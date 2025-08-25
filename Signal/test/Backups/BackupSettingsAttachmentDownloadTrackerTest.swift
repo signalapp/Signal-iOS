@@ -286,13 +286,30 @@ private class MockDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStat
     }
 
     var currentStatusMock: BackupAttachmentDownloadQueueStatus {
-        didSet { notifyStatusDidChange() }
+        didSet {
+            NotificationCenter.default.postOnMainThread(
+                name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
+                object: nil,
+            )
+        }
     }
-    func currentStatus() -> BackupAttachmentDownloadQueueStatus {
+    func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
+        switch mode {
+        case .fullsize:
+            break
+        case .thumbnail:
+            fatalError("Only fullsize in this test")
+        }
         return currentStatusMock
     }
 
-    func currentStatusAndToken() -> (SignalServiceKit.BackupAttachmentDownloadQueueStatus, any SignalServiceKit.BackupAttachmentDownloadQueueStatusToken) {
+    func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (SignalServiceKit.BackupAttachmentDownloadQueueStatus, any SignalServiceKit.BackupAttachmentDownloadQueueStatusToken) {
+        switch mode {
+        case .fullsize:
+            break
+        case .thumbnail:
+            fatalError("Only fullsize in this test")
+        }
         return (currentStatusMock, MockBackupAttachmentDownloadQueueStatusManager.BackupAttachmentDownloadQueueStatusTokenMock())
     }
 

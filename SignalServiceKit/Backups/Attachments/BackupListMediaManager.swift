@@ -682,17 +682,18 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         }
         if shouldMarkDownloadProgressFinished {
             tx.addSyncCompletion {
-                Task {
-                    await self.backupAttachmentDownloadProgress.didFinishDownloadOfAttachment(
-                        withId: attachment.id,
-                        isThumbnail: isThumbnail,
-                        byteCount: UInt64(QueuedBackupAttachmentDownload.estimatedByteCount(
-                            attachment: attachment,
-                            reference: nil,
-                            isThumbnail: isThumbnail,
-                            canDownloadFromMediaTier: true
-                        ))
-                    )
+                if !isThumbnail {
+                    Task {
+                        await self.backupAttachmentDownloadProgress.didFinishDownloadOfFullsizeAttachment(
+                            withId: attachment.id,
+                            byteCount: UInt64(QueuedBackupAttachmentDownload.estimatedByteCount(
+                                attachment: attachment,
+                                reference: nil,
+                                isThumbnail: isThumbnail,
+                                canDownloadFromMediaTier: true
+                            ))
+                        )
+                    }
                 }
             }
         }

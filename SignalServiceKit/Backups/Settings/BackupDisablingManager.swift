@@ -79,8 +79,11 @@ public final class BackupDisablingManager {
 
         // We may have just made the download queue non-empty. Ensure we wait
         // for the status manager to start observing, so its reported status
-        // picks up that fact.
-        return await backupAttachmentDownloadQueueStatusManager.beginObservingIfNecessary()
+        // picks up that fact. Kick off thumbnails async; fullsize returns here.
+        Task { [backupAttachmentDownloadQueueStatusManager] in
+            await backupAttachmentDownloadQueueStatusManager.beginObservingIfNecessary(for: .thumbnail)
+        }
+        return await backupAttachmentDownloadQueueStatusManager.beginObservingIfNecessary(for: .fullsize)
     }
 
     /// Attempts to remotely disable Backups, if necessary. For example, a
@@ -200,12 +203,12 @@ public final class BackupDisablingManager {
             }
         }
 
-        if countsAsComplete(await backupAttachmentDownloadQueueStatusManager.beginObservingIfNecessary()) {
+        if countsAsComplete(await backupAttachmentDownloadQueueStatusManager.beginObservingIfNecessary(for: .fullsize)) {
             return
         }
 
-        for await _ in NotificationCenter.default.notifications(named: .backupAttachmentDownloadQueueStatusDidChange) {
-            if countsAsComplete(await backupAttachmentDownloadQueueStatusManager.currentStatus()) {
+        for await _ in NotificationCenter.default.notifications(named: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize)) {
+            if countsAsComplete(await backupAttachmentDownloadQueueStatusManager.currentStatus(for: .fullsize)) {
                 break
             }
         }

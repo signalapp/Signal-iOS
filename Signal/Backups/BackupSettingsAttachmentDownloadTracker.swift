@@ -143,7 +143,7 @@ private class Tracker {
         BackupAttachmentDownloadQueueStatus
     ) {
         let observer = NotificationCenter.default.addObserver(
-            name: .backupAttachmentDownloadQueueStatusDidChange
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize)
         ) { [weak self] _ in
             guard let self else { return }
 
@@ -152,13 +152,13 @@ private class Tracker {
 
         return (
             observer,
-            backupAttachmentDownloadQueueStatusReporter.currentStatus()
+            backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
         )
     }
 
     @MainActor
     private func handleDownloadQueueStatusUpdate() {
-        let queueStatus = backupAttachmentDownloadQueueStatusReporter.currentStatus()
+        let queueStatus = backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
 
         state.enqueueUpdate { [self] _state in
             _state.lastReportedDownloadQueueStatus = queueStatus

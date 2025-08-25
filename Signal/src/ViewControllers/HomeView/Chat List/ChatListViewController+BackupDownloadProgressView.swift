@@ -28,7 +28,7 @@ public class CLVBackupDownloadProgressView {
             self.didDismissDownloadCompleteBanner = backupAttachmentDownloadStore
                 .getDidDismissDownloadCompleteBanner(tx: tx)
             self.totalPendingBackupAttachmentDownloadByteCount =
-                try? backupAttachmentDownloadStore.computeEstimatedRemainingByteCount(tx: tx)
+                try? backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx)
 
         }
     }

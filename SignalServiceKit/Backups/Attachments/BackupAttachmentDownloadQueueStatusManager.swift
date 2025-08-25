@@ -5,6 +5,11 @@
 
 import GRDB
 
+public enum BackupAttachmentDownloadQueueMode {
+    case fullsize
+    case thumbnail
+}
+
 public enum BackupAttachmentDownloadQueueStatus: Equatable, Sendable {
     /// The queue is running, and attachments are downloading.
     case running
@@ -34,7 +39,14 @@ public enum BackupAttachmentDownloadQueueStatus: Equatable, Sendable {
 }
 
 public extension Notification.Name {
-    static let backupAttachmentDownloadQueueStatusDidChange = Notification.Name(rawValue: "BackupAttachmentDownloadQueueStatusDidChange")
+    static func backupAttachmentDownloadQueueStatusDidChange(mode: BackupAttachmentDownloadQueueMode) -> Notification.Name {
+        switch mode {
+        case .fullsize:
+            return Notification.Name(rawValue: "BackupAttachmentDownloadQueueStatusDidChange_fullsize")
+        case .thumbnail:
+            return Notification.Name(rawValue: "BackupAttachmentDownloadQueueStatusDidChange_thumbnail")
+        }
+    }
 }
 
 // MARK: -
@@ -45,9 +57,9 @@ public extension Notification.Name {
 /// `@MainActor`-isolated because most of the inputs are themselves isolated.
 @MainActor
 public protocol BackupAttachmentDownloadQueueStatusReporter {
-    func currentStatus() -> BackupAttachmentDownloadQueueStatus
+    func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus
 
-    func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken)
+    func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken)
 
     /// Synchronously returns the minimum required disk space for downloads.
     nonisolated func minimumRequiredDiskSpaceToCompleteDownloads() -> UInt64
@@ -58,9 +70,9 @@ public protocol BackupAttachmentDownloadQueueStatusReporter {
 }
 
 extension BackupAttachmentDownloadQueueStatusReporter {
-    func notifyStatusDidChange() {
+    fileprivate func notifyStatusDidChange(for mode: BackupAttachmentDownloadQueueMode) {
         NotificationCenter.default.postOnMainThread(
-            name: .backupAttachmentDownloadQueueStatusDidChange,
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: mode),
             object: nil,
         )
     }
@@ -80,7 +92,7 @@ public protocol BackupAttachmentDownloadQueueStatusToken {}
 public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusReporter {
 
     /// Begin observing status updates, if necessary.
-    func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus
+    func beginObservingIfNecessary(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus
 
     /// Synchronously check remaining disk space.
     /// If there is sufficient space, early exit.
@@ -90,12 +102,19 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
     /// Checks if the error should change the status (e.g. out of disk space errors should stop subsequent downloads)
     /// Returns nil if the error has no effect on the status (though note the status may be changed for any other concurrent
     /// reason unrelated to the error).
-    nonisolated func jobDidExperienceError(_ error: Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus?
+    nonisolated func jobDidExperienceError(
+        _ error: Error,
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async -> BackupAttachmentDownloadQueueStatus?
 
-    nonisolated func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async
+    nonisolated func jobDidSucceed(
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async
 
     /// Call when the download queue is emptied.
-    func didEmptyQueue(isThumbnail: Bool)
+    func didEmptyQueue(for mode: BackupAttachmentDownloadQueueMode)
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool)
 }
@@ -107,13 +126,13 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     // MARK: - BackupAttachmentDownloadQueueStatusReporter
 
-    public func currentStatus() -> BackupAttachmentDownloadQueueStatus {
-        return state.asQueueStatus(dateProvider: dateProvider)
+    public func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
+        return state.asQueueStatus(mode: mode, dateProvider: dateProvider)
     }
 
-    public func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
+    public func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
         return (
-            state.asQueueStatus(dateProvider: dateProvider),
+            state.asQueueStatus(mode: mode, dateProvider: dateProvider),
             BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: state.lastNetworkOr5xxErrorTime)
         )
     }
@@ -135,29 +154,36 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     // MARK: - BackupAttachmentDownloadQueueStatusManager
 
-    public func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus {
+    public func beginObservingIfNecessary(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
         observeDeviceAndLocalStatesIfNecessary()
-        return currentStatus()
+        return currentStatus(for: mode)
     }
 
-    public nonisolated func jobDidExperienceError(_ error: Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus? {
+    public nonisolated func jobDidExperienceError(
+        _ error: Error,
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async -> BackupAttachmentDownloadQueueStatus? {
         // We care about out of disk space errors for downloads.
         if (error as NSError).code == NSFileWriteOutOfSpaceError {
             // Return nil to avoid having to thread-hop to the main thread just to get
             // the current status when we know it won't change due to this error.
             return await MainActor.run {
-                return downloadDidExperienceOutOfSpaceError()
+                return downloadDidExperienceOutOfSpaceError(mode: mode)
             }
         } else if error.isNetworkFailureOrTimeout {
             return await MainActor.run {
-                return downloadDidExperienceNetworkOr5xxError(token: token)
+                return downloadDidExperienceNetworkOr5xxError(mode: mode, token: token)
             }
         } else {
             return nil
         }
     }
 
-    public nonisolated func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async {
+    public nonisolated func jobDidSucceed(
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async {
         guard (token as? BackupAttachmentDownloadQueueStatusTokenImpl)?.lastNetworkOr5xxErrorTime != nil else {
             return
         }
@@ -176,13 +202,17 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         }
     }
 
-    public func didEmptyQueue(isThumbnail: Bool) {
-        if isThumbnail {
+    public func didEmptyQueue(for mode: BackupAttachmentDownloadQueueMode) {
+        switch mode {
+        case .thumbnail:
             state.isThumbnailQueueEmpty = true
-        } else {
+        case .fullsize:
             state.isFullsizeQueueEmpty = true
         }
-        stopObservingDeviceAndLocalStates()
+
+        if state.isThumbnailQueueEmpty == true && state.isFullsizeQueueEmpty == true {
+            stopObservingDeviceAndLocalStates()
+        }
     }
 
     public func setIsMainAppAndActiveOverride(_ newValue: Bool) {
@@ -243,7 +273,8 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             downloadDidExperienceOutOfSpaceError: false,
             isMainAppAndActive: appContext.isMainAppAndActive,
         )
-        self.queueStatus = state.asQueueStatus(dateProvider: dateProvider)
+        self.fullsizeQueueStatus = state.asQueueStatus(mode: .fullsize, dateProvider: dateProvider)
+        self.thumbnailQueueStatus = state.asQueueStatus(mode: .thumbnail, dateProvider: dateProvider)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.appReadinessDidChange()
@@ -255,13 +286,6 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     private struct State {
         var isFullsizeQueueEmpty: Bool?
         var isThumbnailQueueEmpty: Bool?
-
-        var isQueueEmpty: Bool? {
-            guard let isFullsizeQueueEmpty, let isThumbnailQueueEmpty else {
-                return nil
-            }
-            return isFullsizeQueueEmpty && isThumbnailQueueEmpty
-        }
 
         var areDownloadsSuspended: Bool?
 
@@ -322,9 +346,20 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             self.isMainAppAndActive = isMainAppAndActive
         }
 
-        func asQueueStatus(dateProvider: DateProvider) -> BackupAttachmentDownloadQueueStatus {
-            if isQueueEmpty == true {
-                return .empty
+        func asQueueStatus(
+            mode: BackupAttachmentDownloadQueueMode,
+            dateProvider: DateProvider
+        ) -> BackupAttachmentDownloadQueueStatus {
+
+            switch mode {
+            case .fullsize:
+                if isFullsizeQueueEmpty == true {
+                    return .empty
+                }
+            case .thumbnail:
+                if isThumbnailQueueEmpty == true {
+                    return .empty
+                }
             }
 
             guard
@@ -390,14 +425,23 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     private var state: State {
         didSet {
-            queueStatus = state.asQueueStatus(dateProvider: dateProvider)
+            fullsizeQueueStatus = state.asQueueStatus(mode: .fullsize, dateProvider: dateProvider)
+            thumbnailQueueStatus = state.asQueueStatus(mode: .thumbnail, dateProvider: dateProvider)
         }
     }
 
-    private var queueStatus: BackupAttachmentDownloadQueueStatus {
+    private var fullsizeQueueStatus: BackupAttachmentDownloadQueueStatus {
         didSet {
-            if oldValue != queueStatus {
-                notifyStatusDidChange()
+            if oldValue != fullsizeQueueStatus {
+                notifyStatusDidChange(for: .fullsize)
+            }
+        }
+    }
+
+    private var thumbnailQueueStatus: BackupAttachmentDownloadQueueStatus {
+        didSet {
+            if oldValue != thumbnailQueueStatus {
+                notifyStatusDidChange(for: .thumbnail)
             }
         }
     }
@@ -406,7 +450,15 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     private func observeDeviceAndLocalStatesIfNecessary() {
         // For change logic, treat nil as empty (if nil, observation is unstarted)
-        let wasQueueEmpty = state.isQueueEmpty ?? true
+        let wasQueueEmpty: Bool
+        if
+            let wasFullsizeQueueEmpty = state.isFullsizeQueueEmpty,
+            let wasThumbnailQueueEmpty = state.isThumbnailQueueEmpty
+        {
+            wasQueueEmpty = wasFullsizeQueueEmpty && wasThumbnailQueueEmpty
+        } else {
+            wasQueueEmpty = true
+        }
 
         let (
             isFullsizeQueueEmpty,
@@ -571,9 +623,10 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         availableDiskSpaceMaybeDidChange()
     }
 
-    private func downloadDidExperienceOutOfSpaceError() -> BackupAttachmentDownloadQueueStatus {
+    private func downloadDidExperienceOutOfSpaceError(mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
+        // We track the error independent of fullsize vs thumbnail
         state.downloadDidExperienceOutOfSpaceError = true
-        return state.asQueueStatus(dateProvider: dateProvider)
+        return state.asQueueStatus(mode: mode, dateProvider: dateProvider)
     }
 
     private class BackupAttachmentDownloadQueueStatusTokenImpl: BackupAttachmentDownloadQueueStatusToken {
@@ -601,12 +654,15 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         return errorDate.addingTimeInterval(delay)
     }
 
-    private func downloadDidExperienceNetworkOr5xxError(token: BackupAttachmentDownloadQueueStatusToken) -> BackupAttachmentDownloadQueueStatus {
+    private func downloadDidExperienceNetworkOr5xxError(
+        mode: BackupAttachmentDownloadQueueMode,
+        token: BackupAttachmentDownloadQueueStatusToken
+    ) -> BackupAttachmentDownloadQueueStatus {
         guard
             let token = token as? BackupAttachmentDownloadQueueStatusTokenImpl,
             state.lastNetworkOr5xxErrorTime == token.lastNetworkOr5xxErrorTime
         else {
-            return state.asQueueStatus(dateProvider: dateProvider)
+            return state.asQueueStatus(mode: mode, dateProvider: dateProvider)
         }
         let failureCount = state.networkOr5xxErrorCount
         let errorDate = dateProvider()
@@ -625,7 +681,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 self?.didReachNetworkErrorRetryTime(token: BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: errorDate))
             }
         }
-        return state.asQueueStatus(dateProvider: dateProvider)
+        return state.asQueueStatus(mode: mode, dateProvider: dateProvider)
     }
 
     private func didReachNetworkErrorRetryTime(token: BackupAttachmentDownloadQueueStatusToken) {
@@ -658,11 +714,11 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
     struct BackupAttachmentDownloadQueueStatusTokenMock: BackupAttachmentDownloadQueueStatusToken {}
 
     var currentStatusMock: BackupAttachmentDownloadQueueStatus?
-    func currentStatus() -> BackupAttachmentDownloadQueueStatus {
+    func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
         currentStatusMock ?? .empty
     }
 
-    func currentStatusAndToken() -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
+    func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
         (currentStatusMock ?? .empty, BackupAttachmentDownloadQueueStatusTokenMock())
     }
 
@@ -674,23 +730,30 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
         // Nothing
     }
 
-    func beginObservingIfNecessary() -> BackupAttachmentDownloadQueueStatus {
-        return currentStatus()
+    func beginObservingIfNecessary(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
+        return currentStatus(for: mode)
     }
 
     func quickCheckDiskSpaceForDownloads() async {
         // Nothing
     }
 
-    func jobDidExperienceError(_ error: any Error, token: BackupAttachmentDownloadQueueStatusToken) async -> BackupAttachmentDownloadQueueStatus? {
+    func jobDidExperienceError(
+        _ error: any Error,
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async -> BackupAttachmentDownloadQueueStatus? {
         return nil
     }
 
-    func jobDidSucceed(token: BackupAttachmentDownloadQueueStatusToken) async {
+    func jobDidSucceed(
+        token: BackupAttachmentDownloadQueueStatusToken,
+        mode: BackupAttachmentDownloadQueueMode,
+    ) async {
         // Nothing
     }
 
-    func didEmptyQueue(isThumbnail: Bool) {
+    func didEmptyQueue(for mode: BackupAttachmentDownloadQueueMode) {
         // Nothing
     }
 

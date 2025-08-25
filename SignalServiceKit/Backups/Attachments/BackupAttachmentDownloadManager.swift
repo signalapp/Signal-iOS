@@ -93,9 +93,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
 
-        func taskQueue(forThumbnailDownloads: Bool) -> TaskQueueLoader<TaskRunner> {
+        func taskQueue(mode: BackupAttachmentDownloadQueueMode) -> TaskQueueLoader<TaskRunner> {
             let taskRunner = TaskRunner(
-                forThumbnailDownloads: forThumbnailDownloads,
+                mode: mode,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
                 attachmentUploadStore: attachmentUploadStore,
@@ -112,17 +112,20 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 tsAccountManager: tsAccountManager
             )
             return TaskQueueLoader(
-                maxConcurrentTasks: forThumbnailDownloads
-                    ? Constants.numParallelDownloadsThumbnail
-                    : Constants.numParallelDownloadsFullsize,
+                maxConcurrentTasks: {
+                    switch mode {
+                    case .thumbnail: Constants.numParallelDownloadsThumbnail
+                    case .fullsize: Constants.numParallelDownloadsFullsize
+                    }
+                }(),
                 dateProvider: dateProvider,
                 db: db,
                 runner: taskRunner
             )
         }
 
-        self.fullsizeTaskQueue = taskQueue(forThumbnailDownloads: false)
-        self.thumbnailTaskQueue = taskQueue(forThumbnailDownloads: true)
+        self.fullsizeTaskQueue = taskQueue(mode: .fullsize)
+        self.thumbnailTaskQueue = taskQueue(mode: .thumbnail)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
             self?.startObservingExternalEvents()
@@ -179,6 +182,17 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
+        async let fullsizeResult = Result.init {
+            try await self._restoreAttachmentsIfNeeded(mode: .fullsize)
+        }
+        async let thumbnailResult = Result.init {
+            try await self._restoreAttachmentsIfNeeded(mode: .thumbnail)
+        }
+        try await fullsizeResult.get()
+        try await thumbnailResult.get()
+    }
+
+    private func _restoreAttachmentsIfNeeded(mode: BackupAttachmentDownloadQueueMode) async throws {
         guard appContext.isMainApp else { return }
 
         if
@@ -189,7 +203,18 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             try await listMediaManager.queryListMediaIfNeeded()
         }
 
-        switch await statusManager.beginObservingIfNecessary() {
+        let taskQueue: TaskQueueLoader<TaskRunner>
+        let logString: String
+        switch mode {
+        case .fullsize:
+            taskQueue = fullsizeTaskQueue
+            logString = "fullsize"
+        case .thumbnail:
+            taskQueue = thumbnailTaskQueue
+            logString = "thumbnail"
+        }
+
+        switch await statusManager.beginObservingIfNecessary(for: mode) {
         case .running:
             break
         case .suspended:
@@ -199,50 +224,43 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             // The queue will stop on its own if empty.
             return
         case .notRegisteredAndReady:
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            try await taskQueue.stop()
             return
         case .noWifiReachability:
-            logger.info("Skipping backup attachment downloads while not reachable by wifi")
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            logger.info("Skipping \(logString) backup attachment downloads while not reachable by wifi")
+            try await taskQueue.stop()
             return
         case .noReachability:
-            logger.info("Skipping backup attachment downloads while not reachable at all")
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            logger.info("Skipping \(logString) backup attachment downloads while not reachable at all")
+            try await taskQueue.stop()
             return
         case .lowBattery:
-            logger.info("Skipping backup attachment downloads while low battery")
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            logger.info("Skipping \(logString) backup attachment downloads while low battery")
+            try await taskQueue.stop()
             return
         case .lowDiskSpace:
-            logger.info("Skipping backup attachment downloads while low on disk space")
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            logger.info("Skipping \(logString) backup attachment downloads while low on disk space")
+            try await taskQueue.stop()
             return
         case .appBackgrounded:
-            logger.info("Skipping backup attachment downloads while backgrounded")
-            try await fullsizeTaskQueue.stop()
-            try await thumbnailTaskQueue.stop()
+            logger.info("Skipping \(logString) backup attachment downloads while backgrounded")
+            try await taskQueue.stop()
             return
         }
 
         do {
             try await progress.beginObserving()
         } catch {
-            owsFailDebug("Unable to observe download progres \(error.grdbErrorForLogging)")
+            owsFailDebug("Unable to observe \(logString) download progres \(error.grdbErrorForLogging)")
         }
 
         let backgroundTask = OWSBackgroundTask(
-            label: #function
-        ) { [weak fullsizeTaskQueue, weak thumbnailTaskQueue] status in
+            label: #function + logString
+        ) { [weak taskQueue] status in
             switch status {
             case .expired:
                 Task {
-                    try? await fullsizeTaskQueue?.stop()
-                    try? await thumbnailTaskQueue?.stop()
+                    try? await taskQueue?.stop()
                 }
             case .couldNotStart, .success:
                 break
@@ -250,14 +268,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
         defer { backgroundTask.end() }
 
-        async let fullsizeResult = Result.init { [fullsizeTaskQueue] in
-            try await fullsizeTaskQueue.loadAndRunTasks()
-        }
-        async let thumbnailResult = Result.init { [thumbnailTaskQueue] in
-            try await thumbnailTaskQueue.loadAndRunTasks()
-        }
-        try await fullsizeResult.get()
-        try await thumbnailResult.get()
+        try await taskQueue.loadAndRunTasks()
     }
 
     // MARK: - Queue status observation
@@ -265,8 +276,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     private func startObservingExternalEvents() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(queueStatusDidChange),
-            name: .backupAttachmentDownloadQueueStatusDidChange,
+            selector: #selector(fullsizeQueueStatusDidChange),
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(thumbnailQueueStatusDidChange),
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .thumbnail),
             object: nil
         )
 
@@ -279,9 +296,16 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     @objc
-    private func queueStatusDidChange() {
+    private func fullsizeQueueStatusDidChange() {
         Task {
-            try await self.restoreAttachmentsIfNeeded()
+            try await self._restoreAttachmentsIfNeeded(mode: .fullsize)
+        }
+    }
+
+    @objc
+    private func thumbnailQueueStatusDidChange() {
+        Task {
+            try await self._restoreAttachmentsIfNeeded(mode: .thumbnail)
         }
     }
 
@@ -313,10 +337,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         let store: TaskStore
 
-        private let forThumbnailDownloads: Bool
+        private let mode: BackupAttachmentDownloadQueueMode
 
         init(
-            forThumbnailDownloads: Bool,
+            mode: BackupAttachmentDownloadQueueMode,
             attachmentStore: AttachmentStore,
             attachmentDownloadManager: AttachmentDownloadManager,
             attachmentUploadStore: AttachmentUploadStore,
@@ -332,7 +356,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             statusManager: BackupAttachmentDownloadQueueStatusManager,
             tsAccountManager: TSAccountManager
         ) {
-            self.forThumbnailDownloads = forThumbnailDownloads
+            self.mode = mode
             self.attachmentStore = attachmentStore
             self.attachmentDownloadManager = attachmentDownloadManager
             self.attachmentUploadStore = attachmentUploadStore
@@ -349,7 +373,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.tsAccountManager = tsAccountManager
 
             self.store = TaskStore(
-                forThumbnailDownloads: forThumbnailDownloads,
+                mode: mode,
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             )
         }
@@ -364,7 +388,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
             await statusManager.quickCheckDiskSpaceForDownloads()
 
-            let (status, statusToken) = await statusManager.currentStatusAndToken()
+            let (status, statusToken) = await statusManager.currentStatusAndToken(for: mode)
 
             switch status {
             case .running:
@@ -408,10 +432,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 return .cancelled
             }
 
-            let progressSink = await progress.willBeginDownloadingAttachment(
-                withId: record.record.attachmentRowId,
-                isThumbnail: record.record.isThumbnail
-            )
+            let progressSink: OWSProgressSink?
+            if record.record.isThumbnail {
+                progressSink = nil
+            } else {
+                progressSink = await progress.willBeginDownloadingFullsizeAttachment(
+                    withId: record.record.attachmentRowId
+                )
+            }
 
             let nowMs = dateProvider().ows_millisecondsSince1970
             let remoteConfig = remoteConfigProvider.currentConfig()
@@ -438,11 +466,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             case nil:
                 // No longer at all eligible to download from this source.
                 // count this as having completed the download for progress tracking purposes.
-                await progress.didFinishDownloadOfAttachment(
-                    withId: record.record.attachmentRowId,
-                    isThumbnail: record.record.isThumbnail,
-                    byteCount: UInt64(record.record.estimatedByteCount)
-                )
+                if !record.record.isThumbnail {
+                    await progress.didFinishDownloadOfFullsizeAttachment(
+                        withId: record.record.attachmentRowId,
+                        byteCount: UInt64(record.record.estimatedByteCount)
+                    )
+                }
                 return .cancelled
             case .ineligible:
                 // Current state prevents running this row; unclear how we
@@ -469,11 +498,12 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     )
                 }
                 // count this as having completed the download.
-                await progress.didFinishDownloadOfAttachment(
-                    withId: record.record.attachmentRowId,
-                    isThumbnail: record.record.isThumbnail,
-                    byteCount: UInt64(record.record.estimatedByteCount)
-                )
+                if !record.record.isThumbnail {
+                    await progress.didFinishDownloadOfFullsizeAttachment(
+                        withId: record.record.attachmentRowId,
+                        byteCount: UInt64(record.record.estimatedByteCount)
+                    )
+                }
                 return .retryableError(NoLongerEligibleError())
             }
 
@@ -509,7 +539,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                     progress: progressSink
                 )
             } catch let error {
-                switch await statusManager.jobDidExperienceError(error, token: statusToken) {
+                switch await statusManager.jobDidExperienceError(error, token: statusToken, mode: mode) {
                 case nil:
                     // No state change, keep going.
                     break
@@ -592,13 +622,14 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 }
             }
 
-            await statusManager.jobDidSucceed(token: statusToken)
+            await statusManager.jobDidSucceed(token: statusToken, mode: mode)
 
-            await progress.didFinishDownloadOfAttachment(
-                withId: record.record.attachmentRowId,
-                isThumbnail: record.record.isThumbnail,
-                byteCount: UInt64(record.record.estimatedByteCount)
-            )
+            if !record.record.isThumbnail {
+                await progress.didFinishDownloadOfFullsizeAttachment(
+                    withId: record.record.attachmentRowId,
+                    byteCount: UInt64(record.record.estimatedByteCount)
+                )
+            }
 
             return .success
         }
@@ -745,14 +776,25 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         }
 
         func didDrainQueue() async {
-            await progress.didEmptyDownloadQueue(isThumbnail: forThumbnailDownloads)
-            await statusManager.didEmptyQueue(isThumbnail: forThumbnailDownloads)
-            await db.awaitableWrite { tx in
-                // Go ahead and delete all done rows to reset the byte count.
-                // This isn't load-bearing, but its nice to do just in case
-                // some new download gets added it can just count up to its own
+            switch mode {
+            case .thumbnail:
+                Logger.info("Did drain thumbnail queue")
+            case .fullsize:
+                Logger.info("Did drain fullsize queue")
+                await progress.didEmptyFullsizeDownloadQueue()
+            }
+            await statusManager.didEmptyQueue(for: mode)
+            switch mode {
+            case .thumbnail:
+                break
+            case .fullsize:
+                await db.awaitableWrite { tx in
+                    // Go ahead and delete all done rows to reset the byte count.
+                    // This isn't load-bearing, but its nice to do just in case
+                    // some new download gets added it can just count up to its own
                     // total.
-                try? backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+                    try? backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+                }
             }
         }
     }
@@ -769,17 +811,21 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
         private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
 
-        private let forThumbnailDownloads: Bool
+        private let mode: BackupAttachmentDownloadQueueMode
 
         init(
-            forThumbnailDownloads: Bool,
+            mode: BackupAttachmentDownloadQueueMode,
             backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         ) {
             self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
-            self.forThumbnailDownloads = forThumbnailDownloads
+            self.mode = mode
         }
 
         func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
+            let forThumbnailDownloads = switch mode {
+            case .thumbnail: true
+            case .fullsize: false
+            }
             return try backupAttachmentDownloadStore.peek(
                 count: count,
                 isThumbnail: forThumbnailDownloads,

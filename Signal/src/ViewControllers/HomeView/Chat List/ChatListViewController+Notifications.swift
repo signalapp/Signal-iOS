@@ -82,7 +82,7 @@ extension ChatListViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(backupAttachmentDownloadQueueStatusDidChange(_:)),
-            name: .backupAttachmentDownloadQueueStatusDidChange,
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -99,7 +99,7 @@ extension ChatListViewController {
         )
 
         viewState.backupDownloadProgressViewState.downloadQueueStatus =
-            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus()
+            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
         Task { @MainActor in
             self.viewState.backupDownloadProgressViewState.downloadProgressObserver = await DependenciesBridge.shared
                 .backupAttachmentDownloadProgress
@@ -281,7 +281,7 @@ extension ChatListViewController {
     @objc
     private func backupAttachmentDownloadQueueStatusDidChange(_ notification: Notification) {
         self.viewState.backupDownloadProgressViewState.downloadQueueStatus =
-            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus()
+            DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
         self.viewState.backupDownloadProgressView.update(viewState: self.viewState.backupDownloadProgressViewState)
     }
 

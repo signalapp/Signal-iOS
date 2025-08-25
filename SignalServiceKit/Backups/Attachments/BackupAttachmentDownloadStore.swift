@@ -91,10 +91,10 @@ public protocol BackupAttachmentDownloadStore {
     func deleteAllDone(tx: DBWriteTransaction) throws
 
     /// Returns nil, NOT 0, if there are no rows.
-    func computeEstimatedFinishedByteCount(tx: DBReadTransaction) throws -> UInt64?
+    func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64?
 
     /// Returns nil, NOT 0, if there are no rows.
-    func computeEstimatedRemainingByteCount(tx: DBReadTransaction) throws -> UInt64?
+    func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64?
 
     // MARK: Banner state
 
@@ -334,20 +334,24 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .deleteAll(tx.database)
     }
 
-    public func computeEstimatedFinishedByteCount(tx: DBReadTransaction) throws -> UInt64? {
+    public func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64? {
         try UInt64.fetchOne(tx.database, sql: """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
             FROM \(QueuedBackupAttachmentDownload.databaseTableName)
-            WHERE \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.done.rawValue);
+            WHERE
+                \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.done.rawValue)
+                AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
             """
         )
     }
 
-    public func computeEstimatedRemainingByteCount(tx: DBReadTransaction) throws -> UInt64? {
+    public func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64? {
         try UInt64.fetchOne(tx.database, sql: """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
             FROM \(QueuedBackupAttachmentDownload.databaseTableName)
-            WHERE \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.ready.rawValue);
+            WHERE
+                \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.ready.rawValue)
+                AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
             """
         )
     }
