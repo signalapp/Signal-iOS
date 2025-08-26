@@ -127,7 +127,7 @@ public class AccountKeyStore {
     /// this method should be careful that those side-effects have been managed,
     /// either by the caller or something upstream of the caller.
     ///
-    /// Callers who are unsure should refer to ``SecureValueRecovery/setNewAccountEntropyPoolWithSideEffects``.
+    /// Callers who are unsure should refer to ``AccountEntropyPoolManager``.
     public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
         // Clear the old master key when setting the accountEntropyPool
         masterKeyKvStore.removeValue(forKey: Keys.masterKey, transaction: tx)

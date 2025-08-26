@@ -157,10 +157,9 @@ public protocol SecureValueRecovery {
         tx: DBWriteTransaction
     ) throws(SVR.KeysError)
 
-    func setNewAccountEntropyPoolWithSideEffects(
-        _ accountEntropyPool: AccountEntropyPool,
+    func handleMasterKeyUpdated(
+        newMasterKey: MasterKey,
         disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }

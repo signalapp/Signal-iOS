@@ -336,7 +336,6 @@ public class AppSetup {
         )
 
         let svr = SecureValueRecovery2Impl(
-            accountAttributesUpdater: accountAttributesUpdater,
             appContext: SVR2.Wrappers.AppContext(),
             appReadiness: appReadiness,
             appVersion: appVersion,
@@ -347,7 +346,6 @@ public class AppSetup {
             scheduler: DispatchQueue(label: "org.signal.svr2", qos: .userInitiated),
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
-            syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
@@ -1449,8 +1447,21 @@ public class AppSetup {
             backupExportJob: backupExportJob
         )
 
+        let accountEntropyPoolManager = AccountEntropyPoolManagerImpl(
+            accountAttributesUpdater: accountAttributesUpdater,
+            accountKeyStore: accountKeyStore,
+            appContext: appContext,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            storageServiceManager: storageServiceManager,
+            svr: svr,
+            syncManager: syncManager,
+            tsAccountManager: tsAccountManager,
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
+            accountEntropyPoolManager: accountEntropyPoolManager,
             adHocCallRecordManager: adHocCallRecordManager,
             appExpiry: appExpiry,
             attachmentCloner: attachmentCloner,

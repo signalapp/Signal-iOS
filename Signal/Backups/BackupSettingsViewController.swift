@@ -17,6 +17,7 @@ class BackupSettingsViewController:
         case presentWelcomeToBackupsSheet
     }
 
+    private let accountEntropyPoolManager: AccountEntropyPoolManager
     private let accountKeyStore: AccountKeyStore
     private let backupAttachmentDownloadTracker: BackupSettingsAttachmentDownloadTracker
     private let backupAttachmentUploadTracker: BackupSettingsAttachmentUploadTracker
@@ -28,7 +29,6 @@ class BackupSettingsViewController:
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let deviceSleepManager: DeviceSleepManager
-    private let svr: SecureValueRecovery
     private let tsAccountManager: TSAccountManager
 
     private var onAppearAction: OnAppearAction?
@@ -45,6 +45,7 @@ class BackupSettingsViewController:
 
         self.init(
             onAppearAction: onAppearAction,
+            accountEntropyPoolManager: DependenciesBridge.shared.accountEntropyPoolManager,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupAttachmentDownloadProgress: DependenciesBridge.shared.backupAttachmentDownloadProgress,
             backupAttachmentDownloadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter,
@@ -58,13 +59,13 @@ class BackupSettingsViewController:
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
-            svr: DependenciesBridge.shared.svr,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 
     init(
         onAppearAction: OnAppearAction?,
+        accountEntropyPoolManager: AccountEntropyPoolManager,
         accountKeyStore: AccountKeyStore,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
@@ -78,14 +79,14 @@ class BackupSettingsViewController:
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
-        svr: SecureValueRecovery,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         owsPrecondition(
             db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
             "Unsafe to let a linked device access Backup Settings!"
         )
 
+        self.accountEntropyPoolManager = accountEntropyPoolManager
         self.accountKeyStore = accountKeyStore
         self.backupAttachmentDownloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
@@ -103,7 +104,6 @@ class BackupSettingsViewController:
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.deviceSleepManager = deviceSleepManager
-        self.svr = svr
         self.tsAccountManager = tsAccountManager
 
         self.onAppearAction = onAppearAction
@@ -1065,20 +1065,12 @@ class BackupSettingsViewController:
             owsFail("Attempting to set AEP, but Backups are not disabled!")
         }
 
-        Logger.warn("Setting new AEP and MRBK!")
+        Logger.warn("Rotating AEP: Create New Key!")
 
-        // Generate a new, random MRBK for use in the future alongside our new,
-        // random AEP.
-        accountKeyStore.setMediaRootBackupKey(
-            MediaRootBackupKey(backupKey: .generateRandom()),
-            tx: tx
-        )
-
-        svr.setNewAccountEntropyPoolWithSideEffects(
-            newCandidateAEP,
+        accountEntropyPoolManager.setAccountEntropyPool(
+            newAccountEntropyPool: newCandidateAEP,
             disablePIN: false,
-            authedAccount: .implicit(),
-            transaction: tx
+            tx: tx
         )
     }
 }

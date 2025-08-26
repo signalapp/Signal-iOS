@@ -9,11 +9,6 @@ import Foundation
 
 public class SecureValueRecoveryMock: SecureValueRecovery {
 
-    public var hasAccountEntropyPool = false
-    public func hasAccountEntropyPool(transaction: DBReadTransaction) -> Bool {
-        return hasAccountEntropyPool
-    }
-
     public init() {}
 
     public var hasMasterKey = false
@@ -108,16 +103,8 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         doesHavePendingRestoration = false
     }
 
-    public var setNewAccountEntropyPoolWithSideEffectsMock: ((_ authedAccount: AuthedAccount) -> Void)?
-    public func setNewAccountEntropyPoolWithSideEffects(
-        _ accountEntropyPool: AccountEntropyPool,
-        disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    ) {
-        setNewAccountEntropyPoolWithSideEffectsMock?(authedAccount)
-        hasAccountEntropyPool = true
-        hasMasterKey = true
+    public func handleMasterKeyUpdated(newMasterKey: MasterKey, disablePIN: Bool, tx: DBWriteTransaction) {
+        // Do nothing
     }
 }
 

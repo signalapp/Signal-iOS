@@ -121,6 +121,7 @@ public class AppEnvironment: NSObject {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            let accountEntropyPoolManager = DependenciesBridge.shared.accountEntropyPoolManager
             let backupDisablingManager = DependenciesBridge.shared.backupDisablingManager
             let backupIdService = DependenciesBridge.shared.backupIdService
             let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
@@ -194,6 +195,10 @@ public class AppEnvironment: NSObject {
                         // Do nothing, we'll try again on the next app launch.
                         owsFailDebug("Error registering backup ID \(error)")
                     }
+                }
+
+                Task {
+                    await accountEntropyPoolManager.generateIfMissing()
                 }
             } else {
                 Task {

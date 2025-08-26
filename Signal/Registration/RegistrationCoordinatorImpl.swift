@@ -1394,11 +1394,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            deps.svr.setNewAccountEntropyPoolWithSideEffects(
-                accountEntropyPool,
+            deps.accountEntropyPoolManager.setAccountEntropyPool(
+                newAccountEntropyPool: accountEntropyPool,
                 disablePIN: !userHasPIN,
-                authedAccount: accountIdentity.authedAccount,
-                transaction: tx
+                tx: tx
             )
 
             block?(tx)

@@ -18,6 +18,7 @@ public class RegistrationCoordinatorTest {
 
     private var date: Date { self.stubs.date }
 
+    private var accountEntropyPoolManager: MockAccountEntropyPoolManager!
     private var appExpiry: AppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
@@ -61,6 +62,7 @@ public class RegistrationCoordinatorTest {
         dateProvider = { self.date }
         db = InMemoryDB()
 
+        accountEntropyPoolManager = MockAccountEntropyPoolManager()
         appExpiry = .forUnitTests()
         accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -104,6 +106,7 @@ public class RegistrationCoordinatorTest {
         }
 
         let dependencies = RegistrationCoordinatorDependencies(
+            accountEntropyPoolManager: accountEntropyPoolManager,
             appExpiry: appExpiry,
             accountEntropyPoolGenerator: { Stubs.accountEntropyPoolToGenerate },
             accountKeyStore: accountKeyStore,
@@ -2928,10 +2931,10 @@ public class RegistrationCoordinatorTest {
             throw OWSAssertionError("")
         })
 
-        var didSetLocalAccountEntropyPool = false
-        svr.setNewAccountEntropyPoolWithSideEffectsMock = { _ in
-            #expect(self.svr.hasAccountEntropyPool == false)
-            didSetLocalAccountEntropyPool = true
+        var didSetAccountEntropyPool = false
+        accountEntropyPoolManager.setAccountEntropyPoolMock = {
+            #expect(!didSetAccountEntropyPool)
+            didSetAccountEntropyPool = true
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -2960,15 +2963,14 @@ public class RegistrationCoordinatorTest {
                 )
         )
 
-        // At this point we should have no master key.
-        #expect(svr.hasMasterKey == false)
-        #expect(svr.hasAccountEntropyPool == false)
+        // At this point we should not have set the AEP.
+        #expect(!didSetAccountEntropyPool)
 
         // Skip the PIN code.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
-        #expect(testCase.newKey == .accountEntropyPool)
-        #expect(didSetLocalAccountEntropyPool)
+        // We should now have set the AEP.
+        #expect(didSetAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3075,10 +3077,10 @@ public class RegistrationCoordinatorTest {
             throw OWSAssertionError("")
         })
 
-        var didSetLocalAccountEntropyPool = false
-        svr.setNewAccountEntropyPoolWithSideEffectsMock = { _ in
-            #expect(self.svr.hasAccountEntropyPool == false)
-            didSetLocalAccountEntropyPool = true
+        var didSetAccountEntropyPool = false
+        accountEntropyPoolManager.setAccountEntropyPoolMock = {
+            #expect(!didSetAccountEntropyPool)
+            didSetAccountEntropyPool = true
         }
 
         // Now we should ask to restore the PIN.
@@ -3098,14 +3100,14 @@ public class RegistrationCoordinatorTest {
                 )
         )
 
-        // At this point we should have no master key.
-        #expect(svr.hasMasterKey.negated)
+        // At this point we should not have set the AEP.
+        #expect(!didSetAccountEntropyPool)
 
         // Skip this PIN code, too.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
-        #expect(testCase.newKey == .accountEntropyPool)
-        #expect(didSetLocalAccountEntropyPool)
+        // We should now have set the master key (i.e., the AEP).
+        #expect(didSetAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)

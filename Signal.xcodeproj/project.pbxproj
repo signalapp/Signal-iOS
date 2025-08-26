@@ -2890,6 +2890,7 @@
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
 		D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */; };
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
+		D9EDF2782E4D2A2F001D4BEC /* AccountEntropyPoolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */; };
 		D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */; };
 		D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */; };
 		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
@@ -6849,6 +6850,7 @@
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
 		D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGContext+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
+		D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPoolManager.swift; sourceTree = "<group>"; };
 		D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
 		D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
 		D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManagerTest.swift; sourceTree = "<group>"; };
@@ -9621,9 +9623,9 @@
 		6673FF6A2978B5B900F96CFD /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
+				D9EDF2762E4D29F0001D4BEC /* AccountEntropyPool */,
 				6640DD612ACDD5CD00CE9A8C /* LocalStorage */,
 				66C2B13B2A0E9108008DDE72 /* SVR2 */,
-				C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */,
 				D94AEB392D28837A00B03D7A /* MasterKey.swift */,
 				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
@@ -13036,6 +13038,15 @@
 				D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */,
 			);
 			path = DeleteForMe;
+			sourceTree = "<group>";
+		};
+		D9EDF2762E4D29F0001D4BEC /* AccountEntropyPool */ = {
+			isa = PBXGroup;
+			children = (
+				C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */,
+				D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */,
+			);
+			path = AccountEntropyPool;
 			sourceTree = "<group>";
 		};
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
@@ -17543,6 +17554,7 @@
 				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */,
+				D9EDF2782E4D2A2F001D4BEC /* AccountEntropyPoolManager.swift in Sources */,
 				C14D49CE2D667F830033BA69 /* AccountKeyStore.swift in Sources */,
 				50BE67532CAAF7DF006D7BC7 /* AdHocCallRecordManager.swift in Sources */,
 				728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */,

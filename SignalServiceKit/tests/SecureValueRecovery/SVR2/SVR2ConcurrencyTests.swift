@@ -35,7 +35,6 @@ class SVR2ConcurrencyTests: XCTestCase {
         let localStorage = SVRLocalStorageImpl()
 
         self.svr = SecureValueRecovery2Impl(
-            accountAttributesUpdater: MockAccountAttributesUpdater(),
             appContext: SVR2.Mocks.AppContext(),
             appReadiness: AppReadinessMock(),
             appVersion: MockAppVerion(),
@@ -47,7 +46,6 @@ class SVR2ConcurrencyTests: XCTestCase {
             scheduler: AlwaysAsyncScheduler(queue),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
-            syncManager: OWSMockSyncManager(),
             tsAccountManager: MockTSAccountManager(),
             tsConstants: TSConstants.shared,
             twoFAManager: SVR2.TestMocks.OWS2FAManager()
@@ -343,7 +341,6 @@ class SVR2ConcurrencyTests: XCTestCase {
             let localStorage = SVRLocalStorageImpl()
 
             let svr = SecureValueRecovery2Impl(
-                accountAttributesUpdater: MockAccountAttributesUpdater(),
                 appContext: SVR2.Mocks.AppContext(),
                 appReadiness: AppReadinessMock(),
                 appVersion: MockAppVerion(),
@@ -355,7 +352,6 @@ class SVR2ConcurrencyTests: XCTestCase {
                 scheduler: AlwaysAsyncScheduler(queue),
                 storageServiceManager: FakeStorageServiceManager(),
                 svrLocalStorage: localStorage,
-                syncManager: OWSMockSyncManager(),
                 tsAccountManager: MockTSAccountManager(),
                 tsConstants: TSConstants.shared,
                 twoFAManager: SVR2.TestMocks.OWS2FAManager()

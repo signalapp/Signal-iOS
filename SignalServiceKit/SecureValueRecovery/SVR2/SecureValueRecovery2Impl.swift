@@ -9,7 +9,6 @@ import LibSignalClient
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
 public class SecureValueRecovery2Impl: SecureValueRecovery {
 
-    private let accountAttributesUpdater: AccountAttributesUpdater
     private let appContext: SVR2.Shims.AppContext
     private let appReadiness: AppReadiness
     private let appVersion: AppVersion
@@ -21,13 +20,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let localStorage: SVRLocalStorageInternal
     private let scheduler: Scheduler
     private let storageServiceManager: StorageServiceManager
-    private let syncManager: SyncManagerProtocolSwift
     private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR2.Shims.OWS2FAManager
 
     public convenience init(
-        accountAttributesUpdater: AccountAttributesUpdater,
         appContext: SVR2.Shims.AppContext,
         appReadiness: AppReadiness,
         appVersion: AppVersion,
@@ -38,13 +35,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
-        syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR2.Shims.OWS2FAManager
     ) {
         self.init(
-            accountAttributesUpdater: accountAttributesUpdater,
             appContext: appContext,
             appReadiness: appReadiness,
             appVersion: appVersion,
@@ -56,7 +51,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             scheduler: scheduler,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
-            syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: twoFAManager
@@ -64,7 +58,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     internal init(
-        accountAttributesUpdater: AccountAttributesUpdater,
         appContext: SVR2.Shims.AppContext,
         appReadiness: AppReadiness,
         appVersion: AppVersion,
@@ -76,12 +69,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
-        syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR2.Shims.OWS2FAManager
     ) {
-        self.accountAttributesUpdater = accountAttributesUpdater
         self.appContext = appContext
         self.appReadiness = appReadiness
         self.appVersion = appVersion
@@ -93,7 +84,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.localStorage = svrLocalStorage
         self.scheduler = scheduler
         self.storageServiceManager = storageServiceManager
-        self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
@@ -101,10 +91,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func warmCaches() {
         if self.appContext.isMainApp {
-            // This is where the AEP migration happen for existing installs
-            // Run this inside the `isMainApp` section since we want to
-            // avoid migrating the AEP in the NSE.
-            generateAccountEntropyPoolIfMissing()
 
             // Never migrate in the NSE or extensions.
             _ = performStartupMigrationsIfNecessary()
@@ -205,35 +191,16 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: -
 
-    /// This method will:
-    /// 1. Set the provided AEP
-    /// 2. Clear out any SVR state
-    /// 3. Initiate a Storage Service update
-    /// 4. Update the users AccountAttributes
-    /// 5. Depending on the value of `disablePIN`
-    ///     a. true: Disable 2FA and remove local SVR credentials
-    ///     b. false: Initiate a new backup of SVR credentials if a PIN is available
-    public func setNewAccountEntropyPoolWithSideEffects(
-        _ accountEntropyPool: AccountEntropyPool,
+    /// Takes SVR-related actions when the master key changes, such as updating
+    /// local state and updating remote SVR state.
+    ///
+    /// - Parameter disablePIN
+    /// If `true`, wipes local state related to the PIN; no remote actions are
+    /// taken, since the master key the PIN protects is being updated anyway.
+    public func handleMasterKeyUpdated(
+        newMasterKey: MasterKey,
         disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction,
-    ) {
-        Logger.info("")
-        accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: transaction)
-        performSideEffectsOfNewMasterKey(
-            accountEntropyPool.getMasterKey(),
-            disablePIN: disablePIN,
-            authedAccount: authedAccount,
-            transaction: transaction
-        )
-    }
-
-    private func performSideEffectsOfNewMasterKey(
-        _ masterKey: MasterKey,
-        disablePIN: Bool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
+        tx transaction: DBWriteTransaction,
     ) {
         // clearInProgressBackup will clear any in progress backup state.
         // This will prevent us continuing any in progress backups/exposes.
@@ -247,31 +214,19 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         )
 
         if disablePIN {
+            Logger.info("Disabling PIN.")
+
             // Disable the PIN locally.
             twoFAManager.markDisabled(transaction: transaction)
             // Wipe credentials; they're now useless.
             credentialStorage.removeSVR2CredentialsForCurrentUser(transaction)
-        } else {
-            // If the user has a current PIN, update SVR with the new key
-            if let currentPIN = twoFAManager.pinCode(transaction: transaction) {
-                // Record that the master key needs to be backed up.
-                localStorage.setNeedsMasterKeyBackup(true, transaction)
-                _ = backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit)
-            }
+        } else if let pin = twoFAManager.pinCode(transaction: transaction) {
+            Logger.info("Scheduling master key backup with PIN.")
+
+            // Record that the master key needs to be backed up.
+            localStorage.setNeedsMasterKeyBackup(true, transaction)
+            _ = backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit)
         }
-
-        syncStorageService(
-            restoredMasterKey: masterKey,
-            authedAccount: authedAccount,
-            transaction: transaction
-        )
-
-        // We should update account attributes so we wipe the reglock and
-        // reg recovery password.
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(
-            authedAccount: authedAccount,
-            tx: transaction
-        )
     }
 
     // MARK: - PIN Management
@@ -1109,32 +1064,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Migrations
 
-    public func generateAccountEntropyPoolIfMissing() {
-        let (isRegisteredPrimary, accountEntropyPool, pinCode) = db.read {(
-            self.tsAccountManager.registrationState(tx: $0).isRegisteredPrimaryDevice,
-            self.accountKeyStore.getAccountEntropyPool(tx: $0),
-            self.twoFAManager.pinCode(transaction: $0)
-        )}
-
-        guard
-            accountEntropyPool == nil,
-            isRegisteredPrimary
-        else {
-            return
-        }
-
-        Logger.info("Generating new AEP, we are registered but missing one!")
-
-        db.write { tx in
-            self.setNewAccountEntropyPoolWithSideEffects(
-                AccountEntropyPool(),
-                disablePIN: pinCode == nil,
-                authedAccount: .implicit(),
-                transaction: tx
-            )
-        }
-    }
-
     public func performStartupMigrationsIfNecessary() -> Promise<Void> {
         // Require migrations to succeed before we check for old stuff
         // to wipe, because migrations add old stuff to be wiped.
@@ -1149,7 +1078,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // the NSE to do the initial SVR backup. Initial AEP migrations could happen in the NSE,
     // so we want to allow any migrations that happened in the NSE to complete the backup.
     // This should only affect legacy installs since any new install or
-    // migration should already have this marked through `setNewAccountEntropyPoolWithSideEffects`.
+    // migration should already have this marked through `handleMasterKeyUpdated`.
     // Eventualy (Nov 2025), this can be removed since all active accounts will either
     // have migrated or only migrated in the main app.
     private static let needsInitialAEPBackup = "needsInitialAEPBackup"
@@ -1538,51 +1467,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         if mrEnclaveStringValue != localStorage.getSVR2MrEnclaveStringValue(transaction) {
             localStorage.setSVR2MrEnclaveStringValue(mrEnclaveStringValue, transaction)
-        }
-    }
-
-    private func syncStorageService(
-        restoredMasterKey: MasterKey,
-        authedAccount: AuthedAccount,
-        transaction: DBReadTransaction
-    ) {
-        // Only continue if we are on the primary device.
-        guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
-            return
-        }
-
-        let authedDeviceForStorageServiceSync = authedAccount.authedDevice(isPrimaryDevice: true)
-
-        /// When the app is ready, trigger a rotation of the Storage Service
-        /// manifest since our SVR master key, which is used to encrypt Storage
-        /// Service manifests, has changed and the remote manifest is now
-        /// encrypted with out-of-date keys.
-        ///
-        /// If possible, though, we'll try and preserve Storage Service records,
-        /// which may be encrypted with a `recordIkm` in the manifest instead of
-        /// the SVR master key. (See: ``StorageServiceRecordIkmMigrator``.)
-        ///
-        /// It's okay if this doesn't succeed (e.g., the rotation fails or is
-        /// interrupted), as the next time we attempt to back up or restore
-        /// we'll run into encryption errors, from which we'll automatically
-        /// recover by creating a new manifest anyway. However, we might as well
-        /// be proactive about that now.
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [storageServiceManager, syncManager] in
-            Task {
-                try? await storageServiceManager.rotateManifest(
-                    mode: .preservingRecordsIfPossible,
-                    authedDevice: authedDeviceForStorageServiceSync
-                )
-
-                // Sync our new keys with linked devices, but wait until the storage
-                // service restore is done. That way we avoid the linked device getting
-                // the new keys first, failing to decrypt old storage service data,
-                // and asking for new keys even though thats not the problem.
-                // We don't wanna miss sending one of these, though, so go ahead and send it
-                // even if it fails. In any scenario it should eventually recover once
-                // both storage service and the linked device have the latest stuff.
-                syncManager.sendKeysSyncMessage()
-            }
         }
     }
 }

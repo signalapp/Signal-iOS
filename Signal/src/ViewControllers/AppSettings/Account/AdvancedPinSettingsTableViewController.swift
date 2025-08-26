@@ -116,10 +116,9 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func disablePinWithConfirmation() {
-        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+        let accountEntropyPoolManager = DependenciesBridge.shared.accountEntropyPoolManager
         let db = DependenciesBridge.shared.db
         let ows2FAManager = SSKEnvironment.shared.ows2FAManagerRef
-        let svr = DependenciesBridge.shared.svr
 
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
@@ -137,20 +136,12 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
             proceedStyle: .destructive,
             proceedAction: { _ in
                 db.write { tx in
-                    Logger.warn("Rotating AEP and MRBK: disabling PIN!")
+                    Logger.warn("Rotating AEP: disabling PIN!")
 
-                    // Generate a new, random MRBK for use in the future alongside our new,
-                    // random AEP.
-                    accountKeyStore.setMediaRootBackupKey(
-                        MediaRootBackupKey(backupKey: .generateRandom()),
-                        tx: tx
-                    )
-
-                    svr.setNewAccountEntropyPoolWithSideEffects(
-                        AccountEntropyPool(),
+                    accountEntropyPoolManager.setAccountEntropyPool(
+                        newAccountEntropyPool: AccountEntropyPool(),
                         disablePIN: true,
-                        authedAccount: .implicit(),
-                        transaction: tx
+                        tx: tx
                     )
 
                     ows2FAManager.markDisabled(transaction: tx)

@@ -46,6 +46,7 @@ public class DependenciesBridge {
     }
 
     public let accountAttributesUpdater: AccountAttributesUpdater
+    public let accountEntropyPoolManager: AccountEntropyPoolManager
     public let adHocCallRecordManager: any AdHocCallRecordManager
     public let appExpiry: AppExpiry
     public let attachmentCloner: SignalAttachmentCloner
@@ -179,6 +180,7 @@ public class DependenciesBridge {
 
     init(
         accountAttributesUpdater: AccountAttributesUpdater,
+        accountEntropyPoolManager: AccountEntropyPoolManager,
         adHocCallRecordManager: any AdHocCallRecordManager,
         appExpiry: AppExpiry,
         attachmentCloner: SignalAttachmentCloner,
@@ -311,6 +313,7 @@ public class DependenciesBridge {
         wallpaperStore: WallpaperStore
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
+        self.accountEntropyPoolManager = accountEntropyPoolManager
         self.adHocCallRecordManager = adHocCallRecordManager
         self.appExpiry = appExpiry
         self.attachmentCloner = attachmentCloner
