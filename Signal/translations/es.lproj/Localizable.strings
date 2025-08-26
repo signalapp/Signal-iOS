@@ -1157,7 +1157,7 @@
 "CALL_LINK_EDIT_NAME" = "Editar el nombre de la llamada";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
-"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "No se ha podido entrar en la llamada. Comprueba tu conexión a Internet e inténtalo de nuevo.";
+"CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "No has podido unirte a la llamada. Comprueba tu conexión a Internet e inténtalo de nuevo.";
 
 /* Button on an action sheet to approve a request to join a call link. */
 "CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Aprobar solicitud";
@@ -7697,7 +7697,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Incluir chats silenciados";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Globo de notificaciones";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Globo de notificación";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Las notificaciones de llamadas y mensajes pueden mostrarse cuando el teléfono está bloqueado.";

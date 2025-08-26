@@ -605,19 +605,19 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "Nachrichten wiederherstellen …";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Bei der Erstellung deiner Datensicherung ist was schiefgelaufen. Bitte versuche es erneut oder kontaktiere den Support.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Bei der Erstellung deines Backups ist was schiefgelaufen. Bitte versuche es erneut oder kontaktiere den Support.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Backups über das Mobilfunknetz zulassen";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Bei der Datensicherung übers Mobilfunknetz können zusätzliche Kosten anfallen. Du kannst dich mit einem WLAN-Netzwerk verbinden oder Datensicherungen über das Mobilfunknetz zulassen.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Beim Backup übers Mobilfunknetz können zusätzliche Kosten anfallen. Du kannst dich mit einem WLAN-Netzwerk verbinden oder Backups über das Mobilfunknetz zulassen.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Backup über mobile Daten erlauben?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Backup über Mobilfunknetz erlauben?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Bei der Erstellung deiner Datensicherung ist was schiefgelaufen. Überprüfe deine Internetverbindung und versuche es erneut.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Bei der Erstellung deines Backups ist was schiefgelaufen. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION" = "Backup wird erstellt: %1$@";

@@ -260,13 +260,13 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Systemowy";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Sprawdź, czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie. Jeśli problem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
 "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Karta straciła ważność. Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
@@ -278,7 +278,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "W kodzie CVC jest błąd. Sprawdź czy kod CVC podany w Apple Pay jest poprawny. Jeśli nie, uaktualnij go i spróbuj ponownie.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczających środków. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczających środków. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Miesiąc wygaśnięcia Twojej metody płatności jest niepoprawny. Uaktualnij go w Apple Pay i spróbuj ponownie.";
@@ -293,7 +293,7 @@
 "APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Spróbuj wykonać płatność ponownie lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
@@ -926,7 +926,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Dodaj odznakę do profilu";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
+"BADGE_THANKS_TITLE" = "Dziękujemy Ci za wsparcie!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Kiedy masz więcej niż jedną odznakę, możesz zdecydować, którą chcesz pokazać w swoim profilu.";
@@ -1706,7 +1706,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Zablokowano";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Niezweryfikowany";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Niezweryfikowany kontakt";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Niezarejestrowany numer";
@@ -2861,7 +2861,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Twoja darowizna na rzecz aplikacji Signal została wpłacona w imieniu wybranej osoby. %1$@ może się teraz pochwalić wsparciem w swoim profilu.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Dziękujemy Ci za wsparcie!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Wyświetl";
@@ -3320,7 +3320,7 @@
 "FIND_BY_USERNAME_TITLE" = "Wyszukaj po nazwie użytkownika";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz ukończoną weryfikację";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz weryfikację jako ukończoną";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Zresetuj sesję";
@@ -5732,7 +5732,7 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Rejestracja zakończona";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Przywrócona wiadomość z innego urządzenia zawierała nieprawidłowe lub wygasłe dane.  Spróbuj ponownie.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Przywracane wiadomości z drugiego urządzenia zawierały nieprawidłowe lub wygasłe dane.  Spróbuj ponownie.";
 
 /* Title of prompt notifying restore failed. */
 "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Nie udało się przywrócić";
@@ -6440,7 +6440,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowano";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowany kontakt";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Dotknij, aby zeskanować";
@@ -6473,7 +6473,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Zweryfikuj numer bezpieczeństwa";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Zweryfikuj";
+"PRIVACY_VERIFY_BUTTON" = "Oznacz kontakt jako zweryfikowany";
 
 /* Button to add a new viewer on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodaj odbiorców";

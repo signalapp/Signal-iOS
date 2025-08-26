@@ -1823,13 +1823,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wysyłanie…</string>
+			<string>Udostępnianie…</string>
 			<key>few</key>
-			<string>Wysyłanie %1$d…</string>
+			<string>Udostępnianie %1$d…</string>
 			<key>many</key>
-			<string>Wysyłanie %1$d…</string>
+			<string>Udostępnianie %1$d…</string>
 			<key>other</key>
-			<string>Wysyłanie %1$d…</string>
+			<string>Udostępnianie %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
