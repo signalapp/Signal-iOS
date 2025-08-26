@@ -197,7 +197,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         let privateKey = key.deriveEcKey(aci: localAci)
 
         let authCredential = try await backupAuthCredentialManager.fetchBackupCredential(
-            for: key,
+            key: key,
             localAci: localAci,
             chatServiceAuth: auth,
             forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential

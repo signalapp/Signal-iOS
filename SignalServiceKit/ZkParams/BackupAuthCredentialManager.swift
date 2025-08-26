@@ -22,26 +22,20 @@ public protocol BackupAuthCredentialManager {
     /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
     /// paid credential is available.
     func fetchBackupCredential(
-        for key: BackupKeyMaterial,
+        key: BackupKeyMaterial,
         localAci: Aci,
-        chatServiceAuth auth: ChatServiceAuth,
+        chatServiceAuth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential
 
     func fetchSvr🐝AuthCredential(
         key: MessageRootBackupKey,
-        chatServiceAuth auth: ChatServiceAuth,
+        chatServiceAuth: ChatServiceAuth,
         forceRefresh: Bool,
     ) async throws -> LibSignalClient.Auth
 }
 
-public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
-
-    private enum Constants {
-        static let numberOfDaysToFetchInSeconds: TimeInterval = 7 * .day
-        static let numberOfDaysRemainingFutureCredentialsInSeconds: TimeInterval = 4 * .day
-        static let keyValueStoreCollectionName = "MessageBackupAuthCredentialManager"
-    }
+struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     private let authCredentialStore: AuthCredentialStore
     private let backupIdService: BackupIdService
@@ -49,7 +43,6 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private let dateProvider: DateProvider
     private let db: any DB
-    private let kvStore: KeyValueStore
     private let networkManager: NetworkManager
 
     init(
@@ -67,90 +60,47 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.networkManager = networkManager
     }
 
-    public func fetchBackupCredential(
-        for key: BackupKeyMaterial,
+    // MARK: -
+
+    func fetchBackupCredential(
+        key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupAuthCredential {
 
-        // Wait for steps whose side-effects affect Backup auth credentials.
-        try await waitForAuthCredentialDependencies(localAci: localAci, auth: auth)
+        try await waitForAuthCredentialDependency(.registerBackupId(localAci: localAci, auth: auth))
+        try await waitForAuthCredentialDependency(.renewBackupEntitlementForTestFlight)
+        try await waitForAuthCredentialDependency(.redeemBackupSubscriptionViaIAP)
 
-        let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
-        let futureRedemptionTime = redemptionTime + UInt64(Constants.numberOfDaysRemainingFutureCredentialsInSeconds)
-
-        let authCredential = db.read { tx -> BackupAuthCredential? in
-            // Check there are more than 4 days of credentials remaining.
-            // If not, return nil and trigger a credential fetch.
-            guard let _ = self.authCredentialStore.backupAuthCredential(
-                for: key.credentialType,
-                redemptionTime: futureRedemptionTime,
-                tx: tx
-            ) else {
-                return nil
-            }
-
-            if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(
-                for: key.credentialType,
-                redemptionTime: redemptionTime,
-                tx: tx
-            ) {
-                switch backupAuthCredential.backupLevel {
-                case .free where forceRefreshUnlessCachedPaidCredential:
-                    // Force a refresh if the cached credential is free
-                    // and we deliberately want to check for paid credentials.
-                    return nil
-                case .free, .paid:
-                    return backupAuthCredential
-                }
-            } else {
-                owsFailDebug("Error retrieving cached auth credential")
-            }
-
-            return nil
+        if let cachedAuthCredential = readCachedAuthCredential(
+            key: key,
+            requirePaidCredential: forceRefreshUnlessCachedPaidCredential,
+        ) {
+            return cachedAuthCredential
         }
 
-        if let authCredential {
-            return authCredential
-        }
-
-        let authCredentials = try await fetchNewAuthCredentials(localAci: localAci, for: key, auth: auth)
+        let authCredentialsOfKeyType = try await fetchNewAuthCredentials(localAci: localAci, key: key, auth: auth)
 
         await db.awaitableWrite { tx in
-            // Fetch both credential types if either is needed.
-            BackupAuthCredentialType.allCases.forEach { credentialType in
-                guard let receivedCredentials = authCredentials[credentialType] else {
-                    if credentialType == credentialType {
-                        // If the requested media type fails, make some noise about it.
-                        owsFailDebug("Failed to retrieve credentials for \(credentialType.rawValue)")
-                    }
-                    return
-                }
-                self.authCredentialStore.removeAllBackupAuthCredentials(ofType: credentialType, tx: tx)
-                for receivedCredential in receivedCredentials {
-                    self.authCredentialStore.setBackupAuthCredential(
-                        receivedCredential.credential,
-                        for: credentialType,
-                        redemptionTime: receivedCredential.redemptionTime,
-                        tx: tx
-                    )
-                }
-            }
+            cacheReceivedAuthCredentials(
+                authCredentialsOfKeyType,
+                credentialType: key.credentialType,
+                tx: tx,
+            )
         }
 
-        guard let authCredential = authCredentials[key.credentialType]?.first?.credential else {
-            throw OWSAssertionError("The server didn't give us any auth credentials.")
+        guard let authCredential = authCredentialsOfKeyType.first?.credential else {
+            throw OWSAssertionError("Fetched credentials were empty!")
         }
 
         return authCredential
     }
 
-    public func fetchSvr🐝AuthCredential(
+    func fetchSvr🐝AuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefresh: Bool,
@@ -163,7 +113,7 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         }
 
         let backupAuthCredential = try await self.fetchBackupCredential(
-            for: key,
+            key: key,
             localAci: key.aci,
             chatServiceAuth: auth,
             forceRefreshUnlessCachedPaidCredential: false
@@ -190,57 +140,129 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     // MARK: -
 
-    /// Aggregates steps that should happen before we try and fetch auth
+    /// Represents an action that should happen before we try and fetch auth
     /// credentials, because they have side-effects that affect our ability to
     /// fetch said credentials.
-    private func waitForAuthCredentialDependencies(
-        localAci: Aci,
-        auth: ChatServiceAuth,
+    private enum BackupAuthCredentialDependency: Hashable {
+        case registerBackupId(localAci: Aci, auth: ChatServiceAuth)
+        case redeemBackupSubscriptionViaIAP
+        case renewBackupEntitlementForTestFlight
+    }
+
+    private func waitForAuthCredentialDependency(
+        _ dependency: BackupAuthCredentialDependency,
     ) async throws {
-        let steps: [String: () async throws -> Void] = [
-            "registerBackupId": {
+        let label: String
+        let block: () async throws -> Void
+        switch dependency {
+        case .registerBackupId(let localAci, let auth):
+            label = "registerBackupId"
+            block = {
                 // We can't fetch Backup auth credentials without having registered
                 // our Backup ID. Normally this will have already happened, making
                 // this call a no-op; however, it's possible it never succeeded or
                 // we need to run it again.
                 try await backupIdService.registerBackupIDIfNecessary(localAci: localAci, auth: auth)
-            },
-            "redeemBackupSubscription": {
+            }
+        case .redeemBackupSubscriptionViaIAP:
+            label = "redeemBackupSubscription"
+            block = {
                 // Redeem our subscription if necessary, to ensure we have our
                 // server-side Backup entitlement in place so we correctly fetch
                 // paid-ter credentials.
                 try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
-            },
-            "testFlightEntitlement": {
+            }
+        case .renewBackupEntitlementForTestFlight:
+            label = "testFlightEntitlement"
+            block = {
                 // Same motivation as redeeming our subscription above, but for
                 // TestFlight builds.
                 try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
-            },
-        ]
-
-        for (label, block) in steps {
-            do {
-                try await block()
-            } catch {
-                Logger.warn("Failed auth credential dependency step: \(label)! \(error)")
-                throw error
             }
+        }
+
+        do {
+            try await block()
+        } catch {
+            Logger.warn("Failed auth credential dependency step: \(label)! \(error)")
+            throw error
+        }
+    }
+
+    // MARK: -
+
+    private func readCachedAuthCredential(
+        key: BackupKeyMaterial,
+        requirePaidCredential: Bool,
+    ) -> BackupAuthCredential? {
+        return db.read { tx -> BackupAuthCredential? in
+            let redemptionTime = dateProvider().epochSecondsSinceStartOfToday
+
+            // Check there are more than 4 days of credentials remaining.
+            // If not, return nil and trigger a credential fetch.
+            guard let _ = self.authCredentialStore.backupAuthCredential(
+                for: key.credentialType,
+                redemptionTime: redemptionTime + 4 * .dayInSeconds,
+                tx: tx
+            ) else {
+                return nil
+            }
+
+            if let authCredential = self.authCredentialStore.backupAuthCredential(
+                for: key.credentialType,
+                redemptionTime: redemptionTime,
+                tx: tx
+            ) {
+                switch authCredential.backupLevel {
+                case .free where requirePaidCredential:
+                    break
+                case .free, .paid:
+                    return authCredential
+                }
+            } else {
+                owsFailDebug("Unexpectedly missing auth credential for now, but had one for a future date!")
+            }
+
+            return nil
+        }
+    }
+
+    private func cacheReceivedAuthCredentials(
+        _ receivedAuthCredentials: [ReceivedBackupAuthCredential],
+        credentialType: BackupAuthCredentialType,
+        tx: DBWriteTransaction,
+    ) {
+        if receivedAuthCredentials.isEmpty {
+            owsFailDebug("Attempting to cache credentials, but none present!")
+            return
+        }
+
+        authCredentialStore.removeAllBackupAuthCredentials(ofType: credentialType, tx: tx)
+
+        for receivedCredential in receivedAuthCredentials {
+            authCredentialStore.setBackupAuthCredential(
+                receivedCredential.credential,
+                for: credentialType,
+                redemptionTime: receivedCredential.redemptionTime,
+                tx: tx,
+            )
         }
     }
 
     private func fetchNewAuthCredentials(
         localAci: Aci,
-        for key: BackupKeyMaterial,
+        key: BackupKeyMaterial,
         auth: ChatServiceAuth
-    ) async throws -> [BackupAuthCredentialType: [ReceivedBackupAuthCredentials]] {
+    ) async throws -> [ReceivedBackupAuthCredential] {
 
-        let startTimestamp = self.dateProvider().startOfTodayUTCTimestamp()
-        let endTimestamp = startTimestamp + UInt64(Constants.numberOfDaysToFetchInSeconds)
-        let timestampRange = startTimestamp...endTimestamp
+        // Always fetch 7d worth of credentials at once.
+        let startTimestampSeconds = dateProvider().epochSecondsSinceStartOfToday
+        let endTimestampSeconds = startTimestampSeconds + 7 * .dayInSeconds
+        let timestampRange = startTimestampSeconds...endTimestampSeconds
 
         let request = OWSRequestFactory.backupAuthenticationCredentialRequest(
-            from: startTimestamp,
-            to: endTimestamp,
+            from: startTimestampSeconds,
+            to: endTimestampSeconds,
             auth: auth
         )
 
@@ -260,45 +282,47 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
         let authCredentialRepsonse = try JSONDecoder().decode(BackupCredentialResponse.self, from: data)
 
+        guard
+            let authCredentialsOfKeyType = authCredentialRepsonse.credentials[key.credentialType],
+            !authCredentialsOfKeyType.isEmpty
+        else {
+            throw OWSAssertionError("Missing auth credentials of type \(key.credentialType) in response!")
+        }
+
         let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
-        return try authCredentialRepsonse.credentials.reduce(into: [BackupAuthCredentialType: [ReceivedBackupAuthCredentials]]()) { result, element in
-            let type = element.key
-            result[type] = try element.value.compactMap {
-                guard timestampRange.contains($0.redemptionTime) else {
-                    owsFailDebug("Dropping \(type.rawValue) backup credential we didn't ask for")
-                    return nil
-                }
-                do {
-                    let redemptionDate = Date(timeIntervalSince1970: TimeInterval($0.redemptionTime))
-                    let backupRequestContext = BackupAuthCredentialRequestContext.create(
-                        backupKey: key.backupKey.serialize(),
-                        aci: localAci.rawUUID
-                    )
-                    let backupAuthResponse = try BackupAuthCredentialResponse(contents: $0.credential)
-                    let credential = try backupRequestContext.receive(
-                        backupAuthResponse,
-                        timestamp: redemptionDate,
-                        params: backupServerPublicParams
-                    )
-                    return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
-                } catch SignalError.verificationFailed where type != key.credentialType {
-                    // If the message backup key is missing and the caller is asking for
-                    // media credentials, ignore the error
-                    return nil
-                } catch SignalError.verificationFailed where type != key.credentialType {
-                    // Similarly, If the media backup key is missing and the caller is
-                    // asking for message credentials, ignore the error.  This will happen,
-                    // for example, during registration when restoring from backup - the
-                    // user will have entered a message backup key, but the media root backup
-                    // key won't be available until after downloading and reading the backup info.
-                    return nil
-                } catch {
-                    owsFailDebug("Error creating credential! \(error)")
-                    throw error
-                }
+
+        return try authCredentialsOfKeyType.compactMap { credential -> ReceivedBackupAuthCredential? in
+            guard timestampRange.contains(credential.redemptionTime) else {
+                owsFailDebug("Dropping backup credential outside of requested time range! \(key.credentialType)")
+                return nil
+            }
+
+            do {
+                let backupRequestContext = BackupAuthCredentialRequestContext.create(
+                    backupKey: key.serialize(),
+                    aci: localAci.rawUUID
+                )
+
+                let backupAuthResponse = try BackupAuthCredentialResponse(contents: credential.credential)
+                let redemptionDate = Date(timeIntervalSince1970: TimeInterval(credential.redemptionTime))
+                let receivedCredential = try backupRequestContext.receive(
+                    backupAuthResponse,
+                    timestamp: redemptionDate,
+                    params: backupServerPublicParams
+                )
+
+                return ReceivedBackupAuthCredential(
+                    redemptionTime: credential.redemptionTime,
+                    credential: receivedCredential
+                )
+            } catch {
+                owsFailDebug("Error creating credential! \(error)")
+                throw error
             }
         }
     }
+
+    // MARK: -
 
     private struct BackupCredentialResponse: Decodable {
         var credentials: [BackupAuthCredentialType: [AuthCredential]]
@@ -309,21 +333,30 @@ public struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         }
     }
 
-    private struct ReceivedBackupAuthCredentials {
+    private struct ReceivedBackupAuthCredential {
         var redemptionTime: UInt64
         var credential: BackupAuthCredential
     }
 
     // swiftlint:disable:next type_name
-    public struct ReceivedSVR🐝AuthCredentials: Codable {
+    private struct ReceivedSVR🐝AuthCredentials: Codable {
         let username: String
         let password: String
     }
 }
 
-fileprivate extension Date {
+// MARK: -
+
+private extension UInt64 {
+    static var dayInSeconds: UInt64 {
+        UInt64(TimeInterval.day)
+    }
+}
+
+private extension Date {
     /// The "start of today", i.e. midnight at the beginning of today, in epoch seconds.
-    func startOfTodayUTCTimestamp() -> UInt64 {
-        return UInt64(self.timeIntervalSince1970 / .day) * UInt64(TimeInterval.day)
+    var epochSecondsSinceStartOfToday: UInt64 {
+        let daysSince1970 = UInt64(timeIntervalSince1970) / .dayInSeconds
+        return daysSince1970 * .dayInSeconds
     }
 }
