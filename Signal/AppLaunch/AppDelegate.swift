@@ -144,6 +144,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
+        // If we reach this point, the app has launched & terminated successfully,
+        // which means this flag can be cleared.
+        CurrentAppContext().appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
         Logger.info("")
         Logger.flush()
     }
