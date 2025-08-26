@@ -256,9 +256,12 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     private let configuration: URLSessionConfiguration
 
-    private lazy var session: URLSession = {
-        URLSession(configuration: configuration, delegate: delegateBox, delegateQueue: Self.operationQueue)
-    }()
+    private let _session = AtomicValue<URLSession?>(nil, lock: .init())
+    private var session: URLSession {
+        return _session.map {
+            return $0 ?? URLSession(configuration: configuration, delegate: delegateBox, delegateQueue: Self.operationQueue)
+        }!
+    }
 
     private let maxResponseSize: Int?
 
