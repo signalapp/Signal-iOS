@@ -243,6 +243,11 @@ private extension TSRequest {
             method: "DELETE",
             parameters: nil
         )
+        // The first time you call this, a "delete" operation is enqueued on the
+        // server to be performed asynchronously (e.g., within 24h). If you call
+        // again with an async deletion already enqueued, it'll delete
+        // synchronously, which can be very slow.
+        request.timeoutInterval = 30
         request.auth = .backup(backupAuth)
         return request
     }
