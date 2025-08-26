@@ -29,52 +29,85 @@ public class SenderKeyStore {
 
     /// Returns a list of devices that already have the current device's sender
     /// key for the thread.
-    public func readyRecipients(
+    func readyRecipients(
         for thread: TSThread,
         limitedTo intendedRecipients: Set<ServiceId>,
         tx: DBReadTransaction,
-    ) -> [ServiceId: [DeviceId]] {
-        // If we haven't saved a distributionId yet, then there's no way we have
-        // any ready recipients. All intended recipients will certainly need a
-        // Sender Key Distribution Message.
-        guard
-            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: tx),
-            let keyMetadata = getKeyMetadata(for: keyId, readTx: tx)
-        else {
-            return [:]
-        }
+    ) -> [ServiceId: [SenderKeyRecipientDevice]] {
+        let sentKeyInfo = { () -> [SignalServiceAddress: SKDMSendInfo]? in
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: tx) else {
+                // If we haven't saved a distributionId yet, then there's no way we have
+                // any sentKeyInfo.
+                return nil
+            }
+            return getKeyMetadata(for: keyId, readTx: tx)?.sentKeyInfo
+        }()
 
-        // Iterate over each recipient. If no new devices or reregistrations have
-        // occurred since the last SKDM, we can skip sending to them.
-        var result = [ServiceId: [DeviceId]]()
-        for (address, sendInfo) in keyMetadata.sentKeyInfo {
-            guard let serviceId = address.serviceId else {
-                continue
-            }
-            guard intendedRecipients.contains(serviceId) else {
-                continue
-            }
+        // Iterate over intended recipients. If all of their devices have received
+        // a copy of the Sender Key (this may be vacuously true), they're ready.
+        var result = [ServiceId: [SenderKeyRecipientDevice]]()
+        for intendedRecipient in intendedRecipients {
+            let priorSendRecipientState: SenderKeySentToRecipient = (
+                sentKeyInfo?[SignalServiceAddress(intendedRecipient)]?.keyRecipient
+                ?? SenderKeySentToRecipient(devices: [])
+            )
             do {
-                let priorSendRecipientState = sendInfo.keyRecipient
-
                 // Only remove the recipient in question from our send targets if the cached state contains
                 // every device from the current state. Any new devices mean we need to re-send.
-                let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: tx)
-                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
-                    result[serviceId] = currentRecipientState.devices.map(\.deviceId)
+                let currentRecipientState = try self.recipientState(for: intendedRecipient, tx: tx)
+                if isRecipientReady(currentRecipientState, priorRecipient: priorSendRecipientState) {
+                    result[intendedRecipient] = currentRecipientState
                 }
             } catch {
                 // It's likely there's no session for the current recipient. Maybe it was cleared?
                 // In this case, we just assume we need to send a new SKDM
                 if case SignalError.invalidState(_) = error {
-                    Logger.warn("Invalid session state. Cannot build recipient state for \(serviceId). \(error)")
+                    Logger.warn("Invalid session state. Cannot build recipient state for \(intendedRecipient). \(error)")
                 } else {
-                    owsFailDebug("Failed to fetch current recipient state for \(serviceId): \(error)")
+                    owsFailDebug("Failed to fetch current recipient state for \(intendedRecipient): \(error)")
                 }
             }
         }
-
         return result
+    }
+
+    /// Builds SenderKeyRecipientDevices for the given address by fetching all of the devices and corresponding registrationIds
+    private func recipientState(for serviceId: ServiceId, tx: DBReadTransaction) throws -> [SenderKeyRecipientDevice] {
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
+            throw OWSAssertionError("Invalid device array")
+        }
+        let deviceIds = recipient.deviceIds
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        return try deviceIds.map { deviceId -> SenderKeyRecipientDevice in
+            // We have to fetch the registrationId since deviceIds can be reused.
+            // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
+            // deviceIds that will need an SKDM
+            let registrationId = try sessionStore.loadSession(
+                for: serviceId,
+                deviceId: deviceId,
+                tx: tx
+            )?.remoteRegistrationId()
+
+            return SenderKeyRecipientDevice(deviceId: deviceId, registrationId: registrationId)
+        }
+    }
+
+    /// - Returns: `true` if `priorRecipient` contains every device in
+    /// `currentRecipient`; `false` if `currentRecipient` doesn't have any
+    /// devices or any devices don't have established sessions
+    private func isRecipientReady(_ currentRecipientDevices: [SenderKeyRecipientDevice], priorRecipient: SenderKeySentToRecipient) -> Bool {
+        var hypotheticalSentToDevices = [SenderKeySentToRecipient.Device]()
+        for recipientDevice in currentRecipientDevices {
+            guard let registrationId = recipientDevice.registrationId else {
+                // If there are any devices without registration IDs, we assume they're new
+                // and will definitely require an SKDM.
+                return false
+            }
+            hypotheticalSentToDevices.append(SenderKeySentToRecipient.Device(deviceId: recipientDevice.deviceId, registrationId: registrationId))
+        }
+        // Otherwise, we can skip the SKDM if it's been sent to every device.
+        return priorRecipient.devices.isSuperset(of: hypotheticalSentToDevices)
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`
@@ -402,36 +435,30 @@ extension SenderKeyStore {
 /// Currently just tracks the sent timestamp and the recipient.
 private struct SKDMSendInfo: Codable {
     let skdmTimestamp: UInt64
-    let keyRecipient: KeyRecipient
+    let keyRecipient: SenderKeySentToRecipient
 }
 
-// MARK: KeyRecipient
+// MARK: - SenderKeyRecipient
+
+struct SenderKeyRecipientDevice {
+    var deviceId: DeviceId
+    var registrationId: UInt32?
+}
+
+// MARK: SenderKeySentToRecipient
 
 /// Stores information about a recipient of a sender key
 /// Helpful for diffing across deviceId and registrationId changes.
 /// If a new device shows up, we need to make sure that we send a copy of our sender key to the address
-private struct KeyRecipient: Codable {
+private struct SenderKeySentToRecipient: Codable {
 
     struct Device: Codable, Hashable {
         let deviceId: DeviceId
-        let registrationId: UInt32?
+        let registrationId: UInt32
 
-        init(deviceId: DeviceId, registrationId: UInt32?) {
+        init(deviceId: DeviceId, registrationId: UInt32) {
             self.deviceId = deviceId
             self.registrationId = registrationId
-        }
-
-        static func == (lhs: Device, rhs: Device) -> Bool {
-            // We can only be sure that a device hasn't changed if the registrationIds
-            // are the same. If either registrationId is nil, that means the Device was
-            // constructed before we had a session established for the device.
-            //
-            // If we end up trying to send a SenderKey message to a device without a
-            // session, this ensures that we will always send an SKDM to that device. A
-            // session will be created in order to send the SKDM, so by the time we're
-            // ready to mark success we should have something to store.
-            guard lhs.registrationId != nil, rhs.registrationId != nil else { return false }
-            return lhs.registrationId == rhs.registrationId && lhs.deviceId == rhs.deviceId
         }
     }
 
@@ -446,35 +473,6 @@ private struct KeyRecipient: Codable {
 
     fileprivate init(devices: Set<Device>) {
         self.devices = devices
-    }
-
-    /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for serviceId: ServiceId, transaction tx: DBReadTransaction) throws -> KeyRecipient {
-        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
-            throw OWSAssertionError("Invalid device array")
-        }
-        let deviceIds = recipient.deviceIds
-        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        let devices: [Device] = try deviceIds.map { deviceId in
-            // We have to fetch the registrationId since deviceIds can be reused.
-            // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
-            // deviceIds that will need an SKDM
-            let registrationId = try sessionStore.loadSession(
-                for: serviceId,
-                deviceId: deviceId,
-                tx: tx
-            )?.remoteRegistrationId()
-
-            return Device(deviceId: deviceId, registrationId: registrationId)
-        }
-        return KeyRecipient(devices: Set(devices))
-    }
-
-    /// Returns `true` as long as the argument does not contain any devices that are unknown to the receiver
-    func containsEveryDevice(from other: KeyRecipient) -> Bool {
-        let newDevices = other.devices.subtracting(self.devices)
-        return newDevices.isEmpty
     }
 }
 
@@ -545,8 +543,8 @@ private struct KeyMetadata {
     }
 
     mutating func recordSentSenderKey(_ sentSenderKey: SentSenderKey) {
-        let recipient = KeyRecipient(devices: Set(sentSenderKey.messages.map {
-            return KeyRecipient.Device(deviceId: $0.destinationDeviceId, registrationId: $0.destinationRegistrationId)
+        let recipient = SenderKeySentToRecipient(devices: Set(sentSenderKey.messages.map {
+            return SenderKeySentToRecipient.Device(deviceId: $0.destinationDeviceId, registrationId: $0.destinationRegistrationId)
         }))
         let sendInfo = SKDMSendInfo(skdmTimestamp: sentSenderKey.timestamp, keyRecipient: recipient)
         sentKeyInfo[SignalServiceAddress(sentSenderKey.recipient)] = sendInfo
@@ -592,17 +590,17 @@ extension KeyMetadata: Codable {
 
         // There have been a few iterations of our delivery tracking. Briefly we have:
         // - V1: We just recorded a mapping from UUID -> Set<DeviceIds>
-        // - V2: Record a mapping of SignalServiceAddress -> KeyRecipient. This allowed us to
+        // - V2: Record a mapping of SignalServiceAddress -> SenderKeySentToRecipient. This allowed us to
         //       track additional info about the recipient of a key like registrationId
         // - V3: Record a mapping of SignalServiceAddress -> SKDMSendInfo. This allows us to
         //       record even more information about the send that's not specific to the recipient.
         //       Right now, this is just used to record the SKDM timestamp.
         //
         // Hopefully this doesn't need to change in the future. We now have a place to hang information
-        // about the recipient (KeyRecipient) and the context of the sent SKDM (SKDMSendInfo)
+        // about the recipient (SenderKeySentToRecipient) and the context of the sent SKDM (SKDMSendInfo)
         if let sendInfo = try container.decodeIfPresent([SignalServiceAddress: SKDMSendInfo].self, forKey: .sentKeyInfo) {
             sentKeyInfo = sendInfo
-        } else if let keyRecipients = try legacyValues.decodeIfPresent([SignalServiceAddress: KeyRecipient].self, forKey: .keyRecipients) {
+        } else if let keyRecipients = try legacyValues.decodeIfPresent([SignalServiceAddress: SenderKeySentToRecipient].self, forKey: .keyRecipients) {
             sentKeyInfo = keyRecipients.mapValues { SKDMSendInfo(skdmTimestamp: 0, keyRecipient: $0) }
         } else {
             // There's no way to migrate from our V1 storage. That's okay, we can just reset the dictionary. The only

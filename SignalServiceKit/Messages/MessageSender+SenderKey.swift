@@ -112,7 +112,7 @@ extension MessageSender {
             return ([], nil)
         }
 
-        let eligibleRecipients = Set(recipients.filter { serviceId in
+        var eligibleRecipients = Set(recipients.filter { serviceId in
             // Sender key requires that you're currently a full member of the group.
             guard threadRecipients.contains(serviceId) else {
                 return false
@@ -149,7 +149,20 @@ extension MessageSender {
         // We fetch all the ready recipients, ignoring those that aren't intended
         // recipients (perhaps due to errors & retries), and then determine whether
         // or not we need to send any SKDMs.
-        let readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx).filter { !$0.value.isEmpty }
+        var readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx)
+
+        // If there are any unregistered recipients, we don't want to use Sender
+        // Key for them. We expect them to remain unregistered, and it's faster to
+        // fan out to them to check whether or not their account exists. (If their
+        // account exists, we'll use Sender Key for them for the next message.)
+        let unregisteredRecipients = readyRecipients.filter { $0.value.isEmpty }.map(\.key)
+        eligibleRecipients.subtract(unregisteredRecipients)
+        if eligibleRecipients.count < 2 {
+            return ([], nil)
+        }
+        for unregisteredRecipient in unregisteredRecipients {
+            readyRecipients.removeValue(forKey: unregisteredRecipient)
+        }
 
         // In the common path (i.e., we've already distributed our Sender Key), we
         // can immediately consume those results, construct the body of the
@@ -157,7 +170,7 @@ extension MessageSender {
         let recipientsInNeedOfSenderKey = eligibleRecipients.subtracting(readyRecipients.keys)
         if recipientsInNeedOfSenderKey.isEmpty {
             let recipients = readyRecipients.map {
-                return Recipient(serviceId: $0.key, deviceIds: $0.value)
+                return Recipient(serviceId: $0.key, deviceIds: $0.value.map(\.deviceId))
             }
             let ciphertextResult = Result(catching: {
                 try self.senderKeyMessageBody(
@@ -210,7 +223,7 @@ extension MessageSender {
 
         return (
             eligibleRecipients,
-            { () async -> [(ServiceId, any Error)] in
+            { [eligibleRecipients] () async -> [(ServiceId, any Error)] in
                 var failedRecipients = preparedDistributionMessages.failedRecipients
                 failedRecipients += await self.sendPreparedSenderKeyDistributionMessages(
                     preparedDistributionMessages.senderKeyDistributionMessageSends,
@@ -246,7 +259,7 @@ extension MessageSender {
         let ciphertextResult: Result<Data, any Error>?
         (readyRecipients, ciphertextResult) = await databaseStorage.awaitableWrite { tx in
             var readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx).map {
-                return Recipient(serviceId: $0.key, deviceIds: $0.value)
+                return Recipient(serviceId: $0.key, deviceIds: $0.value.map(\.deviceId))
             }
             if !message.isStorySend || thread.isGroupThread {
                 readyRecipients = readyRecipients.filter { !$0.deviceIds.isEmpty }
