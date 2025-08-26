@@ -90,13 +90,14 @@ public extension BackupArchive {
 
 public protocol BackupRequestManager {
 
-    /// Creates a ``BackupServiceAuth``, which wraps a ``BackupAuthCredential``.
-    /// Created from local ACI and the current valid backup credential. This
-    /// `BackupServiceAuth` is used to authenticate all further `/v1/archive` operations.
-    ///
-    /// - parameter forceRefreshUnlessCachedPaidCredential: Forces a refresh if we have a cached
-    /// credential that isn't ``BackupLevel.paid``. Default false. Set this to true if intending to check whether a
-    /// paid credential is available.
+    /// Passthrough API for ``BackupAuthCredentialManager/fetchBackupServiceAuthForRegistration``.
+    func fetchBackupServiceAuthForRegistration(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth: ChatServiceAuth,
+    ) async throws -> BackupServiceAuth
+
+    /// Passthrough API for ``BackupAuthCredentialManager/fetchBackupServiceAuth``.
     func fetchBackupServiceAuth(
         for key: BackupKeyMaterial,
         localAci: Aci,
@@ -188,25 +189,29 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     // MARK: - Backup Auth
 
+    public func fetchBackupServiceAuthForRegistration(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth: ChatServiceAuth
+    ) async throws -> BackupServiceAuth {
+        return try await backupAuthCredentialManager.fetchBackupServiceAuthForRegistration(
+            key: key,
+            localAci: localAci,
+            chatServiceAuth: chatServiceAuth,
+        )
+    }
+
     public func fetchBackupServiceAuth(
         for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupServiceAuth {
-        let privateKey = key.deriveEcKey(aci: localAci)
-
-        let authCredential = try await backupAuthCredentialManager.fetchBackupCredential(
+        return try await backupAuthCredentialManager.fetchBackupServiceAuth(
             key: key,
             localAci: localAci,
             chatServiceAuth: auth,
-            forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential
-        )
-
-        return try BackupServiceAuth(
-            privateKey: privateKey,
-            authCredential: authCredential,
-            type: key.credentialType
+            forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential,
         )
     }
 
@@ -528,6 +533,14 @@ public struct BackupReadCredential {
 public class BackupRequestManagerMock: BackupRequestManager {
 
     init() {}
+
+    public func fetchBackupServiceAuthForRegistration(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth: ChatServiceAuth,
+    ) async throws -> BackupServiceAuth {
+        return BackupServiceAuth.mock(type: .media, backupLevel: .paid)
+    }
 
     public func fetchBackupServiceAuth(
         for key: SignalServiceKit.BackupKeyMaterial,

@@ -11,7 +11,7 @@ public import LibSignalClient
 open class BackupArchiveManagerMock: BackupArchiveManager {
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth
+        backupAuth: BackupServiceAuth,
     ) async throws -> BackupCdnInfo {
         return BackupCdnInfo(
             fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
@@ -21,7 +21,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
 
     public func downloadEncryptedBackup(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth,
+        backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> URL {
         return URL(string: "file://")!

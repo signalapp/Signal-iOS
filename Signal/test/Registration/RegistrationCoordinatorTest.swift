@@ -112,6 +112,7 @@ public class RegistrationCoordinatorTest {
             accountKeyStore: accountKeyStore,
             backupArchiveManager: BackupArchiveManagerMock(),
             backupNonceStore: BackupNonceMetadataStore(),
+            backupRequestManager: BackupRequestManagerMock(),
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,

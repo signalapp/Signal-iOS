@@ -103,6 +103,14 @@ class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager 
 }
 
 class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
+    func fetchBackupServiceAuthForRegistration(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth: ChatServiceAuth
+    ) async throws -> BackupServiceAuth {
+        fatalError("Unimplemented for tests")
+    }
+
     func fetchBackupServiceAuth(
         for key: BackupKeyMaterial,
         localAci: Aci,

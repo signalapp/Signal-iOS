@@ -27,13 +27,13 @@ public protocol BackupArchiveManager {
     /// Fetch the CDN info for the current backup
     func backupCdnInfo(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth
+        backupAuth: BackupServiceAuth,
     ) async throws -> BackupCdnInfo
 
     /// Download the encrypted backup for the current user to a local file.
     func downloadEncryptedBackup(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth,
+        backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> URL
 

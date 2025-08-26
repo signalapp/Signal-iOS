@@ -162,14 +162,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func downloadEncryptedBackup(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth,
+        backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?
     ) async throws -> URL {
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: backupKey,
-            localAci: backupKey.aci,
-            auth: auth
-        )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
         let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
             metadata: metadata,
@@ -184,13 +179,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
-        auth: ChatServiceAuth
+        backupAuth: BackupServiceAuth,
     ) async throws -> BackupCdnInfo {
-        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: backupKey,
-            localAci: backupKey.aci,
-            auth: auth
-        )
         let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
         return try await attachmentDownloadManager.backupCdnInfo(metadata: metadata)
     }

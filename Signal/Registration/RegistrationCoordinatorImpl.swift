@@ -592,14 +592,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
 
             let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
-            let fileUrl = switch type {
+            let fileUrl: URL
+            switch type {
             case .local:
                 // TODO: [Backups] This is currently unsupported, so log and return
                 throw OWSAssertionError("Local backups not supported.")
             case .remote:
-                try await self.deps.backupArchiveManager.downloadEncryptedBackup(
+                let backupServiceAuth = try await self.deps.backupRequestManager.fetchBackupServiceAuthForRegistration(
+                    key: backupKey,
+                    localAci: identity.aci,
+                    chatServiceAuth: identity.chatServiceAuth
+                )
+                fileUrl = try await self.deps.backupArchiveManager.downloadEncryptedBackup(
                     backupKey: backupKey,
-                    auth: identity.chatServiceAuth,
+                    backupAuth: backupServiceAuth,
                     progress: downloadProgress,
                 )
             }
@@ -638,9 +644,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
             } else {
                 owsFailDebug("Missing metadata header; refetching from cdn")
+                let backupServiceAuth = try await self.deps.backupRequestManager.fetchBackupServiceAuthForRegistration(
+                    key: backupKey,
+                    localAci: identity.aci,
+                    chatServiceAuth: identity.chatServiceAuth
+                )
                 let metadataHeader = try await self.deps.backupArchiveManager.backupCdnInfo(
                     backupKey: backupKey,
-                    auth: identity.chatServiceAuth
+                    backupAuth: backupServiceAuth
                 ).metadataHeader
                 self.inMemoryState.backupMetadataHeader = metadataHeader
                 nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
@@ -1435,9 +1446,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         do {
             // For manual restore, fetch the backup info
             let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+            let backupServiceAuth = try await self.deps.backupRequestManager.fetchBackupServiceAuthForRegistration(
+                key: backupKey,
+                localAci: accountIdentity.aci,
+                chatServiceAuth: accountIdentity.chatServiceAuth
+            )
             let cdnInfo = try await self.deps.backupArchiveManager.backupCdnInfo(
                 backupKey: backupKey,
-                auth: accountIdentity.chatServiceAuth
+                backupAuth: backupServiceAuth,
             )
             self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
             return .confirmRestoreFromBackup(
