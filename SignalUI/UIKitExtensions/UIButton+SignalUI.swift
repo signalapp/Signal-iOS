@@ -317,7 +317,12 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) -> UIBarButtonItem {
-        Self.doneButton { [weak viewController] in
+        let systemItem: SystemItem = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            .close
+        } else {
+            .done
+        }
+        return Self.systemItem(systemItem) { [weak viewController] in
             viewController?.dismiss(animated: animated, completion: completion)
         }
     }
