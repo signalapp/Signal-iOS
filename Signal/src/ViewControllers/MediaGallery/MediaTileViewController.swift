@@ -1483,9 +1483,11 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(stackView)
-        stackView.autoCenterInSuperview()
-        stackView.autoPinWidthToSuperview(withMargin: 32, relation: .lessThanOrEqual)
-        stackView.autoPinHeightToSuperview(withMargin: 32, relation: .lessThanOrEqual)
+        stackView.autoCenterInSuperviewMargins()
+        stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 32, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 32, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 32, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 32, relation: .greaterThanOrEqual)
         reload()
     }
 

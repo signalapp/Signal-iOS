@@ -102,7 +102,8 @@ public class MediaGalleryAccessoriesHelper {
         viewController.navigationItem.titleView = headerView
 
         viewController.view.addSubview(footerBar)
-        footerBar.autoPinWidthToSuperview()
+        footerBar.autoPinEdge(toSuperviewSafeArea: .leading)
+        footerBar.autoPinEdge(toSuperviewSafeArea: .trailing)
 
         updateDeleteButton()
         updateSelectionModeControls()
@@ -247,13 +248,22 @@ public class MediaGalleryAccessoriesHelper {
     }()
 
     func updateFilterButton() {
+        let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
         if let button = filterButton.customView as? UIButton {
-            let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
             button.setAttributedTitle(buttonTitle, for: .normal)
             button.menu = menuItems.menu()
             button.sizeToFit()
             button.isHidden = menuItems.isEmpty
         }
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            // I tried just setting .isHidden on the bar button item here, but
+            // for some reason it would never reappear when I do that. But if
+            // the content is blank and the shared background is hidden, then it
+            // appears completely invisible.
+            filterButton.hidesSharedBackground = menuItems.isEmpty
+        }
+#endif
     }
 
     // MARK: - List/Grid
@@ -498,7 +508,11 @@ public class MediaGalleryAccessoriesHelper {
         let stackView = UIStackView(arrangedSubviews: [ selectionCountLabel, selectionSizeLabel ])
         stackView.axis = .vertical
         stackView.spacing = 0
-        return stackView
+        let container = UIView()
+        container.addSubview(stackView)
+        stackView.autoVCenterInSuperview()
+        stackView.autoPinWidthToSuperviewMargins(withInset: 12)
+        return container
     }())
 
     private func updateSelectionInfoLabel() {
@@ -506,8 +520,18 @@ public class MediaGalleryAccessoriesHelper {
             selectionCountLabel.text = ""
             selectionSizeLabel.text = ""
             selectionInfoButton.customView?.sizeToFit()
+#if compiler(>=6.2)
+            if #available(iOS 26, *) {
+                selectionInfoButton.hidesSharedBackground = true
+            }
+#endif
             return
         }
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            selectionInfoButton.hidesSharedBackground = false
+        }
+#endif
         selectionCountLabel.text = String.localizedStringWithFormat(
             OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware", comment: ""),
             selectionCount
