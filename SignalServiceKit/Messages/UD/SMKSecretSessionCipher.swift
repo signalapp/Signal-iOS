@@ -85,13 +85,14 @@ public class SMKSecretSessionCipher: NSObject {
     private let currentSenderKeyStore: LibSignalClient.SenderKeyStore
 
     // public SecretSessionCipher(SignalProtocolStore signalProtocolStore) {
-    public init(sessionStore: SessionStore,
-                preKeyStore: PreKeyStore,
-                signedPreKeyStore: SignedPreKeyStore,
-                kyberPreKeyStore: KyberPreKeyStore,
-                identityStore: IdentityKeyStore,
-                senderKeyStore: LibSignalClient.SenderKeyStore) throws {
-
+    public init(
+        sessionStore: SessionStore,
+        preKeyStore: PreKeyStore,
+        signedPreKeyStore: SignedPreKeyStore,
+        kyberPreKeyStore: KyberPreKeyStore,
+        identityStore: IdentityKeyStore,
+        senderKeyStore: LibSignalClient.SenderKeyStore
+    ) {
         self.currentSessionStore = sessionStore
         self.currentPreKeyStore = preKeyStore
         self.currentSignedPreKeyStore = signedPreKeyStore

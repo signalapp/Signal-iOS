@@ -54,13 +54,15 @@ class MockClient {
         senderKeyStore = protocolStore
     }
 
-    func createSecretSessionCipher() throws -> SMKSecretSessionCipher {
-        return try SMKSecretSessionCipher(sessionStore: sessionStore,
-                                          preKeyStore: preKeyStore,
-                                          signedPreKeyStore: signedPreKeyStore,
-                                          kyberPreKeyStore: kyberPreKeyStore,
-                                          identityStore: identityStore,
-                                          senderKeyStore: senderKeyStore)
+    func createSecretSessionCipher() -> SMKSecretSessionCipher {
+        return SMKSecretSessionCipher(
+            sessionStore: sessionStore,
+            preKeyStore: preKeyStore,
+            signedPreKeyStore: signedPreKeyStore,
+            kyberPreKeyStore: kyberPreKeyStore,
+            identityStore: identityStore,
+            senderKeyStore: senderKeyStore
+        )
     }
 
     func generateMockPreKey() -> LibSignalClient.PreKeyRecord {

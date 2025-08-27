@@ -1693,12 +1693,12 @@ public class MessageSender {
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         if let sealedSenderParameters {
-            let secretCipher = try SMKSecretSessionCipher(
+            let secretCipher = SMKSecretSessionCipher(
                 sessionStore: signalProtocolStore.sessionStore,
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                 kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
-                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
+                identityStore: try identityManager.libSignalStore(for: .aci, tx: transaction),
                 senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
             )
 

@@ -46,7 +46,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         )
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
-        let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher: SMKSecretSessionCipher = aliceMockClient.createSecretSessionCipher()
 
         // byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
         // senderCertificate, "smert za smert".getBytes());
@@ -63,7 +63,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         )
 
         // SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222", 1));
-        let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher: SMKSecretSessionCipher = bobMockClient.createSecretSessionCipher()
 
         // Pair<SignalProtocolAddress, byte[]> plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
         let bobPlaintext = try! bobCipher.decryptMessage(
@@ -105,7 +105,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
-        let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher: SMKSecretSessionCipher = aliceMockClient.createSecretSessionCipher()
 
         // byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
         // senderCertificate, "и вот я".getBytes());
@@ -124,7 +124,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
-        let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher: SMKSecretSessionCipher = bobMockClient.createSecretSessionCipher()
 
         // try {
         //   bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
@@ -184,7 +184,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
-        let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher: SMKSecretSessionCipher = aliceMockClient.createSecretSessionCipher()
 
         // byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
         //     senderCertificate, "и вот я".getBytes());
@@ -204,7 +204,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
-        let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher: SMKSecretSessionCipher = bobMockClient.createSecretSessionCipher()
 
         // try {
         //   bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31338);
@@ -265,7 +265,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
              expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
-        let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher: SMKSecretSessionCipher = aliceMockClient.createSecretSessionCipher()
 
         // byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
         //    senderCertificate, "smert za smert".getBytes());
@@ -282,7 +282,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
-        let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher: SMKSecretSessionCipher = bobMockClient.createSecretSessionCipher()
 
         // try {
         //   bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
@@ -335,7 +335,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             context: NullContext())
 
         // Test: Alice encrypt's a message using `groupEncryptMessage`
-        let aliceCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher = aliceMockClient.createSecretSessionCipher()
         let alicePlaintext = "beltalowda".data(using: String.Encoding.utf8)!
         let aliceCiphertext = try! aliceCipher.groupEncryptMessage(
             recipients: [bobMockClient.protocolAddress],
@@ -351,7 +351,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         let singleRecipientCiphertext = try! sealedSenderMultiRecipientMessageForSingleRecipient(aliceCiphertext)
 
         // Test: Bob decrypts the ciphertext
-        let bobCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher = bobMockClient.createSecretSessionCipher()
         let bobPlaintext = try! bobCipher.decryptMessage(
             trustRoot: trustRoot.publicKey,
             cipherTextData: singleRecipientCiphertext,
@@ -389,7 +389,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             context: NullContext())
 
         // Test: Alice encrypt's a message using `groupEncryptMessage`
-        let aliceCipher = try! aliceMockClient.createSecretSessionCipher()
+        let aliceCipher = aliceMockClient.createSecretSessionCipher()
         let alicePlaintext = "beltalowda".data(using: String.Encoding.utf8)!
         let aliceCiphertext = try! aliceCipher.groupEncryptMessage(
             recipients: [bobMockClient.protocolAddress],
@@ -405,7 +405,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         let singleRecipientCiphertext = try! sealedSenderMultiRecipientMessageForSingleRecipient(aliceCiphertext)
 
         // Test: Bob decrypts the ciphertext
-        let bobCipher = try! bobMockClient.createSecretSessionCipher()
+        let bobCipher = bobMockClient.createSecretSessionCipher()
         do {
             _ = try bobCipher.decryptMessage(
                 trustRoot: trustRoot.publicKey,
