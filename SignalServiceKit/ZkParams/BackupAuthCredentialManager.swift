@@ -160,7 +160,6 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         )
         let response = try await networkManager.asyncRequest(
             OWSRequestFactory.fetchSVR🐝AuthCredential(auth: backupServiceAuth),
-            canUseWebSocket: FeatureFlags.postRegWebSocket
         )
         guard let bodyData = response.responseBodyData else {
             throw OWSAssertionError("Missing body data")
@@ -295,7 +294,7 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
         let response: HTTPResponse
         do {
-            response = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+            response = try await networkManager.asyncRequest(request)
         } catch let error {
             if error.httpStatusCode == 404 {
                 throw BackupAuthCredentialFetchError.noExistingBackupId

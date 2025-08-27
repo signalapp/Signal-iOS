@@ -85,7 +85,7 @@ fileprivate extension RemoteAttestation.Auth {
 
         request.auth = .identified(auth)
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         #if TESTABLE_BUILD
         HTTPUtils.logCurl(for: request)

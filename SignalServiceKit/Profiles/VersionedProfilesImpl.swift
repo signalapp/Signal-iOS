@@ -224,7 +224,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             commitment: commitmentData,
             auth: authedAccount.chatServiceAuth
         )
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         let avatarUrlPath: OptionalChange<String?>
         switch profileAvatarMutation {

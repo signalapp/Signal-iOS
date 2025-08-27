@@ -106,7 +106,7 @@ public class MessageFetchBGRefreshTask {
     private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
         Task {
-            let backgroundMessageFetcher = self.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+            let backgroundMessageFetcher = self.backgroundMessageFetcherFactory.buildFetcher()
             let result = await Result {
                 try await withCooperativeTimeout(seconds: 27) {
                     await backgroundMessageFetcher.start()

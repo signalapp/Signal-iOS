@@ -182,7 +182,6 @@ public class QuickRestoreManager {
                     token: restoreMethodToken,
                     method: method
                 ),
-                canUseWebSocket: true,
             )
             switch response.responseStatusCode {
             case 200, 204:
@@ -204,7 +203,6 @@ public class QuickRestoreManager {
             do {
                 let response = try await networkManager.asyncRequest(
                     Requests.WaitForRestoreMethodChoice.buildRequest(token: restoreMethodToken),
-                    canUseWebSocket: true,
                 )
                 switch response.responseStatusCode {
                 case 200:

@@ -137,7 +137,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             return mockSession
         }
 
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url.absoluteString.hasSuffix("v1/devices/capabilities") {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: Data())
             }

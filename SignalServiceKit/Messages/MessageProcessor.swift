@@ -129,24 +129,6 @@ public class MessageProcessor {
         )
     }
 
-    /// Deprecated.
-    public func enqueueReceivedEnvelope(
-        _ envelopeProto: SSKProtoEnvelope,
-        serverDeliveryTimestamp: UInt64,
-        envelopeSource: EnvelopeSource,
-        completion: @escaping () -> Void
-    ) {
-        assert(!OWSChatConnection.mustAppUseSocketsToMakeRequests)
-        enqueueReceivedEnvelope(
-            ReceivedEnvelope(
-                envelope: envelopeProto,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: completion
-            ),
-            envelopeSource: envelopeSource
-        )
-    }
-
     private func enqueueReceivedEnvelope(_ receivedEnvelope: ReceivedEnvelope, envelopeSource: EnvelopeSource) {
         pendingEnvelopes.enqueue(receivedEnvelope)
         drainPendingEnvelopes()
@@ -642,7 +624,6 @@ public enum EnvelopeSource {
     case unknown
     case websocketIdentified
     case websocketUnidentified
-    case rest
     case debugUI
     case tests
 }

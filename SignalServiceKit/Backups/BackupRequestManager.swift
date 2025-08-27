@@ -449,7 +449,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         auth: BackupServiceAuth,
         requestFactory: (BackupServiceAuth) -> TSRequest
     ) async throws -> HTTPResponse {
-        return try await networkManager.asyncRequest(requestFactory(auth), canUseWebSocket: FeatureFlags.postRegWebSocket)
+        return try await networkManager.asyncRequest(requestFactory(auth))
     }
 
     private func executeBackupService<T: Decodable>(

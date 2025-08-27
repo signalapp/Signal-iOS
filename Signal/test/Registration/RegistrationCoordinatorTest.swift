@@ -370,7 +370,7 @@ public class RegistrationCoordinatorTest {
         if wasReglockEnabled {
             // If we had reglock before registration, it should be re-enabled.
             let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
-            networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+            networkManagerMock.asyncRequestHandlers.append({ request, _ in
                 if request.url == expectedReglockRequest.url {
                     #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
                     return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
@@ -422,7 +422,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
@@ -550,7 +550,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 #expect(finalMasterKey.regRecoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
@@ -937,7 +937,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 self.testRun.addObservedStep(.updateAccountAttribute)
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
@@ -1244,7 +1244,7 @@ public class RegistrationCoordinatorTest {
 
         // If we had reglock before registration, it should be re-enabled.
         let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedReglockRequest.url {
                 #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
@@ -1298,7 +1298,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
@@ -1619,7 +1619,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 self.testRun.addObservedStep(.updateAccountAttribute)
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
@@ -1913,7 +1913,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
@@ -2922,7 +2922,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
@@ -3062,7 +3062,7 @@ public class RegistrationCoordinatorTest {
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
-        networkManagerMock.asyncRequestHandlers.append({ request, _, _ in
+        networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }

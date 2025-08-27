@@ -7,14 +7,6 @@ import Foundation
 public import LibSignalClient
 
 public struct TSRequest: CustomDebugStringConvertible {
-    /// If true, an HTTP 401 will trigger a follow up request to see if the account is deregistered.
-    /// If it is, the account will be marked as de-registered.
-    ///
-    /// - Warning: This only applies to REST requests. We handle HTTP 403 errors
-    /// (*not* HTTP 401) for web sockets during the initial handshake, not
-    /// during the processing for individual requests.
-    public var shouldCheckDeregisteredOn401: Bool = false
-
     public let url: URL
     public let method: String
     public var headers: HttpHeaders

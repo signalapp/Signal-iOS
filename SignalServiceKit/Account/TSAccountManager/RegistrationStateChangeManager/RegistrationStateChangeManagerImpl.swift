@@ -333,7 +333,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             backupAuths = nil
         }
 
-        try await deleteLocalDevice(OWSRequestFactory.unregisterAccountRequest(), canUseWebSocket: true)
+        try await deleteLocalDevice(OWSRequestFactory.unregisterAccountRequest())
 
         // Now that we've successfully unregistered, make a best effort to wipe
         // our Backups. This is safe to try even if Backups were disabled.
@@ -361,18 +361,18 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         if let localDeviceId = localDeviceId.ifValid {
             var request = TSRequest.deleteDevice(deviceId: localDeviceId)
             request.auth = .identified(auth)
-            try await deleteLocalDevice(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+            try await deleteLocalDevice(request)
         } else {
             // If localDeviceId isn't valid, we've already been unlinked.
         }
     }
 
-    private func deleteLocalDevice(_ request: TSRequest, canUseWebSocket: Bool) async throws {
+    private func deleteLocalDevice(_ request: TSRequest) async throws {
         self.isUnregisteringFromService.set(true)
         defer { self.isUnregisteringFromService.set(false) }
 
         do {
-            _ = try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+            _ = try await networkManager.asyncRequest(request)
         } catch OWSHTTPError.networkFailure(.wrappedFailure(SignalError.connectionInvalidated)) {
             Logger.warn("Connection was invalidated -- we this device (or account) was probably deleted.")
             // The server closed the connection before we got a response. This almost
@@ -382,7 +382,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             // NotRegisteredError (via a 403 when reopening the socket), but if we
             // don't, we throw whatever error happens on the second attempt.
             do {
-                _ = try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+                _ = try await networkManager.asyncRequest(request)
             } catch is NotRegisteredError {
                 // This is expected when the `connectionInvalidated` error races the
                 // response to the INITIAL request.

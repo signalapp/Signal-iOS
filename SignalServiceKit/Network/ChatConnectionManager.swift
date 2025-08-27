@@ -21,8 +21,6 @@ public protocol ChatConnectionManager {
     var unidentifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get async }
 
-    func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
-    func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool
     func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken
     func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken
     func waitForDisconnectIfClosed() async
@@ -92,26 +90,15 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         }
     }
 
-    public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
-        return connection(ofType: connectionType).canOpenWebSocket
-    }
-
-    public func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool {
-        return connection(ofType: connectionType).shouldSocketBeOpen_restOnly
-    }
-
     public func waitForIdentifiedConnectionToOpen() async throws(CancellationError) {
-        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionIdentified.waitForOpen()
     }
 
     public func waitForUnidentifiedConnectionToOpen() async throws(CancellationError) {
-        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionUnidentified.waitForOpen()
     }
 
     public func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) {
-        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionIdentified.waitUntilSocketShouldBeClosed()
     }
 
@@ -182,14 +169,6 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
     public var unidentifiedConnectionState: OWSChatConnectionState = .closed
 
     public var shouldWaitForSocketToMakeRequestPerType = [OWSChatConnectionType: Bool]()
-
-    public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
-        return shouldWaitForSocketToMakeRequestPerType[connectionType] ?? true
-    }
-
-    public func shouldSocketBeOpen_restOnly(connectionType: OWSChatConnectionType) -> Bool {
-        fatalError()
-    }
 
     public func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken {
         fatalError()

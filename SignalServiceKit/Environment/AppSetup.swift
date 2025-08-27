@@ -1413,12 +1413,11 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable
         )
 
-        let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
+        let messageFetcherJob = MessageFetcherJob()
 
         let backgroundMessageFetcherFactory = BackgroundMessageFetcherFactory(
             chatConnectionManager: chatConnectionManager,
             groupMessageProcessorManager: groupMessageProcessorManager,
-            messageFetcherJob: messageFetcherJob,
             messageProcessor: messageProcessor,
             messageSenderJobQueue: messageSenderJobQueue,
             receiptSender: receiptSender,

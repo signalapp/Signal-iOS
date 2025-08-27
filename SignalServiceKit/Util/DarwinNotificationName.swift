@@ -6,9 +6,6 @@
 import Foundation
 
 public struct DarwinNotificationName: ExpressibleByStringLiteral {
-    public static let nseDidReceiveNotification: DarwinNotificationName = "org.signal.nseDidReceiveNotification"
-    public static let mainAppHandledNotification: DarwinNotificationName = "org.signal.mainAppHandledNotification"
-    public static let mainAppLaunched: DarwinNotificationName = "org.signal.mainAppLaunched"
     static let primaryDBFolderNameDidChange: DarwinNotificationName = "org.signal.primaryDBFolderNameDidChange"
 
     static func sdsCrossProcess(for type: AppContextType) -> DarwinNotificationName {

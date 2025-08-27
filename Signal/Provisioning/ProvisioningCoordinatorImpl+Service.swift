@@ -101,7 +101,7 @@ extension ProvisioningCoordinatorImpl {
             )
 
             // Don't care what the response is.
-            _ = try await networkManager.asyncRequest(request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+            _ = try await networkManager.asyncRequest(request)
         }
 
         enum Constants {

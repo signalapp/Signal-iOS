@@ -108,7 +108,6 @@ final class BackupIdServiceImpl: BackupIdService {
                 mediaBackupId: base64MediaRequestContext,
                 auth: auth
             ),
-            canUseWebSocket: FeatureFlags.postRegWebSocket,
         )
     }
 }

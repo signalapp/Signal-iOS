@@ -443,7 +443,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             notificationPresenter: NotificationPresenterImpl(),
             incrementalMessageTSAttachmentMigratorFactory: launchContext.incrementalMessageTSAttachmentMigratorFactory
         )
-        setupNSEInteroperation()
         SUIEnvironment.shared.setUp(
             appReadiness: appReadiness,
             authCredentialManager: databaseContinuation.authCredentialManager
@@ -508,33 +507,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Require 500MB free in order to launch.
         return freeSpaceInBytes >= 500_000_000
-    }
-
-    private func setupNSEInteroperation() {
-        // We immediately post a notification letting the NSE know the main app has launched.
-        // If it's running it should take this as a sign to terminate so we don't unintentionally
-        // try and fetch messages from two processes at once.
-        DarwinNotificationCenter.postNotification(name: .mainAppLaunched)
-
-        let appReadiness: AppReadiness = self.appReadiness
-
-        // We listen to this notification for the lifetime of the application, so we don't
-        // record the returned observer token.
-        _ = DarwinNotificationCenter.addObserver(
-            name: .nseDidReceiveNotification,
-            queue: DispatchQueue.global(qos: .userInitiated)
-        ) { token in
-            appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                DispatchQueue.global(qos: .userInitiated).async {
-                    let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
-                    if chatConnectionManager.shouldSocketBeOpen_restOnly(connectionType: .identified) {
-                        // Immediately let the NSE know we will handle this notification so that it
-                        // does not attempt to process messages while we are active.
-                        DarwinNotificationCenter.postNotification(name: .mainAppHandledNotification)
-                    }
-                }
-            }
-        }
     }
 
     private func didLoadDatabase(
@@ -1353,7 +1325,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.backgroundFetchHandle?.interrupt()
             self.backgroundFetchHandle = nil
         } else {
-            let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+            let backgroundFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             self.activeConnectionTokens = []
             self.backgroundFetchHandle?.interrupt()
             let startDate = MonotonicDate()
@@ -1481,7 +1453,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.info("Ignoring remote notification; user is not registered.")
                 return
             }
-            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+            let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             await backgroundMessageFetcher.start()
 
             // If we get canceled, we want to ignore the contact sync in this method
@@ -1815,7 +1787,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             try await self.appReadiness.waitForAppReady()
 
             let backgroundMessageFetcherFactory = DependenciesBridge.shared.backgroundMessageFetcherFactory
-            let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+            let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher()
             // So that we open up a connection for replies.
             await backgroundMessageFetcher.start()
             await NotificationActionHandler.handleNotificationResponse(response, appReadiness: appReadiness)

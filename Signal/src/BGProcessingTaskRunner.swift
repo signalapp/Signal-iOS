@@ -181,7 +181,7 @@ extension BGProcessingTaskRunner where Self: Sendable {
         backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory,
         operation: () async throws -> T,
     ) async throws -> T {
-        let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher(useWebSocket: true)
+        let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher()
 
         // We want a chat connection, and if we get a chat connection, we're also
         // going to need to deal with message processing.

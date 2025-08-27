@@ -3568,7 +3568,6 @@
 		F9C5CDB5289453B400548EEE /* OWSRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */; };
 		F9C5CDBA289453B400548EEE /* OWSDeviceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */; };
 		F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */; };
-		F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */; };
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; };
 		F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */; };
 		F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */; };
@@ -7550,7 +7549,6 @@
 		F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRequestFactory.swift; sourceTree = "<group>"; };
 		F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceService.swift; sourceTree = "<group>"; };
 		F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceProfile.swift; sourceTree = "<group>"; };
-		F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTNetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
 		F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningService.swift; sourceTree = "<group>"; };
 		F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceSet.swift; sourceTree = "<group>"; };
@@ -14372,7 +14370,6 @@
 				F9C5CAEF289453B200548EEE /* HTTPEntities.swift */,
 				F9C5CAE0289453B200548EEE /* HTTPUtils.swift */,
 				F9C5CADA289453B200548EEE /* NetworkManager.swift */,
-				F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */,
 				F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */,
 			);
 			path = API;
@@ -18430,7 +18427,6 @@
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
 				5063B41E2C5432A30041CA51 /* ResolvableValue.swift in Sources */,
-				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				502C69742B06F0A400012867 /* Result.swift in Sources */,
 				50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */,
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,

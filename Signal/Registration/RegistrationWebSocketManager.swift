@@ -48,10 +48,6 @@ struct RegistrationWebSocketManagerImpl: RegistrationWebSocketManager {
 
     @MainActor
     func acquireRestrictedWebSocket(chatServiceAuth: ChatServiceAuth) async {
-        guard FeatureFlags.postRegWebSocket else {
-            return
-        }
-
         Logger.info("")
 
         // We want to open a socket, but we don't want to process messages yet, so
@@ -63,10 +59,6 @@ struct RegistrationWebSocketManagerImpl: RegistrationWebSocketManager {
 
     @MainActor
     func releaseRestrictedWebSocket(isRegistered: Bool) async {
-        guard FeatureFlags.postRegWebSocket else {
-            return
-        }
-
         Logger.info("")
 
         // Jump through the main queue to ensure we lose the race with the

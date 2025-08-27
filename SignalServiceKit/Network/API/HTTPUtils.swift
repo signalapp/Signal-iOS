@@ -135,8 +135,6 @@ public class HTTPUtils {
         return httpError
     }
 
-    // This DRYs up handling of main service errors so that
-    // REST and websocket errors are handled in the same way.
     public static func applyHTTPError(_ httpError: OWSHTTPError) async {
         if httpError.isNetworkFailureImpl || httpError.isTimeoutImpl {
             OutageDetection.shared.reportConnectionFailure()

@@ -122,14 +122,6 @@ public enum WhoAmIRequestFactory {
 
             #endif
         }
-
-        public enum AmIDeregistered: Int, UnknownEnumCodable {
-            case notDeregistered = 200
-            case deregistered = 401
-            case unexpectedError = -1
-
-            static public var unknown: Self { .unexpectedError }
-        }
     }
 
     /// Response body should be a `Responses.WhoAmI` json.
@@ -143,20 +135,5 @@ public enum WhoAmIRequestFactory {
         )
         result.auth = .identified(auth)
         return result
-    }
-
-    /// Usage of this request is limited to checking if the account is deregistered via REST.
-    /// This means the result contents are irrelevant; all that matters is if we get a 200, 401, or something else.
-    /// See `Responses.AmIDeregistered`
-    public static func amIDeregisteredRequest() -> TSRequest {
-        var whoAmI = whoAmIRequest(auth: .implicit())
-
-        // As counterintuitive as this is, we want this flag to be false.
-        // (As of writing, it defaults to false anyway, but we want to be sure).
-        // This flag is what tells us to make _this_ request to check for
-        // de-registration, so we don't want to loop forever.
-        whoAmI.shouldCheckDeregisteredOn401 = false
-
-        return whoAmI
     }
 }

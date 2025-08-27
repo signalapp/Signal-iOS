@@ -174,14 +174,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldPerformPniOp = shouldCheckPniPreKeys && hasPniIdentityKey(tx: tx)
 
         return Self.taskQueue.enqueue { [self, chatConnectionManager, taskManager, targets] in
-            if OWSChatConnection.mustAppUseSocketsToMakeRequests {
-                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
-            } else {
-                // TODO: Migrate the NSE to use web sockets.
-                // The NSE generally launches only when network is available, and we try to
-                // run this only when we have network, but it's not harmful if that's not
-                // true, so this is fine.
-            }
+            try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
             if shouldPerformPniOp {
@@ -324,14 +317,7 @@ public class PreKeyManagerImpl: PreKeyManager {
                 return
             }
             do {
-                if OWSChatConnection.mustAppUseSocketsToMakeRequests {
-                    try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
-                } else {
-                    // TODO: Migrate the NSE to use web sockets.
-                    // The NSE generally launches only when network is available, and we try to
-                    // run this only when we have network, but it's not harmful if that's not
-                    // true, so this is fine.
-                }
+                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
                 try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
             } catch {
                 Logger.warn("Couldn't rotate pre keys: \(error)")

@@ -14,9 +14,8 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
     private func performRequest(
         request: TSRequest,
-        canUseWebSocket: Bool = true,
     ) async throws -> any HTTPResponse {
-        try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+        try await networkManager.asyncRequest(request)
     }
 
     // MARK: Selection
@@ -95,7 +94,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
         request.auth = .identified(chatServiceAuth)
 
         do {
-            let response = try await performRequest(request: request, canUseWebSocket: FeatureFlags.postRegWebSocket)
+            let response = try await performRequest(request: request)
 
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
@@ -258,7 +257,7 @@ extension UsernameApiClientImpl {
 }
 
 protocol _UsernameApiClientImpl_NetworkManager_Shim {
-    func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> HTTPResponse
+    func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse
 }
 
 class _UsernameApiClientImpl_NetworkManager_Wrapper: _UsernameApiClientImpl_NetworkManager_Shim {
@@ -268,7 +267,7 @@ class _UsernameApiClientImpl_NetworkManager_Wrapper: _UsernameApiClientImpl_Netw
         self.networkManager = networkManager
     }
 
-    func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> HTTPResponse {
-        return try await networkManager.asyncRequest(request, canUseWebSocket: canUseWebSocket)
+    func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse {
+        return try await networkManager.asyncRequest(request)
     }
 }

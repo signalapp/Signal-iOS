@@ -87,21 +87,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Messages
 
-    static func getMessagesRequest() -> TSRequest {
-        var request = TSRequest(url: URL(string: "v1/messages")!, method: "GET", parameters: [:])
-        StoryManager.appendStoryHeaders(to: &request)
-        request.shouldCheckDeregisteredOn401 = true
-        return request
-    }
-
-    static func acknowledgeMessageDeliveryRequest(serverGuid: String) -> TSRequest {
-        owsAssertDebug(!serverGuid.isEmpty)
-
-        let path = "v1/messages/uuid/\(serverGuid)"
-
-        return TSRequest(url: URL(string: path)!, method: "DELETE", parameters: [:])
-    }
-
     static func udSenderCertificateRequest(uuidOnly: Bool) -> TSRequest {
         var path = "v1/certificate/delivery"
         if uuidOnly {

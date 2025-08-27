@@ -33,9 +33,6 @@ public struct RequestMakerResult {
 
 /// A utility class that handles:
 ///
-/// - Sending via Web Socket or REST, depending on the process (main app vs.
-/// NSE) & whether or not we're connected.
-///
 /// - Retrying UD requests that fail due to 401/403 errors.
 final class RequestMaker {
 
@@ -53,10 +50,6 @@ final class RequestMaker {
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
         /// off additional profile fetches when errors occur.
         static let isProfileFetch = Options(rawValue: 1 << 1)
-
-        /// This Request can *always* use the web socket and should never fall back
-        /// to REST.
-        static let waitForWebSocketToOpen = Options(rawValue: 1 << 2)
     }
 
     private let label: String
@@ -166,11 +159,7 @@ final class RequestMaker {
     private func _makeRequest(request: TSRequest) async throws -> RequestMakerResult {
         let connectionType = try request.auth.connectionType
         let networkManager = SSKEnvironment.shared.networkManagerRef
-        let response = try await networkManager.asyncRequest(request, canUseWebSocket: (
-            FeatureFlags.postRegWebSocket
-            || self.options.contains(.waitForWebSocketToOpen)
-            || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
-        ))
+        let response = try await networkManager.asyncRequest(request)
         return RequestMakerResult(response: response, wasSentByUD: connectionType == .unidentified)
     }
 

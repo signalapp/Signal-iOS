@@ -187,36 +187,6 @@ public class OWSChatConnection {
 
     // MARK: - Socket LifeCycle
 
-    public static var mustAppUseSocketsToMakeRequests: Bool {
-        switch CurrentAppContext().type {
-        case .main:
-            return true
-        case .nse:
-            return true
-        case .share:
-            return true
-        }
-    }
-
-    public static var canAppUseSocketsToMakeRequests: Bool {
-        switch CurrentAppContext().type {
-        case .main:
-            return true
-        case .nse:
-            return true
-        case .share:
-            return true
-        }
-    }
-
-    public var canOpenWebSocket: Bool {
-        return serialQueue.sync { self.canOpenWebSocketError == nil }
-    }
-
-    public var shouldSocketBeOpen_restOnly: Bool {
-        return serialQueue.sync { self.shouldSocketBeOpen() }
-    }
-
     /// Tracks app-wide, "fatal" errors that block web sockets.
     ///
     /// If this property is nonnil, the app shouldn't attempt to open a
@@ -250,9 +220,6 @@ public class OWSChatConnection {
     fileprivate func _canOpenWebSocketError() -> (any Error)? {
         guard !appExpiry.isExpired(now: Date()) else {
             return AppExpiredError()
-        }
-        guard Self.canAppUseSocketsToMakeRequests else {
-            return OWSHTTPError.networkFailure(.genericFailure)
         }
         return nil
     }
@@ -401,8 +368,6 @@ public class OWSChatConnection {
     // MARK: - Message Sending
 
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
-        owsAssertDebug(Self.canAppUseSocketsToMakeRequests)
-
         let requestId = UInt64.random(in: .min ... .max)
         let requestDescription = "\(request) [\(requestId)]"
         do {

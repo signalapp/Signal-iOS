@@ -408,7 +408,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             do {
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForDeviceToLink(tokenId: tokenId),
-                    canUseWebSocket: FeatureFlags.postRegWebSocket,
                 )
                 switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
                 case .success:
@@ -626,7 +625,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             do {
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForLinkNSyncBackupUpload(auth: auth),
-                    canUseWebSocket: FeatureFlags.postRegWebSocket,
                 )
                 switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
                 case .success:

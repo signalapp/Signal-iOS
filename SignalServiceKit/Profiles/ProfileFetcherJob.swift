@@ -303,12 +303,8 @@ public class ProfileFetcherJob {
     }
 
     private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
-        let connectionType = try request.auth.connectionType
         let networkManager = SSKEnvironment.shared.networkManagerRef
-        return try await networkManager.asyncRequest(request, canUseWebSocket: (
-            FeatureFlags.postRegWebSocket
-            || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
-        ))
+        return try await networkManager.asyncRequest(request)
     }
 
     private func updateProfile(

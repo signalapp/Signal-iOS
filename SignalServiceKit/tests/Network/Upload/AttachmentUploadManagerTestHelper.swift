@@ -6,7 +6,7 @@
 import Foundation
 @testable import SignalServiceKit
 
-typealias PerformTSRequestBlock = ((TSRequest, Bool) async throws -> any HTTPResponse)
+typealias PerformTSRequestBlock = ((TSRequest) async throws -> any HTTPResponse)
 typealias PerformRequestBlock = ((URLRequest) async throws -> any HTTPResponse)
 typealias PerformUploadBlock = ((URLRequest, URL, OWSProgressSource?) async throws -> any HTTPResponse)
 
@@ -131,13 +131,13 @@ class AttachmentUploadManagerMockHelper {
             return self.mockURLSession
         }
 
-        mockNetworkManager.performRequestBlock = { request, canUseWebSocket in
+        mockNetworkManager.performRequestBlock = { request in
             let item = self.authFormRequestBlock.removeFirst()
             guard case let .uploadForm(authDataTaskBlock) = item else {
                 return .init(error: OWSAssertionError("Mock request missing"))
             }
             self.capturedRequests.append(.uploadForm(request))
-            return Promise.wrapAsync { try await authDataTaskBlock(request, canUseWebSocket) }
+            return Promise.wrapAsync { try await authDataTaskBlock(request) }
         }
 
         mockURLSession.performRequestBlock = { request in
@@ -198,7 +198,7 @@ class AttachmentUploadManagerMockHelper {
             cdnKey: UUID().uuidString,
             cdnNumber: cdn.rawValue
         )
-        authFormRequestBlock.append(.uploadForm({ request, _ in
+        authFormRequestBlock.append(.uploadForm({ request in
             self.activeUploadRequestMocks = self.authToUploadRequestMockMap[authString] ?? .init()
             return HTTPResponseImpl(
                 requestUrl: request.url,

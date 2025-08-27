@@ -130,7 +130,7 @@ public class MessageSender {
             throw MessageSenderNoSessionForTransientMessageError()
         }
 
-        var requestOptions: RequestMaker.Options = [.waitForWebSocketToOpen]
+        var requestOptions: RequestMaker.Options = []
 
         // If we're sending a story, we can use the identified connection to fetch
         // pre keys and the unidentified connection to send the message. For other
@@ -1475,7 +1475,7 @@ public class MessageSender {
             accessKey: sealedSenderParameters?.accessKey,
             endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
-            options: [.waitForWebSocketToOpen]
+            options: []
         )
 
         owsAssertDebug(!message.isStorySend || sealedSenderParameters != nil, "Story messages must use Sealed Sender.")
@@ -1578,8 +1578,6 @@ public class MessageSender {
         Logger.warn("\(type(of: message)) to \(messageSend.serviceId), timestamp: \(message.timestamp), error: \(responseError)")
 
         switch responseError.httpStatusCode {
-        case 401 where !OWSChatConnection.mustAppUseSocketsToMakeRequests:
-            throw NotRegisteredError()
         case 404:
             if !messageSend.isSelfSend {
                 try await checkIfAccountExists(serviceId: messageSend.serviceId)
