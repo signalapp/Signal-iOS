@@ -18,7 +18,6 @@ public class RegistrationCoordinatorTest {
 
     private var date: Date { self.stubs.date }
 
-    private var accountEntropyPoolManager: MockAccountEntropyPoolManager!
     private var appExpiry: AppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
@@ -62,7 +61,6 @@ public class RegistrationCoordinatorTest {
         dateProvider = { self.date }
         db = InMemoryDB()
 
-        accountEntropyPoolManager = MockAccountEntropyPoolManager()
         appExpiry = .forUnitTests()
         accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -106,7 +104,6 @@ public class RegistrationCoordinatorTest {
         }
 
         let dependencies = RegistrationCoordinatorDependencies(
-            accountEntropyPoolManager: accountEntropyPoolManager,
             appExpiry: appExpiry,
             accountEntropyPoolGenerator: { Stubs.accountEntropyPoolToGenerate },
             accountKeyStore: accountKeyStore,
@@ -2932,12 +2929,6 @@ public class RegistrationCoordinatorTest {
             throw OWSAssertionError("")
         })
 
-        var didSetAccountEntropyPool = false
-        accountEntropyPoolManager.setAccountEntropyPoolMock = {
-            #expect(!didSetAccountEntropyPool)
-            didSetAccountEntropyPool = true
-        }
-
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
@@ -2965,13 +2956,13 @@ public class RegistrationCoordinatorTest {
         )
 
         // At this point we should not have set the AEP.
-        #expect(!didSetAccountEntropyPool)
+        #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) == nil })
 
         // Skip the PIN code.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
         // We should now have set the AEP.
-        #expect(didSetAccountEntropyPool)
+        #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) != nil })
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3078,12 +3069,6 @@ public class RegistrationCoordinatorTest {
             throw OWSAssertionError("")
         })
 
-        var didSetAccountEntropyPool = false
-        accountEntropyPoolManager.setAccountEntropyPoolMock = {
-            #expect(!didSetAccountEntropyPool)
-            didSetAccountEntropyPool = true
-        }
-
         // Now we should ask to restore the PIN.
         #expect(
             await coordinator.submitVerificationCode(Stubs.pinCode).awaitable() ==
@@ -3102,13 +3087,13 @@ public class RegistrationCoordinatorTest {
         )
 
         // At this point we should not have set the AEP.
-        #expect(!didSetAccountEntropyPool)
+        #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) == nil })
 
         // Skip this PIN code, too.
         #expect(await coordinator.skipPINCode().awaitable() == .done)
 
         // We should now have set the master key (i.e., the AEP).
-        #expect(didSetAccountEntropyPool)
+        #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) != nil })
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)

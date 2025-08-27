@@ -7,7 +7,6 @@ import Foundation
 public import SignalServiceKit
 
 public struct RegistrationCoordinatorDependencies {
-    public let accountEntropyPoolManager: AccountEntropyPoolManager
     public let appExpiry: AppExpiry
     public let accountEntropyPoolGenerator: () -> AccountEntropyPool
     public let accountKeyStore: AccountKeyStore
@@ -50,7 +49,6 @@ public struct RegistrationCoordinatorDependencies {
 
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
-            accountEntropyPoolManager: DependenciesBridge.shared.accountEntropyPoolManager,
             appExpiry: DependenciesBridge.shared.appExpiry,
             accountEntropyPoolGenerator: { AccountEntropyPool() },
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,

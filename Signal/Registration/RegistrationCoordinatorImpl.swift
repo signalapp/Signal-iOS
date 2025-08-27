@@ -1404,10 +1404,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
-            let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
-            deps.accountEntropyPoolManager.setAccountEntropyPool(
-                newAccountEntropyPool: accountEntropyPool,
-                disablePIN: !userHasPIN,
+            // Persist the AEP. RegCoordinator manages all necessary side
+            // effects, like updating Account Attributes and rotating the
+            // Storage Service manifest.
+            deps.accountKeyStore.setAccountEntropyPool(
+                accountEntropyPool,
                 tx: tx
             )
 
