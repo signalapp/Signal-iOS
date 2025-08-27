@@ -1189,6 +1189,7 @@
 		66D31DAB2BC48D9C00EAF735 /* OWSContactEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAA2BC48D9C00EAF735 /* OWSContactEmail.swift */; };
 		66D31DAD2BC48E0100EAF735 /* OWSContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAC2BC48E0100EAF735 /* OWSContactAddress.swift */; };
 		66D31DAF2BC48E3A00EAF735 /* OWSContactName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */; };
+		66D31F972E5E685300A1C82D /* InternalListMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31F962E5E684E00A1C82D /* InternalListMediaViewController.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
 		66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */; };
 		66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */; };
@@ -5131,6 +5132,7 @@
 		66D31DAA2BC48D9C00EAF735 /* OWSContactEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactEmail.swift; sourceTree = "<group>"; };
 		66D31DAC2BC48E0100EAF735 /* OWSContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactAddress.swift; sourceTree = "<group>"; };
 		66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactName.swift; sourceTree = "<group>"; };
+		66D31F962E5E684E00A1C82D /* InternalListMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalListMediaViewController.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
 		66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
 		66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManagerImpl.swift; sourceTree = "<group>"; };
@@ -10795,6 +10797,7 @@
 				344A761024B366F4009D69A5 /* FlagsViewController.swift */,
 				665229882E218D53002C14A0 /* InternalDiskUsageViewController.swift */,
 				45B27B852037FFB400A539DF /* InternalFileBrowserViewController.swift */,
+				66D31F962E5E684E00A1C82D /* InternalListMediaViewController.swift */,
 				8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */,
 				663883562D4C034F008EA898 /* InternalSQLClientViewController.swift */,
 				4CBBFE492306F5D300B37450 /* LogViewController.swift */,
@@ -17139,6 +17142,7 @@
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				665229892E218D5F002C14A0 /* InternalDiskUsageViewController.swift in Sources */,
 				45B27B862037FFB400A539DF /* InternalFileBrowserViewController.swift in Sources */,
+				66D31F972E5E685300A1C82D /* InternalListMediaViewController.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
 				663883572D4C0360008EA898 /* InternalSQLClientViewController.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,

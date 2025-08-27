@@ -116,7 +116,7 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
 
     // MARK: - Codable
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case id
         case attachmentRowId
         case maxOwnerTimestamp

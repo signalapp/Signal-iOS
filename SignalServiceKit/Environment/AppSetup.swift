@@ -1503,6 +1503,7 @@ public class AppSetup {
             backupExportJobRunner: backupExportJobRunner,
             backupIdService: backupIdService,
             backupKeyService: backupKeyService,
+            backupListMediaManager: backupListMediaManager,
             backupRefreshManager: backupRefreshManager,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,

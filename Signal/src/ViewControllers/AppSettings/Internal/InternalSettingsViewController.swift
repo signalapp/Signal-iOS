@@ -175,6 +175,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         })
 
+        backupsSection.add(.actionItem(withText: "Backup media integrity check") { [weak self] in
+            let vc = InternalListMediaViewController()
+            self?.navigationController?.pushViewController(vc, animated: true)
+        })
+
         if backupsSection.items.isEmpty.negated {
             contents.add(backupsSection)
         }

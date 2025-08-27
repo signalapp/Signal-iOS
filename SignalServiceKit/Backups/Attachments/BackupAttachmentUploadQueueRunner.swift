@@ -234,7 +234,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
         switch backupAuth.backupLevel {
         case .free:
-            owsFailDebug("Local backupPlan is paid but credential is free")
+            Logger.warn("Local backupPlan is paid but credential is free")
             // If our force refreshed credential is free tier, we definitely
             // aren't uploading anything, so may as well stop the queues.
             try? await taskQueue.stop()
