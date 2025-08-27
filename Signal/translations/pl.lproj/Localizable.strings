@@ -260,13 +260,13 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Systemowy";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Sprawdź, czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie. Jeśli problem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
 "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Karta straciła ważność. Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
@@ -278,7 +278,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "W kodzie CVC jest błąd. Sprawdź czy kod CVC podany w Apple Pay jest poprawny. Jeśli nie, uaktualnij go i spróbuj ponownie.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczających środków. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczających środków. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Miesiąc wygaśnięcia Twojej metody płatności jest niepoprawny. Uaktualnij go w Apple Pay i spróbuj ponownie.";
@@ -293,7 +293,7 @@
 "APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Spróbuj wykonać płatność ponownie lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Zarządzaj usługą";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Usługa płatna, ale gratis, dopóki uczestniczysz w jej testach";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Wiadomości tekstowe i wszystkie multimedia";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Pobrać pozostałe multimedia?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Multimedia usunięte z urządzenia pozostaną dostępne do pobrania, dopóki uczestniczysz w testowaniu usługi. Pamiętaj, aby pobrać wszystkie multimedia na urządzenie przed zakończeniem testowania usługi.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testujesz funkcję usuwania multimediów z urządzenia";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Nieużywane multimedia zostaną usunięte z urządzenia, ale w dowolnym momencie można je będzie pobrać z kopii zapasowej.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Nieużywane multimedia zostaną usunięte z urządzenia, ale dopóki uczestniczysz w testach usługi, w dowolnym momencie możesz pobrać te multimedia z kopii zapasowej.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Optymalizacja pamięci jest dostępna tylko w ramach płatnej usługi kopii zapasowych Signal. Aby korzystać z tej funkcji, wykup płatny tryb tworzenia kopii zapasowych.";
@@ -876,6 +876,15 @@
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Kopie zapasowe Signal";
+
+/* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+
+/* Title for system notification or megaphone when backups is enabled */
+"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+
+/* Action text for backups enabled megaphone taking user to backup settings */
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Moje odznaki";
@@ -926,7 +935,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Dodaj odznakę do profilu";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
+"BADGE_THANKS_TITLE" = "Dziękujemy Ci za wsparcie!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Kiedy masz więcej niż jedną odznakę, możesz zdecydować, którą chcesz pokazać w swoim profilu.";
@@ -1706,7 +1715,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Zablokowano";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Niezweryfikowany";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Niezweryfikowany kontakt";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Niezarejestrowany numer";
@@ -2861,7 +2870,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Twoja darowizna na rzecz aplikacji Signal została wpłacona w imieniu wybranej osoby. %1$@ może się teraz pochwalić wsparciem w swoim profilu.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Dziękujemy Ci za wsparcie!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Wyświetl";
@@ -3320,7 +3329,7 @@
 "FIND_BY_USERNAME_TITLE" = "Wyszukaj po nazwie użytkownika";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz ukończoną weryfikację";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz weryfikację jako ukończoną";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Zresetuj sesję";
@@ -5732,7 +5741,7 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Rejestracja zakończona";
 
 /* Body of prompt notifying restore failed. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Przywrócona wiadomość z innego urządzenia zawierała nieprawidłowe lub wygasłe dane.  Spróbuj ponownie.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "Przywracane wiadomości z drugiego urządzenia zawierały nieprawidłowe lub wygasłe dane.  Spróbuj ponownie.";
 
 /* Title of prompt notifying restore failed. */
 "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE" = "Nie udało się przywrócić";
@@ -6328,21 +6337,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Możesz zmienić PIN, pod warunkiem że to urządzenie zostało zarejestrowane.";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Wyłącz";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Aby wyłączyć PIN, musisz najpierw wyłączyć blokadę rejestracji.";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Wyłączyć blokadę rejestracji?";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN został utworzony, ale nie udało się włączyć blokady rejestracji. Sprawdź połączenie z internetem i spróbuj ponownie.";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Nie udało się włączyć blokady rejestracji";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Wyłącz PIN";
 
@@ -6354,12 +6348,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Dzięki PIN-owi dane przechowywane w aplikacji Signal są szyfrowane i tylko Ty masz do nich dostęp. Aby chronić swoje konto, ustaw mocniejszy PIN.";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Nie udało się wyłączyć Twojego PIN-u.";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Nie udało się wyłączyć PIN-u";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Pomiń PIN";
@@ -6439,8 +6427,14 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
 
+/* Label specifying the message type as a poll */
+"POLL_LABEL" = "Poll";
+
+/* Label specifying how many options the user can select */
+"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowano";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowany kontakt";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Dotknij, aby zeskanować";
@@ -6473,7 +6467,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Zweryfikuj numer bezpieczeństwa";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Zweryfikuj";
+"PRIVACY_VERIFY_BUTTON" = "Oznacz kontakt jako zweryfikowany";
 
 /* Button to add a new viewer on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodaj odbiorców";
@@ -6970,6 +6964,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Aby wysyłać wiadomości, musisz się zarejestrować.";
 
+/* Body of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
+
+/* Title of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Zeskanuj ten kod swoim poprzednim telefonem";
 
@@ -7461,6 +7461,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Wyłącz PIN";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Włącz PIN";
@@ -8266,11 +8272,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Wyłącz";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Wyłączyć blokadę rejestracji?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Włącz";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeśli przy ponownej rejestracji w aplikacji Signal nie będziesz pamiętać PIN-u, stracisz dostęp do konta na 7 dni.";

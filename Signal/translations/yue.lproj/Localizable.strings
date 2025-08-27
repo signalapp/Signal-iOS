@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "管理計劃";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "課咗金，不過只要你仲係測試員就可以免費";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "備份文字訊息 + 全部媒體";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "係咪下載已經卸載嘅媒體？";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "只要你仲係測試員，就可以攞到卸載咗嘅媒體。請確保喺離開測試計劃之前下載全部媒體。";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "正在測試卸載媒體";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "未用嘅媒體會卸載，但可以隨時喺備份度下載返。";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "未用嘅媒體會卸載，但只要你仲係測試員，可以隨時喺備份度下載返。";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "淨係得有課金 Signal 備份嘅帳戶先用到「優化儲存空間」功能。如果想用呢個功能，就升級備份計劃啦。";
@@ -876,6 +876,15 @@
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal 備份";
+
+/* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+
+/* Title for system notification or megaphone when backups is enabled */
+"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+
+/* Action text for backups enabled megaphone taking user to backup settings */
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "我嘅襟章";
@@ -6328,21 +6337,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "呢部機維持註冊其間，您個 PIN 碼都係任改唔嬲。";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "關閉";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "若然要停用您個 PIN 碼，首唔先要閂咗註冊鎖。";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "係咪要閂咗註冊鎖？";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN 碼建立成功，但註冊鎖啟用唔到。請檢查您嘅連線，然後再試下啦。";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "註冊鎖啟用唔到";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "停用 PIN 碼";
 
@@ -6354,12 +6348,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN 碼可以確保你喺 Signal 儲存嘅資訊受到加密保護，只有你先接觸得到。揀選一個更強效嘅 PIN 碼去保護你嘅帳戶。";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "未停用到你嘅 PIN 碼。";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN 碼停用唔到";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "略過 PIN 碼";
@@ -6438,6 +6426,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放多媒體";
+
+/* Label specifying the message type as a poll */
+"POLL_LABEL" = "Poll";
+
+/* Label specifying how many options the user can select */
+"POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "驗證咗";
@@ -6970,6 +6964,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要註冊先可以傳送訊息。";
 
+/* Body of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
+
+/* Title of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "用你部舊手機掃描呢個二維碼";
 
@@ -7461,6 +7461,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "停用 PIN 碼";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "啟用 PIN 碼";
@@ -8266,11 +8272,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "關閉";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "係咪要閂咗註冊鎖？";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "開啟";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "當您重新註冊 Signal 嘅時候，若果您唔記得咗您嘅 Signal PIN 碼，您個帳戶將會凍結 7 日，暫時唔用得住。";

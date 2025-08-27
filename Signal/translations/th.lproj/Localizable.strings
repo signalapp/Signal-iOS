@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "จัดการแพ็กเกจ";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "มีค่าบริการ แต่ฟรีหากยังอยู่ในสถานะผู้ร่วมทดสอบ";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "สำรองข้อความ + สื่อทั้งหมด";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "ดาวน์โหลดไฟล์สื่อที่ออฟโหลดไว้ใช่หรือไม่";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "หากยังอยู่ในสถานะผู้ร่วมทดสอบ คุณจะสามารถดาวน์โหลดไฟล์สื่อที่ถูกออฟโหลดกลับมาได้ทุกเมื่อ โปรดตรวจสอบว่าคุณดาวน์โหลดไฟล์สื่อทั้งหมดเรียบร้อยแล้วก่อนที่จะยุติสถานะผู้ร่วมทดสอบ";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "การทดสอบไฟล์สื่อที่ออฟโหลด";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "ไฟล์สื่อที่ไม่ได้ใช้งานจะถูกออฟโหลด แต่คุณสามารถดาวน์โหลดไฟล์กลับมาจากข้อมูลสำรองได้ทุกเมื่อ";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "ไฟล์สื่อที่ไม่ได้ใช้งานจะถูกออฟโหลด แต่คุณสามารถดาวน์โหลดไฟล์กลับมาจากข้อมูลสำรองได้ทุกเมื่อในขณะที่ยังอยู่ในสถานะผู้ร่วมทดสอบ";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "เริ่มใช้งานฟีเจอร์การเพิ่มประสิทธิภาพพื้นที่จัดเก็บ โดยอัปเกรดแพ็กเกจสำรองข้อมูลของคุณด้วยการชำระค่าสำรองข้อมูลของ Signal";
@@ -876,6 +876,15 @@
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "การสำรองข้อมูลของ Signal";
+
+/* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+
+/* Title for system notification or megaphone when backups is enabled */
+"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+
+/* Action text for backups enabled megaphone taking user to backup settings */
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "โล่ของฉัน";
@@ -6328,21 +6337,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "คุณสามารถเปลี่ยนรหัส PIN ได้ตราบเท่าที่คุณยังลงทะเบียนอุปกรณ์นี้";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "ปิดกุญแจลงทะเบียน";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "ในการปิดการใช้งานรหัส PIN คุณจะต้องปิดการใช้งานกุญแจลงทะเบียนก่อนเป็นอย่างแรก";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "ปิดกุญแจลงทะเบียนหรือไม่?";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "การสร้างรหัส PIN เสร็จเรียบร้อย แต่กุญแจลงทะเบียนไม่สามรถเปิดใช้งานได้ ตรวจสอบการเชื่อมต่อแล้วแล้วอีกครั้ง";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "การเปิดใช้งานกุญแจลงทะเบียนล้มเหลว";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "ปิดใช้งาน PIN";
 
@@ -6354,12 +6348,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN ช่วยรักษาข้อมูลของคุณที่เก็บอยู่ใน Signal ให้เข้ารหัสอยู่เสมอ เพื่อที่ข้อมูลดังกล่าวจะมีคุณเพียงคนเดียวเท่านั้นที่สามารถเข้าถึงได้ เลือก PIN ที่ยากกว่านี้เพื่อปกป้องบัญชีของคุณ";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "ไม่สามารถปิดใช้งาน PIN ของคุณได้";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "การปิดใช้งาน PIN ล้มเหลว";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "ข้ามการใส่ PIN";
@@ -6438,6 +6426,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "เล่นสื่อ";
+
+/* Label specifying the message type as a poll */
+"POLL_LABEL" = "Poll";
+
+/* Label specifying how many options the user can select */
+"POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "ตรวจยืนยันแล้ว";
@@ -6970,6 +6964,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "คุณจำเป็นต้องลงทะเบียนก่อน จึงจะสามารถส่งข้อความได้";
 
+/* Body of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
+
+/* Title of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "ใช้โทรศัพท์เครื่องเก่าของคุณสแกนโค้ดนี้";
 
@@ -7461,6 +7461,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "ปิดใช้งาน PIN";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "เปิดใช้งาน PIN";
@@ -8266,11 +8272,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "ปิด";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "ปิดกุญแจลงทะเบียนหรือไม่?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "เปิด";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "ถ้าคุณลืมรหัส PIN ของคุณตอนที่คุณลงทะเบียนกับ Signal อีกครั้ง คุณจะถูกล็อกจากบัญชีของคุณเป็นเวลา 7 วัน";

@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "플랜 관리";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "유료이지만 테스트 사용자 자격을 유지하는 동안은 무료로 사용 가능";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "텍스트 + 모든 미디어 백업";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "오프로드된 미디어를 다운로드하시겠습니까?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "오프로드된 미디어는 테스트 사용자 자격을 유지하는 동안 사용할 수 있습니다. 테스트 프로그램을 종료하기 전에 모든 미디어 파일을 다운로드하세요.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "오프로드된 미디어 테스트";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "사용하지 않는 미디어를 오프로드하지만, 언제든지 백업에서 다운로드할 수 있습니다.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "사용되지 않은 미디어는 오프로드되지만, 테스트 사용자로 등록되어 있는 동안에는 언제든지 백업에서 다운로드할 수 있습니다.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "저장 공간 최적화는 유료 Signal 백업으로만 사용할 수 있습니다. 이 기능을 사용하기 시작하려면 백업 플랜을 업그레이드하세요.";
@@ -876,6 +876,15 @@
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal 백업";
+
+/* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+
+/* Title for system notification or megaphone when backups is enabled */
+"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+
+/* Action text for backups enabled megaphone taking user to backup settings */
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "내 배지";
@@ -6328,21 +6337,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "이 기기가 등록된 동안 PIN은 언제든지 변경할 수 있습니다.";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "끄기";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "PIN을 끄기 전 먼저 등록 잠금부터 꺼야 합니다.";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "등록 잠금을 끄시겠습니까?";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN을 만들었으나 등록 잠금을 활성화하지 못했습니다. 연결을 확인하고 다시 시도하세요.";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "등록 잠금 활성화 실패";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN 끄기";
 
@@ -6354,12 +6348,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN은 사용자만 액세스할 수 있도록 사용자 정보를 Singal에 암호화하여 저장합니다. 더욱 강력한 PIN을 선택하여 계정을 보호하세요.";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "PIN을 비활성화할 수 없습니다.";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN 끄기 실패";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "PIN 건너뛰기";
@@ -6438,6 +6426,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
+
+/* Label specifying the message type as a poll */
+"POLL_LABEL" = "Poll";
+
+/* Label specifying how many options the user can select */
+"POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "검증함";
@@ -6970,6 +6964,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "메시지를 보내기 전에 등록해야 합니다.";
 
+/* Body of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
+
+/* Title of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "이전 휴대폰으로 이 코드 스캔";
 
@@ -7461,6 +7461,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN 비활성화";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN 사용하기";
@@ -8266,11 +8272,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "끄기";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "등록 잠금을 끄시겠습니까?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "켜기";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Signal에 등록할 때 Signal PIN을 또 잊어버린다면 7일간 계정이 잠깁니다.";

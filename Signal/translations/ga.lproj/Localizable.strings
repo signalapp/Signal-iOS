@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Bainistigh plean";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Ar íocaíocht, ach saor in aisce duit mar thástálaí";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Cúltaca téacs + gach meáin";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Íoslódáil meáin a baineadh?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Cuirfear meáin a baineadh ar fáil fad is a bhíonn tú mar thástálaí. Cinntigh go ndéanfaidh tú gach meáin agat roimh imeacht as an gclár tástála.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Tástáil Meán a Baineadh";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Bainfear meáin nár úsáideadh, ach is féidir iad a íoslódáil ó do chúltaca am ar bith.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Bainfear meáin nár úsáideadh, ach is féidir iad a íoslódáil ó do chúltaca am ar bith fad is a bhíonn tú mar thástálaí.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Ní féidir optamú stórais a úsáid ach leis an leibhéal íoctha de Chúltacaí Signal. Uasghrádaigh do phlean cúltacaithe le tosú ar úsáid na gné sin.";
@@ -876,6 +876,15 @@
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Cúltacaí Signal";
+
+/* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+
+/* Title for system notification or megaphone when backups is enabled */
+"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+
+/* Action text for backups enabled megaphone taking user to backup settings */
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mo chuid Suaitheantas";
@@ -6328,21 +6337,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Is féidir leat d'UAP a athrú chomh fada is atá an gléas seo cláraithe.";
 
-/* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Múch";
-
-/* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Ní mór duit Glas Clárúcháin a mhúchadh chun an UAP a dhíchumasú.";
-
-/* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "An bhfuil fonn ort an Glas Clárúcháin a mhúchadh?";
-
-/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
-
-/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
-
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Díchumasaigh an UAP";
 
@@ -6354,12 +6348,6 @@
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Coinníonn UAPanna faisnéis a stóráiltear le Signal criptithe ionas nach mbeidh ach tusa in ann í a rochtain. Roghnaigh UAP níos láidre le do chuntas a chosaint.";
-
-/* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Níorbh fhéidir do UAP a dhíchumasú.";
-
-/* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Theip ar dhíchumasú an UAP";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Scipeáil an UAP";
@@ -6438,6 +6426,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Seinn an Comhad Meáin";
+
+/* Label specifying the message type as a poll */
+"POLL_LABEL" = "Poll";
+
+/* Label specifying how many options the user can select */
+"POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Deimhnithe";
@@ -6970,6 +6964,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Caithfidh tú clárú sular féidir leat teachtaireacht a sheoladh.";
 
+/* Body of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
+
+/* Title of error notifying restore failed. */
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan an cód seo le do sheanghuthán";
 
@@ -7461,6 +7461,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Díchumasaigh UAP";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+
+/* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Cumasaigh UAP";
@@ -8266,11 +8272,26 @@
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Múch";
 
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "An bhfuil fonn ort an Glas Clárúcháin a mhúchadh?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Cuir ar siúl";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+
+/* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Má ligeann tú d'UAP Signal i ndearmad nuair a chláróidh tú le Signal arís, cuirfear do chuntas faoi ghlas ar feadh 7 lá.";
