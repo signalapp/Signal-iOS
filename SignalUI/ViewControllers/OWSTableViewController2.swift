@@ -422,8 +422,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
         guard section.hasBackground else { return }
 
-        Logger.debug("Cell: \(cell.layoutMargins.left)\tContent: \(cell.contentView.layoutMargins.left)")
-
         let cellBackgroundColor: UIColor
         let cellSelectedBackgroundColor: UIColor
         if let customCell = cell as? CustomBackgroundColorCell {
