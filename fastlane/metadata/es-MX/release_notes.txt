@@ -1,1 +1,1 @@
-• Ahora, cuando estés escribiendo un mensaje, ese hilo aparecerá arriba del todo de tu lista de chats, para que te resulte aún más fácil dar forma al borrador perfecto.
+• Now you can tap on a name in the calls tab to view additional information instead of immediately starting a new call with that contact. There’s still a shortcut to quickly call someone back too, but whether or not you use it is entirely your call.

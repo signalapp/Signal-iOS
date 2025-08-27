@@ -1,1 +1,1 @@
-• मैसेज लिखते समय, वह थ्रेड आपकी चैट लिस्ट में सबसे ऊपर दिखाई देगा। इस तरह, अब अपना सही ड्राफ़्ट तैयार करना और भी आसान हो गया है।
+• Now you can tap on a name in the calls tab to view additional information instead of immediately starting a new call with that contact. There’s still a shortcut to quickly call someone back too, but whether or not you use it is entirely your call.
