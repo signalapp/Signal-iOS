@@ -35,6 +35,7 @@ public enum AppNotificationCategory: CaseIterable {
     case transferRelaunch
     case deregistration
     case newDeviceLinked
+    case backupsEnabled
 }
 
 /// Represents "custom" notification actions. These are the ones that appear
@@ -63,6 +64,7 @@ public enum AppNotificationDefaultAction: String {
     case reregister
     case showChatList
     case showLinkedDevices
+    case showBackupsEnabled
 }
 
 public struct AppNotificationUserInfo {
@@ -189,6 +191,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.authErrorLogout"
         case .newDeviceLinked:
             return "Signal.AppNotificationCategory.newDeviceLinked"
+        case .backupsEnabled:
+            return "Signal.AppNotificationCategory.backupsEnabled"
         }
     }
 
@@ -224,6 +228,8 @@ extension AppNotificationCategory {
         case .deregistration:
             return []
         case .newDeviceLinked:
+            return []
+        case .backupsEnabled:
             return []
         }
     }
@@ -1026,6 +1032,30 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
+    public func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showBackupsEnabled
+        enqueueNotificationAction {
+            await self.notifyViaPresenter(
+                category: .backupsEnabled,
+                title: ResolvableValue(resolvedValue: OWSLocalizedString(
+                    "BACKUPS_TURNED_ON_TITLE",
+                    comment: "Title for system notification or megaphone when backups is enabled"
+                )),
+                body: String(
+                    format: OWSLocalizedString(
+                        "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT",
+                        comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}"
+                    ),
+                    backupsTimestamp.formatted(date: .omitted, time: .shortened)
+                ),
+                threadIdentifier: nil,
+                userInfo: userInfo,
+                soundQuery: .global
+            )
+        }
+    }
+
     public func notifyUser(
         forErrorMessage errorMessage: TSErrorMessage,
         thread: TSThread,
@@ -1405,12 +1435,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         presenter.clearAllNotifications()
     }
 
-    public func clearAllNotificationsExceptNewLinkedDevices() {
-        Self.clearAllNotificationsExceptNewLinkedDevices()
+    public func clearAllNonScheduledNotifications() {
+        Self.clearAllNonScheduledNotifications()
     }
 
-    public static func clearAllNotificationsExceptNewLinkedDevices() {
-        UserNotificationPresenter.clearAllNotificationsExceptNewLinkedDevices()
+    public static func clearAllNonScheduledNotifications() {
+        UserNotificationPresenter.clearAllNonScheduledNotifications()
     }
 
     public func clearDeliveredNewLinkedDevicesNotifications() {

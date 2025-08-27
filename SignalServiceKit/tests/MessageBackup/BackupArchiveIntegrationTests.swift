@@ -547,11 +547,12 @@ private enum CrashyMocks {
         func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBWriteTransaction) { failTest(Self.self) }
         func notifyForGroupCallSafetyNumberChange(callTitle: String, threadUniqueId: String?, roomId: Data?, presentAtJoin: Bool) { failTest(Self.self) }
         func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) { failTest(Self.self) }
+        func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) { failTest(Self.self) }
         func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
         func notifyUserOfDeregistration(tx: DBWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }
-        func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }
-        static func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }
+        func clearAllNonScheduledNotifications() { failTest(Self.self) }
+        static func clearAllNonScheduledNotifications() { failTest(Self.self) }
         func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
         func cancelNotifications(threadId: String) { failTest(Self.self) }
         func cancelNotifications(messageIds: [String]) { failTest(Self.self) }

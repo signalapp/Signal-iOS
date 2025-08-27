@@ -5,6 +5,13 @@
 
 import LibSignalClient
 
+public struct MostRecentlyEnabledBackupsDetails: Codable {
+    public let enabledTime: Date
+    public let notificationDelay: TimeInterval
+
+    public var shouldRemindUserAfter: Date { enabledTime.addingTimeInterval(notificationDelay) }
+}
+
 public enum BackupPlan: RawRepresentable {
     case disabled
     case disabling
@@ -67,6 +74,7 @@ public struct BackupSettingsStore {
         static let lastBackupKeyReminderDate = "lastBackupKeyReminderDate"
         static let haveSetBackupID = "haveSetBackupID"
         static let lastBackupRefreshDate = "lastBackupRefreshDate"
+        static let lastBackupEnabledDetails = "lastBackupEnabledDetails"
 
         // Storage Service reflected value
         static let storageServiceBackupTier = "storageServiceBackupTier"
@@ -128,6 +136,48 @@ public struct BackupSettingsStore {
         kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
         kvStore.setInt(newBackupPlan.rawValue, key: Keys.plan, transaction: tx)
         setStorageServiceBackupTier(newBackupPlan.asStorageServiceBackupTier, tx: tx)
+    }
+
+    // MARK: -
+
+    public func lastBackupEnabledDetails(
+        tx: DBReadTransaction
+    ) -> MostRecentlyEnabledBackupsDetails? {
+        do {
+            return try kvStore.getCodableValue(
+                forKey: Keys.lastBackupEnabledDetails,
+                transaction: tx
+            )
+        } catch {
+            owsFailDebug("Failed to get MostRecentlyEnabledBackupsDetails \(error)")
+            return nil
+        }
+    }
+
+    public func setLastBackupEnabledDetails(
+        backupsEnabledTime: Date,
+        notificationDelay: TimeInterval,
+        tx: DBWriteTransaction
+    ) {
+        do {
+            try kvStore.setCodable(
+                MostRecentlyEnabledBackupsDetails(
+                    enabledTime: backupsEnabledTime,
+                    notificationDelay: notificationDelay
+                ),
+                key: Keys.lastBackupEnabledDetails,
+                transaction: tx
+            )
+        } catch {
+            owsFailDebug("Failed to set MostRecentlyEnabledBackupsDetails")
+        }
+    }
+
+    public func clearLastBackupEnabledDetails(tx: DBWriteTransaction) {
+        kvStore.removeValue(
+            forKey: Keys.lastBackupEnabledDetails,
+            transaction: tx
+        )
     }
 
     // MARK: -

@@ -31,10 +31,12 @@ final class BackupEnablingManager {
     private let backupDisablingManager: BackupDisablingManager
     private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private let db: DB
     private let tsAccountManager: TSAccountManager
+    private let notificationPresenter: NotificationPresenter
 
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
@@ -44,16 +46,19 @@ final class BackupEnablingManager {
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        notificationPresenter: NotificationPresenter
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupDisablingManager = backupDisablingManager
         self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
+        self.backupSettingsStore = BackupSettingsStore()
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.db = db
         self.tsAccountManager = tsAccountManager
+        self.notificationPresenter = notificationPresenter
     }
 
     @MainActor
@@ -85,6 +90,7 @@ final class BackupEnablingManager {
             owsFailDebug("Unexpected non-displayable error enabling Backups! \(error)")
             throw .genericError
         }
+        scheduleEnableBackupsNotification()
     }
 
     private func _enableBackups(
@@ -122,6 +128,21 @@ final class BackupEnablingManager {
                 try await enablePaidPlanWithStoreKit()
             }
         }
+    }
+
+    // MARK: -
+
+    private func scheduleEnableBackupsNotification() {
+        let backupsEnabledTimestamp = Date()
+        let notificationDelay = TimeInterval.random(in: .hour...(.hour * 3))
+        db.write { tx in
+            backupSettingsStore.setLastBackupEnabledDetails(
+                backupsEnabledTime: backupsEnabledTimestamp,
+                notificationDelay: notificationDelay,
+                tx: tx
+            )
+        }
+        notificationPresenter.scheduleNotifyForBackupsEnabled(backupsTimestamp: backupsEnabledTimestamp)
     }
 
     // MARK: -

@@ -166,6 +166,9 @@ class UserNotificationPresenter {
             }()
 
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
+        } else if category == .backupsEnabled {
+            let delay = TimeInterval.random(in: .hour...(3 * .hour))
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
         } else {
             trigger = nil
         }
@@ -221,7 +224,8 @@ class UserNotificationPresenter {
              .missedCallFromNoLongerVerifiedIdentity,
              .transferRelaunch,
              .deregistration,
-             .newDeviceLinked:
+             .newDeviceLinked,
+             .backupsEnabled:
             // Always show these notifications
             return true
 
@@ -304,18 +308,22 @@ class UserNotificationPresenter {
         Self.notificationCenter.removeAllDeliveredNotifications()
     }
 
-    static func clearAllNotificationsExceptNewLinkedDevices() {
-        Logger.info("Clearing all notifications except new linked device notifications")
+    static func clearAllNonScheduledNotifications() {
+        Logger.info("Clearing all notifications except scheduled notifications")
 
         Task {
+            let scheduledNotifications: Set = [
+                AppNotificationCategory.newDeviceLinked.identifier,
+                AppNotificationCategory.backupsEnabled.identifier
+            ]
             let pendingNotificationIDs = await Self.notificationCenter.pendingNotificationRequests()
                 .filter { notificationRequest in
-                    notificationRequest.content.categoryIdentifier != AppNotificationCategory.newDeviceLinked.identifier
+                    scheduledNotifications.contains(notificationRequest.content.categoryIdentifier) == false
                 }
                 .map(\.identifier)
             let deliveredNotificationIDs = await Self.notificationCenter.deliveredNotifications()
                 .filter { notification in
-                    notification.request.content.categoryIdentifier != AppNotificationCategory.newDeviceLinked.identifier
+                    scheduledNotifications.contains(notification.request.content.categoryIdentifier) == false
                 }
                 .map(\.request.identifier)
 

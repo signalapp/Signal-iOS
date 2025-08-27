@@ -97,6 +97,10 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) {
+        Logger.warn("")
+    }
+
     public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
         Logger.warn("")
     }
@@ -109,11 +113,11 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func clearAllNotificationsExceptNewLinkedDevices() {
+    public func clearAllNonScheduledNotifications() {
         Logger.warn("")
     }
 
-    public static func clearAllNotificationsExceptNewLinkedDevices() {
+    public static func clearAllNonScheduledNotifications() {
         Logger.warn("")
     }
 

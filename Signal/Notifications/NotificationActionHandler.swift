@@ -55,6 +55,8 @@ public class NotificationActionHandler {
                 break
             case .showLinkedDevices:
                 showLinkedDevices()
+            case .showBackupsEnabled:
+                showBackupsEnabled()
             }
         case UNNotificationDismissActionIdentifier:
             // TODO - mark as read?
@@ -379,6 +381,11 @@ public class NotificationActionHandler {
     @MainActor
     private class func showLinkedDevices() {
         SignalApp.shared.showAppSettings(mode: .linkedDevices)
+    }
+
+    @MainActor
+    private class func showBackupsEnabled() {
+        SignalApp.shared.showAppSettings(mode: .backups)
     }
 
     private struct NotificationMessage {

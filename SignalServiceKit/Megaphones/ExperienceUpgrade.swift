@@ -121,6 +121,7 @@ extension ExperienceUpgrade {
                 .contactPermissionReminder,
                 .backupKeyReminder,
                 .enableBackupsReminder,
+                .haveEnabledBackupsNotification,
                 .unrecognized:
             return
         case .remoteMegaphone(let megaphone):

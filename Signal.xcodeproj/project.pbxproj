@@ -14,6 +14,7 @@
 		04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573652E4CEE560019651F /* CVComponentPoll.swift */; };
 		04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736A2E4CF1BD0019651F /* CVPollView.swift */; };
 		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
+		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
 		04B975462E43A4AF00E20364 /* BackupRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */; };
 		04B975482E43BFE600E20364 /* BackupRefreshManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */; };
@@ -3831,6 +3832,7 @@
 		04A573652E4CEE560019651F /* CVComponentPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentPoll.swift; sourceTree = "<group>"; };
 		04A5736A2E4CF1BD0019651F /* CVPollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPollView.swift; sourceTree = "<group>"; };
 		04A5736F2E4D4BD30019651F /* OWSPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPoll.swift; sourceTree = "<group>"; };
+		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManager.swift; sourceTree = "<group>"; };
 		04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManagerTest.swift; sourceTree = "<group>"; };
 		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -10844,6 +10846,7 @@
 			children = (
 				041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */,
 				04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */,
+				0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */,
 				D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */,
@@ -16780,6 +16783,7 @@
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
 				B9A53B912CF507FB0000578B /* BackupProgressModal.swift in Sources */,
 				D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */,
+				0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */,
 				D932C0EB2E13AD3F00FEF9C3 /* BackupSettingsAttachmentDownloadTracker.swift in Sources */,
 				D93964B62E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,

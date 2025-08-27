@@ -77,6 +77,7 @@ public class AppEnvironment: NSObject {
             backupTestFlightEntitlementManager: DependenciesBridge.shared.backupTestFlightEntitlementManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            notificationPresenter: SSKEnvironment.shared.notificationPresenterRef
         )
         self.callService = callService
         self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(

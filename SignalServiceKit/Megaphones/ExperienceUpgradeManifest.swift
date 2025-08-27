@@ -55,6 +55,9 @@ public enum ExperienceUpgradeManifest {
     /// Prompts the user to enable backups.
     case enableBackupsReminder
 
+    /// Notifies the user backups were enabled.
+    case haveEnabledBackupsNotification
+
     /// An unrecognized upgrade, which should generally be ignored/discarded.
     ///
     /// This may represent a persisted ``ExperienceUpgrade`` record which refers
@@ -129,6 +132,8 @@ extension ExperienceUpgradeManifest {
                 return .backupKeyReminder
             case Self.enableBackupsReminder.uniqueId:
                 return .enableBackupsReminder
+            case Self.haveEnabledBackupsNotification.uniqueId:
+                return .haveEnabledBackupsNotification
             default:
                 break
             }
@@ -159,7 +164,8 @@ extension ExperienceUpgradeManifest {
         .pinReminder,
         .contactPermissionReminder,
         .backupKeyReminder,
-        .enableBackupsReminder
+        .enableBackupsReminder,
+        .haveEnabledBackupsNotification
     ]
 }
 
@@ -193,6 +199,8 @@ extension ExperienceUpgradeManifest {
             return "backupKeyReminder"
         case .enableBackupsReminder:
             return "enableBackupsReminder"
+        case .haveEnabledBackupsNotification:
+            return "haveEnabledBackupsNotification"
         case .unrecognized(let uniqueId):
             return uniqueId
         }
@@ -265,8 +273,10 @@ extension ExperienceUpgradeManifest: ExperienceUpgradeSortable {
             return (8, 0)
         case .enableBackupsReminder:
             return (9, 0)
-        case .contactPermissionReminder:
+        case .haveEnabledBackupsNotification:
             return (10, 0)
+        case .contactPermissionReminder:
+            return (11, 0)
         case .unrecognized:
             return (Int.max, Int.max)
         }
@@ -291,7 +301,8 @@ extension ExperienceUpgradeManifest {
                 .createUsernameReminder,
                 .remoteMegaphone,
                 .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder:
+                .inactivePrimaryDeviceReminder,
+                .haveEnabledBackupsNotification:
             return false
         case
                 .notificationPermissionReminder,
@@ -313,6 +324,7 @@ extension ExperienceUpgradeManifest {
                 .newLinkedDeviceNotification,
                 .introducingPins,
                 .pinReminder,
+                .haveEnabledBackupsNotification,
                 .unrecognized:
             return false
         case
@@ -345,6 +357,7 @@ extension ExperienceUpgradeManifest {
                 .contactPermissionReminder,
                 .backupKeyReminder,
                 .enableBackupsReminder,
+                .haveEnabledBackupsNotification,
                 .unrecognized:
             return false
         case .remoteMegaphone:
@@ -373,6 +386,7 @@ extension ExperienceUpgradeManifest {
             return 7 * .day
         case
                 .newLinkedDeviceNotification,
+                .haveEnabledBackupsNotification,
                 .createUsernameReminder:
             // On snooze, never show again.
             return .infinity
@@ -434,7 +448,8 @@ extension ExperienceUpgradeManifest {
                 .pinReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,
-                .enableBackupsReminder:
+                .enableBackupsReminder,
+                .haveEnabledBackupsNotification:
             return Int.max
         case .remoteMegaphone(let megaphone):
             return megaphone.manifest.showForNumberOfDays
@@ -447,7 +462,9 @@ extension ExperienceUpgradeManifest {
     /// show the upgrade.
     private var delayAfterRegistration: TimeInterval {
         switch self {
-        case .newLinkedDeviceNotification:
+        case
+                .newLinkedDeviceNotification,
+                .haveEnabledBackupsNotification:
             return 0
         case
                 .notificationPermissionReminder,
@@ -495,7 +512,8 @@ extension ExperienceUpgradeManifest {
                 .pinReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,
-                .enableBackupsReminder:
+                .enableBackupsReminder,
+                .haveEnabledBackupsNotification:
             return Date.distantFuture
         case .remoteMegaphone(let megaphone):
             return Date(timeIntervalSince1970: TimeInterval(megaphone.manifest.dontShowAfter))
@@ -515,6 +533,7 @@ extension ExperienceUpgradeManifest {
                 .contactPermissionReminder,
                 .backupKeyReminder,
                 .enableBackupsReminder,
+                .haveEnabledBackupsNotification,
                 .unrecognized:
             return false
         case
@@ -614,6 +633,27 @@ extension ExperienceUpgradeManifest {
         } else {
             .skip
         }
+    }
+
+    public enum BackupsEnabledNotificationResult {
+        case display
+        case skip
+        case clearStoredDetails
+    }
+
+    public static func checkPreconditionsForEnabledBackupsNotification(tx: DBReadTransaction) -> BackupsEnabledNotificationResult {
+        guard let lastBackupEnabledDetails = BackupSettingsStore().lastBackupEnabledDetails(tx: tx) else {
+            return .skip
+        }
+
+        // Don't show the megaphone if notifications are enabled, we'll send
+        // a notification instead. Clear the stored details so we don't show
+        // a stale megaphone in the future.
+        guard checkPreconditionsForNotificationsPermissionsReminder() else {
+            return .clearStoredDetails
+        }
+
+        return Date() > lastBackupEnabledDetails.shouldRemindUserAfter ? .display : .skip
     }
 
     public static func checkPreconditionsForCreateUsernameReminder(transaction: DBReadTransaction) -> Bool {

@@ -16,6 +16,7 @@ class ExperienceUpgradeManager {
 
     static func presentNext(fromViewController: UIViewController) -> Bool {
         var shouldClearNewDeviceNotification = false
+        var shouldClearBackupsEnabledDetails = false
 
         let optionalNext = SSKEnvironment.shared.databaseStorageRef.read { transaction -> ExperienceUpgrade? in
             let tx = transaction
@@ -89,6 +90,17 @@ class ExperienceUpgradeManager {
                                 remoteConfig: RemoteConfig.current,
                                 transaction: transaction
                             )
+                    case .haveEnabledBackupsNotification:
+                        let result = ExperienceUpgradeManifest
+                            .checkPreconditionsForEnabledBackupsNotification(tx: tx)
+                        switch result {
+                        case .display:
+                            return true
+                        case .skip:
+                            return false
+                        case .clearStoredDetails:
+                            shouldClearBackupsEnabledDetails = true
+                        }
                     case .unrecognized:
                         break
                     }
@@ -100,6 +112,12 @@ class ExperienceUpgradeManager {
         if shouldClearNewDeviceNotification {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
+            }
+        }
+
+        if shouldClearBackupsEnabledDetails {
+            DependenciesBridge.shared.db.write { tx in
+                BackupSettingsStore().clearLastBackupEnabledDetails(tx: tx)
             }
         }
 
@@ -222,7 +240,8 @@ class ExperienceUpgradeManager {
                 .inactivePrimaryDeviceReminder,
                 .contactPermissionReminder,
                 .backupKeyReminder,
-                .enableBackupsReminder:
+                .enableBackupsReminder,
+                .haveEnabledBackupsNotification:
             return true
         case .remoteMegaphone:
             // Remote megaphones are always presentable. We filter out any with
@@ -328,6 +347,22 @@ class ExperienceUpgradeManager {
             return BackupEnablementMegaphone(
                 experienceUpgrade: experienceUpgrade,
                 fromViewController: fromViewController
+            )
+        case .haveEnabledBackupsNotification:
+            let lastBackupsEnabledDetails = db.read { tx in
+                BackupSettingsStore().lastBackupEnabledDetails(tx: tx)
+            }
+
+            guard let lastBackupsEnabledDetails else {
+                owsFailDebug("Missing lastBackupsEnabledDetails")
+                return nil
+            }
+
+            return BackupsEnabledNotificationMegaphone(
+                experienceUpgrade: experienceUpgrade,
+                fromViewController: fromViewController,
+                backupsEnabledTime: lastBackupsEnabledDetails.enabledTime,
+                db: db
             )
         case .unrecognized:
             return nil
