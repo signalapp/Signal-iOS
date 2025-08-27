@@ -100,6 +100,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+                          isPoll:(BOOL)isPoll
   isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
@@ -138,6 +139,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge
                  isGroupStoryReply:isGroupStoryReply
+                            isPoll:isPoll
     isSmsMessageRestoredFromBackup:isSmsMessageRestoredFromBackup
                 isViewOnceComplete:isViewOnceComplete
                  isViewOnceMessage:isViewOnceMessage

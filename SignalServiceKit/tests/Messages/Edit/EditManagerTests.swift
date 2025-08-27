@@ -475,8 +475,8 @@ class EditManagerTests: SSKBaseTest {
     // MARK: - Test Data
 
     /// There are three types
-    ///     'match': The values before and after should always match.
-    ///     'change': If the value is present, it should change before and after the edit
+    ///     'unchanged': The values before and after should always match.
+    ///     'changed': If the value is present, it should change before and after the edit
     ///     'ignore': Properties that arent checked in these tests
     enum EditedMessageValidationType {
         case unchanged
@@ -515,6 +515,7 @@ class EditManagerTests: SSKBaseTest {
         "storyAuthorUuidString": .unchanged,
         "isGroupStoryReply": .unchanged,
         "isStoryReply": .unchanged,
+        "isPoll": .unchanged,
         "hash": .ignore,
         "superclass": .ignore,
         "description": .ignore,
@@ -552,6 +553,7 @@ class EditManagerTests: SSKBaseTest {
         "storyAuthorUuidString": .unchanged,
         "isGroupStoryReply": .unchanged,
         "isStoryReply": .unchanged,
+        "isPoll": .unchanged,
         "hash": .ignore,
         "superclass": .ignore,
         "description": .ignore,

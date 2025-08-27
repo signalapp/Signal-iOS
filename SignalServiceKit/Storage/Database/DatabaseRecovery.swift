@@ -308,6 +308,9 @@ public extension DatabaseRecovery {
             GroupMessageProcessorJob.databaseTableName,
             "ListedBackupMediaObject",
             "BackupOversizeTextCache",
+            "Poll",
+            "PollOption",
+            "PollVote"
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

@@ -126,6 +126,7 @@ CREATE
             ,"archivedPaymentInfo" BLOB
             ,"expireTimerVersion" INTEGER
             ,"isSmsMessageRestoredFromBackup" BOOLEAN DEFAULT 0
+            ,"isPoll" BOOLEAN DEFAULT 0
         )
 ;
 
@@ -2396,5 +2397,73 @@ CREATE
     INDEX "index_BackupAttachmentUploadQueue_on_isFullsize_maxOwnerTimestamp"
         ON "BackupAttachmentUploadQueue"("isFullsize"
     ,"maxOwnerTimestamp"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "Poll" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"interactionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"isEnded" BOOLEAN
+                        ,"allowsMultiSelect" BOOLEAN
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "PollOption" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"pollId" INTEGER NOT NULL REFERENCES "Poll"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"option" TEXT
+                        ,"optionIndex" INTEGER
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "PollVote" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"optionId" INTEGER NOT NULL REFERENCES "PollOption"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"voteAuthorId" INTEGER UNIQUE REFERENCES "model_SignalRecipient"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,"voteCount" INTEGER
+)
+;
+
+CREATE
+    INDEX "index_poll_on_interactionId"
+        ON "Poll"("interactionId"
+)
+;
+
+CREATE
+    INDEX "index_polloption_on_pollId"
+        ON "PollOption"("pollId"
+)
+;
+
+CREATE
+    INDEX "index_pollvote_on_optionId"
+        ON "PollVote"("optionId"
 )
 ;

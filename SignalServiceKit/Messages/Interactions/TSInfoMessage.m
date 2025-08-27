@@ -135,6 +135,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+                          isPoll:(BOOL)isPoll
   isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
@@ -170,6 +171,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                   expiresInSeconds:expiresInSeconds
                          giftBadge:giftBadge
                  isGroupStoryReply:isGroupStoryReply
+                            isPoll:isPoll
     isSmsMessageRestoredFromBackup:isSmsMessageRestoredFromBackup
                 isViewOnceComplete:isViewOnceComplete
                  isViewOnceMessage:isViewOnceMessage

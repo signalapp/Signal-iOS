@@ -127,6 +127,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                        giftBadge:(nullable OWSGiftBadge *)giftBadge
                isGroupStoryReply:(BOOL)isGroupStoryReply
+                          isPoll:(BOOL)isPoll
   isSmsMessageRestoredFromBackup:(BOOL)isSmsMessageRestoredFromBackup
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
@@ -161,6 +162,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expiresInSeconds = expiresInSeconds;
     _giftBadge = giftBadge;
     _isGroupStoryReply = isGroupStoryReply;
+    _isPoll = isPoll;
     _isSmsMessageRestoredFromBackup = isSmsMessageRestoredFromBackup;
     _isViewOnceComplete = isViewOnceComplete;
     _isViewOnceMessage = isViewOnceMessage;

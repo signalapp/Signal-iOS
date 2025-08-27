@@ -341,6 +341,7 @@ public class GRDBSchemaMigrator {
         case dropAllIncrementalMacs
         case addOriginalTransitTierInfoAttachmentColumns
         case rebuildIncompleteViewOnceIndex
+        case addIsPollToTSInteraction
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -404,7 +405,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 125
+    public static let grdbSchemaVersionLatest: UInt = 126
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4252,6 +4253,88 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.rebuildIncompleteViewOnceIndex) { tx in
             try self.rebuildIncompleteViewOnceIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsPollToTSInteraction) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { table in
+                table.add(column: "isPoll", .boolean)
+                    .defaults(to: false)
+            }
+
+            try tx.database.create(
+                table: "Poll"
+            ) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("interactionId", .integer)
+                    .notNull()
+                    .references(
+                        "model_TSInteraction",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("isEnded", .boolean)
+                table.column("allowsMultiSelect", .boolean)
+            }
+
+            try tx.database.create(
+                table: "PollOption"
+            ) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("pollId", .integer)
+                    .notNull()
+                    .references(
+                        "Poll",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("option", .text)
+                table.column("optionIndex", .integer)
+            }
+
+            try tx.database.create(
+                table: "PollVote"
+            ) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("optionId", .integer)
+                    .notNull()
+                    .references(
+                        "PollOption",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("voteAuthorId", .integer)
+                    .unique()
+                    .references(
+                        "model_SignalRecipient",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("voteCount", .integer)
+            }
+
+            try tx.database.create(
+                index: "index_poll_on_interactionId",
+                on: "Poll",
+                columns: ["interactionId"]
+            )
+
+            try tx.database.create(
+                index: "index_polloption_on_pollId",
+                on: "PollOption",
+                columns: ["pollId"]
+            )
+
+            try tx.database.create(
+                index: "index_pollvote_on_optionId",
+                on: "PollVote",
+                columns: ["optionId"]
+            )
+
             return .success(())
         }
 
