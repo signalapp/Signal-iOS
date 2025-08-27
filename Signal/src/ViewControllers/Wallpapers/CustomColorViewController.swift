@@ -208,17 +208,11 @@ class CustomColorViewController: OWSTableViewController2 {
 
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
-        previewSection.add(OWSTableItem { [weak self] in
+        previewSection.add(OWSTableItem {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
-            guard let self = self else { return cell }
-
             cell.contentView.addSubview(previewView)
-            previewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
-            previewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
-            previewView.autoPinEdge(toSuperviewEdge: .top)
-            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 6)
-            previewView.autoPinHeightToSuperview()
+            previewView.autoPinEdgesToSuperviewEdges()
 
             return cell
         } actionBlock: {})
@@ -270,12 +264,12 @@ class CustomColorViewController: OWSTableViewController2 {
             headerLabel.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray15 : UIColor.ows_gray60
             headerLabel.text = headerText
             cell.contentView.addSubview(headerLabel)
-            headerLabel.autoPinEdge(toSuperviewMargin: .leading, withInset: 6)
-            headerLabel.autoPinEdge(toSuperviewMargin: .trailing, withInset: 6)
+            headerLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
+            headerLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
             headerLabel.autoPinEdge(toSuperviewMargin: .top)
 
             cell.contentView.addSubview(sliderView)
-            sliderView.autoPinWidthToSuperviewMargins()
+            sliderView.autoPinWidthToSuperview()
             sliderView.autoPinEdge(toSuperviewMargin: .bottom)
             sliderView.autoPinEdge(.top, to: .bottom, of: headerLabel, withOffset: 6)
 
@@ -902,7 +896,7 @@ extension CustomColorViewController: CustomColorPreviewDelegate {
     }
 
     var previewWidth: CGFloat {
-        self.view.width - cellOuterInsets.totalWidth
+        self.view.width
     }
 }
 

@@ -345,7 +345,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         guard view.width != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.width
 
-        topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 24, bottom: 13)
+        topHeaderStack.layoutMargins = .init(top: 24, left: 0, bottom: 13, right: 0)
 
         updateHeaderButtons()
     }

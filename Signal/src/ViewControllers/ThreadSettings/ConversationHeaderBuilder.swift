@@ -514,7 +514,7 @@ struct ConversationHeaderBuilder {
         let header = UIStackView(arrangedSubviews: subviews)
         header.axis = .vertical
         header.alignment = .center
-        header.layoutMargins = delegate.tableViewController.cellOuterInsetsWithMargin(bottom: 24)
+        header.layoutMargins = .init(top: 0, left: 0, bottom: 24, right: 0)
         header.isLayoutMarginsRelativeArrangement = true
 
         header.isUserInteractionEnabled = true

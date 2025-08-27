@@ -24,11 +24,11 @@ public class NewStoryHeaderView: UIStackView {
         addBackgroundView(withBackgroundColor: delegate.tableBackgroundColor)
         axis = .horizontal
         isLayoutMarginsRelativeArrangement = true
-        layoutMargins = delegate.cellOuterInsetsWithMargin(
+        layoutMargins = .init(
             top: (delegate.defaultSpacingBetweenSections ?? 0) + 12,
-            left: CurrentAppContext().isRTL ? 0 : OWSTableViewController2.cellHInnerMargin * 0.5,
+            leading: OWSTableViewController2.cellHInnerMargin * 0.5,
             bottom: 10,
-            right: CurrentAppContext().isRTL ? OWSTableViewController2.cellHInnerMargin * 0.5 : 0
+            trailing: 0
         )
         layoutMargins.left += delegate.tableView.safeAreaInsets.left
         layoutMargins.right += delegate.tableView.safeAreaInsets.right

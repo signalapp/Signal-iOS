@@ -66,10 +66,9 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         bottomStack.axis = .vertical
         bottomStack.alignment = .fill
         bottomStack.isLayoutMarginsRelativeArrangement = true
-        bottomStack.layoutMargins = cellOuterInsetsWithMargin(top: 8, left: 20, right: 20)
+        bottomStack.layoutMargins = .init(top: 8, left: 20, bottom: 8, right: 20)
         bottomStack.addArrangedSubviews([
             nextButton,
-            UIView.spacer(withHeight: 8)
         ])
     }
 
@@ -90,7 +89,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
             guard let self = self else { return cell }
             let passphraseGrid = self.buildPassphraseGrid(passphrase: passphrase)
             cell.contentView.addSubview(passphraseGrid)
-            passphraseGrid.autoPinEdgesToSuperviewMargins()
+            passphraseGrid.autoPinEdgesToSuperviewEdges()
             return cell
         },
         actionBlock: nil))
@@ -135,7 +134,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = cellOuterInsetsWithMargin(top: 32, left: 20, bottom: 40, right: 20)
+        topStack.layoutMargins = .init(top: 32, left: 20, bottom: 40, right: 20)
         return topStack
     }
 
@@ -155,7 +154,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = cellOuterInsetsWithMargin(hMargin: 20, vMargin: 16)
+        topStack.layoutMargins = .init(hMargin: 20, vMargin: 16)
         return topStack
     }
 

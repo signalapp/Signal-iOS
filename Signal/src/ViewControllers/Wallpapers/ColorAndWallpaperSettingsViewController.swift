@@ -77,9 +77,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             guard let self = self else { return cell }
             let miniPreview = MiniPreviewView(wallpaperViewBuilder: self.wallpaperViewBuilder, chatColor: self.chatColor)
             cell.contentView.addSubview(miniPreview)
-            miniPreview.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
-            miniPreview.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
-            miniPreview.autoPinHeightToSuperview()
+            miniPreview.autoPinEdgesToSuperviewEdges()
             return cell
         } actionBlock: {}
         previewSection.add(previewItem)

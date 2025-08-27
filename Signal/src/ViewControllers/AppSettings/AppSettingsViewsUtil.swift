@@ -7,18 +7,16 @@ public import SignalUI
 import UIKit
 
 public class AppSettingsViewsUtil {
-    public class func newCell(cellOuterInsets: UIEdgeInsets) -> UITableViewCell {
+    public class func newCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none
-        cell.layoutMargins = cellOuterInsets
-        cell.contentView.layoutMargins = .zero
         return cell
     }
 
-    public class func loadingTableItem(cellOuterInsets: UIEdgeInsets) -> OWSTableItem {
+    public class func loadingTableItem() -> OWSTableItem {
         OWSTableItem.init(
             customCellBlock: {
-                let cell = newCell(cellOuterInsets: cellOuterInsets)
+                let cell = newCell()
 
                 let stackView = UIStackView()
                 stackView.axis = .vertical

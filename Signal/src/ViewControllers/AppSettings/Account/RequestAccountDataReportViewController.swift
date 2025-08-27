@@ -70,8 +70,6 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             .init(customCellBlock: { [weak self] in
                 let cell = UITableViewCell()
                 guard let self else { return cell }
-                cell.layoutMargins = OWSTableViewController2.cellOuterInsets(in: self.view)
-                cell.contentView.layoutMargins = .zero
 
                 let iconView = UIImageView(image: .init(named: "account_data_report"))
                 iconView.autoSetDimensions(to: .square(88))

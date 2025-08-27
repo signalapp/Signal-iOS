@@ -253,8 +253,13 @@ class AvatarEditViewController: OWSTableViewController2 {
         guard view.width != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.width
 
-        segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
-        bottomFooterStack.layoutMargins = cellOuterInsets
+        let hMargin = Self.cellOuterInset(in: view)
+        bottomFooterStack.layoutMargins = .init(
+            top: 12,
+            left: hMargin,
+            bottom: 10,
+            right: hMargin
+        )
 
         updateThemeHeaderContainer()
         updateThemePickerContainer()

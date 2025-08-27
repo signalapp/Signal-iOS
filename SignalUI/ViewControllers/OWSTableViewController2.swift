@@ -34,7 +34,7 @@ open class OWSTableViewController2: OWSViewController {
         applyContents(shouldReload: shouldReload)
     }
 
-    public let tableView = OWSTableView(frame: .zero, style: .grouped)
+    public let tableView = OWSTableView(frame: .zero, style: .insetGrouped)
 
     // This is an alternative to/replacement for UITableView.tableHeaderView.
     //
@@ -306,6 +306,11 @@ open class OWSTableViewController2: OWSViewController {
     private func applyContents(shouldReload: Bool = true) {
         AssertIsOnMainThread()
 
+        tableView.insetsLayoutMarginsFromSafeArea = false
+        let hMargin = Self.cellOuterInset(in: view)
+        tableView.layoutMargins.left = hMargin + view.safeAreaInsets.left
+        tableView.layoutMargins.right = hMargin + view.safeAreaInsets.right
+
         if let title = contents.title, !title.isEmpty {
             self.title = title
         }
@@ -415,14 +420,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         cell.backgroundColor = .clear
         cell.contentView.backgroundColor = .clear
 
-        guard section.hasBackground else {
-            let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = forceDarkMode
-            ? Theme.darkThemeTableCell2SelectedBackgroundColor
-            : Theme.tableCell2SelectedBackgroundColor
-            cell.selectedBackgroundView = selectedBackgroundView
-            return
-        }
+        guard section.hasBackground else { return }
+
+        Logger.debug("Cell: \(cell.layoutMargins.left)\tContent: \(cell.contentView.layoutMargins.left)")
 
         let cellBackgroundColor: UIColor
         let cellSelectedBackgroundColor: UIColor
@@ -439,83 +439,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             section: section,
             backgroundColor: cellBackgroundColor
         )
-        cell.selectedBackgroundView = buildCellSelectedBackgroundView(
-            indexPath: indexPath,
-            section: section,
-            backgroundColor: cellSelectedBackgroundColor
-        )
 
-        // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
-        // _inside_.
-        //
-        // By applying it to the cell, ensure the correct behavior for accessories.
-        cell.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 0)
-        var contentMargins = UIEdgeInsets(
-            hMargin: 0,
+        let selectedBackground = UIView()
+        selectedBackground.backgroundColor = cellSelectedBackgroundColor
+        cell.selectedBackgroundView = selectedBackground
+
+        cell.layoutMargins = UIEdgeInsets(
+            hMargin: Self.cellHInnerMargin,
             vMargin: Self.cellVInnerMargin
         )
-        // Our table code is going to be vastly simpler if we DRY up the
-        // spacing between the cell content and the accessory here.
-        let hasAccessory = (cell.accessoryView != nil || cell.accessoryType != .none)
-        if hasAccessory {
-            if CurrentAppContext().isRTL {
-                contentMargins.left += 8
-            } else {
-                contentMargins.right += 8
-            }
-        }
-        cell.contentView.layoutMargins = contentMargins
-    }
-
-    /// Returns the frame representing the shape of a cell's visible pill, in
-    /// the given view.
-    public func cellPillFrame(view: UIView) -> CGRect {
-        var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
-
-        pillFrame.x += view.safeAreaInsets.left
-        pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
-
-        return pillFrame
-    }
-
-    /// Configures the given layer to draw the background pill for a cell, in
-    /// the given view.
-    private func configureCellPillLayer(
-        pillLayer: CAShapeLayer,
-        view: UIView,
-        isFirstInSection: Bool,
-        isLastInSection: Bool,
-        backgroundColor: UIColor
-    ) {
-        pillLayer.frame = view.bounds
-        pillLayer.fillColor = backgroundColor.cgColor
-
-        let pillFrame = cellPillFrame(view: view)
-
-        if
-            pillFrame.width > 0,
-            pillFrame.height > 0
-        {
-            var roundingCorners: UIRectCorner = []
-
-            if isFirstInSection {
-                roundingCorners.formUnion(.topLeft)
-                roundingCorners.formUnion(.topRight)
-            }
-
-            if isLastInSection {
-                roundingCorners.formUnion(.bottomLeft)
-                roundingCorners.formUnion(.bottomRight)
-            }
-
-            pillLayer.path = UIBezierPath(
-                roundedRect: pillFrame,
-                byRoundingCorners: roundingCorners,
-                cornerRadii: .square(OWSTableViewController2.cellRounding)
-            ).cgPath
-        } else {
-            pillLayer.path = nil
-        }
     }
 
     private func configureCellSeparatorLayer(
@@ -528,7 +460,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         separatorLayer.frame = view.bounds
         separatorLayer.fillColor = separatorColor.cgColor
 
-        var separatorFrame = cellPillFrame(view: view)
+        var separatorFrame = view.bounds
         let separatorThickness: CGFloat = .hairlineWidth
 
         separatorFrame.y = separatorFrame.height - separatorThickness
@@ -547,22 +479,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         section: OWSTableSection,
         backgroundColor: UIColor
     ) -> UIView {
-        let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
-        let pillLayer = CAShapeLayer()
         var separatorLayer: CAShapeLayer?
 
         let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
             guard let self = self else { return }
-
-            self.configureCellPillLayer(
-                pillLayer: pillLayer,
-                view: view,
-                isFirstInSection: isFirstInSection,
-                isLastInSection: isLastInSection,
-                backgroundColor: backgroundColor
-            )
 
             if let separatorLayer {
                 self.configureCellSeparatorLayer(
@@ -575,8 +497,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             }
         }
 
-        backgroundView.layer.addSublayer(pillLayer)
-
         if
             section.hasSeparators,
             !isLastInSection
@@ -587,31 +507,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             backgroundView.layer.addSublayer(separator)
         }
 
-        return backgroundView
-    }
+        backgroundView.backgroundColor = backgroundColor
 
-    private func buildCellSelectedBackgroundView(
-        indexPath: IndexPath,
-        section: OWSTableSection,
-        backgroundColor: UIColor
-    ) -> UIView {
-        let pillLayer = CAShapeLayer()
-        let isFirstInSection = indexPath.row == 0
-        let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
-
-        let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
-            guard let self = self else { return }
-
-            self.configureCellPillLayer(
-                pillLayer: pillLayer,
-                view: view,
-                isFirstInSection: isFirstInSection,
-                isLastInSection: isLastInSection,
-                backgroundColor: backgroundColor
-            )
-        }
-
-        backgroundView.layer.addSublayer(pillLayer)
         return backgroundView
     }
 
@@ -626,7 +523,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         return UITableView.automaticDimension
     }
 
-    public static let cellRounding: CGFloat = 10
+    /// Approximate cell corner rounding. Now that we use native inset grouped
+    /// tables, this is only an approximation and its use should be avoided.
+    public static let cellRounding: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        22
+    } else {
+        10
+    }
 
     public static var maximumInnerWidth: CGFloat { 496 }
 
@@ -636,44 +539,19 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     // The distance from the edge of the view to the cell border.
     public static func cellOuterInsets(in view: UIView) -> UIEdgeInsets {
-        var insets = UIEdgeInsets(hMargin: defaultHOuterMargin, vMargin: 0)
+        UIEdgeInsets(hMargin: cellOuterInset(in: view), vMargin: 0)
+    }
 
-        let totalInnerWidth = view.width - insets.totalWidth - view.safeAreaInsets.totalWidth
+    public static func cellOuterInset(in view: UIView) -> CGFloat {
+        var inset = defaultHOuterMargin
+        let totalInnerWidth = view.width - (inset * 2) - view.safeAreaInsets.totalWidth
         if totalInnerWidth > maximumInnerWidth {
-            let excessInnerWidth = totalInnerWidth - maximumInnerWidth
-            insets.left += excessInnerWidth / 2
-            insets.right += excessInnerWidth / 2
+            inset += (totalInnerWidth - maximumInnerWidth) / 2
         }
-
-        return insets
+        return inset
     }
 
     public var cellOuterInsets: UIEdgeInsets { Self.cellOuterInsets(in: view) }
-
-    public func cellOuterInsetsWithMargin(top: CGFloat = .zero, left: CGFloat = .zero, bottom: CGFloat = .zero, right: CGFloat = .zero) -> UIEdgeInsets {
-        UIEdgeInsets(
-            top: top,
-            left: left + cellHOuterLeftMargin,
-            bottom: bottom,
-            right: right + cellHOuterRightMargin
-        )
-    }
-
-    public func cellOuterInsetsWithMargin(hMargin: CGFloat, vMargin: CGFloat) -> UIEdgeInsets {
-        cellOuterInsetsWithMargin(top: vMargin, left: hMargin, bottom: vMargin, right: hMargin)
-    }
-
-    public static func cellHOuterLeftMargin(in view: UIView) -> CGFloat {
-        cellOuterInsets(in: view).left
-    }
-
-    public var cellHOuterLeftMargin: CGFloat { Self.cellHOuterLeftMargin(in: view) }
-
-    public static func cellHOuterRightMargin(in view: UIView) -> CGFloat {
-        cellOuterInsets(in: view).right
-    }
-
-    public var cellHOuterRightMargin: CGFloat { Self.cellHOuterRightMargin(in: view) }
 
     // The distance from the cell border to the cell content.
     public static var cellHInnerMargin: CGFloat {
@@ -697,9 +575,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     private func headerTextContainerInsets(useDeepInsets: Bool) -> UIEdgeInsets {
-        var textContainerInset = cellOuterInsetsWithMargin(
+        var textContainerInset = UIEdgeInsets(
             top: (defaultSpacingBetweenSections ?? 0) + 12,
-            bottom: 10
+            leading: 0,
+            bottom: 10,
+            trailing: 0
         )
 
         if useDeepInsets {
@@ -707,8 +587,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             textContainerInset.right += Self.cellHInnerMargin * 0.5
         }
 
-        textContainerInset.left += tableView.safeAreaInsets.left
-        textContainerInset.right += tableView.safeAreaInsets.right
         return textContainerInset
     }
 
@@ -717,15 +595,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     private func footerTextContainerInsets(useDeepInsets: Bool) -> UIEdgeInsets {
-        var textContainerInset = cellOuterInsetsWithMargin(top: 12)
+        var textContainerInset = UIEdgeInsets.zero
+        textContainerInset.top = 12
 
         if useDeepInsets {
             textContainerInset.left += Self.cellHInnerMargin
             textContainerInset.right += Self.cellHInnerMargin
         }
-
-        textContainerInset.left += tableView.safeAreaInsets.left
-        textContainerInset.right += tableView.safeAreaInsets.right
 
         return textContainerInset
     }

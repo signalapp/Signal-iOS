@@ -439,8 +439,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let balanceStack = UIStackView(arrangedSubviews: [ balanceLabel ])
         balanceStack.axis = .vertical
         balanceStack.alignment = .fill
-        balanceStack.layoutMargins = cellOuterInsets
-        balanceStack.isLayoutMarginsRelativeArrangement = true
 
         let conversionRefreshSize: CGFloat = 20
         let conversionRefreshIcon = UIImageView.withTemplateImageName("refresh-20",
@@ -528,7 +526,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         ])
         headerStack.axis = .vertical
         headerStack.alignment = .fill
-        headerStack.layoutMargins = cellOuterInsetsWithMargin(top: 30, bottom: 8)
+        headerStack.layoutMargins = .init(top: 30, left: 0, bottom: 8, right: 0)
         headerStack.isLayoutMarginsRelativeArrangement = true
         cell.contentView.addSubview(headerStack)
         headerStack.autoPinEdgesToSuperviewEdges()
@@ -901,7 +899,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             dismissIconView.autoCenterInSuperview()
             cell.contentView.addSubview(dismissButton)
             dismissButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-            dismissButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8 + self.cellOuterInsets.trailing)
+            dismissButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
 
             cell.isUserInteractionEnabled = true
             cell.addGestureRecognizer(tapGestureRecognizer)

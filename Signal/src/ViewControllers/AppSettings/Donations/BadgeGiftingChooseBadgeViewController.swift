@@ -211,7 +211,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
     private func loadingSections() -> [OWSTableSection] {
         let section = OWSTableSection()
-        section.add(AppSettingsViewsUtil.loadingTableItem(cellOuterInsets: cellOuterInsets))
+        section.add(AppSettingsViewsUtil.loadingTableItem())
         section.hasBackground = false
         return [section]
     }
@@ -220,7 +220,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.add(.init(customCellBlock: { [weak self] in
             guard let self = self else { return UITableViewCell() }
-            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+            let cell = AppSettingsViewsUtil.newCell()
 
             let stackView = UIStackView()
             stackView.axis = .vertical
@@ -269,7 +269,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         currencyButtonSection.hasBackground = false
         currencyButtonSection.add(.init(customCellBlock: { [weak self] in
             guard let self = self else { return UITableViewCell() }
-            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+            let cell = AppSettingsViewsUtil.newCell()
 
             let currencyPickerButton = DonationCurrencyPickerButton(
                 currentCurrencyCode: selectedCurrencyCode,
@@ -293,9 +293,8 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         }))
 
         let badgeSection = OWSTableSection()
-        badgeSection.add(.init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
-            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+        badgeSection.add(.init(customCellBlock: {
+            let cell = AppSettingsViewsUtil.newCell()
 
             guard let price = pricesByCurrencyCode[selectedCurrencyCode] else {
                 owsFailBeta("State is invalid. We selected a currency code that we don't have a price for.")

@@ -779,3 +779,17 @@ extension DonationPaymentDetailsViewController: CreditOrDebitCardDonationFormVie
 fileprivate extension UInt8 {
     var isValidAsMonth: Bool { self >= 1 && self <= 12 }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+@available(iOS 17, *)
+#Preview {
+    DonationPaymentDetailsViewController(
+        donationAmount: .init(currencyCode: "USD", value: 10),
+        donationMode: .oneTime,
+        paymentMethod: .card,
+        onFinished: { _ in }
+    )
+}
+#endif

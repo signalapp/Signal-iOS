@@ -104,9 +104,9 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
         vStack.isLayoutMarginsRelativeArrangement = true
         vStack.layoutMargins = .init(
             top: 20,
-            left: tableViewController.cellHOuterLeftMargin,
+            left: 0,
             bottom: 36,
-            right: tableViewController.cellHOuterRightMargin
+            right: 0
         )
 
         // [CallLink] TODO: This should expand to a full-screen preview when tapped

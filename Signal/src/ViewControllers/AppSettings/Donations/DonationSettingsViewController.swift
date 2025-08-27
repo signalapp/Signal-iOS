@@ -292,8 +292,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
         OWSTableSection(items: [.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             guard let self = self else { return cell }
-            cell.layoutMargins = OWSTableViewController2.cellOuterInsets(in: self.view)
-            cell.contentView.layoutMargins = .zero
 
             let heroStack = DonationHeroView(avatarView: self.avatarView)
             heroStack.delegate = self
@@ -325,7 +323,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private func loadingSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.add(AppSettingsViewsUtil.loadingTableItem(cellOuterInsets: cellOuterInsets))
+        section.add(AppSettingsViewsUtil.loadingTableItem())
         section.hasBackground = false
         return section
     }

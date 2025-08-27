@@ -127,19 +127,16 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         stackView.spacing = 8
         stackView.setCustomSpacing(12, after: bankIconContainer)
 
-        let container = UIView()
-        let hPadding = UIDevice.current.isNarrowerThanIPhone6 ? Self.defaultHOuterMargin : 29
-        container.layoutMargins = .init(
+        let hPadding: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 0 : 8
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = .init(
             top: 0,
             leading: hPadding,
             bottom: 20,
             trailing: hPadding
         )
 
-        container.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        return container
+        return stackView
     }
 
     private static func makeLoadingview() -> UIActivityIndicatorView {
