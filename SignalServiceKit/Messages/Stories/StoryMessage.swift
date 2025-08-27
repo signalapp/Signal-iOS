@@ -939,7 +939,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Only send to recipients in the "failed" state
         for (serviceId, state) in recipientStates {
             guard state.sendingState != .failed else { continue }
-            messages.forEach { $0.updateWithSkippedRecipient(SignalServiceAddress(serviceId), transaction: transaction) }
+            messages.forEach { $0.updateWithSkippedRecipients([SignalServiceAddress(serviceId)], tx: transaction) }
         }
 
         messages.forEach { message in

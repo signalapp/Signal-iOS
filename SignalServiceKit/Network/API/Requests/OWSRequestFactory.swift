@@ -110,6 +110,12 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
     }
 
+    static func accountRequest(serviceId: ServiceId) -> TSRequest {
+        var request = TSRequest(url: URL(string: "v1/accounts/account/\(serviceId.serviceIdString)")!, method: "HEAD")
+        request.auth = .anonymous
+        return request
+    }
+
     static func submitMessageRequest(
         serviceId: ServiceId,
         messages: [DeviceMessage],

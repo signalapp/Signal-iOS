@@ -91,7 +91,8 @@ public actor ProfileFetcherImpl: ProfileFetcher {
     private var rateLimitExpirationDate: MonotonicDate?
     private var scheduledOpportunisticDate: MonotonicDate?
 
-    public init(
+    init(
+        accountChecker: AccountChecker,
         db: any DB,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
@@ -99,8 +100,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         profileManager: any ProfileManager,
         reachabilityManager: any SSKReachabilityManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        recipientManager: any SignalRecipientManager,
-        recipientMerger: any RecipientMerger,
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
@@ -114,14 +113,13 @@ public actor ProfileFetcherImpl: ProfileFetcher {
                 groupIdContext: groupIdContext,
                 mustFetchNewCredential: mustFetchNewCredential,
                 authedAccount: authedAccount,
+                accountChecker: accountChecker,
                 db: db,
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
                 identityManager: identityManager,
                 paymentsHelper: paymentsHelper,
                 profileManager: profileManager,
                 recipientDatabaseTable: recipientDatabaseTable,
-                recipientManager: recipientManager,
-                recipientMerger: recipientMerger,
                 syncManager: syncManager,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,

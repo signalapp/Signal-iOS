@@ -33,9 +33,14 @@ public class MessageSender {
 
     private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
 
+    let accountChecker: AccountChecker
     private let groupSendEndorsementStore: any GroupSendEndorsementStore
 
-    init(groupSendEndorsementStore: any GroupSendEndorsementStore) {
+    init(
+        accountChecker: AccountChecker,
+        groupSendEndorsementStore: any GroupSendEndorsementStore
+    ) {
+        self.accountChecker = accountChecker
         self.groupSendEndorsementStore = groupSendEndorsementStore
 
         SwiftSingletons.register(self)
@@ -436,10 +441,7 @@ public class MessageSender {
     ) {
         let skippedRecipients = Set(message.sendingRecipientAddresses())
             .subtracting(sendingRecipients.lazy.map { SignalServiceAddress($0) })
-        for address in skippedRecipients {
-            // Mark this recipient as "skipped".
-            message.updateWithSkippedRecipient(address, transaction: tx)
-        }
+        message.updateWithSkippedRecipients(skippedRecipients, tx: tx)
     }
 
     private func unsentRecipients(
@@ -974,13 +976,29 @@ public class MessageSender {
         thread: TSThread,
         perRecipientErrors allErrors: [(serviceId: ServiceId, error: any Error)]
     ) async throws {
-        // Some errors should be ignored when sending messages to non 1:1 threads.
-        // See discussion on NSError (MessageSender) category.
-        let shouldIgnoreError = { (error: Error) -> Bool in
-            return !(thread is TSContactThread) && error.shouldBeIgnoredForNonContactThreads
+        var skippedRecipients = [ServiceId]()
+        var filteredErrors = [(serviceId: ServiceId, error: any Error)]()
+
+        for (serviceId, error) in allErrors {
+            // If we're sending a group message to an account that doesn't exist, we
+            // mark them as "Skipped" rather than fail the entire operation.
+            if !(thread is TSContactThread), error is MessageSenderNoSuchSignalRecipientError {
+                skippedRecipients.append(serviceId)
+            } else {
+                filteredErrors.append((serviceId, error))
+            }
         }
 
-        let filteredErrors = allErrors.lazy.filter { !shouldIgnoreError($0.error) }
+        // Record the individual error for each "failed" recipient.
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            if !skippedRecipients.isEmpty {
+                message.updateWithSkippedRecipients(skippedRecipients.map { SignalServiceAddress($0) }, tx: tx)
+            }
+            if !filteredErrors.isEmpty {
+                message.updateWithFailedRecipients(filteredErrors, tx: tx)
+                self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: filteredErrors, tx: tx)
+            }
+        }
 
         // If we only received errors that we should ignore, consider this send a
         // success, unless the message could not be sent to any recipient.
@@ -989,12 +1007,6 @@ public class MessageSender {
                 throw MessageSenderErrorNoValidRecipients()
             }
             return
-        }
-
-        // Record the individual error for each "failed" recipient.
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            message.updateWithFailedRecipients(filteredErrors, tx: tx)
-            self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: filteredErrors, tx: tx)
         }
 
         // Some errors should never be retried, in order to avoid hitting rate
@@ -1197,21 +1209,30 @@ public class MessageSender {
 
         let retryRecoveryState: InnerRecoveryState
         do {
-            let deviceMessages = try await buildDeviceMessages(
-                messageSend: messageSend,
-                sealedSenderParameters: sealedSenderParameters
-            )
-
             if messageSend.isSelfSend {
                 owsAssertDebug(messageSend.message.canSendToLocalAddress)
             }
 
-            if messageSend.isSelfSend, deviceMessages.isEmpty {
-                // This emulates the completion logic of an actual successful send (see below).
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                    message.updateWithSkippedRecipient(messageSend.localIdentifiers.aciAddress, transaction: tx)
+            var deviceMessages = try await buildDeviceMessages(
+                messageSend: messageSend,
+                sealedSenderParameters: sealedSenderParameters
+            )
+            if deviceMessages.isEmpty {
+                if messageSend.isSelfSend {
+                    // This emulates the completion logic of an actual successful send (see below).
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                        message.updateWithSkippedRecipients([messageSend.localIdentifiers.aciAddress], tx: tx)
+                    }
+                    return []
                 }
-                return []
+                if !(messageSend.thread is TSContactThread) {
+                    try checkIfAccountExistsUsingCache(serviceId: messageSend.serviceId)
+                }
+                try await checkIfAccountExists(serviceId: messageSend.serviceId)
+                deviceMessages = try await buildDeviceMessages(
+                    messageSend: messageSend,
+                    sealedSenderParameters: sealedSenderParameters
+                )
             }
 
             for deviceMessage in deviceMessages {
@@ -1256,6 +1277,28 @@ public class MessageSender {
             recoveryState: retryRecoveryState,
             sealedSenderParameters: sealedSenderParameters
         )
+    }
+
+    private let nonExistentAccountCache = AtomicValue([ServiceId: MonotonicDate](), lock: .init())
+
+    private func checkIfAccountExists(serviceId: ServiceId) async throws {
+        do {
+            try await self.accountChecker.checkIfAccountExists(serviceId: serviceId)
+        } catch where error.httpStatusCode == 404 {
+            nonExistentAccountCache.update { $0[serviceId] = MonotonicDate() }
+            throw MessageSenderNoSuchSignalRecipientError()
+        }
+    }
+
+    private func checkIfAccountExistsUsingCache(serviceId: ServiceId) throws {
+        let mostRecentErrorDate = nonExistentAccountCache.update { $0[serviceId] }
+        guard let mostRecentErrorDate else {
+            return
+        }
+        let timeSinceMostRecentError = MonotonicDate() - mostRecentErrorDate
+        if timeSinceMostRecentError.seconds < (6 * TimeInterval.hour) {
+            throw MessageSenderNoSuchSignalRecipientError()
+        }
     }
 
     private func buildDeviceMessages(
@@ -1538,7 +1581,11 @@ public class MessageSender {
         case 401 where !OWSChatConnection.mustAppUseSocketsToMakeRequests:
             throw NotRegisteredError()
         case 404:
-            try await failSendForUnregisteredRecipient(messageSend)
+            if !messageSend.isSelfSend {
+                try await checkIfAccountExists(serviceId: messageSend.serviceId)
+            }
+            Logger.warn("Server endpoints disagree about registration status for \(messageSend.serviceId). Backing off and retrying…")
+            throw OWSRetryableMessageSenderError()
         case 409:
             let response = try MismatchedDevices.parse(responseError.httpResponseData ?? Data())
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -1572,59 +1619,7 @@ public class MessageSender {
         }
     }
 
-    private func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) async throws -> Never {
-        let message: TSOutgoingMessage = messageSend.message
-
-        if !message.isSyncMessage {
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTx in
-                self.markAsUnregistered(
-                    serviceId: messageSend.serviceId,
-                    message: message,
-                    thread: messageSend.thread,
-                    transaction: writeTx
-                )
-            }
-        }
-
-        throw MessageSenderNoSuchSignalRecipientError()
-    }
-
     // MARK: - Unregistered, Missing, & Stale Devices
-
-    func markAsUnregistered(
-        serviceId: ServiceId,
-        message: TSOutgoingMessage,
-        thread: TSThread,
-        transaction tx: DBWriteTransaction
-    ) {
-        AssertNotOnMainThread()
-
-        if thread.isNonContactThread {
-            // Mark as "skipped" group members who no longer have signal accounts.
-            message.updateWithSkippedRecipient(SignalServiceAddress(serviceId), transaction: tx)
-        }
-
-        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
-            return
-        }
-
-        let recipientManager = DependenciesBridge.shared.recipientManager
-        recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
-
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            Logger.warn("Can't split recipient because we're not registered.")
-            return
-        }
-
-        let recipientMerger = DependenciesBridge.shared.recipientMerger
-        recipientMerger.splitUnregisteredRecipientIfNeeded(
-            localIdentifiers: localIdentifiers,
-            unregisteredRecipient: recipient,
-            tx: tx
-        )
-    }
 
     func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [DeviceId], extraDevices: [DeviceId], tx: DBWriteTransaction) {
         Logger.warn("Mismatched devices for \(serviceId): +\(missingDevices) -\(extraDevices)")

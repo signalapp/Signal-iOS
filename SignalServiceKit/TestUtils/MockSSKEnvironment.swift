@@ -55,7 +55,7 @@ public class MockSSKEnvironment {
                 contactManager: FakeContactsManager(),
                 groupV2Updates: MockGroupV2Updates(),
                 groupsV2: MockGroupsV2(),
-                messageSender: FakeMessageSender(),
+                messageSender: { FakeMessageSender(accountChecker: $0) },
                 modelReadCaches: ModelReadCaches(
                     factory: TestableModelReadCacheFactory(appReadiness: appReadiness)
                 ),

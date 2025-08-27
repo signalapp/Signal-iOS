@@ -263,10 +263,10 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                 skipSyncTranscript: index > 0,
                 transaction: tx
             )
-            builder.skippedRecipientIds.forEach {
-                let recipientAddress = recipientDatabaseTable.fetchRecipient(rowId: $0, tx: tx)!.address
-                message.updateWithSkippedRecipient(recipientAddress, transaction: tx)
+            let skippedRecipients = builder.skippedRecipientIds.map {
+                return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: tx)!.address
             }
+            message.updateWithSkippedRecipients(skippedRecipients, tx: tx)
             return message
         }
 

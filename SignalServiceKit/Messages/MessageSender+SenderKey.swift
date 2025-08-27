@@ -327,7 +327,7 @@ extension MessageSender {
 
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let failedRecipients = sendResult.unregisteredServiceIds.map { serviceId in
-                self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: tx)
+                self.accountChecker.markAsUnregisteredAndSplitRecipientIfNeeded(serviceId: serviceId, shouldUpdateStorageService: true, tx: tx)
                 return (serviceId, MessageSenderNoSuchSignalRecipientError())
             }
 
@@ -468,14 +468,6 @@ extension MessageSender {
                 do {
                     sentSenderKeys.append(try distributionResult.get())
                 } catch {
-                    if error is MessageSenderNoSuchSignalRecipientError {
-                        self.markAsUnregistered(
-                            serviceId: serviceId,
-                            message: originalMessage,
-                            thread: thread,
-                            transaction: tx
-                        )
-                    }
                     failedRecipients.append((serviceId, error))
                 }
             }

@@ -21,14 +21,13 @@ public class ProfileFetcherJob {
     private let mustFetchNewCredential: Bool
     private let authedAccount: AuthedAccount
 
+    private let accountChecker: AccountChecker
     private let db: any DB
     private let disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore
     private let identityManager: any OWSIdentityManager
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let recipientManager: any SignalRecipientManager
-    private let recipientMerger: any RecipientMerger
     private let syncManager: any SyncManagerProtocol
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
@@ -39,14 +38,13 @@ public class ProfileFetcherJob {
         groupIdContext: GroupIdentifier?,
         mustFetchNewCredential: Bool,
         authedAccount: AuthedAccount,
+        accountChecker: AccountChecker,
         db: any DB,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        recipientManager: any SignalRecipientManager,
-        recipientMerger: any RecipientMerger,
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
@@ -56,14 +54,13 @@ public class ProfileFetcherJob {
         self.groupIdContext = groupIdContext
         self.mustFetchNewCredential = mustFetchNewCredential
         self.authedAccount = authedAccount
+        self.accountChecker = accountChecker
         self.db = db
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.identityManager = identityManager
         self.paymentsHelper = paymentsHelper
         self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
-        self.recipientManager = recipientManager
-        self.recipientMerger = recipientMerger
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -84,22 +81,11 @@ public class ProfileFetcherJob {
             try await updateProfile(fetchedProfile: fetchedProfile, localIdentifiers: localIdentifiers)
             return fetchedProfile
         } catch ProfileRequestError.notFound {
-            await db.awaitableWrite { [serviceId] tx in
-                let recipient = self.recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)
-                guard let recipient else {
-                    return
-                }
-                self.recipientManager.markAsUnregisteredAndSave(
-                    recipient,
-                    unregisteredAt: .now,
-                    shouldUpdateStorageService: true,
-                    tx: tx
-                )
-                self.recipientMerger.splitUnregisteredRecipientIfNeeded(
-                    localIdentifiers: localIdentifiers,
-                    unregisteredRecipient: recipient,
-                    tx: tx
-                )
+            let isRegistered = db.read { tx in
+                return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.isRegistered == true
+            }
+            if isRegistered {
+                try? await accountChecker.checkIfAccountExists(serviceId: serviceId)
             }
             throw ProfileRequestError.notFound
         }

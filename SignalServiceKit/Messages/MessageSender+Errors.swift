@@ -48,14 +48,6 @@ public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescription
 // MARK: -
 
 extension Error {
-    public var shouldBeIgnoredForNonContactThreads: Bool {
-        self is MessageSenderNoSuchSignalRecipientError
-    }
-}
-
-// MARK: -
-
-extension Error {
     public var isFatalError: Bool {
         switch self {
         case is MessageSenderNoSessionForTransientMessageError:

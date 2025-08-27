@@ -26,7 +26,7 @@ public class AppSetup {
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
         let groupsV2: (any GroupsV2)?
-        let messageSender: MessageSender?
+        let messageSender: (AccountChecker) -> MessageSender?
         let modelReadCaches: ModelReadCaches?
         let networkManager: NetworkManager?
         let paymentsCurrencies: (any PaymentsCurrenciesSwift)?
@@ -48,7 +48,7 @@ public class AppSetup {
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
             groupsV2: (any GroupsV2)? = nil,
-            messageSender: MessageSender? = nil,
+            messageSender: @escaping ((AccountChecker) -> MessageSender?) = { _ in nil },
             modelReadCaches: ModelReadCaches? = nil,
             networkManager: NetworkManager? = nil,
             paymentsCurrencies: (any PaymentsCurrenciesSwift)? = nil,
@@ -207,9 +207,6 @@ public class AppSetup {
 
         let groupSendEndorsementStore = GroupSendEndorsementStoreImpl()
 
-        let messageSender = testDependencies.messageSender ?? MessageSender(
-            groupSendEndorsementStore: groupSendEndorsementStore
-        )
         let messageSenderJobQueue = MessageSenderJobQueue(appReadiness: appReadiness)
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
@@ -624,13 +621,6 @@ public class AppSetup {
             storageServiceManager: storageServiceManager
         )
 
-        let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
-            db: db,
-            messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            registrationIdGenerator: RegistrationIdGenerator()
-        )
-
         let badgeCountFetcher = BadgeCountFetcherImpl()
 
         let identityManager = OWSIdentityManagerImpl(
@@ -646,17 +636,6 @@ public class AppSetup {
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
-        )
-
-        let changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
-            db: db,
-            identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
-            registrationIdGenerator: RegistrationIdGenerator(),
             tsAccountManager: tsAccountManager
         )
 
@@ -947,6 +926,39 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
         )
 
+        let accountChecker = AccountChecker(
+            db: db,
+            networkManager: networkManager,
+            recipientFetcher: recipientFetcher,
+            recipientManager: recipientManager,
+            recipientMerger: recipientMerger,
+            recipientStore: recipientDatabaseTable,
+            tsAccountManager: tsAccountManager
+        )
+
+        let messageSender = testDependencies.messageSender(accountChecker) ?? MessageSender(
+            accountChecker: accountChecker,
+            groupSendEndorsementStore: groupSendEndorsementStore
+        )
+
+        let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
+            db: db,
+            messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            registrationIdGenerator: RegistrationIdGenerator()
+        )
+
+        let changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            db: db,
+            identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
+            registrationIdGenerator: RegistrationIdGenerator(),
+            tsAccountManager: tsAccountManager
+        )
+
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             accountKeyStore: accountKeyStore,
             appContext: appContext,
@@ -1123,6 +1135,7 @@ public class AppSetup {
         )
 
         let profileFetcher = ProfileFetcherImpl(
+            accountChecker: accountChecker,
             db: db,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
@@ -1130,8 +1143,6 @@ public class AppSetup {
             profileManager: profileManager,
             reachabilityManager: reachabilityManager,
             recipientDatabaseTable: recipientDatabaseTable,
-            recipientManager: recipientManager,
-            recipientMerger: recipientMerger,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             udManager: udManager,

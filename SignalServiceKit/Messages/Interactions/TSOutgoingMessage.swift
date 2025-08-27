@@ -137,18 +137,19 @@ public extension TSOutgoingMessage {
         }
     }
 
-    /// Records a skipped send to one recipient.
-    func updateWithSkippedRecipient(
-        _ address: SignalServiceAddress,
-        transaction tx: DBWriteTransaction
+    /// Records a skipped send to multiple recipients.
+    func updateWithSkippedRecipients(
+        _ addresses: some Sequence<SignalServiceAddress>,
+        tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
-            guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
-                owsFailDebug("Missing recipient state for recipient: \(address)!")
-                return
+            for address in addresses {
+                guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
+                    owsFailDebug("Missing recipient state for recipient: \(address)!")
+                    continue
+                }
+                recipientState.updateStatusIfPossible(.skipped)
             }
-
-            recipientState.updateStatusIfPossible(.skipped)
         }
     }
 
