@@ -7745,6 +7745,542 @@ extension SSKProtoDataMessageGiftBadgeBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessagePollCreate
+
+@objc
+public class SSKProtoDataMessagePollCreate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.PollCreate
+
+    @objc
+    public var question: String? {
+        guard hasQuestion else {
+            return nil
+        }
+        return proto.question
+    }
+    @objc
+    public var hasQuestion: Bool {
+        return proto.hasQuestion
+    }
+
+    @objc
+    public var allowMultiple: Bool {
+        return proto.allowMultiple
+    }
+    @objc
+    public var hasAllowMultiple: Bool {
+        return proto.hasAllowMultiple
+    }
+
+    @objc
+    public var options: [String] {
+        return proto.options
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.PollCreate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.PollCreate(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.PollCreate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessagePollCreate {
+    @objc
+    public static func builder() -> SSKProtoDataMessagePollCreateBuilder {
+        return SSKProtoDataMessagePollCreateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePollCreateBuilder {
+        let builder = SSKProtoDataMessagePollCreateBuilder()
+        if let _value = question {
+            builder.setQuestion(_value)
+        }
+        if hasAllowMultiple {
+            builder.setAllowMultiple(allowMultiple)
+        }
+        builder.setOptions(options)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessagePollCreateBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.PollCreate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setQuestion(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.question = valueParam
+    }
+
+    public func setQuestion(_ valueParam: String) {
+        proto.question = valueParam
+    }
+
+    @objc
+    public func setAllowMultiple(_ valueParam: Bool) {
+        proto.allowMultiple = valueParam
+    }
+
+    @objc
+    public func addOptions(_ valueParam: String) {
+        proto.options.append(valueParam)
+    }
+
+    @objc
+    public func setOptions(_ wrappedItems: [String]) {
+        proto.options = wrappedItems
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessagePollCreate {
+        return SSKProtoDataMessagePollCreate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessagePollCreate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessagePollCreate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePollCreateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePollCreate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePollTerminate
+
+@objc
+public class SSKProtoDataMessagePollTerminate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.PollTerminate
+
+    @objc
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
+    }
+    @objc
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.PollTerminate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.PollTerminate(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.PollTerminate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessagePollTerminate {
+    @objc
+    public static func builder() -> SSKProtoDataMessagePollTerminateBuilder {
+        return SSKProtoDataMessagePollTerminateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePollTerminateBuilder {
+        let builder = SSKProtoDataMessagePollTerminateBuilder()
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessagePollTerminateBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.PollTerminate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessagePollTerminate {
+        return SSKProtoDataMessagePollTerminate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessagePollTerminate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessagePollTerminate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePollTerminateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePollTerminate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePollVote
+
+@objc
+public class SSKProtoDataMessagePollVote: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.PollVote
+
+    @objc
+    public var targetAuthorAciBinary: Data? {
+        guard hasTargetAuthorAciBinary else {
+            return nil
+        }
+        return proto.targetAuthorAciBinary
+    }
+    @objc
+    public var hasTargetAuthorAciBinary: Bool {
+        return proto.hasTargetAuthorAciBinary
+    }
+
+    @objc
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
+    }
+    @objc
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
+    }
+
+    @objc
+    public var optionIndexes: [UInt32] {
+        return proto.optionIndexes
+    }
+
+    @objc
+    public var voteCount: UInt32 {
+        return proto.voteCount
+    }
+    @objc
+    public var hasVoteCount: Bool {
+        return proto.hasVoteCount
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.PollVote) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.PollVote(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.PollVote) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessagePollVote {
+    @objc
+    public static func builder() -> SSKProtoDataMessagePollVoteBuilder {
+        return SSKProtoDataMessagePollVoteBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePollVoteBuilder {
+        let builder = SSKProtoDataMessagePollVoteBuilder()
+        if let _value = targetAuthorAciBinary {
+            builder.setTargetAuthorAciBinary(_value)
+        }
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
+        }
+        builder.setOptionIndexes(optionIndexes)
+        if hasVoteCount {
+            builder.setVoteCount(voteCount)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessagePollVoteBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.PollVote()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetAuthorAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    public func setTargetAuthorAciBinary(_ valueParam: Data) {
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
+    }
+
+    @objc
+    public func addOptionIndexes(_ valueParam: UInt32) {
+        proto.optionIndexes.append(valueParam)
+    }
+
+    @objc
+    public func setOptionIndexes(_ wrappedItems: [UInt32]) {
+        proto.optionIndexes = wrappedItems
+    }
+
+    @objc
+    public func setVoteCount(_ valueParam: UInt32) {
+        proto.voteCount = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessagePollVote {
+        return SSKProtoDataMessagePollVote(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessagePollVote(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessagePollVote {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePollVoteBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePollVote? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -7782,6 +8318,7 @@ public enum SSKProtoDataMessageProtocolVersion: Int32 {
     case cdnSelectorAttachments = 5
     case mentions = 6
     case payments = 7
+    case polls = 8
 }
 
 private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -7794,6 +8331,7 @@ private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
     case .mentions: return .mentions
     case .payments: return .payments
+    case .polls: return .polls
     }
 }
 
@@ -7807,6 +8345,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
     case .mentions: return .mentions
     case .payments: return .payments
+    case .polls: return .polls
     }
 }
 
