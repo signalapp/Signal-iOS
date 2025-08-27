@@ -1379,40 +1379,42 @@ struct BackupSettingsView: View {
                     )
                 }
 
-                SignalSection {
-                    Toggle(
-                        OWSLocalizedString(
-                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
-                            comment: "Title for a toggle allowing users to change the Optimize Local Storage setting."
-                        ),
-                        isOn: Binding(
-                            get: { viewModel.optimizeLocalStorage },
-                            set: { viewModel.setOptimizeLocalStorage($0) }
-                        )
-                    ).disabled(!viewModel.optimizeLocalStorageAvailable)
-                } footer: {
-                    let footerText: String = if
-                        viewModel.optimizeLocalStorageAvailable,
-                        viewModel.isPaidPlanTester
-                    {
-                        OWSLocalizedString(
-                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS",
-                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester."
-                        )
-                    } else if viewModel.optimizeLocalStorageAvailable {
-                        OWSLocalizedString(
-                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
-                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available."
-                        )
-                    } else {
-                        OWSLocalizedString(
-                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
-                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable."
-                        )
-                    }
+                if FeatureFlags.Backups.showOptimizeMedia {
+                    SignalSection {
+                        Toggle(
+                            OWSLocalizedString(
+                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
+                                comment: "Title for a toggle allowing users to change the Optimize Local Storage setting."
+                            ),
+                            isOn: Binding(
+                                get: { viewModel.optimizeLocalStorage },
+                                set: { viewModel.setOptimizeLocalStorage($0) }
+                            )
+                        ).disabled(!viewModel.optimizeLocalStorageAvailable)
+                    } footer: {
+                        let footerText: String = if
+                            viewModel.optimizeLocalStorageAvailable,
+                            viewModel.isPaidPlanTester
+                        {
+                            OWSLocalizedString(
+                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS",
+                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester."
+                            )
+                        } else if viewModel.optimizeLocalStorageAvailable {
+                            OWSLocalizedString(
+                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
+                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available."
+                            )
+                        } else {
+                            OWSLocalizedString(
+                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
+                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable."
+                            )
+                        }
 
-                    Text(footerText)
-                        .foregroundStyle(Color.Signal.secondaryLabel)
+                        Text(footerText)
+                            .foregroundStyle(Color.Signal.secondaryLabel)
+                    }
                 }
 
                 SignalSection {

@@ -63,7 +63,7 @@ public final class BackupRefreshManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws {
-        guard FeatureFlags.Backups.showSettings else {
+        guard FeatureFlags.Backups.supported else {
             return
         }
 

@@ -44,7 +44,8 @@ public enum FeatureFlags {
 
     public enum Backups {
         public static let supported = build.includes(.internal)
-        public static let showSettings = build.includes(.dev)
+        public static let showSettings = build.includes(.internal)
+        public static let showOptimizeMedia = build.includes(.dev)
 
         public static let restoreFailOnAnyError = build.includes(.beta)
         public static let detailedBenchLogging = build.includes(.internal)
