@@ -89,6 +89,12 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
     ) {
         logger.warn("Setting new AEP!")
 
+        // Eventually, we may support rotating the AEP without rotating related-
+        // but-non-derived keys such as the MRBK and the Storage Service
+        // recordIkm. For now, though, "rotating the AEP" should also rotate all
+        // our keys.
+        let rotateRelatedNonDerivedKeys = true
+
         switch backupSettingsStore.backupPlan(tx: tx) {
         case .disabled:
             break
@@ -102,11 +108,12 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
             logger.warn("Setting AEP, but not a registered primary device.")
         }
 
-        // At least for the time being, all AEP rotations also rotate the MRBK.
-        accountKeyStore.setMediaRootBackupKey(
-            MediaRootBackupKey(backupKey: .generateRandom()),
-            tx: tx
-        )
+        if rotateRelatedNonDerivedKeys {
+            accountKeyStore.setMediaRootBackupKey(
+                MediaRootBackupKey(backupKey: .generateRandom()),
+                tx: tx
+            )
+        }
 
         accountKeyStore.setAccountEntropyPool(newAccountEntropyPool, tx: tx)
 
@@ -139,7 +146,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         // by creating a new manifest anyway.
         Task {
             try? await storageServiceManager.rotateManifest(
-                mode: .preservingRecordsIfPossible,
+                mode: rotateRelatedNonDerivedKeys ? .alsoRotatingRecords : .preservingRecordsIfPossible,
                 authedDevice: .implicit
             )
 

@@ -103,8 +103,8 @@ public enum StorageServiceManagerManifestRotationMode {
 
     /// Recreate the manifest and all records, using local data as the source of
     /// truth for creating records. This deletes all existing records, replacing
-    /// them with new ones with newly-generated identifiers; if we are capable,
-    /// the records will be encrypted using a newly-generated `recordIkm`.
+    /// them with new ones with newly-generated identifiers; these new records
+    /// will be encrypted using a newly-generated `recordIkm`.
     case alsoRotatingRecords
 
     /// Orders cases by precedence, with higher numbers more significant.
