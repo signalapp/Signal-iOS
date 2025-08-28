@@ -1621,6 +1621,7 @@ private struct BackupExportProgressView: View {
             }
             .font(.subheadline)
             .foregroundStyle(Color.Signal.secondaryLabel)
+            .monospacedDigit()
         }
 
         Button {
@@ -1717,6 +1718,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                 Text(subtitleText)
                     .font(.subheadline)
                     .foregroundStyle(Color.Signal.secondaryLabel)
+                    .monospacedDigit()
             } else {
                 Text(subtitleText)
             }
@@ -1816,6 +1818,7 @@ private struct BackupAttachmentUploadProgressView: View {
             Text(subtitleText)
                 .font(.subheadline)
                 .foregroundStyle(Color.Signal.secondaryLabel)
+                .monospacedDigit()
         }
     }
 }
