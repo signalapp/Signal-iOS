@@ -76,6 +76,7 @@ class BackupArchiveProtoOutputStream {
 
     /// Closes the output stream.
     func closeFileStream() throws {
-        try? outputStream.close()
+        exportProgress?.didCloseStream()
+        try outputStream.close()
     }
 }

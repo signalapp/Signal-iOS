@@ -47,6 +47,12 @@ public struct BackupArchiveExportProgress {
     public func didExportFrame() {
         progressSource.incrementCompletedUnitCount(by: 1)
     }
+
+    public func didCloseStream() {
+        // We used an estimate to populate the unit count originally, so make
+        // sure we complete the progress when we're done.
+        progressSource.complete()
+    }
 }
 
 // MARK: -
