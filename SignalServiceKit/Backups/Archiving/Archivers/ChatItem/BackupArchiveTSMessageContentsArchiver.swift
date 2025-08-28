@@ -535,16 +535,25 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 return errorResult
             }
 
-            quote.text = { () -> BackupProto_Text in
+            let quoteText = { () -> BackupProto_Text? in
                 var quoteText = BackupProto_Text()
                 // We do not allow oversize text in quotes; truncate if some historical bug
                 // cause quotes to contain more than the usual oversize text threshold.
-                quoteText.body = text.body.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
-                quoteText.bodyRanges = text.bodyRanges
-                return quoteText
+                let trimmedQuoteText = text.body.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
+                // If, after trimming the quote text, we end up with an empty string,
+                // skip setting a quote text entirely
+                if let quoteTextBody = trimmedQuoteText.nilIfEmpty {
+                    quoteText.body = quoteTextBody
+                    quoteText.bodyRanges = text.bodyRanges
+                    return quoteText
+                } else {
+                    return nil
+                }
             }()
-
-            didArchiveText = true
+            if let quoteText {
+                quote.text = quoteText
+                didArchiveText = true
+            }
         }
 
         if let attachmentInfo = quotedMessage.attachmentInfo() {
