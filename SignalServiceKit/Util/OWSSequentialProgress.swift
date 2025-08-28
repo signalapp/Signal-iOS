@@ -57,19 +57,21 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
     }
 
     public var currentStep: StepEnum {
-        var lastStep: StepEnum?
         for step in StepEnum.allCases {
-            lastStep = step
-            if
-                let stepProgress = progress(for: step),
-                stepProgress.percentComplete == 1
-            {
-                // This step finished, try the next step
+            guard let stepProgress = progress(for: step) else {
+                // If we don't have a child progress for a given step, skip it.
                 continue
             }
+
+            guard stepProgress.percentComplete < 1 else {
+                // If we've completed a step, skip it.
+                continue
+            }
+
             return step
         }
-        return lastStep!
+
+        return Array(StepEnum.allCases).last!
     }
 
     public var currentStepProgress: OWSProgress.ChildProgress? {

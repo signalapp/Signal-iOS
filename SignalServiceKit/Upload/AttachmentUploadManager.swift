@@ -235,7 +235,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 attempt: attempt,
                 dateProvider: dateProvider,
                 sleepTimer: sleepTimer,
-                progress: nil
+                progress: progress,
             )
         } catch {
             if error.isNetworkFailureOrTimeout {

@@ -1315,15 +1315,13 @@ struct BackupSettingsView: View {
                 )
             }
 
-            if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
-                SignalSection {
-                    BackupAttachmentUploadProgressView(
-                        latestUploadUpdate: latestBackupAttachmentUploadUpdate
-                    )
-                }
-            }
-
-            if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
+            if let latestBackupExportProgressUpdate = viewModel.latestBackupExportProgressUpdate {
+                BackupExportProgressView(
+                    latestExportProgressUpdate: latestBackupExportProgressUpdate,
+                    latestAttachmentUploadUpdate: viewModel.latestBackupAttachmentUploadUpdate,
+                    viewModel: viewModel,
+                )
+            } else if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
                 switch contents {
                 case .disabling, .disablingDownloadsRunning:
                     // We'll show a download progress bar below if necessary.
@@ -1336,33 +1334,33 @@ struct BackupSettingsView: View {
                         )
                     }
                 }
+            } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
+                SignalSection {
+                    BackupAttachmentUploadProgressView(
+                        latestUploadUpdate: latestBackupAttachmentUploadUpdate
+                    )
+                }
             }
 
             switch contents {
             case .enabled:
                 SignalSection {
-                    if let latestBackupExportProgressUpdate = viewModel.latestBackupExportProgressUpdate {
-                        BackupExportProgressView(
-                            latestProgressUpdate: latestBackupExportProgressUpdate,
-                            viewModel: viewModel
-                        )
-                    } else {
-                        Button {
-                            viewModel.performManualBackup()
-                        } label: {
-                            Label {
-                                Text(OWSLocalizedString(
-                                    "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
-                                    comment: "Title for a button allowing users to trigger a manual backup."
-                                ))
-                            } icon: {
-                                Image(uiImage: .backup)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            }
+                    Button {
+                        viewModel.performManualBackup()
+                    } label: {
+                        Label {
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
+                                comment: "Title for a button allowing users to trigger a manual backup."
+                            ))
+                        } icon: {
+                            Image(uiImage: .backup)
+                                .resizable()
+                                .frame(width: 24, height: 24)
                         }
-                        .foregroundStyle(Color.Signal.label)
                     }
+                    .foregroundStyle(Color.Signal.label)
+                    .disabled(viewModel.latestBackupExportProgressUpdate != nil)
                 } header: {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER",
@@ -1573,55 +1571,49 @@ struct BackupSettingsView: View {
 // MARK: -
 
 private struct BackupExportProgressView: View {
-    let latestProgressUpdate: OWSSequentialProgress<BackupExportJobStep>
+    let latestExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>
+    let latestAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
     let viewModel: BackupSettingsViewModel
 
     var body: some View {
         VStack(alignment: .leading) {
-            let percentComplete = latestProgressUpdate.percentComplete
-
-            ProgressView(value: percentComplete)
-                .progressViewStyle(.linear)
-                .tint(.Signal.accent)
-                .scaleEffect(x: 1, y: 1.5)
-                .padding(.vertical, 12)
-
-            Group {
-                Text(String(
-                    format: OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION",
-                        comment: "Description for a progress bar tracking a multi-step backup operation. Embeds {{ the percentage complete of the overall operation, e.g. 20% }}."
-                    ),
-                    percentComplete.formatted(.percent.precision(.fractionLength(0))),
-                ))
-
-                let stepDescription = switch latestProgressUpdate.currentStep {
-                case .registerBackupId, .backupExport:
-                    OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP",
-                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup."
-                    )
-                case .backupUpload:
-                    OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP",
-                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup."
-                    )
-                case .listMedia:
-                    OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA",
-                        comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media."
-                    )
-                case .attachmentOrphaning, .attachmentUpload, .offloading:
+            let stepDescription = switch latestExportProgressUpdate.currentStep {
+            case .registerBackupId, .backupExport:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP",
+                    comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup."
+                )
+            case .backupUpload:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP",
+                    comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup."
+                )
+            case .listMedia:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA",
+                    comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media."
+                )
+            case .attachmentOrphaning, .attachmentUpload, .offloading:
+                if let latestAttachmentUploadUpdate {
+                    BackupAttachmentUploadProgressView.subtitleText(uploadUpdate: latestAttachmentUploadUpdate)
+                } else {
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA",
                         comment: "Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media."
                     )
                 }
-                Text(stepDescription)
             }
-            .font(.subheadline)
-            .foregroundStyle(Color.Signal.secondaryLabel)
-            .monospacedDigit()
+
+            ProgressView(value: latestExportProgressUpdate.percentComplete)
+                .progressViewStyle(.linear)
+                .tint(.Signal.accent)
+                .scaleEffect(x: 1, y: 1.5)
+                .padding(.vertical, 12)
+
+            Text(stepDescription)
+                .font(.subheadline)
+                .foregroundStyle(Color.Signal.secondaryLabel)
+                .monospacedDigit()
         }
 
         Button {
@@ -1787,38 +1779,42 @@ private struct BackupAttachmentUploadProgressView: View {
                 .scaleEffect(x: 1, y: 1.5)
                 .padding(.vertical, 12)
 
-            let subtitleText: String = switch latestUploadUpdate.state {
-            case .running:
-                String(
-                    format: OWSLocalizedString(
-                        "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING",
-                        comment: "Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the amount uploaded as a percentage, e.g. 10% }}."
-                    ),
-                    latestUploadUpdate.bytesUploaded.formatted(.byteCount(style: .decimal)),
-                    latestUploadUpdate.totalBytesToUpload.formatted(.byteCount(style: .decimal)),
-                    latestUploadUpdate.percentageUploaded.formatted(.percent.precision(.fractionLength(0))),
-                )
-            case .pausedLowBattery:
-                OWSLocalizedString(
-                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY",
-                    comment: "Subtitle for a progress bar tracking uploads that are paused because of low battery."
-                )
-            case .pausedNeedsWifi:
-                OWSLocalizedString(
-                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI",
-                    comment: "Subtitle for a progress bar tracking uploads that are paused because they need WiFi."
-                )
-            case .pausedNeedsInternet:
-                OWSLocalizedString(
-                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET",
-                    comment: "Subtitle for a progress bar tracking uploads that are paused because they need an internet connection"
-                )
-            }
-
+            let subtitleText: String = Self.subtitleText(uploadUpdate: latestUploadUpdate)
             Text(subtitleText)
                 .font(.subheadline)
                 .foregroundStyle(Color.Signal.secondaryLabel)
                 .monospacedDigit()
+        }
+    }
+
+    static func subtitleText(
+        uploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate
+    ) -> String {
+        return switch uploadUpdate.state {
+        case .running:
+            String(
+                format: OWSLocalizedString(
+                    "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING",
+                    comment: "Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}."
+                ),
+                uploadUpdate.bytesUploaded.formatted(.byteCount(style: .decimal)),
+                uploadUpdate.totalBytesToUpload.formatted(.byteCount(style: .decimal)),
+            )
+        case .pausedLowBattery:
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY",
+                comment: "Subtitle for a progress bar tracking uploads that are paused because of low battery."
+            )
+        case .pausedNeedsWifi:
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI",
+                comment: "Subtitle for a progress bar tracking uploads that are paused because they need WiFi."
+            )
+        case .pausedNeedsInternet:
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET",
+                comment: "Subtitle for a progress bar tracking uploads that are paused because they need an internet connection"
+            )
         }
     }
 }
@@ -2309,6 +2305,33 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
+    ))
+}
+
+#Preview("Manual Backup: Media Upload Paused (Battery)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
+    ))
+}
+
+#Preview("Manual Backup: Media Upload Paused (WiFi)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
+    ))
+}
+
+#Preview("Manual Backup: Media Upload Paused (Internet)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        latestBackupAttachmentUploadUpdateState: .pausedNeedsInternet,
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
