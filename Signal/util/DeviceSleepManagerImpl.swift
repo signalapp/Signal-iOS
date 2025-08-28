@@ -23,12 +23,14 @@ class DeviceSleepManagerImpl: DeviceSleepManager {
 
     @MainActor
     public func addBlock(blockObject: DeviceSleepBlockObject) {
+        Logger.info("Adding sleep block: \(blockObject.blockReason)")
         blockObjects.append(Weak(value: blockObject))
         ensureSleepBlocking()
     }
 
     @MainActor
     public func removeBlock(blockObject: DeviceSleepBlockObject) {
+        Logger.info("Removing sleep block: \(blockObject.blockReason)")
         blockObjects.removeAll(where: { $0.value === blockObject })
         ensureSleepBlocking()
     }
@@ -43,20 +45,10 @@ class DeviceSleepManagerImpl: DeviceSleepManager {
 
         let blockObjects = self.blockObjects.compactMap(\.value)
 
-        let description: String
-        switch blockObjects.count {
-        case 0:
-            description = "no blocking objects"
-        case 1:
-            description = "\(blockObjects[0].blockReason)"
-        default:
-            description = "\(blockObjects[0].blockReason) and \(blockObjects.count - 1) other(s)"
-        }
-
         let shouldBeBlocking = !blockObjects.isEmpty
         if UIApplication.shared.isIdleTimerDisabled != shouldBeBlocking {
             if shouldBeBlocking {
-                Logger.info("Blocking sleep because of: \(description)")
+                Logger.info("Blocking sleep.")
             } else {
                 Logger.info("Unblocking sleep.")
             }

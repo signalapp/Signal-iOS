@@ -33,6 +33,8 @@ public protocol BackupExportJobRunner {
     func run() async throws(BackupExportJobError)
 }
 
+// MARK: -
+
 class BackupExportJobRunnerImpl: BackupExportJobRunner {
     private struct State {
         struct ProgressObserver {
@@ -40,7 +42,10 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
             let block: (OWSSequentialProgress<BackupExportJobStep>?) -> Void
         }
 
+        var progressObservers: [ProgressObserver] = []
         var currentExportJobTask: Task<Result<Void, BackupExportJobError>, Never>?
+
+        var latestProgressUpdateTimestamp: MonotonicDate?
         var latestProgress: OWSSequentialProgress<BackupExportJobStep>? {
             didSet {
                 for observer in progressObservers {
@@ -48,7 +53,6 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                 }
             }
         }
-        var progressObservers: [ProgressObserver] = []
     }
 
     private let backupExportJob: BackupExportJob
@@ -148,6 +152,15 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
 
     private func exportJobDidUpdateProgress(_ exportJobProgress: OWSSequentialProgress<BackupExportJobStep>) {
         self.state.enqueueUpdate { _state in
+            if
+                let latestProgressUpdateTimestamp = _state.latestProgressUpdateTimestamp,
+                latestProgressUpdateTimestamp.adding(0.1) > MonotonicDate()
+            {
+                // Debounce updates to at most 1x/0.1s, lest we overwhelm the UI.
+                return
+            }
+
+            _state.latestProgressUpdateTimestamp = MonotonicDate()
             _state.latestProgress = exportJobProgress
         }
     }
@@ -155,6 +168,8 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     private func exportJobDidComplete() {
         self.state.enqueueUpdate { _state in
             _state.currentExportJobTask = nil
+
+            _state.latestProgressUpdateTimestamp = nil
             _state.latestProgress = nil
         }
     }
