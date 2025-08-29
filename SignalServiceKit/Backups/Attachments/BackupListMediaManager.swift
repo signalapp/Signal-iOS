@@ -62,6 +62,12 @@ public struct ListMediaIntegrityCheckResult: Codable {
     }
 
     var hasFailures: Bool {
+        if fullsize.uploadedCount == 0 {
+            // The first time we run list media, we have no
+            // uploads, so don't count as a failure.
+            return false
+        }
+
         // Don't count thumbnail failures
         // Don't count orphans; we maybe just haven't deleted yet.
         return fullsize.hasFailures
@@ -132,6 +138,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.remoteConfigManager = remoteConfigManager
         self.tsAccountManager = tsAccountManager
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backupPlanDidChange),
+            name: .backupPlanChanged,
+            object: nil
+        )
     }
 
     public func getLastFailingIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult? {
@@ -1160,6 +1173,19 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         kvStore.removeValue(forKey: Constants.paginationCursorKey, transaction: tx)
         self.kvStore.setBool(false, key: Constants.hasCompletedEnumeratingAttachmentsKey, transaction: tx)
         self.kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
+    }
+
+    @objc
+    private func backupPlanDidChange() {
+        switch db.read(block: backupSettingsStore.backupPlan(tx:)) {
+        case .free, .paid, .paidAsTester, .paidExpiringSoon, .disabling:
+            return
+        case .disabled:
+            // Rotate the last integrity check failure when disabled
+            db.write { tx in
+                kvStore.removeValue(forKey: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
+            }
+        }
     }
 
     private enum Constants {
