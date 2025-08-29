@@ -287,7 +287,13 @@ class BackupExportJobImpl: BackupExportJob {
                     )
                 })
             }
-            try await backupAttachmentUploadQueueRunner.backUpAllAttachments()
+
+            let waitOnThumbnails = switch mode {
+            case .bgProcessingTask: true
+            case .manual: false
+            }
+
+            try await backupAttachmentUploadQueueRunner.backUpAllAttachments(waitOnThumbnails: waitOnThumbnails)
             _ = uploadObserver.take()
             uploadObserver = nil
 
