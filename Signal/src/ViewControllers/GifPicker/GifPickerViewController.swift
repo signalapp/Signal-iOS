@@ -38,9 +38,9 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
             options: self.hasQuotedReplyDraft ? [.disallowViewOnce] : [],
             attachmentApprovalItems: [attachmentApprovalItem],
         )
+        attachmentApproval.approvalDataSource = self
         attachmentApproval.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         attachmentApproval.approvalDelegate = self
-        attachmentApproval.approvalDataSource = self
         pushViewController(attachmentApproval, animated: true) {
             // Remove any selected state in case the user returns "back" to the gif picker.
             self.gifPickerViewController.clearSelectedState()
