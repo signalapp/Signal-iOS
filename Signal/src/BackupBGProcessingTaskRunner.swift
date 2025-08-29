@@ -6,24 +6,32 @@
 import SignalServiceKit
 
 class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
+    private enum StoreKeys {
+        static let lastCompletionDate: String = "lastCompletionDate"
+    }
 
     private let backgroundMessageFetcherFactory: () -> BackgroundMessageFetcherFactory
     private let backupSettingsStore: BackupSettingsStore
+    private let dateProvider: DateProvider
     private let db: DB
     private let exportJob: () -> BackupExportJob
+    private let kvStore: KeyValueStore
     private let tsAccountManager: () -> TSAccountManager
 
     init(
         backgroundMessageFetcherFactory: @escaping () -> BackgroundMessageFetcherFactory,
         backupSettingsStore: BackupSettingsStore,
+        dateProvider: @escaping DateProvider,
         db: SDSDatabaseStorage,
         exportJob: @escaping () -> BackupExportJob,
         tsAccountManager: @escaping () -> TSAccountManager,
     ) {
         self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.backupSettingsStore = backupSettingsStore
+        self.dateProvider = dateProvider
         self.db = db
         self.exportJob = exportJob
+        self.kvStore = KeyValueStore(collection: "BackupBGProcessingTaskRunner")
         self.tsAccountManager = tsAccountManager
     }
 
@@ -39,6 +47,10 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             backgroundMessageFetcherFactory: backgroundMessageFetcherFactory(),
             operation: {
                 try await exportJob().exportAndUploadBackup(mode: .bgProcessingTask)
+
+                await db.awaitableWrite { tx in
+                    kvStore.setDate(dateProvider(), key: StoreKeys.lastCompletionDate, transaction: tx)
+                }
             }
         )
     }
@@ -59,7 +71,11 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             case .free, .paid, .paidExpiringSoon, .paidAsTester:
                 break
             }
-            let lastBackupDate = (backupSettingsStore.lastBackupDate(tx: tx) ?? Date(millisecondsSince1970: 0))
+
+            // We want this task to run to completion nightly, so intentionally
+            // use a distinct "last Backup date" than what's saved (and shared)
+            // in BackupSettingsStore.
+            let lastBackupDate = kvStore.getDate(StoreKeys.lastCompletionDate, transaction: tx) ?? .distantPast
 
             // Add in a little buffer so that we can roughly run at any time of
             // day, every day, but aren't always creeping forward with a strict

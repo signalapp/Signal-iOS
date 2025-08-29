@@ -325,6 +325,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let backupRunner = BackupBGProcessingTaskRunner(
             backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
             backupSettingsStore: BackupSettingsStore(),
+            dateProvider: { Date() },
             db: databaseStorage,
             exportJob: { DependenciesBridge.shared.backupExportJob },
             tsAccountManager: { DependenciesBridge.shared.tsAccountManager },
