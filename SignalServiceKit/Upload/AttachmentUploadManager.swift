@@ -439,8 +439,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let cdnNumber: UInt32
         do {
             cdnNumber =  try await self.copyToMediaTier(
-                localAci: localAci,
                 backupKey: backupKey,
+                auth: auth,
                 mediaName: mediaName,
                 uploadEra: uploadEra,
                 result: uploadResult,
@@ -619,8 +619,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let cdnNumber: UInt32
         do {
             cdnNumber = try await self.copyToMediaTier(
-                localAci: localAci,
                 backupKey: backupKey,
+                auth: auth,
                 mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                 uploadEra: uploadEra,
                 result: result,
@@ -1199,18 +1199,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     public func copyToMediaTier(
-        localAci: Aci,
         backupKey: MediaRootBackupKey,
+        auth: BackupServiceAuth,
         mediaName: String,
         uploadEra: String,
         result: Upload.AttachmentResult,
         logger: PrefixedLogger
     ) async throws -> UInt32 {
-        let auth = try await backupRequestManager.fetchBackupServiceAuth(
-            for: backupKey,
-            localAci: localAci,
-            auth: .implicit()
-        )
         let mediaEncryptionMetadata = try backupKey.mediaEncryptionMetadata(
             mediaName: mediaName,
             type: .outerLayerFullsizeOrThumbnail

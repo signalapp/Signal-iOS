@@ -54,7 +54,7 @@ public protocol BackupAuthCredentialManager {
     ) async throws -> LibSignalClient.Auth
 }
 
-struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
+class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     private let authCredentialStore: AuthCredentialStore
     private let backupIdService: BackupIdService
@@ -111,17 +111,12 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         try await waitForAuthCredentialDependency(.renewBackupEntitlementForTestFlight)
         try await waitForAuthCredentialDependency(.redeemBackupSubscriptionViaIAP)
 
-        if let cachedAuthCredential = readCachedAuthCredential(key: key) {
-            switch cachedAuthCredential.backupLevel {
-            case .free where forceRefreshUnlessCachedPaidCredential:
-                break
-            case .free, .paid:
-                return BackupServiceAuth(
-                    privateKey: key.deriveEcKey(aci: localAci),
-                    authCredential: cachedAuthCredential,
-                    type: key.credentialType,
-                )
-            }
+        if let cachedServiceAuth = readCachedServiceAuth(
+            key: key,
+            localAci: localAci,
+            forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential
+        ) {
+            return cachedServiceAuth
         }
 
         let (
@@ -195,7 +190,7 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                 // our Backup ID. Normally this will have already happened, making
                 // this call a no-op; however, it's possible it never succeeded or
                 // we need to run it again.
-                try await backupIdService.registerBackupIDIfNecessary(localAci: localAci, auth: auth)
+                try await self.backupIdService.registerBackupIDIfNecessary(localAci: localAci, auth: auth)
             }
         case .redeemBackupSubscriptionViaIAP:
             label = "redeemBackupSubscription"
@@ -203,14 +198,14 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                 // Redeem our subscription if necessary, to ensure we have our
                 // server-side Backup entitlement in place so we correctly fetch
                 // paid-ter credentials.
-                try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
+                try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
             }
         case .renewBackupEntitlementForTestFlight:
             label = "testFlightEntitlement"
             block = {
                 // Same motivation as redeeming our subscription above, but for
                 // TestFlight builds.
-                try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
+                try await self.backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
             }
         }
 
@@ -250,6 +245,40 @@ struct BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             }
 
             return authCredential
+        }
+    }
+
+    private let backupServiceAuthCache = LRUCache<Data, BackupServiceAuth>(maxSize: 4)
+    private func readCachedServiceAuth(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        forceRefreshUnlessCachedPaidCredential: Bool
+    ) -> BackupServiceAuth? {
+        guard let cachedAuthCredential = readCachedAuthCredential(key: key) else {
+            return nil
+        }
+
+        switch cachedAuthCredential.backupLevel {
+        case .free where forceRefreshUnlessCachedPaidCredential:
+            return nil
+        case .free, .paid:
+            break
+        }
+
+        // Use the credential as the service auth cache key, so if the
+        // credential changes externally we skip the service auth cache.
+        let cacheKey = cachedAuthCredential.serialize()
+
+        if let cachedServiceAuth = backupServiceAuthCache[cacheKey] {
+            return cachedServiceAuth
+        } else {
+            let backupServiceAuth = BackupServiceAuth(
+                privateKey: key.deriveEcKey(aci: localAci),
+                authCredential: cachedAuthCredential,
+                type: key.credentialType,
+            )
+            backupServiceAuthCache[cacheKey] = backupServiceAuth
+            return backupServiceAuth
         }
     }
 
