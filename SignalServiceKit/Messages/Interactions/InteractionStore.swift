@@ -5,7 +5,7 @@
 
 import Foundation
 public import GRDB
-import LibSignalClient
+public import LibSignalClient
 
 public protocol InteractionStore {
 
@@ -61,6 +61,11 @@ public protocol InteractionStore {
         rowId: Int64,
         tx: DBReadTransaction
     ) -> Bool
+
+    func fetchMessage(
+        timestamp: UInt64,
+        author: Aci,
+        transaction: DBReadTransaction) throws -> TSMessage?
 
     // MARK: -
 
@@ -277,6 +282,28 @@ public class InteractionStoreImpl: InteractionStore {
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
+
+    public func fetchMessage(
+        timestamp: UInt64,
+        author: Aci,
+        transaction: DBReadTransaction
+    ) throws -> TSMessage? {
+        guard let record = try InteractionRecord.fetchOne(
+            transaction.database,
+            sql: """
+                SELECT *
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .timestamp) = ?
+                AND \(interactionColumn: .authorUUID) IS ?
+                LIMIT 1
+                """,
+            arguments: [timestamp, author.serviceIdUppercaseString]
+        ) else {
+            return nil
+        }
+
+        return try TSInteraction.fromRecord(record) as? TSMessage
+    }
 }
 
 // MARK: -
@@ -489,6 +516,11 @@ open class MockInteractionStore: InteractionStore {
         tx: DBWriteTransaction
     ) {
         // Unimplemented
+    }
+
+    public func fetchMessage(timestamp: UInt64, author: LibSignalClient.Aci, transaction: DBReadTransaction) throws -> TSMessage? {
+        // Unimplemented
+        return nil
     }
 }
 

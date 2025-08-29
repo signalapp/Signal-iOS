@@ -1127,7 +1127,8 @@ public final class MessageReceiver {
             linkPreview: linkPreviewBuilder?.info,
             messageSticker: messageStickerBuilder?.info,
             giftBadge: giftBadge,
-            paymentNotification: paymentModels?.notification
+            paymentNotification: paymentModels?.notification,
+            isPoll: false // TODO: fill in once poll protos are in
         )
         let message = messageBuilder.build()
 

@@ -52,7 +52,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         linkPreview: OWSLinkPreview?,
         messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?,
-        paymentNotification: TSPaymentNotification?
+        paymentNotification: TSPaymentNotification?,
+        isPoll: Bool
     ) {
         self.authorAci = authorAci
         self.authorE164 = authorE164
@@ -83,7 +84,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             contactShare: contactShare,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
-            giftBadge: giftBadge
+            giftBadge: giftBadge,
+            isPoll: isPoll
         )
     }
 
@@ -116,7 +118,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil,
-        paymentNotification: TSPaymentNotification? = nil
+        paymentNotification: TSPaymentNotification? = nil,
+        isPoll: Bool = false
     ) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(
             thread: thread,
@@ -146,7 +149,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             linkPreview: linkPreview,
             messageSticker: messageSticker,
             giftBadge: giftBadge,
-            paymentNotification: paymentNotification
+            paymentNotification: paymentNotification,
+            isPoll: isPoll
         )
     }
 

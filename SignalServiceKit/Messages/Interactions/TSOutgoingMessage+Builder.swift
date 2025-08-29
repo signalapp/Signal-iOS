@@ -37,7 +37,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         contactShare: OWSContact?,
         linkPreview: OWSLinkPreview?,
         messageSticker: MessageSticker?,
-        giftBadge: OWSGiftBadge?
+        giftBadge: OWSGiftBadge?,
+        isPoll: Bool
     ) {
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
@@ -64,7 +65,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             contactShare: contactShare,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
-            giftBadge: giftBadge
+            giftBadge: giftBadge,
+            isPoll: isPoll
         )
     }
 
@@ -93,7 +95,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         contactShare: OWSContact? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
-        giftBadge: OWSGiftBadge? = nil
+        giftBadge: OWSGiftBadge? = nil,
+        isPoll: Bool = false
     ) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(
             thread: thread,
@@ -119,7 +122,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             contactShare: contactShare,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
-            giftBadge: giftBadge
+            giftBadge: giftBadge,
+            isPoll: isPoll
         )
     }
 

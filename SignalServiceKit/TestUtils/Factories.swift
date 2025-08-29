@@ -143,7 +143,8 @@ public class OutgoingMessageFactory: Factory {
             contactShare: contactShareBuilder(),
             linkPreview: linkPreviewBuilder(),
             messageSticker: messageStickerBuilder(),
-            giftBadge: giftBadgeBuilder()
+            giftBadge: giftBadgeBuilder(),
+            isPoll: isPollBuilder()
         ).build(transaction: transaction)
         return message
     }
@@ -254,6 +255,10 @@ public class OutgoingMessageFactory: Factory {
         return nil
     }
 
+    public var isPollBuilder: () -> Bool = {
+        return false
+    }
+
     // MARK: Delivery Receipts
 
     public func buildDeliveryReceipt() -> OWSReceiptsForSenderMessage {
@@ -313,7 +318,8 @@ public class IncomingMessageFactory: Factory {
             linkPreview: linkPreviewBuilder(),
             messageSticker: messageStickerBuilder(),
             giftBadge: giftBadgeBuilder(),
-            paymentNotification: paymentNotificationBuilder()
+            paymentNotification: paymentNotificationBuilder(),
+            isPoll: isPollBuilder()
         )
         let item = builder.build()
         item.anyInsert(transaction: transaction)
@@ -436,6 +442,10 @@ public class IncomingMessageFactory: Factory {
 
     public var paymentNotificationBuilder: () -> TSPaymentNotification? = {
         return nil
+    }
+
+    public var isPollBuilder: () -> Bool = {
+        return false
     }
 }
 

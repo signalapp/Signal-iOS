@@ -217,7 +217,7 @@ public class CVPollView: ManualStackView {
             let optionRowInnerMeasurement = ManualStackView.measure(
                 config: configurator.optionRowInnerStackConfig,
                 measurementBuilder: measurementBuilder,
-                measurementKey: measurementKey_optionRowInnerStack + String(option.optionID),
+                measurementKey: measurementKey_optionRowInnerStack + String(option.optionIndex),
                 subviewInfos: [configurator.checkBoxSize.asManualSubviewInfo(hasFixedSize: true), optionRowSize.asManualSubviewInfo]
             )
 
@@ -225,7 +225,7 @@ public class CVPollView: ManualStackView {
             let optionRowOuterMeasurement = ManualStackView.measure(
                 config: configurator.optionRowOuterStackConfig,
                 measurementBuilder: measurementBuilder,
-                measurementKey: measurementKey_optionRowOuterStack + String(option.optionID),
+                measurementKey: measurementKey_optionRowOuterStack + String(option.optionIndex),
                 subviewInfos: [optionRowInnerMeasurement.measuredSize.asManualSubviewInfo, progressBarSize.asManualSubviewInfo]
             )
 
@@ -347,7 +347,7 @@ public class CVPollView: ManualStackView {
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
                 option: pollOption.text,
-                index: pollOption.optionID,
+                index: pollOption.optionIndex,
                 votes: pollOption.votes,
                 totalVotes: totalVotes
             )
@@ -407,7 +407,7 @@ public class CVPollView: ManualStackView {
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
             option: String,
-            index: Int,
+            index: UInt32,
             votes: Int,
             totalVotes: Int
         ) {

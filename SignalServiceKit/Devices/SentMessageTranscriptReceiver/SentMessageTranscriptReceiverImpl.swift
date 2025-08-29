@@ -218,7 +218,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             contactShare: contactBuilder?.info,
             linkPreview: linkPreviewBuilder?.info,
             messageSticker: messageStickerBuilder?.info,
-            giftBadge: messageParams.giftBadge
+            giftBadge: messageParams.giftBadge,
+            isPoll: false // TODO(KC): fill in once poll sending is implemented
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 

@@ -3,21 +3,28 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+public import LibSignalClient
+
 public struct OWSPoll: Equatable {
-    public typealias OptionID = Int
+    public typealias OptionIndex = UInt32
 
     public struct OWSPollOption {
-        public let optionID: OptionID
+        public let optionIndex: OptionIndex
         public let text: String
         public var votes: Int
+        public let acis: [Aci]
 
         init(
-            optionID: OptionID,
-            text: String
+            optionIndex: OptionIndex,
+            text: String,
+            votes: Int = 0,
+            acis: [Aci] = []
         ) {
-            self.optionID = optionID
+            self.optionIndex = optionIndex
             self.text = text
-            self.votes = 0
+            self.votes = votes
+            self.acis = acis
         }
     }
 
@@ -26,7 +33,7 @@ public struct OWSPoll: Equatable {
     public let isEnded: Bool
     public let allowMultiSelect: Bool
 
-    private let options: [OptionID: OWSPollOption]
+    private let options: [OptionIndex: OWSPollOption]
 
     init(
         pollID: String,
@@ -40,7 +47,7 @@ public struct OWSPoll: Equatable {
         self.isEnded = false
 
         self.options = Dictionary(uniqueKeysWithValues: options.enumerated().map { index, option in
-            return (index, OWSPollOption(optionID: index, text: option))
+            return (OWSPoll.OptionIndex(index), OWSPollOption(optionIndex: OWSPoll.OptionIndex(index), text: option))
         })
     }
 
@@ -56,7 +63,7 @@ public struct OWSPoll: Equatable {
         return options.sorted { $0.key < $1.key }.map { $0.value }
     }
 
-    public func optionForIndex(optionID: OptionID) -> OWSPollOption? {
-        return options[optionID]
+    public func optionForIndex(optionIndex: OptionIndex) -> OWSPollOption? {
+        return options[optionIndex]
     }
 }

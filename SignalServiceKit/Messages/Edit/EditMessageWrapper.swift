@@ -123,6 +123,10 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         let serverDeliveryTimestamp = edits.serverDeliveryTimestamp.unwrapChange(orKeepValue: message.serverDeliveryTimestamp)
         let serverGuid = edits.serverGuid.unwrapChange(orKeepValue: message.serverGuid)
 
+        if message.isPoll {
+            owsFailDebug("Poll messages should not be editable")
+        }
+
         /// Copies the wrapped message's fields with edited fields overridden as
         /// appropriate. Attachment-related properties are zeroed-out, and
         /// handled later by ``EditManagerAttachments/reconcileAttachments``.
@@ -156,7 +160,8 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             linkPreview: nil,
             messageSticker: nil,
             giftBadge: message.giftBadge,
-            paymentNotification: nil
+            paymentNotification: nil,
+            isPoll: false
         )
     }
 
@@ -212,6 +217,10 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
         let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
 
+        if message.isPoll {
+            owsFailDebug("Poll messages should not be editable")
+        }
+
         /// Copies the wrapped message's fields with edited fields overridden as
         /// appropriate. Attachment-related properties are zeroed-out, and
         /// handled later by ``EditManagerAttachments/reconcileAttachments``.
@@ -242,7 +251,8 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             contactShare: nil,
             linkPreview: nil,
             messageSticker: nil,
-            giftBadge: message.giftBadge
+            giftBadge: message.giftBadge,
+            isPoll: false
         )
     }
 

@@ -99,6 +99,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _linkPreview = messageBuilder.linkPreview;
     _messageSticker = messageBuilder.messageSticker;
     _giftBadge = messageBuilder.giftBadge;
+    _isPoll = messageBuilder.isPoll;
 
     return self;
 }
