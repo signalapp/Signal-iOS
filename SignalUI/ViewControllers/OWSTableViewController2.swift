@@ -386,12 +386,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             return cell
         }
 
-        OWSTableItem.configureCell(cell)
-
         if let title = item.title {
             cell.textLabel?.text = title
         }
 
+        // Use the general configureCell(), after which we'll manually configure
+        // the cell background further.
+        OWSTableItem.configureCell(cell)
         configureCellBackground(cell, indexPath: indexPath)
 
         return cell
