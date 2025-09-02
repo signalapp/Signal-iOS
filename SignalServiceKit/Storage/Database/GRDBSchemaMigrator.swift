@@ -644,9 +644,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dedupeSignalRecipients) { transaction in
-            autoreleasepool {
-                dedupeSignalRecipients(transaction: transaction)
-            }
+            try dedupeSignalRecipients(tx: transaction)
 
             try transaction.database.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
             try transaction.database.drop(index: "index_signal_recipients_on_recipientUUID")
@@ -6209,37 +6207,49 @@ public func createInitialGalleryRecords(transaction: DBWriteTransaction) throws 
     /// will just be removed by a later migration before they're ever used.
 }
 
-func dedupeSignalRecipients(transaction: DBWriteTransaction) {
-    let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-
-    var recipients: [SignalServiceAddress: [SignalRecipient.RowId]] = [:]
-
-    recipientDatabaseTable.enumerateAll(tx: transaction) { recipient in
-        recipients[recipient.address, default: []].append(recipient.id!)
-    }
-
-    for (address, recipientIds) in recipients {
-        guard recipientIds.count > 1 else {
-            continue
+extension GRDBSchemaMigrator {
+    static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {
+        struct Recipient: FetchableRecord, Decodable {
+            var id: Int64
+            var aciString: String?
+            var phoneNumber: String?
         }
-        // Since we have duplicate recipients for an address, we want to keep the one returned by the
-        // finder, since that is the one whose uniqueId is used as the `accountId` for the
-        // accountId finder.
-        guard
-            let primaryRecipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)
-        else {
-            owsFailDebug("primaryRecipient was unexpectedly nil")
-            continue
-        }
+        let fetchAllRecipients = "SELECT id, recipientUUID aciString, recipientPhoneNumber phoneNumber FROM model_SignalRecipient"
 
-        let redundantRecipientIds = recipientIds.filter { $0 != primaryRecipient.id }
-        for redundantId in redundantRecipientIds {
-            guard let redundantRecipient = recipientDatabaseTable.fetchRecipient(rowId: redundantId, tx: transaction) else {
-                owsFailDebug("redundantRecipient was unexpectedly nil")
-                continue
+        let recipientCursor = try Recipient.fetchCursor(tx.database, sql: fetchAllRecipients)
+        var recipientsByAciString = [String: [Int64]]()
+        var recipientsByPhoneNumber = [String: [Recipient]]()
+        while let recipient = try recipientCursor.next() {
+            if let aciString = recipient.aciString {
+                recipientsByAciString[aciString, default: []].append(recipient.id)
             }
-            Logger.info("removing redundant recipient: \(redundantRecipient)")
-            recipientDatabaseTable.removeRecipient(redundantRecipient, transaction: transaction)
+            if let phoneNumber = recipient.phoneNumber {
+                recipientsByPhoneNumber[phoneNumber, default: []].append(recipient)
+            }
+        }
+
+        // First, ensure there are no duplicate ACIs. If there are, we pick the one
+        // with the lowest rowID because that's the one that would be returned when
+        // fetching by ACI.
+        for (_, rowIds) in recipientsByAciString {
+            for duplicateRowId in rowIds.sorted().dropFirst() {
+                try tx.database.execute(sql: "DELETE FROM model_SignalRecipient WHERE id = ?", arguments: [duplicateRowId])
+            }
+        }
+
+        // Next, ensure there are no duplicate phone numbers. If there are, we
+        // similarly keep the first one, and then we clear (if there's an ACI) or
+        // delete (if there's not an ACI) the others.
+        for (_, recipients) in recipientsByPhoneNumber {
+            for recipient in recipients.sorted(by: { $0.id < $1.id }).dropFirst() {
+                let mutationSql: String
+                if recipient.aciString != nil {
+                    mutationSql = "UPDATE model_SignalRecipient SET recipientPhoneNumber = NULL WHERE id = ?"
+                } else {
+                    mutationSql = "DELETE FROM model_SignalRecipient WHERE id = ?"
+                }
+                try tx.database.execute(sql: mutationSql, arguments: [recipient.id])
+            }
         }
     }
 }

@@ -616,66 +616,6 @@ class SignalRecipientTest: SSKBaseTest {
         ])
     }
 
-    func testDeDupe() throws {
-        let databaseQueue = DatabaseQueue()
-        let deviceIdsObjC = NSOrderedSet(array: [NSNumber]())
-        let encodedDevices = SDSCodableModelLegacySerializer().serializeAsLegacySDSData(property: deviceIdsObjC)
-        try databaseQueue.write { db in
-            try db.execute(
-                sql: """
-                CREATE
-                    TABLE
-                        IF NOT EXISTS "model_SignalRecipient" (
-                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-                            ,"recordType" INTEGER NOT NULL
-                            ,"uniqueId" TEXT NOT NULL UNIQUE
-                                ON CONFLICT FAIL
-                            ,"devices" BLOB NOT NULL
-                            ,"recipientPhoneNumber" TEXT
-                            ,"recipientUUID" TEXT
-                        )
-                ;
-                """
-            )
-            let aci1 = Aci.randomForTesting()
-            let aci2 = Aci.randomForTesting()
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
-                arguments: [
-                    SDSRecordType.signalRecipient.rawValue,
-                    UUID().uuidString,
-                    aci1.serviceIdUppercaseString,
-                    encodedDevices,
-                ],
-            )
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
-                arguments: [
-                    SDSRecordType.signalRecipient.rawValue,
-                    UUID().uuidString,
-                    aci1.serviceIdUppercaseString,
-                    encodedDevices,
-                ],
-            )
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (recordType, uniqueId, recipientUUID, devices) VALUES (?, ?, ?, ?)",
-                arguments: [
-                    SDSRecordType.signalRecipient.rawValue,
-                    UUID().uuidString,
-                    aci2.serviceIdUppercaseString,
-                    encodedDevices,
-                ],
-            )
-            do {
-                let tx = DBWriteTransaction(database: db)
-                defer { tx.finalizeTransaction() }
-                dedupeSignalRecipients(transaction: tx)
-            }
-            let recipientCount = try Int64.fetchOne(db, sql: "SELECT COUNT(*) FROM model_SignalRecipient")
-            XCTAssertEqual(recipientCount, 2)
-        }
-    }
-
     // MARK: - Helpers
 
     @discardableResult
@@ -864,6 +804,73 @@ final class SignalRecipient2Test: XCTestCase {
                 recipientManager.markAsRegisteredAndSave(recipient, deviceId: DeviceId(validating: testCase.addedDeviceId)!, shouldUpdateStorageService: false, tx: tx)
                 XCTAssertEqual(Set(recipient.deviceIds), Set(testCase.expectedDeviceIds.map { DeviceId(validating: $0)! }), "\(testCase)")
             }
+        }
+    }
+
+    func testDeDupe() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: """
+                CREATE
+                    TABLE
+                        IF NOT EXISTS "model_SignalRecipient" (
+                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                            ,"recipientPhoneNumber" TEXT
+                            ,"recipientUUID" TEXT
+                        )
+                ;
+                """
+            )
+            let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+            let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+            let aci3 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000C")
+            let phoneNumber1 = "+16505550101"
+            let phoneNumber2 = "+16505550102"
+            let phoneNumber3 = "+16505550103"
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientUUID) VALUES (?)",
+                arguments: [aci1.serviceIdUppercaseString],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientUUID, recipientPhoneNumber) VALUES (?, ?)",
+                arguments: [aci1.serviceIdUppercaseString, phoneNumber1],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientPhoneNumber) VALUES (?)",
+                arguments: [phoneNumber1],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientUUID, recipientPhoneNumber) VALUES (?, ?)",
+                arguments: [aci2.serviceIdUppercaseString, phoneNumber2],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientUUID) VALUES (?)",
+                arguments: [aci2.serviceIdUppercaseString],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientUUID, recipientPhoneNumber) VALUES (?, ?)",
+                arguments: [aci3.serviceIdUppercaseString, phoneNumber2],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientPhoneNumber) VALUES (?)",
+                arguments: [phoneNumber3],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (recipientPhoneNumber) VALUES (?)",
+                arguments: [phoneNumber3],
+            )
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.dedupeSignalRecipients(tx: tx)
+            }
+            let recipientIds = try Int64.fetchAll(db, sql: "SELECT id FROM model_SignalRecipient")
+            XCTAssertEqual(recipientIds, [1, 4, 6, 7])
+            let phoneNumbers = try (String?).fetchAll(db, sql: "SELECT recipientPhoneNumber FROM model_SignalRecipient ORDER BY id")
+            XCTAssertEqual(phoneNumbers, [nil, phoneNumber2, nil, phoneNumber3])
+            let aciStrings = try (String?).fetchAll(db, sql: "SELECT recipientUUID FROM model_SignalRecipient ORDER BY id")
+            XCTAssertEqual(aciStrings, [aci1.serviceIdUppercaseString, aci2.serviceIdUppercaseString, aci3.serviceIdUppercaseString, nil])
         }
     }
 }
