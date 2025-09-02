@@ -112,7 +112,7 @@ class BackupOnboardingCoordinator {
             BackupRecordKeyViewController(
                 aepMode: .current(aep, localDeviceAuthSuccess),
                 options: [.showContinueButton],
-                onCompletion: { [self] _ in
+                onContinuePressed: { [self] _ in
                     showConfirmBackupKey(aep: aep)
                 },
             ),

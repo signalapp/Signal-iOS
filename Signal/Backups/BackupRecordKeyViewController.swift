@@ -11,9 +11,6 @@ class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
     struct Option: OptionSet {
         let rawValue: Int
 
-        /// Show a "done" button instead of the nav bar "back" button. Note that
-        /// this prevents dismissal using standard navigation.
-        static let replaceNavBarBackWithDoneButton = Option(rawValue: 1 << 0)
         /// Show a "continue" button in the view footer. Not compatible with
         /// `.showCreateNewKeyButton`.
         static let showContinueButton = Option(rawValue: 1 << 1)
@@ -36,43 +33,31 @@ class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
         }
     }
 
-    private let onCompletion: (BackupRecordKeyViewController) -> Void
-    private let onCreateNewKeyPressed: (BackupRecordKeyViewController) -> Void
+    private let onContinuePressedBlock: (BackupRecordKeyViewController) -> Void
+    private let onCreateNewKeyPressedBlock: (BackupRecordKeyViewController) -> Void
     private let options: [Option]
     private let viewModel: BackupRecordKeyViewModel
 
     /// - Parameter onCreateNewKeyPressed
     /// Called when the user taps the "create new key" button. Only relevant if
-    /// the `.showCreateNewKey` option is passed.
-    /// - Parameter onCompletion
-    /// Called when the user "completes" recording their Backup Key, such as by
-    /// tapping a "continue" or "done" button (depending on the passed options).
+    /// the `.showCreateNewKeyButton` option is passed.
+    /// - Parameter onContinuePressed
+    /// Called when the user taps the "continue" button. Only relevant if the
+    /// `.showContinueButton` option is passed.
     init(
         aepMode: AEPMode,
         options: [Option],
         onCreateNewKeyPressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
-        onCompletion: @escaping (BackupRecordKeyViewController) -> Void
+        onContinuePressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
     ) {
-        self.onCompletion = onCompletion
-        self.onCreateNewKeyPressed = onCreateNewKeyPressed
+        self.onContinuePressedBlock = onContinuePressed
+        self.onCreateNewKeyPressedBlock = onCreateNewKeyPressed
         self.options = options
         self.viewModel = BackupRecordKeyViewModel(aep: aepMode.aep, options: options)
 
         super.init(wrappedView: BackupRecordKeyView(viewModel: viewModel))
 
         viewModel.actionsDelegate = self
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        if options.contains(.replaceNavBarBackWithDoneButton) {
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        if options.contains(.replaceNavBarBackWithDoneButton) {
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        }
     }
 }
 
@@ -90,12 +75,12 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 
-    fileprivate func complete() {
-        onCompletion(self)
+    fileprivate func onContinuePressed() {
+        onContinuePressedBlock(self)
     }
 
-    fileprivate func createNewKey() {
-        onCreateNewKeyPressed(self)
+    fileprivate func onCreateNewKeyPressed() {
+        onCreateNewKeyPressedBlock(self)
     }
 }
 
@@ -104,8 +89,8 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
 private class BackupRecordKeyViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func copyToClipboard(_ aep: AccountEntropyPool)
-        func complete()
-        func createNewKey()
+        func onContinuePressed()
+        func onCreateNewKeyPressed()
     }
 
     let aep: AccountEntropyPool
@@ -124,12 +109,12 @@ private class BackupRecordKeyViewModel: ObservableObject {
         actionsDelegate?.copyToClipboard(aep)
     }
 
-    func complete() {
-        actionsDelegate?.complete()
+    func onContinuePressed() {
+        actionsDelegate?.onContinuePressed()
     }
 
-    func createNewKey() {
-        actionsDelegate?.createNewKey()
+    func onCreateNewKeyPressed() {
+        actionsDelegate?.onCreateNewKeyPressed()
     }
 }
 
@@ -195,7 +180,7 @@ struct BackupRecordKeyView: View {
                 Spacer().frame(height: 32)
 
                 Button {
-                    viewModel.createNewKey()
+                    viewModel.onCreateNewKeyPressed()
                 } label: {
                     Text(OWSLocalizedString(
                         "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
@@ -209,7 +194,7 @@ struct BackupRecordKeyView: View {
                 Spacer().frame(height: 32)
 
                 Button {
-                    viewModel.complete()
+                    viewModel.onContinuePressed()
                 } label: {
                     Text(CommonStrings.continueButton)
                         .foregroundStyle(.white)
@@ -225,18 +210,6 @@ struct BackupRecordKeyView: View {
         }
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
-        .navigationBarBackButtonHidden(viewModel.options.contains(.replaceNavBarBackWithDoneButton))
-        .navigationBarItems(leading: viewModel.options.contains(.replaceNavBarBackWithDoneButton) ? doneButton : nil)
-    }
-
-    private var doneButton: some View {
-        Button {
-            viewModel.complete()
-        } label: {
-            Text(CommonStrings.doneButton)
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.Signal.label)
-        }
     }
 }
 
@@ -308,8 +281,8 @@ private extension BackupRecordKeyViewModel {
     ) -> BackupRecordKeyViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
             func copyToClipboard(_ aep: AccountEntropyPool) { print("Copying \(aep.rawData) to clipboard...!") }
-            func complete() { print("Continuing...!") }
-            func createNewKey() { print("Creating new key...!") }
+            func onContinuePressed() { print("Completing...!") }
+            func onCreateNewKeyPressed() { print("Creating new key...!") }
         }
 
         let viewModel = BackupRecordKeyViewModel(
@@ -322,18 +295,9 @@ private extension BackupRecordKeyViewModel {
     }
 }
 
-#Preview("NavBarDone") {
-    NavigationView {
-        BackupRecordKeyView(viewModel: .forPreview(options: [.replaceNavBarBackWithDoneButton]))
-    }
-}
-
 #Preview("CreateNewKey") {
     NavigationView {
-        BackupRecordKeyView(viewModel: .forPreview(options: [
-            .replaceNavBarBackWithDoneButton,
-            .showCreateNewKeyButton,
-        ]))
+        BackupRecordKeyView(viewModel: .forPreview(options: [.showCreateNewKeyButton]))
     }
 }
 

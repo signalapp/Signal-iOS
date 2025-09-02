@@ -932,7 +932,7 @@ class BackupSettingsViewController:
 
         let recordKeyViewController = BackupRecordKeyViewController(
             aepMode: .current(aep, authSuccess),
-            options: [.replaceNavBarBackWithDoneButton, .showCreateNewKeyButton],
+            options: [.showCreateNewKeyButton],
             onCreateNewKeyPressed: { [weak self] recordKeyViewController in
                 guard let self else { return }
 
@@ -940,24 +940,6 @@ class BackupSettingsViewController:
                 // in a "create new AEP" flow.
                 showCreateNewBackupKeyWarningSheet(fromViewController: recordKeyViewController)
             },
-            onCompletion: { [weak self] recordKeyViewController in
-                guard let self else { return }
-
-                let keepKeySafeSheet = BackupKeepKeySafeSheet(
-                    onContinue: { [weak self] in
-                        guard let self else { return }
-                        navigationController?.popToViewController(self, animated: true)
-                    },
-                    onSeeKeyAgain: {
-                        // The sheet is already dismissed, and the topmost
-                        // view is a BackupRecordKeyViewController.
-                    }
-                )
-                recordKeyViewController.present(
-                    keepKeySafeSheet,
-                    animated: true
-                )
-            }
         )
 
         navigationController?.pushViewController(recordKeyViewController, animated: true)
@@ -1014,7 +996,7 @@ class BackupSettingsViewController:
         let recordKeyViewController = BackupRecordKeyViewController(
             aepMode: .newCandidate(newCandidateAEP),
             options: [.showContinueButton],
-            onCompletion: { [weak self] _ in
+            onContinuePressed: { [weak self] _ in
                 guard let self else { return }
                 showConfirmNewBackupKey(newCandidateAEP: newCandidateAEP)
             }

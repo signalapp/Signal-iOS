@@ -63,7 +63,7 @@ class BackupsReminderCoordinator {
             BackupRecordKeyViewController(
                 aepMode: .current(aep, localDeviceAuthSuccess),
                 options: [.showContinueButton],
-                onCompletion: { [weak self] _ in
+                onContinuePressed: { [weak self] _ in
                     self?.showConfirmBackupKey(backupKeyReminderNavController: backupKeyReminderNavController, aep: aep)
                 },
             ),
