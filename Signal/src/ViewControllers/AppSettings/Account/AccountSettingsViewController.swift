@@ -267,27 +267,20 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 // Don't allow changing number if we are in the middle of registering.
                 return .disallowed
             }
-            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             guard
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction),
                 let localE164 = E164(localIdentifiers.phoneNumber),
                 let authToken = tsAccountManager.storedServerAuthToken(tx: transaction),
-                let localRecipient = recipientDatabaseTable.fetchRecipient(
-                    serviceId: localIdentifiers.aci,
-                    transaction: transaction
-                ),
                 let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction).ifValid
             else {
                 return .disallowed
             }
-            let localUserAllDeviceIds = localRecipient.deviceIds
 
             return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: localIdentifiers.aci,
-                localDeviceId: localDeviceId,
-                localUserAllDeviceIds: localUserAllDeviceIds
+                localDeviceId: localDeviceId
             ))
         }
     }

@@ -12,11 +12,11 @@ import Foundation
 /// sent through our message-sending machinery, and is instead part of a
 /// PNI distribution request (and thereafter distributed by the service).
 final class PniDistributionSyncMessage {
-    private let pniIdentityKeyPair: ECKeyPair
-    private let signedPreKey: SignedPreKeyRecord
-    private let pqLastResortPreKey: KyberPreKeyRecord
-    private let registrationId: UInt32
-    private let e164: E164
+    let pniIdentityKeyPair: ECKeyPair
+    let signedPreKey: SignedPreKeyRecord
+    let pqLastResortPreKey: KyberPreKeyRecord
+    let registrationId: UInt32
+    let e164: E164
 
     init(
         pniIdentityKeyPair: ECKeyPair,

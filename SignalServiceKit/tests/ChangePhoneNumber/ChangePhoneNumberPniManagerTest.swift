@@ -52,10 +52,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
-        let (parameters, pendingState) = await generateIdentity(
-            e164: e164,
-            linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).unwrapSuccess
+        let (parameters, pendingState) = await generateIdentity(e164: e164).unwrapSuccess
 
         XCTAssertEqual(e164, pendingState.newE164)
 
@@ -66,8 +63,6 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.first, pendingState.localDevicePniRegistrationId)
 
-        let expectedDeviceIds = [DeviceId(validating: 1)!, DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [expectedDeviceIds])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
@@ -76,18 +71,13 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
 
-        let isFailureResult = await generateIdentity(
-            e164: e164,
-            linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).isError
+        let isFailureResult = await generateIdentity(e164: e164).isError
 
         XCTAssertTrue(isFailureResult)
 
         XCTAssertEqual(identityManagerMock.generatedKeyPairs.count, 1)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
 
-        let expectedDeviceIds = [DeviceId(validating: 1)!, DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [expectedDeviceIds])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
@@ -98,10 +88,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
-        let (_, pendingState) = await generateIdentity(
-            e164: e164,
-            linkedDeviceIds: [DeviceId(validating: 2)!, DeviceId(validating: 3)!]
-        ).unwrapSuccess
+        let (_, pendingState) = await generateIdentity(e164: e164).unwrapSuccess
 
         db.write { transaction in
             try! changeNumberPniManager.finalizePniIdentity(
@@ -131,18 +118,14 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     // MARK: - Helpers
 
-    private func generateIdentity(
-        e164: E164,
-        linkedDeviceIds: [DeviceId]
-    ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
+    private func generateIdentity(e164: E164) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
         let aci = Aci.randomForTesting()
         let localDeviceId: DeviceId = .primary
 
         return await changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
             localAci: aci,
-            localDeviceId: localDeviceId,
-            localUserAllDeviceIds: [localDeviceId] + linkedDeviceIds
+            localDeviceId: localDeviceId
         )
     }
 }
@@ -213,12 +196,10 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
     }
 
     var buildOutcomes: [BuildOutcome] = []
-    var buildRequestedForDeviceIds: [[DeviceId]] = []
 
     func buildPniDistributionParameters(
         localAci: Aci,
         localDeviceId: LocalDeviceId,
-        localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
@@ -227,8 +208,6 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
     ) async throws -> PniDistribution.Parameters {
         let buildOutcome = buildOutcomes.first!
         buildOutcomes = Array(buildOutcomes.dropFirst())
-
-        buildRequestedForDeviceIds.append(localUserAllDeviceIds)
 
         switch buildOutcome {
         case .success:

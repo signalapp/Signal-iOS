@@ -37,7 +37,6 @@ public protocol ChangePhoneNumberPniManager {
         forNewE164 newE164: E164,
         localAci: Aci,
         localDeviceId: DeviceId,
-        localUserAllDeviceIds: [DeviceId]
     ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult
 
     /// Commits an identity generated for a change number request.
@@ -132,7 +131,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         forNewE164 newE164: E164,
         localAci: Aci,
         localDeviceId: DeviceId,
-        localUserAllDeviceIds: [DeviceId]
     ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
         logger.info("Generating PNI identity!")
 
@@ -154,7 +152,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             let parameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localAci,
                 localDeviceId: .valid(localDeviceId),
-                localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: pniIdentityKeyPair,
                 localE164: newE164,
                 localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,

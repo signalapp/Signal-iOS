@@ -48,58 +48,78 @@ public class MessageSender {
 
     // MARK: - Creating Signal Protocol Sessions
 
-    private func containsValidSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> Bool {
+    private func validSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> SessionRecord? {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         do {
             guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
-                return false
+                return nil
             }
-            return session.hasCurrentState
+            guard session.hasCurrentState else {
+                return nil
+            }
+            return session
         } catch {
             switch error {
             case RecipientIdError.mustNotUsePniBecauseAciExists:
                 throw error
             default:
-                return false
+                return nil
             }
         }
     }
 
     /// Establishes a session with the recipient if one doesn't already exist.
-    private func ensureRecipientHasSession(
+    private func createSession(
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
-        let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx)
-        }
-        if hasSession {
-            return
-        }
-
-        let preKeyBundle = try await makePrekeyRequest(
-            serviceId: serviceId,
-            deviceId: deviceId,
-            isTransient: isTransient,
-            sealedSenderParameters: sealedSenderParameters
-        )
-
-        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            try self.createSession(
-                for: preKeyBundle,
+        do {
+            let preKeyBundle = try await makePrekeyRequest(
                 serviceId: serviceId,
                 deviceId: deviceId,
-                transaction: tx
+                sealedSenderParameters: sealedSenderParameters
             )
+
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                try self._createSession(
+                    for: preKeyBundle,
+                    serviceId: serviceId,
+                    deviceId: deviceId,
+                    transaction: tx
+                )
+            }
+        } catch {
+            switch error {
+            case is UntrustedIdentityError:
+                // This *can* happen under normal usage, but it should happen relatively
+                // rarely. We expect it to happen whenever Bob reinstalls, and Alice
+                // messages Bob before she can pull down his latest identity. If it's
+                // happening a lot, we should rethink our profile fetching strategy.
+                throw error
+            case is InvalidKeySignatureError:
+                // This should never happen unless a broken client is uploading invalid
+                // keys. The server should now enforce valid signatures on upload,
+                // resulting in this become exceedingly rare as time goes by.
+                throw error
+            case MessageSenderError.prekeyRateLimit:
+                throw SignalServiceRateLimitedError()
+            case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
+                throw error
+            case RecipientIdError.mustNotUsePniBecauseAciExists:
+                throw error
+            case RequestMakerUDAuthError.udAuthFailure:
+                throw error
+            default:
+                owsAssertDebug(error.isNetworkFailureOrTimeout)
+                throw OWSRetryableMessageSenderError()
+            }
         }
     }
 
     private func makePrekeyRequest(
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> SignalServiceKit.PreKeyBundle {
         Logger.info("serviceId: \(serviceId).\(deviceId)")
@@ -116,11 +136,6 @@ public class MessageSender {
             // Check if this error is happening repeatedly. If so, return an
             // InvalidKeySignatureError as a terminal failure.
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: true)
-        }
-
-        if isTransient {
-            Logger.info("Skipping prekey request for transient message")
-            throw MessageSenderNoSessionForTransientMessageError()
         }
 
         var requestOptions: RequestMaker.Options = []
@@ -166,7 +181,7 @@ public class MessageSender {
         }
     }
 
-    private func createSession(
+    private func _createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         serviceId: ServiceId,
         deviceId: DeviceId,
@@ -174,7 +189,7 @@ public class MessageSender {
     ) throws {
         assert(!Thread.isMainThread)
 
-        if try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction) {
+        if try validSession(for: serviceId, deviceId: deviceId, tx: transaction) != nil {
             Logger.warn("Session already exists for \(serviceId), deviceId: \(deviceId).")
             return
         }
@@ -246,7 +261,7 @@ public class MessageSender {
             hadInvalidKeySignatureError(for: serviceId)
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: false)
         }
-        owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction), "Couldn't create session.")
+        owsAssertDebug(try validSession(for: serviceId, deviceId: deviceId, tx: transaction) != nil, "Couldn't create session.")
     }
 
     // MARK: - Untrusted Identities
@@ -1295,147 +1310,208 @@ public class MessageSender {
         messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [DeviceMessage] {
-        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let recipient = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return recipientDatabaseTable.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx)
-        }
-
-        // If we think the recipient isn't registered, don't build any device
-        // messages. Instead, send an empty message to the server to learn if the
-        // account has any devices.
-        guard let recipient, recipient.isRegistered else {
-            return []
-        }
-
-        var recipientDeviceIds = recipient.deviceIds
-
-        if messageSend.isSelfSend {
-            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
-            recipientDeviceIds.removeAll(where: { localDeviceId.equals($0) })
-        }
-
         guard messageSend.message.encryptionStyle == .whisper || messageSend.message.isResendRequest else {
             throw OWSAssertionError("Unexpected message type")
         }
-
-        var results = [DeviceMessage]()
-        for deviceId in recipientDeviceIds {
-            let deviceMessage = try await buildDeviceMessage(
-                messagePlaintextContent: messageSend.plaintextContent,
-                messageEncryptionStyle: messageSend.message.encryptionStyle,
-                serviceId: messageSend.serviceId,
-                deviceId: deviceId,
-                isTransient: messageSend.message.isOnline || messageSend.message.isTransientSKDM,
-                sealedSenderParameters: sealedSenderParameters
-            )
-            if let deviceMessage {
-                results.append(deviceMessage)
-            }
-        }
-        return results
+        return try await buildDeviceMessages(
+            serviceId: messageSend.serviceId,
+            isSelfSend: messageSend.isSelfSend,
+            encryptionStyle: messageSend.message.encryptionStyle,
+            buildPlaintextContent: { _, _ in messageSend.plaintextContent },
+            isTransient: messageSend.message.isOnline || messageSend.message.isTransientSKDM,
+            sealedSenderParameters: sealedSenderParameters
+        )
     }
 
-    /// Build a ``DeviceMessage`` for the given parameters describing a message.
+    /// Builds ``DeviceMessage``s for a recipient.
     ///
-    /// A `nil` return value indicates that the given message could not be built
-    /// due to an invalid device ID.
-    func buildDeviceMessage(
-        messagePlaintextContent: Data,
-        messageEncryptionStyle: EncryptionStyle,
+    /// This method is heavily optimized for the fast path where a session
+    /// already exists for all of the recipient's devices.
+    ///
+    /// - Parameters:
+    ///   - serviceId: The recipient's ServiceId. This may be an ACI, a PNI, or
+    ///   our own ACI. (It should never be our own PNI. Callers are expected to
+    ///   enforce this invariant.)
+    ///
+    ///   - isSelfSend: If true, `serviceId` is our own ACI. Callers are
+    ///   expected to have pre-existing knowledge of `localIdentifiers` and can
+    ///   thus compute this more efficiently.
+    ///
+    ///   - buildPlaintextContent: Constructs the plaintext content (i.e., the
+    ///   content to be encrypted) for a given `DeviceId`. This block will be
+    ///   invoked once for every `DeviceId` for which a `DeviceMessage` is
+    ///   returned. It may also be invoked for `DeviceId`s which aren't returned
+    ///   if we can't fetch pre keys for those devices.
+    ///
+    ///   - isTransient: If false (the standard behavior), this method will
+    ///   issue network requests to fetch pre keys to establish missing Signal
+    ///   Protocol sessions. (If we don't establish a Signal Protocol session
+    ///   with `serviceId`, we can't send it ANY messages.) As a rate limiting
+    ///   optimization, if true, this method will never make a network request;
+    ///   it will either encrypt using already-available Signal Protocol
+    ///   sessions or will throw an error.
+    func buildDeviceMessages(
         serviceId: ServiceId,
-        deviceId: DeviceId,
+        isSelfSend: Bool,
+        encryptionStyle: EncryptionStyle,
+        buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
-    ) async throws -> DeviceMessage? {
-        AssertNotOnMainThread()
+    ) async throws -> [DeviceMessage] {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        do {
-            try await ensureRecipientHasSession(
-                serviceId: serviceId,
-                deviceId: deviceId,
-                isTransient: isTransient,
-                sealedSenderParameters: sealedSenderParameters
-            )
-        } catch let error {
-            switch error {
-            case MessageSenderError.missingDevice:
-                // If we have an invalid device exception, remove this device from the
-                // recipient and suppress the error.
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                    self.updateDevices(
+        struct MissingSession {
+            var deviceId: DeviceId
+            var plaintextContent: Data
+        }
+
+        var deviceMessages: [DeviceMessage]
+        let missingSessions: [MissingSession]
+        (deviceMessages, missingSessions) = try await databaseStorage.awaitableWrite { tx -> ([DeviceMessage], [MissingSession]) in
+            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)
+
+            guard let recipient, recipient.isRegistered else {
+                return ([], [])
+            }
+
+            var deviceIds = recipient.deviceIds
+
+            if isSelfSend {
+                let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
+                deviceIds.removeAll(where: { localDeviceId.equals($0) })
+            }
+
+            var deviceMessages = [DeviceMessage]()
+            var missingSessions = [MissingSession]()
+            for deviceId in deviceIds {
+                let plaintextContent = try buildPlaintextContent(deviceId, tx)
+                do {
+                    deviceMessages.append(try self.buildDeviceMessage(
                         serviceId: serviceId,
-                        devicesToAdd: [],
-                        devicesToRemove: [deviceId],
-                        transaction: tx
-                    )
+                        deviceId: deviceId,
+                        encryptionStyle: encryptionStyle,
+                        plaintextContent: plaintextContent,
+                        sealedSenderParameters: sealedSenderParameters,
+                        tx: tx
+                    ))
+                } catch SignalError.sessionNotFound(_) {
+                    missingSessions.append(MissingSession(deviceId: deviceId, plaintextContent: plaintextContent))
                 }
-                return nil
-            case is MessageSenderNoSessionForTransientMessageError:
+            }
+
+            return (deviceMessages, missingSessions)
+        }
+
+        if !missingSessions.isEmpty {
+            if isTransient {
                 // When users re-register, we don't want transient messages (like typing
                 // indicators) to cause users to hit the prekey fetch rate limit. So we
                 // silently discard these message if there is no pre-existing session for
                 // the recipient.
-                throw error
-            case is UntrustedIdentityError:
-                // This *can* happen under normal usage, but it should happen relatively
-                // rarely. We expect it to happen whenever Bob reinstalls, and Alice
-                // messages Bob before she can pull down his latest identity. If it's
-                // happening a lot, we should rethink our profile fetching strategy.
-                throw error
-            case is InvalidKeySignatureError:
-                // This should never happen unless a broken client is uploading invalid
-                // keys. The server should now enforce valid signatures on upload,
-                // resulting in this become exceedingly rare as time goes by.
-                throw error
-            case MessageSenderError.prekeyRateLimit:
-                throw SignalServiceRateLimitedError()
-            case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
-                throw error
-            case RecipientIdError.mustNotUsePniBecauseAciExists:
-                throw error
-            case RequestMakerUDAuthError.udAuthFailure:
-                throw error
-            default:
-                owsAssertDebug(error.isNetworkFailureOrTimeout)
-                throw OWSRetryableMessageSenderError()
+                throw MessageSenderNoSessionForTransientMessageError()
+            }
+
+            Logger.info("Fetching pre keys for some of \(serviceId)'s devices: \(missingSessions.map(\.deviceId))")
+
+            for missingSession in missingSessions {
+                do {
+                    try await createSession(
+                        serviceId: serviceId,
+                        deviceId: missingSession.deviceId,
+                        sealedSenderParameters: sealedSenderParameters
+                    )
+                } catch MessageSenderError.missingDevice {
+                    // If we have an invalid device exception, remove this device from the
+                    // recipient and suppress the error.
+                    await databaseStorage.awaitableWrite { tx in
+                        self.updateDevices(
+                            serviceId: serviceId,
+                            devicesToAdd: [],
+                            devicesToRemove: [missingSession.deviceId],
+                            transaction: tx
+                        )
+                    }
+                }
+            }
+
+            deviceMessages += try await databaseStorage.awaitableWrite { tx -> [DeviceMessage] in
+                let deviceIds = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
+
+                return try missingSessions.filter({ deviceIds.contains($0.deviceId) }).map {
+                    do {
+                        return try self.buildDeviceMessage(
+                            serviceId: serviceId,
+                            deviceId: $0.deviceId,
+                            encryptionStyle: encryptionStyle,
+                            plaintextContent: $0.plaintextContent,
+                            sealedSenderParameters: sealedSenderParameters,
+                            tx: tx
+                        )
+                    } catch SignalError.sessionNotFound(_) {
+                        // It's possible that we'll archive or delete a session we just created
+                        // above before we reach this point. (For example, perhaps Storage Service
+                        // will tell us that the account is no longer registered.) This should be
+                        // rare, and we should be able to resolve any discrepancies by trying again
+                        // with exponential backoff.
+                        Logger.warn("Couldn't find session for \(serviceId) that we just created. Retrying…")
+                        throw OWSRetryableMessageSenderError()
+                    }
+                }
             }
         }
 
-        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            do {
-                switch messageEncryptionStyle {
-                case .whisper:
-                    return try self.encryptMessage(
-                        plaintextContent: messagePlaintextContent,
-                        serviceId: serviceId,
-                        deviceId: deviceId,
-                        sealedSenderParameters: sealedSenderParameters,
-                        transaction: tx
-                    )
-                case .plaintext:
-                    return try self.wrapPlaintextMessage(
-                        plaintextContent: messagePlaintextContent,
-                        serviceId: serviceId,
-                        deviceId: deviceId,
-                        sealedSenderParameters: sealedSenderParameters,
-                        transaction: tx
-                    )
-                @unknown default:
-                    throw OWSAssertionError("Unrecognized encryption style")
-                }
-            } catch IdentityManagerError.identityKeyMismatchForOutgoingMessage {
-                Logger.warn("Found identity key mismatch on outgoing message to \(serviceId).\(deviceId). Archiving session before retrying...")
-                let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
-                let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
-                throw OWSRetryableMessageSenderError()
-            } catch SignalError.untrustedIdentity {
-                Logger.warn("Found untrusted identity on outgoing message to \(serviceId). Wrapping error and throwing...")
-                throw UntrustedIdentityError(serviceId: serviceId)
-            } catch {
-                Logger.warn("Failed to encrypt message \(error)")
-                throw error
+        return deviceMessages
+    }
+
+    private func buildDeviceMessage(
+        serviceId: ServiceId,
+        deviceId: DeviceId,
+        encryptionStyle: EncryptionStyle,
+        plaintextContent: Data,
+        sealedSenderParameters: SealedSenderParameters?,
+        tx: DBWriteTransaction
+    ) throws -> DeviceMessage {
+        do {
+            switch encryptionStyle {
+            case .whisper:
+                return try self.encryptMessage(
+                    plaintextContent: plaintextContent,
+                    serviceId: serviceId,
+                    deviceId: deviceId,
+                    sealedSenderParameters: sealedSenderParameters,
+                    transaction: tx
+                )
+            case .plaintext:
+                return try self.wrapPlaintextMessage(
+                    plaintextContent: plaintextContent,
+                    serviceId: serviceId,
+                    deviceId: deviceId,
+                    sealedSenderParameters: sealedSenderParameters,
+                    transaction: tx
+                )
+            @unknown default:
+                throw OWSAssertionError("Unrecognized encryption style")
             }
+        } catch IdentityManagerError.identityKeyMismatchForOutgoingMessage {
+            Logger.warn("Found identity key mismatch on outgoing message to \(serviceId).\(deviceId). Archiving session before retrying...")
+            let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+            let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+            aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
+            throw OWSRetryableMessageSenderError()
+        } catch SignalError.untrustedIdentity {
+            Logger.warn("Found untrusted identity on outgoing message to \(serviceId). Wrapping error and throwing...")
+            throw UntrustedIdentityError(serviceId: serviceId)
+        } catch {
+            switch error {
+            case SignalError.sessionNotFound(_):
+                // Callers expect this error & handle it. They will report any anomalous failures.
+                break
+            default:
+                Logger.warn("Failed to encrypt message \(error)")
+            }
+            throw error
         }
     }
 
@@ -1662,10 +1738,6 @@ public class MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction) else {
-            throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
-        }
-
         let paddedPlaintext = plainText.paddedMessageBody
 
         let serializedMessage: Data
@@ -1774,8 +1846,9 @@ public class MessageSender {
             messageType = .plaintextContent
         }
 
-        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        let session = try sessionStore.loadSession(for: protocolAddress, context: transaction)!
+        guard let session = try validSession(for: serviceId, deviceId: deviceId, tx: transaction) else {
+            throw SignalError.sessionNotFound("")
+        }
         return DeviceMessage(
             type: messageType,
             destinationDeviceId: deviceId,

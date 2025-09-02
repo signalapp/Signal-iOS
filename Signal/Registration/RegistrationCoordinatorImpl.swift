@@ -4332,7 +4332,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             forNewE164: e164,
             localAci: changeNumberState.localAci,
             localDeviceId: changeNumberState.localDeviceId,
-            localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
         )
 
         switch pniResult {

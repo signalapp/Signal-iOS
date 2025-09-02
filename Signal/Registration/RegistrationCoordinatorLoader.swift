@@ -51,7 +51,6 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             public let oldAuthToken: String
             @AciUuid public var localAci: Aci
             public let localDeviceId: DeviceId
-            public let localUserAllDeviceIds: [DeviceId]
 
             public struct PendingPniState {
                 public let newE164: E164
@@ -68,14 +67,12 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
                 oldAuthToken: String,
                 localAci: Aci,
                 localDeviceId: DeviceId,
-                localUserAllDeviceIds: [DeviceId],
                 pniState: PendingPniState?
             ) {
                 self.oldE164 = oldE164
                 self.oldAuthToken = oldAuthToken
                 self._localAci = localAci.codableUuid
                 self.localDeviceId = localDeviceId
-                self.localUserAllDeviceIds = localUserAllDeviceIds
                 self.pniState = pniState
             }
         }
@@ -203,7 +200,6 @@ extension RegistrationMode {
                 oldAuthToken: params.oldAuthToken,
                 localAci: params.localAci,
                 localDeviceId: params.localDeviceId,
-                localUserAllDeviceIds: params.localUserAllDeviceIds,
                 pniState: nil
             ))
         }
@@ -223,8 +219,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
                 oldE164: state.oldE164,
                 oldAuthToken: state.oldAuthToken,
                 localAci: state.localAci,
-                localDeviceId: state.localDeviceId,
-                localUserAllDeviceIds: state.localUserAllDeviceIds
+                localDeviceId: state.localDeviceId
             ))
         }
     }
