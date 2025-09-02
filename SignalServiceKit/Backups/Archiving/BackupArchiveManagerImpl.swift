@@ -222,24 +222,29 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             progress: progress
         )
 
-        var backupSize = UInt64(metadata.encryptedDataLength)
-        let backupPlan = db.read { tx in
-            BackupSettingsStore().backupPlan(tx: tx)
-        }
-
-        switch backupPlan {
-        case .free:
-            break
-        case .paid, .paidExpiringSoon, .paidAsTester:
-            backupSize += metadata.attachmentByteSize
-        case .disabled, .disabling:
-            owsFailDebug("Shouldn't generate backup when backups is disabled")
-            backupSize = 0
-        }
-
         await db.awaitableWrite { tx in
-            BackupSettingsStore().setLastBackupDate(dateProvider(), tx: tx)
-            BackupSettingsStore().setLastBackupSizeBytes(UInt64(backupSize), tx: tx)
+            let backupFileSizeBytes: UInt64
+            let backupMediaSizeBytes: UInt64
+            switch backupSettingsStore.backupPlan(tx: tx) {
+            case .paid, .paidExpiringSoon, .paidAsTester:
+                backupFileSizeBytes = UInt64(metadata.encryptedDataLength)
+                backupMediaSizeBytes = metadata.attachmentByteSize
+            case .free:
+                backupFileSizeBytes = UInt64(metadata.encryptedDataLength)
+                backupMediaSizeBytes = 0
+            case .disabled, .disabling:
+                owsFailDebug("Shouldn't generate backup when backups is disabled")
+                backupFileSizeBytes = 0
+                backupMediaSizeBytes = 0
+            }
+
+            backupSettingsStore.setLastBackupDate(dateProvider(), tx: tx)
+            backupSettingsStore.setLastBackupSizeBytes(
+                backupFileSizeBytes: backupFileSizeBytes,
+                backupMediaSizeBytes: backupMediaSizeBytes,
+                tx: tx
+            )
+
             if let nonceMetadata = metadata.nonceMetadata {
                 backupNonceMetadataStore.setLastForwardSecrecyToken(
                     nonceMetadata.forwardSecrecyToken,

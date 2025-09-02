@@ -66,6 +66,7 @@ public struct BackupSettingsStore {
         static let plan = "planKey2"
         static let firstBackupDate = "firstBackupDate"
         static let lastBackupDate = "lastBackupDate"
+        static let lastBackupFileSizeBytes = "lastBackupFileSizeBytes"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let isBackupAttachmentDownloadQueueSuspended = "isBackupAttachmentDownloadQueueSuspended"
         static let shouldAllowBackupDownloadsOnCellular = "shouldAllowBackupDownloadsOnCellular"
@@ -231,15 +232,28 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
+    /// THe size of the user's most recent Backup proto file.
+    public func lastBackupFileSizeBytes(tx: DBReadTransaction) -> UInt64? {
+        return kvStore.getUInt64(Keys.lastBackupFileSizeBytes, transaction: tx)
+    }
+
+    /// The total size of a user's most recent Backup, including their Backup
+    /// proto file and backed-up media.
     public func lastBackupSizeBytes(tx: DBReadTransaction) -> UInt64? {
         return kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
     }
 
-    public func setLastBackupSizeBytes(_ lastBackupSizeBytes: UInt64, tx: DBWriteTransaction) {
-        kvStore.setUInt64(lastBackupSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
+    public func setLastBackupSizeBytes(
+        backupFileSizeBytes: UInt64,
+        backupMediaSizeBytes: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        kvStore.setUInt64(backupFileSizeBytes, key: Keys.lastBackupFileSizeBytes, transaction: tx)
+        kvStore.setUInt64(backupFileSizeBytes + backupMediaSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
     }
 
     public func resetLastBackupSizeBytes(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: Keys.lastBackupFileSizeBytes, transaction: tx)
         kvStore.removeValue(forKey: Keys.lastBackupSizeBytes, transaction: tx)
     }
 

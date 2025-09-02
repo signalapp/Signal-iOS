@@ -128,20 +128,29 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let backupsSection = OWSTableSection(title: "Backups")
 
+        let (
+            lastBackupFileSizeBytes,
+        ) = DependenciesBridge.shared.db.read { tx in
+            return (
+                BackupSettingsStore().lastBackupFileSizeBytes(tx: tx)
+            )
+        }
+
         if mode != .registration {
             backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") {
                 self.exportMessageBackupProto()
             })
         }
-
-        backupsSection.add(.switch(
-            withText: "Offload all attachments",
-            subtitle: "If on and \"Optimize Storage\" enabled, offload all attachments instead of only those >30d old",
-            isOn: { Attachment.offloadingThresholdOverride },
-            actionBlock: { _ in
-                Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
-            }
-        ))
+        if FeatureFlags.Backups.showOptimizeMedia {
+            backupsSection.add(.switch(
+                withText: "Offload all attachments",
+                subtitle: "If on and \"Optimize Storage\" enabled, offload all attachments instead of only those >30d old",
+                isOn: { Attachment.offloadingThresholdOverride },
+                actionBlock: { _ in
+                    Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
+                }
+            ))
+        }
         backupsSection.add(.switch(
             withText: "Disable transit tier downloads",
             subtitle: "Only download backed-up media, never last 45 days free tier media",
@@ -174,11 +183,14 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 self?.presentToast(text: "Backups must be disabled to reenable onboarding!")
             }
         })
-
         backupsSection.add(.actionItem(withText: "Backup media integrity check") { [weak self] in
             let vc = InternalListMediaViewController()
             self?.navigationController?.pushViewController(vc, animated: true)
         })
+        backupsSection.add(.copyableItem(
+            label: "Last Backup chats/messages file size",
+            value: lastBackupFileSizeBytes.flatMap { ByteCountFormatter().string(for: $0) }
+        ))
 
         if backupsSection.items.isEmpty.negated {
             contents.add(backupsSection)
