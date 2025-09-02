@@ -71,23 +71,32 @@ public class MessageSender {
     /// Establishes a session with the recipient if one doesn't already exist.
     private func createSession(
         serviceId: ServiceId,
-        deviceId: DeviceId,
+        deviceId: PreKeyDevice,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
         do {
-            let preKeyBundle = try await makePrekeyRequest(
+            var preKeyBundle = try await makePreKeyRequest(
                 serviceId: serviceId,
                 deviceId: deviceId,
                 sealedSenderParameters: sealedSenderParameters
             )
 
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                try self._createSession(
-                    for: preKeyBundle,
-                    serviceId: serviceId,
-                    deviceId: deviceId,
-                    transaction: tx
-                )
+                switch deviceId {
+                case .all:
+                    self.updateDevices(
+                        serviceId: serviceId,
+                        deviceIds: preKeyBundle.devices.map(\.deviceId),
+                        tx: tx
+                    )
+                case .specific(let deviceId):
+                    owsAssertDebug(preKeyBundle.devices.map(\.deviceId) == [deviceId], "Server returned unexpected device bundles.")
+                    preKeyBundle.devices.removeAll(where: { $0.deviceId != deviceId })
+                    guard preKeyBundle.devices.map(\.deviceId) == [deviceId] else {
+                        throw OWSAssertionError("The server didn't return a bundle for the device we requested.")
+                    }
+                }
+                try self._createSessions(for: preKeyBundle, serviceId: serviceId, tx: tx)
             }
         } catch {
             switch error {
@@ -117,21 +126,24 @@ public class MessageSender {
         }
     }
 
-    private func makePrekeyRequest(
+    private enum PreKeyDevice {
+        case all
+        case specific(DeviceId)
+    }
+
+    private func makePreKeyRequest(
         serviceId: ServiceId,
-        deviceId: DeviceId,
+        deviceId: PreKeyDevice,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> SignalServiceKit.PreKeyBundle {
-        Logger.info("serviceId: \(serviceId).\(deviceId)")
-
         // As an optimization, skip the request if an error is guaranteed.
         if willDefinitelyHaveUntrustedIdentityError(for: serviceId) {
-            Logger.info("Skipping prekey request due to untrusted identity.")
+            Logger.warn("Skipping prekey request due to untrusted identity.")
             throw UntrustedIdentityError(serviceId: serviceId)
         }
 
         if willLikelyHaveInvalidKeySignatureError(for: serviceId) {
-            Logger.info("Skipping prekey request due to invalid prekey signature.")
+            Logger.warn("Skipping prekey request due to invalid prekey signature.")
 
             // Check if this error is happening repeatedly. If so, return an
             // InvalidKeySignatureError as a terminal failure.
@@ -159,8 +171,15 @@ public class MessageSender {
         )
 
         do {
+            let deviceIdParam: String
+            switch deviceId {
+            case .all:
+                deviceIdParam = "*"
+            case .specific(let deviceId):
+                deviceIdParam = String(deviceId.rawValue)
+            }
             let result = try await requestMaker.makeRequest {
-                return OWSRequestFactory.recipientPreKeyRequest(serviceId: serviceId, deviceId: deviceId, auth: $0)
+                return OWSRequestFactory.recipientPreKeyRequest(serviceId: serviceId, deviceId: deviceIdParam, auth: $0)
             }
             guard let responseData = result.response.responseBodyData else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
@@ -171,8 +190,6 @@ public class MessageSender {
             return bundle
         } catch {
             switch error.httpStatusCode {
-            case 404:
-                throw MessageSenderError.missingDevice
             case 429:
                 throw MessageSenderError.prekeyRateLimit
             default:
@@ -181,21 +198,29 @@ public class MessageSender {
         }
     }
 
-    private func _createSession(
+    private func _createSessions(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         serviceId: ServiceId,
-        deviceId: DeviceId,
-        transaction: DBWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         assert(!Thread.isMainThread)
+
+        for deviceBundle in preKeyBundle.devices {
+            try _createSession(for: deviceBundle, serviceId: serviceId, identityKey: preKeyBundle.identityKey, tx: tx)
+        }
+    }
+
+    private func _createSession(
+        for deviceBundle: SignalServiceKit.PreKeyBundle.PreKeyDeviceBundle,
+        serviceId: ServiceId,
+        identityKey: IdentityKey,
+        tx transaction: DBWriteTransaction
+    ) throws {
+        let deviceId = deviceBundle.deviceId
 
         if try validSession(for: serviceId, deviceId: deviceId, tx: transaction) != nil {
             Logger.warn("Session already exists for \(serviceId), deviceId: \(deviceId).")
             return
-        }
-
-        guard let deviceBundle = preKeyBundle.devices.first(where: { $0.deviceId == deviceId }) else {
-            throw OWSAssertionError("Server didn't provide a bundle for the requested device.")
         }
 
         Logger.info("Creating session for \(serviceId), deviceId: \(deviceId); signed \(deviceBundle.signedPreKey.keyId), one-time \(deviceBundle.preKey?.keyId as Optional), kyber \(deviceBundle.pqPreKey.keyId as Optional)")
@@ -210,7 +235,7 @@ public class MessageSender {
                 signedPrekeyId: deviceBundle.signedPreKey.keyId,
                 signedPrekey: deviceBundle.signedPreKey.publicKey,
                 signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                identity: preKeyBundle.identityKey,
+                identity: identityKey,
                 kyberPrekeyId: deviceBundle.pqPreKey.keyId,
                 kyberPrekey: deviceBundle.pqPreKey.publicKey,
                 kyberPrekeySignature: deviceBundle.pqPreKey.signature
@@ -222,7 +247,7 @@ public class MessageSender {
                 signedPrekeyId: deviceBundle.signedPreKey.keyId,
                 signedPrekey: deviceBundle.signedPreKey.publicKey,
                 signedPrekeySignature: deviceBundle.signedPreKey.signature,
-                identity: preKeyBundle.identityKey,
+                identity: identityKey,
                 kyberPrekeyId: deviceBundle.pqPreKey.keyId,
                 kyberPrekey: deviceBundle.pqPreKey.publicKey,
                 kyberPrekeySignature: deviceBundle.pqPreKey.signature
@@ -244,7 +269,7 @@ public class MessageSender {
             Logger.warn("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
-                preKeyBundle: preKeyBundle,
+                identityKey: identityKey,
                 transaction: transaction
             )
             throw UntrustedIdentityError(serviceId: serviceId)
@@ -268,11 +293,11 @@ public class MessageSender {
 
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
-        preKeyBundle: SignalServiceKit.PreKeyBundle,
+        identityKey: IdentityKey,
         transaction tx: DBWriteTransaction
     ) {
         let identityManager = DependenciesBridge.shared.identityManager
-        identityManager.saveIdentityKey(preKeyBundle.identityKey, for: serviceId, tx: tx)
+        identityManager.saveIdentityKey(identityKey, for: serviceId, tx: tx)
     }
 
     /// If true, we expect fetching a bundle will fail no matter what it contains.
@@ -1413,26 +1438,44 @@ public class MessageSender {
                 throw MessageSenderNoSessionForTransientMessageError()
             }
 
-            Logger.info("Fetching pre keys for some of \(serviceId)'s devices: \(missingSessions.map(\.deviceId))")
-
-            for missingSession in missingSessions {
+            // If we don't have *any* sessions, we can do less work by asking the
+            // server for all of them at the same time. (This also helps establish the
+            // initial list of devices when contacting someone for the first time.)
+            if deviceMessages.isEmpty {
                 do {
                     try await createSession(
                         serviceId: serviceId,
-                        deviceId: missingSession.deviceId,
+                        deviceId: .all,
                         sealedSenderParameters: sealedSenderParameters
                     )
-                } catch MessageSenderError.missingDevice {
-                    // If we have an invalid device exception, remove this device from the
-                    // recipient and suppress the error.
-                    await databaseStorage.awaitableWrite { tx in
-                        self.updateDevices(
-                            serviceId: serviceId,
-                            devicesToAdd: [],
-                            devicesToRemove: [missingSession.deviceId],
-                            transaction: tx
-                        )
+                } catch where error.httpStatusCode == 404 {
+                    try await handle404(serviceId: serviceId, isSelfSend: isSelfSend)
+                }
+            } else {
+                try await withThrowingTaskGroup { taskGroup in
+                    for missingSession in missingSessions {
+                        taskGroup.addTask {
+                            do {
+                                try await self.createSession(
+                                    serviceId: serviceId,
+                                    deviceId: .specific(missingSession.deviceId),
+                                    sealedSenderParameters: sealedSenderParameters
+                                )
+                            } catch where error.httpStatusCode == 404 {
+                                // If we have an invalid device exception, remove this device from the
+                                // recipient and suppress the error.
+                                await databaseStorage.awaitableWrite { tx in
+                                    self.updateDevices(
+                                        serviceId: serviceId,
+                                        devicesToAdd: [],
+                                        devicesToRemove: [missingSession.deviceId],
+                                        transaction: tx
+                                    )
+                                }
+                            }
+                        }
                     }
+                    try await taskGroup.waitForAll()
                 }
             }
 
@@ -1640,11 +1683,7 @@ public class MessageSender {
 
         switch responseError.httpStatusCode {
         case 404:
-            if !messageSend.isSelfSend {
-                try await checkIfAccountExists(serviceId: messageSend.serviceId)
-            }
-            Logger.warn("Server endpoints disagree about registration status for \(messageSend.serviceId). Backing off and retrying…")
-            throw OWSRetryableMessageSenderError()
+            try await handle404(serviceId: messageSend.serviceId, isSelfSend: messageSend.isSelfSend)
         case 409:
             let response = try MismatchedDevices.parse(responseError.httpResponseData ?? Data())
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -1678,6 +1717,14 @@ public class MessageSender {
         }
     }
 
+    private func handle404(serviceId: ServiceId, isSelfSend: Bool) async throws -> Never {
+        if !isSelfSend {
+            try await checkIfAccountExists(serviceId: serviceId)
+        }
+        Logger.warn("Server endpoints disagree about registration status for \(serviceId). Backing off and retrying…")
+        throw OWSRetryableMessageSenderError()
+    }
+
     // MARK: - Unregistered, Missing, & Stale Devices
 
     func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [DeviceId], extraDevices: [DeviceId], tx: DBWriteTransaction) {
@@ -1698,31 +1745,57 @@ public class MessageSender {
         }
     }
 
+    private func updateDevices(
+        serviceId: ServiceId,
+        deviceIds: [DeviceId],
+        tx: DBWriteTransaction
+    ) {
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        self._updateDevices(
+            serviceId: serviceId,
+            recipient: recipient,
+            devicesToAdd: Array(Set(deviceIds).subtracting(recipient.deviceIds)),
+            devicesToRemove: Array(Set(recipient.deviceIds).subtracting(deviceIds)),
+            tx: tx
+        )
+    }
+
     func updateDevices(
         serviceId: ServiceId,
         devicesToAdd: [DeviceId],
         devicesToRemove: [DeviceId],
-        transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
+    ) {
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        self._updateDevices(serviceId: serviceId, recipient: recipient, devicesToAdd: devicesToAdd, devicesToRemove: devicesToRemove, tx: tx)
+    }
+
+    private func _updateDevices(
+        serviceId: ServiceId,
+        recipient: SignalRecipient,
+        devicesToAdd: [DeviceId],
+        devicesToRemove: [DeviceId],
+        tx: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
-        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
         let recipientManager = DependenciesBridge.shared.recipientManager
         recipientManager.modifyAndSave(
             recipient,
             deviceIdsToAdd: devicesToAdd,
             deviceIdsToRemove: devicesToRemove,
             shouldUpdateStorageService: true,
-            tx: transaction
+            tx: tx
         )
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: transaction)
+                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
             }
         }
     }

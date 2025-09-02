@@ -8,7 +8,6 @@ public import LibSignalClient
 
 public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
     case prekeyRateLimit
-    case missingDevice
     case blockedContactRecipient
     case threadMissing
 
@@ -19,7 +18,7 @@ public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescription
                 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
                 comment: "Error message indicating that message send failed due to block list"
             )
-        case .prekeyRateLimit, .missingDevice, .threadMissing:
+        case .prekeyRateLimit, .threadMissing:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SEND_FAILED",
                 comment: "Label indicating that a message failed to send."
@@ -34,8 +33,6 @@ public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescription
         case .prekeyRateLimit:
             // TODO: Retry with backoff.
             // TODO: Can we honor a retry delay hint from the response?
-            return true
-        case .missingDevice:
             return true
         case .blockedContactRecipient:
             return false

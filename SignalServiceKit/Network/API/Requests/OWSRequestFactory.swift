@@ -487,7 +487,7 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
     }
 
-    static func recipientPreKeyRequest(serviceId: ServiceId, deviceId: DeviceId, auth: TSRequest.SealedSenderAuth?) -> TSRequest {
+    static func recipientPreKeyRequest(serviceId: ServiceId, deviceId: String, auth: TSRequest.SealedSenderAuth?) -> TSRequest {
         let path = "\(self.textSecureKeysAPI)/\(serviceId.serviceIdString)/\(deviceId)"
 
         var request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])

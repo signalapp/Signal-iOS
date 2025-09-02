@@ -7,8 +7,8 @@ import Foundation
 import LibSignalClient
 
 struct PreKeyBundle: Decodable {
-    let identityKey: IdentityKey
-    let devices: [PreKeyDeviceBundle]
+    var identityKey: IdentityKey
+    var devices: [PreKeyDeviceBundle]
 
     enum CodingKeys: CodingKey {
         case identityKey
