@@ -135,12 +135,7 @@ public class GRDBDatabaseStorageAdapter {
 
         try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(keyFetcher: keyFetcher)
 
-        do {
-            // Crash if storage can't be initialized.
-            self.storage = try GRDBStorage(dbURL: databaseFileUrl, keyFetcher: keyFetcher)
-        } catch {
-            throw error
-        }
+        self.storage = try GRDBStorage(dbURL: databaseFileUrl, keyFetcher: keyFetcher)
     }
 
     deinit {
