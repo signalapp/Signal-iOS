@@ -26,17 +26,20 @@ final class BackupIdServiceImpl: BackupIdService {
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let networkManager: NetworkManager
+    private let tsAccountManager: TSAccountManager
 
     init(
         accountKeyStore: AccountKeyStore,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
-        networkManager: NetworkManager
+        networkManager: NetworkManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.accountKeyStore = accountKeyStore
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.networkManager = networkManager
+        self.tsAccountManager = tsAccountManager
     }
 
     private func rootBackupKeys(
@@ -62,9 +65,23 @@ final class BackupIdServiceImpl: BackupIdService {
             return
         }
 
-        guard db.read(block: { tx in
-            backupSettingsStore.haveSetBackupID(tx: tx) == false
-        }) else {
+        let (
+            haveSetBackupId,
+            isRegisteredPrimaryDevice,
+        ): (Bool, Bool) = db.read { tx in
+            return (
+                backupSettingsStore.haveSetBackupID(tx: tx),
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+            )
+        }
+
+        guard !haveSetBackupId else {
+            // Skip if we've already done it.
+            return
+        }
+
+        guard isRegisteredPrimaryDevice else {
+            // Only the primary may set this.
             return
         }
 

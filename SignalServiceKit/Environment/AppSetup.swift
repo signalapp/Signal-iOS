@@ -357,7 +357,8 @@ public class AppSetup {
             accountKeyStore: accountKeyStore,
             backupSettingsStore: backupSettingsStore,
             db: db,
-            networkManager: networkManager
+            networkManager: networkManager,
+            tsAccountManager: tsAccountManager,
         )
 
         let backupPlanManager = BackupPlanManagerImpl(
