@@ -105,7 +105,7 @@ public extension GroupsV2Impl {
     private static func isRegisteredWithSneakyTransaction(authedAccount: AuthedAccount) -> Bool {
         switch authedAccount.info {
         case .explicit:
-            return true
+            return false
         case .implicit:
             return DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         }
