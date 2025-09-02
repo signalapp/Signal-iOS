@@ -67,11 +67,9 @@ public class MessageSender {
 
     /// Establishes a session with the recipient if one doesn't already exist.
     private func ensureRecipientHasSession(
-        recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
         let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -82,18 +80,15 @@ public class MessageSender {
         }
 
         let preKeyBundle = try await makePrekeyRequest(
-            recipientUniqueId: recipientUniqueId,
             serviceId: serviceId,
             deviceId: deviceId,
-            isOnlineMessage: isOnlineMessage,
-            isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
+            isTransient: isTransient,
             sealedSenderParameters: sealedSenderParameters
         )
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             try self.createSession(
                 for: preKeyBundle,
-                recipientUniqueId: recipientUniqueId,
                 serviceId: serviceId,
                 deviceId: deviceId,
                 transaction: tx
@@ -102,11 +97,9 @@ public class MessageSender {
     }
 
     private func makePrekeyRequest(
-        recipientUniqueId: RecipientUniqueId?,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> SignalServiceKit.PreKeyBundle {
         Logger.info("serviceId: \(serviceId).\(deviceId)")
@@ -117,15 +110,15 @@ public class MessageSender {
             throw UntrustedIdentityError(serviceId: serviceId)
         }
 
-        if let recipientUniqueId, willLikelyHaveInvalidKeySignatureError(for: recipientUniqueId) {
+        if willLikelyHaveInvalidKeySignatureError(for: serviceId) {
             Logger.info("Skipping prekey request due to invalid prekey signature.")
 
-            // Check if this error is happening repeatedly for this recipientUniqueId.
-            // If so, return an InvalidKeySignatureError as a terminal failure.
+            // Check if this error is happening repeatedly. If so, return an
+            // InvalidKeySignatureError as a terminal failure.
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: true)
         }
 
-        if isOnlineMessage || isTransientSenderKeyDistributionMessage {
+        if isTransient {
             Logger.info("Skipping prekey request for transient message")
             throw MessageSenderNoSessionForTransientMessageError()
         }
@@ -175,7 +168,6 @@ public class MessageSender {
 
     private func createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
-        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: DeviceId,
         transaction: DBWriteTransaction
@@ -237,7 +229,6 @@ public class MessageSender {
             Logger.warn("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
-                recipientUniqueId: recipientUniqueId,
                 preKeyBundle: preKeyBundle,
                 transaction: transaction
             )
@@ -252,7 +243,7 @@ public class MessageSender {
             // more than once and fail early.
             // The error thrown here is considered non-terminal which allows
             // the request to be retried.
-            hadInvalidKeySignatureError(for: recipientUniqueId)
+            hadInvalidKeySignatureError(for: serviceId)
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: false)
         }
         owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction), "Couldn't create session.")
@@ -262,7 +253,6 @@ public class MessageSender {
 
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
-        recipientUniqueId: RecipientUniqueId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
         transaction tx: DBWriteTransaction
     ) {
@@ -302,28 +292,28 @@ public class MessageSender {
 
     // MARK: - Invalid Signatures
 
-    private typealias InvalidSignatureCache = [RecipientUniqueId: InvalidSignatureCacheItem]
+    private typealias InvalidSignatureCache = [ServiceId: InvalidSignatureCacheItem]
     private struct InvalidSignatureCacheItem {
         let lastErrorDate: Date
         let errorCount: UInt32
     }
     private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: .init())
 
-    private func hadInvalidKeySignatureError(for recipientUniqueId: RecipientUniqueId) {
+    private func hadInvalidKeySignatureError(for serviceId: ServiceId) {
         invalidKeySignatureCache.update { cache in
             var errorCount: UInt32 = 1
-            if let mostRecentError = cache[recipientUniqueId] {
+            if let mostRecentError = cache[serviceId] {
                 errorCount = mostRecentError.errorCount + 1
             }
 
-            cache[recipientUniqueId] = InvalidSignatureCacheItem(
+            cache[serviceId] = InvalidSignatureCacheItem(
                 lastErrorDate: Date(),
                 errorCount: errorCount
             )
         }
     }
 
-    private func willLikelyHaveInvalidKeySignatureError(for recipientUniqueId: RecipientUniqueId) -> Bool {
+    private func willLikelyHaveInvalidKeySignatureError(for serviceId: ServiceId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Similar to untrusted identity errors, when an invalid signature for a prekey
@@ -338,7 +328,7 @@ public class MessageSender {
         // don't begin limiting the prekey request until after encounting the
         // second bad signature for a particular recipient.
 
-        guard let mostRecentError = invalidKeySignatureCache.get()[recipientUniqueId] else {
+        guard let mostRecentError = invalidKeySignatureCache.get()[serviceId] else {
             return false
         }
 
@@ -347,7 +337,7 @@ public class MessageSender {
 
             // Error has expired, remove it to reset the count
             invalidKeySignatureCache.update { cache in
-                _ = cache.removeValue(forKey: recipientUniqueId)
+                _ = cache.removeValue(forKey: serviceId)
             }
 
             return false
@@ -1324,17 +1314,18 @@ public class MessageSender {
             recipientDeviceIds.removeAll(where: { localDeviceId.equals($0) })
         }
 
+        guard messageSend.message.encryptionStyle == .whisper || messageSend.message.isResendRequest else {
+            throw OWSAssertionError("Unexpected message type")
+        }
+
         var results = [DeviceMessage]()
         for deviceId in recipientDeviceIds {
             let deviceMessage = try await buildDeviceMessage(
                 messagePlaintextContent: messageSend.plaintextContent,
                 messageEncryptionStyle: messageSend.message.encryptionStyle,
-                recipientUniqueId: recipient.uniqueId,
                 serviceId: messageSend.serviceId,
                 deviceId: deviceId,
-                isOnlineMessage: messageSend.message.isOnline,
-                isTransientSenderKeyDistributionMessage: messageSend.message.isTransientSKDM,
-                isResendRequestMessage: messageSend.message.isResendRequest,
+                isTransient: messageSend.message.isOnline || messageSend.message.isTransientSKDM,
                 sealedSenderParameters: sealedSenderParameters
             )
             if let deviceMessage {
@@ -1351,23 +1342,18 @@ public class MessageSender {
     func buildDeviceMessage(
         messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isResendRequestMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage? {
         AssertNotOnMainThread()
 
         do {
             try await ensureRecipientHasSession(
-                recipientUniqueId: recipientUniqueId,
                 serviceId: serviceId,
                 deviceId: deviceId,
-                isOnlineMessage: isOnlineMessage,
-                isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
+                isTransient: isTransient,
                 sealedSenderParameters: sealedSenderParameters
             )
         } catch let error {
@@ -1431,7 +1417,6 @@ public class MessageSender {
                         plaintextContent: messagePlaintextContent,
                         serviceId: serviceId,
                         deviceId: deviceId,
-                        isResendRequestMessage: isResendRequestMessage,
                         sealedSenderParameters: sealedSenderParameters,
                         transaction: tx
                     )
@@ -1754,7 +1739,6 @@ public class MessageSender {
         plaintextContent rawPlaintext: Data,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?,
         transaction: DBWriteTransaction
     ) throws -> DeviceMessage {
@@ -1762,11 +1746,6 @@ public class MessageSender {
 
         let identityManager = DependenciesBridge.shared.identityManager
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
-
-        // Only resend request messages are allowed to use this codepath.
-        guard isResendRequestMessage else {
-            throw OWSAssertionError("Unexpected message type")
-        }
 
         let plaintext = try PlaintextContent(bytes: rawPlaintext)
 

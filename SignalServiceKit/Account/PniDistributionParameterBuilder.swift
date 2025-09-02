@@ -89,7 +89,6 @@ protocol PniDistributionParamaterBuilder {
     ///   new identity. Note that this message contains private key data.
     func buildPniDistributionParameters(
         localAci: Aci,
-        localRecipientUniqueId: String,
         localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
@@ -122,7 +121,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
     func buildPniDistributionParameters(
         localAci: Aci,
-        localRecipientUniqueId: String,
         localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
@@ -161,7 +159,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         // Create a signed pre key & registration ID for linked devices.
         let linkedDeviceParamResults = try await buildLinkedDevicePniGenerationParams(
             localAci: localAci,
-            localRecipientUniqueId: localRecipientUniqueId,
             localUserLinkedDeviceIds: localUserLinkedDeviceIds,
             pniIdentityKeyPair: localPniIdentityKeyPair,
             e164: localE164
@@ -198,7 +195,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// device that is no longer valid, and was ignored.
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
-        localRecipientUniqueId: String,
         localUserLinkedDeviceIds: [DeviceId],
         pniIdentityKeyPair: ECKeyPair,
         e164: E164
@@ -217,7 +213,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                     let deviceMessage: DeviceMessage?
                     do {
                         deviceMessage = try await self.encryptPniDistributionMessage(
-                            recipientUniqueId: localRecipientUniqueId,
                             recipientAci: localAci,
                             recipientDeviceId: linkedDeviceId,
                             identityKeyPair: pniIdentityKeyPair,
@@ -259,7 +254,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// The message for the linked device. If `nil`, indicates the device was
     /// invalid and should be skipped.
     private func encryptPniDistributionMessage(
-        recipientUniqueId: String,
         recipientAci: Aci,
         recipientDeviceId: DeviceId,
         identityKeyPair: ECKeyPair,
@@ -281,12 +275,9 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         return try await self.messageSender.buildDeviceMessage(
             forMessagePlaintextContent: plaintextContent,
             messageEncryptionStyle: .whisper,
-            recipientUniqueId: recipientUniqueId,
             serviceId: recipientAci,
             deviceId: recipientDeviceId,
-            isOnlineMessage: false,
-            isTransientSenderKeyDistributionMessage: false,
-            isResendRequestMessage: false,
+            isTransient: false,
             sealedSenderParameters: nil // Sync messages do not use UD
         )
     }
@@ -310,12 +301,9 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isResendRequestMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage?
 }
@@ -330,23 +318,17 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isResendRequestMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage? {
         try await messageSender.buildDeviceMessage(
             messagePlaintextContent: messagePlaintextContent,
             messageEncryptionStyle: messageEncryptionStyle,
-            recipientUniqueId: recipientUniqueId,
             serviceId: serviceId,
             deviceId: deviceId,
-            isOnlineMessage: isOnlineMessage,
-            isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-            isResendRequestMessage: isResendRequestMessage,
+            isTransient: isTransient,
             sealedSenderParameters: sealedSenderParameters
         )
     }

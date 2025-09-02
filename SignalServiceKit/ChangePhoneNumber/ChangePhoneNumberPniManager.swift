@@ -36,7 +36,6 @@ public protocol ChangePhoneNumberPniManager {
     func generatePniIdentity(
         forNewE164 newE164: E164,
         localAci: Aci,
-        localRecipientUniqueId: String,
         localDeviceId: DeviceId,
         localUserAllDeviceIds: [DeviceId]
     ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult
@@ -132,7 +131,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     func generatePniIdentity(
         forNewE164 newE164: E164,
         localAci: Aci,
-        localRecipientUniqueId: String,
         localDeviceId: DeviceId,
         localUserAllDeviceIds: [DeviceId]
     ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
@@ -155,7 +153,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         do {
             let parameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localAci,
-                localRecipientUniqueId: localRecipientUniqueId,
                 localDeviceId: .valid(localDeviceId),
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: pniIdentityKeyPair,

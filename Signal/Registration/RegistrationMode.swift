@@ -20,7 +20,6 @@ public enum RegistrationMode: CustomDebugStringConvertible {
         public let oldE164: E164
         public let oldAuthToken: String
         @AciUuid public var localAci: Aci
-        public let localAccountId: String
         public let localDeviceId: DeviceId
         public let localUserAllDeviceIds: [DeviceId]
     }

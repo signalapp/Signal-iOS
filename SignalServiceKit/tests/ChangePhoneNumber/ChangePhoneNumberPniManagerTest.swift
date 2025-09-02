@@ -136,14 +136,11 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         linkedDeviceIds: [DeviceId]
     ) async -> ChangePhoneNumberPni.GeneratePniIdentityResult {
         let aci = Aci.randomForTesting()
-        let recipientUniqueId: String = UUID().uuidString
-
         let localDeviceId: DeviceId = .primary
 
         return await changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
             localAci: aci,
-            localRecipientUniqueId: recipientUniqueId,
             localDeviceId: localDeviceId,
             localUserAllDeviceIds: [localDeviceId] + linkedDeviceIds
         )
@@ -220,7 +217,6 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
 
     func buildPniDistributionParameters(
         localAci: Aci,
-        localRecipientUniqueId: String,
         localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,

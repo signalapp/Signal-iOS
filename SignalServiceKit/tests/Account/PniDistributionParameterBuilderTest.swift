@@ -174,12 +174,10 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localDevicePniRegistrationId: UInt32
     ) async throws -> PniDistribution.Parameters {
         let aci = Aci.randomForTesting()
-        let recipientUniqueId = "what's up"
         let e164 = E164("+17735550199")!
 
         return try await pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
-            localRecipientUniqueId: recipientUniqueId,
             localDeviceId: .valid(localDeviceId),
             localUserAllDeviceIds: localUserAllDeviceIds,
             localPniIdentityKeyPair: localPniIdentityKeyPair,
@@ -210,12 +208,9 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: DeviceId,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isResendRequestMessage: Bool,
+        isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) throws -> DeviceMessage? {
         let nextDeviceMessageMock = deviceMessageMocks.update(block: {

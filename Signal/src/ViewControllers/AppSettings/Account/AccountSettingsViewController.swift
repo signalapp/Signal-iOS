@@ -280,14 +280,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
             else {
                 return .disallowed
             }
-            let localRecipientUniqueId = localRecipient.uniqueId
             let localUserAllDeviceIds = localRecipient.deviceIds
 
             return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: localIdentifiers.aci,
-                localAccountId: localRecipientUniqueId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds
             ))

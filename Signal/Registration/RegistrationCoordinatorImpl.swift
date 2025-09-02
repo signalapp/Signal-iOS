@@ -4331,7 +4331,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let pniResult = await deps.changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
             localAci: changeNumberState.localAci,
-            localRecipientUniqueId: changeNumberState.localAccountId,
             localDeviceId: changeNumberState.localDeviceId,
             localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
         )
