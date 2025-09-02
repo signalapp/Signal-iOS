@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Управљање планом";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Плаћено (бесплатно за кориснике TestFlight-а)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Резервне копије порука и свих медија";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Желите ли да преузмете уклоњене медије?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Медији који су уклоњени биће доступни све док користите TestFlight. Не заборавите да преузмете све своје медије пре него што напустите програм за тестирање.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Тестирање уклоњених медија";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Неискоришћени медији ће бити уклоњени, али се могу преузети из резервне копије у било ком тренутку.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Неискоришћени медији ће бити уклоњени, али се могу преузети из резервне копије у било ком тренутку док користите TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Оптимизација меморијског простора се може користити само ако имате плаћени пакет резервних копија Signal-а. Надоградите пакет резервних копија да бисте могли да користите ову функционалност.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Резервне поруке Signal-а";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Укључене су резервне копије Signal-а за овај налог у %1$@. Додирните да видите.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Укључили сте резервне копије";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Прикажи подешавања";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Моје значке";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Пусти медиј";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Анкета";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Изаберите једну опцију";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Верификован корисник";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Враћање није успело";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Скенирајте овај код старим телефоном";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Искључи PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Морате да искључите резервне копије пре деактивирања PIN-а.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Морате да искључите закључавање регистрације пре деактивирања PIN-а.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Укључи PIN";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Искључи";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Догодила се грешка приликом искључивања закључавања регистрације. Обратите се подршци.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Догодила се грешка приликом искључивања закључавања регистрације. Проверите да ли сте повезани на интернет и пробајте поново.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Желите ли да искључите закључавање регистрације?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Укључи";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Догодила се грешка приликом укључивања закључавања регистрације. Обратите се подршци.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Догодила се грешка приликом укључивања закључавања регистрације. Проверите да ли сте повезани на интернет и пробајте поново.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Морате да креирате PIN да бисте користили закључавање регистрације.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Ако заборавите Signal PIN када се поново региструјете на Signal, ваш налог ће бити закључан 7 дана.";

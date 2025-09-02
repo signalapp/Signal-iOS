@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Hantera plan";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Betalplan (gratis för TestFlight-användare)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Säkerhetskopiering av textmeddelanden + alla mediefiler";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Ladda ner avlastade media?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media som avlastas kommer att vara tillgänglig så länge du använder TestFlight. Se till att ladda ner alla dina mediefiler innan du lämnar testprogrammet.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testar avlastade mediefiler";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Oanvända mediafiler kommer att avlastas, men kan laddas ner från din säkerhetskopia när som helst.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Oanvända media kommer att avlastas, men kan laddas ner från din säkerhetskopia när som helst medan du använder TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Lagringsoptimering kan endast användas med den betalda nivån av Säkerhetskopiering av Signal. Uppgradera din säkerhetskopieringsplan för att börja använda den här funktionen.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Säkerhetskopiering av Signal";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Säkerhetskopiering av Signal aktiverades för det här kontot kl. %1$@. Tryck för att visa.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Du aktiverade säkerhetskopiering";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Visa inställningar";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mina märken";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Omröstning";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Välj en";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verifierad";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Återställningen misslyckades";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Skanna den här koden med din gamla telefon";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Inaktivera PIN-koden";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Du måste inaktivera säkerhetskopior innan du inaktiverar din pinkod.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Du måste inaktivera registreringslåset innan du avaktiverar din pinkod.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivera PIN-koden";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Slå av";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Det gick inte att inaktivera registreringslåset. Kontakta supporten.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Det gick inte att inaktivera registreringslåset. Kontrollera din internetanslutning och försök igen.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Slå av registreringslås?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Slå på";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Det gick inte att aktivera registreringslåset. Kontakta supporten.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Det gick inte att aktivera registreringslåset. Kontrollera din internetanslutning och försök igen.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Du måste skapa en pinkod för att använda registreringslåset.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Om du glömmer din PIN-kod när du registrerar dig hos Signal igen, kommer du att vara utelåst från ditt konto i 7 dagar.";

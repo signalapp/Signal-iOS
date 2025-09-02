@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Gestisci il tuo piano";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Pagato (gratis per gli utenti di TestFlight)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Backup messaggi + tutti i media";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Scaricare i media del backup remoto?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "I media trasferiti su un backup remoto sono disponibili finché continuerai a usare TestFlight. Accertati perciò di scaricarli prima di lasciare il programma da tester.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Test dei media trasferiti su backup remoto";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "I media inutilizzati verranno trasferiti su un backup remoto, ma potrai scaricarli in qualsiasi momento dal tuo backup.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "I media inutilizzati verranno trasferiti su un backup remoto, ma possono essere scaricati dal tuo backup in qualsiasi momento finché continuerai a usare TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "L'ottimizzazione dello spazio di archiviazione è una funzione disponibile solo con i Backup di Signal a pagamento. Scegli il tuo piano di backup per poterla usare.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Backup di Signal";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "I backup di Signal sono stati attivati su questo account alle %1$@. Tocca per saperne di più.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Hai attivato i backup";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Visualizza impostazioni";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "I miei badge";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Riproduci media";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Sondaggio";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Scegli un'opzione";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificato";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Ripristino fallito";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Scansiona questo codice con il tuo precedente telefono";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disabilita PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Devi disattivare i backup prima di disattivare il tuo PIN.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Devi disattivare il blocco registrazione prima di disattivare il tuo PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Abilita PIN";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Disattiva";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Impossibile disabilitare il blocco registrazione. Ti consigliamo di contattare l'assistenza.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Impossibile disabilitare il blocco registrazione. Controlla la tua connessione Internet e riprova.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Disattivare il blocco registrazione?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Attiva";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Impossibile abilitare il blocco registrazione. Ti consigliamo di contattare l'assistenza.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Impossibile abilitare il blocco registrazione. Controlla la tua connessione Internet e riprova.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Devi creare un PIN per usare il blocco registrazione.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Se dimentichi il tuo PIN di Signal quando ti registri di nuovo con Signal, non avrai accesso al tuo account per 7 giorni.";

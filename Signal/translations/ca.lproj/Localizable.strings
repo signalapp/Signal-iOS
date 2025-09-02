@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Gestionar pla";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "De pagament (gratuït per als usuaris de TestFlight)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Còpia de seguretat de missatges de text + tots els arxius multimèdia";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Descarregar arxius multimèdia restants?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Els arxius arxivats estaran disponibles mentre continuïs utilitzant TestFlight. Assegura't de descarregar tots els teus arxius multimèdia abans d'abandonar el programa de prova.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Provant arxius multimèdia arxivats";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Els arxius multimèdia no utilitzats es descarregaran, però es poden baixar de la còpia de seguretat en qualsevol moment.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Els arxius multimèdia no utilitzats es descarregaran, però es poden baixar de la còpia de seguretat en qualsevol moment mentre continuïs utilitzant TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "L'optimització d'emmagatzematge només es pot utilitzar amb el nivell de subscripció de pagament de Còpies de seguretat de Signal. Actualitza el teu pla de còpies de seguretat per accedir a aquesta funció.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Còpies de seguretat de Signal";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "S'han desactivat les còpies de seguretat de Signal per aquest compte a les %1$@. Toca per veure.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Has activat les còpies de seguretat";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Mostra'n la configuració";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Les meves insígnies";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reprodueix el contingut";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Enquesta";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Selecciona una opció";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificat";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restauració fallida";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Escaneja aquest codi amb el teu mòbil antic";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Desactiva el PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Has de desactivar les còpies de seguretat abans de desactivar el PIN.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Has de desactivar el bloqueig de registre abans de desactivar el PIN.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activa el PIN";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Desactiva";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Ha fallat desactivar el bloqueig de registre. Posa't en contacte amb el servei d'assistència.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Ha fallat desactivar el bloqueig de registre. Comprova la connexió a Internet i torna-ho a provar.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Voleu desactivar el blocatge de registre?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Activa";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Ha fallat activar el bloqueig de registre. Posa't en contacte amb el servei d'assistència.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Ha fallat activar el bloqueig de registre. Comprova la connexió a Internet i torna-ho a provar.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Has de crear un PIN per utilitzar el bloqueig de registre.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si heu oblidat el PIN quan us torneu a registrar al Signal, se us blocarà el compte durant 7 dies.";

@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Kelola Langganan";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Terbayar (gratis untuk pengguna TestFlight)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Pencadangan pesan + semua media";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Unduh Media yang Di-offload?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media yang di-offload akan tetap tersedia selama Anda masih menggunakan TestFlight. Pastikan Anda mengunduh semua media sebelum keluar dari program pengujian.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Menguji Media yang Di-offload";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja selagi Anda masih menggunakan TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Pengoptimalan penyimpanan hanya dapat digunakan dengan Signal Backups berbayar. Upgrade paket pencadangan Anda untuk mulai menggunakan fitur ini.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Signal Backups";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups diaktifkan untuk akun ini pada %1$@. Ketuk untuk melihat.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Anda Mengaktifkan Backups";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Lihat Pengaturan";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Lencana Saya";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Polling";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Pilih Satu";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Terverifikasi";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Pemulihan gagal";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Pindai kode ini dengan ponsel lama Anda";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Nonaktifkan PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Backups harus dinonaktifkan dulu sebelum PIN dapat dinonaktifkan.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Kunci registrasi harus dinonaktifkan dulu sebelum PIN dapat dinonaktifkan.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktifkan PIN";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Matikan";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Gagal menonaktifkan kunci registrasi. Silakan hubungi tim dukungan.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Gagal menonaktifkan kunci registrasi. Periksa koneksi internet Anda dan coba lagi.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Matikan Kunci Pendaftaran?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Nyalakan";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Gagal mengaktifkan kunci registrasi. Silakan hubungi tim dukungan.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Gagal mengaktifkan kunci registrasi. Cek koneksi internet, lalu coba lagi.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Buat PIN dulu agar kunci registrasi dapat digunakan.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jika Anda lupa PIN Signal saat mendaftar ke Signal  lagi, akun Anda akan terkunci selama 7 hari.";

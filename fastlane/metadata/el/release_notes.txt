@@ -1,1 +1,1 @@
-• Now you can tap on a name in the calls tab to view additional information instead of immediately starting a new call with that contact. There’s still a shortcut to quickly call someone back too, but whether or not you use it is entirely your call.
+• Πλέον μπορείς να πατάς σε ένα όνομα στην καρτέλα κλήσεων για να δεις πρόσθετες πληροφορίες αντί να ξεκινήσεις αμέσως μια νέα κλήση με αυτήν την επαφή. Εξακολουθεί να υπάρχει μια συντόμευση για να καλείς γρήγορα κάποιον πίσω, αλλά είναι αποκλειστικά δική σου απόφαση το αν θα τη χρησιμοποιείς ή όχι.

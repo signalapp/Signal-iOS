@@ -674,7 +674,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Gérer le forfait";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Payant (mais gratuit pour les utilisateurs de TestFlight)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Messages texte + tous les médias";
@@ -821,7 +821,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Télécharger les médias déplacés vers la sauvergarde ?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media that is offloaded will be available as long as you are using TestFlight. Make sure to download all your media before leaving the test program.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Les médias déplacés vers la sauvegarde restent disponibles tant que vous utilisez TestFlight. Si vous décidez de quitter le programme bêta, n'oubliez pas de télécharger tous vos médias au préalable.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Tester l'optimisation de l'espace de stockage";
@@ -830,7 +830,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Signal déplacera les médias inutilisés vers la sauvegarde et les supprimera de votre appareil. Vous pourrez les télécharger depuis votre sauvegarde à tout moment.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Unused media will be offloaded, but can be downloaded from your backup anytime while you are using TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Signal déplacera les médias inutilisés vers la sauvegarde et les supprimera de votre appareil. Vous pourrez les télécharger depuis votre sauvegarde à tout moment tant que vous utilisez TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "L'optimisation de l'espace de stockage n'est disponible qu'avec la version payante du forfait de sauvegarde Signal. Donnez un coup de pouce à Signal et passez à la version payante pour utiliser cette fonctionnalité.";
@@ -878,13 +878,13 @@
 "BACKUPS_SETTINGS_TITLE" = "Sauvegardes Signal";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %1$@. Tap to view.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Les sauvegardes Signal ont été activées sur ce compte à %1$@. Appuyez pour plus d'infos.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "You Turned On Backups";
+"BACKUPS_TURNED_ON_TITLE" = "Vous avez activé les sauvegardes";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
-"BACKUPS_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUPS_VIEW_SETTINGS_BUTTON" = "Afficher les paramètres";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mes macarons";
@@ -962,7 +962,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fermer la bannière";
 
 /* Beta label */
-"BETA_LABEL" = "Bêta";
+"BETA_LABEL" = "Version BÊTA";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ce groupe ne pourra plus vous envoyer de messages, ni vous tenir informé des dernières actualités.";
@@ -2576,7 +2576,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "En attente de connexion à l'ancien iPhone…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Échec du transfert vers le nouvel appareil. Maintenez votre ancien appareil à proximité, puis réessayez.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Échec du transfert vers le nouvel appareil. Placez votre ancien appareil à proximité et réessayez.";
 
 /* Title for a progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "Échec du transfert";
@@ -6428,10 +6428,10 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Lire le média";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Poll";
+"POLL_LABEL" = "Sondage";
 
 /* Label specifying how many options the user can select */
-"POLL_SELECT_LABEL_SINGULAR" = "Select One";
+"POLL_SELECT_LABEL_SINGULAR" = "Sélectionnez une réponse";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Confirmé";
@@ -6818,7 +6818,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_TITLE" = "Impossible de restaurer la sauvegarde";
 
 /* Body for a sheet telling users to try restoring a backup again after a server error. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Signal ne peut pas restaurer votre sauvegarde pour le moment. Vérifiez votre connexion Internet et réessayez.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_BODY" = "Impossible de restaurer votre sauvegarde pour le moment. Veuillez vérifier votre connexion Internet et réessayer.";
 
 /* Title for a sheet telling users to try restoring a backup again after a server error. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE" = "Impossible de restaurer la sauvegarde";
@@ -6968,7 +6968,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_BODY" = "Failed to restore from old device. Try again.";
 
 /* Title of error notifying restore failed. */
-"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Restore failed";
+"REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Échec de la restauration";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "Scannez ce code avec votre ancien téléphone";
@@ -7463,10 +7463,10 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Désactiver le code PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "You must disable Backups before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Pour désactiver le code PIN, vous devez d'abord désactiver les sauvegardes.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "You must disable registration lock before disabling your PIN.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Pour désactiver le code PIN, vous devez d'abord désactiver le blocage d'inscription.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activer le code PIN";
@@ -7625,13 +7625,13 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Supprimer toutes les données";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer l'historique des conversations (messages, médias, appels, etc.) de tous vos appareils ? Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer tout l'historique de vos conversations de tous vos appareils ? Cela supprimera vos messages, vos médias, vos appels et l'ensemble de vos contenus. Cette action est irréversible.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
 
 /* Secondary alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "Toutes vos conversations seront définitivement supprimées. Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE" = "Vous allez définitivement supprimer toutes vos conversations. Cette action est irréversible.";
 
 /* Secondary alert title before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Voulez-vous vraiment supprimer tout l'historique des conversations ?";
@@ -8273,10 +8273,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Désactiver";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Failed to disable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "Impossible de désactiver le blocage d'inscription. Merci de contacter l'assistance.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Failed to disable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "Impossible de désactiver le blocage d'inscription. Vérifiez votre connexion Internet et réessayez.";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Désactiver le blocage d’inscription ?";
@@ -8285,13 +8285,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Activer";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Failed to enable registration lock. Please contact support.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "Impossible d'activer le blocage d'inscription. Merci de contacter l'assistance.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Failed to enable registration lock. Check your internet connection and try again.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "Impossible d'activer le blocage d'inscription. Vérifiez votre connexion Internet et réessayez.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "You must create a PIN to use registration lock.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Pour activer le blocage d'inscription, vous devez d'abord créer un code PIN.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si vous ne vous souvenez plus de votre code PIN au moment de vous réinscrire à Signal, vous ne pourrez pas accéder à votre compte pendant sept jours.";
