@@ -76,6 +76,12 @@ public class GroupsV2Impl: GroupsV2 {
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil,
+        )
     }
 
     @objc
@@ -87,6 +93,13 @@ public class GroupsV2Impl: GroupsV2 {
 
     @objc
     private func reachabilityChanged() {
+        AssertIsOnMainThread()
+
+        Self.enqueueRestoreGroupPass(authedAccount: .implicit())
+    }
+
+    @objc
+    private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         Self.enqueueRestoreGroupPass(authedAccount: .implicit())
