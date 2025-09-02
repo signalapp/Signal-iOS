@@ -331,8 +331,6 @@ private extension GroupV2UpdatesImpl {
         source: GroupChangeActionFetchSource,
         options: TSGroupModelOptions
     ) async throws {
-        try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-
         do {
             // Try to use individual changes.
             try await self.fetchAndApplyChangeActionsFromService(
