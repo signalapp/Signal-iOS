@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CoreImage
 import Foundation
 import libwebp
 import YYImage
@@ -96,15 +97,14 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         }
 
         // Initially try 0.4 quality. Then scale down until we hit size limits.
-        let qualities: [Double] = [0.4, 0.2, 0.05, 0]
-        let imageData = try qualities
-            .lazy
-            .map(generateWebpData(quality:))
-            .first(where: { $0.count < AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes })
-        guard let imageData else {
-            throw OWSAssertionError("Unable to generate thumbnail below size limit!")
+        let qualities: [Double] = [0.4, 0]
+        for quality in qualities {
+            let candidate = try generateWebpData(quality: quality)
+            if candidate.count < AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
+                return candidate
+            }
         }
-        return imageData
+        throw OWSAssertionError("Unable to generate thumbnail below size limit!")
     }
 
     private enum ThumbnailSpec {
