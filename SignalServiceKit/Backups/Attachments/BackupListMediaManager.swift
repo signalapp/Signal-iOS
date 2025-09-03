@@ -79,7 +79,9 @@ public protocol BackupListMediaManager {
 
     func getLastFailingIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult?
 
-    func performUploadIntegrityCheck() async throws -> ListMediaIntegrityCheckResult
+    func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult?
+
+    func setManualNeedsListMedia(tx: DBWriteTransaction)
 }
 
 public class BackupListMediaManagerImpl: BackupListMediaManager {
@@ -151,7 +153,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         try kvStore.getCodableValue(forKey: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
     }
 
+    public func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult? {
+        try kvStore.getCodableValue(forKey: Constants.lastIntegrityCheckResultKey, transaction: tx)
+    }
+
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+
+    /// Nil if we have not run list media this app launch (only held in memory).
+    /// Set to the upload era where we ran list media this app launch.
+    /// Should only be accessed from the taskQueue for locking purposes.
+    private var lastListMediaUploadEraThisAppSession: String?
 
     public func queryListMediaIfNeeded() async throws {
         let task = Task {
@@ -175,13 +186,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         )
     }
 
-    public func performUploadIntegrityCheck() async throws -> ListMediaIntegrityCheckResult {
-        return try await taskQueue.run {
-            try await self._queryListMediaIfNeeded(forceIfNotNeeded: true)
-        }
-    }
-
-    private func _queryListMediaIfNeeded(forceIfNotNeeded: Bool = false) async throws -> ListMediaIntegrityCheckResult {
+    private func _queryListMediaIfNeeded() async throws -> ListMediaIntegrityCheckResult {
         guard FeatureFlags.Backups.supported else {
             return .empty(listMediaStartTimestamp: 0)
         }
@@ -216,7 +221,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 integrityCheckResult
             )
         }
-        guard needsToQuery || forceIfNotNeeded else {
+        guard needsToQuery else {
             return .empty(listMediaStartTimestamp: 0)
         }
 
@@ -1115,6 +1120,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         case .free:
             return false
         case .paid, .paidExpiringSoon, .paidAsTester:
+            // Only query once per app session per upload era; this overrides the manual
+            // toggle and the date-based checks.
+            if lastListMediaUploadEraThisAppSession == currentUploadEra {
+                return false
+            }
+
+            if kvStore.getBool(Constants.manuallySetNeedsListMediaKey, defaultValue: false, transaction: tx) {
+                return true
+            }
+
             // If paid tier, query periodically as a catch-all to ensure local state
             // stays in sync with the server.
             let nowMs = dateProvider().ows_millisecondsSince1970
@@ -1157,16 +1172,19 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.kvStore.setBool(true, key: Constants.hasEverRunListMediaKey, transaction: tx)
         if let uploadEra = kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) {
             self.kvStore.setString(uploadEra, key: Constants.lastListMediaUploadEraKey, transaction: tx)
+            self.lastListMediaUploadEraThisAppSession = uploadEra
             self.kvStore.removeValue(forKey: Constants.inProgressUploadEraKey, transaction: tx)
         } else {
             owsFailDebug("Missing in progress upload era?")
         }
         self.kvStore.setUInt64(startTimestamp, key: Constants.lastListMediaStartTimestampKey, transaction: tx)
+        self.kvStore.setBool(false, key: Constants.manuallySetNeedsListMediaKey, transaction: tx)
         kvStore.removeValue(forKey: Constants.inProgressListMediaStartTimestampKey, transaction: tx)
 
         if integrityCheckResult.hasFailures {
             try kvStore.setCodable(integrityCheckResult, key: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
         }
+        try kvStore.setCodable(integrityCheckResult, key: Constants.lastIntegrityCheckResultKey, transaction: tx)
         kvStore.removeValue(forKey: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
 
         self.kvStore.setBool(false, key: Constants.hasCompletedListingMediaKey, transaction: tx)
@@ -1184,8 +1202,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             // Rotate the last integrity check failure when disabled
             db.write { tx in
                 kvStore.removeValue(forKey: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
+                kvStore.removeValue(forKey: Constants.lastIntegrityCheckResultKey, transaction: tx)
             }
         }
+    }
+
+    public func setManualNeedsListMedia(tx: DBWriteTransaction) {
+        kvStore.setBool(true, key: Constants.manuallySetNeedsListMediaKey, transaction: tx)
     }
 
     private enum Constants {
@@ -1196,6 +1219,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         /// Maps to the timestamp we last completed a list media request.
         static let lastListMediaStartTimestampKey = "lastListMediaTimestamp"
         static let inProgressListMediaStartTimestampKey = "inProgressListMediaTimestamp"
+
+        static let manuallySetNeedsListMediaKey = "manuallySetNeedsListMediaKey"
 
         /// True if we've ever run list media in the lifetime of this app.
         static let hasEverRunListMediaKey = "hasEverRunListMedia"
@@ -1221,6 +1246,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         static let hasCompletedEnumeratingAttachmentsKey = "hasCompletedEnumeratingAttachmentsKey"
 
         static let lastNonEmptyIntegrityCheckResultKey = "lastNonEmptyIntegrityCheckResultKey"
+        static let lastIntegrityCheckResultKey = "lastIntegrityCheckResultKey"
         static let inProgressIntegrityCheckResultKey = "inProgressIntegrityCheckResultKey"
     }
 }
@@ -1238,8 +1264,12 @@ class MockBackupListMediaManager: BackupListMediaManager {
         nil
     }
 
-    func performUploadIntegrityCheck() async throws -> ListMediaIntegrityCheckResult {
-        return .empty(listMediaStartTimestamp: 0)
+    func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult? {
+        nil
+    }
+
+    func setManualNeedsListMedia(tx: DBWriteTransaction) {
+        // Nothing
     }
 }
 

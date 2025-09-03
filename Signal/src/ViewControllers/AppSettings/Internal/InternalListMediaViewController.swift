@@ -14,11 +14,22 @@ class InternalListMediaViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = "Backup media debug"
-
-        updateTableContents()
     }
 
-    private var lastResult: ListMediaIntegrityCheckResult?
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            asyncBlock: { [weak self] modal in
+                try? await DependenciesBridge.shared.backupListMediaManager.queryListMediaIfNeeded()
+                await MainActor.run {
+                    self?.updateTableContents()
+                }
+                modal.dismiss(animated: true)
+            }
+        )
+    }
 
     func updateTableContents() {
         let contents = OWSTableContents()
@@ -28,6 +39,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             pendingUploadThumbnailCount,
             pendingOrphanDeleteCount,
             lastListMediaFailure,
+            lastListMediaResult,
         ) = DependenciesBridge.shared.db.read { tx in
             return (
                 try! QueuedBackupAttachmentUpload
@@ -37,7 +49,8 @@ class InternalListMediaViewController: OWSTableViewController2 {
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == false)
                     .fetchCount(tx.database),
                 try! OrphanedBackupAttachment.fetchCount(tx.database),
-                try! DependenciesBridge.shared.backupListMediaManager.getLastFailingIntegrityCheckResult(tx: tx)
+                try! DependenciesBridge.shared.backupListMediaManager.getLastFailingIntegrityCheckResult(tx: tx),
+                try! DependenciesBridge.shared.backupListMediaManager.getMostRecentIntegrityCheckResult(tx: tx)
             )
         }
 
@@ -54,24 +67,23 @@ class InternalListMediaViewController: OWSTableViewController2 {
         contents.add(lastFailureSection)
 
         let lastResultSection = OWSTableSection(title: "Latest result")
-        if let lastResult {
-            Self.populate(section: lastResultSection, with: lastResult)
+        if let lastListMediaResult {
+            Self.populate(section: lastResultSection, with: lastListMediaResult)
         }
         lastResultSection.add(.actionItem(withText: "Perform remote integrity check", actionBlock: { [weak self] in
             guard let self else { return }
-            ModalActivityIndicatorViewController.present(
-                fromViewController: self,
-                asyncBlock: { [weak self] modal in
-                    guard let result = try? await DependenciesBridge.shared.backupListMediaManager.performUploadIntegrityCheck() else {
-                        return
-                    }
-                    await MainActor.run {
-                        self?.lastResult = result
-                        self?.updateTableContents()
-                    }
-                    modal.dismiss(animated: true)
-                }
+            let vc = ActionSheetController(
+                title: "This will schedule the integrity check to run on next app launch, then exit the app. "
+                    + "After tapping \"Okay\", please relaunch the app and return to this screen to check the results."
             )
+            vc.addAction(.init(title: "Okay", handler: { _ in
+                DependenciesBridge.shared.db.write { tx in
+                    DependenciesBridge.shared.backupListMediaManager.setManualNeedsListMedia(tx: tx)
+                }
+                exit(0)
+            }))
+            vc.addAction(.cancel)
+            present(vc, animated: true)
         }))
         contents.add(lastResultSection)
 
