@@ -70,7 +70,7 @@ extension MessageSender {
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) -> (
+    ) throws(OWSAssertionError) -> (
         senderKeyRecipients: Set<ServiceId>,
         sendSenderKeyMessage: (@Sendable () async -> [(ServiceId, any Error)])?
     ) {
@@ -91,8 +91,7 @@ extension MessageSender {
             // them, but we MAY need any of them, so we must ensure they all exist
             // before starting. They SHOULD always exist; it's a bug if they don't.
             guard threadRecipients.allSatisfy({ endorsements.individual[$0] != nil }) else {
-                owsFailDebug("Can't use GSEs if some individual endorsements are missing.")
-                return ([], nil)
+                throw OWSAssertionError("Can't use GSEs if some individual endorsements are missing")
             }
             authBuilder = { readyRecipients in
                 var combined = endorsements.combined
@@ -108,8 +107,7 @@ extension MessageSender {
                 ).build())
             }
         } else {
-            owsFailDebug("Can't use Sender Key for a group message unless we have endorsements.")
-            return ([], nil)
+            throw OWSAssertionError("Can't use Sender Key for a group message unless we have endorsements")
         }
 
         var eligibleRecipients = Set(recipients.filter { serviceId in
@@ -218,7 +216,7 @@ extension MessageSender {
             // We should always be able to prepare SKDMs (sending them may fail though).
             // TODO: If we can't, the state is probably corrupt and should be reset.
             Logger.warn("Fanning out because we couldn't prepare SKDMs: \(error)")
-            return ([], nil)
+            throw OWSAssertionError("Fanning out because we couldn't prepare SKDMs")
         }
 
         return (

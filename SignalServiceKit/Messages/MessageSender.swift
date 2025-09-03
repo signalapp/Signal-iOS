@@ -798,29 +798,32 @@ public class MessageSender {
 
             let senderKeyRecipients: Set<ServiceId>
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
-            if recoveryState.canUseMultiRecipientSealedSender, thread.usesSenderKey {
-                (senderKeyRecipients, sendViaSenderKey) = self.prepareSenderKeyMessageSend(
-                    for: serviceIds,
-                    in: thread,
-                    message: message,
-                    serializedMessage: serializedMessage,
-                    endorsements: endorsements,
-                    udAccessMap: udAccessMap,
-                    senderCertificate: senderCertificate,
-                    localIdentifiers: localIdentifiers,
-                    tx: tx
-                )
+            if thread.usesSenderKey {
+                do throws(OWSAssertionError) {
+                    guard recoveryState.canUseMultiRecipientSealedSender else {
+                        throw OWSAssertionError("Can't use Sender Key because of a prior failure.")
+                    }
+                    (senderKeyRecipients, sendViaSenderKey) = try self.prepareSenderKeyMessageSend(
+                        for: serviceIds,
+                        in: thread,
+                        message: message,
+                        serializedMessage: serializedMessage,
+                        endorsements: endorsements,
+                        udAccessMap: udAccessMap,
+                        senderCertificate: senderCertificate,
+                        localIdentifiers: localIdentifiers,
+                        tx: tx
+                    )
+                } catch {
+                    senderKeyRecipients = []
+                    sendViaSenderKey = nil
+
+                    let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
+                    notificationPresenter.notifyTestPopulation(ofErrorMessage: error.description)
+                }
             } else {
                 senderKeyRecipients = []
                 sendViaSenderKey = nil
-            }
-
-            if let thread = thread as? TSGroupThread, sendViaSenderKey == nil {
-                let fullMembers = Set(thread.groupMembership.fullMembers.compactMap(\.serviceId))
-                if fullMembers.intersection(serviceIds).count >= 2 {
-                    let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
-                    notificationPresenter.notifyTestPopulation(ofErrorMessage: "Couldn't send using GSEs.")
-                }
             }
 
             return .sendPreparedMessage(SendMessageNextAction.PreparedState(
