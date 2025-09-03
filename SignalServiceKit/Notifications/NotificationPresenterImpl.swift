@@ -938,7 +938,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
-        // Fail debug on all devices. External devices should still log the error string.
+        // External devices should still log the error string.
         Logger.error("Fatal error occurred: \(errorString).")
         guard DebugFlags.testPopulationErrorAlerts else {
             return
