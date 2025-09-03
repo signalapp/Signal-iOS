@@ -82,7 +82,7 @@ extension BackupArchive {
                 // If the expire timer was less than our minimum, we can always
                 // skip.
                 return true
-            } else if let expireStartDate = expireStartDate {
+            } else if let expireStartDate = expireStartDate, expireStartDate > 0 {
                 // If the expiration timer has started, check whether the
                 // remaining time before it expires is sufficient.
                 let expirationDate = expireStartDate + expiresInMs
