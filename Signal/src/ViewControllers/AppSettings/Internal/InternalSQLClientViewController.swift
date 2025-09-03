@@ -96,14 +96,30 @@ class InternalSQLClientViewController: UIViewController {
         }
 
         let output = DependenciesBridge.shared.db.read { tx in
+            let rows: [Row]
             do {
-                return try Row
-                    .fetchAll(tx.database, sql: query)
-                .map({"\($0)"})
-                .joined(separator: "\n")
+                rows = try Row.fetchAll(tx.database, sql: query)
             } catch let error {
                 return "\(error)"
             }
+
+            let rowStrings: [String] = rows.map { row in
+                let columnValueStrings: [String] = row.map { (columnName: String, dbValue: DatabaseValue) -> String in
+                    let valueString = switch dbValue.storage {
+                    case .string(let string): string
+                    case .int64(let int64): "\(int64)"
+                    case .double(let double): "\(double)"
+                    case .null: "NULL"
+                    case .blob(let data): data.hexadecimalString
+                    }
+
+                    return "\(columnName):\(valueString)"
+                }
+
+                return "[\(columnValueStrings.joined(separator: ", "))]"
+            }
+
+            return rowStrings.joined(separator: "\n\n")
         }
 
         outputTextView.text = output
