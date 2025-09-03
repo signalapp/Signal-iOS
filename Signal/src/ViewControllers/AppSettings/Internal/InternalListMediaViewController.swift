@@ -43,9 +43,11 @@ class InternalListMediaViewController: OWSTableViewController2 {
         ) = DependenciesBridge.shared.db.read { tx in
             return (
                 try! QueuedBackupAttachmentUpload
+                    .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.state) == QueuedBackupAttachmentUpload.State.ready.rawValue)
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == true)
                     .fetchCount(tx.database),
                 try! QueuedBackupAttachmentUpload
+                    .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.state) == QueuedBackupAttachmentUpload.State.ready.rawValue)
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == false)
                     .fetchCount(tx.database),
                 try! OrphanedBackupAttachment.fetchCount(tx.database),
