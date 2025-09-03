@@ -186,7 +186,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             )
 
             dequeuedRecords = try store.fetchNextUploads(
-                count: UInt(timestamps.count - 1),
+                count: UInt(timestamps.count),
                 isFullsize: true,
                 tx: tx
             )
@@ -203,11 +203,12 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         })
 
         // We should have gotten entries in timestamp order
-        XCTAssertEqual(dequeuedTimestamps, Array(sortedTimestamps.prefix(sortedTimestamps.count - 1)))
+        XCTAssertEqual(dequeuedTimestamps, Array(sortedTimestamps.prefix(sortedTimestamps.count)))
 
         try db.write { tx in
-            try dequeuedRecords.forEach { record in
-                try store.removeQueuedUpload(
+            // Finish all but one
+            try dequeuedRecords.prefix(timestamps.count - 1).forEach { record in
+                try store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: true,
                     tx: tx
@@ -216,9 +217,26 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         }
 
         try db.read { tx in
-            // all rows but one should be deleted.
+            // Since not all rows are done, they should all stick around.
+            let records = try QueuedBackupAttachmentUpload.fetchAll(tx.database)
+            XCTAssertEqual(5, records.count)
+            XCTAssertEqual(4, records.filter({ $0.state == .done }).count)
+            XCTAssertEqual(1, records.filter({ $0.state == .ready }).count)
+        }
+
+        try db.write { tx in
+            // Finish the last one
+            _ = try store.markUploadDone(
+                for: dequeuedRecords.last!.attachmentRowId,
+                fullsize: true,
+                tx: tx
+            )
+        }
+
+        try db.read { tx in
+            // all rows but one should now be deleted.
             XCTAssertEqual(
-                1,
+                0,
                 try QueuedBackupAttachmentUpload.fetchCount(tx.database)
             )
         }
@@ -285,7 +303,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
         try db.write { tx in
             try dequeuedRecords.forEach { record in
-                try store.removeQueuedUpload(
+                try store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: record.isFullsize,
                     tx: tx
@@ -294,11 +312,12 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         }
 
         try db.read { tx in
-            // all fullsize rows should be deleted.
-            XCTAssertEqual(
-                4,
-                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
-            )
+            // All fullsize rows should be done
+            let records = try QueuedBackupAttachmentUpload.fetchAll(tx.database)
+            XCTAssertEqual(8, records.count)
+            XCTAssertEqual(4, records.filter(\.isFullsize.negated).count)
+            XCTAssertEqual(4, records.filter(\.isFullsize).count)
+            XCTAssertEqual(4, records.filter({ $0.isFullsize && $0.state == .done }).count)
         }
     }
 

@@ -82,6 +82,7 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
         let queueSnapshot = try self.computeRemainingUnuploadedByteCount()
         let sink = OWSProgress.createSink(block)
         let source = await sink.addSource(withLabel: "", unitCount: queueSnapshot.totalByteCount)
+        source.incrementCompletedUnitCount(by: queueSnapshot.completedByteCount)
         let observer = Observer(
             queueSnapshot: queueSnapshot,
             sink: sink,
@@ -226,6 +227,7 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
 
     fileprivate struct UploadQueueSnapshot {
         let totalByteCount: UInt64
+        let completedByteCount: UInt64
         // We want to ignore updates from uploads that were scheduled after
         // we started observing. Take advantage of sequential row ids by
         // ignoring updates from ids that came after initial setup.
@@ -234,16 +236,21 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
 
     private nonisolated func computeRemainingUnuploadedByteCount() throws -> UploadQueueSnapshot {
         return try db.read { tx in
-            var totalByteCount: UInt64 = 0
+            var remainingByteCount: UInt64 = 0
+            var completedByteCount: UInt64 = 0
             var maxRowId: Int64?
 
-            let cursor = try QueuedBackupAttachmentUpload
+            var cursor = try QueuedBackupAttachmentUpload
+                .filter(
+                    Column(QueuedBackupAttachmentUpload.CodingKeys.state)
+                        == QueuedBackupAttachmentUpload.State.ready.rawValue
+                )
                 // Don't coun't thumbnails in progress
                 .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == true)
                 .fetchCursor(tx.database)
 
             while let uploadRecord = try cursor.next() {
-                totalByteCount += UInt64(uploadRecord.estimatedByteCount)
+                remainingByteCount += UInt64(uploadRecord.estimatedByteCount)
                 if let existingMaxRowId = maxRowId {
                     maxRowId = max(existingMaxRowId, uploadRecord.id!)
                 } else {
@@ -251,7 +258,24 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
                 }
             }
 
-            return UploadQueueSnapshot(totalByteCount: totalByteCount, maxRowId: maxRowId)
+            cursor = try QueuedBackupAttachmentUpload
+                .filter(
+                    Column(QueuedBackupAttachmentUpload.CodingKeys.state)
+                        == QueuedBackupAttachmentUpload.State.done.rawValue
+                )
+                // Don't coun't thumbnails in progress
+                .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == true)
+                .fetchCursor(tx.database)
+
+            while let uploadRecord = try cursor.next() {
+                completedByteCount += UInt64(uploadRecord.estimatedByteCount)
+            }
+
+            return UploadQueueSnapshot(
+                totalByteCount: remainingByteCount + completedByteCount,
+                completedByteCount: completedByteCount,
+                maxRowId: maxRowId
+            )
         }
     }
 }
@@ -277,6 +301,7 @@ open class BackupAttachmentUploadProgressMock: BackupAttachmentUploadProgress {
         return BackupAttachmentUploadProgressObserver(
             queueSnapshot: .init(
                 totalByteCount: 100,
+                completedByteCount: 0,
                 maxRowId: nil
             ),
             sink: sink,

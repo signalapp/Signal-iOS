@@ -2295,6 +2295,7 @@ CREATE
                 ,"isFullsize" BOOLEAN NOT NULL
                 ,"numRetries" INTEGER NOT NULL DEFAULT 0
                 ,"minRetryTimestamp" INTEGER NOT NULL DEFAULT 0
+                ,"state" INTEGER DEFAULT 0
 )
 ;
 
@@ -2394,13 +2395,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_BackupAttachmentUploadQueue_on_isFullsize_maxOwnerTimestamp"
-        ON "BackupAttachmentUploadQueue"("isFullsize"
-    ,"maxOwnerTimestamp"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "Poll" (
             "id" INTEGER PRIMARY KEY NOT NULL
@@ -2466,4 +2460,33 @@ CREATE
     INDEX "index_pollvote_on_optionId"
         ON "PollVote"("optionId"
 )
+;
+
+CREATE
+    INDEX "index_BackupAttachmentUploadQueue_on_state_isFullsize_maxOwnerTimestamp"
+        ON "BackupAttachmentUploadQueue"("state"
+    ,"isFullsize"
+    ,"maxOwnerTimestamp"
+)
+;
+
+CREATE
+    TRIGGER __BackupAttachmentUploadQueue_au AFTER UPDATE
+            OF state
+                ON BackupAttachmentUploadQueue BEGIN DELETE
+                FROM
+                    BackupAttachmentUploadQueue
+                WHERE
+                    state = 1
+                    AND NOT EXISTS (
+                        SELECT
+                                id
+                            FROM
+                                BackupAttachmentUploadQueue
+                            WHERE
+                                state = 0
+                    )
+;
+
+END
 ;

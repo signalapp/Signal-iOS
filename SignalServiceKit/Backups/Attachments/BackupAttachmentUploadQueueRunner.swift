@@ -756,7 +756,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
-            try backupAttachmentUploadStore.removeQueuedUpload(
+            // We don't actually delete records when finishing; we just mark
+            // them done so we can still keep track of their byte count.
+            try backupAttachmentUploadStore.markUploadDone(
                 for: record.record.attachmentRowId,
                 fullsize: record.record.isFullsize,
                 tx: tx

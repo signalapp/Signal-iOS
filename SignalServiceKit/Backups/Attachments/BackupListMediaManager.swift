@@ -879,16 +879,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         // Since we now know this is uploaded, we can go ahead and remove
         // from the upload queue if present.
         if
-            let removedRecord = try backupAttachmentUploadStore.removeQueuedUpload(
+            let finishedRecord = try backupAttachmentUploadStore.markUploadDone(
                 for: attachment.id,
                 fullsize: isThumbnail.negated,
                 tx: tx
             )
         {
-            if removedRecord.isFullsize {
+            if finishedRecord.isFullsize {
                 Task {
                     await backupAttachmentUploadProgress.didFinishUploadOfFullsizeAttachment(
-                        uploadRecord: removedRecord
+                        uploadRecord: finishedRecord
                     )
                 }
             }

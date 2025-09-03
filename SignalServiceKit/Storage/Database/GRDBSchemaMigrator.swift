@@ -342,6 +342,8 @@ public class GRDBSchemaMigrator {
         case addOriginalTransitTierInfoAttachmentColumns
         case rebuildIncompleteViewOnceIndex
         case addIsPollToTSInteraction
+        case addBackupAttachmentUploadQueueStateColumn
+        case addBackupAttachmentUploadQueueTrigger
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -405,7 +407,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 126
+    public static let grdbSchemaVersionLatest: UInt = 127
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4333,6 +4335,39 @@ public class GRDBSchemaMigrator {
                 columns: ["optionId"]
             )
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupAttachmentUploadQueueStateColumn) { tx in
+
+            try tx.database.alter(table: "BackupAttachmentUploadQueue") { table in
+                table.add(column: "state", .integer)
+                    .defaults(to: 0)
+            }
+
+            try tx.database.drop(index: "index_BackupAttachmentUploadQueue_on_isFullsize_maxOwnerTimestamp")
+
+            try tx.database.create(
+                index: "index_BackupAttachmentUploadQueue_on_state_isFullsize_maxOwnerTimestamp",
+                on: "BackupAttachmentUploadQueue",
+                columns: ["state", "isFullsize", "maxOwnerTimestamp"]
+            )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupAttachmentUploadQueueTrigger) { tx in
+            try tx.database.execute(sql: """
+                CREATE TRIGGER __BackupAttachmentUploadQueue_au
+                AFTER UPDATE OF state ON BackupAttachmentUploadQueue
+                BEGIN
+                    DELETE FROM BackupAttachmentUploadQueue
+                        WHERE state = 1
+                        AND NOT EXISTS (
+                            SELECT id FROM BackupAttachmentUploadQueue WHERE state = 0
+                        );
+                END;
+            """)
             return .success(())
         }
 
