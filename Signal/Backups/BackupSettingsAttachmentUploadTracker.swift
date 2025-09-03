@@ -11,6 +11,7 @@ final class BackupSettingsAttachmentUploadTracker {
         enum State {
             case running
             case pausedLowBattery
+            case pausedLowPowerMode
             case pausedNeedsWifi
             case pausedNeedsInternet
         }
@@ -186,7 +187,7 @@ private class Tracker {
 
                 _state.uploadProgressObserver = nil
 
-            case .noWifiReachability, .lowBattery, .noReachability:
+            case .noWifiReachability, .lowBattery, .lowPowerMode, .noReachability:
                 break
             }
 
@@ -221,6 +222,8 @@ private class Tracker {
                 return .pausedNeedsWifi
             case .lowBattery:
                 return .pausedLowBattery
+            case .lowPowerMode:
+                return .pausedLowPowerMode
             case .empty, .notRegisteredAndReady, .appBackgrounded:
                 return nil
             }

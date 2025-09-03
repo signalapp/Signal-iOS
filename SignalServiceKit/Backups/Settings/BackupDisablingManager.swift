@@ -198,7 +198,7 @@ public final class BackupDisablingManager {
             switch status {
             case .suspended, .empty, .notRegisteredAndReady:
                 return true
-            case .running, .noWifiReachability, .noReachability, .lowBattery, .lowDiskSpace, .appBackgrounded:
+            case .running, .noWifiReachability, .noReachability, .lowBattery, .lowPowerMode, .lowDiskSpace, .appBackgrounded:
                 return false
             }
         }

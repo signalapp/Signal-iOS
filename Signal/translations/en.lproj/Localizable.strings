@@ -760,6 +760,9 @@
 /* Subtitle for a progress bar tracking downloads that are paused because of low battery. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Download paused: device has low battery";
 
+/* Subtitle for a progress bar tracking downloads that are paused because of low power mode. */
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Download paused: low power mode";
+
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Not enough space to download your media. To continue free up %1$@ of space.";
 
@@ -849,6 +852,9 @@
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Media upload paused: device has low battery";
+
+/* Subtitle for a progress bar tracking uploads that are paused because of low power mode. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Media upload paused: low power mode";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Media upload paused: no internet…";
@@ -7059,6 +7065,9 @@
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery */
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Device has low battery";
+
+/* Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode */
+"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Low power mode";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "No internet…";

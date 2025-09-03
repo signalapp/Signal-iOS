@@ -11,6 +11,7 @@ final class BackupSettingsAttachmentDownloadTracker {
             case suspended
             case running
             case pausedLowBattery
+            case pausedLowPowerMode
             case pausedNeedsWifi
             case pausedNeedsInternet
             case outOfDiskSpace(bytesRequired: UInt64)
@@ -205,6 +206,8 @@ private class Tracker {
                 return .pausedNeedsInternet
             case .lowBattery:
                 return .pausedLowBattery
+            case .lowPowerMode:
+                return .pausedLowPowerMode
             case .lowDiskSpace:
                 return .outOfDiskSpace(bytesRequired: max(
                     lastReportedDownloadProgress.remainingUnitCount,

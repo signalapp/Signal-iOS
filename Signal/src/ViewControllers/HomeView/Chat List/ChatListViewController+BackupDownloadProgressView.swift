@@ -187,6 +187,8 @@ public class CLVBackupDownloadProgressView {
             return nil
         case .lowBattery:
             return .paused(reason: .lowBattery)
+        case .lowPowerMode:
+            return .paused(reason: .lowPowerMode)
         case .lowDiskSpace:
             let minRequiredDiskSpace = backupAttachmentDownloadQueueStatusReporter
                 .minimumRequiredDiskSpaceToCompleteDownloads()
@@ -227,6 +229,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         public enum PauseReason {
             case notReachable
             case lowBattery
+            case lowPowerMode
         }
     }
 
@@ -248,11 +251,11 @@ private class BackupAttachmentDownloadProgressView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
-    private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
-    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
-    private let backupSettingsStore: BackupSettingsStore
-    private let db: DB
+    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager!
+    private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter!
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore!
+    private let backupSettingsStore: BackupSettingsStore!
+    private let db: DB!
 
     init(
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
@@ -274,6 +277,20 @@ private class BackupAttachmentDownloadProgressView: UIView {
             name: .themeDidChange,
             object: nil
         )
+
+        initialRender()
+    }
+
+    fileprivate init(forPreview: (), state: State) {
+        self.backupAttachmentDownloadManager = nil
+        self.backupAttachmentDownloadQueueStatusReporter = nil
+        self.backupAttachmentDownloadStore = nil
+        self.backupSettingsStore = nil
+        self.db = nil
+
+        self.state = state
+
+        super.init(frame: .zero)
 
         initialRender()
     }
@@ -707,6 +724,11 @@ private class BackupAttachmentDownloadProgressView: UIView {
                     "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE",
                     comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery"
                 )
+            case .lowPowerMode:
+                OWSLocalizedString(
+                    "RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE",
+                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode"
+                )
             case .notReachable:
                 OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE",
@@ -993,3 +1015,36 @@ private class BackupAttachmentDownloadProgressView: UIView {
         }
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private class BackupDownloadProgressPreviewViewController: UIViewController {
+    private let state: BackupAttachmentDownloadProgressView.State
+
+    init(state: BackupAttachmentDownloadProgressView.State) {
+        self.state = state
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let progressView = BackupAttachmentDownloadProgressView(
+            forPreview: (),
+            state: state
+        )
+        view.addSubview(progressView)
+        progressView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+    }
+}
+
+@available(iOS 17, *)
+#Preview {
+    return BackupDownloadProgressPreviewViewController(state: .paused(reason: .lowPowerMode))
+}
+
+#endif

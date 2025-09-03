@@ -281,6 +281,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .lowBattery:
             logger.warn("Skipping \(logString) Backup uploads: low battery.")
             try await taskQueue.stop()
+        case .lowPowerMode:
+            logger.warn("Skipping \(logString) Backup uploads: low power mode.")
+            try await taskQueue.stop()
         case .appBackgrounded:
             logger.warn("Skipping \(logString) Backup uploads: app backgrounded")
             try await taskQueue.stop()
@@ -394,7 +397,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             case .empty:
                 // The queue will stop on its own, finish this task.
                 break
-            case .lowBattery:
+            case .lowBattery, .lowPowerMode:
                 try? await loader.stop()
                 return .retryableError(NeedsBatteryError())
             case .noWifiReachability, .noReachability:
@@ -614,7 +617,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // issue.
                             return .retryableError(NetworkRetryError())
                         case .noWifiReachability, .notRegisteredAndReady,
-                                .lowBattery, .appBackgrounded, .empty:
+                                .lowBattery, .lowPowerMode, .appBackgrounded, .empty:
                             // These other states may be overriding reachability;
                             // just allow the queue itself to retry and once the
                             // other states are resolved reachability will kick in,

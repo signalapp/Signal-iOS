@@ -26,8 +26,10 @@ public enum BackupAttachmentDownloadQueueStatus: Equatable, Sendable {
     case noWifiReachability
     /// Internet access is required for downloads, but not available.
     case noReachability
-    /// The device has low battery or is in low power mode.
+    /// The device has low battery.
     case lowBattery
+    /// The device is in low power mode.
+    case lowPowerMode
     /// There is not enough disk space to finish downloading.
     /// Note that we require a minimum amount of space and will continue
     /// greedily downloading until this minimum is reached even if we know
@@ -402,7 +404,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             }
 
             if isLowPowerMode == true {
-                return .lowBattery
+                return .lowPowerMode
             }
 
             if !isMainAppAndActive && !isMainAppAndActiveOverride {
@@ -504,13 +506,13 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         let notificationsToObserve: [(Notification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
-            (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
-            (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
+            (.batteryLevelChanged, #selector(batteryLevelDidChange)),
+            (.batteryLowPowerModeChanged, #selector(lowPowerModeDidChange)),
             (.OWSApplicationWillEnterForeground, #selector(willEnterForeground)),
             (.backupAttachmentDownloadQueueSuspensionStatusDidChange, #selector(suspensionStatusDidChange)),
             (.shouldAllowBackupDownloadsOnCellularChanged, #selector(shouldAllowBackupDownloadsOnCellularDidChange)),
-            (Notification.Name.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
-            (Notification.Name.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
+            (.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
+            (.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(

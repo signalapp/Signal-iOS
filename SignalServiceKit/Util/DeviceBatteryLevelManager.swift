@@ -5,13 +5,15 @@
 
 import Foundation
 
+extension Notification.Name {
+    public static let batteryLevelChanged: Notification.Name = UIDevice.batteryLevelDidChangeNotification
+    public static let batteryLowPowerModeChanged: Notification.Name = .NSProcessInfoPowerStateDidChange
+}
+
 @MainActor
 public protocol DeviceBatteryLevelMonitor {
     /// A value from 0 to 1
     var batteryLevel: Float { get }
-
-    /// Notification fired on NotificationCenter.default when the battery level changes.
-    var notification: Notification.Name { get }
 }
 
 @MainActor
@@ -27,5 +29,4 @@ public protocol DeviceBatteryLevelManager {
     func endMonitoring(_ monitor: DeviceBatteryLevelMonitor)
 
     var isLowPowerModeEnabled: Bool { get }
-    var isLowPowerModeChangedNotification: Notification.Name { get }
 }

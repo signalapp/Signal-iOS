@@ -21,8 +21,10 @@ public enum BackupAttachmentUploadQueueStatus {
     case noWifiReachability
     /// Internet access is required for uploads, but not available.
     case noReachability
-    /// The device has low battery or is in low power mode.
+    /// The device has low battery.
     case lowBattery
+    /// The device is in low power mode.
+    case lowPowerMode
     /// The app is running in the background.
     case appBackgrounded
 }
@@ -259,7 +261,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             }
 
             if isLowPowerMode == true {
-                return .lowBattery
+                return .lowPowerMode
             }
 
             if !isMainAppAndActive && !isMainAppAndActiveOverride {
@@ -327,10 +329,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             (.backupPlanChanged, #selector(backupPlanDidChange)),
             (.shouldAllowBackupUploadsOnCellularChanged, #selector(shouldAllowBackupUploadsOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
-            (UIDevice.batteryLevelDidChangeNotification, #selector(batteryLevelDidChange)),
-            (Notification.Name.NSProcessInfoPowerStateDidChange, #selector(lowPowerModeDidChange)),
-            (Notification.Name.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
-            (Notification.Name.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
+            (.batteryLevelChanged, #selector(batteryLevelDidChange)),
+            (.batteryLowPowerModeChanged, #selector(lowPowerModeDidChange)),
+            (.OWSApplicationDidEnterBackground, #selector(isMainAppAndActiveDidChange)),
+            (.OWSApplicationDidBecomeActive, #selector(isMainAppAndActiveDidChange)),
         ]
         for (name, selector) in notificationsToObserve {
             NotificationCenter.default.addObserver(

@@ -522,7 +522,7 @@ class BackupSettingsViewController:
         switch currentDownloadQueueStatus {
         case .empty, .suspended, .notRegisteredAndReady, .appBackgrounded:
             break
-        case .running, .noWifiReachability, .noReachability, .lowBattery, .lowDiskSpace:
+        case .running, .noWifiReachability, .noReachability, .lowBattery, .lowPowerMode, .lowDiskSpace:
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
                     "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE",
@@ -1261,7 +1261,7 @@ struct BackupSettingsView: View {
             switch latestDownloadUpdate?.state {
             case nil, .suspended:
                 return .disabling
-            case .running, .pausedLowBattery, .pausedNeedsWifi, .pausedNeedsInternet, .outOfDiskSpace:
+            case .running, .pausedLowBattery, .pausedLowPowerMode, .pausedNeedsWifi, .pausedNeedsInternet, .outOfDiskSpace:
                 return .disablingDownloadsRunning(latestDownloadUpdate!)
             }
         }
@@ -1621,7 +1621,7 @@ private struct BackupAttachmentDownloadProgressView: View {
             let progressViewColor: Color? = switch latestDownloadUpdate.state {
             case .suspended:
                 nil
-            case .running, .pausedLowBattery, .pausedNeedsWifi, .pausedNeedsInternet:
+            case .running, .pausedLowBattery, .pausedLowPowerMode, .pausedNeedsWifi, .pausedNeedsInternet:
                 .Signal.accent
             case .outOfDiskSpace:
                 .yellow
@@ -1661,6 +1661,11 @@ private struct BackupAttachmentDownloadProgressView: View {
                 OWSLocalizedString(
                     "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY",
                     comment: "Subtitle for a progress bar tracking downloads that are paused because of low battery."
+                )
+            case .pausedLowPowerMode:
+                OWSLocalizedString(
+                    "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE",
+                    comment: "Subtitle for a progress bar tracking downloads that are paused because of low power mode."
                 )
             case .pausedNeedsWifi:
                 OWSLocalizedString(
@@ -1742,7 +1747,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                 }
             }
             .foregroundStyle(Color.Signal.label)
-        case .pausedLowBattery, .pausedNeedsInternet:
+        case .pausedLowBattery, .pausedLowPowerMode, .pausedNeedsInternet:
             EmptyView()
         }
     }
@@ -1786,6 +1791,11 @@ private struct BackupAttachmentUploadProgressView: View {
             OWSLocalizedString(
                 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY",
                 comment: "Subtitle for a progress bar tracking uploads that are paused because of low battery."
+            )
+        case .pausedLowPowerMode:
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE",
+                comment: "Subtitle for a progress bar tracking uploads that are paused because of low power mode."
             )
         case .pausedNeedsWifi:
             OWSLocalizedString(
@@ -2291,11 +2301,20 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     ))
 }
 
-#Preview("Manual Backup: Media Upload Paused (Battery)") {
+#Preview("Manual Backup: Media Upload Paused (Low Battery)") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
+    ))
+}
+
+#Preview("Manual Backup: Media Upload Paused (Low Power Mode)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
+        latestBackupAttachmentUploadUpdateState: .pausedLowPowerMode,
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
@@ -2345,10 +2364,18 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     ))
 }
 
-#Preview("Downloads: Paused (Battery)") {
+#Preview("Downloads: Paused (Low Battery)") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowBattery,
+        backupSubscriptionLoadingState: .loaded(.free)
+    ))
+}
+
+#Preview("Downloads: Paused (Low Power Mode)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .free,
+        latestBackupAttachmentDownloadUpdateState: .pausedLowPowerMode,
         backupSubscriptionLoadingState: .loaded(.free)
     ))
 }

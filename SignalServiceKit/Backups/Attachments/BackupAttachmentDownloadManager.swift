@@ -238,6 +238,10 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             logger.info("Skipping \(logString) backup attachment downloads while low battery")
             try await taskQueue.stop()
             return
+        case .lowPowerMode:
+            logger.info("Skipping \(logString) backup attachment downloads while low power mode")
+            try await taskQueue.stop()
+            return
         case .lowDiskSpace:
             logger.info("Skipping \(logString) backup attachment downloads while low on disk space")
             try await taskQueue.stop()
@@ -402,7 +406,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             case .lowDiskSpace:
                 try? await loader.stop()
                 return .retryableError(NeedsDiskSpaceError())
-            case .lowBattery:
+            case .lowBattery, .lowPowerMode:
                 try? await loader.stop()
                 return .retryableError(NeedsBatteryError())
             case .appBackgrounded:
@@ -548,7 +552,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 case .empty:
                     // The queue will stop on its own, finish this task.
                     break
-                case .suspended, .lowDiskSpace, .lowBattery, .noWifiReachability, .noReachability, .appBackgrounded, .notRegisteredAndReady:
+                case .suspended, .lowDiskSpace, .lowBattery, .lowPowerMode, .noWifiReachability, .noReachability, .appBackgrounded, .notRegisteredAndReady:
                     // Stop the queue now proactively.
                     try? await loader.stop()
                 }
