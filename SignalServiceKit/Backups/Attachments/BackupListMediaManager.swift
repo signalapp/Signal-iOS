@@ -577,11 +577,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         if isThumbnail {
             mediaName = AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: fullsizeMediaName)
             localCdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber
-            attachmentWasAssumedUploaded = attachment.thumbnailMediaTierInfo != nil
+            attachmentWasAssumedUploaded = attachment.thumbnailMediaTierInfo?.cdnNumber != nil
         } else {
             mediaName = fullsizeMediaName
             localCdnNumber = attachment.mediaTierInfo?.cdnNumber
-            attachmentWasAssumedUploaded = attachment.mediaTierInfo != nil
+            attachmentWasAssumedUploaded = attachment.mediaTierInfo?.cdnNumber != nil
         }
 
         let mediaId = try backupKey.deriveMediaId(mediaName)
