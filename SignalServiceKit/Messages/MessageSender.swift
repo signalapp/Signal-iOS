@@ -675,12 +675,7 @@ public class MessageSender {
     private struct OuterRecoveryState {
         var canLookUpPhoneNumbers = true
         var canRefreshExpiringGroupSendEndorsements = true
-
-        // Sender key sends will fail if a single recipient has an invalid access
-        // token, but the server can't identify the recipient for us. To recover,
-        // fall back to a fanout; this will fail only for the affect recipient.
         var canUseMultiRecipientSealedSender = true
-
         var canHandleMultiRecipientMismatchedDevices = true
         var canHandleMultiRecipientStaleDevices = true
 
