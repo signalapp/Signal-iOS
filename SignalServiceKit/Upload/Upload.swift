@@ -6,7 +6,7 @@
 import Foundation
 
 public enum Upload {
-    public static let uploadQueue = ConcurrentTaskQueue(concurrentLimit: CurrentAppContext().isNSE ? 2 : 8)
+    public static let uploadQueue = ConcurrentTaskQueue(concurrentLimit: CurrentAppContext().isNSE ? 2 : 12)
 
     public enum Constants {
         public static let attachmentUploadProgressNotification = NSNotification.Name("AttachmentUploadProgressNotification")

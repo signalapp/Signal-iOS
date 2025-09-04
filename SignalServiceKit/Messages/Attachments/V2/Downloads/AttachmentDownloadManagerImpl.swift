@@ -104,7 +104,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             tsAccountManager: tsAccountManager
         )
         self.queueLoader = TaskQueueLoader(
-            maxConcurrentTasks: 8,
+            maxConcurrentTasks: 12,
             dateProvider: dateProvider,
             db: db,
             runner: taskRunner

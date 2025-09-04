@@ -853,8 +853,8 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     // MARK: -
 
     private enum Constants {
-        static let numParallelDownloadsFullsize: UInt = 4
-        static let numParallelDownloadsThumbnail: UInt = 4
+        static let numParallelDownloadsFullsize: UInt = 12
+        static let numParallelDownloadsThumbnail: UInt = 8
     }
 }
 
