@@ -205,7 +205,7 @@ public class SMKSecretSessionCipher: NSObject {
 
         do {
             // validator.validate(content.getSenderCertificate(), timestamp);
-            guard try messageContent.senderCertificate.validate(trustRoot: trustRoot, time: timestamp) else {
+            guard messageContent.senderCertificate.validate(trustRoot: trustRoot, time: timestamp) else {
                 throw SMKSecretSessionCipherError.invalidCertificate
             }
 
