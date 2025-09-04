@@ -100,46 +100,25 @@ public class TSAccountManagerImpl: TSAccountManager {
     private static var aciRegistrationIdKey: String = "TSStorageLocalRegistrationId"
     private static var pniRegistrationIdKey: String = "TSStorageLocalPniRegistrationId"
 
-    public func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        getOrGenerateRegistrationId(
-            forStorageKey: Self.aciRegistrationIdKey,
-            nounForLogging: "ACI registration ID",
-            tx: tx
-        )
+    public func getRegistrationId(for identity: OWSIdentity, tx: DBReadTransaction) -> UInt32? {
+        let key = switch identity {
+        case .aci: Self.aciRegistrationIdKey
+        case .pni: Self.pniRegistrationIdKey
+        }
+        return kvStore.getUInt32(key, transaction: tx)
     }
 
-    public func getOrGeneratePniRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        getOrGenerateRegistrationId(
-            forStorageKey: Self.pniRegistrationIdKey,
-            nounForLogging: "PNI registration ID",
-            tx: tx
-        )
+    public func setRegistrationId(_ newRegistrationId: UInt32, for identity: OWSIdentity, tx: DBWriteTransaction) {
+        let key = switch identity {
+        case .aci: Self.aciRegistrationIdKey
+        case .pni: Self.pniRegistrationIdKey
+        }
+        kvStore.setUInt32(newRegistrationId, key: key, transaction: tx)
     }
 
-    public func wipeRegistrationIdsFromFailedProvisioning(tx: DBWriteTransaction) {
+    public func clearRegistrationIds(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Self.aciRegistrationIdKey, transaction: tx)
         kvStore.removeValue(forKey: Self.pniRegistrationIdKey, transaction: tx)
-    }
-
-    public func setPniRegistrationId(_ newRegistrationId: UInt32, tx: DBWriteTransaction) {
-        kvStore.setUInt32(newRegistrationId, key: Self.pniRegistrationIdKey, transaction: tx)
-    }
-
-    private func getOrGenerateRegistrationId(
-        forStorageKey key: String,
-        nounForLogging: String,
-        tx: DBWriteTransaction
-    ) -> UInt32 {
-        guard
-            let storedId = kvStore.getUInt32(key, transaction: tx),
-            storedId != 0
-        else {
-            let result = RegistrationIdGenerator.generate()
-            Logger.info("Generated a new \(nounForLogging): \(result)")
-            kvStore.setUInt32(result, key: key, transaction: tx)
-            return result
-        }
-        return storedId
     }
 
     // MARK: - Manual Message Fetch

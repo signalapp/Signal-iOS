@@ -28,16 +28,15 @@ public struct AccountAttributesGenerator {
     }
 
     func generateForPrimary(
-        tx: DBWriteTransaction
+        aciRegistrationId: UInt32,
+        pniRegistrationId: UInt32,
+        tx: DBReadTransaction
     ) -> AccountAttributes {
         owsAssertDebug(tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true)
 
-        let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
+        let sdsTx: DBReadTransaction = SDSDB.shimOnlyBridge(tx)
 
         let isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx: tx)
-
-        let registrationId = tsAccountManager.getOrGenerateAciRegistrationId(tx: tx)
-        let pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
 
         guard let profileKey = profileManager.localUserProfile(tx: sdsTx)?.profileKey else {
             owsFail("Couldn't fetch local profile key.")
@@ -65,7 +64,7 @@ public struct AccountAttributesGenerator {
 
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
-            registrationId: registrationId,
+            registrationId: aciRegistrationId,
             pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,

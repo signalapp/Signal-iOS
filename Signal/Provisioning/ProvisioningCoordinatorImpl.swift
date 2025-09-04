@@ -282,13 +282,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         phoneNumber: E164,
         prekeyBundles: RegistrationPreKeyUploadBundles
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
-        let (aciRegistrationId, pniRegistrationId) = await self.db.awaitableWrite { tx in
-            return (
-                tsAccountManager.getOrGenerateAciRegistrationId(tx: tx),
-                tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
-            )
-        }
-
         return try await completeProvisioning_verifyAndLinkOnServer(
             provisionMessage: provisionMessage,
             deviceName: deviceName,
@@ -296,11 +289,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             pni: pni,
             phoneNumber: phoneNumber,
             prekeyBundles: prekeyBundles,
-            aciRegistrationId: aciRegistrationId,
-            pniRegistrationId: pniRegistrationId
+            aciRegistrationId: RegistrationIdGenerator.generate(),
+            pniRegistrationId: RegistrationIdGenerator.generate()
         ).withUndoOnFailureStep {
             await self.db.awaitableWrite { tx in
-                self.tsAccountManager.wipeRegistrationIdsFromFailedProvisioning(tx: tx)
+                self.tsAccountManager.clearRegistrationIds(tx: tx)
             }
         }
     }
@@ -346,7 +339,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         return try await completeProvisioning_setLocalKeys(
             provisionMessage: provisionMessage,
             prekeyBundles: prekeyBundles,
-            authedDevice: authedDevice
+            authedDevice: authedDevice,
+            aciRegistrationId: aciRegistrationId,
+            pniRegistrationId: pniRegistrationId
         ).withUndoOnFailureStep {
             try await self.undoVerifyAndLinkOnServer(authedDevice: authedDevice)
         }
@@ -355,7 +350,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func completeProvisioning_setLocalKeys(
         provisionMessage: LinkingProvisioningMessage,
         prekeyBundles: RegistrationPreKeyUploadBundles,
-        authedDevice: AuthedDevice.Explicit
+        authedDevice: AuthedDevice.Explicit,
+        aciRegistrationId: UInt32,
+        pniRegistrationId: UInt32
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
         let error: CompleteProvisioningError? = await self.db.awaitableWrite { tx in
             self.identityManager.setIdentityKeyPair(
@@ -374,6 +371,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 userProfileWriter: .linking,
                 tx: tx
             )
+
+            self.tsAccountManager.setRegistrationId(aciRegistrationId, for: .aci, tx: tx)
+            self.tsAccountManager.setRegistrationId(pniRegistrationId, for: .pni, tx: tx)
 
             do {
                 try svr.storeKeys(

@@ -85,27 +85,37 @@ public class MockTSAccountManager: TSAccountManager {
         return { id }
     }()
 
-    open func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        aciRegistrationIdMock()
-    }
-
     public var pniRegistrationIdMock: () -> UInt32 = {
         let id = RegistrationIdGenerator.generate()
         return { id }
     }()
 
-    open func getOrGeneratePniRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        return pniRegistrationIdMock()
+    open func getRegistrationId(for identity: OWSIdentity, tx: DBReadTransaction) -> UInt32? {
+        switch identity {
+        case .aci:
+            return aciRegistrationIdMock()
+        case .pni:
+            return pniRegistrationIdMock()
+        }
     }
 
-    open func wipeRegistrationIdsFromFailedProvisioning(tx: DBWriteTransaction) {}
+    open func clearRegistrationIds(tx: DBWriteTransaction) {}
+
+    public lazy var setAciRegistrationIdMock: (_ id: UInt32) -> Void = { [weak self] id in
+        self?.aciRegistrationIdMock = { id }
+    }
 
     public lazy var setPniRegistrationIdMock: (_ id: UInt32) -> Void = { [weak self] id in
         self?.pniRegistrationIdMock = { id }
     }
 
-    open func setPniRegistrationId(_ newRegistrationId: UInt32, tx: DBWriteTransaction) {
-        setPniRegistrationIdMock(newRegistrationId)
+    open func setRegistrationId(_ newRegistrationId: UInt32, for identity: OWSIdentity, tx: DBWriteTransaction) {
+        switch identity {
+        case .aci:
+            setAciRegistrationIdMock(newRegistrationId)
+        case .pni:
+            setPniRegistrationIdMock(newRegistrationId)
+        }
     }
 
     // MARK: - Manual Message Fetch

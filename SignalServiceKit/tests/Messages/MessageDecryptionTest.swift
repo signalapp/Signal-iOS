@@ -43,6 +43,9 @@ class MessageDecryptionTest: SSKBaseTest {
                 ),
                 tx: tx
             )
+
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .aci, tx: tx)
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .pni, tx: tx)
         }
 
         (SSKEnvironment.shared.notificationPresenterRef as! NoopNotificationPresenterImpl).expectErrors = true

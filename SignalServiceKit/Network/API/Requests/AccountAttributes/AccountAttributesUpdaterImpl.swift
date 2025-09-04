@@ -113,15 +113,23 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             case yes(
                 currentDeviceCapabilities: AccountAttributes.Capabilities,
                 lastAttributeRequestDate: Date?,
-                registrationState: TSRegistrationState
+                registrationState: TSRegistrationState,
+                aciRegistrationId: UInt32,
+                pniRegistrationId: UInt32
             )
         }
 
         let shouldUpdate = db.read { tx -> ShouldUpdate in
             let registrationState = self.tsAccountManager.registrationState(tx: tx)
             let isRegistered = registrationState.isRegistered
+            let aciRegistrationId = self.tsAccountManager.getRegistrationId(for: .aci, tx: tx)
+            let pniRegistrationId = self.tsAccountManager.getRegistrationId(for: .pni, tx: tx)
 
-            guard isRegistered else {
+            guard
+                isRegistered,
+                let aciRegistrationId,
+                let pniRegistrationId
+            else {
                 return .no
             }
 
@@ -135,7 +143,9 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState
+                    registrationState: registrationState,
+                    aciRegistrationId: aciRegistrationId,
+                    pniRegistrationId: pniRegistrationId
                 )
             }
 
@@ -150,7 +160,9 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState
+                    registrationState: registrationState,
+                    aciRegistrationId: aciRegistrationId,
+                    pniRegistrationId: pniRegistrationId
                 )
             }
             // Check if the app version has changed.
@@ -159,7 +171,9 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState
+                    registrationState: registrationState,
+                    aciRegistrationId: aciRegistrationId,
+                    pniRegistrationId: pniRegistrationId
                 )
             }
             return .no
@@ -167,12 +181,22 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         switch shouldUpdate {
         case .no:
             return
-        case let .yes(currentDeviceCapabilities, lastAttributeRequestDate, registrationState):
+        case let .yes(
+            currentDeviceCapabilities,
+            lastAttributeRequestDate,
+            registrationState,
+            aciRegistrationId,
+            pniRegistrationId
+        ):
             Logger.info("Updating account attributes.")
             let reportedDeviceCapabilities: AccountAttributes.Capabilities
             if registrationState.isPrimaryDevice == true {
-                let attributes = await db.awaitableWrite { tx in
-                    accountAttributesGenerator.generateForPrimary(tx: tx)
+                let attributes = db.read { tx in
+                    accountAttributesGenerator.generateForPrimary(
+                        aciRegistrationId: aciRegistrationId,
+                        pniRegistrationId: pniRegistrationId,
+                        tx: tx
+                    )
                 }
 
                 let request = AccountAttributesRequestFactory(

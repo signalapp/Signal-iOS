@@ -194,8 +194,9 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             tx: transaction
         )
 
-        tsAccountManager.setPniRegistrationId(
+        tsAccountManager.setRegistrationId(
             pendingState.localDevicePniRegistrationId,
+            for: .pni,
             tx: transaction
         )
 

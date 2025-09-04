@@ -256,16 +256,17 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         guard let identityKeyPair = self.identityKeyPair(for: identity, tx: tx) else {
             throw OWSAssertionError("no identity key pair for \(identity)")
         }
+        guard self.tsAccountManager.getRegistrationId(for: identity, tx: tx) != nil else {
+            throw OWSAssertionError("no registrationId for \(identity)")
+        }
         return IdentityStore(
             identityManager: self,
             identityKeyPair: identityKeyPair.identityKeyPair,
             fetchLocalRegistrationId: { [tsAccountManager] in
-                switch identity {
-                case .aci:
-                    return tsAccountManager.getOrGenerateAciRegistrationId(tx: $0)
-                case .pni:
-                    return tsAccountManager.getOrGeneratePniRegistrationId(tx: $0)
+                guard let registrationId = tsAccountManager.getRegistrationId(for: identity, tx: $0) else {
+                    owsFail("Missing registrationId for \(identity)")
                 }
+                return registrationId
             }
         )
     }

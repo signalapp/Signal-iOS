@@ -232,7 +232,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
             messageCount,
             attachmentCount,
             donationSubscriberID,
-            storageServiceManifestVersion
+            storageServiceManifestVersion,
+            aciRegistrationId,
+            pniRegistrationId
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
@@ -240,7 +242,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSInteraction.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.database),
                 DonationSubscriptionManager.getSubscriberID(transaction: tx),
-                SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx)
+                SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx),
+                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .aci, tx: tx),
+                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .pni, tx: tx)
             )
         }
 
@@ -250,6 +254,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "ACI", value: localIdentifiers?.aci.serviceIdString))
         regSection.add(.copyableItem(label: "PNI", value: localIdentifiers?.pni?.serviceIdString))
         regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
+        regSection.add(.copyableItem(label: "ACI Registration ID", value: aciRegistrationId.map({"\($0)"}) ?? "<missing>"))
+        regSection.add(.copyableItem(label: "PNI Registration ID", value: pniRegistrationId.map({"\($0)"}) ?? "<missing>"))
         regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))
         regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))?.profileKey?.keyData.hexadecimalString ?? "none"))
         if let donationSubscriberID {

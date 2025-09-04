@@ -23,6 +23,9 @@ class TestProtocolRunnerTest: SSKBaseTest {
                 localIdentifiers: .forUnitTests,
                 tx: tx
             )
+
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .aci, tx: tx)
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .pni, tx: tx)
         }
     }
 

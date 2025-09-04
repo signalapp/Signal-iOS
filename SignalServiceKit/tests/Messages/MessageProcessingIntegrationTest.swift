@@ -42,6 +42,9 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                 ),
                 tx: tx
             )
+
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .aci, tx: tx)
+            DependenciesBridge.shared.tsAccountManager.setRegistrationId(RegistrationIdGenerator.generate(), for: .pni, tx: tx)
         }
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)

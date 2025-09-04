@@ -885,8 +885,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var pendingProfileInfo: (givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?, avatarData: Data?)?
 
         // TSAccountManager state
-        var registrationId: UInt32!
-        var pniRegistrationId: UInt32!
         var isManualMessageFetchEnabled = false
         var phoneNumberDiscoverability: PhoneNumberDiscoverability?
 
@@ -956,6 +954,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// Initially the e164 in the UI may be pre-populated (e.g. in re-reg)
         /// but this value is not set until the user accepts it or enters their own value.
         var e164: E164?
+
+        var aciRegistrationId: UInt32!
+        var pniRegistrationId: UInt32!
 
         /// If we ever get a response from a server where we failed reglock,
         /// we know the e164 the request was for has reglock enabled.
@@ -1159,6 +1160,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case shouldSkipRegistrationSplash
             case hasResetForReRegistration
             case e164
+            case aciRegistrationId
+            case pniRegistrationId
             case e164WithKnownReglockEnabled
             case numLocalPinGuesses
             case hasSkippedPinEntry
@@ -1244,6 +1247,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 initialMasterKey = masterKey
             }
 
+            // Generate new registration ids every time we register; until we set these on the server
+            // in the registration request, they are meaningless and can be swapped out. But, for
+            // simplicity, generate these once at the start of registration and persist that value
+            // through registration. The registration IDs are set at the time of the registration call,
+            // but these values aren't persisted to their final destination until the very end of
+            // registration, so persiting the these values once at the start is the easiest way to
+            // avoid problems.
+            // Note: We should not reuse existing registration ids if we are reregistering
+            updatePersistedState(tx) {
+                if $0.aciRegistrationId == nil {
+                    $0.aciRegistrationId = RegistrationIdGenerator.generate()
+                }
+                if $0.pniRegistrationId == nil {
+                    $0.pniRegistrationId = RegistrationIdGenerator.generate()
+                }
+            }
+
             self.updateMasterKeyAndLocalState(masterKey: initialMasterKey, tx: tx)
             inMemoryState.tsRegistrationState = deps.tsAccountManager.registrationState(tx: tx)
             if let quickRestorePin = inMemoryState.registrationMessage?.pin {
@@ -1255,8 +1275,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             loadSVRAuthCredentialCandidates(tx)
             inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx: tx)
-            inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateAciRegistrationId(tx: tx)
-            inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
 
             inMemoryState.allowUnrestrictedUD = deps.udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
@@ -1411,6 +1429,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountEntropyPool,
                 tx: tx
             )
+
+            deps.tsAccountManager.setRegistrationId(persistedState.aciRegistrationId, for: .aci, tx: tx)
+            deps.tsAccountManager.setRegistrationId(persistedState.pniRegistrationId, for: .pni, tx: tx)
 
             block?(tx)
 
@@ -4534,8 +4555,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
-            registrationId: inMemoryState.registrationId,
-            pniRegistrationId: inMemoryState.pniRegistrationId,
+            registrationId: persistedState.aciRegistrationId,
+            pniRegistrationId: persistedState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
             reglockToken: reglockToken,
