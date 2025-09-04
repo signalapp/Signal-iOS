@@ -602,6 +602,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         error.isNetworkFailureOrTimeout
                         // Retry 500s per-item with the same backoff as network errors
                         || error.is5xxServiceResponse
+                        || (error as? Upload.Error) == .networkTimeout
+                        || (error as? Upload.Error) == .networkError
                     {
                         switch await statusManager.currentStatus(for: mode) {
                         case .running:
@@ -630,8 +632,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // the record again immediately then.
                             return .retryableError(error)
                         }
-                    } else if record.record.isFullsize {
-                        switch error as? Upload.Error {
+                    } else if let uploadError = error as? Upload.Error {
+                        switch uploadError {
                         case .missingFile:
                             // The file is missing! We can never retry this upload;
                             // call it a "success" so we don't mess with progress
@@ -643,9 +645,30 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                                 )
                             }
                             return .success
+                        case .uploadFailure(let recovery):
+                            switch recovery {
+                            case .resume(let retryMode), .restart(let retryMode):
+                                switch retryMode {
+                                case .afterBackoff:
+                                    return .retryableError(RateLimitedRetryError(retryAfter: nil))
+                                case .afterServerRequestedDelay(let retryAfter):
+                                    return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
+                                case .immediately:
+                                    return .retryableError(RateLimitedRetryError(retryAfter: 0))
+                                }
+                            case .noMoreRetries:
+                                logger.error("No more upload retries; stopping the queue")
+                                try? await loader.stop()
+                                return .retryableError(error)
+                            }
                         default:
-                            break
+                            // For other errors stop the queue to prevent thundering herd;
+                            // when it starts up again (e.g. on app launch) we will retry.
+                            logger.error("Unknown error occurred; stopping the queue")
+                            try? await loader.stop()
+                            return .retryableError(error)
                         }
+                    } else if record.record.isFullsize {
                         // For other errors stop the queue to prevent thundering herd;
                         // when it starts up again (e.g. on app launch) we will retry.
                         logger.error("Unknown error occurred; stopping the queue")
@@ -679,7 +702,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         private struct RateLimitedRetryError: Error {
-            let retryAfter: TimeInterval
+            let retryAfter: TimeInterval?
         }
         private struct NetworkRetryError: Error {}
 
@@ -697,7 +720,13 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 record.numRetries += 1
                 retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: record.numRetries)
             } else if let rateLimitedError = error as? RateLimitedRetryError {
-                retryDelay = rateLimitedError.retryAfter
+                if let retryAfter = rateLimitedError.retryAfter {
+                    retryDelay = retryAfter
+                } else {
+                    // If no delay provided, use standard backoff and increment retry count.
+                    record.numRetries += 1
+                    retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: record.numRetries)
+                }
             } else {
                 return
             }

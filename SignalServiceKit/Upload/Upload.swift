@@ -41,8 +41,8 @@ public enum Upload {
 
     // MARK: -
 
-    public enum FailureMode {
-        public enum RetryMode {
+    public enum FailureMode: Equatable {
+        public enum RetryMode: Equatable {
             /// This was a temporary failure, such as a network
             /// timeout, so an immediate retry should be possible
             case immediately
@@ -79,7 +79,7 @@ public enum Upload {
         case uploaded(Int)
     }
 
-    public enum Error: Swift.Error, IsRetryableProvider, LocalizedError {
+    public enum Error: Swift.Error, IsRetryableProvider, LocalizedError, Equatable {
         case invalidUploadURL
         case networkError
         case networkTimeout
