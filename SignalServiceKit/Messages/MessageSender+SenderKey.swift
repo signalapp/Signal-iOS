@@ -17,14 +17,6 @@ extension MessageSender {
             self.serviceId = serviceId
             self.deviceIds = deviceIds
         }
-
-        init(serviceId: ServiceId, transaction tx: DBReadTransaction) {
-            self.serviceId = serviceId
-            self.deviceIds = {
-                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-                return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
-            }()
-        }
     }
 
     enum SenderKeyError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
@@ -110,34 +102,8 @@ extension MessageSender {
             throw OWSAssertionError("Can't use Sender Key for a group message unless we have endorsements")
         }
 
-        var eligibleRecipients = Set(recipients.filter { serviceId in
-            // Sender key requires that you're currently a full member of the group.
-            guard threadRecipients.contains(serviceId) else {
-                return false
-            }
-
-            if localIdentifiers.contains(serviceId: serviceId) {
-                return false
-            }
-
-            // TODO: Remove this & handle SignalError.invalidRegistrationId.
-            // If all registrationIds aren't valid, we should fallback to fanout
-            // This should be removed once we've sorted out why there are invalid
-            // registrationIds
-            let registrationIdStatus = Self.registrationIdStatus(for: serviceId, transaction: tx)
-            switch registrationIdStatus {
-            case .valid:
-                // All good, keep going.
-                break
-            case .invalid:
-                // Don't bother with SKDM, fall back to fanout.
-                return false
-            case .noSession:
-                // This recipient has no session; thats ok, just fall back to SKDM.
-                break
-            }
-
-            return true
+        var eligibleRecipients = Set(recipients.filter {
+            return threadRecipients.contains($0) && !localIdentifiers.contains(serviceId: $0)
         })
 
         if eligibleRecipients.count < 2 {
@@ -149,14 +115,25 @@ extension MessageSender {
         // or not we need to send any SKDMs.
         var readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx)
 
+        // If there are any invalid recipients, we can't use Sender Key for them.
+        let invalidRecipients = readyRecipients.filter {
+            return $0.value.contains(where: { !Self.isValidRegistrationId($0.registrationId) })
+        }.map(\.key)
+        eligibleRecipients.subtract(invalidRecipients)
+
         // If there are any unregistered recipients, we don't want to use Sender
         // Key for them. We expect them to remain unregistered, and it's faster to
         // fan out to them to check whether or not their account exists. (If their
         // account exists, we'll use Sender Key for them for the next message.)
         let unregisteredRecipients = readyRecipients.filter { $0.value.isEmpty }.map(\.key)
         eligibleRecipients.subtract(unregisteredRecipients)
+
         if eligibleRecipients.count < 2 {
             return ([], nil)
+        }
+
+        for invalidRecipient in invalidRecipients {
+            readyRecipients.removeValue(forKey: invalidRecipient)
         }
         for unregisteredRecipient in unregisteredRecipients {
             readyRecipients.removeValue(forKey: unregisteredRecipient)
@@ -256,12 +233,16 @@ extension MessageSender {
         let readyRecipients: [Recipient]
         let ciphertextResult: Result<Data, any Error>?
         (readyRecipients, ciphertextResult) = await databaseStorage.awaitableWrite { tx in
-            var readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx).map {
-                return Recipient(serviceId: $0.key, deviceIds: $0.value.map(\.deviceId))
-            }
-            if !message.isStorySend || thread.isGroupThread {
-                readyRecipients = readyRecipients.filter { !$0.deviceIds.isEmpty }
-            }
+            let readyRecipients = { () -> [Recipient] in
+                var readyRecipients = senderKeyStore.readyRecipients(for: thread, limitedTo: eligibleRecipients, tx: tx)
+                // If we found invalid registration IDs when sending SKDMs, these are "no
+                // longer eligible" and need a retry that will result in a fanout.
+                readyRecipients = readyRecipients.filter { $0.value.allSatisfy({ Self.isValidRegistrationId($0.registrationId) }) }
+                if !message.isStorySend || thread.isGroupThread {
+                    readyRecipients = readyRecipients.filter { !$0.value.isEmpty }
+                }
+                return readyRecipients.map { Recipient(serviceId: $0.key, deviceIds: $0.value.map(\.deviceId)) }
+            }()
             if readyRecipients.isEmpty {
                 return (readyRecipients, nil)
             }
@@ -679,6 +660,10 @@ extension MessageSender {
         )
         return try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
     }
+
+    private static func isValidRegistrationId(_ registrationId: UInt32) -> Bool {
+        return (registrationId & RegistrationIdGenerator.Constants.maximumRegistrationId) == registrationId
+    }
 }
 
 private extension MessageSender {
@@ -721,55 +706,5 @@ private extension MessageSender {
 
     static func decode410Response(data: Data) throws -> [AccountStaleDevices] {
         return try JSONDecoder().decode([AccountStaleDevices].self, from: data)
-    }
-
-    enum RegistrationIdStatus {
-        /// The address has a session with a valid registration id
-        case valid
-        /// LibSignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
-        /// but there are some reports of clients having larger registrationIds. Unclear why.
-        case invalid
-        /// There is no session for this address. Unclear why this would happen; but in this case
-        /// the address should receive an SKDM.
-        case noSession
-    }
-
-    /// We shouldn't send a SenderKey message to addresses with a session record with
-    /// an invalid registrationId.
-    /// We should send an SKDM to addresses with no session record at all.
-    ///
-    /// For now, let's perform a check to filter out invalid registrationIds. An
-    /// investigation into cleaning up these invalid registrationIds is ongoing.
-    ///
-    /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
-    /// SenderKeyStore already said this address has previous Sender Key sends). We should
-    /// investigate how this ever happened, but for now fall back to sending another SKDM.
-    static func registrationIdStatus(for serviceId: ServiceId, transaction tx: DBReadTransaction) -> RegistrationIdStatus {
-        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: tx).deviceIds
-        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        for deviceId in candidateDevices {
-            do {
-                guard
-                    let sessionRecord = try sessionStore.loadSession(
-                        for: serviceId,
-                        deviceId: deviceId,
-                        tx: tx
-                    ),
-                    sessionRecord.hasCurrentState
-                else { return .noSession }
-                let registrationId = try sessionRecord.remoteRegistrationId()
-                let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
-                owsAssertDebug(isValidRegistrationId)
-                if !isValidRegistrationId {
-                    return .invalid
-                }
-            } catch {
-                // An error is never thrown on nil result; only if there's something
-                // on disk but parsing fails.
-                owsFailDebug("Failed to fetch registrationId for \(serviceId): \(error)")
-                return .invalid
-            }
-        }
-        return .valid
     }
 }

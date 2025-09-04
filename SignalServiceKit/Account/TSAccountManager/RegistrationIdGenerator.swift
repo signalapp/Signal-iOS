@@ -12,8 +12,12 @@ public class RegistrationIdGenerator {
 
     public init() {}
 
+    enum Constants {
+        static let maximumRegistrationId: UInt32 = 0x3fff
+    }
+
     public static func generate() -> UInt32 {
-        return UInt32.random(in: 1...0x3fff)
+        return UInt32.random(in: 1...Constants.maximumRegistrationId)
     }
 
     public func generate() -> UInt32 {
