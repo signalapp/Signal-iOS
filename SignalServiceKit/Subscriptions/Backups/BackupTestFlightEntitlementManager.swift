@@ -28,6 +28,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     private let db: DB
     private let logger: PrefixedLogger
     private let kvStore: KeyValueStore
+    private let serialTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     init(
         backupPlanManager: BackupPlanManager,
@@ -52,6 +53,12 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     // MARK: -
 
     func acquireEntitlement() async throws {
+        try await serialTaskQueue.run {
+            try await _acquireEntitlement()
+        }
+    }
+
+    private func _acquireEntitlement() async throws {
         owsPrecondition(FeatureFlags.Backups.avoidStoreKitForTesters)
 
         guard TSConstants.isUsingProductionService else {

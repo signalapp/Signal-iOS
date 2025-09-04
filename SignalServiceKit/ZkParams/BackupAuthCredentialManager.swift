@@ -54,6 +54,8 @@ public protocol BackupAuthCredentialManager {
     ) async throws -> LibSignalClient.Auth
 }
 
+// MARK: -
+
 class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     private let authCredentialStore: AuthCredentialStore
@@ -63,6 +65,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
+    private let serialTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     init(
         authCredentialStore: AuthCredentialStore,
@@ -89,6 +92,20 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
     ) async throws -> BackupServiceAuth {
+        return try await serialTaskQueue.run {
+            try await _fetchBackupServiceAuthForRegistration(
+                key: key,
+                localAci: localAci,
+                chatServiceAuth: auth,
+            )
+        }
+    }
+
+    private func _fetchBackupServiceAuthForRegistration(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth auth: ChatServiceAuth,
+    ) async throws -> BackupServiceAuth {
         try await waitForAuthCredentialDependency(.registerBackupId(localAci: localAci, auth: auth))
 
         let (_, backupServiceAuth) = try await fetchNewAuthCredentials(
@@ -100,7 +117,25 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         return backupServiceAuth
     }
 
+    // MARK: -
+
     func fetchBackupServiceAuth(
+        key: BackupKeyMaterial,
+        localAci: Aci,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefreshUnlessCachedPaidCredential: Bool
+    ) async throws -> BackupServiceAuth {
+        return try await serialTaskQueue.run {
+            try await _fetchBackupServiceAuth(
+                key: key,
+                localAci: localAci,
+                chatServiceAuth: auth,
+                forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential,
+            )
+        }
+    }
+
+    private func _fetchBackupServiceAuth(
         key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
@@ -135,7 +170,23 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         return backupServiceAuth
     }
 
+    // MARK: -
+
     func fetchSvr🐝AuthCredential(
+        key: MessageRootBackupKey,
+        chatServiceAuth auth: ChatServiceAuth,
+        forceRefresh: Bool,
+    ) async throws -> LibSignalClient.Auth {
+        try await serialTaskQueue.run {
+            try await _fetchSvr🐝AuthCredential(
+                key: key,
+                chatServiceAuth: auth,
+                forceRefresh: forceRefresh,
+            )
+        }
+    }
+
+    private func _fetchSvr🐝AuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefresh: Bool,
@@ -159,11 +210,17 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         guard let bodyData = response.responseBodyData else {
             throw OWSAssertionError("Missing body data")
         }
-        let svr🐝Auth = try JSONDecoder().decode(ReceivedSVR🐝AuthCredentials.self, from: bodyData)
-        return LibSignalClient.Auth(
-            username: svr🐝Auth.username,
-            password: svr🐝Auth.password
+        let receivedSvr🐝AuthCredential = try JSONDecoder().decode(ReceivedSVR🐝AuthCredentials.self, from: bodyData)
+        let svr🐝Auth = LibSignalClient.Auth(
+            username: receivedSvr🐝AuthCredential.username,
+            password: receivedSvr🐝AuthCredential.password
         )
+
+        await db.awaitableWrite { tx in
+            authCredentialStore.setSvr🐝AuthCredential(svr🐝Auth, tx: tx)
+        }
+
+        return svr🐝Auth
     }
 
     // MARK: -
