@@ -14,11 +14,11 @@ extension Data {
             // The +2 here is to ensure the cipher has room for a padding byte, plus the separator byte.
             // The -2 at the end of this undoes that.
             let messageLengthWithTerminator = self.count + 2
-            var messagePartCount = messageLengthWithTerminator / 160
-            if !messageLengthWithTerminator.isMultiple(of: 160) {
+            var messagePartCount = messageLengthWithTerminator / 80
+            if !messageLengthWithTerminator.isMultiple(of: 80) {
                 messagePartCount += 1
             }
-            let resultLength = messagePartCount * 160
+            let resultLength = messagePartCount * 80
             return resultLength - 2 - self.count
         }()
         return self + [0x80] + Data(count: paddingLength)

@@ -8,16 +8,12 @@ import SignalServiceKit
 
 class DataMessagePaddingTests: XCTestCase {
     func testPadding() {
-        for i in 1...158 {
+        for i in 0...78 {
+            XCTAssertEqual(Data(count: i).paddedMessageBody.count, 79)
+        }
+
+        for i in 79...158 {
             XCTAssertEqual(Data(count: i).paddedMessageBody.count, 159)
-        }
-
-        for i in 159...318 {
-            XCTAssertEqual(Data(count: i).paddedMessageBody.count, 319)
-        }
-
-        for i in 319...478 {
-            XCTAssertEqual(Data(count: i).paddedMessageBody.count, 479)
         }
     }
 
