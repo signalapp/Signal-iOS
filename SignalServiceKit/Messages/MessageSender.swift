@@ -119,6 +119,8 @@ public class MessageSender {
                 throw error
             case RequestMakerUDAuthError.udAuthFailure:
                 throw error
+            case let error as OWSHTTPError where error.httpStatusCode == 404:
+                throw error
             default:
                 owsAssertDebug(error.isNetworkFailureOrTimeout)
                 throw OWSRetryableMessageSenderError()
