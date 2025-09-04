@@ -533,6 +533,7 @@ private enum ValueFlag: String, FlagType {
     case clientExpiration = "ios.clientExpiration"
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
+    case libsignalChatRequestConnectionCheckTimeoutMillis = "ios.libsignal.chatRequestConnectionCheckTimeoutMillis"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
@@ -565,6 +566,7 @@ private enum ValueFlag: String, FlagType {
         case .clientExpiration: true
         case .creditAndDebitCardDisabledRegions: true
         case .idealEnabledRegions: true
+        case .libsignalChatRequestConnectionCheckTimeoutMillis: true
         case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: true
         case .maxGroupSizeHardLimit: true
@@ -860,6 +862,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             return (oldConfig ?? .emptyConfig).merging(newValueFlags: valueFlags, newClockSkew: clockSkew)
         }
 
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+
         // As a special case, persist RingRTC field trials. See comments in
         // ``RingrtcFieldTrials`` for details.
         RingrtcFieldTrials.saveNwPathMonitorTrialState(
@@ -867,12 +871,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 let isKilled = mergedConfig.isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
                 return !isKilled
             }(),
-            in: CurrentAppContext().appUserDefaults()
+            in: appUserDefaults
         )
 
         let libsignalEnforceMinTlsVersion = mergedConfig.isEnabled(.libsignalEnforceMinTlsVersion, defaultValue: FeatureFlags.libsignalEnforceMinTlsVersion)
+        LibsignalUserDefaults.saveShouldEnforceMinTlsVersion(libsignalEnforceMinTlsVersion, in: appUserDefaults)
 
-        LibsignalUserDefaults.saveShouldEnforceMinTlsVersion(libsignalEnforceMinTlsVersion, in: CurrentAppContext().appUserDefaults())
+        let libsignalConnectionCheckTimeout = mergedConfig.value(.libsignalChatRequestConnectionCheckTimeoutMillis).flatMap { Int($0) } ?? 0
+        LibsignalUserDefaults.saveChatRequestConnectionCheckTimeoutMillis(libsignalConnectionCheckTimeout, in: appUserDefaults)
 
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 
@@ -1071,14 +1077,15 @@ private extension KeyValueStore {
 
 // MARK: -
 
+/// Workaround (hopefully temporary) for the libsignal Net instance being created before RemoteConfig is ready to access.
 enum LibsignalUserDefaults {
 
-    private static var shouldEnforceMinTlsVersionKey: String = "LibsignalEnforceMinTlsVersion"
+    private static let shouldEnforceMinTlsVersionKey: String = "LibsignalEnforceMinTlsVersion"
 
     /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
     ///
     /// It also makes it possible to override the setting in Xcode via the Scheme settings:
-    /// add the arguments "-UseLibsignalForUnidentifiedWebsocket YES" to the invocation of the app.
+    /// add the arguments "-LibsignalEnforceMinTlsVersion YES" to the invocation of the app.
     static func saveShouldEnforceMinTlsVersion(
         _ shouldEnforceMinTlsVersion: Bool,
         in defaults: UserDefaults
@@ -1088,5 +1095,22 @@ enum LibsignalUserDefaults {
 
     static func readShouldEnforceMinTlsVersion(from defaults: UserDefaults) -> Bool {
         return defaults.bool(forKey: shouldEnforceMinTlsVersionKey)
+    }
+
+    private static let chatRequestConnectionCheckTimeoutMillis: String = "LibsignalChatRequestConnectionCheckTimeoutMillis"
+
+    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
+    ///
+    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
+    /// add the arguments "-LibsignalChatRequestConnectionCheckTimeoutMillis 2000" to the invocation of the app.
+    static func saveChatRequestConnectionCheckTimeoutMillis(
+        _ timeoutMillis: Int,
+        in defaults: UserDefaults
+    ) {
+        defaults.set(timeoutMillis, forKey: chatRequestConnectionCheckTimeoutMillis)
+    }
+
+    static func readChatRequestConnectionCheckTimeoutMillis(from defaults: UserDefaults) -> Int {
+        return defaults.integer(forKey: chatRequestConnectionCheckTimeoutMillis)
     }
 }
