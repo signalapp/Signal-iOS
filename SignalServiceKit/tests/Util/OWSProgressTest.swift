@@ -151,8 +151,9 @@ class OWSProgressTest: XCTestCase {
         // Emissions can get debounced, so we can't guarantee
         // anything about them except that theres a first and last.
         XCTAssertGreaterThanOrEqual(outputs.count, 1)
-        // initial 0 emission, plus two updates to total unit count, plus 10 updates.
-        XCTAssertLessThanOrEqual(outputs.count, 13)
+        // three child node additions, plus 11 updates.
+        // some emissions may get debounced.
+        XCTAssertLessThanOrEqual(outputs.count, 14)
         XCTAssertEqual(outputs.last, 100)
     }
 
