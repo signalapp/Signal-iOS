@@ -229,6 +229,9 @@ class BackupPlanManagerImpl: BackupPlanManager {
         // Suspend the queue; the user has to explicitly opt in to downloads
         // after optimization is disabled.
         backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+
+        // Reset the download banner so we show it again if the user dismissed.
+        backupAttachmentDownloadStore.resetDidDismissDownloadCompleteBanner(tx: tx)
     }
 
     // MARK: -

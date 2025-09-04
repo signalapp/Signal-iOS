@@ -103,6 +103,8 @@ public protocol BackupAttachmentDownloadStore {
     func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool
 
     func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
+
+    func resetDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
 }
 
 public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
@@ -364,6 +366,10 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction) {
         kvStore.setBool(true, key: didDismissDownloadCompleteBannerKey, transaction: tx)
+    }
+
+    public func resetDidDismissDownloadCompleteBanner(tx: DBWriteTransaction) {
+        kvStore.setBool(false, key: didDismissDownloadCompleteBannerKey, transaction: tx)
     }
 }
 
