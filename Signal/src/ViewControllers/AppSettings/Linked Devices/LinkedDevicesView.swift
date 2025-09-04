@@ -647,7 +647,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             })
         }
         actionSheet.addAction(.init(title: CommonStrings.learnMore) { _ in
-            UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
+            CurrentAppContext().open(URL.Support.linkedDevices, completion: nil)
         })
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.continueButton, style: .cancel))
 

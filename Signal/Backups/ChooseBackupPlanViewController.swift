@@ -161,7 +161,10 @@ struct ChooseBackupPlanView: View {
                     comment: "Subtitle for a view allowing users to choose a Backup plan."
                 ))
                 .appendLink(CommonStrings.learnMore) {
-                    // TODO: [Backups] Open Support page
+                    CurrentAppContext().open(
+                        URL.Support.backups,
+                        completion: nil
+                    )
                 }
                 .foregroundStyle(Color.Signal.secondaryLabel)
 

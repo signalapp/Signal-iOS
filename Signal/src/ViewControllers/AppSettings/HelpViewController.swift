@@ -31,7 +31,7 @@ final class HelpViewController: OWSTableViewController2 {
         helpSection.add(.disclosureItem(
             withText: supportCenterLabel,
             actionBlock: { [weak self] in
-                let vc = SFSafariViewController(url: SupportConstants.supportURL)
+                let vc = SFSafariViewController(url: URL.Support.generic)
                 self?.present(vc, animated: true, completion: nil)
             }
         ))

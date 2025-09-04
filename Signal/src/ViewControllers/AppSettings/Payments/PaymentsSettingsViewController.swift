@@ -1007,10 +1007,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             title: CommonStrings.learnMore,
             style: .default,
             handler: { _ in
-                UIApplication.shared.open(
-                    URL(string: "https://support.signal.org/hc/articles/360057625692#payments_currency_conversion")!,
-                    options: [:],
-                    completionHandler: nil
+                CurrentAppContext().open(
+                    URL.Support.Payments.currencyConversion,
+                    completion: nil
                 )
             }
         ))
@@ -1239,28 +1238,25 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didTapAboutMobileCoinCard() {
-        UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_which_ones")!,
-            options: [:],
-            completionHandler: nil
+        CurrentAppContext().open(
+            URL.Support.Payments.whichOnes,
+            completion: nil
         )
     }
 
     @objc
     private func didTapAddingToYourWalletCard() {
-        UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_transfer_from_exchange")!,
-            options: [:],
-            completionHandler: nil
+        CurrentAppContext().open(
+            URL.Support.Payments.transferFromExchange,
+            completion: nil
         )
     }
 
     @objc
     private func didTapCashingOutCoinCard() {
-        UIApplication.shared.open(
-            URL(string: "https://support.signal.org/hc/articles/360057625692#payments_transfer_to_exchange")!,
-            options: [:],
-            completionHandler: nil
+        CurrentAppContext().open(
+            URL.Support.Payments.transferToExchange,
+            completion: nil
         )
     }
 

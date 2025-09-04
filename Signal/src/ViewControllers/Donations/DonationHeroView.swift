@@ -52,7 +52,7 @@ class DonationHeroView: UIStackView {
         // We'd like a link that doesn't go anywhere, because we'd like to
         // handle the tapping ourselves. We use a "fake" URL because
         // NSAttributedString needs one.
-        let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
+        let linkPart = StringStyle.Part.link(URL.Support.Donations.subscriptionFAQ)
         let readMoreText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_READ_MORE",
             comment: "On donation screens, a small amount of information text is shown. Users can click this link to learn more information."

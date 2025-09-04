@@ -892,7 +892,7 @@ class BackupSettingsViewController:
                     title: CommonStrings.learnMore,
                     handler: { _ in
                         CurrentAppContext().open(
-                            URL(string: "https://support.signal.org/hc/articles/360007059752")!,
+                            URL.Support.backups,
                             completion: nil
                         )
                     }

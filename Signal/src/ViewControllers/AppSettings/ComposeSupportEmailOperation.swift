@@ -180,7 +180,7 @@ final class ComposeSupportEmailOperation: NSObject {
     }
 
     private var emailURL: URL? {
-        let linkBuilder = MailtoLink(to: SupportConstants.supportEmail,
+        let linkBuilder = MailtoLink(to: "support@signal.org",
                                      subject: model.localizedSubject,
                                      body: emailBody)
         return linkBuilder.url

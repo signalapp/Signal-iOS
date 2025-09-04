@@ -8,10 +8,6 @@ import SignalUI
 import SignalServiceKit
 
 class RequestAccountDataReportViewController: OWSTableViewController2 {
-    private var learnMoreUrl: URL {
-        URL(string: "https://support.signal.org/hc/articles/5538911756954")!
-    }
-
     private enum FileType {
         case json
         case text
@@ -67,10 +63,8 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
     private func headerSection() -> OWSTableSection {
         let result = OWSTableSection(items: [
-            .init(customCellBlock: { [weak self] in
+            .init(customCellBlock: {
                 let cell = UITableViewCell()
-                guard let self else { return cell }
-
                 let iconView = UIImageView(image: .init(named: "account_data_report"))
                 iconView.autoSetDimensions(to: .square(88))
 
@@ -91,7 +85,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                             "ACCOUNT_DATA_REPORT_SUBTITLE",
                             comment: "Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information."
                         ),
-                        CommonStrings.learnMore.styled(with: .link(self.learnMoreUrl))
+                        CommonStrings.learnMore.styled(with: .link(URL.Support.requestingAccountData))
                     ],
                     baseStyle: .init(.color(Theme.primaryTextColor), .font(.dynamicTypeBody)),
                     separator: " "

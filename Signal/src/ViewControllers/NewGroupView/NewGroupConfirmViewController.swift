@@ -338,15 +338,11 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     }
 
     private class func showLearnMoreView() {
-        guard let url = URL(string: "https://support.signal.org/hc/articles/360007319331") else {
-            owsFailDebug("Invalid url.")
-            return
-        }
         guard let fromViewController = CurrentAppContext().frontmostViewController() else {
             owsFailDebug("Missing fromViewController.")
             return
         }
-        let vc = SFSafariViewController(url: url)
+        let vc = SFSafariViewController(url: URL.Support.groups)
         fromViewController.present(vc, animated: true, completion: nil)
     }
 }

@@ -22,10 +22,6 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
     private let state: RegistrationEnterAccountEntropyPoolState
 
-    private enum Constants {
-        static let backupKeyupportUrl = URL(string: "https://support.signal.org/hc/articles/360007059752")!
-    }
-
     init(
         state: RegistrationEnterAccountEntropyPoolState,
         presenter: RegistrationEnterAccountEntropyPoolPresenter,
@@ -126,7 +122,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             },
             secondaryButton: .init(title: CommonStrings.learnMore) { [weak self] sheet in
                 guard let self else { return }
-                let vc = SFSafariViewController(url: Constants.backupKeyupportUrl)
+                let vc = SFSafariViewController(url: URL.Support.backups)
                 self.dismiss(animated: true) {
                     self.present(vc, animated: true, completion: nil)
                 }

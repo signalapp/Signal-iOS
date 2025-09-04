@@ -158,25 +158,25 @@ extension DonationViewsUtil {
                 "SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS",
                 comment: "SEPA bank account donation error for insufficient funds."
             )
-            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+            actions = .learnMore(link: URL.Support.Donations.badgeExpiration)
         case "debit_not_authorized":
             message = OWSLocalizedString(
                 "SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED",
                 comment: "SEPA bank account donation error for the payment not being authorizing by the account holder."
             )
-            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+            actions = .learnMore(link: URL.Support.Donations.badgeExpiration)
         case "account_closed", "bank_account_restricted", "recipient_deceased":
             message = OWSLocalizedString(
                 "SEPA_DONATION_ERROR_NOT_PROCESSED",
                 comment: "SEPA bank account donation error for the account details not being able to be processed."
             )
-            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+            actions = .learnMore(link: URL.Support.Donations.badgeExpiration)
         case "debit_authorization_not_match":
             message = OWSLocalizedString(
                 "SEPA_DONATION_ERROR_NOT_AUTHORIZED",
                 comment: "SEPA bank account donation error for missing or incorrect mandate information."
             )
-            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+            actions = .learnMore(link: URL.Support.Donations.badgeExpiration)
         case "debit_disputed":
             fallthrough
         case "branch_does_not_exist", "incorrect_account_holder_name", "invalid_account_number", "generic_could_not_process", "refer_to_customer":

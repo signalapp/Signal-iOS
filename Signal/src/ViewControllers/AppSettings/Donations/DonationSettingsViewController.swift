@@ -420,7 +420,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     comment: "Title for the 'Donor FAQ' button on the donation screen"
                 ),
                 actionBlock: { [weak self] in
-                    let vc = SFSafariViewController(url: SupportConstants.donorFAQURL)
+                    let vc = SFSafariViewController(url: URL.Support.Donations.donorFAQ)
                     self?.present(vc, animated: true, completion: nil)
                 }
             ))

@@ -30,8 +30,6 @@ protocol RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter: AnyObject
 // MARK: - RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController
 
 class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSViewController {
-    private var learnMoreURL: URL { URL(string: "https://support.signal.org/hc/articles/360007059792")! }
-
     private var state: RegistrationPinAttemptsExhaustedViewState
 
     public init(
@@ -173,6 +171,6 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
 
     @objc
     private func didTapLearnMoreButton() {
-        present(SFSafariViewController(url: self.learnMoreURL), animated: true)
+        present(SFSafariViewController(url: URL.Support.pin), animated: true)
     }
 }

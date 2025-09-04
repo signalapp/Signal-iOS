@@ -167,10 +167,7 @@ extension ConversationViewController {
                                      comment: "Label for button to learn more about message requests."),
             style: .default,
             handler: { _ in
-                // TODO: Finalize this behavior.
-                let url = URL(string: "https://support.signal.org/hc/articles/360007459591")!
-                UIApplication.shared.open(url, options: [:])
-
+                CurrentAppContext().open(URL.Support.profilesAndMessageRequests, completion: nil)
             }
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -211,7 +208,7 @@ extension ConversationViewController {
                 title: CommonStrings.learnMore,
                 style: .default
             ) { _ in
-                UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/4404859745690")!)
+                CurrentAppContext().open(URL.Support.deliveryIssue, completion: nil)
             }
         )
         presentActionSheet(actionSheet)

@@ -42,12 +42,6 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
     RegistrationCoordinatorBackupErrorPresenter,
     SFSafariViewControllerDelegate
 {
-    private enum Constants {
-        static let incompatibleVersionFAQURL = URL(string: "https://support.signal.org/hc/articles/360007059752")!
-        static let backupKeyFAQURL = URL(string: "https://support.signal.org/hc/articles/360007059752")!
-        static let itunesStoreUrl = URL(string: "https://itunes.apple.com/app/id874139669")!
-    }
-
     public func mapToRegistrationError(error: Error) -> RegistrationBackupRestoreError {
         switch error {
         case _ where error.isNetworkFailureOrTimeout:
@@ -189,7 +183,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             })
             actions.append(ActionSheetAction(title: CommonStrings.help) { _ in
                 self.presentSupportArticle(
-                    url: Constants.backupKeyFAQURL,
+                    url: URL.Support.backups,
                     presenter: presenter
                 ) {
                     self.presentError(
@@ -227,7 +221,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             }
             actions.append(ActionSheetAction(title: CommonStrings.learnMore) { _ in
                 self.presentSupportArticle(
-                    url: Constants.incompatibleVersionFAQURL,
+                    url: URL.Support.backups,
                     presenter: presenter
                 ) {
                     self.presentError(
@@ -371,9 +365,10 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
     private func presentAppStorePage(
         completion: @escaping () -> Void
     ) {
-        UIApplication.shared.open(Constants.itunesStoreUrl) { _ in
-            completion()
-        }
+        CurrentAppContext().open(
+            TSConstants.appStoreUrl,
+            completion: { _ in completion() }
+        )
     }
 
     @objc

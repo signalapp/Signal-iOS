@@ -917,7 +917,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             style: .default,
             handler: { _ in
                 CurrentAppContext().open(
-                    URL(string: "https://support.signal.org/hc/articles/360007059752")!,
+                    URL.Support.backups,
                     completion: nil
                 )
             }

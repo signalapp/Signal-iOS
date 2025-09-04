@@ -62,7 +62,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             attributedString.append(
                 CommonStrings.learnMore,
                 attributes: [
-                    .link: URL(string: "https://support.signal.org/hc/articles/360007059792")!,
+                    .link: URL.Support.pin,
                     .font: explanationLabelFont
                 ]
             )
@@ -404,7 +404,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             )
         ) { [weak self] _ in
             guard let self = self else { return }
-            let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/articles/360007059792")!)
+            let vc = SFSafariViewController(url: URL.Support.pin)
             self.present(vc, animated: true) {
                 pinnedHeightConstraint.isActive = false
                 self.proportionalSpacerConstraint?.isActive = true

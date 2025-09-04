@@ -253,8 +253,8 @@ extension PaymentsViewPassphraseSplashViewController.Style {
         }
     }
 
-    var explanationUrl: String {
-        return "https://support.signal.org/hc/articles/360057625692#payments_wallet_view_passphrase"
+    var explanationUrl: URL {
+        return URL.Support.Payments.walletViewPassphrase
     }
 
     var shouldConfirmCancel: Bool {

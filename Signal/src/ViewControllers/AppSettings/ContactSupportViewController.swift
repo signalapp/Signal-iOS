@@ -7,16 +7,6 @@ import SafariServices
 import SignalServiceKit
 import SignalUI
 
-class SupportConstants: NSObject {
-    static let supportURL = URL(string: "https://support.signal.org/")!
-    static let debugLogsInfoURL = URL(string: "https://support.signal.org/hc/articles/360007318591")!
-    static let supportEmail = "support@signal.org"
-    static let subscriptionFAQURL = URL(string: "https://support.signal.org/hc/articles/4408365318426")!
-    static let donorFAQURL = URL(string: "https://support.signal.org/hc/articles/360031949872")!
-    static let badgeExpirationLearnMoreURL = URL(string: "https://support.signal.org/hc/articles/360031949872#fix")!
-    static let donationPendingLearnMoreURL = URL(string: "https://support.signal.org/hc/articles/360031949872#pending")!
-}
-
 private extension ContactSupportViewController.Filter {
     var emailFilterString: String {
         return switch self {
@@ -353,8 +343,8 @@ extension ContactSupportViewController {
                     return cell
                 },
                    actionBlock: { [weak self] in
-                    let vc = SFSafariViewController(url: SupportConstants.supportURL)
-                    self?.present(vc, animated: true)
+                       let vc = SFSafariViewController(url: URL.Support.generic)
+                       self?.present(vc, animated: true)
                 })
             ]),
 
@@ -381,7 +371,7 @@ extension ContactSupportViewController {
         label.textColor = Theme.primaryTextColor
 
         let infoButton = OWSButton(imageName: "help", tintColor: Theme.secondaryTextAndIconColor) { [weak self] in
-            let vc = SFSafariViewController(url: SupportConstants.debugLogsInfoURL)
+            let vc = SFSafariViewController(url: URL.Support.debugLogs)
             self?.present(vc, animated: true)
         }
         infoButton.accessibilityLabel = OWSLocalizedString("DEBUG_LOG_INFO_BUTTON",

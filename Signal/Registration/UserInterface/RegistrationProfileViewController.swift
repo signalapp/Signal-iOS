@@ -28,8 +28,6 @@ protocol RegistrationProfilePresenter: AnyObject {
 // MARK: - RegistrationProfileViewController
 
 class RegistrationProfileViewController: OWSViewController {
-    private var profilesFAQURL: URL { URL(string: "https://support.signal.org/hc/articles/360007459591")! }
-
     var state: RegistrationProfileState
     public init(
         state: RegistrationProfileState,
@@ -92,7 +90,7 @@ class RegistrationProfileViewController: OWSViewController {
             CommonStrings.learnMore.styled(with: {
                 // We'd like a link that doesn't go anywhere, because we'd like to handle the
                 // tapping ourselves. We use a "fake" URL because BonMot needs one.
-                return StringStyle.Part.link(profilesFAQURL)
+                return StringStyle.Part.link(URL.Support.profilesAndMessageRequests)
             }())
         ])
         result.font = .fontForRegistrationExplanationLabel
@@ -393,7 +391,7 @@ extension RegistrationProfileViewController: UITextViewDelegate {
 
         actionSheet.addAction(.init(title: CommonStrings.learnMore) { [weak self] _ in
             guard let self else { return }
-            self.present(SFSafariViewController(url: self.profilesFAQURL), animated: true)
+            self.present(SFSafariViewController(url: URL.Support.profilesAndMessageRequests), animated: true)
         })
 
         actionSheet.addAction(.init(title: CommonStrings.okayButton, style: .cancel))

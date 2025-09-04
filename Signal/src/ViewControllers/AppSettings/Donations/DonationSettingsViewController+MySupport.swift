@@ -445,7 +445,7 @@ extension DonationSettingsViewController {
                     guard let self else { return }
 
                     self.present(
-                        SFSafariViewController(url: SupportConstants.donationPendingLearnMoreURL),
+                        SFSafariViewController(url: URL.Support.Donations.donationPending),
                         animated: true
                     )
                 }

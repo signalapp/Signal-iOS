@@ -112,7 +112,7 @@ private struct ProvisioningQRCodeView: View {
                         "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
                         comment: "Link text for page with troubleshooting info shown on the QR scanning screen"
                     ),
-                    destination: URL(string: "https://support.signal.org/hc/articles/360007320451")!
+                    destination: URL.Support.troubleshootingMultipleDevices
                 )
                 .font(.subheadline)
                 .foregroundStyle(Color.Signal.accent)

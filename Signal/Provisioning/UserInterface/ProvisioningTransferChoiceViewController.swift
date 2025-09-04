@@ -104,7 +104,7 @@ class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
                 comment: "Footer text when loading messages during linking process."
             ),
             " ",
-            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/articles/360007320551")!))
+            CommonStrings.learnMore.styled(with: .link(URL.Support.linkedDevices))
         ])
         .styled(
             with: .font(.dynamicTypeFootnote),

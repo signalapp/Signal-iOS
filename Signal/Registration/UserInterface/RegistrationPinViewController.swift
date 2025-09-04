@@ -93,8 +93,6 @@ protocol RegistrationPinPresenter: AnyObject {
 // MARK: - RegistrationPinViewController
 
 class RegistrationPinViewController: OWSViewController {
-    private var learnMoreAboutPinsURL: URL { URL(string: "https://support.signal.org/hc/articles/360007059792")! }
-
     public init(
         state: RegistrationPinState,
         presenter: RegistrationPinPresenter
@@ -221,7 +219,7 @@ class RegistrationPinViewController: OWSViewController {
                             comment: "During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string."
                         ),
                         CommonStrings.learnMore.styled(
-                            with: StringStyle.Part.link(learnMoreAboutPinsURL)
+                            with: StringStyle.Part.link(URL.Support.pin)
                         )
                     ]
                 case .confirmingNewPin:
@@ -648,7 +646,7 @@ class RegistrationPinViewController: OWSViewController {
 
         actionSheet.addAction(.init(title: CommonStrings.learnMore) { [weak self] _ in
             guard let self else { return }
-            self.present(SFSafariViewController(url: self.learnMoreAboutPinsURL), animated: true)
+            self.present(SFSafariViewController(url: URL.Support.pin), animated: true)
         })
 
         actionSheet.addAction(.init(title: CommonStrings.okayButton))
@@ -801,7 +799,7 @@ class RegistrationPinViewController: OWSViewController {
                         "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE",
                         comment: "Explanation for the skip pin entry action sheet during onboarding."
                     ),
-                    CommonStrings.learnMore.styled(with: .link(learnMoreAboutPinsURL))
+                    CommonStrings.learnMore.styled(with: .link(URL.Support.pin))
                 ],
                 baseStyle: ActionSheetController.messageBaseStyle,
                 separator: " "

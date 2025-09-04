@@ -222,6 +222,6 @@ fileprivate extension URL {
     }
 
     static var unsupportedOsUrl: URL {
-        return URL(string: "https://support.signal.org/hc/articles/5109141421850")!
+        return URL.Support.unsupportedOS
     }
 }

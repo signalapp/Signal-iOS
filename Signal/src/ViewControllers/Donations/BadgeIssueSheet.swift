@@ -118,7 +118,7 @@ public class BadgeIssueSheetState {
 
             return Body(
                 String(format: formatText, chargeFailureString),
-                learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
+                learnMoreLink: URL.Support.Donations.badgeExpiration
             )
         case let .boostExpired(hasCurrentSubscription):
             let bodyText: String
@@ -166,7 +166,7 @@ public class BadgeIssueSheetState {
 
             return Body(
                 String(format: bodyFormat, badge.localizedName),
-                learnMoreLink: SupportConstants.donationPendingLearnMoreURL
+                learnMoreLink: URL.Support.Donations.donationPending
             )
         case .subscriptionBankPaymentProcessing:
             let bodyFormat = OWSLocalizedString(
@@ -176,7 +176,7 @@ public class BadgeIssueSheetState {
 
             return Body(
                 String(format: bodyFormat, badge.localizedName),
-                learnMoreLink: SupportConstants.donationPendingLearnMoreURL
+                learnMoreLink: URL.Support.Donations.donationPending
             )
         }
     }()

@@ -13,12 +13,12 @@
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		044D77782E5E6D750048C21A /* PollVoteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D77772E5E6D700048C21A /* PollVoteRecord.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
+		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		04A357CB2E5E283800499B27 /* PollManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
 		04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573652E4CEE560019651F /* CVComponentPoll.swift */; };
 		04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736A2E4CF1BD0019651F /* CVPollView.swift */; };
 		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
-		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
 		04AB61C62E5E37A800405699 /* PollRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C52E5E37A400405699 /* PollRecord.swift */; };
 		04AB61C82E5E399700405699 /* PollOptionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C72E5E399400405699 /* PollOptionRecord.swift */; };
@@ -2804,6 +2804,7 @@
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
+		D9DD708E2E67BC53003E1A45 /* URL+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DD708D2E67BC48003E1A45 /* URL+Support.swift */; };
 		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */; };
 		D9DE35012DF0B89E005099D7 /* ScrollableContentPinnedFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */; };
 		D9DF21EB2E21BD2800A962B2 /* BackupDisablingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */; };
@@ -3837,12 +3838,12 @@
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		044D77772E5E6D700048C21A /* PollVoteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteRecord.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
 		04A573652E4CEE560019651F /* CVComponentPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentPoll.swift; sourceTree = "<group>"; };
 		04A5736A2E4CF1BD0019651F /* CVPollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPollView.swift; sourceTree = "<group>"; };
 		04A5736F2E4D4BD30019651F /* OWSPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPoll.swift; sourceTree = "<group>"; };
-		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		04AB61C52E5E37A400405699 /* PollRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollRecord.swift; sourceTree = "<group>"; };
 		04AB61C72E5E399400405699 /* PollOptionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollOptionRecord.swift; sourceTree = "<group>"; };
 		04AB61C92E5E448A00405699 /* PollManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollManagerTest.swift; sourceTree = "<group>"; };
@@ -6776,6 +6777,7 @@
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DD708D2E67BC48003E1A45 /* URL+Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Support.swift"; sourceTree = "<group>"; };
 		D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOnboardingIntroViewController.swift; sourceTree = "<group>"; };
 		D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableContentPinnedFooterView.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
@@ -8389,6 +8391,7 @@
 				B95967832D52976A00F9A800 /* NavigationPreviewController.swift */,
 				B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */,
 				C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */,
+				D9DD708D2E67BC48003E1A45 /* URL+Support.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -16710,6 +16713,7 @@
 				764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */,
 				762A41692A37D71600057955 /* UIViewController+SignalUI.swift in Sources */,
 				05A180362CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift in Sources */,
+				D9DD708E2E67BC53003E1A45 /* URL+Support.swift in Sources */,
 				D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */,
 				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
 				3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */,

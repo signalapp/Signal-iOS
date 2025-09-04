@@ -32,8 +32,6 @@ protocol RegistrationReglockTimeoutPresenter: AnyObject {
 // MARK: - RegistrationReglockTimeoutViewController
 
 class RegistrationReglockTimeoutViewController: OWSViewController {
-    private var learnMoreURL: URL { URL(string: "https://support.signal.org/hc/articles/360007059792")! }
-
     private let oneMinute: TimeInterval = 60
 
     public init(
@@ -203,6 +201,6 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
 
     @objc
     private func didTapLearnMoreButton() {
-        present(SFSafariViewController(url: self.learnMoreURL), animated: true)
+        present(SFSafariViewController(url: URL.Support.pin), animated: true)
     }
 }
