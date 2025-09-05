@@ -678,7 +678,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ attachmentParams: Attachment.ConstructionParams,
         reference referenceParams: AttachmentReference.ConstructionParams,
         tx: DBWriteTransaction
-    ) throws {
+    ) throws -> Attachment.IDType {
         // Find if there is already an attachment with the same plaintext hash.
         let sha256ContentHash = attachmentParams.sha256ContentHash ?? attachmentParams.streamInfo?.sha256ContentHash
         let existingRecord = try sha256ContentHash.map {
@@ -726,6 +726,8 @@ public class AttachmentStoreImpl: AttachmentStore {
             try! attachmentRecord.delete(tx.database)
             throw ownerError
         }
+
+        return attachmentRowId
     }
 
     /// The "global wallpaper" reference is a special case.

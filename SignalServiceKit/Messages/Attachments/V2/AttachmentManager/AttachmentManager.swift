@@ -34,6 +34,7 @@ public protocol AttachmentManager {
     func createAttachmentPointers(
         from backupProtos: [OwnedAttachmentBackupPointerProto],
         uploadEra: String,
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
     ) -> [OwnedAttachmentBackupPointerProto.CreationError]
 

@@ -206,11 +206,12 @@ public protocol AttachmentStore {
     /// Throws ``AttachmentInsertError.duplicatePlaintextHash`` if an existing
     /// attachment is found with the same plaintext hash.
     /// May throw other errors with less strict typing if database operations fail.
+    @discardableResult
     func insert(
         _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference.ConstructionParams,
         tx: DBWriteTransaction
-    ) throws
+    ) throws -> Attachment.IDType
 
     /// Remove all owners of thread types (wallpaper and global wallpaper owners).
     /// Will also delete any attachments that become unowned, like any other deletion.

@@ -71,6 +71,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     public func createAttachmentPointers(
         from backupProtos: [OwnedAttachmentBackupPointerProto],
         uploadEra: String,
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
     ) -> [OwnedAttachmentBackupPointerProto.CreationError] {
         let results = createAttachments(
@@ -84,6 +85,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     owner: $1,
                     sourceOrder: $2,
                     uploadEra: uploadEra,
+                    attachmentByteCounter: attachmentByteCounter,
                     tx: $3
                 )
             },
@@ -432,6 +434,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         // Nil if no order is to be applied.
         sourceOrder: UInt32?,
         uploadEra: String,
+        attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
     ) -> Result<Void, OwnedAttachmentBackupPointerProto.CreationError> {
         let proto = ownedProto.proto
@@ -575,11 +578,18 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         do {
-            try attachmentStore.insert(
+            let attachmentRowId = try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
                 tx: tx
             )
+
+            if let sourceUnencryptedByteCount {
+                attachmentByteCounter.addToByteCount(
+                    attachmentID: attachmentRowId,
+                    byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: sourceUnencryptedByteCount)
+                )
+            }
 
             if let mediaName = attachmentParams.mediaName {
                 orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(

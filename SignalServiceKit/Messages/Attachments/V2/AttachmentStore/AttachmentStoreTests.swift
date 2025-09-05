@@ -11,7 +11,7 @@ class AttachmentStoreTests: XCTestCase {
 
     private var db: InMemoryDB!
 
-    private var attachmentStore: AttachmentStoreImpl!
+    private var attachmentStore: AttachmentStore!
     private var attachmentUploadStore: AttachmentUploadStoreImpl!
 
     override func setUp() async throws {
@@ -29,7 +29,7 @@ class AttachmentStoreTests: XCTestCase {
         )
 
         try db.write { tx in
-            try attachmentStore.insert(
+            _ = try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
                 tx: tx

@@ -340,6 +340,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         let errors = attachmentManager.createAttachmentPointers(
             from: [ownedAttachment],
             uploadEra: uploadEra,
+            attachmentByteCounter: context.attachmentByteCounter,
             tx: context.tx
         )
         guard errors.isEmpty else {

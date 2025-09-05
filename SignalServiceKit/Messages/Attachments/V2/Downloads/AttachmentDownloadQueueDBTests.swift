@@ -13,7 +13,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
 
     private var db: InMemoryDB!
 
-    private var attachmentStore: AttachmentStoreImpl!
+    private var attachmentStore: AttachmentStore!
 
     override func setUp() async throws {
         db = InMemoryDB()

@@ -24,6 +24,7 @@ extension BackupArchive {
 
         init(
             startTimestampMs: UInt64,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             isPrimaryDevice: Bool,
             currentRemoteConfig: RemoteConfig,
             backupPurpose: MessageBackupPurpose,
@@ -33,6 +34,7 @@ extension BackupArchive {
             self.backupPurpose = backupPurpose
             super.init(
                 startTimestampMs: startTimestampMs,
+                attachmentByteCounter: attachmentByteCounter,
                 isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )

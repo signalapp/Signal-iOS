@@ -434,6 +434,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
         let errors = attachmentManager.createAttachmentPointers(
             from: attachments,
             uploadEra: uploadEra,
+            attachmentByteCounter: context.attachmentByteCounter,
             tx: context.tx
         )
 
@@ -583,17 +584,15 @@ extension ReferencedAttachment {
 
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra)
 
-        if attachment.mediaName != nil {
-            guard
-                let unencryptedByteCount =
-                    attachment.streamInfo?.unencryptedByteCount
-                    ?? attachment.mediaTierInfo?.unencryptedByteCount
-            else {
-                return proto
-            }
+        if
+            attachment.mediaName != nil,
+            let unencryptedByteCount =
+                attachment.streamInfo?.unencryptedByteCount
+                ?? attachment.mediaTierInfo?.unencryptedByteCount
+        {
             attachmentByteCounter.addToByteCount(
                 attachmentID: attachment.id,
-                byteCount: UInt64(Cryptography.estimatedMediaTierCDNSize(unencryptedSize: unencryptedByteCount))
+                byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: unencryptedByteCount)
             )
         }
 

@@ -16,6 +16,7 @@ extension BackupArchive {
             chatContext: ChatRestoringContext,
             recipientContext: RecipientRestoringContext,
             startTimestampMs: UInt64,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
@@ -23,6 +24,7 @@ extension BackupArchive {
             self.chatContext = chatContext
             super.init(
                 startTimestampMs: startTimestampMs,
+                attachmentByteCounter: attachmentByteCounter,
                 isPrimaryDevice: isPrimaryDevice,
                 tx: tx
             )

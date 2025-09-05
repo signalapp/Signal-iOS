@@ -490,6 +490,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         let errors = attachmentManager.createAttachmentPointers(
             from: [ownedAttachment],
             uploadEra: uploadEra,
+            attachmentByteCounter: context.attachmentByteCounter,
             tx: context.tx
         )
 

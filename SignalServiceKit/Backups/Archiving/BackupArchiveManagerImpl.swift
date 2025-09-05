@@ -882,8 +882,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             throw OWSAssertionError("HMAC validation failed!")
                         }
 
+                        guard let inputFileSize = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
+                            throw OWSAssertionError("Failed to get size of file!")
+                        }
+
                         return try self._importBackup(
                             inputStream: inputStream,
+                            inputFileSize: inputFileSize,
                             localIdentifiers: localIdentifiers,
                             isPrimaryDevice: isPrimaryDevice,
                             backupPurpose: backupPurpose,
@@ -912,6 +917,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     private func _importBackup(
         inputStream stream: BackupArchiveProtoInputStream,
+        inputFileSize: UInt64,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         backupPurpose: MessageBackupPurpose,
@@ -933,6 +939,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         }
 
         let startTimestampMs = dateProvider().ows_millisecondsSince1970
+        let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
 
         let currentRemoteConfig = remoteConfigManager.currentConfig()
 
@@ -1013,6 +1020,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 init(
                     localIdentifiers: LocalIdentifiers,
                     startTimestampMs: UInt64,
+                    attachmentByteCounter: BackupArchiveAttachmentByteCounter,
                     isPrimaryDevice: Bool,
                     currentRemoteConfig: RemoteConfig,
                     backupPurpose: MessageBackupPurpose,
@@ -1020,6 +1028,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 ) {
                     accountData = BackupArchive.AccountDataRestoringContext(
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         currentRemoteConfig: currentRemoteConfig,
                         backupPurpose: backupPurpose,
@@ -1027,6 +1036,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     )
                     customChatColor = BackupArchive.CustomChatColorRestoringContext(
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         accountDataContext: accountData,
                         tx: tx
@@ -1034,6 +1044,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     recipient = BackupArchive.RecipientRestoringContext(
                         localIdentifiers: localIdentifiers,
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
@@ -1041,6 +1052,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         customChatColorContext: customChatColor,
                         recipientContext: recipient,
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
@@ -1048,11 +1060,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         chatContext: chat,
                         recipientContext: recipient,
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
                     stickerPack = BackupArchive.RestoringContext(
                         startTimestampMs: startTimestampMs,
+                        attachmentByteCounter: attachmentByteCounter,
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx
                     )
@@ -1061,6 +1075,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let contexts = Contexts(
                 localIdentifiers: localIdentifiers,
                 startTimestampMs: startTimestampMs,
+                attachmentByteCounter: attachmentByteCounter,
                 isPrimaryDevice: isPrimaryDevice,
                 currentRemoteConfig: currentRemoteConfig,
                 backupPurpose: backupPurpose,
@@ -1315,6 +1330,18 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 BackupRestoreState.unfinalized.rawValue,
                 key: Constants.keyValueStoreRestoreStateKey,
                 transaction: tx
+            )
+
+            // Populate "last Backup" details, since otherwise they'll be blank
+            // and imply the user has no Backup.
+            backupSettingsStore.setLastBackupDate(
+                Date(millisecondsSince1970: backupInfo.backupTimeMs),
+                tx: tx
+            )
+            backupSettingsStore.setLastBackupSizeBytes(
+                backupFileSizeBytes: inputFileSize,
+                backupMediaSizeBytes: attachmentByteCounter.attachmentByteSize(),
+                tx: tx
             )
 
             tx.addSyncCompletion { [

@@ -21,17 +21,13 @@ extension BackupArchive {
         /// For benchmarking archive steps.
         let bencher: BackupArchive.ArchiveBencher
         let attachmentByteCounter: BackupArchiveAttachmentByteCounter
-
         /// Parameters configuring what content is included in this archive.
         let includedContentFilter: IncludedContentFilter
-
         /// The timestamp at which the archiving process started.
         let startTimestampMs: UInt64
-
-        let tx: DBReadTransaction
-
         /// Always set even if BackupPlan is free
         let currentBackupAttachmentUploadEra: String
+        let tx: DBReadTransaction
 
         init(
             bencher: BackupArchive.ArchiveBencher,
@@ -55,17 +51,18 @@ extension BackupArchive {
 
         /// The timestamp at which we began restoring.
         public let startTimestampMs: UInt64
-
+        public let attachmentByteCounter: BackupArchiveAttachmentByteCounter
         public let isPrimaryDevice: Bool
-
         public let tx: DBWriteTransaction
 
         init(
             startTimestampMs: UInt64,
+            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             isPrimaryDevice: Bool,
             tx: DBWriteTransaction
         ) {
             self.startTimestampMs = startTimestampMs
+            self.attachmentByteCounter = attachmentByteCounter
             self.isPrimaryDevice = isPrimaryDevice
             self.tx = tx
         }

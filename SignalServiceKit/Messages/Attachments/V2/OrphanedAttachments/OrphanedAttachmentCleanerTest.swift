@@ -39,7 +39,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         )
 
         try db.write { tx in
-            try attachmentStore.insert(
+            _ = try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
                 tx: tx

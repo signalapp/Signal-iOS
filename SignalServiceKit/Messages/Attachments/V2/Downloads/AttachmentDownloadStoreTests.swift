@@ -13,7 +13,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
 
     private var db: InMemoryDB!
 
-    private var attachmentStore: AttachmentStoreImpl!
+    private var attachmentStore: AttachmentStore!
     private var downloadStore: AttachmentDownloadStoreImpl!
 
     private var now = Date()

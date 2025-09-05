@@ -9,10 +9,9 @@ public class BackupArchiveAttachmentByteCounter {
     private var bytesCounter: UInt64 = 0
     private var includedAttachmentsInByteCount: Set<Attachment.IDType> = Set()
 
-    func addToByteCount(attachmentID: Attachment.IDType, byteCount: UInt64) {
-        if includedAttachmentsInByteCount.contains(attachmentID) == false {
-            bytesCounter += byteCount
-            includedAttachmentsInByteCount.insert(attachmentID)
+    func addToByteCount(attachmentID: Attachment.IDType, byteCount: UInt32) {
+        if includedAttachmentsInByteCount.insert(attachmentID).inserted {
+            bytesCounter += UInt64(byteCount)
         }
     }
 
