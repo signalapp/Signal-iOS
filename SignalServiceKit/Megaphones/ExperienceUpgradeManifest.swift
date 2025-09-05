@@ -711,13 +711,16 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupKeyReminder(
+        backupSettingsStore: BackupSettingsStore,
+        tsAccountManager: TSAccountManager,
         transaction: DBReadTransaction
     ) -> Bool {
-        guard FeatureFlags.Backups.showMegaphones else {
+        guard
+            FeatureFlags.Backups.showMegaphones,
+            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
+        else {
             return false
         }
-
-        let backupSettingsStore = BackupSettingsStore()
 
         switch backupSettingsStore.backupPlan(tx: transaction) {
         case .disabled, .disabling:
@@ -744,13 +747,18 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupEnablementReminder(
+        backupSettingsStore: BackupSettingsStore,
+        tsAccountManager: TSAccountManager,
         transaction: DBReadTransaction,
     ) -> Bool {
-        guard FeatureFlags.Backups.showMegaphones else {
+        guard
+            FeatureFlags.Backups.showMegaphones,
+            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
+        else {
             return false
         }
 
-        guard !BackupSettingsStore().haveBackupsEverBeenEnabled(tx: transaction) else {
+        guard !backupSettingsStore.haveBackupsEverBeenEnabled(tx: transaction) else {
             return false
         }
 

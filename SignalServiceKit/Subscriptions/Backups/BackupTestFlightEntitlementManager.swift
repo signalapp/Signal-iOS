@@ -28,13 +28,15 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     private let db: DB
     private let logger: PrefixedLogger
     private let kvStore: KeyValueStore
-    private let serialTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+    private let serialTaskQueue: ConcurrentTaskQueue
+    private let tsAccountManager: TSAccountManager
 
     init(
         backupPlanManager: BackupPlanManager,
         dateProvider: @escaping DateProvider,
         db: DB,
         networkManager: NetworkManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.logger = PrefixedLogger(prefix: "[Backups]")
 
@@ -48,6 +50,8 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupTestFlightEntitlementManager")
+        self.serialTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+        self.tsAccountManager = tsAccountManager
     }
 
     // MARK: -
@@ -90,19 +94,26 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     func renewEntitlementIfNecessary() async throws {
         let (
+            isRegisteredPrimaryDevice,
             isCurrentlyTesterBuild,
             currentBackupPlan,
-            lastEntitlementRenewalDate
+            lastEntitlementRenewalDate,
         ): (
+            Bool,
             Bool,
             BackupPlan,
             Date?
         ) = db.read { tx in
             (
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 FeatureFlags.Backups.avoidStoreKitForTesters,
                 backupPlanManager.backupPlan(tx: tx),
                 kvStore.getDate(StoreKeys.lastEntitlementRenewalDate, transaction: tx)
             )
+        }
+
+        guard isRegisteredPrimaryDevice else {
+            return
         }
 
         switch currentBackupPlan {

@@ -1175,7 +1175,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let authedAccount: AuthedAccount
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
-    private let backupSettingsStore: BackupSettingsStore
+    private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -1200,7 +1200,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
         avatarDefaultColorManager: AvatarDefaultColorManager,
-        backupSettingsStore: BackupSettingsStore,
+        backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -1225,7 +1225,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.authedAccount = authedAccount
 
         self.avatarDefaultColorManager = avatarDefaultColorManager
-        self.backupSettingsStore = backupSettingsStore
+        self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
         self.linkPreviewSettingStore = linkPreviewSettingStore
@@ -1403,8 +1403,15 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        if let backupPlanValue = backupSettingsStore.getStorageServiceBackupTier(tx: transaction) {
-            builder.setBackupTier(backupPlanValue)
+        let backupLevel: LibSignalClient.BackupLevel? = switch backupPlanManager.backupPlan(tx: transaction) {
+        case .disabled, .disabling: nil
+        case .free: .free
+        case .paid, .paidExpiringSoon, .paidAsTester: .paid
+        }
+        if let backupLevel {
+            builder.setBackupTier(UInt64(backupLevel.rawValue))
+        } else {
+            // Leave backupTier unset.
         }
 
         return builder.buildInfallibly()
@@ -1730,13 +1737,41 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        backupSettingsStore.setStorageServiceBackupTier(record.backupTier, tx: transaction)
+        do {
+            try mergeBackupPlan(in: record, tx: transaction)
+        } catch {
+            owsFail("Failed to merge BackupPlan from Storage Service! \(error)")
+        }
 
         if mergeDefaultAvatarColor(in: record, tx: transaction) {
             needsUpdate = true
         }
 
         return .merged(needsUpdate: needsUpdate, ())
+    }
+
+    private func mergeBackupPlan(
+        in record: StorageServiceProtoAccountRecord,
+        tx: DBWriteTransaction,
+    ) throws {
+        guard !isPrimaryDevice else {
+            // Never set the BackupPlan on a primary via Storage Service.
+            return
+        }
+
+        if let backupTierRawValue = record.backupTier {
+            if
+                let backupTierUInt8 = UInt8(exactly: backupTierRawValue),
+                let backupLevel = LibSignalClient.BackupLevel(rawValue: backupTierUInt8)
+            {
+                try backupPlanManager.setBackupPlan(fromStorageService: backupLevel, tx: tx)
+            } else {
+                let logger = PrefixedLogger(prefix: "[Backups]")
+                logger.warn("Ignoring backupTier value: \(backupTierRawValue)")
+            }
+        } else {
+            try backupPlanManager.setBackupPlan(fromStorageService: nil, tx: tx)
+        }
     }
 
     /// Merge the default avatar color from this AccountRecord with local state.

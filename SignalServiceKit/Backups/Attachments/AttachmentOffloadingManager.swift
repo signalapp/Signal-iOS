@@ -104,6 +104,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     private let listMediaManager: BackupListMediaManager
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
+    private let tsAccountManager: TSAccountManager
 
     public init(
         attachmentStore: AttachmentStore,
@@ -116,6 +117,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         listMediaManager: BackupListMediaManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
+        tsAccountManager: TSAccountManager,
     ) {
         self.attachmentStore = attachmentStore
         self.attachmentThumbnailService = attachmentThumbnailService
@@ -127,6 +129,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         self.listMediaManager = listMediaManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.tsAccountManager = tsAccountManager
     }
 
     public func offloadAttachmentsIfNeeded() async throws {
@@ -134,7 +137,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             return
         }
 
-        guard db.read(block: { backupPlanAllowsOffloading(tx: $0) }) else {
+        guard db.read(block: { offloadingIsAllowed(tx: $0) }) else {
             return
         }
 
@@ -167,7 +170,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         let viewedTimestampCutoff = startTimeMs - Attachment.offloadingThresholdMs
 
         let (candidateAttachments, didHitEnd) = try db.read { (tx) -> ([Attachment], Bool) in
-            guard backupPlanAllowsOffloading(tx: tx) else {
+            guard offloadingIsAllowed(tx: tx) else {
                 return ([], false)
             }
 
@@ -246,7 +249,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         let pendingThumbnails = try await generateThumbnails(candidateAttachments)
 
         try await db.awaitableWrite { tx in
-            guard backupPlanAllowsOffloading(tx: tx) else {
+            guard offloadingIsAllowed(tx: tx) else {
                 return
             }
 
@@ -338,7 +341,11 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         }
     }
 
-    private func backupPlanAllowsOffloading(tx: DBReadTransaction) -> Bool {
+    private func offloadingIsAllowed(tx: DBReadTransaction) -> Bool {
+        guard tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
+            return false
+        }
+
         switch backupSettingsStore.backupPlan(tx: tx) {
         case .disabled, .disabling, .free:
             return false

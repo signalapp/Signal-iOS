@@ -81,12 +81,16 @@ class ExperienceUpgradeManager {
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupKeyReminder(
+                                backupSettingsStore: BackupSettingsStore(),
+                                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                                 transaction: transaction,
                             )
                     case .enableBackupsReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupEnablementReminder(
-                                transaction: transaction
+                                backupSettingsStore: BackupSettingsStore(),
+                                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                                transaction: transaction,
                             )
                     case .haveEnabledBackupsNotification:
                         let result = ExperienceUpgradeManifest

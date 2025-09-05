@@ -437,16 +437,16 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         try? await storageServiceManager.waitForPendingRestores()
 
         let (
-            registrationState,
+            isRegisteredPrimaryDevice,
             persistedIAPSubscriberData,
         ) = db.read { tx in
             return (
-                tsAccountManager.registrationState(tx: tx),
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 store.getIAPSubscriberData(tx: tx),
             )
         }
 
-        guard registrationState.isRegisteredPrimaryDevice else {
+        guard isRegisteredPrimaryDevice else {
             return
         }
 

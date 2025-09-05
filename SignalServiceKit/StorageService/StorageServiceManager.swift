@@ -150,6 +150,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                     name: .OWSApplicationWillResignActive,
                     object: nil
                 )
+
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.backupPlanDidChange),
+                    name: .backupPlanChanged,
+                    object: nil
+                )
             }
 
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
@@ -176,6 +183,12 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         // some reason we aren't able to successfully complete this backup
         // while in the background we'll try again on the next app launch.
         backupPendingChanges(authedDevice: .implicit)
+    }
+
+    @objc
+    private func backupPlanDidChange() {
+        // If the BackupPlan changed, we should update our AccountRecord.
+        recordPendingLocalAccountUpdates()
     }
 
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {
@@ -2060,7 +2073,7 @@ class StorageServiceOperation {
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
-                backupSettingsStore: BackupSettingsStore(),
+                backupPlanManager: DependenciesBridge.shared.backupPlanManager,
                 backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,

@@ -66,9 +66,25 @@ final class BackupEnablingManager {
         fromViewController: UIViewController,
         planSelection: ChooseBackupPlanViewController.PlanSelection,
     ) async throws(DisplayableError) {
-        guard let localIdentifiers = db.read(block: { tx in
-            tsAccountManager.localIdentifiers(tx: tx)
-        }) else {
+        let (
+            isRegisteredPrimaryDevice,
+            localIdentifiers,
+        ): (
+            Bool,
+            LocalIdentifiers?
+        ) = db.read { tx in
+            return (
+                tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
+                tsAccountManager.localIdentifiers(tx: tx),
+            )
+        }
+
+        owsPrecondition(
+            isRegisteredPrimaryDevice,
+            "Attempting to enable Backups on a non-primary device!"
+        )
+
+        guard let localIdentifiers else {
             throw DisplayableError(OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED",
                 comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."

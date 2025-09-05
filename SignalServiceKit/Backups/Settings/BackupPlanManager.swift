@@ -3,18 +3,31 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
+
 public protocol BackupPlanManager {
     /// See ``BackupSettingsStore/backupPlan(tx:)``. API passed-through for
     /// convenience of callers using this type.
     func backupPlan(tx: DBReadTransaction) -> BackupPlan
 
+    /// Set the current `BackupPlan` via data from Storage Service.
+    ///
+    /// - Important
+    /// Must only be called on linked devices!
+    ///
+    /// - Important
+    /// Callers should use a `DB` method that rolls-back-if-throws to get the
+    /// `tx` for calling this API, to avoid state being partially set.
+    func setBackupPlan(
+        fromStorageService backupLevel: LibSignalClient.BackupLevel?,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Set the current `BackupPlan`.
     ///
     /// - Important
-    /// This API has side effects, such as setting ancillary state in addition
-    /// to the `BackupPlan`. Callers should use a `DB` method that
-    /// rolls-back-if-throws to get the `tx` for calling this API, to avoid
-    /// state being partially set.
+    /// Callers should use a `DB` method that rolls-back-if-throws to get the
+    /// `tx` for calling this API, to avoid state being partially set.
     func setBackupPlan(_ plan: BackupPlan, tx: DBWriteTransaction) throws
 }
 
@@ -29,20 +42,17 @@ class BackupPlanManagerImpl: BackupPlanManager {
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
-    private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
 
     init(
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
-        storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
     ) {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
-        self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
     }
 
@@ -51,6 +61,28 @@ class BackupPlanManagerImpl: BackupPlanManager {
     func backupPlan(tx: DBReadTransaction) -> BackupPlan {
         return backupSettingsStore.backupPlan(tx: tx)
     }
+
+    // MARK: -
+
+    func setBackupPlan(fromStorageService backupLevel: BackupLevel?, tx: DBWriteTransaction) throws {
+        guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == false else {
+            owsFailDebug("Attempting to set backupPlan from Storage Service, but not a linked device!")
+            return
+        }
+
+        switch backupLevel {
+        case nil:
+            backupSettingsStore.setBackupPlan(.disabled, tx: tx)
+            try configureDownloadsForDisablingBackups(tx: tx)
+        case .free:
+            backupSettingsStore.setBackupPlan(.free, tx: tx)
+        case .paid:
+            // Linked devices don't support optimizeLocalStorage; default off.
+            backupSettingsStore.setBackupPlan(.paid(optimizeLocalStorage: false), tx: tx)
+        }
+    }
+
+    // MARK: -
 
     func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
         let oldBackupPlan = backupPlan(tx: tx)
@@ -72,9 +104,8 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 tx: tx
             )
 
-            tx.addSyncCompletion { [storageServiceManager] in
+            tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
-                storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
     }
@@ -126,14 +157,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             }
         case (_, .disabled):
-            // When we disable, we mark everything ineligible and delete all
-            // done rows. If we ever re-enable, we will mark those rows
-            // ready again.
-            try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
-            try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
-            // This doesn't _really_ do anything, since we don't run the queue
-            // when disabled anyway, but may as well suspend.
-            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+            try configureDownloadsForDisablingBackups(tx: tx)
 
         case (.disabled, .free):
             try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
@@ -201,6 +225,17 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 try configureDownloadsForDidDisableOptimizeStorage(tx: tx)
             }
         }
+    }
+
+    private func configureDownloadsForDisablingBackups(tx: DBWriteTransaction) throws {
+        // When we disable, we mark everything ineligible and delete all
+        // done rows. If we ever re-enable, we will mark those rows
+        // ready again.
+        try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+        try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
+        // This doesn't _really_ do anything, since we don't run the queue
+        // when disabled anyway, but may as well suspend.
+        backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
     }
 
     private func configureDownloadsForDidEnableOptimizeStorage(tx: DBWriteTransaction) throws {
@@ -283,6 +318,10 @@ class MockBackupPlanManager: BackupPlanManager {
     var backupPlanMock: BackupPlan?
     func backupPlan(tx: DBReadTransaction) -> BackupPlan {
         backupPlanMock ?? .disabled
+    }
+
+    func setBackupPlan(fromStorageService backupLevel: BackupLevel?, tx: DBWriteTransaction) {
+        owsFail("Not implemented!")
     }
 
     func setBackupPlan(_ plan: BackupPlan, tx: DBWriteTransaction) throws {

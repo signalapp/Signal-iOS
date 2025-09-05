@@ -373,7 +373,6 @@ public class AppSetup {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
-            storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -398,7 +397,8 @@ public class AppSetup {
             backupPlanManager: backupPlanManager,
             dateProvider: dateProvider,
             db: db,
-            networkManager: networkManager
+            networkManager: networkManager,
+            tsAccountManager: tsAccountManager,
         )
 
         let backupRequestManager = BackupRequestManagerImpl(
@@ -1442,7 +1442,8 @@ public class AppSetup {
             db: db,
             listMediaManager: backupListMediaManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
-            orphanedAttachmentStore: orphanedAttachmentStore
+            orphanedAttachmentStore: orphanedAttachmentStore,
+            tsAccountManager: tsAccountManager,
         )
         let backupExportJob = BackupExportJobImpl(
             accountKeyStore: accountKeyStore,

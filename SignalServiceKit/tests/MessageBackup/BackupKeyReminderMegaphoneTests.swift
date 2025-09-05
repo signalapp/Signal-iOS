@@ -9,16 +9,14 @@ import XCTest
 @testable import SignalServiceKit
 
 class BackupKeyReminderMegaphoneTests: XCTestCase {
-    private var db: InMemoryDB!
-    private var backupSettingsStore = BackupSettingsStore()
-
-    override func setUp() {
-        super.setUp()
-        db = InMemoryDB()
-    }
+    private let backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
+    private let db: DB = InMemoryDB()
+    private let tsAccountManager: TSAccountManager = MockTSAccountManager()
 
     private func checkPreconditions(tx: DBReadTransaction) -> Bool {
         return ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(
+            backupSettingsStore: backupSettingsStore,
+            tsAccountManager: tsAccountManager,
             transaction: tx
         )
     }

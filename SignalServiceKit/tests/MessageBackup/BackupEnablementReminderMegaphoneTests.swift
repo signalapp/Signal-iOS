@@ -11,8 +11,10 @@ import XCTest
 @testable import SignalServiceKit
 
 class BackupEnablementReminderMegaphoneTests: XCTestCase {
-    private let db = InMemoryDB()
-    private let backupSettingsStore = BackupSettingsStore()
+    private let db: DB = InMemoryDB()
+    private let backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
+    private let tsAccountManager: TSAccountManager = MockTSAccountManager()
+
     private var contactThread: TSContactThread!
     private var experienceUpgrade: ExperienceUpgrade!
 
@@ -20,6 +22,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         super.setUp()
         let testPhone = E164("+16505550101")!
         let testPNI = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+
         contactThread = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: testPNI,
             phoneNumber: testPhone.stringValue,
@@ -35,6 +38,8 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
 
     private func checkPreconditions(tx: DBReadTransaction) -> Bool {
         return ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(
+            backupSettingsStore: backupSettingsStore,
+            tsAccountManager: tsAccountManager,
             transaction: tx
         )
     }

@@ -76,9 +76,6 @@ public struct BackupSettingsStore {
         static let haveSetBackupID = "haveSetBackupID"
         static let lastBackupRefreshDate = "lastBackupRefreshDate"
         static let lastBackupEnabledDetails = "lastBackupEnabledDetails"
-
-        // Storage Service reflected value
-        static let storageServiceBackupTier = "storageServiceBackupTier"
     }
 
     private let kvStore: KeyValueStore
@@ -136,7 +133,6 @@ public struct BackupSettingsStore {
     public func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) {
         kvStore.setBool(true, key: Keys.haveEverBeenEnabled, transaction: tx)
         kvStore.setInt(newBackupPlan.rawValue, key: Keys.plan, transaction: tx)
-        setStorageServiceBackupTier(newBackupPlan.asStorageServiceBackupTier, tx: tx)
     }
 
     // MARK: -
@@ -193,20 +189,6 @@ public struct BackupSettingsStore {
         } else {
             kvStore.removeValue(forKey: Keys.firstBackupDate, transaction: tx)
         }
-    }
-
-    // MARK: -
-
-    public func setStorageServiceBackupTier(_ value: UInt64?, tx: DBWriteTransaction) {
-        if let value {
-            kvStore.setUInt64(value, key: Keys.storageServiceBackupTier, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Keys.storageServiceBackupTier, transaction: tx)
-        }
-    }
-
-    public func getStorageServiceBackupTier(tx: DBReadTransaction) -> UInt64? {
-        return kvStore.getUInt64(Keys.storageServiceBackupTier, transaction: tx)
     }
 
     // MARK: -
