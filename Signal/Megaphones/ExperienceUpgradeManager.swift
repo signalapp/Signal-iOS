@@ -81,13 +81,11 @@ class ExperienceUpgradeManager {
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupKeyReminder(
-                                remoteConfig: RemoteConfig.current,
                                 transaction: transaction,
                             )
                     case .enableBackupsReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupEnablementReminder(
-                                remoteConfig: RemoteConfig.current,
                                 transaction: transaction
                             )
                     case .haveEnabledBackupsNotification:

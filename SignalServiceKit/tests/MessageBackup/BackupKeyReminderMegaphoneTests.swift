@@ -18,12 +18,7 @@ class BackupKeyReminderMegaphoneTests: XCTestCase {
     }
 
     private func checkPreconditions(tx: DBReadTransaction) -> Bool {
-        let remoteConfig = RemoteConfig(clockSkew: 0, valueFlags: [
-            "ios.allowBackups": "true"
-        ])
-
         return ExperienceUpgradeManifest.checkPreconditionsForBackupKeyReminder(
-            remoteConfig: remoteConfig,
             transaction: tx
         )
     }

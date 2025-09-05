@@ -711,10 +711,9 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupKeyReminder(
-        remoteConfig: RemoteConfig,
         transaction: DBReadTransaction
     ) -> Bool {
-        guard remoteConfig.allowBackupSettings else {
+        guard FeatureFlags.Backups.showMegaphones else {
             return false
         }
 
@@ -745,10 +744,9 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForBackupEnablementReminder(
-        remoteConfig: RemoteConfig,
         transaction: DBReadTransaction,
     ) -> Bool {
-        guard remoteConfig.allowBackupSettings else {
+        guard FeatureFlags.Backups.showMegaphones else {
             return false
         }
 
