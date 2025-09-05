@@ -240,9 +240,36 @@ class BackupSettingsViewController:
                 await self?.preventDeviceSleepDuringNonNilUpdates(
                     updateStream: backupExportJobRunner.updates(),
                     label: "Export",
-                ) { [weak self] exportProgressUpdate in
+                ) { [weak self] exportJobUpdate in
                     guard let self else { return }
-                    viewModel.latestBackupExportProgressUpdate = exportProgressUpdate
+
+                    switch exportJobUpdate {
+                    case nil:
+                        viewModel.latestBackupExportProgressUpdate = nil
+                    case .progress(let progressUpdate):
+                        viewModel.latestBackupExportProgressUpdate = progressUpdate
+                    case .completion(let result):
+                        viewModel.latestBackupExportProgressUpdate = nil
+
+                        switch result {
+                        case .success:
+                            break
+                        case .failure(let exportJobError):
+                            switch exportJobError {
+                            case .cancellationError, .needsWifi, .networkRequestError:
+                                Logger.warn("Failed to perform manual backup! \(exportJobError)")
+                            case .backupError, .backupKeyError, .unregistered:
+                                owsFailDebug("Failed to perform manual backup! \(exportJobError)")
+                            }
+
+                            showSheetForBackupExportJobError(exportJobError)
+                        }
+
+                        db.read { tx in
+                            self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
+                            self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
+                        }
+                    }
                 }
             },
             Task { [weak self, backupAttachmentDownloadTracker] in
@@ -659,27 +686,9 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        Task { [weak self, backupExportJobRunner] in
-            do throws(BackupExportJobError) {
-                try await backupExportJobRunner.run()
-            } catch {
-                switch error {
-                case .cancellationError, .needsWifi, .networkRequestError:
-                    Logger.warn("Failed to perform manual backup! \(error)")
-                case .backupError, .backupKeyError, .unregistered:
-                    owsFailDebug("Failed to perform manual backup! \(error)")
-                }
-
-                self?.showSheetForBackupExportJobError(error)
-            }
-
-            guard let self else { return }
-
-            db.read { tx in
-                self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
-                self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
-            }
-        }
+        // We observe updates from BackupExportJob, including when it
+        // finishes, so all we need to do here is kick it off.
+        backupExportJobRunner.startIfNecessary()
     }
 
     fileprivate func cancelManualBackup() {

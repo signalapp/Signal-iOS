@@ -114,7 +114,7 @@ class BackupExportJobImpl: BackupExportJob {
         self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
-        self.logger = PrefixedLogger(prefix: "[BackupExportJob]")
+        self.logger = PrefixedLogger(prefix: "[Backups][ExportJob]")
         self.messageProcessor = messageProcessor
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.reachabilityManager = reachabilityManager
@@ -316,7 +316,7 @@ class BackupExportJobImpl: BackupExportJob {
             logger.info("Done!")
         } catch is CancellationError {
             throw .cancellationError
-        } catch let error {
+        } catch {
             if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
                 throw .networkRequestError(error)
             } else {
