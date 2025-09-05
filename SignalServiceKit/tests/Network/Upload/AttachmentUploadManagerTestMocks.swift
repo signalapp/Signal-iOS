@@ -85,20 +85,7 @@ public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
     }
 }
 
-class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManager {
-    func updateCanOpenWebSocket() {}
-    var hasEmptiedInitialQueue: Bool { true }
-    var unidentifiedConnectionState: OWSChatConnectionState { .open }
-    func waitForIdentifiedConnectionToOpen() async throws(CancellationError) { }
-    func waitForUnidentifiedConnectionToOpen() async throws(CancellationError) { }
-    func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError) { fatalError() }
-    func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken { fatalError() }
-    func requestUnidentifiedConnection() -> OWSChatConnection.ConnectionToken { fatalError() }
-    func makeRequest(_ request: TSRequest) async throws -> HTTPResponse { fatalError() }
-    func waitForDisconnectIfClosed() async {}
-    func setRegistrationOverride(_ chatServiceAuth: ChatServiceAuth) async {}
-    func clearRegistrationOverride() async {}
-}
+class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManagerMock {}
 
 class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchBackupServiceAuthForRegistration(
