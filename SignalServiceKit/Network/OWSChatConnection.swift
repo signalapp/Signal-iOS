@@ -161,14 +161,31 @@ public class OWSChatConnection {
         try await Monitor.waitForCondition(openCondition, in: self, on: serialQueue)
     }
 
-    /// Only throws on cancellation or after timeout.
-    private func waitUntilReadyToResolveRequest(timeout: TimeInterval) async throws {
+    fileprivate func waitUntilReadyAndPerformRequest<Output>(
+        operation: () async throws -> Output,
+    ) async throws -> Output {
+        let timeout: TimeInterval = 30
         do {
             try await withCooperativeRace(
                 { try await self.waitForOpen() },
                 { try await self.waitUntilSocketShouldBeClosed() },
                 { try await Task.sleep(nanoseconds: timeout.clampedNanoseconds); throw CooperativeTimeoutError() },
             )
+
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                self.serialQueue.async {
+                    if let canOpenWebSocketError = self.canOpenWebSocketError {
+                        continuation.resume(throwing: canOpenWebSocketError)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+
+            let output = try await operation()
+            OutageDetection.shared.reportConnectionSuccess()
+            return output
+
         } catch is CooperativeTimeoutError {
             throw OWSHTTPError.networkFailure(.genericFailure)
         }
@@ -373,24 +390,11 @@ public class OWSChatConnection {
         do {
             Logger.info("Sending… -> \(requestDescription)")
 
-            try await waitUntilReadyToResolveRequest(timeout: 30)
-
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-                self.serialQueue.async {
-                    if let canOpenWebSocketError = self.canOpenWebSocketError {
-                        continuation.resume(throwing: canOpenWebSocketError)
-                    } else {
-                        continuation.resume()
-                    }
-                }
+            return try await waitUntilReadyAndPerformRequest {
+                let response = try await self.makeRequestInternal(request, requestId: requestId)
+                Logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
+                return response
             }
-
-            let response = try await self.makeRequestInternal(request, requestId: requestId)
-
-            Logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
-
-            OutageDetection.shared.reportConnectionSuccess()
-            return response
         } catch {
             if let statusCode = error.httpStatusCode {
                 Logger.warn("HTTP \(statusCode) <- \(requestDescription)")
@@ -492,6 +496,29 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             assertOnQueue(serialQueue)
             _connection = newValue
             notifyStatusChange(newState: newValue.asExternalState)
+        }
+    }
+
+    fileprivate func getOpenConnectionAfterHavingWaited() async -> Connection? {
+        // To improve: some callers might have already done a hop to serialQueue,
+        // and now we're making another one (without priority donation, even).
+        let connection = await withCheckedContinuation { continuation in
+            self.serialQueue.async {
+                continuation.resume(returning: self.connection)
+            }
+        }
+
+        // There is a race condition where we cycle the socket between
+        // `waitForOpen` succeeding (see callers) and the code that runs here. If we
+        // win the race, the request we send will be almost immediately canceled.
+        // If we lose the race, we won't send the request at all. These outcomes
+        // are essentially equivalent, and it's not necessary to support this race
+        // condition where the socket cycles immediately after it opens.
+        switch connection {
+        case .closed(task: _), .connecting(token: _, task: _):
+            return nil
+        case .open(let service):
+            return service
         }
     }
 
@@ -677,23 +704,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
 
         let libsignalRequest = ChatConnection.Request(method: httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
 
-        let connection = await withCheckedContinuation { continuation in
-            self.serialQueue.async { continuation.resume(returning: self.connection) }
-        }
-
-        // There is a race condition where we cycle the socket between
-        // `waitForOpen` returning (see caller) and the code that runs here. If we
-        // win the race, the request we send will be almost immediately canceled.
-        // If we lose the race, we won't send the request at all. These outcomes
-        // are essentially equivalent, and it's not necessary to support this race
-        // condition where the socket cycles immediately after it opens.
-        let chatService: Connection?
-        switch connection {
-        case .closed(task: _), .connecting(token: _, task: _):
-            chatService = nil
-        case .open(let _chatService):
-            chatService = _chatService
-        }
+        let chatService = await getOpenConnectionAfterHavingWaited()
 
         let connectionInfo: ConnectionInfo
         let response: ChatConnection.Response
@@ -805,6 +816,18 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             self?._applyDesiredSocketState()
         }
     }
+
+    internal func withLibsignalConnection<Output>(
+        _ callback: (Connection) async throws -> Output
+    ) async throws -> Output {
+        try await waitUntilReadyAndPerformRequest {
+            guard let service = await getOpenConnectionAfterHavingWaited() else {
+                throw SignalError.chatServiceInactive("no connection to chat server")
+            }
+            try Task.checkCancellation()
+            return try await callback(service)
+        }
+     }
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
