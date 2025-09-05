@@ -198,7 +198,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             return cachedCredential
         }
 
-        let backupServiceAuth = try await fetchBackupServiceAuth(
+        let backupServiceAuth = try await _fetchBackupServiceAuth(
             key: key,
             localAci: key.aci,
             chatServiceAuth: auth,
