@@ -86,6 +86,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             }
             if shouldUpdate {
                 existingRecord.highestPriorityOwnerType = newRecord.highestPriorityOwnerType
+                existingRecord.state = newRecord.state
                 try existingRecord.update(db)
             }
         } else {
