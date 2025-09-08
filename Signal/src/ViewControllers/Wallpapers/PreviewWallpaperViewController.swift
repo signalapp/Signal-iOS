@@ -124,7 +124,7 @@ class PreviewWallpaperViewController: UIViewController {
             guard let standalonePage = self.standalonePage else {
                 return owsFailDebug("Missing standalone page for photo")
             }
-            croppedAndScaledPhoto = standalonePage.view.renderAsImage()
+            croppedAndScaledPhoto = standalonePage.generateSnapshotImage()
             preset = nil
         case .preset(let selectedWallpaper):
             croppedAndScaledPhoto = nil
@@ -320,6 +320,7 @@ private class WallpaperPage: UIViewController {
 
     var wallpaperView: WallpaperView?
     var wallpaperPreviewView: UIView?
+    var scrollView: UIScrollView?
 
     override func loadView() {
         let rootView = ManualLayoutViewWithLayer(name: "rootView")
@@ -358,6 +359,7 @@ private class WallpaperPage: UIViewController {
             view.addSubview(scrollView)
             scrollView.autoPinEdgesToSuperviewEdges()
             scrollView.addSubview(wallpaperPreviewView)
+            self.scrollView = scrollView
 
             wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
 
@@ -476,6 +478,24 @@ private class WallpaperPage: UIViewController {
         } else {
             wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = true }
         }
+    }
+
+    func generateSnapshotImage() -> UIImage? {
+        guard case .photo = wallpaper, let scrollView else {
+            return view.renderAsImage()
+        }
+
+        let viewForSnapshotting = UIView(frame: scrollView.frame)
+        viewForSnapshotting.clipsToBounds = true
+        let imageView = UIImageView(image: shouldBlur ? blurredPhoto : photo)
+        viewForSnapshotting.addSubview(imageView)
+        imageView.frame = CGRect(
+            x: -scrollView.contentOffset.x,
+            y: -scrollView.contentOffset.y,
+            width: scrollView.contentScaleFactor * scrollView.contentSize.width,
+            height: scrollView.contentScaleFactor * scrollView.contentSize.height
+        )
+        return viewForSnapshotting.renderAsImage()
     }
 }
 
