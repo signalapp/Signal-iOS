@@ -677,7 +677,7 @@ public extension DatabaseRecovery {
                     do {
                         try FullTextSearchIndexer.insert(message, tx: tx)
                     } catch {
-                        owsFail("Error: \(error)")
+                        owsFailDebug("Failed to insert message into FTS: \(error)")
                     }
                 }
             }
