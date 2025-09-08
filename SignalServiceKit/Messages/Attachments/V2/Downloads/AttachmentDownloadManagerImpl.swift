@@ -392,7 +392,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         do {
-            try await db.awaitableWrite { tx in
+            try await db.awaitableWriteWithRollbackIfThrows { tx in
                 try self.attachmentDownloadStore.enqueueDownloadOfAttachment(
                     withId: id,
                     source: source,
@@ -2025,7 +2025,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             priority: AttachmentDownloadPriority,
             timestamp: UInt64,
         ) async throws -> DownloadResult {
-            return try await db.awaitableWrite { tx in
+            return try await db.awaitableWriteWithRollbackIfThrows { tx in
                 guard let attachmentWeJustDownloaded = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
                     Logger.error("Missing attachment after download; could have been deleted while downloading.")
                     throw OWSUnretryableError()
@@ -2190,7 +2190,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentId: Attachment.IDType,
             pendingAttachment: PendingAttachment
         ) async throws -> AttachmentStream {
-            return try await db.awaitableWrite { tx -> AttachmentStream in
+            return try await db.awaitableWriteWithRollbackIfThrows { tx -> AttachmentStream in
                 guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
                     Logger.error("Missing attachment after download; could have been deleted while downloading.")
                     throw OWSUnretryableError()
@@ -2378,7 +2378,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 originalAttachmentStream: downloadedAttachment
             )
 
-            try await db.awaitableWrite { tx in
+            try await db.awaitableWriteWithRollbackIfThrows { tx in
                 let alreadyAssignedFirstReference: Bool
                 let thumbnailAttachments = try self.attachmentStore
                     .allQuotedReplyAttachments(
@@ -2542,6 +2542,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Its ok to point at the old owner here; its the same message id
                     // or story message id etc, which is what we use for this.
                     self.touchOwner(reference.owner, tx: tx)
+                }
+
+                if let thumbnailAttachment = attachmentStore.fetch(id: thumbnailAttachmentId, tx: tx)?.asStream() {
+                    // Schedule upload, if needed.
+                    try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        thumbnailAttachment.attachment,
+                        tx: tx
+                    )
+                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
                 }
             }
         }
