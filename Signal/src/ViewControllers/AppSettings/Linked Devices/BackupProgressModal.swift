@@ -226,7 +226,7 @@ struct BackupProgressView: View {
     }
 
     private var byteCountFormat: ByteCountFormatStyle {
-        .byteCount(style: .decimal, allowedUnits: [.mb, .gb])
+        .byteCount(style: .decimal, allowedUnits: [.mb, .gb], spellsOutZero: false)
     }
 
     private var progressString: String {

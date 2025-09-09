@@ -172,7 +172,7 @@ struct LinkAndSyncProvisioningProgressView: View {
     }
 
     private var byteCountFormat: ByteCountFormatStyle {
-        .byteCount(style: .decimal, allowedUnits: [.mb, .gb])
+        .byteCount(style: .decimal, allowedUnits: [.mb, .gb], spellsOutZero: false)
     }
 
     private var subtitle: String {
