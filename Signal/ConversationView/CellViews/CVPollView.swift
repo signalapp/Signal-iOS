@@ -348,7 +348,7 @@ public class CVPollView: ManualStackView {
                 cellMeasurement: cellMeasurement,
                 option: pollOption.text,
                 index: pollOption.optionIndex,
-                votes: pollOption.votes,
+                votes: pollOption.acis.count,
                 totalVotes: totalVotes
             )
         }
@@ -382,6 +382,11 @@ public class CVPollView: ManualStackView {
                     size: adjustedSize)
                 Self.setSubviewFrame(subview: progressBarBackground, frame: subviewFrame)
             })
+
+            // No need to render progress fill if votes are 0
+            if votes <= 0 {
+                return
+            }
 
             progressBarContainer.addSubview(progressFill, withLayoutBlock: { [weak self] _ in
                 guard let self = self, let superview = progressFill.superview else {

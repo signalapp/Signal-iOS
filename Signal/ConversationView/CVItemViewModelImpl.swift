@@ -271,6 +271,8 @@ extension CVItemViewModelImpl {
             return !hasUnloadedAttachments
         case .paymentAttachment, .archivedPaymentAttachment, .undownloadableAttachment:
             return false
+        case .poll:
+            return false
         }
     }
 }

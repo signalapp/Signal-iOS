@@ -782,7 +782,8 @@ extension TSMessage {
             hasGiftBadge: giftBadge != nil,
             isStoryReply: isStoryReply,
             isPaymentMessage: isPaymentMessage,
-            storyReactionEmoji: storyReactionEmoji
+            storyReactionEmoji: storyReactionEmoji,
+            isPoll: isPoll
         )
     }
 }
@@ -795,7 +796,8 @@ extension TSMessageBuilder {
         hasQuotedReply: Bool,
         hasContactShare: Bool,
         hasSticker: Bool,
-        hasPayment: Bool
+        hasPayment: Bool,
+        hasPoll: Bool
     ) -> Bool {
         return Self.hasRenderableContent(
             hasNonemptyBody: messageBody?.nilIfEmpty != nil,
@@ -807,7 +809,8 @@ extension TSMessageBuilder {
             hasGiftBadge: giftBadge != nil,
             isStoryReply: storyAuthorAci != nil && storyTimestamp != nil,
             isPaymentMessage: hasPayment,
-            storyReactionEmoji: storyReactionEmoji
+            storyReactionEmoji: storyReactionEmoji,
+            isPoll: hasPoll
         )
     }
 
@@ -821,7 +824,8 @@ extension TSMessageBuilder {
         hasGiftBadge: Bool,
         isStoryReply: Bool,
         isPaymentMessage: Bool,
-        storyReactionEmoji: String?
+        storyReactionEmoji: String?,
+        isPoll: Bool
     ) -> Bool {
         if isPaymentMessage {
             // Android doesn't include any body or other content in payments.
@@ -841,6 +845,10 @@ extension TSMessageBuilder {
         }
 
         if hasBodyAttachmentsOrOversizeText() {
+            return true
+        }
+
+        if isPoll {
             return true
         }
 

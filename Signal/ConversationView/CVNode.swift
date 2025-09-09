@@ -22,6 +22,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case stickerMessage
     case quoteOnlyMessage
     case giftBadge
+    case poll
 
     // Most of these other message cell types use a special root view.
     case dateHeader
@@ -56,6 +57,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
         case .systemMessage: return "systemMessage"
         case .unknownThreadWarning: return "unknownThreadWarning"
         case .defaultDisappearingMessageTimer: return "defaultDisappearingMessageTimer"
+        case .poll: return "poll"
         }
     }
 }

@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class PollManager {
+public class PollMessageManager {
     let pollStore: PollStore
     let recipientDatabaseTable: RecipientDatabaseTable
     let interactionStore: InteractionStore
@@ -28,7 +28,7 @@ public class PollManager {
     ) throws {
         try pollStore.createPoll(
             interactionId: interactionId,
-            allowMultiSelect: pollCreateProto.allowMultiple,
+            allowsMultiSelect: pollCreateProto.allowMultiple,
             options: pollCreateProto.options,
             transaction: transaction
         )
@@ -78,5 +78,14 @@ public class PollManager {
         transaction: DBWriteTransaction
     ) {
         // TODO: implement me
+    }
+
+    public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {
+        guard let interactionId = message.grdbId?.int64Value,
+              let question = message.body else {
+            return nil
+        }
+
+        return try pollStore.owsPoll(question: question, interactionId: interactionId, transaction: transaction)
     }
 }

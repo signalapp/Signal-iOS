@@ -1107,7 +1107,6 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   /// Clears the value of `storyContext`. Subsequent reads from it will return its default value.
   mutating func clearStoryContext() {_uniqueStorage()._storyContext = nil}
 
-  /// NEXT ID: 24
   var giftBadge: SignalServiceProtos_DataMessage.GiftBadge {
     get {return _storage._giftBadge ?? SignalServiceProtos_DataMessage.GiftBadge()}
     set {_uniqueStorage()._giftBadge = newValue}
@@ -1116,6 +1115,34 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   var hasGiftBadge: Bool {return _storage._giftBadge != nil}
   /// Clears the value of `giftBadge`. Subsequent reads from it will return its default value.
   mutating func clearGiftBadge() {_uniqueStorage()._giftBadge = nil}
+
+  var pollCreate: SignalServiceProtos_DataMessage.PollCreate {
+    get {return _storage._pollCreate ?? SignalServiceProtos_DataMessage.PollCreate()}
+    set {_uniqueStorage()._pollCreate = newValue}
+  }
+  /// Returns true if `pollCreate` has been explicitly set.
+  var hasPollCreate: Bool {return _storage._pollCreate != nil}
+  /// Clears the value of `pollCreate`. Subsequent reads from it will return its default value.
+  mutating func clearPollCreate() {_uniqueStorage()._pollCreate = nil}
+
+  var pollTerminate: SignalServiceProtos_DataMessage.PollTerminate {
+    get {return _storage._pollTerminate ?? SignalServiceProtos_DataMessage.PollTerminate()}
+    set {_uniqueStorage()._pollTerminate = newValue}
+  }
+  /// Returns true if `pollTerminate` has been explicitly set.
+  var hasPollTerminate: Bool {return _storage._pollTerminate != nil}
+  /// Clears the value of `pollTerminate`. Subsequent reads from it will return its default value.
+  mutating func clearPollTerminate() {_uniqueStorage()._pollTerminate = nil}
+
+  /// NEXT ID: 27
+  var pollVote: SignalServiceProtos_DataMessage.PollVote {
+    get {return _storage._pollVote ?? SignalServiceProtos_DataMessage.PollVote()}
+    set {_uniqueStorage()._pollVote = newValue}
+  }
+  /// Returns true if `pollVote` has been explicitly set.
+  var hasPollVote: Bool {return _storage._pollVote != nil}
+  /// Clears the value of `pollVote`. Subsequent reads from it will return its default value.
+  mutating func clearPollVote() {_uniqueStorage()._pollVote = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5399,6 +5426,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         20: .same(proto: "payment"),
         21: .same(proto: "storyContext"),
         22: .same(proto: "giftBadge"),
+        24: .same(proto: "pollCreate"),
+        25: .same(proto: "pollTerminate"),
+        26: .same(proto: "pollVote"),
   ])
 
   fileprivate class _StorageClass {
@@ -5423,6 +5453,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _payment: SignalServiceProtos_DataMessage.Payment? = nil
     var _storyContext: SignalServiceProtos_DataMessage.StoryContext? = nil
     var _giftBadge: SignalServiceProtos_DataMessage.GiftBadge? = nil
+    var _pollCreate: SignalServiceProtos_DataMessage.PollCreate? = nil
+    var _pollTerminate: SignalServiceProtos_DataMessage.PollTerminate? = nil
+    var _pollVote: SignalServiceProtos_DataMessage.PollVote? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -5454,6 +5487,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _payment = source._payment
       _storyContext = source._storyContext
       _giftBadge = source._giftBadge
+      _pollCreate = source._pollCreate
+      _pollTerminate = source._pollTerminate
+      _pollVote = source._pollVote
     }
   }
 
@@ -5493,6 +5529,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._storyContext) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._giftBadge) }()
         case 23: try { try decoder.decodeSingularUInt32Field(value: &_storage._expireTimerVersion) }()
+        case 24: try { try decoder.decodeSingularMessageField(value: &_storage._pollCreate) }()
+        case 25: try { try decoder.decodeSingularMessageField(value: &_storage._pollTerminate) }()
+        case 26: try { try decoder.decodeSingularMessageField(value: &_storage._pollVote) }()
         default: break
         }
       }
@@ -5568,6 +5607,15 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._expireTimerVersion {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 23)
       } }()
+      try { if let v = _storage._pollCreate {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+      } }()
+      try { if let v = _storage._pollTerminate {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 25)
+      } }()
+      try { if let v = _storage._pollVote {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 26)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5598,6 +5646,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._payment != rhs_storage._payment {return false}
         if _storage._storyContext != rhs_storage._storyContext {return false}
         if _storage._giftBadge != rhs_storage._giftBadge {return false}
+        if _storage._pollCreate != rhs_storage._pollCreate {return false}
+        if _storage._pollTerminate != rhs_storage._pollTerminate {return false}
+        if _storage._pollVote != rhs_storage._pollVote {return false}
         return true
       }
       if !storagesAreEqual {return false}

@@ -22,7 +22,8 @@ extension TSMessage {
                 hasGiftBadge: giftBadge != nil,
                 isStoryReply: isStoryReply,
                 isPaymentMessage: (self is OWSPaymentMessage || self is OWSArchivedPaymentMessage),
-                storyReactionEmoji: storyReactionEmoji
+                storyReactionEmoji: storyReactionEmoji,
+                isPoll: isPoll
             )
         }
         return insertedMessageHasRenderableContent(rowId: rowId, tx: tx)

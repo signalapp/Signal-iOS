@@ -26,10 +26,17 @@ public struct PollRecord: Codable, FetchableRecord, MutablePersistableRecord {
         self.allowsMultiSelect = allowsMultiSelect
     }
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case id
         case interactionId
         case isEnded
         case allowsMultiSelect
+    }
+
+    enum Columns {
+        static let id = Column(CodingKeys.id.rawValue)
+        static let interactionId = Column(CodingKeys.interactionId.rawValue)
+        static let allowsMultiSelect = Column(CodingKeys.allowsMultiSelect.rawValue)
+        static let isEnded = Column(CodingKeys.isEnded.rawValue)
     }
 }

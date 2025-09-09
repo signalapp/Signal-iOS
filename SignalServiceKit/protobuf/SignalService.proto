@@ -430,7 +430,10 @@ message DataMessage {
   optional Payment payment = 20;
   optional StoryContext storyContext = 21;
   optional GiftBadge giftBadge = 22;
-  // NEXT ID: 24
+  optional PollCreate pollCreate = 24;
+  optional PollTerminate pollTerminate = 25;
+  optional PollVote pollVote = 26;
+  // NEXT ID: 27
 }
 
 message NullMessage {

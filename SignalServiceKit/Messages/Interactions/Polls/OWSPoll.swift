@@ -7,56 +7,60 @@ import Foundation
 public import LibSignalClient
 
 public struct OWSPoll: Equatable {
+    public enum Constants {
+        static let maxCharacterLength = 100
+    }
+
     public typealias OptionIndex = UInt32
 
     public struct OWSPollOption {
         public let optionIndex: OptionIndex
         public let text: String
-        public var votes: Int
         public let acis: [Aci]
 
         init(
             optionIndex: OptionIndex,
             text: String,
-            votes: Int = 0,
-            acis: [Aci] = []
+            acis: [Aci]
         ) {
             self.optionIndex = optionIndex
             self.text = text
-            self.votes = votes
             self.acis = acis
         }
     }
 
-    public let pollID: String
+    public let pollId: Int64
     public let question: String
-    public let isEnded: Bool
-    public let allowMultiSelect: Bool
-
+    public var isEnded: Bool
+    public let allowsMultiSelect: Bool
     private let options: [OptionIndex: OWSPollOption]
 
-    init(
-        pollID: String,
+    public init(
+        pollId: Int64,
         question: String,
         options: [String],
-        allowMultiSelect: Bool
+        allowsMultiSelect: Bool,
+        votes: [OptionIndex: [Aci]],
+        isEnded: Bool
     ) {
-        self.pollID = pollID
+        self.pollId = pollId
         self.question = question
-        self.allowMultiSelect = allowMultiSelect
-        self.isEnded = false
+        self.allowsMultiSelect = allowsMultiSelect
+        self.isEnded = isEnded
 
         self.options = Dictionary(uniqueKeysWithValues: options.enumerated().map { index, option in
-            return (OWSPoll.OptionIndex(index), OWSPollOption(optionIndex: OWSPoll.OptionIndex(index), text: option))
+            let optionIndex = OWSPoll.OptionIndex(index)
+            let votes = votes[optionIndex] ?? []
+            return (optionIndex, OWSPollOption(optionIndex: optionIndex, text: option, acis: votes))
         })
     }
 
     public static func == (lhs: OWSPoll, rhs: OWSPoll) -> Bool {
-        return lhs.pollID == rhs.pollID
+        return lhs.pollId == rhs.pollId
     }
 
     public func totalVotes() -> Int {
-        return options.values.reduce(0) { $0 + $1.votes }
+        return options.values.reduce(0) { $0 + $1.acis.count }
     }
 
     public func sortedOptions() -> [OWSPollOption] {

@@ -262,6 +262,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             contactShare = CVComponentContactShare(itemModel: itemModel,
                                                    contactShareState: contactShareState)
         }
+
+        if let pollState = componentState.poll {
+            poll = CVComponentPoll(itemModel: itemModel, poll: pollState)
+        }
+
         if let bottomButtonsState = componentState.bottomButtons {
             bottomButtons = CVComponentBottomButtons(itemModel: itemModel,
                                                      bottomButtonsState: bottomButtonsState)
@@ -930,7 +935,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
     private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare, .giftBadge] }
+    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare, .giftBadge, .poll] }
     private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer, .undownloadableAttachment] }
 
     // The "message" contents of this component for most messages are vertically

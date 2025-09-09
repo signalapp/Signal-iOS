@@ -230,7 +230,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasContactShare: contactBuilder != nil,
             hasSticker: messageStickerBuilder != nil,
             // Payment notifications go through a different path.
-            hasPayment: false
+            hasPayment: false,
+            hasPoll: false // TODO(KC): fill in once poll sending is implemented
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {

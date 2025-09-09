@@ -980,7 +980,7 @@ public final class MessageReceiver {
         }
 
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? MessageBodyRanges.empty : MessageBodyRanges(protos: dataMessage.bodyRanges)
-        let body = dataMessage.body.map {
+        var body = dataMessage.body.map {
             // Note: we already checked above that the length doesn't need truncation; this
             // just returns the validated body object needed for downstream APIs.
             DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
@@ -1097,6 +1097,21 @@ public final class MessageReceiver {
             }
         }
 
+        let pollCreate = dataMessage.pollCreate
+        if let pollCreate, let question = pollCreate.question {
+            guard question.count <= OWSPoll.Constants.maxCharacterLength
+                    && question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
+            else {
+                owsFailDebug("Poll question too large")
+                return nil
+            }
+
+            body =  DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                MessageBody(text: question, ranges: .empty),
+                tx: tx
+            )
+        }
+
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
         let messageBuilder = TSIncomingMessageBuilder(
@@ -1128,7 +1143,7 @@ public final class MessageReceiver {
             messageSticker: messageStickerBuilder?.info,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification,
-            isPoll: false // TODO: fill in once poll protos are in
+            isPoll: pollCreate != nil
         )
         let message = messageBuilder.build()
 
@@ -1143,7 +1158,8 @@ public final class MessageReceiver {
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
             hasSticker: messageStickerBuilder != nil,
-            hasPayment: paymentModels != nil
+            hasPayment: paymentModels != nil,
+            hasPoll: pollCreate != nil
         )
         guard hasRenderableContent else {
             Logger.warn("Ignoring empty: \(messageDescription)")
@@ -1226,6 +1242,22 @@ public final class MessageReceiver {
             DependenciesBridge.shared.interactionDeleteManager
                 .delete(message, sideEffects: .default(), tx: tx)
             return nil
+        }
+
+        if let pollCreate = dataMessage.pollCreate,
+           let interactionId = message.grdbId?.int64Value {
+            do {
+                try DependenciesBridge.shared.pollMessageManager.processIncomingPollCreate(
+                    interactionId: interactionId,
+                    pollCreateProto: pollCreate,
+                    transaction: tx
+                )
+            } catch {
+                owsFailDebug("Could not insert poll!")
+                DependenciesBridge.shared.interactionDeleteManager
+                    .delete(message, sideEffects: .default(), tx: tx)
+                return nil
+            }
         }
 
         owsAssertDebug(message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx))

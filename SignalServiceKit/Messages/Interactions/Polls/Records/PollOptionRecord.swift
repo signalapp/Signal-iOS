@@ -28,10 +28,17 @@ public struct PollOptionRecord: Codable, FetchableRecord, MutablePersistableReco
         self.optionIndex = optionIndex
     }
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case id
         case pollId
         case option
         case optionIndex
+    }
+
+    enum Columns {
+        static let id = Column(CodingKeys.id.rawValue)
+        static let pollId = Column(CodingKeys.pollId.rawValue)
+        static let option = Column(CodingKeys.option.rawValue)
+        static let optionIndex = Column(CodingKeys.optionIndex.rawValue)
     }
 }

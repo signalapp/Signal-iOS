@@ -34,4 +34,11 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
         case voteAuthorId
         case voteCount
     }
+
+    enum Columns {
+        static let id = Column(CodingKeys.id.rawValue)
+        static let optionId = Column(CodingKeys.optionId.rawValue)
+        static let voteAuthorId = Column(CodingKeys.voteAuthorId.rawValue)
+        static let voteCount = Column(CodingKeys.voteCount.rawValue)
+    }
 }

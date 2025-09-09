@@ -1479,6 +1479,12 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
         )
 
+        let pollMessageManager = PollMessageManager(
+            pollStore: PollStore(),
+            recipientDatabaseTable: recipientDatabaseTable,
+            interactionStore: interactionStore
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             accountEntropyPoolManager: accountEntropyPoolManager,
@@ -1579,6 +1585,7 @@ public class AppSetup {
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,
             pinnedThreadStore: pinnedThreadStore,
+            pollMessageManager: pollMessageManager,
             preKeyManager: preKeyManager,
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             quotedReplyManager: quotedReplyManager,

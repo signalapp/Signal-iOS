@@ -8396,6 +8396,15 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     public let giftBadge: SSKProtoDataMessageGiftBadge?
 
     @objc
+    public let pollCreate: SSKProtoDataMessagePollCreate?
+
+    @objc
+    public let pollTerminate: SSKProtoDataMessagePollTerminate?
+
+    @objc
+    public let pollVote: SSKProtoDataMessagePollVote?
+
+    @objc
     public var body: String? {
         guard hasBody else {
             return nil
@@ -8494,7 +8503,10 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                  groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?,
                  payment: SSKProtoDataMessagePayment?,
                  storyContext: SSKProtoDataMessageStoryContext?,
-                 giftBadge: SSKProtoDataMessageGiftBadge?) {
+                 giftBadge: SSKProtoDataMessageGiftBadge?,
+                 pollCreate: SSKProtoDataMessagePollCreate?,
+                 pollTerminate: SSKProtoDataMessagePollTerminate?,
+                 pollVote: SSKProtoDataMessagePollVote?) {
         self.proto = proto
         self.attachments = attachments
         self.groupV2 = groupV2
@@ -8509,6 +8521,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         self.payment = payment
         self.storyContext = storyContext
         self.giftBadge = giftBadge
+        self.pollCreate = pollCreate
+        self.pollTerminate = pollTerminate
+        self.pollVote = pollVote
     }
 
     @objc
@@ -8580,6 +8595,21 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             giftBadge = SSKProtoDataMessageGiftBadge(proto.giftBadge)
         }
 
+        var pollCreate: SSKProtoDataMessagePollCreate?
+        if proto.hasPollCreate {
+            pollCreate = SSKProtoDataMessagePollCreate(proto.pollCreate)
+        }
+
+        var pollTerminate: SSKProtoDataMessagePollTerminate?
+        if proto.hasPollTerminate {
+            pollTerminate = SSKProtoDataMessagePollTerminate(proto.pollTerminate)
+        }
+
+        var pollVote: SSKProtoDataMessagePollVote?
+        if proto.hasPollVote {
+            pollVote = SSKProtoDataMessagePollVote(proto.pollVote)
+        }
+
         self.init(proto: proto,
                   attachments: attachments,
                   groupV2: groupV2,
@@ -8593,7 +8623,10 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                   groupCallUpdate: groupCallUpdate,
                   payment: payment,
                   storyContext: storyContext,
-                  giftBadge: giftBadge)
+                  giftBadge: giftBadge,
+                  pollCreate: pollCreate,
+                  pollTerminate: pollTerminate,
+                  pollVote: pollVote)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -8696,6 +8729,15 @@ extension SSKProtoDataMessage {
         }
         if let _value = giftBadge {
             builder.setGiftBadge(_value)
+        }
+        if let _value = pollCreate {
+            builder.setPollCreate(_value)
+        }
+        if let _value = pollTerminate {
+            builder.setPollTerminate(_value)
+        }
+        if let _value = pollVote {
+            builder.setPollVote(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -8901,6 +8943,39 @@ public class SSKProtoDataMessageBuilder: NSObject {
 
     public func setGiftBadge(_ valueParam: SSKProtoDataMessageGiftBadge) {
         proto.giftBadge = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPollCreate(_ valueParam: SSKProtoDataMessagePollCreate?) {
+        guard let valueParam = valueParam else { return }
+        proto.pollCreate = valueParam.proto
+    }
+
+    public func setPollCreate(_ valueParam: SSKProtoDataMessagePollCreate) {
+        proto.pollCreate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPollTerminate(_ valueParam: SSKProtoDataMessagePollTerminate?) {
+        guard let valueParam = valueParam else { return }
+        proto.pollTerminate = valueParam.proto
+    }
+
+    public func setPollTerminate(_ valueParam: SSKProtoDataMessagePollTerminate) {
+        proto.pollTerminate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPollVote(_ valueParam: SSKProtoDataMessagePollVote?) {
+        guard let valueParam = valueParam else { return }
+        proto.pollVote = valueParam.proto
+    }
+
+    public func setPollVote(_ valueParam: SSKProtoDataMessagePollVote) {
+        proto.pollVote = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

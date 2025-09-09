@@ -15,10 +15,12 @@ struct OWSPollTest {
     @Test
     func testSortedOptions() throws {
         let poll = OWSPoll(
-            pollID: "1",
+            pollId: 1,
             question: "Are polls working?",
             options: ["Yes", "No", "Maybe"],
-            allowMultiSelect: false
+            allowsMultiSelect: false,
+            votes: [:],
+            isEnded: false
         )
 
         let sortedOptions = poll.sortedOptions()
