@@ -11,39 +11,210 @@ protocol EmojiPickerSectionToolbarDelegate: AnyObject {
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool
 }
 
-class EmojiPickerSectionToolbar: BlurredToolbarContainer {
+class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
     private var buttons = [UIButton]()
 
+    private let forceDarkTheme: Bool
     private weak var delegate: EmojiPickerSectionToolbarDelegate?
+
+    private enum Section {
+        case main
+    }
+    private var dataSource: UICollectionViewDiffableDataSource<Section, ThemeIcon>!
+    private var collectionView: UICollectionView!
+
+    private static let collectionViewSectionMargin: CGFloat = 4
+
+    private struct EmojiSectionCellContentViewConfiguration: UIContentConfiguration {
+        let emojiSectionIcon: ThemeIcon
+        var displayBackgroundView: Bool = false
+
+        func makeContentView() -> UIView & UIContentView {
+            return EmojiSectionCellContentView(configuration: self)
+        }
+
+        func updated(for state: any UIConfigurationState) -> EmojiSectionCellContentViewConfiguration {
+            guard let cellState = state as? UICellConfigurationState else {
+                return self
+            }
+            var configuration = self
+            configuration.displayBackgroundView = cellState.isSelected
+            return configuration
+        }
+    }
+
+    private class EmojiSectionCellContentView: UIView, UIContentView {
+        var configuration: UIContentConfiguration {
+            didSet {
+                configure()
+            }
+        }
+
+        private let backgroundView = UIView()
+        private let imageView = UIImageView()
+        private static let imageSize: CGFloat = 22
+        static let viewSize: CGFloat = 40
+
+        init(configuration: EmojiSectionCellContentViewConfiguration) {
+            self.configuration = configuration
+
+            super.init(frame: .zero)
+
+            // Use simple opaque UIView as part of the content view because
+            // UIBackgroundConfiguration wasn't updating reliably.
+            // Background will be using the color of images in unselected cells.
+            addSubview(backgroundView)
+            backgroundView.backgroundColor = UIColor.Signal.secondaryFill
+
+            addSubview(imageView)
+            imageView.contentMode = .scaleAspectFill
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                imageView.widthAnchor.constraint(equalToConstant: EmojiSectionCellContentView.imageSize),
+                imageView.heightAnchor.constraint(equalToConstant: EmojiSectionCellContentView.imageSize),
+                imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+                imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
+            ])
+
+            configure()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+
+            let circleSize = min(bounds.width, bounds.height)
+            backgroundView.center = bounds.center
+            backgroundView.bounds = CGRect(x: 0, y: 0, width: circleSize, height: circleSize)
+            backgroundView.layer.cornerRadius = 0.5 * circleSize
+        }
+
+        private func configure() {
+            guard let configuration = configuration as? EmojiSectionCellContentViewConfiguration else {
+                return
+            }
+            backgroundView.isHidden = !configuration.displayBackgroundView
+            imageView.image = Theme.iconImage(configuration.emojiSectionIcon)
+            imageView.tintColor = UIColor.Signal.secondaryLabel
+        }
+    }
 
     init(
         delegate: EmojiPickerSectionToolbarDelegate,
         forceDarkTheme: Bool = false
     ) {
         self.delegate = delegate
+        self.forceDarkTheme = forceDarkTheme
 
-        super.init(forceDarkTheme: forceDarkTheme)
+        super.init(frame: .zero)
 
-        buttons = [
-            createSectionButton(icon: .emojiSmiley),
-            createSectionButton(icon: .emojiAnimal),
-            createSectionButton(icon: .emojiFood),
-            createSectionButton(icon: .emojiActivity),
-            createSectionButton(icon: .emojiTravel),
-            createSectionButton(icon: .emojiObject),
-            createSectionButton(icon: .emojiSymbol),
-            createSectionButton(icon: .emojiFlag)
-        ]
-
-        if delegate.emojiPickerSectionToolbarShouldShowRecentsSection(self) == true {
-            buttons.insert(createSectionButton(icon: .emojiRecent), at: 0)
+        if forceDarkTheme {
+            overrideUserInterfaceStyle = .dark
         }
 
-        toolbar.items = Array(
-            buttons
-                .map { [UIBarButtonItem(customView: $0)] }
-                .joined(separator: [.flexibleSpace()])
-        )
+        // Prepare icons.
+        var emojiSectionIcons: [ThemeIcon] = [
+            .emojiSmiley,
+            .emojiAnimal,
+            .emojiFood,
+            .emojiActivity,
+            .emojiTravel,
+            .emojiObject,
+            .emojiSymbol,
+            .emojiFlag
+        ]
+        if delegate.emojiPickerSectionToolbarShouldShowRecentsSection(self) == true {
+            emojiSectionIcons.insert(.emojiRecent, at: 0)
+        }
+
+        // Create and configure collection view.
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: Self.buildCollectionViewLayout(numberOfItems: emojiSectionIcons.count))
+        collectionView.delegate = self
+        collectionView.backgroundColor = .clear
+        collectionView.allowsMultipleSelection = false
+        collectionView.insetsLayoutMarginsFromSafeArea = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        let collectionViewHeight = EmojiSectionCellContentView.viewSize + 2 * Self.collectionViewSectionMargin
+        collectionView.addConstraint(collectionView.heightAnchor.constraint(equalToConstant: collectionViewHeight))
+
+        // Prepare background.
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            // Floating glass panel that encapsulates emoji category strip.
+            // Insets are carefully configured for best on-screen appearance.
+#if compiler(>=6.2)
+            let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            glassEffectView.translatesAutoresizingMaskIntoConstraints = false
+            glassEffectView.cornerConfiguration = .capsule()
+            addSubview(glassEffectView)
+            NSLayoutConstraint.activate([
+                glassEffectView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor, constant: -1),
+                glassEffectView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor, constant: 1),
+                glassEffectView.topAnchor.constraint(equalTo: topAnchor, constant: -2),
+                glassEffectView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 0),
+            ])
+
+            glassEffectView.clipsToBounds = true
+            glassEffectView.layoutMargins = UIEdgeInsets(top: 0, leading: 1, bottom: 0, trailing: -4)
+            glassEffectView.contentView.addSubview(collectionView)
+            NSLayoutConstraint.activate([
+                collectionView.leadingAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.leadingAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.trailingAnchor),
+                collectionView.topAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.topAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.bottomAnchor),
+            ])
+#endif
+        } else {
+            // Container extends to the vertical edges and to the bottom of the view.
+            // Collection view is pinned to the top edge and leading, trailing and bottom margins.
+            let collectionViewContainer: UIView
+            if UIAccessibility.isReduceTransparencyEnabled {
+                backgroundColor = UIColor.Signal.background
+                collectionViewContainer = self
+            } else {
+                let blurEffect = forceDarkTheme ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
+                let blurEffectView = UIVisualEffectView(effect: blurEffect)
+                addSubview(blurEffectView)
+                blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    blurEffectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                    blurEffectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                    blurEffectView.topAnchor.constraint(equalTo: topAnchor),
+                    blurEffectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                ])
+
+                collectionViewContainer = blurEffectView.contentView
+            }
+
+            collectionViewContainer.addSubview(collectionView)
+            NSLayoutConstraint.activate([
+                collectionView.leadingAnchor.constraint(equalTo: collectionViewContainer.layoutMarginsGuide.leadingAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: collectionViewContainer.layoutMarginsGuide.trailingAnchor),
+                collectionView.topAnchor.constraint(equalTo: collectionViewContainer.topAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: collectionViewContainer.safeAreaLayoutGuide.bottomAnchor)
+            ])
+        }
+
+        // Configure data source.
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        dataSource = UICollectionViewDiffableDataSource<Section, ThemeIcon>(
+            collectionView: collectionView
+        ) { (collectionView, indexPath, itemIdentifier) -> UICollectionViewCell? in
+
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.automaticallyUpdatesContentConfiguration = true
+            cell.contentConfiguration = EmojiSectionCellContentViewConfiguration(emojiSectionIcon: itemIdentifier)
+
+            return cell
+        }
+
+        // Populate collection view with data.
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ThemeIcon>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(emojiSectionIcons)
+        dataSource.apply(snapshot, animatingDifferences: false)
 
         setSelectedSection(0)
     }
@@ -52,41 +223,40 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createSectionButton(icon: ThemeIcon) -> UIButton {
-        let button = UIButton()
-        button.setImage(Theme.iconImage(icon), for: .normal)
+    // MARK: Collection View
 
-        let selectedBackgroundColor: UIColor
-        if UIAccessibility.isReduceTransparencyEnabled {
-            selectedBackgroundColor = (Theme.isDarkThemeEnabled || forceDarkTheme) ? UIColor.ows_gray75 : UIColor.ows_gray05
-        } else {
-            selectedBackgroundColor = forceDarkTheme ? Theme.darkThemeBackgroundColor : Theme.backgroundColor
-        }
+    private class func buildCollectionViewLayout(numberOfItems: Int) -> UICollectionViewLayout {
+        let cellSize = EmojiSectionCellContentView.viewSize
 
-        button.setBackgroundImage(UIImage.image(color: selectedBackgroundColor), for: .selected)
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(cellSize),
+            heightDimension: .absolute(cellSize)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        button.autoSetDimensions(to: CGSize(square: 30))
-        button.layer.cornerRadius = 15
-        button.clipsToBounds = true
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1 / CGFloat(numberOfItems)),
+            heightDimension: .absolute(cellSize)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-        button.addTarget(self, action: #selector(didSelectSection), for: .touchUpInside)
-
-        return button
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.contentInsets = NSDirectionalEdgeInsets(margin: collectionViewSectionMargin)
+        return UICollectionViewCompositionalLayout(section: section)
     }
 
-    @objc
-    private func didSelectSection(sender: UIButton) {
-        guard let selectedSection = buttons.firstIndex(of: sender) else {
-            return owsFailDebug("Selectetd unexpected button")
-        }
-
-        setSelectedSection(selectedSection)
-
-        delegate?.emojiPickerSectionToolbar(self, didSelectSection: selectedSection)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.emojiPickerSectionToolbar(self, didSelectSection: indexPath.item)
     }
+
+    // MARK: Selection
 
     func setSelectedSection(_ section: Int) {
-        buttons.forEach { $0.isSelected = false }
-        buttons[safe: section]?.isSelected = true
+        collectionView.selectItem(
+            at: IndexPath(item: section, section: 0),
+            animated: true,
+            scrollPosition: .centeredHorizontally
+        )
     }
 }

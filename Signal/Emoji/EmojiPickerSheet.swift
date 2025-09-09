@@ -114,6 +114,16 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         sectionToolbar.autoPinEdge(.leading, to: .leading, of: contentView)
         sectionToolbar.autoPinEdge(.trailing, to: .trailing, of: contentView)
         sectionToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
+
+#if compiler(>=6.2)
+        // Obscures content underneath the emoji section toolbar to improve legibility.
+        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            let scrollInteraction = UIScrollEdgeElementContainerInteraction()
+            scrollInteraction.scrollView = collectionView
+            scrollInteraction.edge = .bottom
+            sectionToolbar.addInteraction(scrollInteraction)
+        }
+#endif
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
