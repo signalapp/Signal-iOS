@@ -761,7 +761,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Η λήψη διακόπηκε: Η συσκευή έχει χαμηλή μπαταρία";
 
 /* Subtitle for a progress bar tracking downloads that are paused because of low power mode. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Download paused: low power mode";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Η λήψη διακόπηκε: λειτουργία χαμηλής κατανάλωσης ενέργειας";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Δεν υπάρχει αρκετός χώρος για τη λήψη των πολυμέσων σου. Για να συνεχίσεις, απελευθέρωσε %1$@ χώρου.";
@@ -851,19 +851,19 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Παράλειψη λήψης;";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Media upload paused: device has low battery";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Η μεταφόρτωση πολυμέσων διακόπηκε: η συσκευή έχει χαμηλή μπαταρία";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low power mode. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Media upload paused: low power mode";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Η μεταφόρτωση πολυμέσων διακόπηκε προσωρινά: λειτουργία χαμηλής κατανάλωσης ενέργειας";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Media upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Η μεταφόρτωση πολυμέσων διακόπηκε: δεν υπάρχει σύνδεση στο διαδίκτυο…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Media upload paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Η μεταφόρτωση πολυμέσων διακόπηκε: αναμονή για Wi-Fi";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Μεταφόρτωση %1$@ από %2$@";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Ανάλογα με το μέγεθος του αντιγράφου ασφαλείας σου, αυτό μπορεί να διαρκέσει πολύ. Μπορείς να χρησιμοποιείς το τηλέφωνό σου όπως συνήθως, κατά τη διάρκεια της δημιουργίας αντιγράφων ασφαλείας.";
@@ -7067,7 +7067,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Η συσκευή έχει χαμηλή μπαταρία";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode */
-"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Low power mode";
+"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Λειτουργία χαμηλής κατανάλωσης ενέργειας";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Χωρίς διαδίκτυο…";

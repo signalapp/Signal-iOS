@@ -761,7 +761,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Завантаження зупинено: низький заряд акумулятора";
 
 /* Subtitle for a progress bar tracking downloads that are paused because of low power mode. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Download paused: low power mode";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Завантаження зупинено: режим економії заряду";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Недостатньо місця, щоб завантажити медіафайли. Щоб продовжити, звільніть %1$@.";
@@ -851,19 +851,19 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Не завантажувати?";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Media upload paused: device has low battery";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Вивантаження медіафайлів зупинено: низький заряд акумулятора";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low power mode. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Media upload paused: low power mode";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Вивантаження медіафайлів зупинено: режим економії заряду";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Media upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Вивантаження медіафайлів зупинено: немає інтернету…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Media upload paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Вивантаження медіафайлів зупинено: очікування Wi-Fi";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Вивантаження: %1$@ з %2$@";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Що більший розмір резервної копії, то довше триватиме її завантаження. Поки копія створюється, ви можете користуватися телефоном як зазвичай.";
@@ -7067,7 +7067,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Низький заряд акумулятора";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode */
-"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Low power mode";
+"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Режим низького заряду";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Немає інтернету…";

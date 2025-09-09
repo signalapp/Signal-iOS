@@ -761,7 +761,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "ડાઉનલોડ થોભાવ્યું: ડિવાઇસની બેટરી ઓછી છે";
 
 /* Subtitle for a progress bar tracking downloads that are paused because of low power mode. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Download paused: low power mode";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "ડાઉનલોડ થોભાવ્યું: લૉ પાવર મોડ";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "તમારા મીડિયા ડાઉનલોડ કરવા માટે પૂરતી જગ્યા નથી. ચાલુ રાખવા માટે %1$@ જગ્યા ખાલી કરો.";
@@ -851,19 +851,19 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "ડાઉનલોડ કરવાનું છોડીએ?";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Media upload paused: device has low battery";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "મીડિયા અપલોડ થોભાવ્યું: ડિવાઇસમાં બેટરી ઓછી છે";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low power mode. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Media upload paused: low power mode";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "મીડિયા અપલોડ થોભાવ્યું: લૉ પાવર મોડ";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Media upload paused: no internet…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "મીડિયા અપલોડ થોભાવ્યું: ઇન્ટરનેટ નથી…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Media upload paused: waiting for Wi-Fi";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "મીડિયા અપલોડ થોભાવ્યું: વાઇ-ફાઇની રાહ જોઈ રહ્યાં છીએ";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploading %1$@ of %2$@";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%2$@માંથી %1$@ અપલોડ કરી રહ્યા છીએ";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "તમારા બેકઅપની સાઇઝના આધારે, આમાં વધુ સમય લાગી શકે છે. જ્યારે બેકઅપ લેવામાં આવે ત્યારે તમે સામાન્ય રીતે કરતાં હોવ તેમ તમે તમારા ફોનનો ઉપયોગ કરી શકો છો.";
@@ -7067,7 +7067,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "ડિવાઇસની બેટરી ઓછી છે";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode */
-"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Low power mode";
+"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "લૉ પાવર મોડ";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "ઇન્ટરનેટ નથી…";
