@@ -2710,6 +2710,12 @@
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
 
+/* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+
+/* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donation Pending";
+
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
 

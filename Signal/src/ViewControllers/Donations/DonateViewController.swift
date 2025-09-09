@@ -1364,16 +1364,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             return doomedContinueButton
         }
 
-        func cancelSubscriptionButton() -> OWSButton {
-            let cancelTitle = OWSLocalizedString(
-                "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION",
-                comment: "Sustainer view Cancel Subscription button title"
+        func cancelSubscriptionButton(block: @escaping () -> Void) -> OWSButton {
+            let cancelButton = OWSButton(
+                title: OWSLocalizedString(
+                    "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION",
+                    comment: "Sustainer view Cancel Subscription button title"
+                ),
+                block: block
             )
-            let cancelButton = OWSButton(title: cancelTitle) { [weak self] in
-                self?.didTapToCancelSubscription()
-            }
             cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-
             return cancelButton
         }
 
@@ -1428,39 +1427,46 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 errorAlertMessage: message,
                 isEnabled: isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
             )
-            let cancelButton = cancelSubscriptionButton()
+            let cancelButton = cancelSubscriptionButton { [weak self] in
+                guard let self else { return }
 
-            switch currentSubscription.status {
-            case .active:
-                return [continueButton]
-            case .pastDue:
-                /// If the user's subscription is `.pastDue`, it means a renewal
-                /// payment failed and the payment processor is auto-retrying
-                /// the renewal payment. Give the user a chance to bail out by
-                /// canceling their subscription, which will stop the retries.
-                return [continueButton, cancelButton]
-            case .canceled:
-                /// If the subscription is `.canceled`, then we know that we are
-                /// incorrect about the subscription being "still processing"
-                /// and we should let the user clear their local state by
-                /// "canceling".
-                ///
-                /// In the past, the receipt credential redemption job may have
-                /// run out of retries while the payment was still processing,
-                /// and since then the subscription was canceled. (For example,
-                /// if credit card fraud was suspected.)
-                ///
-                /// - Note This should no longer be possible, as the job in
-                /// question no longer runs out of retries.
-                return [continueButton, cancelButton]
-            case .unknown, .incomplete, .unpaid:
-                /// It's not clear how this happened, but in any case the
-                /// something is wrong and we should let users clear their local
-                /// state by canceling.
-                owsFailDebug("Have a payment processing, but have unexpected subscription status \(currentSubscription.status)")
-                return [continueButton, cancelButton]
+                switch currentSubscription.status {
+                case .active:
+                    OWSActionSheets.showConfirmationAlert(
+                        title: OWSLocalizedString(
+                            "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE",
+                            comment: "Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation."
+                        ),
+                        message: OWSLocalizedString(
+                            "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE",
+                            comment: "Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation."
+                        ),
+                        proceedTitle: CommonStrings.continueButton,
+                        proceedAction: { [weak self] _ in
+                            guard let self else { return }
+                            didTapToCancelSubscription()
+                        }
+                    )
+                case .pastDue:
+                    /// If the user's subscription is `.pastDue`, it means a renewal
+                    /// payment failed and the payment processor is auto-retrying
+                    /// the renewal payment. Give the user a chance to bail out by
+                    /// canceling their subscription, which will stop the retries.
+                    didTapToCancelSubscription()
+                case .unknown, .canceled, .incomplete, .unpaid:
+                    /// It's not clear how this happened, but something is wrong
+                    /// and we should let users clear their local state.
+                    owsFailDebug("Have a payment processing, but have unexpected subscription status \(currentSubscription.status)")
+                    didTapToCancelSubscription()
+                }
             }
+
+            return [continueButton, cancelButton]
         } else if let currentSubscription = monthly.currentSubscription {
+            let cancelButton = cancelSubscriptionButton { [weak self] in
+                self?.didTapToCancelSubscription()
+            }
+
             if
                 currentSubscription.active,
                 Self.canMakeNewDonations(forDonateMode: .monthly)
@@ -1476,9 +1482,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 updateButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
                 updateButton.isEnabled = isDifferentSubscriptionLevelSelected(currentSubscription)
 
-                return [updateButton, cancelSubscriptionButton()]
+                return [updateButton, cancelButton]
             } else {
-                return [cancelSubscriptionButton()]
+                return [cancelButton]
             }
         } else {
             let continueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
