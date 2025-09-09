@@ -3600,7 +3600,7 @@
 		F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB15289453B200548EEE /* Locale+SSK.swift */; };
 		F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */; };
 		F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobRecordFinder.swift */; };
-		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; };
+		F9C5CDEE289453B400548EEE /* SDS+Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+Enums.swift */; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; };
 		F9C5CDF4289453B400548EEE /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB22289453B200548EEE /* Currency.swift */; };
@@ -7589,7 +7589,7 @@
 		F9C5CB15289453B200548EEE /* Locale+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Locale+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB19289453B200548EEE /* JobRecordFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobRecordFinder.swift; sourceTree = "<group>"; };
-		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
+		F9C5CB1C289453B200548EEE /* SDS+Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+Enums.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManagerImpl.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB22289453B200548EEE /* Currency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
@@ -14546,7 +14546,7 @@
 				502C69732B06F0A400012867 /* Result.swift */,
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
-				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
+				F9C5CB1C289453B200548EEE /* SDS+Enums.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
 				502346762DB039320029DB97 /* SetDeque.swift */,
@@ -18480,7 +18480,7 @@
 				668A01332C2B6088007B8808 /* Scheduler.swift in Sources */,
 				72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */,
 				7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */,
-				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
+				F9C5CDEE289453B400548EEE /* SDS+Enums.swift in Sources */,
 				D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */,
 				D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */,
 				F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */,

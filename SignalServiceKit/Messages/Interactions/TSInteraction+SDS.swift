@@ -26,7 +26,7 @@ public struct InteractionRecord: SDSRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    public let recordType: SDSRecordType
+    public let recordType: SDSRecordType?
     public let uniqueId: String
 
     // Properties
@@ -207,7 +207,7 @@ public extension InteractionRecord {
 
     init(row: Row) {
         id = row[0]
-        recordType = row[1]
+        recordType = row[1].flatMap { SDSRecordType(rawValue: $0) }
         uniqueId = row[2]
         receivedAtTimestamp = row[3]
         timestamp = row[4]
@@ -217,7 +217,7 @@ public extension InteractionRecord {
         authorPhoneNumber = row[8]
         authorUUID = row[9]
         body = row[10]
-        callType = row[11]
+        callType = row[11].flatMap { RPRecentCallType(rawValue: $0) }
         configurationDurationSeconds = row[12]
         configurationIsEnabled = row[13]
         contactShare = row[14]
@@ -225,11 +225,11 @@ public extension InteractionRecord {
         createdInExistingGroup = row[16]
         customMessage = row[17]
         envelopeData = row[18]
-        errorType = row[19]
+        errorType = row[19].flatMap { TSErrorMessageType(rawValue: $0) }
         expireStartedAt = row[20]
         expiresAt = row[21]
         expiresInSeconds = row[22]
-        groupMetaMessage = row[23]
+        groupMetaMessage = row[23].flatMap { TSGroupMetaMessage(rawValue: $0) }
         hasLegacyMessageState = row[24]
         hasSyncedTranscript = row[25]
         wasNotCreatedLocally = row[26]
@@ -237,12 +237,12 @@ public extension InteractionRecord {
         isViewOnceComplete = row[28]
         isViewOnceMessage = row[29]
         isVoiceMessage = row[30]
-        legacyMessageState = row[31]
+        legacyMessageState = row[31].flatMap { TSOutgoingMessageState(rawValue: $0) }
         legacyWasDelivered = row[32]
         linkPreview = row[33]
         messageId = row[34]
         messageSticker = row[35]
-        messageType = row[36]
+        messageType = row[36].flatMap { TSInfoMessageType(rawValue: $0) }
         mostRecentFailureText = row[37]
         preKeyBundle = row[38]
         protocolVersion = row[39]
@@ -253,15 +253,15 @@ public extension InteractionRecord {
         sender = row[44]
         serverTimestamp = row[45]
         deprecated_sourceDeviceId = row[46]
-        storedMessageState = row[47]
+        storedMessageState = row[47].flatMap { TSOutgoingMessageState(rawValue: $0) }
         storedShouldStartExpireTimer = row[48]
         unregisteredAddress = row[49]
-        verificationState = row[50]
+        verificationState = row[50].flatMap { OWSVerificationState(rawValue: $0) }
         wasReceivedByUD = row[51]
         infoMessageUserInfo = row[52]
         wasRemotelyDeleted = row[53]
         bodyRanges = row[54]
-        offerType = row[55]
+        offerType = row[55].flatMap { TSRecentCallOfferType(rawValue: $0) }
         serverDeliveryTimestamp = row[56]
         eraId = row[57]
         hasEnded = row[58]
@@ -278,7 +278,7 @@ public extension InteractionRecord {
         isGroupStoryReply = row[69]
         storyReactionEmoji = row[70]
         giftBadge = row[71]
-        editState = row[72]
+        editState = row[72].flatMap { TSEditState(rawValue: $0) }
         archivedPaymentInfo = row[73]
         expireTimerVersion = row[74]
         isSmsMessageRestoredFromBackup = row[75]
@@ -305,11 +305,10 @@ extension TSInteraction {
     // the corresponding model class.
     class func fromRecord(_ record: InteractionRecord) throws -> TSInteraction {
 
-        guard let recordId = record.id else {
-            throw SDSError.invalidValue()
-        }
+        guard let recordId = record.id else { throw SDSError.missingRequiredField(fieldName: "id") }
+        guard let recordType = record.recordType else { throw SDSError.missingRequiredField(fieldName: "recordType") }
 
-        switch record.recordType {
+        switch recordType {
         case .addToContactsOfferMessage:
 
             let uniqueId: String = record.uniqueId
@@ -2291,7 +2290,7 @@ extension TSInteraction {
                                                 uniqueThreadId: uniqueThreadId)
 
         default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \(recordType)")
             throw SDSError.invalidValue()
         }
     }
@@ -5039,7 +5038,7 @@ extension InteractionRecord {
     // where this model (and any subclasses) are persisted.
     internal func asValues() -> [DatabaseValueConvertible?] {
         return [
-                recordType,
+                recordType?.rawValue,
                             uniqueId,
                             receivedAtTimestamp,
                             timestamp,
@@ -5049,7 +5048,7 @@ extension InteractionRecord {
                             authorPhoneNumber,
                             authorUUID,
                             body,
-                            callType,
+                            callType?.rawValue,
                             configurationDurationSeconds,
                             configurationIsEnabled,
                             contactShare,
@@ -5057,11 +5056,11 @@ extension InteractionRecord {
                             createdInExistingGroup,
                             customMessage,
                             envelopeData,
-                            errorType,
+                            errorType?.rawValue,
                             expireStartedAt,
                             expiresAt,
                             expiresInSeconds,
-                            groupMetaMessage,
+                            groupMetaMessage?.rawValue,
                             hasLegacyMessageState,
                             hasSyncedTranscript,
                             wasNotCreatedLocally,
@@ -5069,12 +5068,12 @@ extension InteractionRecord {
                             isViewOnceComplete,
                             isViewOnceMessage,
                             isVoiceMessage,
-                            legacyMessageState,
+                            legacyMessageState?.rawValue,
                             legacyWasDelivered,
                             linkPreview,
                             messageId,
                             messageSticker,
-                            messageType,
+                            messageType?.rawValue,
                             mostRecentFailureText,
                             preKeyBundle,
                             protocolVersion,
@@ -5085,15 +5084,15 @@ extension InteractionRecord {
                             sender,
                             serverTimestamp,
                             deprecated_sourceDeviceId,
-                            storedMessageState,
+                            storedMessageState?.rawValue,
                             storedShouldStartExpireTimer,
                             unregisteredAddress,
-                            verificationState,
+                            verificationState?.rawValue,
                             wasReceivedByUD,
                             infoMessageUserInfo,
                             wasRemotelyDeleted,
                             bodyRanges,
-                            offerType,
+                            offerType?.rawValue,
                             serverDeliveryTimestamp,
                             eraId,
                             hasEnded,
@@ -5110,7 +5109,7 @@ extension InteractionRecord {
                             isGroupStoryReply,
                             storyReactionEmoji,
                             giftBadge,
-                            editState,
+                            editState?.rawValue,
                             archivedPaymentInfo,
                             expireTimerVersion,
                             isSmsMessageRestoredFromBackup,

@@ -110,7 +110,7 @@ public class ThreadFinder {
         let cursor = try ThreadRecord.fetchCursor(
             transaction.database,
             sql: sql,
-            arguments: [SDSRecordType.privateStoryThread]
+            arguments: [SDSRecordType.privateStoryThread.rawValue]
         )
         while
             let thread = try cursor.next().map({ try TSThread.fromRecord($0) }),

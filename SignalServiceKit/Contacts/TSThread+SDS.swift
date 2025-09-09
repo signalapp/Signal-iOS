@@ -26,7 +26,7 @@ public struct ThreadRecord: SDSRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    public let recordType: SDSRecordType
+    public let recordType: SDSRecordType?
     public let uniqueId: String
 
     // Properties
@@ -109,7 +109,7 @@ public extension ThreadRecord {
 
     init(row: Row) {
         id = row[0]
-        recordType = row[1]
+        recordType = row[1].flatMap { SDSRecordType(rawValue: $0) }
         uniqueId = row[2]
         conversationColorName = row[3]
         creationDate = row[4]
@@ -158,11 +158,10 @@ extension TSThread {
     // the corresponding model class.
     class func fromRecord(_ record: ThreadRecord) throws -> TSThread {
 
-        guard let recordId = record.id else {
-            throw SDSError.invalidValue()
-        }
+        guard let recordId = record.id else { throw SDSError.missingRequiredField(fieldName: "id") }
+        guard let recordType = record.recordType else { throw SDSError.missingRequiredField(fieldName: "recordType") }
 
-        switch record.recordType {
+        switch recordType {
         case .contactThread:
 
             let uniqueId: String = record.uniqueId
@@ -363,7 +362,7 @@ extension TSThread {
                             storyViewMode: storyViewMode)
 
         default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \(recordType)")
             throw SDSError.invalidValue()
         }
     }

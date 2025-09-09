@@ -26,7 +26,7 @@ public struct StickerPackRecord: SDSRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    public let recordType: SDSRecordType
+    public let recordType: SDSRecordType?
     public let uniqueId: String
 
     // Properties
@@ -73,7 +73,7 @@ public extension StickerPackRecord {
 
     init(row: Row) {
         id = row[0]
-        recordType = row[1]
+        recordType = row[1].flatMap { SDSRecordType(rawValue: $0) }
         uniqueId = row[2]
         author = row[3]
         cover = row[4]
@@ -104,11 +104,10 @@ extension StickerPack {
     // the corresponding model class.
     class func fromRecord(_ record: StickerPackRecord) throws -> StickerPack {
 
-        guard let recordId = record.id else {
-            throw SDSError.invalidValue()
-        }
+        guard let recordId = record.id else { throw SDSError.missingRequiredField(fieldName: "id") }
+        guard let recordType = record.recordType else { throw SDSError.missingRequiredField(fieldName: "recordType") }
 
-        switch record.recordType {
+        switch recordType {
         case .stickerPack:
 
             let uniqueId: String = record.uniqueId
@@ -135,7 +134,7 @@ extension StickerPack {
                                title: title)
 
         default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \(recordType)")
             throw SDSError.invalidValue()
         }
     }

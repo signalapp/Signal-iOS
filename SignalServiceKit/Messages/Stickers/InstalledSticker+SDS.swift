@@ -26,7 +26,7 @@ public struct InstalledStickerRecord: SDSRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    public let recordType: SDSRecordType
+    public let recordType: SDSRecordType?
     public let uniqueId: String
 
     // Properties
@@ -65,7 +65,7 @@ public extension InstalledStickerRecord {
 
     init(row: Row) {
         id = row[0]
-        recordType = row[1]
+        recordType = row[1].flatMap { SDSRecordType(rawValue: $0) }
         uniqueId = row[2]
         emojiString = row[3]
         info = row[4]
@@ -92,11 +92,10 @@ extension InstalledSticker {
     // the corresponding model class.
     class func fromRecord(_ record: InstalledStickerRecord) throws -> InstalledSticker {
 
-        guard let recordId = record.id else {
-            throw SDSError.invalidValue()
-        }
+        guard let recordId = record.id else { throw SDSError.missingRequiredField(fieldName: "id") }
+        guard let recordType = record.recordType else { throw SDSError.missingRequiredField(fieldName: "recordType") }
 
-        switch record.recordType {
+        switch recordType {
         case .installedSticker:
 
             let uniqueId: String = record.uniqueId
@@ -112,7 +111,7 @@ extension InstalledSticker {
                                     info: info)
 
         default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \(recordType)")
             throw SDSError.invalidValue()
         }
     }

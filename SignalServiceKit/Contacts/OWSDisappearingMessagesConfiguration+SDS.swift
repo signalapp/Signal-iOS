@@ -26,7 +26,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    public let recordType: SDSRecordType
+    public let recordType: SDSRecordType?
     public let uniqueId: String
 
     // Properties
@@ -65,7 +65,7 @@ public extension DisappearingMessagesConfigurationRecord {
 
     init(row: Row) {
         id = row[0]
-        recordType = row[1]
+        recordType = row[1].flatMap { SDSRecordType(rawValue: $0) }
         uniqueId = row[2]
         durationSeconds = row[3]
         enabled = row[4]
@@ -92,11 +92,10 @@ extension OWSDisappearingMessagesConfiguration {
     // the corresponding model class.
     class func fromRecord(_ record: DisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
 
-        guard let recordId = record.id else {
-            throw SDSError.invalidValue()
-        }
+        guard let recordId = record.id else { throw SDSError.missingRequiredField(fieldName: "id") }
+        guard let recordType = record.recordType else { throw SDSError.missingRequiredField(fieldName: "recordType") }
 
-        switch record.recordType {
+        switch recordType {
         case .disappearingMessagesConfiguration:
 
             let uniqueId: String = record.uniqueId
@@ -111,7 +110,7 @@ extension OWSDisappearingMessagesConfiguration {
                                                         timerVersion: timerVersion)
 
         default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
+            owsFailDebug("Unexpected record type: \(recordType)")
             throw SDSError.invalidValue()
         }
     }

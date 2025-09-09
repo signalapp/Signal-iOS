@@ -77,24 +77,6 @@ public extension SDSRecord {
             owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
-
-    func sdsRemove(transaction: DBWriteTransaction) {
-        do {
-            let tableName = tableMetadata.tableName
-            let whereSQL = "\(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
-            let sql: String = "DELETE FROM \(tableName.quotedDatabaseIdentifier) WHERE \(whereSQL)"
-
-            let statement = try transaction.database.cachedStatement(sql: sql)
-            try statement.setArguments([uniqueIdColumnValue])
-            try statement.execute()
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Write failed: \(error.grdbErrorForLogging)")
-        }
-    }
 }
 
 // MARK: -
