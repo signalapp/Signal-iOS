@@ -484,7 +484,7 @@ class SentStoryCell: UITableViewCell {
         contextButtonContainer.setContextButton(contextButton)
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor
         self.selectedBackgroundView = selectedBackgroundView
     }
 }

@@ -404,10 +404,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeTableCell2SelectedBackgroundColor : .ows_gray15
     }
 
-    public class var tableCell2SelectedBackgroundColor2: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2SelectedBackgroundColor2 : .ows_gray15
-    }
-
     public class var tableCell2MultiSelectedBackgroundColor: UIColor {
         isDarkThemeEnabled ? darkThemeTableCell2MultiSelectedBackgroundColor : .ows_gray05
     }
@@ -481,8 +477,6 @@ final public class Theme: NSObject {
     }
 
     public class var darkThemeTableCell2SelectedBackgroundColor: UIColor { .ows_gray80 }
-
-    public class var darkThemeTableCell2SelectedBackgroundColor2: UIColor { .ows_gray65 }
 
     public class var darkThemeTableCell2MultiSelectedBackgroundColor: UIColor { .ows_gray75 }
 

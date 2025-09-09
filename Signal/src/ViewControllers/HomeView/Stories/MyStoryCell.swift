@@ -165,7 +165,7 @@ class MyStoryCell: UITableViewCell {
         }
 
         let selectedBackgroundView = SelectedBackgroundView()
-        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor
         self.selectedBackgroundView = selectedBackgroundView
 
         updateColors()
