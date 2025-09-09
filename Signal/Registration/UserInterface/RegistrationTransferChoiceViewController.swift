@@ -85,7 +85,7 @@ class RegistrationTransferChoiceViewController: OWSViewController {
         bodyLabel.text = body
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.font = .dynamicTypeBody2
+        bodyLabel.font = .dynamicTypeSubheadline
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
 
         let topSpacer = UIView.vStretchingSpacer()

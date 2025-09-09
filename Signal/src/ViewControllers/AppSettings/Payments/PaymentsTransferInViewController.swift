@@ -66,7 +66,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
                 text: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
                                         comment: "Explanation of the process for adding money in the 'add money' settings view."),
-                font: .dynamicTypeBody2Clamped,
+                font: .dynamicTypeSubheadlineClamped,
                 learnMoreUrl: URL.Support.Payments.transferFromExchange)
             label.textAlignment = .center
             cell.contentView.addSubview(label)
@@ -111,7 +111,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             label.text = OWSLocalizedString("SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
                                            comment: "Indicator that the payments wallet address is invalid.")
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.dynamicTypeBody2Clamped.semibold()
+            label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
             configureWithSubviews(subviews: [label])
         }
@@ -144,13 +144,13 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
                                             comment: "Label for the payments wallet address.")
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeBody2Clamped.semibold()
+        titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         titleLabel.textAlignment = .center
 
         let walletAddressLabel = UILabel()
         walletAddressLabel.text = walletAddressBase58
         walletAddressLabel.textColor = Theme.secondaryTextAndIconColor
-        walletAddressLabel.font = UIFont.monospacedDigitFont(ofSize: UIFont.dynamicTypeBody2Clamped.pointSize)
+        walletAddressLabel.font = UIFont.monospacedDigitFont(ofSize: UIFont.dynamicTypeSubheadlineClamped.pointSize)
         walletAddressLabel.lineBreakMode = .byTruncatingMiddle
         walletAddressLabel.textAlignment = .center
 

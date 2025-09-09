@@ -34,7 +34,7 @@ extension DonateViewController {
 
         private let subheadingLabel: UILabel = {
             let result = UILabel()
-            result.font = .dynamicTypeBody2
+            result.font = .dynamicTypeSubheadline
             result.numberOfLines = 0
             return result
         }()

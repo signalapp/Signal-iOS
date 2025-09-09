@@ -137,7 +137,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
             textAlignment = .center
         }
 
-        private static var buttonFont: UIFont { UIFont.dynamicTypeBody2Clamped.medium() }
+        private static var buttonFont: UIFont { UIFont.dynamicTypeSubheadlineClamped.medium() }
 
         private static let buttonVMargin: CGFloat = 6
 

@@ -265,7 +265,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.textAlignment = .natural
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.dynamicTypeBody2.semibold()
+        titleLabel.font = UIFont.dynamicTypeSubheadline.semibold()
         titleLabel.textColor = UIColor.Signal.label
         titleLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                              comment: "Title for the 'safety number confirmation' view")
@@ -274,7 +274,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.textAlignment = .natural
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
-        messageLabel.font = .dynamicTypeBody2
+        messageLabel.font = .dynamicTypeSubheadline
         messageLabel.textColor = UIColor.Signal.label
         messageLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
                                                comment: "Message for the 'safety number confirmation' view")
@@ -659,7 +659,7 @@ private class SafetyNumberCell: ContactTableViewCell {
             "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
             comment: "View safety number action for the 'safety number confirmation' view"
         )
-        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody2.semibold())
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.semibold())
         button.configuration = config
         button.addTarget(self, action: #selector(performButtonActon), for: .touchUpInside)
     }

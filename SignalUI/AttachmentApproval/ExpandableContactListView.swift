@@ -120,7 +120,7 @@ class ExpandableContactListView: UIView {
         let label = UILabel()
         label.numberOfLines = 1
         label.lineBreakMode = .byClipping
-        label.font = .dynamicTypeBody2Clamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

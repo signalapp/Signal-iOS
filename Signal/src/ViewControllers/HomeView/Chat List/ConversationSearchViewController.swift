@@ -62,7 +62,7 @@ public class ConversationSearchViewController: UITableViewController {
         StringStyle(
             .color(Theme.secondaryTextAndIconColor),
             .xmlRules([
-                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeBody2.semibold())))
+                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeSubheadline.semibold())))
             ])
         )
     }

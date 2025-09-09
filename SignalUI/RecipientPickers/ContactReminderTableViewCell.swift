@@ -31,7 +31,7 @@ class ContactReminderTableViewCell: UITableViewCell {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .dynamicTypeBody2
+        label.font = .dynamicTypeSubheadline
         label.textColor = textColor
         label.text = OWSLocalizedString(
             "LINKED_DEVICE_MANAGE_CONTACTS_BANNER",
@@ -49,7 +49,7 @@ class ContactReminderTableViewCell: UITableViewCell {
             for: .normal
         )
         button.setTitleColor(textColor, for: .normal)
-        button.titleLabel!.font = .dynamicTypeBody2.semibold()
+        button.titleLabel!.font = .dynamicTypeSubheadline.semibold()
         button.addTarget(self, action: #selector(didTapLearnMore), for: .touchUpInside)
         button.ows_contentEdgeInsets = UIEdgeInsets(top: 6, left: 0, bottom: 3, right: 0)
         button.setCompressionResistanceHigh()

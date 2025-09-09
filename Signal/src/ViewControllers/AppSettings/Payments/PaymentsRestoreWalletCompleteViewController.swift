@@ -113,7 +113,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         let explanationLabel = UILabel()
         explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
                                                   comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.")
-        explanationLabel.font = .dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

@@ -56,7 +56,7 @@ class LimitedPhotoPermissionsView: UIView {
 
         let label = UILabel()
         label.textColor = UIColor.Signal.secondaryLabel
-        label.font = .dynamicTypeBody2Clamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.numberOfLines = 2
         label.setContentHuggingHorizontalLow()
         label.text = OWSLocalizedString(

@@ -94,7 +94,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     }
 
     override func contentSizeCategoryDidChange() {
-        instructionsLabel.font = .dynamicTypeBody2
+        instructionsLabel.font = .dynamicTypeSubheadline
     }
 
     // MARK: Actions

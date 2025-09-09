@@ -848,7 +848,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let bodyLabel = UILabel()
             bodyLabel.text = body
             bodyLabel.textColor = Theme.secondaryTextAndIconColor
-            bodyLabel.font = UIFont.dynamicTypeBody2Clamped
+            bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
             bodyLabel.numberOfLines = 0
             bodyLabel.lineBreakMode = .byWordWrapping
 

@@ -128,7 +128,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
 
     static func conversationListSearchResultSnippet() -> Self {
         return .init(
-            baseFont: .dynamicTypeBody2,
+            baseFont: .dynamicTypeSubheadline,
             baseTextColor: .secondaryTextAndIcon,
             spoilerAnimationColorOverride: ConversationStyle.bubbleTextColorIncomingThemed
         )

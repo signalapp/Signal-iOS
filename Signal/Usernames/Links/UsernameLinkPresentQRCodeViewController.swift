@@ -406,7 +406,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
         button.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_whiteAlpha70
-        button.titleLabel!.font = .dynamicTypeBody2.bold()
+        button.titleLabel!.font = .dynamicTypeSubheadline.bold()
         button.setTitleColor(Theme.primaryTextColor, for: .normal)
 
         button.configureForMultilineTitle()

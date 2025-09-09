@@ -18,7 +18,7 @@ public class PaymentsViewUtils {
         let label = UILabel()
         label.text = memoMessage
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.dynamicTypeBody2Clamped
+        label.font = UIFont.dynamicTypeSubheadlineClamped
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

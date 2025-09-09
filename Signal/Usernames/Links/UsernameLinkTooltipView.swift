@@ -59,7 +59,7 @@ class UsernameLinkTooltipView: TooltipView {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
 
-        label.font = .dynamicTypeBody2.semibold()
+        label.font = .dynamicTypeSubheadline.semibold()
         label.textColor = Theme.primaryTextColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

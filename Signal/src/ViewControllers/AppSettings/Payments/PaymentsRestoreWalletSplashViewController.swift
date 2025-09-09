@@ -74,7 +74,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
                                     comment: "Explanation of the 'restore payments wallet' process payments settings."),
-            font: .dynamicTypeBody2Clamped,
+            font: .dynamicTypeSubheadlineClamped,
             learnMoreUrl: URL.Support.Payments.walletRestorePassphrase)
         explanationLabel.textAlignment = .center
 

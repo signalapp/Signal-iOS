@@ -124,7 +124,7 @@ public class RegistrationSplashViewController: OWSViewController {
             for: .normal
         )
         explanationButton.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
-        explanationButton.titleLabel?.font = UIFont.dynamicTypeBody2
+        explanationButton.titleLabel?.font = UIFont.dynamicTypeSubheadline
         explanationButton.titleLabel?.numberOfLines = 0
         explanationButton.titleLabel?.textAlignment = .center
         explanationButton.titleLabel?.lineBreakMode = .byWordWrapping

@@ -55,8 +55,6 @@ public extension UIFont {
 
     class var dynamicTypeBody: UIFont { UIFont.preferredFont(forTextStyle: .body, compatibleWith: .current) }
 
-    class var dynamicTypeBody2: UIFont { UIFont.preferredFont(forTextStyle: .subheadline, compatibleWith: .current) }
-
     class var dynamicTypeCallout: UIFont { UIFont.preferredFont(forTextStyle: .callout, compatibleWith: .current) }
 
     class var dynamicTypeSubheadline: UIFont { UIFont.preferredFont(forTextStyle: .subheadline, compatibleWith: .current) }
@@ -118,7 +116,6 @@ public extension UIFont {
     class var dynamicTypeTitle3Clamped: UIFont { preferredFontClamped(forTextStyle: .title3) }
     class var dynamicTypeHeadlineClamped: UIFont { preferredFontClamped(forTextStyle: .headline) }
     class var dynamicTypeBodyClamped: UIFont { preferredFontClamped(forTextStyle: .body) }
-    class var dynamicTypeBody2Clamped: UIFont { preferredFontClamped(forTextStyle: .subheadline) }
     class var dynamicTypeCalloutClamped: UIFont { preferredFontClamped(forTextStyle: .callout) }
     class var dynamicTypeSubheadlineClamped: UIFont { preferredFontClamped(forTextStyle: .subheadline) }
     class var dynamicTypeFootnoteClamped: UIFont { preferredFontClamped(forTextStyle: .footnote) }

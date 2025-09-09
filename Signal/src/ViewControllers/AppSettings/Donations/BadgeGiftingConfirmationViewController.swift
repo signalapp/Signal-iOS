@@ -200,7 +200,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     seconds: disappearingMessagesDuration,
                     useShortFormat: true
                 )
-                disappearingMessagesTimerLabelView.font = .dynamicTypeBody2
+                disappearingMessagesTimerLabelView.font = .dynamicTypeSubheadline
                 disappearingMessagesTimerLabelView.textAlignment = .center
                 disappearingMessagesTimerLabelView.minimumScaleFactor = 0.8
 
@@ -230,7 +230,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO",
                 comment: "Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message."
             )
-            messageInfoLabel.font = .dynamicTypeBody2
+            messageInfoLabel.font = .dynamicTypeSubheadline
             messageInfoLabel.textColor = Theme.primaryTextColor
             messageInfoLabel.numberOfLines = 0
             cell.contentView.addSubview(messageInfoLabel)
@@ -257,7 +257,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 cell.layoutMargins = .zero
 
                 let disappearingMessagesInfoLabel = UILabel()
-                disappearingMessagesInfoLabel.font = .dynamicTypeBody2
+                disappearingMessagesInfoLabel.font = .dynamicTypeSubheadline
                 disappearingMessagesInfoLabel.textColor = Theme.secondaryTextAndIconColor
                 disappearingMessagesInfoLabel.numberOfLines = 0
 

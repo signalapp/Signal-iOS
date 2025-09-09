@@ -143,7 +143,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
         return CVLabelConfig.unstyledText(
             text,
-            font: UIFont.dynamicTypeBody2.semibold(),
+            font: UIFont.dynamicTypeSubheadline.semibold(),
             textColor: textColor,
             lineBreakMode: .byTruncatingMiddle
         )

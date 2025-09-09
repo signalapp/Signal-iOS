@@ -780,7 +780,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let changeButton = UIButton(type: .custom)
 
         changeButton.setTitle(OWSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar"), for: .normal)
-        changeButton.titleLabel?.font = .dynamicTypeBody2.semibold()
+        changeButton.titleLabel?.font = .dynamicTypeSubheadline.semibold()
         changeButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         changeButton.layer.cornerRadius = 16
 

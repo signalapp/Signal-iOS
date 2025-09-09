@@ -170,7 +170,7 @@ class RotationControl: UIControl {
     }
 
     private func updateFont() {
-        textLabel.font = .dynamicTypeBody2Clamped.monospaced()
+        textLabel.font = .dynamicTypeSubheadlineClamped.monospaced()
     }
 
     private func updateColors() {

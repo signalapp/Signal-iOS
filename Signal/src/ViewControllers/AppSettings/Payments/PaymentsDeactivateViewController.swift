@@ -113,7 +113,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
                                     comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
-            font: .dynamicTypeBody2Clamped,
+            font: .dynamicTypeSubheadlineClamped,
             learnMoreUrl: URL.Support.Payments.deactivate)
         explanationLabel.backgroundColor = backgroundColor
         explanationLabel.textAlignment = .center

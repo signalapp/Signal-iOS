@@ -18,7 +18,7 @@ class OutgoingDeviceTransferQRScanningViewController: DeviceTransferBaseViewCont
     }()
     lazy var label: UILabel = {
         let label = UILabel()
-        label.font = .dynamicTypeBody2
+        label.font = .dynamicTypeSubheadline
         label.textColor = Theme.primaryTextColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

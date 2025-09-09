@@ -71,7 +71,7 @@ extension SpamCaptchaViewController {
         titleLabel.text = OWSLocalizedString("SPAM_CAPTCHA_SHEET_TITLE", comment: "Title for action sheet explaining captcha requirement.")
 
         let bodyLabel = UILabel()
-        bodyLabel.font = .dynamicTypeBody2Clamped
+        bodyLabel.font = .dynamicTypeSubheadlineClamped
         bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping

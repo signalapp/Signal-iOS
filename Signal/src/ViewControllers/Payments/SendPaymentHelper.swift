@@ -128,7 +128,7 @@ class SendPaymentHelper {
 
     public static func buildBottomLabel() -> UILabel {
         let label = UILabel()
-        label.font = .dynamicTypeBody2Clamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         return label

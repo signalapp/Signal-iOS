@@ -26,7 +26,7 @@ class TransferProgressView: UIStackView {
     }()
     let bottomLabel: UILabel = {
         let label = UILabel()
-        label.font = .dynamicTypeBody2
+        label.font = .dynamicTypeSubheadline
         label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         return label

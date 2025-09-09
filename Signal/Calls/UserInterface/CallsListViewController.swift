@@ -2218,7 +2218,7 @@ private extension CallsListViewController {
 
         private lazy var timestampLabel: UILabel = {
             let label = UILabel()
-            label.font = .dynamicTypeBody2
+            label.font = .dynamicTypeSubheadline
             return label
         }()
 
@@ -2258,7 +2258,7 @@ private extension CallsListViewController {
             }
 
             let button = OWSRoundedButton()
-            let font = UIFont.dynamicTypeBody2.bold()
+            let font = UIFont.dynamicTypeSubheadline.bold()
             let title = NSAttributedString.composed(of: [
                 NSAttributedString.with(
                     image: icon,
@@ -2439,12 +2439,12 @@ private extension CallsListViewController {
                     NSAttributedString.with(
                         image: Theme.iconImage(icon),
                         font: .dynamicTypeCallout,
-                        centerVerticallyRelativeTo: .dynamicTypeBody2,
+                        centerVerticallyRelativeTo: .dynamicTypeSubheadline,
                         heightReference: .pointSize
                     ),
                     " ",
                     viewModel.direction.label,
-                ]).styled(with: .font(.dynamicTypeBody2))
+                ]).styled(with: .font(.dynamicTypeSubheadline))
             }()
 
             self.joinPill?.removeFromSuperview()

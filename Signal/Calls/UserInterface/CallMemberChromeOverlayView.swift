@@ -216,7 +216,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             if !useCompactSize {
                 self.addArrangedSubview(nameLabel)
                 nameLabel.textColor = .ows_white
-                nameLabel.font = .dynamicTypeBody2
+                nameLabel.font = .dynamicTypeSubheadline
             }
         }
 

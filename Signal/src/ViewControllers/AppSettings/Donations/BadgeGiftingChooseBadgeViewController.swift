@@ -230,7 +230,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             stackView.addArrangedSubview(textLabel)
             textLabel.text = OWSLocalizedString("DONATION_VIEW_LOAD_FAILED",
                                                comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
-            textLabel.font = .dynamicTypeBody2
+            textLabel.font = .dynamicTypeSubheadline
             textLabel.textAlignment = .center
             textLabel.textColor = Theme.primaryTextColor
             textLabel.numberOfLines = 0

@@ -280,7 +280,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
         let explanationLabel = UILabel()
         explanationLabel.text = explanation
-        explanationLabel.font = .dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

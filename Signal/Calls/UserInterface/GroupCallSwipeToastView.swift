@@ -18,7 +18,7 @@ class GroupCallSwipeToastView: UIView {
 
     private let label: UILabel = {
         let label = UILabel()
-        label.font = UIFont.dynamicTypeBody2
+        label.font = UIFont.dynamicTypeSubheadline
         label.textColor = .ows_gray05
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

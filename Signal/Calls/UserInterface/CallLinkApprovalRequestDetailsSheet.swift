@@ -157,7 +157,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
         let mutualGroupsLabel = UILabel()
         mutualGroupsLabel.text = ProfileDetailLabel.mutualGroupsString(isInGroupContext: false, mutualGroups: mutualThreads)
-        mutualGroupsLabel.font = .dynamicTypeBody2
+        mutualGroupsLabel.font = .dynamicTypeSubheadline
         mutualGroupsLabel.textColor = UIColor.Signal.secondaryLabel
 
         vStack.addArrangedSubview(mutualGroupsLabel)

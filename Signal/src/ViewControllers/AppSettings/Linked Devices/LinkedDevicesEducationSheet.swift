@@ -105,7 +105,7 @@ class LinkedDevicesEducationSheet: StackSheetViewController {
         let textView = LinkingTextView()
         textView.setContentHuggingLow()
         textView.attributedText = text.styled(
-            with: .font(.dynamicTypeBody2),
+            with: .font(.dynamicTypeSubheadline),
             .color(UIColor.Signal.label)
         )
         stackView.addArrangedSubview(textView)

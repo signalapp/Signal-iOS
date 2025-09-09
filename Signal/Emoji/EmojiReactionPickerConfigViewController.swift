@@ -20,7 +20,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     private lazy var instructionLabel: UILabel = {
         let label = UILabel()
         label.text = OWSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
-        label.font = UIFont.dynamicTypeBody2
+        label.font = UIFont.dynamicTypeSubheadline
         label.textColor = self.forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         return label
     }()

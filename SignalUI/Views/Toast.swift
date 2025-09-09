@@ -217,7 +217,7 @@ class ToastView: UIView {
         darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
 
         label.textColor = .ows_white
-        label.font = UIFont.dynamicTypeBody2
+        label.font = UIFont.dynamicTypeSubheadline
         label.numberOfLines = 0
         self.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()

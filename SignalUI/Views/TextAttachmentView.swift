@@ -774,7 +774,7 @@ private class LinkPreviewTooltipView: TooltipView {
             "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP",
             comment: "Tooltip prompting the user to visit a story link."
         )
-        titleLabel.font = UIFont.dynamicTypeBody2Clamped.semibold()
+        titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         titleLabel.textColor = .ows_white
 
         let urlLabel = UILabel()

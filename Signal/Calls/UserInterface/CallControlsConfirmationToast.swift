@@ -84,7 +84,7 @@ class CallControlsConfirmationToastView: UIView {
         static let spacing: CGFloat = 8
         static let horizontalMargin: CGFloat = 12
         static let verticalMargin: CGFloat = 10
-        static let font: UIFont = .dynamicTypeBody2
+        static let font: UIFont = .dynamicTypeSubheadline
         static let imageDimension: CGFloat = 16
     }
 

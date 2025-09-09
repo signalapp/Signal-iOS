@@ -432,7 +432,7 @@ private class CallLinkCardView: UIView {
         linkLabel.numberOfLines = 2
 
         linkLabel.textColor = Theme.snippetColor
-        linkLabel.font = .dynamicTypeBody2
+        linkLabel.font = .dynamicTypeSubheadline
 
         stackView.addArrangedSubviews([nameLabel, linkLabel])
         stackView.axis = .vertical

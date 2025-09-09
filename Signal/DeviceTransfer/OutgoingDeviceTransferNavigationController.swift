@@ -114,7 +114,7 @@ class DeviceTransferBaseViewController: UIViewController {
     func explanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = .dynamicTypeBody2
+        explanationLabel.font = .dynamicTypeSubheadline
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center

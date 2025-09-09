@@ -124,7 +124,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedAuthorFont: UIFont { UIFont.dynamicTypeSubheadlineClamped.semibold() }
         var quotedAuthorColor: UIColor { conversationStyle.quotedReplyAuthorColor() }
         var quotedTextColor: UIColor { conversationStyle.quotedReplyTextColor() }
-        var quotedTextFont: UIFont { UIFont.dynamicTypeBody2 }
+        var quotedTextFont: UIFont { UIFont.dynamicTypeSubheadline }
         var fileTypeTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }
         var fileTypeFont: UIFont { quotedTextFont.italic() }
         var filenameTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }

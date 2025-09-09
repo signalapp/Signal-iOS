@@ -102,7 +102,7 @@ class RaisedHandsToast: UIView {
         labelContainer.addSubview(label)
         labelContainer.heightAnchor.constraint(greaterThanOrEqualTo: label.heightAnchor, multiplier: 1).isActive = true
         label.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
-        label.font = .dynamicTypeBody2
+        label.font = .dynamicTypeSubheadline
         label.numberOfLines = 0
         label.contentMode = CurrentAppContext().isRTL ? .topRight : .topLeft
         label.textColor = .white
@@ -136,7 +136,7 @@ class RaisedHandsToast: UIView {
                 bottom: 8,
                 trailing: Constants.hMarginExpanded
             )
-            button.titleLabel?.font = .dynamicTypeBody2.bold()
+            button.titleLabel?.font = .dynamicTypeSubheadline.bold()
         }
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleExpanded))

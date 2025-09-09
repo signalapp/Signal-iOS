@@ -397,7 +397,7 @@ extension SafetyTipsViewController {
 
         func updateFontsForCurrentPreferredContentSize() {
             titleLabel.font = .dynamicTypeTitle2Clamped.bold()
-            subtitleLabel.font = .dynamicTypeBody2Clamped
+            subtitleLabel.font = .dynamicTypeSubheadlineClamped
         }
 
         func setColorsForCurrentTheme() {

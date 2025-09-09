@@ -269,7 +269,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             icon.setContentHuggingHigh()
 
             let label = UILabel()
-            label.font = .dynamicTypeBody2Clamped
+            label.font = .dynamicTypeSubheadlineClamped
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.textAlignment = .center
@@ -300,7 +300,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             exclamationMark.setContentHuggingHigh()
 
             let label = UILabel()
-            label.font = .dynamicTypeBody2Clamped
+            label.font = .dynamicTypeSubheadlineClamped
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.textAlignment = .center

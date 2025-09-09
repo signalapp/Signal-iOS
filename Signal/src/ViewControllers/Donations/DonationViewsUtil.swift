@@ -191,7 +191,7 @@ public class GiftBadgeCellView: UIStackView {
             )
         }()
         secondLineLabel.textColor = Theme.primaryTextColor
-        secondLineLabel.font = .dynamicTypeBody2
+        secondLineLabel.font = .dynamicTypeSubheadline
         secondLineLabel.numberOfLines = 0
 
         let vStackView = UIStackView(arrangedSubviews: [titleLabel, secondLineLabel])

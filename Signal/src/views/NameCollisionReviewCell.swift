@@ -137,7 +137,7 @@ final class NameCollisionCell: UITableViewCell {
         }
         verticalStack.addArrangedSubview(nameLabel)
 
-        let detailFont = UIFont.dynamicTypeBody2
+        let detailFont = UIFont.dynamicTypeSubheadline
 
         // Verified
         if model.isVerified {

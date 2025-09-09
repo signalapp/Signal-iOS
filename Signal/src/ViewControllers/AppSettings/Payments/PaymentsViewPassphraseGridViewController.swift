@@ -122,7 +122,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let explanationLabel = UILabel()
         explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION",
                                                   comment: "Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
-        explanationLabel.font = .dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

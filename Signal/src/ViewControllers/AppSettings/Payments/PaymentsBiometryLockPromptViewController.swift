@@ -116,7 +116,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
         let explanationLabel = UILabel()
         explanationLabel.text = localizedExplanationLabelText()
-        explanationLabel.font = .dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

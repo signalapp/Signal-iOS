@@ -756,7 +756,7 @@ public class SendPaymentViewController: OWSViewController {
         bigAmountLabel.setContentHuggingVerticalHigh()
         bigAmountLabel.setCompressionResistanceVerticalHigh()
 
-        smallAmountLabel.font = UIFont.dynamicTypeBody2
+        smallAmountLabel.font = UIFont.dynamicTypeSubheadline
         smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
         smallAmountLabel.textAlignment = .center
         smallAmountLabel.setContentHuggingVerticalHigh()

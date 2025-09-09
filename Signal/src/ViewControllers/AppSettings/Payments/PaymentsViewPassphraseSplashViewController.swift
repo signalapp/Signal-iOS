@@ -103,7 +103,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: self.style.explanationText,
-            font: .dynamicTypeBody2Clamped,
+            font: .dynamicTypeSubheadlineClamped,
             learnMoreUrl: self.style.explanationUrl)
         explanationLabel.textAlignment = .center
 
