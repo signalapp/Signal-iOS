@@ -64,19 +64,22 @@ extension RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) throws {
-        guard address.isValid else {
-            throw RecipientHidingError.invalidRecipientAddress(address)
-        }
         guard
             let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address)
         else {
             throw RecipientHidingError.cannotHideLocalAddress
         }
-        let recipient = OWSAccountIdFinder.ensureRecipient(
-            forAddress: address,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = try { () throws -> SignalRecipient in
+            if let serviceId = address.serviceId {
+                return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+            }
+            if let phoneNumber = address.e164 {
+                return recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+            }
+            throw RecipientHidingError.invalidRecipientAddress(address)
+        }()
         try addHiddenRecipient(
             recipient,
             inKnownMessageRequestState: inKnownMessageRequestState,

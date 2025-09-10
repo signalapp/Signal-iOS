@@ -60,30 +60,3 @@ public final class RecipientIdFinder {
         return .success(recipient.uniqueId)
     }
 }
-
-public final class OWSAccountIdFinder {
-    public class func ensureRecipient(
-        forAddress address: SignalServiceAddress,
-        transaction: DBWriteTransaction
-    ) -> SignalRecipient {
-        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient: SignalRecipient
-        if let serviceId = address.serviceId {
-            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
-        } else if let phoneNumber = address.e164 {
-            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction)
-        } else {
-            // This can happen for historical reasons. It shouldn't happen, but it
-            // could. We could return [[NSUUID UUID] UUIDString] and avoid persisting
-            // anything to disk. However, it's possible that a caller may expect to be
-            // able to fetch the recipient based on the value we return, so we need to
-            // ensure that the return value can be fetched. In the future, we should
-            // update all callers to ensure they pass valid addresses.
-            owsFailDebug("Fetching accountId for invalid address.")
-            recipient = SignalRecipient(aci: nil, pni: nil, phoneNumber: nil)
-            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-            recipientDatabaseTable.insertRecipient(recipient, transaction: transaction)
-        }
-        return recipient
-    }
-}

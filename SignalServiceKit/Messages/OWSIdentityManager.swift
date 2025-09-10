@@ -759,7 +759,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) -> ChangeVerificationStateResult {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        let recipient = OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: tx)
+        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
+            owsFailDebug("Missing SignalRecipient")
+            return .error
+        }
         let recipientUniqueId = recipient.uniqueId
         let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
         guard let recipientIdentity else {
