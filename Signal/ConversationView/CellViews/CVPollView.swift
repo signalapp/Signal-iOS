@@ -81,7 +81,7 @@ public class CVPollView: ManualStackView {
         var subtitleStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .horizontal,
                               alignment: .leading,
-                              spacing: 6,
+                              spacing: 4,
                               layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 0))
         }
 
@@ -96,9 +96,15 @@ public class CVPollView: ManualStackView {
         }
 
         var chooseSubtitleTextLabelConfig: CVLabelConfig {
+            let selectLabel = poll.allowsMultiSelect ? OWSLocalizedString(
+                "POLL_SELECT_LABEL_MULTIPLE", comment: "Label specifying the user can select more than one option"
+            ) : OWSLocalizedString(
+                "POLL_SELECT_LABEL_SINGULAR",
+                comment: "Label specifying the user can select one option"
+            )
+
             return CVLabelConfig.unstyledText(
-                // TODO: adjust based on allows multiple selections.
-                OWSLocalizedString("POLL_SELECT_LABEL_SINGULAR", comment: "Label specifying how many options the user can select"),
+                selectLabel,
                 font: UIFont.dynamicTypeFootnote,
                 textColor: textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
@@ -121,6 +127,8 @@ public class CVPollView: ManualStackView {
         }
 
         let checkBoxSize = CGSize(square: 22)
+
+        let circleSize = CGSize(square: 2)
 
         var optionRowInnerStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .horizontal,
@@ -170,6 +178,9 @@ public class CVPollView: ManualStackView {
             maxWidth: maxLabelWidth
         )
         subtitleStackSubviews.append(pollSubtitleSize.asManualSubviewInfo)
+
+        // Small bullet
+        subtitleStackSubviews.append(configurator.circleSize.asManualSubviewInfo(hasFixedSize: true))
 
         let chooseSubtitleLabelConfig = configurator.chooseSubtitleTextLabelConfig
         let chooseSubtitleSize = CVText.measureLabel(
@@ -259,11 +270,29 @@ public class CVPollView: ManualStackView {
         let chooseLabelConfig = configurator.chooseSubtitleTextLabelConfig
         chooseLabelConfig.applyForRendering(label: chooseLabel)
 
-        // TODO: add small bullet between poll/choose strings
-        subtitleStack.configure(config: configurator.subtitleStackConfig,
-                              cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_subtitleStack,
-                              subviews: [pollLabel, chooseLabel])
+        let circleView = UIView()
+        circleView.backgroundColor = configurator.subtitleColor
+        circleView.layer.cornerRadius = configurator.circleSize.width / 2
+
+        let circleContainer = ManualLayoutView(name: "circleContainer")
+        circleContainer.addSubview(circleView, withLayoutBlock: { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+
+            let subviewFrame = CGRect(
+                origin: CGPoint(x: 0, y: chooseLabel.bounds.midY),
+                size: configurator.circleSize
+            )
+            Self.setSubviewFrame(subview: circleView, frame: subviewFrame)
+        })
+
+        subtitleStack.configure(
+            config: configurator.subtitleStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_subtitleStack,
+            subviews: [pollLabel, circleContainer, chooseLabel]
+        )
     }
 
     func configureForRendering(

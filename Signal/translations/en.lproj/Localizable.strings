@@ -6439,7 +6439,10 @@
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 
-/* Label specifying how many options the user can select */
+/* Label specifying the user can select more than one option */
+"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+
+/* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
 /* Badge indicating that the user is verified. */
