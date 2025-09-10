@@ -46,8 +46,8 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public func get(key: KeyType) -> ValueType? {
         // ValueType might be AnyObject, so we need to check
         // rawValue for nil; value might be NSNull.
-        guard let rawValue = cache.object(forKey: key as AnyObject),
-              let value = rawValue as? ValueType else {
+        let rawValue = cache.object(forKey: wrapKeyIfNeeded(key))
+        guard let rawValue, let value = rawValue as? ValueType else {
             return nil
         }
         owsAssertDebug(!(value is NSNull))
@@ -63,11 +63,11 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         guard cache.countLimit > 0 else {
             return
         }
-        cache.setObject(value as AnyObject, forKey: key as AnyObject)
+        cache.setObject(value as AnyObject, forKey: wrapKeyIfNeeded(key))
     }
 
     public func remove(key: KeyType) {
-        cache.removeObject(forKey: key as AnyObject)
+        cache.removeObject(forKey: wrapKeyIfNeeded(key))
     }
 
     @objc
@@ -109,6 +109,32 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public func removeAllObjects() {
         clear()
     }
+
+    // MARK: - Non-NSObject Compatibility
+
+    private class WrappedKey: NSObject {
+        let wrappedValue: KeyType
+        init(_ wrappedValue: KeyType) {
+            self.wrappedValue = wrappedValue
+        }
+        override func isEqual(_ object: Any?) -> Bool {
+            return self.wrappedValue == (object as? WrappedKey)?.wrappedValue
+        }
+        override var hash: Int {
+            return self.wrappedValue.hashValue
+        }
+    }
+
+    private func wrapKeyIfNeeded(_ key: KeyType) -> AnyObject {
+        // Swift classes that don't inherit from NSObject "work" with NSCache, but
+        // they "work" via pointer comparisons, and that's almost certainly
+        // unintentional for Equatable & Hashable types.
+        if KeyType.self is AnyClass, !(key is NSObject) {
+            return WrappedKey(key)
+        }
+        return key as AnyObject
+    }
+
 }
 
 // MARK: -

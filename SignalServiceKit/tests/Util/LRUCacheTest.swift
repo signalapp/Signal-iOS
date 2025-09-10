@@ -5,6 +5,7 @@
 
 import Foundation
 import XCTest
+import LibSignalClient
 
 @testable import SignalServiceKit
 
@@ -125,5 +126,17 @@ class LRUCacheTest: XCTestCase {
         XCTAssertNil(cache.get(key: key1b))
         XCTAssertNil(cache.get(key: key2))
         XCTAssertNil(cache.get(key: key3))
+    }
+
+    func testGroupIdentifier() throws {
+        let secretParams = try GroupSecretParams.generate()
+        let groupId1 = try secretParams.getPublicParams().getGroupIdentifier()
+        let groupId2 = try secretParams.getPublicParams().getGroupIdentifier()
+        XCTAssertNotEqual(ObjectIdentifier(groupId1), ObjectIdentifier(groupId2))
+
+        let cache = LRUCache<GroupIdentifier, Date>(maxSize: 16)
+        cache[groupId1] = Date()
+        XCTAssertNotNil(cache[groupId1])
+        XCTAssertNotNil(cache[groupId2])
     }
 }
