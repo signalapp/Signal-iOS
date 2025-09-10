@@ -62,7 +62,7 @@ struct BackupOnboardingKeyIntroView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_ONBOARDING_KEY_INTRO_TITLE",
-                    comment: "Title for a view introducing the 'Backup Key' during an onboarding flow."
+                    comment: "Title for a view introducing the 'Recovery Key' during an onboarding flow."
                 ))
                 .font(.title)
                 .fontWeight(.semibold)
@@ -72,7 +72,7 @@ struct BackupOnboardingKeyIntroView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE",
-                    comment: "Subtitle for a view introducing the 'Backup Key' during an onboarding flow."
+                    comment: "Subtitle for a view introducing the 'Recovery Key' during an onboarding flow."
                 ))
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)

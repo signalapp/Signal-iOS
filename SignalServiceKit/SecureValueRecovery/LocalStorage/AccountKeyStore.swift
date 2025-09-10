@@ -59,8 +59,8 @@ public class AccountKeyStore {
     /// for all backed-up media.
     /// The MRBK is _not_ derived from the AccountEntropyPool any of its derivatives;
     /// instead we store the MRBK in the backup proto itself. This avoids needing to rotate
-    /// media uploads if the AEP or backup key/id ever changes (at time of writing, it never does);
-    /// the MRBK can be left the same and put into the new backup generated with the new backups keys.
+    /// media uploads if the AEP ever changes; the MRBK can be left the same and
+    /// put into the new backup generated with the new backups keys.
 
     /// Get the already-generated MRBK. Returns nil if none has been set. If you require an MRBK
     /// (e.g. you are creating a backup), use ``getOrGenerateMediaRootBackupKey``.

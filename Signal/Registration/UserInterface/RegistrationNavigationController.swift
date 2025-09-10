@@ -390,7 +390,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .enterBackupKey(let state):
+        case .enterRecoveryKey(let state):
             return Controller(
                 type: RegistrationEnterAccountEntropyPoolViewController.self,
                 make: { presenter in
@@ -698,7 +698,7 @@ extension RegistrationNavigationController: RegistrationEnterAccountEntropyPoolP
     }
 
     func cancelKeyEntry() {
-        let guarantee = coordinator.cancelBackupKeyEntry()
+        let guarantee = coordinator.cancelRecoveryKeyEntry()
         pushNextController(guarantee)
     }
 

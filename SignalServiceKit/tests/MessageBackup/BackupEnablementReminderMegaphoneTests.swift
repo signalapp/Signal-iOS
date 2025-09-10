@@ -44,7 +44,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         )
     }
 
-    func testPreconditionsForBackupKeyMegaphone_backupsEnabled() throws {
+    func testPreconditionsForRecoveryKeyMegaphone_backupsEnabled() throws {
         db.write { tx in
             backupSettingsStore.setBackupPlan(.free, tx: tx)
         }
@@ -55,7 +55,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         }
     }
 
-    func testPreconditionsForBackupKeyMegaphone_lessThanRequiredMessages() throws {
+    func testPreconditionsForRecoveryKeyMegaphone_lessThanRequiredMessages() throws {
         db.write { tx in
             backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         }
@@ -65,7 +65,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         }
     }
 
-    func testPreconditionsForBackupKeyMegaphone_hasRequiredMessages() throws {
+    func testPreconditionsForRecoveryKeyMegaphone_hasRequiredMessages() throws {
         db.write { tx in
             let db = tx.database
             try! contactThread!.asRecord().insert(db)
@@ -85,7 +85,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         }
     }
 
-    func testPreconditionsForBackupKeyMegaphone_backupsHasPreviouslyBeenEnabled() throws {
+    func testPreconditionsForRecoveryKeyMegaphone_backupsHasPreviouslyBeenEnabled() throws {
 
         // Enable then disable backups
         db.write { tx in backupSettingsStore.setBackupPlan(.free, tx: tx) }
@@ -110,7 +110,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         }
     }
 
-    func testPreconditionsForBackupKeyMegaphone_snoozed() throws {
+    func testPreconditionsForRecoveryKeyMegaphone_snoozed() throws {
         experienceUpgrade.snoozeCount = 1
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-25 * TimeInterval.day).timeIntervalSince1970

@@ -139,7 +139,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         usernameField.textColor = view.backgroundColor
         usernameField.text = OWSLocalizedString(
             "AUTOFILL_BACKUP_KEY_USERNAME",
-            comment: "Username for backup key autofill"
+            comment: "Username for recovery key autofill"
         )
         return usernameField
     }()
@@ -199,14 +199,14 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
             nextBarButtonItem.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL",
-                comment: "Label explaining that an entered 'Backup Key' is malformed."
+                comment: "Label explaining that an entered 'Recovery Key' is malformed."
             )
             aepIssueLabel.alpha = 1
         case .wellFormedButMismatched:
             nextBarButtonItem.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL",
-                comment: "Label explaining that an entered 'Backup Key' is incorrect."
+                comment: "Label explaining that an entered 'Recovery Key' is incorrect."
             )
             aepIssueLabel.alpha = 1
         case .success:
@@ -273,7 +273,7 @@ private class AccountEntropyPoolTextView: UIView {
         textView.autoPinEdgesToSuperviewMargins()
         textView.placeholderText = OWSLocalizedString(
             "BACKUP_KEY_PLACEHOLDER",
-            comment: "Text used as placeholder in backup key text view."
+            comment: "Text used as placeholder in recovery key text view."
         )
         textView.setSecureTextEntry(val: true)
         textView.setTextContentType(val: .password)

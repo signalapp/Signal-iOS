@@ -72,7 +72,7 @@ public struct BackupSettingsStore {
         static let shouldAllowBackupDownloadsOnCellular = "shouldAllowBackupDownloadsOnCellular"
         static let shouldAllowBackupUploadsOnCellular = "shouldAllowBackupUploadsOnCellular"
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
-        static let lastBackupKeyReminderDate = "lastBackupKeyReminderDate"
+        static let lastRecoveryKeyReminderDate = "lastBackupKeyReminderDate"
         static let haveSetBackupID = "haveSetBackupID"
         static let lastBackupRefreshDate = "lastBackupRefreshDate"
         static let lastBackupEnabledDetails = "lastBackupEnabledDetails"
@@ -307,12 +307,12 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    public func lastBackupKeyReminderDate(tx: DBReadTransaction) -> Date? {
-        return kvStore.getDate(Keys.lastBackupKeyReminderDate, transaction: tx)
+    public func lastRecoveryKeyReminderDate(tx: DBReadTransaction) -> Date? {
+        return kvStore.getDate(Keys.lastRecoveryKeyReminderDate, transaction: tx)
     }
 
-    public func setLastBackupKeyReminderDate(_ lastBackupKeyReminderDate: Date, tx: DBWriteTransaction) {
-        kvStore.setDate(lastBackupKeyReminderDate, key: Keys.lastBackupKeyReminderDate, transaction: tx)
+    public func setLastRecoveryKeyReminderDate(_ lastRecoveryKeyReminderDate: Date, tx: DBWriteTransaction) {
+        kvStore.setDate(lastRecoveryKeyReminderDate, key: Keys.lastRecoveryKeyReminderDate, transaction: tx)
     }
 
     // MARK: -

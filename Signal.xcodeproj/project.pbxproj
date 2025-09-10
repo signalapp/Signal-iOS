@@ -29,7 +29,7 @@
 		04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */; };
 		04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */; };
 		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
-		04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */; };
+		04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
 		05104D182C8A151100F8851F /* AsyncViewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104D172C8A151100F8851F /* AsyncViewTask.swift */; };
@@ -3853,7 +3853,7 @@
 		04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStore.swift; sourceTree = "<group>"; };
 		04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStoreTest.swift; sourceTree = "<group>"; };
 		04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAttachmentByteCounter.swift; sourceTree = "<group>"; };
-		04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphone.swift; sourceTree = "<group>"; };
+		04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
 		05104D172C8A151100F8851F /* AsyncViewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncViewTask.swift; sourceTree = "<group>"; };
@@ -10882,7 +10882,6 @@
 			isa = PBXGroup;
 			children = (
 				041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */,
-				04E66D3E2DFC81BC0059DBAC /* BackupKeyReminderMegaphone.swift */,
 				0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */,
@@ -10893,6 +10892,7 @@
 				B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
+				04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */,
 				D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */,
 				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
 			);
@@ -16815,7 +16815,6 @@
 				041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */,
 				D9DF21EC2E21BD6600A962B2 /* BackupEnablingManager.swift in Sources */,
 				D93BDD942E43064500779BD8 /* BackupKeepKeySafeSheet.swift in Sources */,
-				04E66D402DFC825B0059DBAC /* BackupKeyReminderMegaphone.swift in Sources */,
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
 				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
@@ -17352,6 +17351,7 @@
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				D9E43C0C2CC194140001536E /* ReactionsSink.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
+				04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */,
 				F9480121299E89F8005442BE /* RegistrationCaptchaViewController.swift in Sources */,
 				66AAC2C429CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift in Sources */,
 				66AAC2C829CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift in Sources */,

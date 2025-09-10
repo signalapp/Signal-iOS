@@ -20,8 +20,6 @@ public enum BackupImportError: Error {
 public class BackupArchiveManagerImpl: BackupArchiveManager {
     public enum Constants {
         fileprivate static let keyValueStoreCollectionName = "MessageBackupManager"
-        fileprivate static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
-        fileprivate static let keyValueStoreHasReservedMediaBackupKey = "HasReservedMediaBackupKey"
         fileprivate static let keyValueStoreRestoreStateKey = "keyValueStoreRestoreStateKey"
 
         public static let supportedBackupVersion: UInt64 = 1

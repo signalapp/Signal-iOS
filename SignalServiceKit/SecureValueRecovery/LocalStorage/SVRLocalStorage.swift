@@ -125,7 +125,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let needsMasterKeyBackup = "needsMasterKeyBackup"
         static let syncedStorageServiceKey = "Storage Service Encryption"
-        static let syncedBackupKey = "Backup Key"
         // Kept around because its existence indicates we had an svr1 backup.
         // TODO: Remove after Nov 1, 2024
         static let legacy_svr1EnclaveName = "enclaveName"

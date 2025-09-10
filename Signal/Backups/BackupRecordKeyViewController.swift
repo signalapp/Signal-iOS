@@ -70,7 +70,7 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
 
         let toast = ToastController(text: OWSLocalizedString(
             "BACKUP_KEY_COPIED_MESSAGE_TOAST",
-            comment: "Toast indicating that the user has copied their backup key."
+            comment: "Toast indicating that the user has copied their recovery key."
         ))
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
@@ -135,7 +135,7 @@ struct BackupRecordKeyView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_RECORD_KEY_TITLE",
-                    comment: "Title for a view allowing users to record their 'Backup Key'."
+                    comment: "Title for a view allowing users to record their 'Recovery Key'."
                 ))
                 .font(.title)
                 .fontWeight(.semibold)
@@ -146,7 +146,7 @@ struct BackupRecordKeyView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_RECORD_KEY_SUBTITLE",
-                    comment: "Subtitle for a view allowing users to record their 'Backup Key'."
+                    comment: "Subtitle for a view allowing users to record their 'Recovery Key'."
                 ))
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
@@ -165,7 +165,7 @@ struct BackupRecordKeyView: View {
             } label: {
                 Text(OWSLocalizedString(
                     "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
-                    comment: "Title for a button allowing users to copy their 'Backup Key' to the clipboard."
+                    comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
                 ))
                 .fontWeight(.medium)
             }
@@ -184,7 +184,7 @@ struct BackupRecordKeyView: View {
                 } label: {
                     Text(OWSLocalizedString(
                         "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
-                        comment: "Title for a button allowing users to create a new 'Backup Key'."
+                        comment: "Title for a button allowing users to create a new 'Recovery Key'."
                     ))
                     .foregroundStyle(Color.Signal.ultramarine)
                 }

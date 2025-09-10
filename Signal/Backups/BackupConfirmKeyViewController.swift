@@ -27,11 +27,11 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
             headerStrings: HeaderStrings(
                 title: OWSLocalizedString(
                     "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE",
-                    comment: "Title for a view asking users to confirm their 'Backup Key'."
+                    comment: "Title for a view asking users to confirm their 'Recovery Key'."
                 ),
                 subtitle: OWSLocalizedString(
                     "BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE",
-                    comment: "Subtitle for a view asking users to confirm their 'Backup Key'."
+                    comment: "Subtitle for a view asking users to confirm their 'Recovery Key'."
                 )
             ),
             footerButtonConfig: FooterButtonConfig(

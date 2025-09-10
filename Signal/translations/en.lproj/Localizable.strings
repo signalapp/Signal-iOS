@@ -484,8 +484,8 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
 
-/* Username for backup key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Backups";
+/* Username for recovery key autofill */
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Secure Backups";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
@@ -511,7 +511,7 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Back";
 
-/* Action text for Backup Key reminder megaphone */
+/* Action text for Recovery Key reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Turn On";
 
 /* Body for Backup enablement reminder megaphone */
@@ -523,44 +523,44 @@
 /* Snooze text for Backup enablement reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Not Now";
 
-/* Toast indicating that the user has copied their backup key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Backup Key copied";
+/* Toast indicating that the user has copied their recovery key. */
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
 
-/* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+/* Text used as placeholder in recovery key text view. */
+"BACKUP_KEY_PLACEHOLDER" = "Recovery Key";
 
-/* Title of button to tap if you forgot your backup key. */
+/* Title of button to tap if you forgot your recovery key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Forgot key?";
 
-/* Action text for Backup Key reminder megaphone */
+/* Action text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verify";
 
-/* Body for Backup Key reminder megaphone */
+/* Body for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We'll occasionally ask you to verify your key to ensure you still know it";
 
-/* Title for Backup Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Backup Key";
+/* Title for Recovery Key reminder megaphone */
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Recovery Key";
 
-/* Snooze text for Backup Key reminder megaphone */
+/* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Not Now";
 
-/* Toast indicating that the Backup Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Backup key correct. Keep your key safe.";
+/* Toast indicating that the Recovery Key was correct. */
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Recovery key correct. Keep your key safe.";
 
-/* Body for a sheet warning users to their 'Backup Key' safe. */
+/* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal will not be able to help you restore your backup if you lose your key. Store it somewhere safe and secure, and do not share it with others.";
 
-/* Title for a sheet warning users to their 'Backup Key' safe. */
+/* Title for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE" = "Keep Your Key Safe";
 
-/* Title for a button offering to let users see their 'Backup Key'. */
+/* Title for a button offering to let users see their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
 
-/* Subtitle for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the backup key you just recorded";
+/* Subtitle for a view asking users to confirm their 'Recovery Key'. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
 
-/* Title for a view asking users to confirm their 'Backup Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Backup Key";
+/* Title for a view asking users to confirm their 'Recovery Key'. */
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Recovery Key";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
@@ -575,25 +575,25 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages and media using Signal's secure, end-to-end encrypted storage service. Never lose a message when you get a new phone or reinstall Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Backups";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Secure Backups";
 
-/* Subtitle for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your backup key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+/* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your recovery key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
 
-/* Title for a view introducing the 'Backup Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Backup Key";
+/* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Recovery Key";
 
-/* Title for a button allowing users to copy their 'Backup Key' to the clipboard. */
+/* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";
 
-/* Title for a button allowing users to create a new 'Backup Key'. */
+/* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Create New Key";
 
-/* Subtitle for a view allowing users to record their 'Backup Key'. */
+/* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "This key is required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
 
-/* Title for a view allowing users to record their 'Backup Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Backup Key";
+/* Title for a view allowing users to record their 'Recovery Key'. */
+"BACKUP_RECORD_KEY_TITLE" = "Record Your Recovery Key";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ of %2$@ (%3$@)";
@@ -707,16 +707,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a Beta feature that we will be adding functionality to on an ongoing basis";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
 
-/* Toast shown when a new Backup Key has been created successfully. */
+/* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
 
-/* Body for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key. You will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+/* Body for a sheet warning users about creating a new Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nYou will need to re-enable and re-upload your Backup, including media, after creating a new key.";
 
-/* Title for a sheet warning users about creating a new Backup Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Backup Key";
+/* Title for a sheet warning users about creating a new Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Recovery Key";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "This will delete all your backup data. No new backups will be created.";
@@ -799,8 +799,8 @@
 /* Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}. */
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Yesterday at %1$@";
 
-/* Label for a menu item offering to show the user their backup key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Backup Key";
+/* Label for a menu item offering to show the user their recovery key. */
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Recovery Key";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
@@ -875,10 +875,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back Up Later";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Signal Backups";
+"BACKUPS_SETTINGS_TITLE" = "Secure Backups";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal Backups were turned on for this account at %@. Tap to view.";
@@ -1577,7 +1577,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last 45 days of media";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "1TB of storage (~250k photos)";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
@@ -3151,11 +3151,11 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
-/* Label explaining that an entered 'Backup Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect backup key";
+/* Label explaining that an entered 'Recovery Key' is incorrect. */
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect recovery key";
 
-/* Label explaining that an entered 'Backup Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid backup key";
+/* Label explaining that an entered 'Recovery Key' is malformed. */
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid recovery key";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
@@ -6782,7 +6782,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The backup key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The recovery key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup Not Found";
@@ -6814,11 +6814,11 @@
 /* Title for a sheet warning users about a generic backup manual restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Couldn't Finish Transfer";
 
-/* Body for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character backup key you saved when enabling Signal backups. Backups can not be recovered without this key.";
+/* Body for a sheet warning users about an incorrect recovery key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
 
-/* Title for a sheet warning users about an incorrect backup key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Backup Key";
+/* Title for a sheet warning users about an incorrect recovery key. */
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Your backup can’t be restored right now. Check your internet connection and try again.";
@@ -6874,11 +6874,11 @@
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
-/* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-character code required to recover your account and data.";
+/* Description for the screen that allows users to enter their recovery key. */
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your recovery key is a 64-character code required to recover your account and data.";
 
-/* Title for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Backup Key";
+/* Title for the screen that allows users to enter their recovery key. */
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Recovery Key";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Enter Number";
@@ -6901,16 +6901,16 @@
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
-/* Title of button to tap if you do not have a backup key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Backup Key?";
+/* Title of button to tap if you do not have a recovery key during registration. */
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Recovery Key?";
 
-/* Body text on a sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your backup key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your backup key in Settings > Chats > Signal Backups. Then tap View backup key.";
+/* Body text on a sheet with info for what to do if you don't have a recovery key */
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
 
-/* Title for sheet with info for what to do if you don't have a backup key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Backup Key?";
+/* Title for sheet with info for what to do if you don't have a recovery key */
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Recovery Key?";
 
-/* Title for button on sheet for when you don't have a backup key */
+/* Title for button on sheet for when you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Skip & Don’t Restore";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */

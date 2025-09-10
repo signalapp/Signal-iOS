@@ -80,7 +80,7 @@ class ExperienceUpgradeManager {
                             .checkPreconditionsForContactsPermissionReminder()
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForBackupKeyReminder(
+                            .checkPreconditionsForRecoveryKeyReminder(
                                 backupSettingsStore: BackupSettingsStore(),
                                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                                 transaction: transaction,
@@ -344,7 +344,7 @@ class ExperienceUpgradeManager {
                 fromViewController: fromViewController
             )
         case .backupKeyReminder:
-            return BackupKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+            return RecoveryKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .enableBackupsReminder:
             return BackupEnablementMegaphone(
                 experienceUpgrade: experienceUpgrade,

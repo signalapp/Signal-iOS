@@ -10,7 +10,7 @@ class BackupKeepKeySafeSheet: HeroSheetViewController {
     static var seeKeyAgainButtonTitle: String {
         return OWSLocalizedString(
             "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE",
-            comment: "Title for a button offering to let users see their 'Backup Key'."
+            comment: "Title for a button offering to let users see their 'Recovery Key'."
         )
     }
 
@@ -28,11 +28,11 @@ class BackupKeepKeySafeSheet: HeroSheetViewController {
             hero: .image(.backupsKey),
             title: OWSLocalizedString(
                 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_TITLE",
-                comment: "Title for a sheet warning users to their 'Backup Key' safe."
+                comment: "Title for a sheet warning users to their 'Recovery Key' safe."
             ),
             body: OWSLocalizedString(
                 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY",
-                comment: "Body for a sheet warning users to their 'Backup Key' safe."
+                comment: "Body for a sheet warning users to their 'Recovery Key' safe."
             ),
             primary: .button(HeroSheetViewController.Button(
                 title: CommonStrings.continueButton,

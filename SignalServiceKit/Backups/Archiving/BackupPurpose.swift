@@ -97,7 +97,7 @@ public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
     case unrecoverable
     /// Couldn't recover SVR🐝 data because the backup key is incorrect;
     /// may be recoverable by entering a different AEP.
-    case incorrectBackupKey
+    case incorrectRecoveryKey
 
     public var isRetryableProvider: Bool {
         switch self {
@@ -108,7 +108,7 @@ public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
             // these errors can be retried by
             // the user.
             return false
-        case .unrecoverable, .incorrectBackupKey:
+        case .unrecoverable, .incorrectRecoveryKey:
             return false
         }
     }
@@ -221,7 +221,7 @@ extension BackupImportSource {
                 throw .unrecoverable
             case .svrDataMissing:
                 Logger.error("SVR🐝 data missing; cannot recover backup")
-                throw .incorrectBackupKey
+                throw .incorrectRecoveryKey
             case .rateLimitedError(let retryAfter, _):
                 // Do a quite rudimentary thing where we just wait
                 // for the retry time, which will leave the user with

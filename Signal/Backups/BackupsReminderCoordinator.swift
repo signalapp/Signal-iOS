@@ -54,7 +54,7 @@ class BackupsReminderCoordinator {
         fromViewController.present(navController, animated: true)
     }
 
-    private func showRecordBackupKey(
+    private func showRecordRecoveryKey(
         backupKeyReminderNavController: UINavigationController,
         localDeviceAuthSuccess: LocalDeviceAuthentication.AuthSuccess,
         aep: AccountEntropyPool
@@ -64,14 +64,14 @@ class BackupsReminderCoordinator {
                 aepMode: .current(aep, localDeviceAuthSuccess),
                 options: [.showContinueButton],
                 onContinuePressed: { [weak self] _ in
-                    self?.showConfirmBackupKey(backupKeyReminderNavController: backupKeyReminderNavController, aep: aep)
+                    self?.showConfirmRecoveryKey(backupKeyReminderNavController: backupKeyReminderNavController, aep: aep)
                 },
             ),
             animated: true
         )
     }
 
-    private func showConfirmBackupKey(backupKeyReminderNavController: UINavigationController, aep: AccountEntropyPool) {
+    private func showConfirmRecoveryKey(backupKeyReminderNavController: UINavigationController, aep: AccountEntropyPool) {
         backupKeyReminderNavController.pushViewController(
             BackupConfirmKeyViewController(
                 aep: aep,
@@ -106,7 +106,7 @@ extension BackupsReminderCoordinator: RegistrationEnterAccountEntropyPoolPresent
                 let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) })
             else { return }
 
-            showRecordBackupKey(
+            showRecordRecoveryKey(
                 backupKeyReminderNavController: backupKeyReminderNavController,
                 localDeviceAuthSuccess: authSuccess,
                 aep: aep

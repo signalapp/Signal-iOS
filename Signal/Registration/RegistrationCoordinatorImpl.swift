@@ -550,7 +550,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return resetRestoreMethodChoice()
     }
 
-    public func cancelBackupKeyEntry() -> Guarantee<RegistrationStep> {
+    public func cancelRecoveryKeyEntry() -> Guarantee<RegistrationStep> {
         inMemoryState.accountEntropyPool = nil
         return resetRestoreMethodChoice()
     }
@@ -610,9 +610,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
             }
 
-            // The backup key has been derived, the backup file has been sourced,
+            // The recovery key has been derived, the backup file has been sourced,
             // so this is the last possible point before we commit to importing the backup.
-            // At this point, persist the backup key so if the app restarts after this point
+            // At this point, persist the recovery key so if the app restarts after this point
             // we remember the key that was used during restore.
             await self.db.awaitableWrite { tx in
                 self.updatePersistedState(tx) {
@@ -704,7 +704,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .restartQuickRestore, .none:
                 owsFailDebug("Invalid option returned from handlinge of registration error.")
                 fallthrough
-            case .incorrectBackupKey, .skipRestore:
+            case .incorrectRecoveryKey, .skipRestore:
                 // By this point, it's really too late to do anything but skip the backup and continue
                 await db.awaitableWrite { tx in
                     updatePersistedState(tx) {
@@ -1495,13 +1495,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
 
             switch step {
-            case .incorrectBackupKey:
+            case .incorrectRecoveryKey:
                 if self.persistedState.restoreMode == .manualRestore {
                     // If manual restore, there's not much of a recovery path here
                     // so just skip restoring and continue
                     return await updateRestoreMethod(method: .declined).awaitable()
                 }
-                return .enterBackupKey(
+                return .enterRecoveryKey(
                     RegistrationEnterAccountEntropyPoolState(
                         canShowBackButton: persistedState.accountIdentity == nil
                     ))
@@ -1571,7 +1571,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// to the new device.
         case quickRestore
         /// The user does not have their old device, but the users intent is to restore
-        /// from backup, so move the user into the restore choice/backup key entry
+        /// from backup, so move the user into the restore choice/recovery key entry
         /// sooner than would happen in the default registration flow.
         case manualRestore
         /// Attempting to register using the reg recovery password
@@ -1794,7 +1794,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .phoneNumberEntry(phoneNumberEntryState())
         }
 
-        return .enterBackupKey(
+        return .enterRecoveryKey(
             RegistrationEnterAccountEntropyPoolState(
                 canShowBackButton: persistedState.accountIdentity == nil
             ))
@@ -1845,7 +1845,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             // If the user chose 'restore from backup', ask them
             // for the AEP before continuing with registration
-            return .enterBackupKey(
+            return .enterRecoveryKey(
                 RegistrationEnterAccountEntropyPoolState(
                     canShowBackButton: persistedState.accountIdentity == nil
                 ))
@@ -3384,7 +3384,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             if isBackup {
                 // If the user want's to restore from backup, ask for the key
-                return .enterBackupKey(RegistrationEnterAccountEntropyPoolState(canShowBackButton: false))
+                return .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(canShowBackButton: false))
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
                 accountEntropyPool = getOrGenerateAccountEntropyPool()
@@ -3401,7 +3401,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // in a rotated AEP/masterKey. Because of that, if the user is restoring from backups, postpone
         // SVR backup until after registration completes. This accomplishes two things:
         // 1. Allows delaying PIN entry to post-restore in some flows, streamlining the
-        //    backup key entry -> restore confirmation -> backup restore path.
+        //    recovery key entry -> restore confirmation -> backup restore path.
         // 2. (and more importantly) Backup restore can be a fairly long and complicated part of
         //    completing a registration. If the user quit before completion and/or otherwise abandons
         //    the registration before completing the restore, we want to make sure that SVR still holds

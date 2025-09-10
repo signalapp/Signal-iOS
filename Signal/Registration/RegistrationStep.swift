@@ -59,8 +59,8 @@ public enum RegistrationStep: Equatable {
     // MARK: From Backup
 
     /// If the user elects to restore from backup and doesn't have their old phone,
-    /// they are prompted to manually enter their backup key.
-    case enterBackupKey(RegistrationEnterAccountEntropyPoolState)
+    /// they are prompted to manually enter their recovery key.
+    case enterRecoveryKey(RegistrationEnterAccountEntropyPoolState)
 
     // MARK: - Post-Registration
 
@@ -153,7 +153,7 @@ public enum RegistrationStep: Equatable {
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
-        case .enterBackupKey: return "enterBackupKey"
+        case .enterRecoveryKey: return "enterRecoveryKey"
         case .chooseRestoreMethod: return "chooseRestoreMethod"
         case .confirmRestoreFromBackup: return "confirmRestoreFromBackup"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"

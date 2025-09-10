@@ -83,12 +83,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         syncedMasterKey = masterKey
     }
 
-    public var hasHadBackupKeyRequestFail = false
-
-    public func hasBackupKeyRequestFailed(transaction: DBReadTransaction) -> Bool {
-        return hasHadBackupKeyRequestFail
-    }
-
     public var doesHavePendingRestoration = false
 
     public func hasPendingRestoration(transaction: DBReadTransaction) -> Bool {

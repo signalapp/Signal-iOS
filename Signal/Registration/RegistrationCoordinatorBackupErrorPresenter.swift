@@ -11,7 +11,7 @@ import LibSignalClient
 public enum RegistrationBackupRestoreError {
     case generic
     case backupNotFound
-    case incorrectBackupKey
+    case incorrectRecoveryKey
     case versionMismatch
     case retryableSVR🐝Error
     case unretryableSVR🐝Error
@@ -21,7 +21,7 @@ public enum RegistrationBackupRestoreError {
 
 public enum RegistrationBackupErrorNextStep {
     case skipRestore
-    case incorrectBackupKey
+    case incorrectRecoveryKey
     case tryAgain
     case restartQuickRestore
 }
@@ -47,16 +47,16 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
         case _ where error.isNetworkFailureOrTimeout:
             return .networkError
         case _ where error is BackupKeyMaterialError:
-            // Missing backup key
-            return .incorrectBackupKey
+            // Missing recovery key
+            return .incorrectRecoveryKey
         case BackupAuthCredentialFetchError.noExistingBackupId:
             // Usually because backups haven't been set up yet.
             return .backupNotFound
         case SignalError.verificationFailed:
-            return .incorrectBackupKey
+            return .incorrectRecoveryKey
         case _ where error is SignalError:
             // LibSignalError (e.g. - creating credentials)
-            return .incorrectBackupKey
+            return .incorrectRecoveryKey
         case let httpError as OWSHTTPError where httpError.responseStatusCode == 404:
             // No backup found in the CDN
             return .backupNotFound
@@ -75,8 +75,8 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                 return .retryableSVR🐝Error
             case .unrecoverable:
                 return .unretryableSVR🐝Error
-            case .incorrectBackupKey:
-                return .incorrectBackupKey
+            case .incorrectRecoveryKey:
+                return .incorrectRecoveryKey
             }
         default:
             return .generic
@@ -169,17 +169,17 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             actions.append(ActionSheetAction(title: tryAgainString) { _ in
                 continuation.resume(returning: .tryAgain)
             })
-        case .incorrectBackupKey:
+        case .incorrectRecoveryKey:
             title = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE",
-                comment: "Title for a sheet warning users about an incorrect backup key."
+                comment: "Title for a sheet warning users about an incorrect recovery key."
             )
             message = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY",
-                comment: "Body for a sheet warning users about an incorrect backup key."
+                comment: "Body for a sheet warning users about an incorrect recovery key."
             )
             actions.append(ActionSheetAction(title: tryAgainString) { _ in
-                continuation.resume(returning: .incorrectBackupKey)
+                continuation.resume(returning: .incorrectRecoveryKey)
             })
             actions.append(ActionSheetAction(title: CommonStrings.help) { _ in
                 self.presentSupportArticle(

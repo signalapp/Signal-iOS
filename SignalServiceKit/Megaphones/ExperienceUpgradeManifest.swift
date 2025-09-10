@@ -49,7 +49,7 @@ public enum ExperienceUpgradeManifest {
     /// Prompts the user to enable contacts permissions.
     case contactPermissionReminder
 
-    /// Prompts the user to enter their backup key, to help ensure they remember it.
+    /// Prompts the user to enter their recovery key, to help ensure they remember it.
     case backupKeyReminder
 
     /// Prompts the user to enable backups.
@@ -710,7 +710,7 @@ extension ExperienceUpgradeManifest {
         }
     }
 
-    public static func checkPreconditionsForBackupKeyReminder(
+    public static func checkPreconditionsForRecoveryKeyReminder(
         backupSettingsStore: BackupSettingsStore,
         tsAccountManager: TSAccountManager,
         transaction: DBReadTransaction
@@ -733,7 +733,7 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        let lastReminderDate = backupSettingsStore.lastBackupKeyReminderDate(tx: transaction)
+        let lastReminderDate = backupSettingsStore.lastRecoveryKeyReminderDate(tx: transaction)
 
         let fourteenDaysAgo = Date().addingTimeInterval(-14 * 24 * 60 * 60)
         guard let lastReminderDate else {

@@ -747,7 +747,7 @@ class StorageServiceOperation {
                 }
             } else {
                 // We're either not registered, or a primary.  Either way,
-                // we don't have backup keys, or a means to get them, so do nothing.
+                // we don't have keys, or a means to get them, so do nothing.
                 // We'll try a fresh restore once the keys are set.
                 Logger.info("Skipping storage service operation due to missing master key.")
             }

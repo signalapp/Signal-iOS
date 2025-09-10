@@ -125,14 +125,10 @@ class BackupSettingsViewController:
 
         super.init(wrappedView: BackupSettingsView(viewModel: viewModel))
 
-        setUpTitleViewWithBadge(
-            title: OWSLocalizedString(
-                "BACKUPS_SETTINGS_TITLE",
-                comment: "Title for the 'Backup' settings menu."
-            ),
-            badgeText: CommonStrings.betaLabel
+        title = OWSLocalizedString(
+            "BACKUPS_SETTINGS_TITLE",
+            comment: "Title for the 'Backup' settings menu."
         )
-
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
@@ -163,69 +159,6 @@ class BackupSettingsViewController:
         super.viewDidDisappear(animated)
 
         stopExternalEventObservation()
-    }
-
-    // MARK: -
-
-    private func titleLabel(text: String) -> UILabel {
-        let titleLabel = UILabel()
-        titleLabel.text = text
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeHeadlineClamped
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        return titleLabel
-    }
-
-    private func badgeView(text: String) -> UIView {
-        let badgeLabel = UILabel()
-        badgeLabel.text = text
-        badgeLabel.font = UIFont.dynamicTypeCaption1.bold()
-        badgeLabel.textColor = UIColor(Color.Signal.label)
-        badgeLabel.textAlignment = .center
-        badgeLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        // Use a container for the grey background so it adjusts
-        // for different text length when localized.
-        let badgeContainer = UIView()
-        badgeContainer.backgroundColor = UIColor(Color.Signal.secondaryFill)
-        badgeContainer.layer.cornerRadius = 12
-        badgeContainer.addSubview(badgeLabel)
-
-        NSLayoutConstraint.activate([
-            badgeLabel.leadingAnchor.constraint(equalTo: badgeContainer.leadingAnchor, constant: 8),
-            badgeLabel.trailingAnchor.constraint(equalTo: badgeContainer.trailingAnchor, constant: -8),
-            badgeLabel.topAnchor.constraint(equalTo: badgeContainer.topAnchor, constant: 4),
-            badgeLabel.bottomAnchor.constraint(equalTo: badgeContainer.bottomAnchor, constant: -4)
-        ])
-
-        return badgeContainer
-    }
-
-    private func setUpTitleViewWithBadge(title: String, badgeText: String) {
-        let titleLabel = titleLabel(text: title)
-        let badgeLabel = badgeView(text: badgeText)
-
-        let stack = UIStackView(arrangedSubviews: [titleLabel, badgeLabel])
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-
-        let titleContainer = UIView()
-        titleContainer.addSubview(stack)
-
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: titleContainer.leadingAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor),
-            badgeLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
-            badgeLabel.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor),
-            badgeLabel.trailingAnchor.constraint(equalTo: titleContainer.trailingAnchor)
-        ])
-
-        navigationItem.titleView = titleContainer
     }
 
     // MARK: -
@@ -925,12 +858,12 @@ class BackupSettingsViewController:
 
     // MARK: -
 
-    fileprivate func showViewBackupKey() {
-        Task { await _showViewBackupKey() }
+    fileprivate func showViewRecoveryKey() {
+        Task { await _showViewRecoveryKey() }
     }
 
     @MainActor
-    private func _showViewBackupKey() async {
+    private func _showViewRecoveryKey() async {
         guard let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }) else {
             return
         }
@@ -947,21 +880,21 @@ class BackupSettingsViewController:
 
                 // If appropriate, the warning sheet will let the user continue
                 // in a "create new AEP" flow.
-                showCreateNewBackupKeyWarningSheet(fromViewController: recordKeyViewController)
+                showCreateNewRecoveryKeyWarningSheet(fromViewController: recordKeyViewController)
             },
         )
 
         navigationController?.pushViewController(recordKeyViewController, animated: true)
     }
 
-    private func showCreateNewBackupKeyWarningSheet(
+    private func showCreateNewRecoveryKeyWarningSheet(
         fromViewController: BackupRecordKeyViewController,
     ) {
         let currentBackupPlan = db.read { tx in
             backupSettingsStore.backupPlan(tx: tx)
         }
 
-        // Only allow creating a new Backup Key if Backups are already disabled.
+        // Only allow creating a new Recovery Key if Backups are already disabled.
         let primary: HeroSheetViewController.Button
         let secondary: HeroSheetViewController.Button?
         switch currentBackupPlan {
@@ -971,7 +904,7 @@ class BackupSettingsViewController:
                 action: { sheet in
                     sheet.dismiss(animated: true) { [weak self] in
                         guard let self else { return }
-                        showRecordNewBackupKey()
+                        showRecordNewRecoveryKey()
                     }
                 }
             )
@@ -980,7 +913,7 @@ class BackupSettingsViewController:
                 style: .secondary,
             )
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            primary = .dismissing(title: CommonStrings.cancelButton)
+            primary = .dismissing(title: CommonStrings.okayButton)
             secondary = nil
         }
 
@@ -988,11 +921,11 @@ class BackupSettingsViewController:
             hero: .image(.backupsKey),
             title: OWSLocalizedString(
                 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE",
-                comment: "Title for a sheet warning users about creating a new Backup Key."
+                comment: "Title for a sheet warning users about creating a new Recovery Key."
             ),
             body: OWSLocalizedString(
                 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY",
-                comment: "Body for a sheet warning users about creating a new Backup Key."
+                comment: "Body for a sheet warning users about creating a new Recovery Key."
             ),
             primary: .button(primary),
             secondary: secondary.map { .button($0) },
@@ -1000,21 +933,21 @@ class BackupSettingsViewController:
         fromViewController.present(warningSheet, animated: true)
     }
 
-    private func showRecordNewBackupKey() {
+    private func showRecordNewRecoveryKey() {
         let newCandidateAEP = AccountEntropyPool()
         let recordKeyViewController = BackupRecordKeyViewController(
             aepMode: .newCandidate(newCandidateAEP),
             options: [.showContinueButton],
             onContinuePressed: { [weak self] _ in
                 guard let self else { return }
-                showConfirmNewBackupKey(newCandidateAEP: newCandidateAEP)
+                showConfirmNewRecoveryKey(newCandidateAEP: newCandidateAEP)
             }
         )
 
         navigationController?.pushViewController(recordKeyViewController, animated: true)
     }
 
-    private func showConfirmNewBackupKey(newCandidateAEP: AccountEntropyPool) {
+    private func showConfirmNewRecoveryKey(newCandidateAEP: AccountEntropyPool) {
         let confirmKeyViewController = BackupConfirmKeyViewController(
             aep: newCandidateAEP,
             onContinue: { [weak self] in
@@ -1028,7 +961,7 @@ class BackupSettingsViewController:
                 navigationController?.popToViewController(self, animated: true) {
                     self.presentToast(text: OWSLocalizedString(
                         "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST",
-                        comment: "Toast shown when a new Backup Key has been created successfully."
+                        comment: "Toast shown when a new Recovery Key has been created successfully."
                     ))
                 }
             },
@@ -1089,7 +1022,7 @@ private class BackupSettingsViewModel: ObservableObject {
         func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan)
         func setShouldAllowBackupDownloadsOnCellular()
 
-        func showViewBackupKey()
+        func showViewRecoveryKey()
     }
 
     enum BackupSubscriptionLoadingState {
@@ -1239,8 +1172,8 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
-    func showViewBackupKey() {
-        actionsDelegate?.showViewBackupKey()
+    func showViewRecoveryKey() {
+        actionsDelegate?.showViewRecoveryKey()
     }
 }
 
@@ -2232,12 +2165,12 @@ private struct BackupViewKeyView: View {
 
     var body: some View {
         Button {
-            viewModel.showViewBackupKey()
+            viewModel.showViewRecoveryKey()
         } label: {
             HStack {
                 Text(OWSLocalizedString(
                     "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL",
-                    comment: "Label for a menu item offering to show the user their backup key."
+                    comment: "Label for a menu item offering to show the user their recovery key."
                 ))
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -2280,8 +2213,8 @@ private extension BackupSettingsViewModel {
             func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) { print("Download queue suspended: \(isSuspended) \(backupPlan)") }
             func setShouldAllowBackupDownloadsOnCellular() { print("Downloads on cellular: true") }
 
-            func showViewBackupKey() { print("Showing View Backup Key!") }
-            func showCreateNewBackupKey() { print("Showing Create New Backup Key!") }
+            func showViewRecoveryKey() { print("Showing View Recovery Key!") }
+            func showCreateNewRecoveryKey() { print("Showing Create New Recovery Key!") }
         }
 
         let viewModel = BackupSettingsViewModel(
