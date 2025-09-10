@@ -15,18 +15,6 @@ public class NotificationActionHandler {
     class func handleNotificationResponse(
         _ response: UNNotificationResponse,
         appReadiness: AppReadinessSetter
-    ) async {
-        do {
-            try await _handleNotificationResponse(response, appReadiness: appReadiness)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
-    }
-
-    @MainActor
-    private class func _handleNotificationResponse(
-        _ response: UNNotificationResponse,
-        appReadiness: AppReadinessSetter
     ) async throws {
         owsAssertDebug(appReadiness.isAppReady)
 
@@ -180,7 +168,7 @@ public class NotificationActionHandler {
                 )
                 let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
                 return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
-            }.awaitable()
+            }.awaitableWithUncooperativeCancellationHandling()
         } catch {
             Logger.warn("Failed to send reply message from notification with error: \(error)")
             SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
@@ -280,7 +268,7 @@ public class NotificationActionHandler {
                     isHighPriority: false,
                     tx: transaction
                 )
-            }.awaitable()
+            }.awaitableWithUncooperativeCancellationHandling()
         } catch {
             Logger.warn("Failed to send reply message from notification with error: \(error)")
             SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)

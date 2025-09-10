@@ -108,6 +108,18 @@ extension Promise {
             }
         }
     }
+
+    /// Converts a Promise to a Swift Concurrency async function.
+    ///
+    /// When the Swift Concurrency Task is canceled, this stops waiting for the
+    /// result and throws a CancellationError.
+    public func awaitableWithUncooperativeCancellationHandling() async throws -> Value {
+        let cancellableContinuation = CancellableContinuation<Value>()
+        self.observe(on: SyncScheduler()) { result in
+            cancellableContinuation.resume(with: result)
+        }
+        return try await cancellableContinuation.wait()
+    }
 }
 
 public extension Promise {

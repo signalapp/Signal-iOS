@@ -1782,6 +1782,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        let startDate = MonotonicDate()
         Task { @MainActor [appReadiness] () -> Void in
             defer { completionHandler() }
 
@@ -1791,14 +1792,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher()
             // So that we open up a connection for replies.
             await backgroundMessageFetcher.start()
-            await NotificationActionHandler.handleNotificationResponse(response, appReadiness: appReadiness)
-            let result = await Result(catching: {
-                // So that we wait for any enqueued messages to be sent.
-                try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
-            })
+
+            do {
+                let elapsedDuration = (MonotonicDate() - startDate).seconds
+                try await withCooperativeTimeout(seconds: 27 - elapsedDuration) {
+                    // Do the actual thing we care about.
+                    try await NotificationActionHandler.handleNotificationResponse(response, appReadiness: appReadiness)
+
+                    // Then wait for any enqueued messages (e.g., read receipts) to be sent.
+                    try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
+                }
+            } catch {
+                Logger.warn("\(error)")
+            }
+
             // So that we tear down gracefully.
             await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
-            try result.get()
         }
     }
 }
