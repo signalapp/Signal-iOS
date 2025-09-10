@@ -43,6 +43,7 @@ public class MessagePipelineSupervisor: NSObject {
         case pendingChangeNumber
         case backup
         case linkNsync
+        case backupBGProcessingTask
 
         fileprivate var reasonString: String {
             switch self {
@@ -56,6 +57,8 @@ public class MessagePipelineSupervisor: NSObject {
                 return "Backup"
             case .linkNsync:
                 return "Link'N'Sync"
+            case .backupBGProcessingTask:
+                return "Backup BGProcessingTask"
             }
         }
     }

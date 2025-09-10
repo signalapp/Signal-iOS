@@ -79,6 +79,7 @@ class BackupExportJobImpl: BackupExportJob {
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let logger: PrefixedLogger
+    private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let messageProcessor: MessageProcessor
     private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     private let reachabilityManager: SSKReachabilityManager
@@ -97,6 +98,7 @@ class BackupExportJobImpl: BackupExportJob {
         backupListMediaManager: BackupListMediaManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
+        messagePipelineSupervisor: MessagePipelineSupervisor,
         messageProcessor: MessageProcessor,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         reachabilityManager: SSKReachabilityManager,
@@ -115,6 +117,7 @@ class BackupExportJobImpl: BackupExportJob {
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.logger = PrefixedLogger(prefix: "[Backups][ExportJob]")
+        self.messagePipelineSupervisor = messagePipelineSupervisor
         self.messageProcessor = messageProcessor
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.reachabilityManager = reachabilityManager
@@ -192,9 +195,11 @@ class BackupExportJobImpl: BackupExportJob {
         }
 
         let progress: OWSSequentialProgressRootSink<BackupExportJobStep>?
+        let suspensionHandle: MessagePipelineSuspensionHandle?
         switch mode {
         case .manual(let _progress):
             progress = _progress
+            suspensionHandle = nil
 
             // These steps should, on the free tier, be no-ops. We'll still run
             // them below, but as a nicety exclude them from progress reporting.
@@ -211,6 +216,13 @@ class BackupExportJobImpl: BackupExportJob {
             }
         case .bgProcessingTask:
             progress = nil
+            suspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(
+                for: .backupBGProcessingTask
+            )
+        }
+
+        defer {
+            suspensionHandle?.invalidate()
         }
 
         do {

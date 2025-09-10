@@ -1458,6 +1458,7 @@ public class AppSetup {
             backupListMediaManager: backupListMediaManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
+            messagePipelineSupervisor: messagePipelineSupervisor,
             messageProcessor: messageProcessor,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             reachabilityManager: reachabilityManager,
