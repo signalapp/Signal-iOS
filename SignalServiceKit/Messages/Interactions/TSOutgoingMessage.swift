@@ -211,8 +211,8 @@ public extension TSOutgoingMessage {
         _ recipientErrors: some Collection<(serviceId: ServiceId, error: Error)>,
         tx: DBWriteTransaction
     ) {
-        let fatalErrors = recipientErrors.lazy.filter { !$0.error.isRetryable }
-        let retryableErrors = recipientErrors.lazy.filter { $0.error.isRetryable }
+        let fatalErrors = recipientErrors.lazy.filter { !MessageSender.isRetryableError($0.error) }
+        let retryableErrors = recipientErrors.lazy.filter { MessageSender.isRetryableError($0.error) }
 
         if fatalErrors.isEmpty {
             Logger.warn("Couldn't send \(self.timestamp), but all errors are retryable: \(Array(retryableErrors))")
@@ -226,7 +226,7 @@ public extension TSOutgoingMessage {
                     owsFailDebug("Missing recipient state for \(serviceId)")
                     continue
                 }
-                if error.isRetryable, recipientState.status == .sending {
+                if MessageSender.isRetryableError(error), recipientState.status == .sending {
                     // For retryable errors, we can just set the error code and leave the
                     // state set as Sending
                 } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {

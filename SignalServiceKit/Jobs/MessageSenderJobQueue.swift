@@ -487,7 +487,7 @@ public class MessageSenderJobQueue {
                 operation.clearExternalRetryTriggers()
                 try await SSKEnvironment.shared.messageSenderRef.sendMessage(operation.message)
                 return
-            } catch where error.isRetryable && !error.isFatalError && attemptCount < maxRetries {
+            } catch where MessageSender.isRetryableError(error) && !error.isFatalError && attemptCount < maxRetries {
                 attemptCount += 1
                 if !operation.job.isInMemoryOnly {
                     await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -508,8 +508,28 @@ public class MessageSenderJobQueue {
                 if error.isTimeout {
                     externalRetryTriggers.insert(.networkBecameReachable)
                 }
+                // Determine the minimum amount of backoff.
+                let maxAverageBackoff: TimeInterval = 14.1 * .minute
+                let exponentialRetryDelay: TimeInterval = OWSOperation.retryIntervalForExponentialBackoff(
+                    failureCount: attemptCount,
+                    maxAverageBackoff: maxAverageBackoff,
+                )
+                // If we have a Retry-After header, use it (within reasonable limits).
+                let suggestedRetryDelay: TimeInterval? = error.httpRetryAfterDate.map {
+                    return min($0.timeIntervalSinceNow, maxAverageBackoff)
+                }
+                // We pick the larger of the two values -- we don't want Retry-After
+                // headers to be able to trigger tight retry loops on the client, so we
+                // maintain a minimum of exponential backoff.
+                var retryDelay = exponentialRetryDelay
+                var httpBlurb = ""
+                if let suggestedRetryDelay {
+                    retryDelay = max(retryDelay, suggestedRetryDelay)
+                    httpBlurb = " (retry-after: \(String(format: "%.1f", suggestedRetryDelay))s)"
+                }
+                Logger.warn("Resending \(operation.message.description) after \(String(format: "%.1f", retryDelay))s\(httpBlurb)")
                 try? await withCooperativeTimeout(
-                    seconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: attemptCount, maxAverageBackoff: 14.1 * .minute),
+                    seconds: retryDelay,
                     operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
                 )
             }

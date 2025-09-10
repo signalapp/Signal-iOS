@@ -143,34 +143,23 @@ public class MessageSender {
             options: requestOptions
         )
 
-        do {
-            let deviceIdParam: String
-            switch deviceId {
-            case .all:
-                deviceIdParam = "*"
-            case .specific(let deviceId):
-                deviceIdParam = String(deviceId.rawValue)
-            }
-            let result = try await requestMaker.makeRequest {
-                return OWSRequestFactory.recipientPreKeyRequest(serviceId: serviceId, deviceId: deviceIdParam, auth: $0)
-            }
-            guard let responseData = result.response.responseBodyData else {
-                throw OWSAssertionError("Prekey fetch missing response object.")
-            }
-            guard let bundle = try? JSONDecoder().decode(SignalServiceKit.PreKeyBundle.self, from: responseData) else {
-                throw OWSAssertionError("Prekey fetch returned an invalid bundle.")
-            }
-            return bundle
-        } catch {
-            switch error.httpStatusCode {
-            case 429:
-                // TODO: Retry with backoff.
-                // TODO: Can we honor a retry delay hint from the response?
-                throw SignalServiceRateLimitedError()
-            default:
-                throw error
-            }
+        let deviceIdParam: String
+        switch deviceId {
+        case .all:
+            deviceIdParam = "*"
+        case .specific(let deviceId):
+            deviceIdParam = String(deviceId.rawValue)
         }
+        let result = try await requestMaker.makeRequest {
+            return OWSRequestFactory.recipientPreKeyRequest(serviceId: serviceId, deviceId: deviceIdParam, auth: $0)
+        }
+        guard let responseData = result.response.responseBodyData else {
+            throw OWSAssertionError("Prekey fetch missing response object.")
+        }
+        guard let bundle = try? JSONDecoder().decode(SignalServiceKit.PreKeyBundle.self, from: responseData) else {
+            throw OWSAssertionError("Prekey fetch returned an invalid bundle.")
+        }
+        return bundle
     }
 
     private func _createSessions(
@@ -1022,12 +1011,16 @@ public class MessageSender {
 
         // If any of the send errors are retryable, we want to retry. Therefore,
         // prefer to propagate a retryable error.
-        if let retryableError = filteredErrors.map({ $0.error }).first(where: { $0.isRetryable }) {
+        if let retryableError = filteredErrors.map({ $0.error }).first(where: { Self.isRetryableError($0) }) {
             throw retryableError
         }
 
         // Otherwise, if we have any error at all, propagate it.
         throw anyError
+    }
+
+    static func isRetryableError(_ error: any Error) -> Bool {
+        return error.isRetryable || error.httpStatusCode == 429
     }
 
     private func normalizeRecipientStatesIfNeeded(

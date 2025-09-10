@@ -46,9 +46,6 @@ extension Error {
             return true
         case is UntrustedIdentityError:
             return true
-        case is SignalServiceRateLimitedError:
-            // Avoid exacerbating the rate limiting.
-            return true
         case is MessageDeletedBeforeSentError:
             return true
         default:
@@ -211,31 +208,6 @@ public class InvalidKeySignatureError: CustomNSError, IsRetryableProvider, UserE
     public var isRetryableProvider: Bool {
         !isTerminalFailure
     }
-}
-
-// MARK: -
-
-class SignalServiceRateLimitedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    public var localizedDescription: String {
-        OWSLocalizedString(
-            "FAILED_SENDING_BECAUSE_RATE_LIMIT",
-            comment: "action sheet header when re-sending message which failed because of too many attempts"
-        )
-    }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.signalServiceRateLimited.rawValue }
-
-    // We're already rate-limited. No need to exacerbate the problem.
-    public var isRetryableProvider: Bool { false }
 }
 
 // MARK: -
