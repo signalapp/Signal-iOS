@@ -133,7 +133,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     // MARK: - View Constants
 
     private static var unreadFont: UIFont {
-        UIFont.dynamicTypeSubheadlineClamped
+        UIFont.dynamicTypeFootnoteClamped
     }
 
     private static var dateTimeFont: UIFont {
