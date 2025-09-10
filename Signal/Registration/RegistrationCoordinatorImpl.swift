@@ -4404,7 +4404,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             reglockToken: reglockToken,
             authPassword: changeNumberState.oldAuthToken,
             pniChangeNumberParameters: pniParams,
-            signalService: deps.signalService,
+            networkManager: deps.networkManager,
         ))
     }
 
