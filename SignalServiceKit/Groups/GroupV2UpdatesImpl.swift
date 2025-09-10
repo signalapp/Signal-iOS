@@ -295,15 +295,16 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 options: options
             )
         } catch {
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Group update failed: \(error)")
-            } else {
-                switch error {
-                case GroupsV2Error.localUserNotInGroup, GroupsV2Error.timeout:
-                    Logger.warn("Group update failed: \(error)")
-                default:
-                    owsFailDebug("Group update failed: \(error)")
-                }
+            Logger.warn("Group update failed: \(error)")
+            switch error {
+            case _ where error.isNetworkFailureOrTimeout:
+                break
+            case GroupsV2Error.localUserNotInGroup, GroupsV2Error.timeout:
+                break
+            case URLError.cancelled:
+                break
+            default:
+                owsFailDebug("Group update failed: \(error)")
             }
             throw error
         }
@@ -358,6 +359,8 @@ private extension GroupV2UpdatesImpl {
                     // If we got change protos for an incompatible revision,
                     // try and recover using a snapshot.
                     return true
+                case URLError.cancelled:
+                    return false
                 default:
                     owsFailDebugUnlessNetworkFailure(error)
                     return false

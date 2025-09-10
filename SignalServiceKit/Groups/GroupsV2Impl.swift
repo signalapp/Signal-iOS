@@ -1191,6 +1191,10 @@ public class GroupsV2Impl: GroupsV2 {
                 Logger.warn("Failure. <- \(requestDescription): \(error)")
             }
 
+            if case URLError.cancelled = error {
+                throw error
+            }
+
             if error.isNetworkFailureOrTimeout {
                 throw error
             }
