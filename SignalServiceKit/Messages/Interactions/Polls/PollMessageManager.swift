@@ -74,10 +74,25 @@ public class PollMessageManager {
     }
 
     public func processIncomingPollTerminate(
-        thread: TSThread,
+        pollTerminateProto: SSKProtoDataMessagePollTerminate,
+        terminateAuthor: Aci,
         transaction: DBWriteTransaction
-    ) {
-        // TODO: implement me
+    ) throws -> TSMessage? {
+        guard let targetMessage = try interactionStore.fetchMessage(
+            timestamp: pollTerminateProto.targetSentTimestamp,
+            author: terminateAuthor,
+            transaction: transaction
+        ) as? TSIncomingMessage,
+              targetMessage.isPoll,
+              let interactionId = targetMessage.grdbId?.int64Value
+        else {
+            Logger.error("Can't find target poll")
+            return nil
+        }
+
+        try pollStore.terminatePoll(interactionId: interactionId, transaction: transaction)
+
+        return targetMessage
     }
 
     public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {

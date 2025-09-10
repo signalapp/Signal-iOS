@@ -1112,6 +1112,26 @@ public final class MessageReceiver {
             )
         }
 
+        if let pollTerminate = dataMessage.pollTerminate {
+            do {
+                let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollTerminate(
+                    pollTerminateProto: pollTerminate,
+                    terminateAuthor: envelope.sourceAci,
+                    transaction: tx
+                )
+
+                if let targetMessage {
+                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                }
+            } catch {
+                owsFailDebug("Could not terminate poll!")
+                return nil
+            }
+
+            // Don't store poll terminate as a message.
+            return nil
+        }
+
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
         let messageBuilder = TSIncomingMessageBuilder(

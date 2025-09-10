@@ -46,12 +46,51 @@ struct PollManagerTest {
         return targetMessage
     }
 
+    private func insertIncomingPollMessage(question: String, timestamp: UInt64? = nil) -> TSIncomingMessage {
+        db.write { tx in
+            let db = tx.database
+            if try! contactThread.asRecord().exists(db) == false {
+                try! contactThread!.asRecord().insert(db)
+            }
+
+            let incomingMessage = createIncomingMessage(with: contactThread) { builder in
+                builder.setMessageBody(AttachmentContentValidatorMock.mockValidatedBody(question))
+                builder.authorAci = authorAci
+                builder.isPoll = true
+                if let timestamp {
+                    builder.timestamp = timestamp
+                }
+            }
+            try! incomingMessage.asRecord().insert(db)
+            return incomingMessage
+        }
+    }
+
+    private func insertSignalRecipient(aci: Aci, pni: Pni, phoneNumber: E164) {
+        db.write { tx in
+            recipientDatabaseTable.insertRecipient(
+                SignalRecipient(
+                    aci: aci,
+                    pni: pni,
+                    phoneNumber: phoneNumber
+                ),
+                transaction: tx
+            )
+        }
+    }
+
     private func buildPollCreateProto(question: String, options: [String], allowMultiple: Bool) -> SSKProtoDataMessagePollCreate {
         let pollCreateBuilder = SSKProtoDataMessagePollCreate.builder()
         pollCreateBuilder.setQuestion(question)
         pollCreateBuilder.setOptions(options)
         pollCreateBuilder.setAllowMultiple(allowMultiple)
         return pollCreateBuilder.buildInfallibly()
+    }
+
+    private func buildPollTerminateProto(targetSentTimestamp: UInt64) -> SSKProtoDataMessagePollTerminate {
+        let pollTerminateBuilder = SSKProtoDataMessagePollTerminate.builder()
+        pollTerminateBuilder.setTargetSentTimestamp(targetSentTimestamp)
+        return pollTerminateBuilder.buildInfallibly()
     }
 
     @Test
@@ -149,6 +188,60 @@ struct PollManagerTest {
 
             let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
             #expect(wafflesOption!.acis.isEmpty)
+        }
+    }
+
+    @Test
+    func testPollTerminate() throws {
+        let question = "What should we have for breakfast?"
+        let incomingMessage = insertIncomingPollMessage(question: question)
+        let pollCreateProto = buildPollCreateProto(
+            question: question,
+            options: ["pancakes", "waffles"],
+            allowMultiple: false
+        )
+
+        try db.write { tx in
+            try pollMessageManager.processIncomingPollCreate(
+                interactionId: 1,
+                pollCreateProto: pollCreateProto,
+                transaction: tx
+            )
+        }
+
+        // Before voting, insert voter into Signal Recipient Table
+        // which is referenced by id in the vote table.
+        let voterAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000001")
+
+        insertSignalRecipient(
+            aci: voterAci,
+            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
+            phoneNumber: E164("+16505550101")!
+        )
+
+        try db.write { tx in
+            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: 1, voteCount: 1)
+            try vote1.insert(tx.database)
+        }
+
+        let terminateProto = buildPollTerminateProto(targetSentTimestamp: incomingMessage.timestamp)
+
+        try db.write { tx in
+            _ = try pollMessageManager.processIncomingPollTerminate(
+                pollTerminateProto: terminateProto,
+                terminateAuthor: authorAci,
+                transaction: tx
+            )
+        }
+
+        try db.read { tx in
+            let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
+            #expect(owsPoll!.question == question)
+            #expect(owsPoll!.sortedOptions()[0].text == "pancakes")
+            #expect(owsPoll!.sortedOptions()[1].text == "waffles")
+            #expect(owsPoll!.allowsMultiSelect == false)
+            #expect(owsPoll!.isEnded == true)
+            #expect(owsPoll!.totalVotes() == 1)
         }
     }
 }

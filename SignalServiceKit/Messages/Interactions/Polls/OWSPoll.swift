@@ -56,7 +56,7 @@ public struct OWSPoll: Equatable {
     }
 
     public static func == (lhs: OWSPoll, rhs: OWSPoll) -> Bool {
-        return lhs.pollId == rhs.pollId
+        return lhs.pollId == rhs.pollId && lhs.isEnded == rhs.isEnded
     }
 
     public func totalVotes() -> Int {

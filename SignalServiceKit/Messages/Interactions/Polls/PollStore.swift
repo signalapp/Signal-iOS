@@ -44,6 +44,15 @@ public class PollStore {
         // TODO: Implement me
     }
 
+    public func terminatePoll(
+        interactionId: Int64,
+        transaction: DBWriteTransaction
+    ) throws {
+        try PollRecord
+            .filter(Column(PollRecord.CodingKeys.interactionId.rawValue) == interactionId)
+            .updateAll(transaction.database, [PollRecord.Columns.isEnded.set(to: true)])
+    }
+
     public func owsPoll(question: String, interactionId: Int64, transaction: DBReadTransaction) throws -> OWSPoll? {
         guard let poll = try PollRecord
             .filter(PollRecord.Columns.interactionId == interactionId)
