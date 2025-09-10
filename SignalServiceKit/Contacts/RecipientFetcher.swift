@@ -7,8 +7,14 @@ import Foundation
 public import LibSignalClient
 
 public protocol RecipientFetcher {
-    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient
+    func fetchOrCreateImpl(serviceId: ServiceId, tx: DBWriteTransaction) -> (inserted: Bool, recipientAfterInsert: SignalRecipient)
     func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient
+}
+
+extension RecipientFetcher {
+    public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+        return fetchOrCreateImpl(serviceId: serviceId, tx: tx).recipientAfterInsert
+    }
 }
 
 public class RecipientFetcherImpl: RecipientFetcher {
@@ -23,13 +29,13 @@ public class RecipientFetcherImpl: RecipientFetcher {
         self.searchableNameIndexer = searchableNameIndexer
     }
 
-    public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+    public func fetchOrCreateImpl(serviceId: ServiceId, tx: DBWriteTransaction) -> (inserted: Bool, recipientAfterInsert: SignalRecipient) {
         if let serviceIdRecipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) {
-            return serviceIdRecipient
+            return (inserted: false, serviceIdRecipient)
         }
         let newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
         recipientDatabaseTable.insertRecipient(newInstance, transaction: tx)
-        return newInstance
+        return (inserted: true, newInstance)
     }
 
     public func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient {
