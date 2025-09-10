@@ -77,11 +77,29 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             // in BackupSettingsStore.
             let lastBackupDate = kvStore.getDate(StoreKeys.lastCompletionDate, transaction: tx) ?? .distantPast
 
-            // Add in a little buffer so that we can roughly run at any time of
-            // day, every day, but aren't always creeping forward with a strict
-            // minimum. For example, if we run at 10pm one day then 9pm the next
-            // is fine.
-            return .after(lastBackupDate.addingTimeInterval(.day - (.hour * 4)))
+            // If a day has passed and we didn't back up, do so right away.
+            if Date().timeIntervalSince(lastBackupDate) > (.day * 1.5) {
+                return .asSoonAsPossible
+            }
+
+            // Otherwise aim for dead of the night (3am) in the local timezone
+            // to give the least chance of interruption.
+            let calendar = Calendar.current
+            let targetStartDate = calendar.nextDate(
+                after: Date(),
+                matching: DateComponents(hour: 3),
+                matchingPolicy: .nextTime
+            )
+            if let targetStartDate {
+                return .after(targetStartDate)
+            } else {
+                // Fall back to a fixed time.
+                // Add in a little buffer so that we can roughly run at any time of
+                // day, every day, but aren't always creeping forward with a strict
+                // minimum. For example, if we run at 10pm one day then 9pm the next
+                // is fine.
+                return .after(lastBackupDate.addingTimeInterval(.day - (.hour * 4)))
+            }
         }
     }
 }
