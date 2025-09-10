@@ -214,6 +214,10 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             currentUploadEra: String
         ) {
             self.needsUploadFullsize = {
+                if attachment.encryptedByteCount > OWSMediaUtils.kMaxAttachmentUploadSizeBytes {
+                    Logger.info("Skipping upload of too-large attachment \(attachment.id), \(attachment.encryptedByteCount) bytes")
+                    return false
+                }
                 if let mediaTierInfo = attachment.attachment.mediaTierInfo {
                     return !mediaTierInfo.isUploaded(currentUploadEra: currentUploadEra)
                 } else {
