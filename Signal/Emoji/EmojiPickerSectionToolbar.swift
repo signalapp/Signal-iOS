@@ -98,7 +98,11 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             }
             backgroundView.isHidden = !configuration.displayBackgroundView
             imageView.image = Theme.iconImage(configuration.emojiSectionIcon)
-            imageView.tintColor = UIColor.Signal.secondaryLabel
+            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+                imageView.tintColor = UIColor.Signal.label
+            } else {
+                imageView.tintColor = UIColor.Signal.secondaryLabel
+            }
         }
     }
 
