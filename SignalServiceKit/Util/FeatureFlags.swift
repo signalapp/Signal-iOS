@@ -43,8 +43,8 @@ public enum FeatureFlags {
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
     public enum Backups {
-        public static let supported = build.includes(.beta)
-        public static let showSettings = build.includes(.beta)
+        public static let supported = build.includes(.internal)
+        public static let showSettings = build.includes(.internal)
         public static let showMegaphones = build.includes(.internal)
         public static let showOptimizeMedia = build.includes(.dev)
 
