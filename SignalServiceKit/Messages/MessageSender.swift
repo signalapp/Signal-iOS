@@ -74,57 +74,28 @@ public class MessageSender {
         deviceId: PreKeyDevice,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
-        do {
-            var preKeyBundle = try await makePreKeyRequest(
-                serviceId: serviceId,
-                deviceId: deviceId,
-                sealedSenderParameters: sealedSenderParameters
-            )
+        var preKeyBundle = try await makePreKeyRequest(
+            serviceId: serviceId,
+            deviceId: deviceId,
+            sealedSenderParameters: sealedSenderParameters
+        )
 
-            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                switch deviceId {
-                case .all:
-                    self.updateDevices(
-                        serviceId: serviceId,
-                        deviceIds: preKeyBundle.devices.map(\.deviceId),
-                        tx: tx
-                    )
-                case .specific(let deviceId):
-                    owsAssertDebug(preKeyBundle.devices.map(\.deviceId) == [deviceId], "Server returned unexpected device bundles.")
-                    preKeyBundle.devices.removeAll(where: { $0.deviceId != deviceId })
-                    guard preKeyBundle.devices.map(\.deviceId) == [deviceId] else {
-                        throw OWSAssertionError("The server didn't return a bundle for the device we requested.")
-                    }
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            switch deviceId {
+            case .all:
+                self.updateDevices(
+                    serviceId: serviceId,
+                    deviceIds: preKeyBundle.devices.map(\.deviceId),
+                    tx: tx
+                )
+            case .specific(let deviceId):
+                owsAssertDebug(preKeyBundle.devices.map(\.deviceId) == [deviceId], "Server returned unexpected device bundles.")
+                preKeyBundle.devices.removeAll(where: { $0.deviceId != deviceId })
+                guard preKeyBundle.devices.map(\.deviceId) == [deviceId] else {
+                    throw OWSAssertionError("The server didn't return a bundle for the device we requested.")
                 }
-                try self._createSessions(for: preKeyBundle, serviceId: serviceId, tx: tx)
             }
-        } catch {
-            switch error {
-            case is UntrustedIdentityError:
-                // This *can* happen under normal usage, but it should happen relatively
-                // rarely. We expect it to happen whenever Bob reinstalls, and Alice
-                // messages Bob before she can pull down his latest identity. If it's
-                // happening a lot, we should rethink our profile fetching strategy.
-                throw error
-            case is InvalidKeySignatureError:
-                // This should never happen unless a broken client is uploading invalid
-                // keys. The server should now enforce valid signatures on upload,
-                // resulting in this become exceedingly rare as time goes by.
-                throw error
-            case MessageSenderError.prekeyRateLimit:
-                throw SignalServiceRateLimitedError()
-            case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
-                throw error
-            case RecipientIdError.mustNotUsePniBecauseAciExists:
-                throw error
-            case RequestMakerUDAuthError.udAuthFailure:
-                throw error
-            case let error as OWSHTTPError where error.httpStatusCode == 404:
-                throw error
-            default:
-                owsAssertDebug(error.isNetworkFailureOrTimeout)
-                throw OWSRetryableMessageSenderError()
-            }
+            try self._createSessions(for: preKeyBundle, serviceId: serviceId, tx: tx)
         }
     }
 
@@ -193,7 +164,9 @@ public class MessageSender {
         } catch {
             switch error.httpStatusCode {
             case 429:
-                throw MessageSenderError.prekeyRateLimit
+                // TODO: Retry with backoff.
+                // TODO: Can we honor a retry delay hint from the response?
+                throw SignalServiceRateLimitedError()
             default:
                 throw error
             }
