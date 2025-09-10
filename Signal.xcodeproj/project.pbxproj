@@ -1792,6 +1792,7 @@
 		C1AE7C5A2D7B4451007A618D /* QuickRestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */; };
 		C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */; };
 		C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */; };
+		C1C2185D2E70BA27008567A1 /* RegistrationIdMismatchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C2185C2E70BA27008567A1 /* RegistrationIdMismatchManager.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1C7E4FB2BE0419300F196EE /* UploadMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */; };
 		C1CA5F8E2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA5F8D2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift */; };
@@ -5741,6 +5742,7 @@
 		C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickRestoreManager.swift; sourceTree = "<group>"; };
 		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamTransform.swift; sourceTree = "<group>"; };
+		C1C2185C2E70BA27008567A1 /* RegistrationIdMismatchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdMismatchManager.swift; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMetadata.swift; sourceTree = "<group>"; };
 		C1CA5F8D2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveDistributionListRecipientArchiver.swift; sourceTree = "<group>"; };
@@ -14059,6 +14061,7 @@
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */,
 				50D146CC2D1F4E5800D628DE /* ProfileKey.swift */,
+				C1C2185C2E70BA27008567A1 /* RegistrationIdMismatchManager.swift */,
 				507CD5E429660D5100E47DAC /* ServiceId.swift */,
 			);
 			path = Account;
@@ -18460,6 +18463,7 @@
 				720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */,
 				C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
+				C1C2185D2E70BA27008567A1 /* RegistrationIdMismatchManager.swift in Sources */,
 				C180878C2D763D4800B16D1E /* RegistrationProvisioningMessage.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,

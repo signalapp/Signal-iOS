@@ -39,6 +39,7 @@ public class AppEnvironment: NSObject {
     private(set) var provisioningManager: ProvisioningManager!
     private(set) var quickRestoreManager: QuickRestoreManager!
     private var usernameValidationObserver: UsernameValidationObserver!
+    private var registrationIdMismatchManager: RegistrationIdMismatchManager!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
         self.deviceTransferServiceRef = deviceTransferService
@@ -114,6 +115,12 @@ public class AppEnvironment: NSObject {
         self.outgoingDeviceRestorePresenter = OutgoingDeviceRestorePresenter(
             deviceTransferService: deviceTransferServiceRef,
             quickRestoreManager: quickRestoreManager
+        )
+
+        self.registrationIdMismatchManager = RegistrationIdMismatchManagerImpl(
+            db: DependenciesBridge.shared.db,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            udManager: SSKEnvironment.shared.udManagerRef
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {
@@ -200,6 +207,13 @@ public class AppEnvironment: NSObject {
 
                 Task {
                     await accountEntropyPoolManager.generateIfMissing()
+                }
+
+                Task {
+                    // Valide the local registration ID of the primary.
+                    // There was a bug in re-registration flow that could lead to a discrepancy
+                    // between client and server around the registrationID
+                    await self.registrationIdMismatchManager.validateRegistrationIds()
                 }
             } else {
                 Task {
