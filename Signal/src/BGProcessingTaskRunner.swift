@@ -194,11 +194,7 @@ extension BGProcessingTaskRunner where Self: Sendable {
         // for any incoming messages so that we can tear down gracefully.
         try? await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
 
-        // Wrap the cleanup of message processing in a new Task, so if we're
-        // canceled, that method doesn't inherit our cancellation.
-        await Task {
-            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
-        }.value
+        await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
 
         // Pass the result of operation() to the caller.
         return try result.get()

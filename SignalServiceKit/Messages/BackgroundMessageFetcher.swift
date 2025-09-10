@@ -123,6 +123,12 @@ public actor BackgroundMessageFetcher {
     }
 
     public func stopAndWaitBeforeSuspending() async {
+        // Wrap the cleanup of message processing in a new Task, so if we're
+        // canceled, that method doesn't inherit our cancellation.
+        return await Task { await self._stopAndWaitBeforeSuspending() }.value
+    }
+
+    private func _stopAndWaitBeforeSuspending() async {
         // Release the connections and wait for them to close.
         self.reset()
         await chatConnectionManager.waitForDisconnectIfClosed()

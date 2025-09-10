@@ -1475,10 +1475,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 try? await syncContacts.wait()
                 try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
             })
-            // So that we tear down gracefully.
-            await Task {
-                await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
-            }.value
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             try result.get()
         }
     }

@@ -191,11 +191,7 @@ class NotificationService: UNNotificationServiceExtension {
                 await backgroundMessageFetcher.start()
                 try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
             })
-            // Wrap the cleanup of message processing in a new Task, so if we're
-            // canceled, that method doesn't inherit our cancellation.
-            await Task {
-                await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
-            }.value
+            await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             try fetchResult.get()
         } catch is CancellationError {
             Logger.warn("Message fetching & processing canceled.")
