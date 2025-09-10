@@ -747,7 +747,7 @@ public class MessageSender {
                     endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx)
                     if
                         recoveryState.canRefreshExpiringGroupSendEndorsements,
-                        endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * .hour
+                        GroupSendEndorsements.willExpireSoon(expirationDate: endorsements?.expiration)
                     {
                         Logger.warn("Refetching GSEs for \(thread.logString) that are missing or about to expire.")
                         return .fetchGroupSendEndorsementsAndTryAgain(secretParams)

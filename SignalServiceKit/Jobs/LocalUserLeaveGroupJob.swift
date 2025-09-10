@@ -48,8 +48,12 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
 
-        let groupModel = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            try fetchGroupModel(threadUniqueId: jobRecord.threadId, tx: tx)
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return TSGroupThread.anyFetchGroupThread(uniqueId: jobRecord.threadId, transaction: tx)
+        }
+
+        guard let groupThread, let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Missing V2 group thread for operation")
         }
 
         let replacementAdminAci: Aci? = try jobRecord.replacementAdminAciString.map { aciString in
@@ -57,6 +61,12 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
                 throw OWSAssertionError("Couldn't parse replacementAdminAci")
             }
             return aci
+        }
+
+        do {
+            try await refreshGroupSendEndorsementsIfNeeded(threadId: groupThread.sqliteRowId!, groupModel: groupModel)
+        } catch where !error.isNetworkFailureOrTimeout {
+            Logger.warn("Tried and failed to refresh credentials; continuing anyways because credentials aren't required; error: \(error)")
         }
 
         try await GroupManager.updateGroupV2(
@@ -76,14 +86,27 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         }
     }
 
-    private func fetchGroupModel(threadUniqueId: String, tx: DBReadTransaction) throws -> TSGroupModelV2 {
-        guard
-            let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: threadUniqueId, transaction: tx),
-            let groupModel = groupThread.groupModel as? TSGroupModelV2
-        else {
-            throw OWSAssertionError("Missing V2 group thread for operation")
+    private func refreshGroupSendEndorsementsIfNeeded(
+        threadId: TSGroupThread.RowId,
+        groupModel: TSGroupModelV2,
+    ) async throws {
+        // If we're not a full member, we can't fetch credentials.
+        guard groupModel.groupMembership.isLocalUserFullMember else {
+            return
         }
-        return groupModel
+        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+        let combinedEndorsement = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
+        }
+        // If we have recent-ish credentials, we don't need to refresh.
+        guard GroupSendEndorsements.willExpireSoon(expirationDate: combinedEndorsement?.expiration) else {
+            return
+        }
+        let secretParams = try groupModel.secretParams()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+        Logger.info("Refreshing GSEs before leaving \(groupId)")
+        // Otherwise, try to refresh the credentials to use them when leaving.
+        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
     }
 }
 

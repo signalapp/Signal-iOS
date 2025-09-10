@@ -17,4 +17,8 @@ struct GroupSendEndorsements {
             return GroupSendFullTokenBuilder(secretParams: secretParams, expiration: expiration, endorsement: $0)
         }
     }
+
+    static func willExpireSoon(expirationDate: Date?) -> Bool {
+        return expirationDate == nil || expirationDate!.timeIntervalSinceNow < 2 * .hour
+    }
 }
