@@ -38,6 +38,7 @@ public struct DeviceId: Codable, Comparable, CustomStringConvertible, Hashable {
         return lhs.rawValue < rhs.rawValue
     }
 
-    // The `rawValue` isn't ever negative, so this is always safe.
+    // The `rawValue` isn't ever negative, so these are always safe.
+    public var uint8Value: UInt8 { UInt8(rawValue) }
     public var uint32Value: UInt32 { UInt32(rawValue) }
 }

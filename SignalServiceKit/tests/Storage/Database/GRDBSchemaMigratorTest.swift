@@ -749,4 +749,43 @@ extension GRDBSchemaMigratorTest {
             XCTAssertEqual(signalRecipients[5]["pni"], nil as String?)
         }
     }
+
+    private static func encodedDeviceIds(_ deviceIds: [UInt32]) throws -> Data {
+        let deviceIdSet = NSOrderedSet(array: deviceIds.map(NSNumber.init(value:)))
+        return try NSKeyedArchiver.archivedData(withRootObject: deviceIdSet, requiringSecureCoding: true)
+    }
+
+    func testMigrateRecipientDevices() throws {
+        // Set up the database with sample data that may have existed.
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "devices" BLOB
+            );
+            """)
+            let sampleData: [[UInt32]] = [
+                [],
+                [1],
+                [1, 2, 3],
+            ]
+            for deviceIds in sampleData {
+                try db.execute(sql: "INSERT INTO model_SignalRecipient (devices) VALUES (?)", arguments: [Self.encodedDeviceIds(deviceIds)])
+            }
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.migrateRecipientDeviceIds(tx: tx)
+            }
+            let signalRecipients = try Row.fetchAll(
+                db,
+                sql: "SELECT * FROM model_SignalRecipient ORDER BY id"
+            )
+            XCTAssertEqual(signalRecipients.count, 3)
+            XCTAssertEqual([UInt8](signalRecipients[0]["devices"] as Data), [])
+            XCTAssertEqual([UInt8](signalRecipients[1]["devices"] as Data), [1])
+            XCTAssertEqual([UInt8](signalRecipients[2]["devices"] as Data), [1, 2, 3])
+        }
+    }
 }

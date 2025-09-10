@@ -344,6 +344,7 @@ public class GRDBSchemaMigrator {
         case addIsPollToTSInteraction
         case addBackupAttachmentUploadQueueStateColumn
         case addBackupAttachmentUploadQueueTrigger
+        case migrateRecipientDeviceIds
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -407,7 +408,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 127
+    public static let grdbSchemaVersionLatest: UInt = 128
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4371,6 +4372,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.migrateRecipientDeviceIds) { tx in
+            try migrateRecipientDeviceIds(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6229,6 +6235,20 @@ public class GRDBSchemaMigrator {
             throw OWSGenericError("Couldn't parse result as an array of addresses.")
         }
         return result
+    }
+
+    static func migrateRecipientDeviceIds(tx: DBWriteTransaction) throws {
+        let rowIds = try Int64.fetchAll(tx.database, sql: "SELECT id FROM model_SignalRecipient")
+        for rowId in rowIds {
+            let oldEncodedValue = try Data.fetchOne(tx.database, sql: "SELECT devices FROM model_SignalRecipient WHERE id = ?", arguments: [rowId])
+            guard let oldEncodedValue else { throw OWSGenericError("Missing oldEncodedValue") }
+            let deviceIdsObjC = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSOrderedSet.self, NSNumber.self], from: oldEncodedValue) as? NSOrderedSet
+            guard let deviceIdsObjC else { throw OWSGenericError("Missing deviceIdsObjC") }
+            let deviceIds = (deviceIdsObjC.array as? [NSNumber])?.map { $0.uint32Value }
+            let validDeviceIds = (deviceIds ?? []).compactMap(UInt8.init(exactly:)).filter({ 1 <= $0 && $0 <= 127 })
+            let newEncodedValue = Data(validDeviceIds.sorted())
+            try tx.database.execute(sql: "UPDATE model_SignalRecipient SET devices = ? WHERE id = ?", arguments: [newEncodedValue, rowId])
+        }
     }
 }
 

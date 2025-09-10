@@ -232,12 +232,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
             phoneNumber = nil
         }
         let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
-        let deviceSetObjC: NSOrderedSet = try SDSCodableModelLegacySerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
-        let deviceArray = (deviceSetObjC.array as? [NSNumber])?.map { $0.uint32Value }
-        // If we can't parse the values in the NSOrderedSet, assume the user isn't
-        // registered. If they are registered, we'll correct the data store the
-        // next time we try to send them a message.
-        deviceIds = deviceArray?.compactMap(DeviceId.init(validating:)) ?? []
+        deviceIds = encodedDeviceIds.compactMap(DeviceId.init(validating:))
         unregisteredAtTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .unregisteredAtTimestamp)
     }
 
@@ -250,9 +245,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
         try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)
         try container.encodeIfPresent(phoneNumber?.stringValue, forKey: .phoneNumber)
         try container.encodeIfPresent(phoneNumber?.isDiscoverable, forKey: .isPhoneNumberDiscoverable)
-        let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0.uint32Value) })
-        let encodedDevices = SDSCodableModelLegacySerializer().serializeAsLegacySDSData(property: deviceSetObjC)
-        try container.encode(encodedDevices, forKey: .deviceIds)
+        try container.encode(Data(deviceIds.map(\.uint8Value)), forKey: .deviceIds)
         try container.encodeIfPresent(unregisteredAtTimestamp, forKey: .unregisteredAtTimestamp)
     }
 
