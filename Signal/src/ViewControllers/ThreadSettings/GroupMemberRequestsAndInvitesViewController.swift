@@ -258,14 +258,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         let groupMembership = groupModel.groupMembership
-        let allPendingMembersSorted = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(groupMembership.invitedMembers, transaction: tx)
-        }
 
-        // Note that these collections retain their sorting from above.
         var membersInvitedByLocalUser = [SignalServiceAddress]()
-        var membersInvitedByOtherUsers = [SignalServiceAddress: [SignalServiceAddress]]()
-        for invitedAddress in allPendingMembersSorted {
+        var membersInvitedByOtherUsers = [Aci: [SignalServiceAddress]]()
+        for invitedAddress in groupMembership.invitedMembers {
             guard let inviterAci = groupMembership.addedByAci(forInvitedMember: invitedAddress) else {
                 owsFailDebug("Missing inviter.")
                 continue
@@ -273,10 +269,15 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             if inviterAci == localAci {
                 membersInvitedByLocalUser.append(invitedAddress)
             } else {
-                var invitedMembers = membersInvitedByOtherUsers[SignalServiceAddress(inviterAci)] ?? []
-                invitedMembers.append(invitedAddress)
-                membersInvitedByOtherUsers[SignalServiceAddress(inviterAci)] = invitedMembers
+                membersInvitedByOtherUsers[inviterAci, default: []].append(invitedAddress)
             }
+        }
+
+        let contactManager = SSKEnvironment.shared.contactManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        membersInvitedByLocalUser = databaseStorage.read { tx in
+            return contactManager.sortSignalServiceAddresses(membersInvitedByLocalUser, transaction: tx)
         }
 
         // Only admins can revoke invites.
@@ -285,30 +286,35 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         // MARK: - People You Invited
 
         let localSection = OWSTableSection()
-        localSection.headerTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED",
-                                                     comment: "Title for the 'people you invited' section of the 'member requests and invites' view.")
-        if membersInvitedByLocalUser.count > 0 {
-            for address in membersInvitedByLocalUser {
-                localSection.add(OWSTableItem(dequeueCellBlock: { tableView in
-                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                        owsFailDebug("Missing cell.")
-                        return UITableViewCell()
-                    }
-
-                    cell.selectionStyle = canRevokeInvites ? .default : .none
-                    cell.configureWithSneakyTransaction(address: address,
-                                                        localUserDisplayMode: .asUser)
-                    return cell
-                    }) { [weak self] in
-                                                self?.inviteFromLocalUserWasTapped(address,
-                                                                                   canRevoke: canRevokeInvites)
-                })
-            }
-        } else {
+        localSection.headerTitle = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED",
+            comment: "Title for the 'people you invited' section of the 'member requests and invites' view.",
+        )
+        if membersInvitedByLocalUser.isEmpty {
             localSection.add(OWSTableItem.softCenterLabel(
-                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
-                                             comment: "Label indicating that a group has no pending members.")
+                withText: OWSLocalizedString(
+                    "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
+                    comment: "Label indicating that a group has no pending members.",
+                ),
             ))
+        } else {
+            for address in membersInvitedByLocalUser {
+                localSection.add(OWSTableItem(
+                    dequeueCellBlock: { tableView in
+                        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                            owsFailDebug("Missing cell.")
+                            return UITableViewCell()
+                        }
+
+                        cell.selectionStyle = canRevokeInvites ? .default : .none
+                        cell.configureWithSneakyTransaction(address: address, localUserDisplayMode: .asUser)
+                        return cell
+                    },
+                    actionBlock: { [weak self] in
+                        self?.inviteFromLocalUserWasTapped(address, canRevoke: canRevokeInvites)
+                    },
+                ))
+            }
         }
         contents.add(localSection)
 
@@ -320,45 +326,56 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         otherUsersSection.footerTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS",
                                                           comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.")
 
-        if membersInvitedByOtherUsers.count > 0 {
-            let inviterAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(membersInvitedByOtherUsers.keys, transaction: tx)
+        if membersInvitedByOtherUsers.isEmpty {
+            otherUsersSection.add(OWSTableItem.softCenterLabel(
+                withText: OWSLocalizedString(
+                    "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
+                    comment: "Label indicating that a group has no pending members.",
+                )
+            ))
+        } else {
+            var inviterAddresses = membersInvitedByOtherUsers.keys.map(SignalServiceAddress.init(_:))
+            inviterAddresses = databaseStorage.read { tx in
+                return contactManager.sortSignalServiceAddresses(inviterAddresses, transaction: tx)
             }
             for inviterAddress in inviterAddresses {
-                guard let invitedAddresses = membersInvitedByOtherUsers[inviterAddress] else {
+                guard let inviterAci = inviterAddress.aci, let invitedAddresses = membersInvitedByOtherUsers[inviterAci] else {
                     owsFailDebug("Missing invited addresses.")
                     continue
                 }
 
-                otherUsersSection.add(OWSTableItem(dequeueCellBlock: { tableView in
-                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                        owsFailDebug("Missing cell.")
-                        return UITableViewCell()
-                    }
+                otherUsersSection.add(OWSTableItem(
+                    dequeueCellBlock: { tableView in
+                        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                            owsFailDebug("Missing cell.")
+                            return UITableViewCell()
+                        }
 
-                    cell.selectionStyle = canRevokeInvites ? .default : .none
+                        cell.selectionStyle = canRevokeInvites ? .default : .none
 
-                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
-                        let inviterName = SSKEnvironment.shared.contactManagerRef.displayName(for: inviterAddress, tx: transaction).resolvedValue()
-                        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d", tableName: "PluralAware",
-                                                       comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member }}.")
-                        configuration.customName = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
-                        cell.configure(configuration: configuration, transaction: transaction)
-                    }
+                        databaseStorage.read { transaction in
+                            let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
+                            let inviterName = contactManager.displayName(for: inviterAddress, tx: transaction).resolvedValue()
+                            let format = OWSLocalizedString(
+                                "PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d",
+                                tableName: "PluralAware",
+                                comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member }}.",
+                            )
+                            configuration.customName = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
+                            cell.configure(configuration: configuration, transaction: transaction)
+                        }
 
-                    return cell
-                }) { [weak self] in
-                    self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
-                                                        inviterAddress: inviterAddress,
-                                                        canRevoke: canRevokeInvites)
-                })
+                        return cell
+                    },
+                    actionBlock: { [weak self] in
+                        self?.invitesFromOtherUserWasTapped(
+                            invitedAddresses: invitedAddresses,
+                            inviterAddress: inviterAddress,
+                            canRevoke: canRevokeInvites,
+                        )
+                    },
+                ))
             }
-        } else {
-            otherUsersSection.add(OWSTableItem.softCenterLabel(
-                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
-                                             comment: "Label indicating that a group has no pending members.")
-            ))
         }
         contents.add(otherUsersSection)
 
