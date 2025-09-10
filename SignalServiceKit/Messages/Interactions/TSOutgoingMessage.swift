@@ -349,14 +349,16 @@ public extension TSOutgoingMessage {
     static func messageStateForRecipientStates(
         _ recipientStates: [TSOutgoingMessageRecipientState]
     ) -> TSOutgoingMessageState {
-        var hasFailedRecipient: Bool = false
+        var hasSendingReceipient = false
+        var hasPendingRecipient = false
+        var hasFailedRecipient = false
 
         for recipientState in recipientStates {
             switch recipientState.status {
             case .sending:
-                return .sending
+                hasSendingReceipient = true
             case .pending:
-                return .pending
+                hasPendingRecipient = true
             case .failed:
                 hasFailedRecipient = true
             case .skipped, .sent, .delivered, .read, .viewed:
@@ -364,11 +366,16 @@ public extension TSOutgoingMessage {
             }
         }
 
+        if hasSendingReceipient {
+            return .sending
+        }
+        if hasPendingRecipient {
+            return .pending
+        }
         if hasFailedRecipient {
             return .failed
-        } else {
-            return .sent
         }
+        return .sent
     }
 
     @objc
