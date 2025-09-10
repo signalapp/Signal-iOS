@@ -687,7 +687,7 @@ public enum DonationSubscriptionManager {
                 // "current" one.
                 return subscriptionBadgeEntitlements.map(\.expirationSeconds).max()
             },
-            enqueueRedemptionJobBlock: { subscriberId, subscription, tx -> DonationReceiptCredentialRedemptionJobRecord? in
+            saveRedemptionJobBlock: { subscriberId, subscription, tx -> DonationReceiptCredentialRedemptionJobRecord? in
                 if receiptCredentialRedemptionJobQueue.subscriptionJobExists(
                     subscriberID: subscriberId,
                     tx: tx

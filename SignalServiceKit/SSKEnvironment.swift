@@ -96,7 +96,6 @@ public class SSKEnvironment: NSObject {
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
     public let callRecordDeleteAllJobQueueRef: CallRecordDeleteAllJobQueue
     public let bulkDeleteInteractionJobQueueRef: BulkDeleteInteractionJobQueue
-    let backupReceiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue
     let donationReceiptCredentialRedemptionJobQueue: DonationReceiptCredentialRedemptionJobQueue
 
     private let appExpiryRef: AppExpiry
@@ -156,7 +155,6 @@ public class SSKEnvironment: NSObject {
         localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
         callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue,
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
-        backupReceiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue,
         donationReceiptCredentialRedemptionJobQueue: DonationReceiptCredentialRedemptionJobQueue,
         preferences: Preferences,
         proximityMonitoringManager: OWSProximityMonitoringManager,
@@ -217,7 +215,6 @@ public class SSKEnvironment: NSObject {
         self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue
         self.callRecordDeleteAllJobQueueRef = callRecordDeleteAllJobQueue
         self.bulkDeleteInteractionJobQueueRef = bulkDeleteInteractionJobQueue
-        self.backupReceiptCredentialRedemptionJobQueue = backupReceiptCredentialRedemptionJobQueue
         self.donationReceiptCredentialRedemptionJobQueue = donationReceiptCredentialRedemptionJobQueue
         self.preferencesRef = preferences
         self.proximityMonitoringManagerRef = proximityMonitoringManager

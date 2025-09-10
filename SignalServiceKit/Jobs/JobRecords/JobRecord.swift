@@ -35,7 +35,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
 
         case callRecordDeleteAll = 100
         case bulkDeleteInteractionJobRecord = 101
-        case backupReceiptsCredentialRedemption = 102
     }
 
     static var recordTypeCodingKey: JobRecordColumns {
@@ -56,7 +55,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         case .sessionReset: return SessionResetJobRecord.self
         case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
         case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
-        case .backupReceiptsCredentialRedemption: return BackupReceiptCredentialRedemptionJobRecord.self
         }
     }
 }
@@ -81,8 +79,6 @@ extension JobRecord.JobRecordType {
             return "CallRecordDeleteAll"
         case .bulkDeleteInteractionJobRecord:
             return "BulkDeleteInteraction"
-        case .backupReceiptsCredentialRedemption:
-            return "BackupReceiptCredentialRedemption"
         }
     }
 }

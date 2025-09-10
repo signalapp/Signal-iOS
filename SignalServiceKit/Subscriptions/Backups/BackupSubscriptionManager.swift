@@ -151,10 +151,10 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupPlanManager: BackupPlanManager
+    private let backupSubscriptionRedeemer: BackupSubscriptionRedeemer
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
-    private let receiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue
     private let storageServiceManager: StorageServiceManager
     private let store: Store
     private let tsAccountManager: TSAccountManager
@@ -162,19 +162,19 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupPlanManager: BackupPlanManager,
+        backupSubscriptionRedeemer: BackupSubscriptionRedeemer,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
-        receiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
+        self.backupSubscriptionRedeemer = backupSubscriptionRedeemer
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
-        self.receiptCredentialRedemptionJobQueue = receiptCredentialRedemptionJobQueue
         self.storageServiceManager = storageServiceManager
         self.store = Store(backupAttachmentUploadEraStore: backupAttachmentUploadEraStore)
         self.tsAccountManager = tsAccountManager
@@ -432,6 +432,18 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     }
 
     private func _redeemSubscriptionIfNecessary() async throws {
+        if let preexistingRedemptionContext = db.read(block: {
+            return BackupSubscriptionRedemptionContext.fetch(tx: $0)
+        }) {
+            // We have a persisted redemption context, which means a previous
+            // redemption was interrupted. Finish it, then try again.
+            //
+            // It's very likely that once we've finished the interrupted one
+            // the recursive call will no-op.
+            try await backupSubscriptionRedeemer.redeem(context: preexistingRedemptionContext)
+            try await _redeemSubscriptionIfNecessary()
+        }
+
         /// Wait on any in-progress restores, since there's a chance we're
         /// restoring subscriber data.
         try? await storageServiceManager.waitForPendingRestores()
@@ -515,7 +527,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
 
         let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
-            BackupReceiptCredentialRedemptionJobRecord
+            BackupSubscriptionRedemptionContext
         >(
             checkerStore: store,
             dateProvider: dateProvider,
@@ -563,15 +575,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             parseEntitlementExpirationBlock: { accountEntitlements, _ in
                 return accountEntitlements.backup?.expirationSeconds
             },
-            enqueueRedemptionJobBlock: { subscriberId, _, tx -> BackupReceiptCredentialRedemptionJobRecord in
-                return receiptCredentialRedemptionJobQueue.saveBackupRedemptionJob(
-                    subscriberId: subscriberId,
-                    tx: tx
-                )
+            saveRedemptionJobBlock: { subscriberId, _, tx -> BackupSubscriptionRedemptionContext in
+                let redemptionContext = BackupSubscriptionRedemptionContext(subscriberId: subscriberId)
+                redemptionContext.upsert(tx: tx)
+                return redemptionContext
             },
-            startRedemptionJobBlock: { jobRecord async throws in
+            startRedemptionJobBlock: { redemptionContext async throws in
                 // Note that this step, if successful, will set BackupPlan.
-                try await receiptCredentialRedemptionJobQueue.runBackupRedemptionJob(jobRecord: jobRecord)
+                try await backupSubscriptionRedeemer.redeem(context: redemptionContext)
             }
         )
     }

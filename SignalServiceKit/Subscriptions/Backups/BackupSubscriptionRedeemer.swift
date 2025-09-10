@@ -5,116 +5,9 @@
 
 import LibSignalClient
 
-private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
-
-/// Responsible for durably redeeming a receipt credential for a Backups
-/// subscription.
-class BackupReceiptCredentialRedemptionJobQueue {
-    private let jobQueueRunner: JobQueueRunner<
-        JobRecordFinderImpl<BackupReceiptCredentialRedemptionJobRecord>,
-        BackupReceiptCredentialRedemptionJobRunnerFactory
-    >
-    private let jobRunnerFactory: BackupReceiptCredentialRedemptionJobRunnerFactory
-
-    public init(
-        authCredentialStore: AuthCredentialStore,
-        backupPlanManager: BackupPlanManager,
-        db: any DB,
-        networkManager: NetworkManager,
-        reachabilityManager: SSKReachabilityManager
-    ) {
-        self.jobRunnerFactory = BackupReceiptCredentialRedemptionJobRunnerFactory(
-            authCredentialStore: authCredentialStore,
-            backupPlanManager: backupPlanManager,
-            db: db,
-            networkManager: networkManager
-        )
-        self.jobQueueRunner = JobQueueRunner(
-            canExecuteJobsConcurrently: true,
-            db: db,
-            jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: self.jobRunnerFactory
-        )
-        self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
-    }
-
-    func start(appContext: AppContext) {
-        guard appContext.isMainApp else { return }
-        jobQueueRunner.start(shouldRestartExistingJobs: true)
-    }
-
-    func saveBackupRedemptionJob(
-        subscriberId: Data,
-        tx: DBWriteTransaction
-    ) -> BackupReceiptCredentialRedemptionJobRecord {
-        logger.info("Adding a redemption job.")
-
-        let jobRecord = BackupReceiptCredentialRedemptionJobRecord(subscriberId: subscriberId)
-        jobRecord.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-        return jobRecord
-    }
-
-    func runBackupRedemptionJob(
-        jobRecord: BackupReceiptCredentialRedemptionJobRecord
-    ) async throws {
-        logger.info("Running redemption job.")
-
-        try await withCheckedThrowingContinuation { continuation in
-            self.jobQueueRunner.addPersistedJob(
-                jobRecord,
-                runner: self.jobRunnerFactory.buildRunner(continuation: continuation)
-            )
-        }
-    }
-}
-
-private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
-    private let authCredentialStore: AuthCredentialStore
-    private let backupPlanManager: BackupPlanManager
-    private let db: any DB
-    private let networkManager: NetworkManager
-
-    init(
-        authCredentialStore: AuthCredentialStore,
-        backupPlanManager: BackupPlanManager,
-        db: any DB,
-        networkManager: NetworkManager
-    ) {
-        self.authCredentialStore = authCredentialStore
-        self.backupPlanManager = backupPlanManager
-        self.db = db
-        self.networkManager = networkManager
-    }
-
-    func buildRunner() -> BackupReceiptCredentialRedemptionJobRunner {
-        return BackupReceiptCredentialRedemptionJobRunner(
-            authCredentialStore: authCredentialStore,
-            backupPlanManager: backupPlanManager,
-            db: db,
-            networkManager: networkManager,
-            continuation: nil
-        )
-    }
-
-    func buildRunner(continuation: CheckedContinuation<Void, Error>) -> BackupReceiptCredentialRedemptionJobRunner {
-        return BackupReceiptCredentialRedemptionJobRunner(
-            authCredentialStore: authCredentialStore,
-            backupPlanManager: backupPlanManager,
-            db: db,
-            networkManager: networkManager,
-            continuation: continuation
-        )
-    }
-}
-
-private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
-    typealias JobRecordType = BackupReceiptCredentialRedemptionJobRecord
-
-    private typealias RedemptionAttemptState = BackupReceiptCredentialRedemptionJobRecord.RedemptionAttemptState
-
+/// Responsible for redeeming receipt credentials for Backups subscriptions.
+class BackupSubscriptionRedeemer {
     private enum Constants {
-        static let maxRetries: UInt = 110
-
         /// A "receipt level" baked by the server into the receipt credentials
         /// used for Backups, representing the free (messages) tier.
         static let freeTierBackupReceiptLevel = 200
@@ -126,46 +19,79 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     private let authCredentialStore: AuthCredentialStore
     private let backupPlanManager: BackupPlanManager
     private let db: any DB
+    private let logger: PrefixedLogger
+    private let reachabilityManager: SSKReachabilityManager
     private let networkManager: NetworkManager
 
-    private let continuation: CheckedContinuation<Void, Error>?
-    private var transientFailureCount: UInt = 0
+    private var networkRetryWaitingTask: AtomicValue<Task<Void, Never>?>
+    private var notificationObservers: [NotificationCenter.Observer]
+    private var transientFailureCount: UInt
 
     init(
         authCredentialStore: AuthCredentialStore,
         backupPlanManager: BackupPlanManager,
         db: any DB,
+        reachabilityManager: SSKReachabilityManager,
         networkManager: NetworkManager,
-        continuation: CheckedContinuation<Void, Error>?
     ) {
         self.authCredentialStore = authCredentialStore
         self.backupPlanManager = backupPlanManager
         self.db = db
+        self.logger = PrefixedLogger(prefix: "[Backups]")
+        self.reachabilityManager = reachabilityManager
         self.networkManager = networkManager
-        self.continuation = continuation
+
+        self.networkRetryWaitingTask = AtomicValue(nil, lock: .init())
+        self.notificationObservers = []
+        self.transientFailureCount = 0
+
+        notificationObservers.append(NotificationCenter.default.addObserver(
+            name: SSKReachability.owsReachabilityDidChange,
+            block: { [weak self] _ in
+                guard let self else { return }
+
+                networkRetryWaitingTask.update { task in
+                    if let task, reachabilityManager.isReachable {
+                        task.cancel()
+                    }
+                }
+            }
+        ))
     }
 
-    /// Returns an exponential-backoff retry delay that increases with each
-    /// subsequent call to this method.
-    private func incrementExponentialRetryDelay() -> TimeInterval {
-        transientFailureCount += 1
-
-        return OWSOperation.retryIntervalForExponentialBackoff(
-            failureCount: transientFailureCount,
-            maxAverageBackoff: .day
-        )
+    deinit {
+        notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
     }
 
     // MARK: -
 
-    func runJobAttempt(_ jobRecord: BackupReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
-        struct TerminalJobError: Error {}
+    /// Returns an exponential-backoff retry delay that increases with each
+    /// subsequent call to this method.
+    private func waitForIncrementedExponentialRetry() async {
+        transientFailureCount += 1
 
-        switch await _redeemBackupReceiptCredential(jobRecord: jobRecord) {
+        let retryDelay: TimeInterval = OWSOperation.retryIntervalForExponentialBackoff(
+            failureCount: transientFailureCount,
+            maxAverageBackoff: .day
+        )
+
+        do {
+            try await Task.sleep(nanoseconds: retryDelay.clampedNanoseconds)
+        } catch {
+            owsPrecondition(error is CancellationError)
+        }
+    }
+
+    // MARK: -
+
+    func redeem(context: BackupSubscriptionRedemptionContext) async throws {
+        struct TerminalRedemptionError: Error {}
+
+        switch await _redeemBackupReceiptCredential(context: context) {
         case .success:
             do {
                 try await db.awaitableWriteWithRollbackIfThrows { tx in
-                    jobRecord.anyRemove(transaction: tx)
+                    context.delete(tx: tx)
 
                     /// We're now a paid-tier Backups user according to the server.
                     /// If our local thinks we're free-tier, upgrade it.
@@ -188,33 +114,42 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     /// of access than we had cached.
                     authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
                 }
-                return .finished(.success(()))
+
+                logger.info("Redemption successful!")
             } catch {
                 owsFailDebug("Failed to set BackupPlan! \(error)")
 
-                await db.awaitableWrite { jobRecord.anyRemove(transaction: $0) }
-                return .finished(.failure(TerminalJobError()))
+                await db.awaitableWrite { context.delete(tx: $0) }
+                throw TerminalRedemptionError()
             }
 
-        case .networkError, .needsReattempt, .paymentStillProcessing:
-            return .retryAfter(incrementExponentialRetryDelay())
+        case .needsReattempt:
+            // Try again, without a delay.
+            try await redeem(context: context)
+
+        case .paymentStillProcessing:
+            // Try again, with a delay.
+            await waitForIncrementedExponentialRetry()
+            try await redeem(context: context)
+
+        case .networkError:
+            // Try again, with an interruptable delay.
+            let waitingTask = networkRetryWaitingTask.update {
+                let task = Task {
+                    await waitForIncrementedExponentialRetry()
+                    networkRetryWaitingTask.set(nil)
+                }
+                $0 = task
+                return task
+            }
+            await waitingTask.value
+            try await redeem(context: context)
 
         case .redemptionUnsuccessful, .assertion:
             owsFailDebug("Job encountered unexpected terminal error!")
 
-            await db.awaitableWrite { jobRecord.anyRemove(transaction: $0) }
-            return .finished(.failure(TerminalJobError()))
-        }
-    }
-
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
-        switch result.ranSuccessfullyOrError {
-        case .success:
-            logger.info("Redemption job finished successfully.")
-            continuation?.resume()
-        case .failure(let error):
-            logger.error("Redemption job failed! \(error)")
-            continuation?.resume(throwing: error)
+            await db.awaitableWrite { context.delete(tx: $0) }
+            throw TerminalRedemptionError()
         }
     }
 
@@ -229,8 +164,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
         case assertion
     }
 
-    /// Performs the steps required to redeem a Backup subscription for the
-    /// period covered by the given `Transaction`.
+    /// Performs the steps required to redeem a Backup subscription.
     ///
     /// Specifically, performs the following steps:
     /// 1. Generates a "receipt credential request".
@@ -249,10 +183,10 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
     /// resume if interrupted, since we may be mutating remote state in such a
     /// way that's only safe to retry with the same inputs.
     private func _redeemBackupReceiptCredential(
-        jobRecord: BackupReceiptCredentialRedemptionJobRecord
+        context: BackupSubscriptionRedemptionContext,
     ) async -> RedeemBackupReceiptCredentialResult {
 
-        switch jobRecord.attemptState {
+        switch context.attemptState {
         case .unattempted:
             logger.info("Generating receipt credential request.")
 
@@ -261,14 +195,14 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                 receiptCredentialRequest
             ) = DonationSubscriptionManager.generateReceiptRequest()
 
-            let nextAttemptState: RedemptionAttemptState = .receiptCredentialRequesting(
-                request: receiptCredentialRequest,
-                context: receiptCredentialRequestContext
-            )
             await db.awaitableWrite { tx in
-                jobRecord.updateAttemptState(nextAttemptState, tx: tx)
+                context.attemptState = .receiptCredentialRequesting(
+                    request: receiptCredentialRequest,
+                    context: receiptCredentialRequestContext
+                )
+                context.upsert(tx: tx)
             }
-            return await _redeemBackupReceiptCredential(jobRecord: jobRecord)
+            return await _redeemBackupReceiptCredential(context: context)
 
         case .receiptCredentialRequesting(
             let receiptCredentialRequest,
@@ -279,7 +213,7 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
             let receiptCredential: ReceiptCredential
             do {
                 receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-                    subscriberId: jobRecord.subscriberId,
+                    subscriberId: context.subscriberId,
                     isValidReceiptLevelPredicate: { receiptLevel -> Bool in
                         /// We'll accept either receipt level here to handle
                         /// things like clock skew, although we're generally
@@ -312,9 +246,6 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                     /// Regardless, we now know that we've redeemed for this
                     /// subscription period, so there's nothing left to do and
                     /// we can treat this as a success.
-                    await db.awaitableWrite { tx in
-                        jobRecord.anyRemove(transaction: tx)
-                    }
                     return .success
                 case .paymentStillProcessing:
                     return .paymentStillProcessing
@@ -335,13 +266,11 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                 return .assertion
             }
 
-            let nextAttemptState: RedemptionAttemptState = .receiptCredentialRedemption(
-                receiptCredential
-            )
             await db.awaitableWrite { tx in
-                jobRecord.updateAttemptState(nextAttemptState, tx: tx)
+                context.attemptState = .receiptCredentialRedemption(receiptCredential)
+                context.upsert(tx: tx)
             }
-            return await _redeemBackupReceiptCredential(jobRecord: jobRecord)
+            return await _redeemBackupReceiptCredential(context: context)
 
         case .receiptCredentialRedemption(let receiptCredential):
             logger.info("Redeeming receipt credential.")
@@ -380,9 +309,9 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
                 /// credential and retrying the job.
                 logger.warn("Receipt credential was expired!")
 
-                let nextAttemptState: RedemptionAttemptState = .unattempted
                 await db.awaitableWrite { tx in
-                    jobRecord.updateAttemptState(nextAttemptState, tx: tx)
+                    context.attemptState = .unattempted
+                    context.upsert(tx: tx)
                 }
 
                 return .needsReattempt

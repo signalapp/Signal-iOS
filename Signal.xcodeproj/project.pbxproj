@@ -2902,8 +2902,8 @@
 		D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */; };
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
 		D9EDF2782E4D2A2F001D4BEC /* AccountEntropyPoolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */; };
-		D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */; };
-		D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */; };
+		D9EE790F2CF5232C007F581B /* BackupSubscriptionRedemptionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE790E2CF5229C007F581B /* BackupSubscriptionRedemptionContext.swift */; };
+		D9EE79112CF525A4007F581B /* BackupSubscriptionRedeemer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EE79102CF5259D007F581B /* BackupSubscriptionRedeemer.swift */; };
 		D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */; };
 		D9F399AD2A95798A001599EC /* IdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */; };
 		D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */; };
@@ -6872,8 +6872,8 @@
 		D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGContext+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
 		D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPoolManager.swift; sourceTree = "<group>"; };
-		D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
-		D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
+		D9EE790E2CF5229C007F581B /* BackupSubscriptionRedemptionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionRedemptionContext.swift; sourceTree = "<group>"; };
+		D9EE79102CF5259D007F581B /* BackupSubscriptionRedeemer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionRedeemer.swift; sourceTree = "<group>"; };
 		D9F027A12E2071D0002994C1 /* BackupDisablingManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManagerTest.swift; sourceTree = "<group>"; };
 		D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoaderTest.swift"; sourceTree = "<group>"; };
 		D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityKeyChecker.swift; sourceTree = "<group>"; };
@@ -12562,7 +12562,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA85289453B100548EEE /* JobRecords */,
-				D9EE79102CF5259D007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift */,
 				D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */,
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
 				886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */,
@@ -12717,6 +12716,8 @@
 				D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */,
 				D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */,
 				D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */,
+				D9EE79102CF5259D007F581B /* BackupSubscriptionRedeemer.swift */,
+				D9EE790E2CF5229C007F581B /* BackupSubscriptionRedemptionContext.swift */,
 				D987C8CE2E1CBDFB004072BC /* BackupTestFlightEntitlementManager.swift */,
 			);
 			path = Backups;
@@ -14313,7 +14314,6 @@
 		F9C5CA85289453B100548EEE /* JobRecords */ = {
 			isa = PBXGroup;
 			children = (
-				D9EE790E2CF5229C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift */,
 				D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */,
 				D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */,
 				D9AE0AD22918715E0063488B /* DonationReceiptCredentialRedemptionJobRecord.swift */,
@@ -17777,14 +17777,14 @@
 				D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */,
 				D98ACAA92E0DA71B00FA497F /* BackupPlanManager.swift in Sources */,
 				66B127FE2E3D352E006FE598 /* BackupPurpose.swift in Sources */,
-				D9EE79112CF525A4007F581B /* BackupReceiptCredentialRedemptionJobQueue.swift in Sources */,
-				D9EE790F2CF5232C007F581B /* BackupReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				04B975462E43A4AF00E20364 /* BackupRefreshManager.swift in Sources */,
 				C14391132BD1C0DF00ED6FCB /* BackupRequestManager.swift in Sources */,
 				C17310A72BD9D45400B7A151 /* BackupServiceAuth.swift in Sources */,
 				D9388C912DA475230048D4F9 /* BackupSettingsStore.swift in Sources */,
 				C113994B2CA1B32C00D4D90C /* BackupStickerPackDownloadStore.swift in Sources */,
 				D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */,
+				D9EE79112CF525A4007F581B /* BackupSubscriptionRedeemer.swift in Sources */,
+				D9EE790F2CF5232C007F581B /* BackupSubscriptionRedemptionContext.swift in Sources */,
 				D987C8CF2E1CBE00004072BC /* BackupTestFlightEntitlementManager.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,

@@ -13,15 +13,15 @@ protocol SubscriptionRedemptionNecessityCheckerStore {
 ///
 /// Broadly, once per some fixed period (at the time of writing, 1x/3d) we make
 /// a series of network requests and parse/compare the results to determine if
-/// we believe the subscription has been renewed. If so, we enqueue and kick off
-/// a durable redemption job.
+/// we believe the subscription has been renewed. If so, we save and kick off a
+/// durable redemption job.
 ///
 /// At the time of writing we have two subscription types – donations and
 /// backups – which differ in their details but which also reuse much of the
 /// same "subscriber ID" anonymization infrastructure. Consequently, the logic
 /// we use to decide if they should be redeemed is largely the same for both,
 /// and customized by blocks passed by specific callers.
-struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
+struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
     typealias FetchSubscriptionBlock = (
         _ db: DB,
         _ subscriptionFetcher: SubscriptionFetcher
@@ -32,14 +32,14 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
         _ subscription: Subscription
     ) -> TimeInterval?
 
-    typealias EnqueueRedemptionJobBlock = (
+    typealias SaveRedemptionJobBlock = (
         _ subscriberId: Data,
         _ subscription: Subscription,
         _ tx: DBWriteTransaction
-    ) throws -> RedemptionJobRecord?
+    ) throws -> RedemptionJobContext?
 
     typealias StartRedemptionJobBlock = (
-        _ jobRecord: RedemptionJobRecord
+        _ jobContext: RedemptionJobContext
     ) async throws -> Void
 
     private enum Constants {
@@ -82,18 +82,18 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
     /// subscription is for a donation, returns the expiration time of the
     /// associated badge entitlement.
     ///
-    /// - Parameter enqueueRedemptionJobBlock
-    /// Enqueues a durable redemption job. Invoked if redemption is necessary.
-    /// May return `nil` if the caller knows a job should not be enqueued; for
-    /// example, if a duplicate job has already been enqueued.
+    /// - Parameter saveRedemptionJobBlock
+    /// Saves a durable redemption job. Invoked if redemption is necessary.
+    /// May return `nil` if the caller knows a job should not be saved; for
+    /// example, if a duplicate job has already been saved.
     ///
     /// - Parameter startRedemptionJobBlock
-    /// Starts a durable redemption job previously enqueued by
-    /// `enqueueRedemptionJobBlock`.
+    /// Starts a durable redemption job previously saved by
+    /// `saveRedemptionJobBlock`.
     func redeemSubscriptionIfNecessary(
         fetchSubscriptionBlock: FetchSubscriptionBlock,
         parseEntitlementExpirationBlock: ParseEntitlementExpirationBlock,
-        enqueueRedemptionJobBlock: EnqueueRedemptionJobBlock,
+        saveRedemptionJobBlock: SaveRedemptionJobBlock,
         startRedemptionJobBlock: StartRedemptionJobBlock
     ) async throws {
         let (
@@ -201,20 +201,20 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
         } else if hasSubscriptionRenewedSinceLastRedemption {
             logger.info("Attempting to redeem subscription renewal!")
 
-            let enqueuedJobRecord: RedemptionJobRecord? = try await db.awaitableWrite { tx in
-                /// Ask the caller to enqueue a redemption job. Importantly, do
+            let savedJobContext: RedemptionJobContext? = try await db.awaitableWrite { tx in
+                /// Ask the caller to save a redemption job. Importantly, do
                 /// this in the same transaction as recording that we performed
                 /// a necessity check.
-                let jobRecord = try enqueueRedemptionJobBlock(subscriberId, subscription, tx)
+                let jobContext = try saveRedemptionJobBlock(subscriberId, subscription, tx)
 
                 checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
 
-                return jobRecord
+                return jobContext
             }
 
-            if let enqueuedJobRecord {
-                /// Now that we've enqueued the durable job, kick-start it.
-                try await startRedemptionJobBlock(enqueuedJobRecord)
+            if let savedJobContext {
+                /// Now that we've saved the durable job, kick-start it.
+                try await startRedemptionJobBlock(savedJobContext)
             }
         } else {
             logger.info("Subscription has not renewed since last redemption; bailing out!")

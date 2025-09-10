@@ -24,7 +24,6 @@ class JobRecordTest: XCTestCase {
         case .sessionReset: return SessionResetJobRecord.self
         case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
         case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
-        case .backupReceiptsCredentialRedemption: return BackupReceiptCredentialRedemptionJobRecord.self
         }
     }
 
@@ -622,15 +621,5 @@ extension BulkDeleteInteractionJobRecord: ValidatableModel {
         else {
             throw ValidatableModelError.failedToValidate
         }
-    }
-}
-
-/// These are hard to generate constants for, becuase they're strongly-typed
-/// with real LibSignal `ReceiptCredential*`s.
-extension BackupReceiptCredentialRedemptionJobRecord: ValidatableModel {
-    static let constants: [(BackupReceiptCredentialRedemptionJobRecord, jsonData: Data)] = []
-
-    func validate(against: BackupReceiptCredentialRedemptionJobRecord) throws {
-        throw ValidatableModelError.failedToValidate
     }
 }

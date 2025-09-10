@@ -376,20 +376,19 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
-            authCredentialStore: authCredentialStore,
-            backupPlanManager: backupPlanManager,
-            db: db,
-            networkManager: networkManager,
-            reachabilityManager: reachabilityManager
-        )
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupPlanManager: backupPlanManager,
+            backupSubscriptionRedeemer: BackupSubscriptionRedeemer(
+                authCredentialStore: authCredentialStore,
+                backupPlanManager: backupPlanManager,
+                db: db,
+                reachabilityManager: reachabilityManager,
+                networkManager: networkManager,
+            ),
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
-            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
@@ -1737,7 +1736,6 @@ public class AppSetup {
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
-            backupReceiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
             donationReceiptCredentialRedemptionJobQueue: donationReceiptCredentialRedemptionJobQueue,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
@@ -1921,7 +1919,6 @@ extension AppSetup.FinalContinuation {
             sskEnvironment.localUserLeaveGroupJobQueueRef.start(appContext: appContext)
             sskEnvironment.callRecordDeleteAllJobQueueRef.start(appContext: appContext)
             sskEnvironment.bulkDeleteInteractionJobQueueRef.start(appContext: appContext)
-            sskEnvironment.backupReceiptCredentialRedemptionJobQueue.start(appContext: appContext)
             sskEnvironment.donationReceiptCredentialRedemptionJobQueue.start(appContext: appContext)
             sskEnvironment.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: appContext)
             sskEnvironment.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: appContext)
