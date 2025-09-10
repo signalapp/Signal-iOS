@@ -239,15 +239,40 @@ class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Uploading backup...")
 
-            try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
-                _ = try await backupArchiveManager.uploadEncryptedBackup(
-                    backupKey: backupKey,
-                    metadata: uploadMetadata,
-                    registeredBackupKeyToken: registeredBackupKeyToken,
-                    auth: .implicit(),
-                    progress: progress?.child(for: .backupUpload),
-                )
-            }
+            try await Retry.performWithBackoff(
+                maxAttempts: 3,
+                isRetryable: { error in
+                    if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
+                        return true
+                    }
+
+                    guard let uploadError = error as? Upload.Error else {
+                        return false
+                    }
+
+                    switch uploadError {
+                    case
+                            .networkError,
+                            .networkTimeout,
+                            .uploadFailure(recovery: .restart),
+                            .uploadFailure(recovery: .resume):
+                        return true
+                    case .uploadFailure(recovery: .noMoreRetries):
+                        return false
+                    case .invalidUploadURL, .unsupportedEndpoint, .unexpectedResponseStatusCode, .missingFile, .unknown:
+                        return false
+                    }
+                },
+                block: {
+                    _ = try await backupArchiveManager.uploadEncryptedBackup(
+                        backupKey: backupKey,
+                        metadata: uploadMetadata,
+                        registeredBackupKeyToken: registeredBackupKeyToken,
+                        auth: .implicit(),
+                        progress: progress?.child(for: .backupUpload),
+                    )
+                }
+            )
 
             logger.info("Listing media...")
 
