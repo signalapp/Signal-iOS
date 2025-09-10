@@ -30,6 +30,12 @@ PODS:
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
+  - SDWebImage (5.21.2):
+    - SDWebImage/Core (= 5.21.2)
+  - SDWebImage/Core (5.21.2)
+  - SDWebImageWebPCoder (0.14.6):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - SignalRingRTC (2.57.1):
     - SignalRingRTC/WebRTC (= 2.57.1)
   - SignalRingRTC/WebRTC (2.57.1)
@@ -61,6 +67,8 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - Reachability
+  - SDWebImage
+  - SDWebImageWebPCoder
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.57.1`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.30.0)
@@ -76,6 +84,8 @@ SPEC REPOS:
     - lottie-ios
     - PureLayout
     - Reachability
+    - SDWebImage
+    - SDWebImageWebPCoder
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
@@ -153,11 +163,13 @@ SPEC CHECKSUMS:
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
+  SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SignalRingRTC: be4ad58e35c0fa7f1a33b115b7a59c60f601a3fa
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 3697407f0d5b23bedeba9c2eaaf3ec6fdff69349
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 04278006f5f95790f01535b3f845bf123f9b8261
+PODFILE CHECKSUM: e7bedd7dfb6768e52c522f3582713a7564e8c0dc
 
 COCOAPODS: 1.15.2

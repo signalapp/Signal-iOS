@@ -5,8 +5,7 @@
 
 import CoreImage
 import Foundation
-import libwebp
-import YYImage
+import SDWebImageWebPCoder
 
 public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
@@ -76,35 +75,52 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
     }
 
     public func backupThumbnailData(image: UIImage) throws -> Data {
-        var image = image
-        if image.pixelSize.largerAxis > AttachmentThumbnailQuality.backupThumbnailDimensionPixels {
-            guard let resized = image.resized(maxDimensionPoints: AttachmentThumbnailQuality.backupThumbnail.thumbnailDimensionPoints()) else {
-                throw OWSAssertionError("Unable to resize image")
-            }
-            image = resized
+        let initialMaxFileSize = UInt32(CGFloat(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes) * 0.8)
+        return try backupThumbnailData(
+            image: image,
+            targetMaxFileSize: initialMaxFileSize
+        )
+    }
+
+    private func backupThumbnailData(
+        image: UIImage,
+        targetMaxFileSize: UInt32
+    ) throws -> Data {
+        let maxPixelSize = AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+        let targetSize: CGSize
+        if image.pixelSize.largerAxis > maxPixelSize {
+            let scaleRatio = maxPixelSize / image.pixelSize.largerAxis
+            targetSize = CGSize(
+                width: image.size.width * scaleRatio,
+                height: image.size.height * scaleRatio
+            )
+        } else {
+            targetSize = image.size
         }
 
-        func generateWebpData(quality: Double) throws -> Data {
-            guard let encoder = YYImageEncoder(type: .webP) else {
-                throw OWSAssertionError("Unable to create thumbnail encoder")
-            }
-            encoder.quality = quality
-            encoder.add(image, duration: 0)
-            guard let imageData = encoder.encode() else {
-                throw OWSAssertionError("Unable to generate webp data")
-            }
-            return imageData
+        guard let data = SDImageWebPCoder.shared.encodedData(
+            with: image,
+            format: .webP,
+            options: [
+                .encodeWebPMethod: 6,
+                .encodeMaxFileSize: targetMaxFileSize,
+                .encodeMaxPixelSize: targetSize
+            ]
+        ) else {
+            throw OWSAssertionError("Unable to generate webp")
         }
-
-        // Initially try 0.4 quality. Then scale down until we hit size limits.
-        let qualities: [Double] = [0.4, 0]
-        for quality in qualities {
-            let candidate = try generateWebpData(quality: quality)
-            if candidate.count < AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
-                return candidate
+        if data.count > AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
+            if targetMaxFileSize < 256 {
+                throw OWSAssertionError("Generated thumbnail too large")
+            } else {
+                let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.25)
+                return try backupThumbnailData(
+                    image: image,
+                    targetMaxFileSize: nextTargetMaxFileSize
+                )
             }
         }
-        throw OWSAssertionError("Unable to generate thumbnail below size limit!")
+        return data
     }
 
     private enum ThumbnailSpec {

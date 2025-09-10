@@ -37,6 +37,8 @@ pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 
+pod 'SDWebImage'
+pod 'SDWebImageWebPCoder'
 pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 pod 'libwebp', podspec: './ThirdParty/libwebp.podspec.json'
