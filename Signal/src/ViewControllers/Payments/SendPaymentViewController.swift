@@ -72,44 +72,8 @@ public class SendPaymentViewController: OWSViewController {
         recipient.isIdentifiedPayment
     }
 
-    public var isUsingPresentedStyle: Bool {
+    private var isUsingPresentedStyle: Bool {
         return presentingViewController != nil
-    }
-
-    open var tableBackgroundColor: UIColor {
-        AssertIsOnMainThread()
-
-        return Self.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
-    }
-
-    public static func tableBackgroundColor(isUsingPresentedStyle: Bool) -> UIColor {
-        AssertIsOnMainThread()
-
-        if isUsingPresentedStyle {
-            return Theme.tableView2PresentedBackgroundColor
-        } else {
-            return Theme.tableView2BackgroundColor
-        }
-    }
-
-    public var cellBackgroundColor: UIColor {
-        Self.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
-    }
-
-    public static func cellBackgroundColor(isUsingPresentedStyle: Bool) -> UIColor {
-        if isUsingPresentedStyle {
-            return Theme.tableCell2PresentedBackgroundColor
-        } else {
-            return Theme.tableCell2BackgroundColor
-        }
-    }
-
-    public var cellSelectedBackgroundColor: UIColor {
-        if isUsingPresentedStyle {
-            return Theme.tableCell2PresentedSelectedBackgroundColor
-        } else {
-            return Theme.tableCell2SelectedBackgroundColor
-        }
     }
 
     public init(
@@ -410,7 +374,7 @@ public class SendPaymentViewController: OWSViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = tableBackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
 
         addListeners()
 
@@ -469,7 +433,7 @@ public class SendPaymentViewController: OWSViewController {
     private func updateContents() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = tableBackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
         navigationItem.title = nil
         if mode.isModalRootView {
             navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
@@ -605,7 +569,7 @@ public class SendPaymentViewController: OWSViewController {
             label.font = buttonFont
             label.textColor = Theme.primaryTextColor
             button.addSubview(label)
-            button.backgroundColor = cellBackgroundColor
+            button.backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
             label.autoCenterInSuperview()
 
             return button
@@ -614,7 +578,7 @@ public class SendPaymentViewController: OWSViewController {
             let button = OWSButton(imageName: imageName,
                                    tintColor: Theme.primaryTextColor,
                                    block: block)
-            button.backgroundColor = cellBackgroundColor
+            button.backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
             return button
         }
         var keyboardRows = [UIView]()
