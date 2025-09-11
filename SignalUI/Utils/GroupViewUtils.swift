@@ -52,8 +52,6 @@ public class GroupViewUtils {
     public class func showUpdateErrorUI(error: Error) {
         AssertIsOnMainThread()
 
-        owsFailDebug(error.localizedDescription)
-
         if error.isNetworkFailureOrTimeout {
             OWSActionSheets.showActionSheet(title: OWSLocalizedString("ERROR_NETWORK_FAILURE",
                                                                      comment: "Error indicating network connectivity problems."),

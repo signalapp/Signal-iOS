@@ -41,7 +41,7 @@ extension GroupManager {
                     // From an operation perspective, this is a success!
                     break
                 default:
-                    owsFailDebug("Group update failed: \(error)")
+                    Logger.warn("Group update failed: \(error)")
                 }
                 throw error
             }
