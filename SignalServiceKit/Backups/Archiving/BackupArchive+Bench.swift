@@ -126,14 +126,14 @@ extension BackupArchive {
         }
 
         override func logResults() {
-            Logger.info("Pre-Frame Restore Metrics:")
+            logger.info("Pre-Frame Restore Metrics:")
             for (action, metrics) in self.preFrameRestoreMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
                 logMetrics(metrics, typeString: action.rawValue)
             }
 
             super.logResults()
 
-            Logger.info("Post-Frame Restore Metrics:")
+            logger.info("Post-Frame Restore Metrics:")
             for (action, metrics) in self.postFrameRestoreMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
                 logMetrics(metrics, typeString: action.rawValue)
             }
@@ -171,6 +171,8 @@ extension BackupArchive {
         class DBFileSizeBencher {
             private let dateProvider: DateProviderMonotonic
             private let dbFileSizeProvider: DBFileSizeProvider
+            private let logger: PrefixedLogger
+
 #if DEBUG
             private let secondsBetweenLogs: TimeInterval = 2
 #else
@@ -188,6 +190,7 @@ extension BackupArchive {
             ) {
                 self.dateProvider = dateProvider
                 self.dbFileSizeProvider = dbFileSizeProvider
+                self.logger = PrefixedLogger(prefix: "[Backups]")
             }
 
             func logIfNecessary(totalFramesProcessed: UInt64) {
@@ -201,7 +204,7 @@ extension BackupArchive {
 
                 let dbFileSize = dbFileSizeProvider.getDatabaseFileSize()
                 let walFileSize = dbFileSizeProvider.getDatabaseWALFileSize()
-                Logger.info("{DB:\(dbFileSize), WAL:\(walFileSize), frames:\(totalFramesProcessed), framesDelta:\(totalFramesProcessed - (lastTotalFramesProcessed ?? 0))}")
+                logger.info("{DB:\(dbFileSize), WAL:\(walFileSize), frames:\(totalFramesProcessed), framesDelta:\(totalFramesProcessed - (lastTotalFramesProcessed ?? 0))}")
 
                 lastLogDate = dateProvider()
                 lastTotalFramesProcessed = totalFramesProcessed
@@ -215,10 +218,10 @@ extension BackupArchive {
     /// archive/restore, per frame type.
     class Bencher {
         fileprivate let dateProvider: DateProviderMonotonic
+        fileprivate let logger: PrefixedLogger
         fileprivate let memorySampler: MemorySampler
 
         fileprivate let startDate: MonotonicDate
-
         fileprivate var totalFramesProcessed: UInt64 = 0
         fileprivate var frameProcessingMetrics = [FrameType: Metrics]()
 
@@ -227,6 +230,7 @@ extension BackupArchive {
             memorySampler: MemorySampler
         ) {
             self.dateProvider = dateProviderMonotonic
+            self.logger = PrefixedLogger(prefix: "[Backups]")
             self.memorySampler = memorySampler
 
             startDate = dateProviderMonotonic()
@@ -312,9 +316,9 @@ extension BackupArchive {
 
         func logResults() {
             let totalFrameCount = frameProcessingMetrics.reduce(0, { $0 + $1.value.frameCount })
-            Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \((dateProvider() - startDate).milliseconds)ms")
+            logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \((dateProvider() - startDate).milliseconds)ms")
 
-            Logger.info("Frame Processing Metrics:")
+            logger.info("Frame Processing Metrics:")
             for (frameType, metrics) in self.frameProcessingMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
                 logMetrics(metrics, typeString: frameType.rawValue)
             }
@@ -330,7 +334,7 @@ extension BackupArchive {
             if metrics.totalEnumerationDurationMs > 0 {
                 logString += " Enum:\(metrics.totalEnumerationDurationMs)ms"
             }
-            Logger.info(logString)
+            logger.info(logString)
         }
 
         private func loggableCountString(_ number: UInt64) -> String {

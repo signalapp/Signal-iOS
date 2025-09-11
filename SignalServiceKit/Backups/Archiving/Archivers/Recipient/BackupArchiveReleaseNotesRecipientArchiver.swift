@@ -15,8 +15,6 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
     typealias ArchiveFrameResult = BackupArchive.ArchiveSingleFrameResult<Void, RecipientAppId>
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<RecipientId>
 
-    private let logger = PrefixedLogger(prefix: "[Backups]")
-
     public init() {}
 
     // MARK: -
@@ -62,7 +60,6 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
         context[recipient.recipientId] = .releaseNotesChannel
 
         // TODO: [Backups] Implement restoring the Release Notes channel recipient.
-        logger.warn("No-op restore of a Release Notes recipient!")
         return .success
     }
 }

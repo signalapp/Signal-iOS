@@ -1122,6 +1122,8 @@ extension BackupArchive {
     fileprivate static let maxCollapsedIdLogCount = 10
 
     public struct CollapsedErrorLog {
+        private let logger: PrefixedLogger
+
         public private(set) var typeLogString: String
         public private(set) var exampleCallsiteString: String
         public private(set) var exampleProtoFrameJson: String?
@@ -1131,6 +1133,8 @@ extension BackupArchive {
         public private(set) var logLevel: BackupArchive.LogLevel
 
         init(_ error: LoggableErrorAndProto) {
+            self.logger = PrefixedLogger(prefix: "[Backups]")
+
             self.typeLogString = error.error.typeLogString
             self.exampleCallsiteString = error.error.callsiteLogString
             self.exampleProtoFrameJson = error.protoJson
@@ -1160,9 +1164,9 @@ extension BackupArchive {
                 + "example callsite: \(exampleCallsiteString)"
             switch logLevel {
             case .warning:
-                Logger.warn(logString)
+                logger.warn(logString)
             case .error:
-                Logger.error(logString)
+                logger.error(logString)
             }
         }
     }

@@ -187,7 +187,6 @@ public class BackupArchivePostFrameRestoreActionManager {
             /// without a chat existing. However, who's to say what we'll import
             /// and it's not illegal to create a Backup with a `Contact` frame
             /// that doesn't have a corresponding `Chat` frame.
-            Logger.warn("Skipping insert of contact-hidden info message: missing contact thread for recipient!")
             return
         }
 
@@ -208,7 +207,6 @@ public class BackupArchivePostFrameRestoreActionManager {
             case .contact(let contactAddress) = address,
             let phoneNumber = contactAddress.e164
         else {
-            Logger.warn("Skipping insert of phone number missing ACI because there's no phone number!")
             return
         }
         AuthorMergeHelper().foundMissingAci(for: phoneNumber.stringValue, tx: chatItemContext.tx)

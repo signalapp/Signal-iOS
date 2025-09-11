@@ -117,6 +117,7 @@ public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
 // MARK: - Encryption Key Derivation
 
 extension BackupImportSource {
+    private var logger: PrefixedLogger { .init(prefix: "[Backups]") }
 
     /// Derive the encryption key used to decrypt the backup file, potentially
     /// performing a fetch from SVR🐝, depending on the purpose and available data.
@@ -213,20 +214,20 @@ extension BackupImportSource {
             switch error as? LibSignalClient.SignalError {
             case .invalidArgument:
                 // Metadata is malformed. Totally unrecoverable.
-                Logger.error("SVR🐝 metadata header malformed; cannot recover backup")
+                logger.error("SVR🐝 metadata header malformed; cannot recover backup")
                 throw .unrecoverable
             case .svrRestoreFailed:
                 // Some SVR🐝 error that means data is lost. Totally unrecoverable.
-                Logger.error("SVR🐝 restore failed; cannot recover backup")
+                logger.error("SVR🐝 restore failed; cannot recover backup")
                 throw .unrecoverable
             case .svrDataMissing:
-                Logger.error("SVR🐝 data missing; cannot recover backup")
+                logger.error("SVR🐝 data missing; cannot recover backup")
                 throw .incorrectRecoveryKey
             case .rateLimitedError(let retryAfter, _):
                 // Do a quite rudimentary thing where we just wait
                 // for the retry time, which will leave the user with
                 // a spinner. But we never really expect this to happen.
-                Logger.warn("Rate-limited SVR🐝 restore, waiting...")
+                logger.warn("Rate-limited SVR🐝 restore, waiting...")
                 try? await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds)
                 return try await fetchForwardSecrecyTokenFromSvr(
                     key: key,
@@ -245,7 +246,7 @@ extension BackupImportSource {
             default:
                 // Everything else let the user retry. This will inevitably
                 // include things that are bugs, leaving users in retry loops.
-                Logger.error("Failed SVR🐝 restore w/ unknown error: \(error)")
+                logger.error("Failed SVR🐝 restore w/ unknown error: \(error)")
                 throw .retryableByUser
             }
         }
@@ -271,6 +272,7 @@ extension BackupImportSource {
 }
 
 extension BackupExportPurpose {
+    private var logger: PrefixedLogger { .init(prefix: "[Backups]") }
 
     struct EncryptionMetadata {
         let encryptionKey: MessageBackupKey
@@ -392,7 +394,7 @@ extension BackupExportPurpose {
             case .invalidArgument:
                 // This happens when the "previousSecretData" is invalid.
                 // To recover, we have to start over with `createNewBackupChain`.
-                Logger.error("Failed SVR🐝 store w/ invalid argument, wiping next secret metadata")
+                logger.error("Failed SVR🐝 store w/ invalid argument, wiping next secret metadata")
                 await db.awaitableWrite { tx in
                     nonceStore.deleteNextSecretMetadata(tx: tx)
                 }
@@ -409,7 +411,7 @@ extension BackupExportPurpose {
                 // Do a quite rudimentary thing where we just wait
                 // for the retry time, which will leave the user with
                 // a spinner. But we never really expect this to happen.
-                Logger.warn("Rate-limited SVR🐝 store, waiting...")
+                logger.warn("Rate-limited SVR🐝 store, waiting...")
                 try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * UInt64(retryAfter * 1000))
                 return try await storeEncryptionMetadataToSvr🐝(
                     key: key,
@@ -427,7 +429,7 @@ extension BackupExportPurpose {
             default:
                 // Everything else let the user retry. This will inevitably
                 // include things that are bugs, leaving users in retry loops.
-                Logger.error("Failed SVR🐝 store w/ unknown error: \(error)")
+                logger.error("Failed SVR🐝 store w/ unknown error: \(error)")
                 throw .retryableByUser
             }
         }

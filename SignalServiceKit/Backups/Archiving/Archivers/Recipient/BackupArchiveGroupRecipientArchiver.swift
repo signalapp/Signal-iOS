@@ -32,8 +32,6 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
     private let storyStore: BackupArchiveStoryStore
     private let threadStore: BackupArchiveThreadStore
 
-    private let logger = PrefixedLogger(prefix: "[Backups]")
-
     public init(
         avatarDefaultColorManager: AvatarDefaultColorManager,
         avatarFetcher: BackupArchiveAvatarFetcher,
@@ -109,7 +107,6 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         errors: inout [ArchiveFrameError]
     ) {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            logger.warn("Skipping archive of V1 group.")
             return
         }
 

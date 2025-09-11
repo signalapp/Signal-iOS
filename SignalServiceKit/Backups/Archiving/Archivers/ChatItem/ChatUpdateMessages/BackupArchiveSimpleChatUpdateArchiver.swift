@@ -420,7 +420,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             ))
         case .releaseChannelDonationRequest:
             // TODO: [Backups] Add support (and a test case!) for this once we've implemented the Release Notes channel.
-            logger.warn("Encountered not-yet-supported release-channel-donation-request update")
             return .success(())
         case .endSession:
             guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {

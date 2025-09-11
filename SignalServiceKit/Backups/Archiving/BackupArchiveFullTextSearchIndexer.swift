@@ -31,6 +31,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
     private let fullTextSearchIndexer: Shims.FullTextSearchIndexer
     private let interactionStore: InteractionStore
     private let kvStore: KeyValueStore
+    private let logger: PrefixedLogger
     private let searchableNameIndexer: SearchableNameIndexer
     private let taskQueue: SerialTaskQueue
 
@@ -48,6 +49,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.interactionStore = interactionStore
         self.kvStore = KeyValueStore(collection: "BackupFullTextSearchIndexerImpl")
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.searchableNameIndexer = searchableNameIndexer
         self.taskQueue = SerialTaskQueue()
 
@@ -108,7 +110,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
                 if maxInteractionRowIdSoFar >= maxInteractionRowIdInclusive {
                     self.setMaxInteractionRowIdInclusive(nil, tx: tx)
                     self.setMinInteractionRowIdExclusive(nil, tx: tx)
-                    Logger.info("Finished")
+                    logger.info("Finished")
                 } else {
                     minInteractionRowIdExclusive = maxInteractionRowIdSoFar
                     self.setMinInteractionRowIdExclusive(maxInteractionRowIdSoFar, tx: tx)
@@ -116,7 +118,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
             }
         }
 
-        Logger.info("Starting job")
+        logger.info("Starting job")
 
         var hasMoreMessages = true
         while hasMoreMessages {
@@ -135,7 +137,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
                     while let interaction = try cursor.next() {
                         let durationMs = (dateProvider() - startTime).milliseconds
                         if durationMs > Constants.batchDurationMs {
-                            Logger.info("Bailing on batch after \(processedCount) interactions")
+                            logger.info("Bailing on batch after \(processedCount) interactions")
                             finalizeBatch(tx: tx)
                             return true
                         }
@@ -146,7 +148,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
                     finalizeBatch(tx: tx)
                     return false
                 } catch let error {
-                    Logger.info("Failed batch after \(processedCount) interactions \(error.grdbErrorForLogging)")
+                    logger.info("Failed batch after \(processedCount) interactions \(error.grdbErrorForLogging)")
                     finalizeBatch(tx: tx)
                     return true
                 }

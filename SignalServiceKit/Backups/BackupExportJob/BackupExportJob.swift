@@ -29,9 +29,16 @@ public enum BackupExportJobStep: String, OWSSequentialProgressStep {
     }
 }
 
-public enum BackupExportJobMode {
+public enum BackupExportJobMode: CustomStringConvertible {
     case manual(OWSSequentialProgressRootSink<BackupExportJobStep>)
     case bgProcessingTask
+
+    public var description: String {
+        switch self {
+        case .manual: "Manual"
+        case .bgProcessingTask: "BGProcessingTask"
+        }
+    }
 }
 
 public enum BackupExportJobError: Error {

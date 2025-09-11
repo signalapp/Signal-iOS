@@ -135,7 +135,6 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             else {
                 /// Skip recipients with no identifiers, but don't add to the
                 /// list of errors.
-                Logger.warn("Skipping empty SignalRecipient!")
                 return
             }
 
@@ -331,7 +330,6 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 else {
                     /// Skip profiles with no identifiers, but don't add to the
                     /// list of errors.
-                    Logger.warn("Skipping empty OWSUserProfile!")
                     return
                 }
 

@@ -76,7 +76,8 @@ class BackupArchiveInlinedOversizeTextArchiver {
     private let attachmentContentValidator: AttachmentContentValidator
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let db: any DB
+    private let db: DB
+    private let logger: PrefixedLogger
 
     private static let lastRestoredRowIdKey = "lastRestoredRowIdKey"
     private let kvStore = KeyValueStore(collection: "BackupOversizeTextCacheStore")
@@ -88,13 +89,14 @@ class BackupArchiveInlinedOversizeTextArchiver {
         attachmentContentValidator: AttachmentContentValidator,
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        db: any DB,
+        db: DB,
     ) {
         self.attachmentsArchiver = attachmentsArchiver
         self.attachmentContentValidator = attachmentContentValidator
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.db = db
+        self.logger = PrefixedLogger(prefix: "[Backups]")
     }
 
     // MARK: - Archive
@@ -416,7 +418,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     private func insert(attachmentId: Attachment.IDType, text: String, tx: DBWriteTransaction) throws -> BackupOversizeTextCache.IDType {
         var text = text
         if text.lengthOfBytes(using: .utf8) > BackupOversizeTextCache.maxTextLengthBytes {
-            Logger.error("Oversized backup text too long! Truncating...")
+            logger.error("Oversized backup text too long! Truncating...")
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
         var record = BackupOversizeTextCache(id: nil, attachmentRowId: attachmentId, text: text)

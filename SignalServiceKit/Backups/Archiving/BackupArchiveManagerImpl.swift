@@ -64,6 +64,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let libsignalNet: LibSignalClient.Net
     private let localStorage: AccountKeyStore
     private let localRecipientArchiver: BackupArchiveLocalRecipientArchiver
+    private let logger: PrefixedLogger
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider
@@ -145,6 +146,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.libsignalNet = libsignalNet
         self.localStorage = localStorage
         self.localRecipientArchiver = localRecipientArchiver
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.oversizeTextArchiver = oversizeTextArchiver
         self.plaintextStreamProvider = plaintextStreamProvider
@@ -208,7 +210,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         } catch let error {
             switch (error as? BackupArchive.Response.BackupUploadFormError) {
             case .tooLarge:
-                Logger.warn("Backup too large! \(metadata.encryptedDataLength)")
+                logger.warn("Backup too large! \(metadata.encryptedDataLength)")
             default:
                 break
             }
@@ -462,7 +464,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         var errors = [LoggableErrorAndProto]()
         let result = Result<Void, Error>(catching: {
-            Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestampMs)")
+            logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestampMs)")
 
             try autoreleasepool {
                 try writeHeader(
@@ -673,7 +675,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             try stream.closeFileStream()
 
-            Logger.info("Finished exporting backup")
+            logger.info("Finished exporting backup")
             bencher.logResults()
         })
         processErrors(errors: errors, didFail: result.isSuccess.negated)
@@ -978,7 +980,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw error
             }
 
-            Logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
+            logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
 
             guard backupInfo.version == Constants.supportedBackupVersion else {
                 frameErrors.append(LoggableErrorAndProto(
@@ -1361,9 +1363,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 disappearingMessagesJob.startIfNecessary()
             }
 
-            Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
-            Logger.info("Backup app version: \(backupInfo.currentAppVersion.nilIfEmpty ?? "Missing!")")
-            Logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
+            logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
+            logger.info("Backup app version: \(backupInfo.currentAppVersion.nilIfEmpty ?? "Missing!")")
+            logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
             bencher.logResults()
 
             return backupInfo
@@ -1447,7 +1449,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         }
         if wasFrameDropped {
             // Log this specifically so we can do a naive exact text search in debug logs.
-            Logger.error("Dropped frame(s) on backup export or import!!!")
+            logger.error("Dropped frame(s) on backup export or import!!!")
         }
         // Only present errors if some error rises above warning.
         // (But if one does, present _all_ errors).
@@ -1500,16 +1502,16 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             switch error {
             case let validationError as MessageBackupValidationError:
                 await backupArchiveErrorPresenter.persistValidationError(validationError)
-                Logger.error("Backup validation failed \(validationError.errorMessage)")
+                logger.error("Backup validation failed \(validationError.errorMessage)")
                 throw BackupValidationError.validationFailed(
                     message: validationError.errorMessage,
                     unknownFields: validationError.unknownFields.fields
                 )
             case SignalError.ioError(let description):
-                Logger.error("Backup validation i/o error: \(description)")
+                logger.error("Backup validation i/o error: \(description)")
                 throw BackupValidationError.ioError(description)
             default:
-                Logger.error("Backup validation unknown error: \(error)")
+                logger.error("Backup validation unknown error: \(error)")
                 throw BackupValidationError.unknownError
             }
         }
