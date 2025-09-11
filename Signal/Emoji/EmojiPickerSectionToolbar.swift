@@ -139,6 +139,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
         collectionView.delegate = self
         collectionView.backgroundColor = .clear
         collectionView.allowsMultipleSelection = false
+        collectionView.alwaysBounceVertical = false
         collectionView.insetsLayoutMarginsFromSafeArea = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         let collectionViewHeight = EmojiSectionCellContentView.viewSize + 2 * Self.collectionViewSectionMargin
