@@ -5,7 +5,7 @@
 
 import Lottie
 public import SignalServiceKit
-import YYImage
+import SDWebImage
 
 public class StickerView {
 
@@ -71,15 +71,14 @@ public class StickerView {
         let stickerView: UIView
         switch stickerType {
         case .webp, .apng, .gif:
-            guard let stickerImage = YYImage(data: stickerData) else {
+            guard let stickerImage = SDAnimatedImage(data: stickerData) else {
                 owsFailDebug("Sticker could not be parsed.")
                 return nil
             }
-            let yyView = YYAnimatedImageView()
-            yyView.alwaysInfiniteLoop = true
-            yyView.contentMode = .scaleAspectFit
-            yyView.image = stickerImage
-            stickerView = yyView
+            let sdAnimatedImageView = SDAnimatedImageView()
+            sdAnimatedImageView.contentMode = .scaleAspectFit
+            sdAnimatedImageView.image = stickerImage
+            stickerView = sdAnimatedImageView
         }
         return stickerView
     }

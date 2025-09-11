@@ -4,7 +4,6 @@
 //
 
 public import SignalServiceKit
-public import YYImage
 
 public class AttachmentSharing {
 
@@ -283,11 +282,4 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             return try? attachmentStream.decryptedImage()
         }
     }
-}
-
-// YYImage does not specify that the sublcass still supports secure coding,
-// this is required for anything that subclasses a class that supports secure
-// coding. We do so here, otherwise copy / save will not work for YYImages
-extension YYImage {
-    open class override var supportsSecureCoding: Bool { true }
 }

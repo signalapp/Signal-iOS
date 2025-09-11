@@ -4,7 +4,6 @@
 //
 
 public import SignalServiceKit
-import YYImage
 
 public enum LinkPreviewImageState: Equatable {
     case none
@@ -322,7 +321,7 @@ public class LinkPreviewSent: LinkPreviewState {
             DispatchQueue.global().async {
                 switch attachmentStream.contentType {
                 case .animatedImage:
-                    guard let image = try? attachmentStream.decryptedYYImage() else {
+                    guard let image = try? attachmentStream.decryptedSDAnimatedImage() else {
                         owsFailDebug("Could not load image")
                         return
                     }

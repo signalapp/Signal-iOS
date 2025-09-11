@@ -6,7 +6,7 @@
 import CoreMedia
 import SignalServiceKit
 import SignalUI
-import YYImage
+import SDWebImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
@@ -117,8 +117,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
                 view = buildPlaceholderView()
             }
         } else if attachmentStream.contentType.isAnimatedImage {
-            if let animatedGif = try? attachmentStream.decryptedYYImage() {
-                view = YYAnimatedImageView(image: animatedGif)
+            if let animatedGif = try? attachmentStream.decryptedSDAnimatedImage() {
+                view = SDAnimatedImageView(image: animatedGif)
             } else {
                 view = buildPlaceholderView()
             }

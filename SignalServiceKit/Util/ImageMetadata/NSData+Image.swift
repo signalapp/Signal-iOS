@@ -6,7 +6,6 @@
 import Foundation
 
 import libwebp
-import YYImage
 
 extension NSData {
     @objc

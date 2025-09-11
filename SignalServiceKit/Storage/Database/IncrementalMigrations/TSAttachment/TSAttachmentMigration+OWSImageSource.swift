@@ -5,7 +5,6 @@
 
 import Foundation
 import libwebp
-import YYImage
 
 // MARK: - PNG Chunker
 

@@ -5,7 +5,7 @@
 
 public import AVFoundation
 import Foundation
-public import YYImage
+public import SDWebImage
 
 /// When presenting a view-once message, we:
 /// 1. copy the displayable attachment contents to a tmp file
@@ -60,7 +60,7 @@ public class ViewOnceContent {
         )
     }
 
-    public func loadYYImage() throws -> YYImage {
+    public func loadYYImage() throws -> SDAnimatedImage {
         // hmac and digest are validated at download time; no need to revalidate every read.
         let data = try Cryptography.decryptFileWithoutValidating(
             at: fileUrl,
@@ -69,7 +69,7 @@ public class ViewOnceContent {
                 plaintextLength: Int(plaintextLength)
             )
         )
-        guard let image = YYImage(data: data) else {
+        guard let image = SDAnimatedImage(data: data) else {
             throw OWSAssertionError("Couldn't load image")
         }
         return image

@@ -5,6 +5,8 @@
 
 import Foundation
 public import LibSignalClient
+import SDWebImage
+import SDWebImageWebPCoder
 
 public class AppSetup {
     public init() {}
@@ -1884,6 +1886,12 @@ extension AppSetup.FinalContinuation {
 
     @MainActor
     public func runLaunchTasksIfNeededAndReloadCaches() {
+
+        // Coders are consulted in reverse order of adding, so add
+        // the AWebPCoder last, which used the native ImageIO, if supported
+        SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+        SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+
         // Warm (or re-warm) all of the caches. In theory, every cache is
         // susceptible to diverging state between the Main App & NSE and should be
         // reloaded here. In practice, some caches exist but aren't used by the

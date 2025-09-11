@@ -6,7 +6,7 @@
 import CoreMedia
 import SignalServiceKit
 import SignalUI
-import YYImage
+import SDWebImage
 
 class ViewOnceMessageViewController: OWSViewController {
 
@@ -141,7 +141,7 @@ class ViewOnceMessageViewController: OWSViewController {
                     owsFailDebug("Attachment has invalid size.")
                     return nil
             }
-            let animatedImageView = YYAnimatedImageView()
+            let animatedImageView = SDAnimatedImageView()
             // We need to specify a contentMode since the size of the image
             // might not match the aspect ratio of the view.
             animatedImageView.contentMode = .scaleAspectFit

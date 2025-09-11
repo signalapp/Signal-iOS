@@ -4,13 +4,13 @@
 //
 
 import Foundation
-public import YYImage
+public import SDWebImage
 
-public extension YYAnimatedImage {
+public extension SDAnimatedImage {
 
-    /// YYAnimatedImageView's duration sometimes returns 0 duration even when this extended method works.
-    var duration: TimeInterval? {
-        let frameCount = self.animatedImageFrameCount()
+    /// SDAnimatedImageView's duration sometimes returns 0 duration even when this extended method works.
+    var animationDuration: TimeInterval? {
+        let frameCount = self.animatedImageFrameCount
         guard frameCount > 0 else {
             return nil
         }

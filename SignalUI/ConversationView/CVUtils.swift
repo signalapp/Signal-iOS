@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 import UIKit
-public import YYImage
+public import SDWebImage
 
 public class CVUtils {
 
@@ -199,7 +199,7 @@ open class CVImageView: UIImageView, CVView {
 
 // MARK: -
 
-open class CVAnimatedImageView: YYAnimatedImageView, CVView {
+public class CVAnimatedImageView: SDAnimatedImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
 

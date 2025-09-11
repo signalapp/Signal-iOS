@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import YYImage
+import SDWebImage
 
 extension UIImage {
 
@@ -80,8 +80,8 @@ extension UIImage {
         )
         let image: UIImage?
         if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
-            /// Use YYImage for webp.
-            image = YYImage(data: data)
+            /// Use SDAnimatedImage for webp.
+            image = SDAnimatedImage(data: data)
         } else {
             image = UIImage(data: data)
         }

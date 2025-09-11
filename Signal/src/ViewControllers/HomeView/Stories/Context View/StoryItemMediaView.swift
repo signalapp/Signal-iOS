@@ -9,7 +9,7 @@ import SafariServices
 import SignalServiceKit
 import SignalUI
 import UIKit
-import YYImage
+import SDWebImage
 
 protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
@@ -252,7 +252,7 @@ class StoryItemMediaView: UIView {
                     // as it would cause the video to loop leading to weird UX
                     glyphCount = nil
                 }
-            } else if let animatedImageDuration = (yyImageView?.image as? YYAnimatedImage)?.duration {
+            } else if let animatedImageDuration = (yyImageView?.image as? SDAnimatedImage)?.animationDuration {
                 // GIFs should loop 3 times, or play for 5 seconds
                 // whichever is longer.
                 return max(5, animatedImageDuration * 3)
@@ -948,10 +948,10 @@ class StoryItemMediaView: UIView {
         return playerView
     }
 
-    private var yyImageView: YYAnimatedImageView?
+    private var yyImageView: SDAnimatedImageView?
     private func buildYYImageView(attachment: AttachmentStream) -> UIView {
         guard
-            let image = try? attachment.decryptedYYImage()
+            let image = try? attachment.decryptedSDAnimatedImage()
         else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -961,7 +961,7 @@ class StoryItemMediaView: UIView {
                 owsFailDebug("Attachment has invalid size.")
                 return buildContentUnavailableView()
         }
-        let animatedImageView = YYAnimatedImageView()
+        let animatedImageView = SDAnimatedImageView()
         animatedImageView.contentMode = .scaleAspectFit
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear

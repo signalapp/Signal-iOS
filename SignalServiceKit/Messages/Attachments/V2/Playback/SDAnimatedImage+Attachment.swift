@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import YYImage
+public import SDWebImage
 
-extension YYImage {
+extension SDAnimatedImage {
 
-    public static func yyImage(
+    public static func sdImage(
         from attachment: AttachmentStream
-    ) throws -> YYImage {
+    ) throws -> SDAnimatedImage {
         // YYImage has an initializer that takes a file path, but that
         // initializer loads the entire file's data into memory.
         // So we don't use any more memory at any point compared to that.
@@ -19,7 +19,7 @@ extension YYImage {
         // file types other than png and jpeg and its unclear if it would work
         // at all for animated images.
         let data = try attachment.decryptedRawData()
-        guard let image = YYImage(data: data) else {
+        guard let image = SDAnimatedImage(data: data) else {
             throw OWSAssertionError("Unable to decode image")
         }
         return image

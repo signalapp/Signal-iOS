@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 import SignalUI
-import YYImage
+import SDWebImage
 
 // MARK: -
 
@@ -320,7 +320,7 @@ class MediaViewAdapterAnimated: MediaViewAdapter {
         guard attachmentStream.contentType.isAnimatedImage else {
             throw ReusableMediaError.invalidMedia
         }
-        guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
+        guard let animatedImage = try? attachmentStream.decryptedSDAnimatedImage() else {
             throw OWSAssertionError("Invalid animated image.")
         }
         return animatedImage
@@ -329,7 +329,7 @@ class MediaViewAdapterAnimated: MediaViewAdapter {
     func applyMedia(_ media: AnyObject) {
         AssertIsOnMainThread()
 
-        guard let image = media as? YYImage else {
+        guard let image = media as? SDAnimatedImage else {
             owsFailDebug("Media has unexpected type: \(type(of: media))")
             return
         }
@@ -544,7 +544,7 @@ public class MediaViewAdapterSticker: MediaViewAdapter {
             throw ReusableMediaError.invalidMedia
         }
         if shouldBeRenderedByYY {
-            guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
+            guard let animatedImage = try? attachmentStream.decryptedSDAnimatedImage() else {
                 throw OWSAssertionError("Invalid animated image.")
             }
             return animatedImage
@@ -560,7 +560,7 @@ public class MediaViewAdapterSticker: MediaViewAdapter {
         AssertIsOnMainThread()
 
         if shouldBeRenderedByYY {
-            guard let image = media as? YYImage else {
+            guard let image = media as? SDAnimatedImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
             }

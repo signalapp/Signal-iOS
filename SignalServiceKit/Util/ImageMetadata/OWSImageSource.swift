@@ -5,8 +5,7 @@
 
 import Foundation
 
-import libwebp
-import YYImage
+import SDWebImage
 
 public protocol OWSImageSource {
 
@@ -487,12 +486,8 @@ extension OWSImageSource {
         guard let data = try? self.readIntoMemory() else {
             return nil
         }
-        guard let cgImage = YYCGImageCreateWithWebPData(data as CFData, false, false, false, false) else {
-            owsFailDebug("Could not generate still for webp image.")
-            return nil
-        }
 
-        return UIImage(cgImage: cgImage.takeRetainedValue())
+        return UIImage.sd_image(with: data)
     }
 
     fileprivate static func isWebp(filePath: String) -> Bool {
@@ -512,25 +507,18 @@ extension OWSImageSource {
         guard let data = try? self.readIntoMemory() else {
             return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
         }
-        return data.withUnsafeBytes {
-            $0.withMemoryRebound(to: UInt8.self) { buffer in
-                var webPData = WebPData(bytes: buffer.baseAddress, size: buffer.count)
-                guard let demuxer = WebPDemux(&webPData) else {
-                    return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
-                }
-                defer {
-                    WebPDemuxDelete(demuxer)
-                }
-
-                let canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH)
-                let canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT)
-                let frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT)
-                let result = WebpMetadata(isValid: canvasWidth > 0 && canvasHeight > 0 && frameCount > 0,
-                                          canvasWidth: canvasWidth,
-                                          canvasHeight: canvasHeight,
-                                          frameCount: frameCount)
-                return result
-            }
+        guard let image = SDAnimatedImage(data: data) else {
+            return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
         }
+
+        let count = image.sd_imageFrameCount
+        let height = image.pixelHeight
+        let width = image.pixelWidth
+        return WebpMetadata(
+            isValid: width > 0 && height > 0 && count > 0,
+            canvasWidth: UInt32(width),
+            canvasHeight: UInt32(height),
+            frameCount: UInt32(count)
+        )
     }
 }

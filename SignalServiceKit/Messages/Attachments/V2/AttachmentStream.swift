@@ -5,7 +5,7 @@
 
 public import AVFoundation
 import Foundation
-public import YYImage
+public import SDWebImage
 
 /// Represents a downloaded attachment with the fullsize contents available on local disk.
 public class AttachmentStream {
@@ -174,8 +174,8 @@ public class AttachmentStream {
             let data = try self.decryptedRawData()
             let image: UIImage?
             if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
-                /// Use YYImage for webp.
-                image = YYImage(data: data)
+                /// Use SDAnimatedImage for webp.
+                image = SDAnimatedImage(data: data)
             } else {
                 image = UIImage(data: data)
             }
@@ -197,12 +197,12 @@ public class AttachmentStream {
         }
     }
 
-    public func decryptedYYImage() throws -> YYImage {
+    public func decryptedSDAnimatedImage() throws -> SDAnimatedImage {
         switch contentType {
         case .file, .invalid, .audio, .video:
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
-            return try YYImage.yyImage(from: self)
+            return try SDAnimatedImage.sdImage(from: self)
         }
     }
 

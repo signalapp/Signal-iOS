@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 import UIKit
-import YYImage
+import SDWebImage
 
 class MediaMessageView: UIView, AudioPlayerDelegate {
 
@@ -138,13 +138,14 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createAnimatedPreview() {
         guard attachment.isValidImage,
               let dataUrl = attachment.dataUrl,
-              let image = YYImage(contentsOfFile: dataUrl.path),
-              image.size.width > 0 && image.size.height > 0 else {
+              let image = SDAnimatedImage(contentsOfFile: dataUrl.path),
+              image.size.width > 0 && image.size.height > 0
+        else {
             createGenericPreview()
             return
         }
 
-        let animatedImageView = YYAnimatedImageView()
+        let animatedImageView = SDAnimatedImageView()
         animatedImageView.image = image
         let aspectRatio = image.size.width / image.size.height
 
