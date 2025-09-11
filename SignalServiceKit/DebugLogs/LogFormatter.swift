@@ -40,17 +40,21 @@ final class LogFormatter: NSObject, DDLogFormatter {
     }
 
     private static func formattedLocation(logMessage: DDLogMessage) -> String {
-        // We format the filename & line number in a format compatible
-        // with Xcode's "Open Quickly..." feature.
-        let file = logMessage.file
+        var file = logMessage.file
+        file = file.replacingOccurrences(of: ".swift", with: "")
+
         let line = logMessage.line
-        let function = logMessage.function ?? ""
-        let spacer = function.isEmpty ? "" : " "
+
+        // Drop the arguments from the function name.
+        var function = logMessage.function ?? ""
+        if let parensIndex = function.firstIndex(of: "(") {
+            function = String(function[..<parensIndex])
+        }
 
         if file.isEmpty, line == 0, function.isEmpty {
             return ""
         }
 
-        return "[\(file):\(line)\(spacer)\(function)]: "
+        return "[\(file):\(line)\(function.isEmpty ? "" : " ")\(function)]: "
     }
 }

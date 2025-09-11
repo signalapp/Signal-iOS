@@ -227,6 +227,8 @@ public final class DebugLogger {
     }
 }
 
+// MARK: -
+
 private extension LibsignalLogLevel {
     var logFlag: DDLogFlag {
         switch self {
@@ -254,6 +256,8 @@ final class LibsignalLoggerImpl: LibsignalLogger {
         Logger.flush()
     }
 }
+
+// MARK: -
 
 private extension RingRTCLogLevel {
     var logFlag: DDLogFlag {
