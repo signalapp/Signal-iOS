@@ -96,7 +96,7 @@ class CLVTableDataSource: NSObject {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.separatorColor = Theme.cellSeparatorColor
+        tableView.separatorColor = Theme.tableView2SeparatorColor
         tableView.register(ChatListCell.self)
         tableView.register(ArchivedConversationsCell.self)
         tableView.register(ChatListFilterFooterCell.self)

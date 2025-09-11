@@ -24,7 +24,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
     /// separator at the bottom of each item except when last in a section.
     let separator: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(dynamicProvider: { _ in Theme.cellSeparatorColor })
+        view.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableView2SeparatorColor })
         view.autoSetDimension(.height, toSize: .hairlineWidth)
         return view
     }()

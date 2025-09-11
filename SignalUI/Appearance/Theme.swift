@@ -382,8 +382,6 @@ final public class Theme: NSObject {
 
     // MARK: - Table View
 
-    public class var cellSeparatorColor: UIColor { hairlineColor }
-
     public class var tableCell2BackgroundColor: UIColor {
         isDarkThemeEnabled
         ? darkThemeTableCell2BackgroundColor
@@ -403,7 +401,7 @@ final public class Theme: NSObject {
     }
 
     public class var tableCell2MultiSelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2MultiSelectedBackgroundColor : .ows_gray05
+        isDarkThemeEnabled ? .ows_gray75 : .ows_gray05
     }
 
     public class var tableCell2PresentedSelectedBackgroundColor: UIColor {
@@ -479,8 +477,6 @@ final public class Theme: NSObject {
     public class var darkThemeTableCell2SelectedBackgroundColor: UIColor {
         UIColor.Signal.primaryFill.resolvedColor(with: darkTraitCollection)
     }
-
-    public class var darkThemeTableCell2MultiSelectedBackgroundColor: UIColor { .ows_gray75 }
 
     public class var darkThemeTableCell2PresentedSelectedBackgroundColor: UIColor {
         UIColor.Signal.primaryFill.resolvedColor(with: elevatedDarkTraitCollection)

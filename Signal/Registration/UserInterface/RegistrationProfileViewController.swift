@@ -189,7 +189,7 @@ class RegistrationProfileViewController: OWSViewController {
 
     private lazy var textFieldStrokes: [UIView] = [givenNameTextField, familyNameTextField].map {
         // This color will be swiftly updated during renders.
-        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: .hairlineWidth)
+        $0.addBottomStroke(color: Theme.hairlineColor, strokeWidth: .hairlineWidth)
     }
 
     private enum NameOrder {
@@ -309,7 +309,7 @@ class RegistrationProfileViewController: OWSViewController {
         cameraImageView.tintColor = Theme.secondaryTextAndIconColor
         cameraImageWrapperView.backgroundColor = Theme.backgroundColor
         [givenNameTextField, familyNameTextField].forEach { $0.textColor = Theme.primaryTextColor }
-        textFieldStrokes.forEach { $0.backgroundColor = Theme.cellSeparatorColor }
+        textFieldStrokes.forEach { $0.backgroundColor = Theme.hairlineColor }
 
         phoneNumberDisclosureView.render()
     }

@@ -72,7 +72,7 @@ final class NameCollisionCell: UITableViewCell {
 
     let separatorView: UIView = {
         let hairline = UIView()
-        hairline.backgroundColor = Theme.cellSeparatorColor
+        hairline.backgroundColor = Theme.tableView2SeparatorColor
         hairline.autoSetDimension(.height, toSize: .hairlineWidth)
         let separator = UIView()
         separator.addSubview(hairline)
