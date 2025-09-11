@@ -396,34 +396,34 @@ class BackupSettingsViewController:
     }
 
     private func presentWelcomeToBackupsSheet() {
-        let welcomeToBackupsSheet = HeroSheetViewController(
-            hero: .image(.backupsSubscribed),
-            title: OWSLocalizedString(
-                "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE",
-                comment: "Title for a sheet shown after the user enables backups."
-            ),
-            body: OWSLocalizedString(
-                "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
-                comment: "Message for a sheet shown after the user enables backups."
-            ),
-            primary: .button(HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON",
-                    comment: "Title for the primary button for a sheet shown after the user enables backups."
-                ),
-                action: { _ in
-                    self.viewModel.performManualBackup()
-                    self.dismiss(animated: true)
-                }
-            )),
-            secondary: .button(.dismissing(
-                title: OWSLocalizedString(
-                    "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON",
-                    comment: "Title for the secondary button for a sheet shown after the user enables backups."
-                ),
-                style: .secondary
-            ))
-        )
+        final class WelcomeToBackupsSheet: HeroSheetViewController {
+            override var canBeDismissed: Bool { false }
+
+            init(
+                onConfirm: @escaping () -> Void,
+            ) {
+                super.init(
+                    hero: .image(.backupsSubscribed),
+                    title: OWSLocalizedString(
+                        "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE",
+                        comment: "Title for a sheet shown after the user enables backups."
+                    ),
+                    body: OWSLocalizedString(
+                        "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
+                        comment: "Message for a sheet shown after the user enables backups."
+                    ),
+                    primary: .button(HeroSheetViewController.Button(
+                        title: CommonStrings.okButton,
+                        action: { _ in onConfirm() }
+                    )),
+                )
+            }
+        }
+
+        let welcomeToBackupsSheet = WelcomeToBackupsSheet { [self] in
+            viewModel.performManualBackup()
+            dismiss(animated: true)
+        }
 
         present(welcomeToBackupsSheet, animated: true)
     }
