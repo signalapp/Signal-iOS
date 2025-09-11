@@ -2,5 +2,7 @@
 
 set -eux
 
-: "Downloading Metal Toolchain"
-xcodebuild -downloadComponent MetalToolchain
+if [ "${CI_WORKFLOW-}" = "Nightly (Xcode 26)" ]; then
+    : "Downloading Metal Toolchain for Xcode 26"
+    xcodebuild -downloadComponent MetalToolchain
+fi
