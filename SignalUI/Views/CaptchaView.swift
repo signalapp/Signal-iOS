@@ -67,6 +67,7 @@ public class CaptchaView: UIView {
         let contentController = WKUserContentController()
         contentController.addUserScript(viewportInjection)
         let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = .nonPersistent()
         configuration.userContentController = contentController
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
