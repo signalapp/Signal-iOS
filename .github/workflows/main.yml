@@ -50,10 +50,6 @@ jobs:
         run: |
           xcodebuild -downloadComponent MetalToolchain
 
-      - name: Download iOS runtime
-        run: |
-          xcodebuild -downloadPlatform iOS
-
       - uses: ./.github/actions/clone-everything
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
