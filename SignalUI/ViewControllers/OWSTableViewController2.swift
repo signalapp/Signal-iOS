@@ -924,9 +924,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         AssertIsOnMainThread()
 
         if isUsingPresentedStyle {
-            return forceDarkMode ? Theme.darkThemeTableView2PresentedBackgroundColor : Theme.tableView2PresentedBackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableView2PresentedBackgroundColor
+            : Theme.tableView2PresentedBackgroundColor
         } else {
-            return forceDarkMode ? Theme.darkThemeTableView2BackgroundColor : Theme.tableView2BackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableView2BackgroundColor
+            : Theme.tableView2BackgroundColor
         }
     }
 
@@ -942,25 +946,37 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         forceDarkMode: Bool = false
     ) -> UIColor {
         if isUsingPresentedStyle {
-            return forceDarkMode ? Theme.darkThemeTableCell2PresentedBackgroundColor : Theme.tableCell2PresentedBackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableCell2PresentedBackgroundColor
+            : Theme.tableCell2PresentedBackgroundColor
         } else {
-            return forceDarkMode ? Theme.darkThemeTableCell2BackgroundColor : Theme.tableCell2BackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableCell2BackgroundColor
+            : Theme.tableCell2BackgroundColor
         }
     }
 
     public var cellSelectedBackgroundColor: UIColor {
         if isUsingPresentedStyle {
-            return forceDarkMode ? Theme.darkThemeTableCell2PresentedSelectedBackgroundColor : Theme.tableCell2PresentedSelectedBackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableCell2PresentedSelectedBackgroundColor
+            : Theme.tableCell2PresentedSelectedBackgroundColor
         } else {
-            return forceDarkMode ? Theme.darkThemeTableCell2SelectedBackgroundColor : Theme.tableCell2SelectedBackgroundColor
+            return forceDarkMode
+            ? Theme.darkThemeTableCell2SelectedBackgroundColor
+            : Theme.tableCell2SelectedBackgroundColor
         }
     }
 
     public var separatorColor: UIColor {
         if isUsingPresentedStyle {
-            return forceDarkMode ? Theme.darkThemeTableView2PresentedSeparatorColor : Theme.tableView2PresentedSeparatorColor
+            return forceDarkMode
+            ? Theme.darkThemeTableView2PresentedSeparatorColor
+            : Theme.tableView2PresentedSeparatorColor
         } else {
-            return forceDarkMode ? Theme.darkThemeTableView2SeparatorColor : Theme.tableView2SeparatorColor
+            return forceDarkMode
+            ? Theme.darkThemeTableView2SeparatorColor
+            : Theme.tableView2SeparatorColor
         }
     }
 

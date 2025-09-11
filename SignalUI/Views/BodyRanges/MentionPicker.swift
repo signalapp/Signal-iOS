@@ -370,7 +370,7 @@ private class MentionableUserCell: UITableViewCell {
             selectedBackgroundView?.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         case .`default`:
             displayNameLabel.textColor = Theme.primaryTextColor
-            selectedBackgroundView?.backgroundColor = Theme.cellSelectedColor
+            selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
         }
 
         displayNameLabel.text = mentionableUser.displayName

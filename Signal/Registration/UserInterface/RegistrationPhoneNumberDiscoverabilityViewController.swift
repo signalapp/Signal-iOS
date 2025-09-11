@@ -260,7 +260,7 @@ private class ButtonRow: UIButton {
     }
 
     public func render() {
-        setBackgroundImage(UIImage.image(color: Theme.cellSelectedColor), for: .highlighted)
+        setBackgroundImage(UIImage.image(color: Theme.tableCell2SelectedBackgroundColor), for: .highlighted)
         setBackgroundImage(UIImage.image(color: Theme.backgroundColor), for: .normal)
 
         buttonLabel.textColor = Theme.primaryTextColor

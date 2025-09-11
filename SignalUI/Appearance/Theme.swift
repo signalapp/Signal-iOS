@@ -382,10 +382,6 @@ final public class Theme: NSObject {
 
     // MARK: - Table View
 
-    public class var cellSelectedColor: UIColor {
-        isDarkThemeEnabled ? UIColor(white: 0.2, alpha: 1) : UIColor(white: 0.92, alpha: 1)
-    }
-
     public class var cellSeparatorColor: UIColor { hairlineColor }
 
     public class var tableCell2BackgroundColor: UIColor {
@@ -401,7 +397,9 @@ final public class Theme: NSObject {
     }
 
     public class var tableCell2SelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2SelectedBackgroundColor : .ows_gray15
+        isDarkThemeEnabled
+        ? darkThemeTableCell2SelectedBackgroundColor
+        : UIColor.Signal.primaryFill.resolvedColor(with: lightTraitCollection)
     }
 
     public class var tableCell2MultiSelectedBackgroundColor: UIColor {
@@ -409,7 +407,9 @@ final public class Theme: NSObject {
     }
 
     public class var tableCell2PresentedSelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? darkThemeTableCell2PresentedSelectedBackgroundColor : .ows_gray15
+        isDarkThemeEnabled
+        ? darkThemeTableCell2PresentedSelectedBackgroundColor
+        : UIColor.Signal.primaryFill.resolvedColor(with: elevatedLightTraitCollection)
     }
 
     public class var tableView2BackgroundColor: UIColor {
@@ -476,11 +476,15 @@ final public class Theme: NSObject {
         UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: elevatedDarkTraitCollection)
     }
 
-    public class var darkThemeTableCell2SelectedBackgroundColor: UIColor { .ows_gray80 }
+    public class var darkThemeTableCell2SelectedBackgroundColor: UIColor {
+        UIColor.Signal.primaryFill.resolvedColor(with: darkTraitCollection)
+    }
 
     public class var darkThemeTableCell2MultiSelectedBackgroundColor: UIColor { .ows_gray75 }
 
-    public class var darkThemeTableCell2PresentedSelectedBackgroundColor: UIColor { .ows_gray75 }
+    public class var darkThemeTableCell2PresentedSelectedBackgroundColor: UIColor {
+        UIColor.Signal.primaryFill.resolvedColor(with: elevatedDarkTraitCollection)
+    }
 
     public class var darkThemeTableView2BackgroundColor: UIColor {
         UIColor.Signal.groupedBackground.resolvedColor(with: darkTraitCollection)
