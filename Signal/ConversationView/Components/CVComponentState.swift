@@ -1756,6 +1756,24 @@ fileprivate extension CVComponentState.Builder {
             conversationStyle: conversationStyle)
 
         self.poll = Poll(state: state)
+
+        if poll.totalVotes() > 0 {
+            let title = poll.isEnded ? OWSLocalizedString(
+                "POLL_BUTTON_VIEW_RESULTS",
+                comment: "Button to view poll results"
+            ) : OWSLocalizedString(
+                "POLL_BUTTON_VIEW_VOTES",
+                comment: "Button to view poll votes"
+            )
+            let viewVotesAction = CVMessageAction(
+                title: title,
+                accessibilityIdentifier: "view_votes",
+                action: .didTapViewVotes(poll: poll)
+            )
+
+            bottomButtonsActions.append(viewVotesAction)
+        }
+
         return build()
     }
 }

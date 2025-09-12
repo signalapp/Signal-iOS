@@ -1257,6 +1257,11 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapJoinCallLinkCall(callLink: CallLink) {
         GroupCallViewController.presentLobby(for: callLink)
     }
+
+    public func didTapViewVotes(poll: OWSPoll) {
+        let pollDetails = PollDetailsViewController(poll: poll)
+        self.present(pollDetails, animated: true)
+    }
 }
 
 // MARK: - OWSNavigationChildController

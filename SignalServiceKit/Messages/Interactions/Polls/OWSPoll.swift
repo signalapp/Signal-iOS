@@ -13,10 +13,11 @@ public struct OWSPoll: Equatable {
 
     public typealias OptionIndex = UInt32
 
-    public struct OWSPollOption: Equatable {
+    public struct OWSPollOption: Equatable, Identifiable {
         public let optionIndex: OptionIndex
         public let text: String
         public let acis: [Aci]
+        public var id: OptionIndex { optionIndex }
 
         init(
             optionIndex: OptionIndex,

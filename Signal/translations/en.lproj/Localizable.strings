@@ -6424,6 +6424,18 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
+/* Button to view poll results */
+"POLL_BUTTON_VIEW_RESULTS" = "View Results";
+
+/* Button to view poll votes */
+"POLL_BUTTON_VIEW_VOTES" = "View Votes";
+
+/* Label for button to end a poll */
+"POLL_DETAILS_END_POLL" = "End Poll";
+
+/* Title of poll details pane */
+"POLL_DETAILS_TITLE" = "Poll Details";
+
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 

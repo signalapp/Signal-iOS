@@ -51,6 +51,8 @@ public class ContactCellConfiguration: NSObject {
         accessoryMessage?.nilIfEmpty != nil
     }
 
+    public var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass?
+
     public init(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode) {
         self.dataSource = .address(address)
         self.localUserDisplayMode = localUserDisplayMode
@@ -175,6 +177,9 @@ public class ContactCellView: ManualStackView {
             } else {
                 config.storyConfiguration = .disabled
             }
+            if let sizeClass = configuration.avatarSizeClass {
+                config.sizeClass = sizeClass
+            }
         }
 
         if avatarDataSource?.isGroupAvatar ?? false,
@@ -208,7 +213,7 @@ public class ContactCellView: ManualStackView {
         // Configure self.
         do {
             var rootStackSubviews: [UIView] = [ avatarView ]
-            let avatarSize = Self.avatarSizeClass.size
+            let avatarSize = configuration.avatarSizeClass?.size ?? Self.avatarSizeClass.size
             var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
             // Configure textStack.

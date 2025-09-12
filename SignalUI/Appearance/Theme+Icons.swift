@@ -182,6 +182,8 @@ public enum ThemeIcon: UInt {
     case profilePlaceholder
 
     case raiseHand
+
+    case pollStop
 }
 
 // MARK: -
@@ -556,6 +558,10 @@ public extension Theme {
 
         case .raiseHand:
             return "raise_hand"
+
+            // Polls
+        case .pollStop:
+            return "pollstop"
         }
     }
 }
