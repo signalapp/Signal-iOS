@@ -1738,7 +1738,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED",
                             comment: "Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}."
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.byteCount(style: .decimal, spellsOutZero: false))
+                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount)
                     )
                 case .disabling, .paidExpiringSoon:
                     String(
@@ -1746,7 +1746,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING",
                             comment: "Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}."
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.byteCount(style: .decimal, spellsOutZero: false))
+                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount)
                     )
                 }
             case .running:
@@ -1755,8 +1755,8 @@ private struct BackupAttachmentDownloadProgressView: View {
                         "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING",
                         comment: "Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}."
                     ),
-                    latestDownloadUpdate.bytesDownloaded.formatted(.byteCount(style: .decimal, spellsOutZero: false)),
-                    latestDownloadUpdate.totalBytesToDownload.formatted(.byteCount(style: .decimal, spellsOutZero: false)),
+                    latestDownloadUpdate.bytesDownloaded.formatted(.owsByteCount),
+                    latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount),
                     latestDownloadUpdate.percentageDownloaded.formatted(.percent.precision(.fractionLength(0))),
                 )
             case .pausedLowBattery:
@@ -1785,7 +1785,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                         "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE",
                         comment: "Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}."
                     ),
-                    bytesRequired.formatted(.byteCount(style: .decimal, spellsOutZero: false))
+                    bytesRequired.formatted(.owsByteCount)
                 )
             }
 
@@ -1888,8 +1888,8 @@ private struct BackupAttachmentUploadProgressView: View {
                     "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING",
                     comment: "Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}."
                 ),
-                bytesUploaded.formatted(.byteCount(style: .decimal, spellsOutZero: false)),
-                totalBytesToUpload.formatted(.byteCount(style: .decimal, spellsOutZero: false)),
+                bytesUploaded.formatted(.owsByteCount),
+                totalBytesToUpload.formatted(.owsByteCount),
                 percentageUploaded.formatted(.percent.precision(.fractionLength(0)))
             )
         case .pausedLowBattery:
@@ -2188,7 +2188,7 @@ private struct BackupDetailsView: View {
             ))
             Spacer()
             if let lastBackupSizeBytes {
-                Text(lastBackupSizeBytes.formatted(.byteCount(style: .decimal, spellsOutZero: false)))
+                Text(lastBackupSizeBytes.formatted(.owsByteCount))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }
         }
