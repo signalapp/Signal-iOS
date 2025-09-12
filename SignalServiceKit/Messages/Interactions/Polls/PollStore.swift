@@ -39,9 +39,94 @@ public class PollStore {
         interactionId: Int64,
         optionsVoted: [OWSPoll.OptionIndex],
         voteAuthorId: Int64,
+        voteCount: UInt32,
         transaction: DBWriteTransaction
     ) throws {
-        // TODO: Implement me
+        guard let poll = try pollForInteractionId(
+            interactionId: interactionId,
+            transaction: transaction
+        ), let pollId = poll.id else {
+            Logger.error("Can't find target poll")
+            return
+        }
+
+        guard !poll.isEnded else {
+            Logger.error("Poll has ended, dropping vote")
+            return
+        }
+
+        guard optionsVoted.count <= 1 || poll.allowsMultiSelect else {
+            Logger.error("Poll doesn't support multiselect but multiple options were voted for")
+            return
+        }
+
+        let pollOptionRecords = try optionsForPoll(
+            pollId: pollId,
+            transaction: transaction
+        )
+
+        let optionIdMap: [Int64] = pollOptionRecords.compactMap { $0.id }
+        let currentVotes = try votesForPoll(
+            voteAuthorId: voteAuthorId,
+            optionIds: optionIdMap,
+            transaction: transaction
+        )
+
+        if !currentVotes.isEmpty {
+            let maxVoteCount = currentVotes.map { $0.voteCount }.max()
+            guard let maxVoteCount, maxVoteCount < voteCount else {
+                Logger.error("Ignoring vote interactionId \(interactionId), optionsVote \(optionsVoted) because it is not most recent")
+                return
+            }
+
+            for oldVotes in currentVotes {
+                try oldVotes.delete(transaction.database)
+            }
+        }
+
+        let optionIndexMap = Dictionary(uniqueKeysWithValues: pollOptionRecords.map { ($0.optionIndex, $0) })
+        for optionIndex in optionsVoted {
+            guard let option = optionIndexMap[Int32(optionIndex)],
+                  let optionId = option.id else {
+                owsFailDebug("Can't find target option")
+                continue
+            }
+            var pollVoteRecord = PollVoteRecord(
+                optionId: optionId,
+                voteAuthorId: voteAuthorId,
+                voteCount: 1
+            )
+            try pollVoteRecord.insert(transaction.database)
+        }
+    }
+
+    private func pollForInteractionId(
+        interactionId: Int64,
+        transaction: DBReadTransaction
+    ) throws -> PollRecord? {
+        return try PollRecord
+            .filter(Column(PollRecord.CodingKeys.interactionId.rawValue) == interactionId)
+            .fetchOne(transaction.database)
+    }
+
+    private func optionsForPoll(
+        pollId: Int64,
+        transaction: DBReadTransaction
+    ) throws -> [PollOptionRecord] {
+        return try PollOptionRecord
+            .filter(Column(PollOptionRecord.CodingKeys.pollId.rawValue) == pollId)
+            .fetchAll(transaction.database)
+    }
+
+    private func votesForPoll(
+        voteAuthorId: Int64,
+        optionIds: [Int64],
+        transaction: DBReadTransaction
+    ) throws -> [PollVoteRecord] {
+        return try PollVoteRecord
+            .filter(optionIds.contains(Column(PollVoteRecord.CodingKeys.optionId.rawValue)))
+            .filter(Column(PollVoteRecord.CodingKeys.voteAuthorId.rawValue) == voteAuthorId)
+            .fetchAll(transaction.database)
     }
 
     public func terminatePoll(

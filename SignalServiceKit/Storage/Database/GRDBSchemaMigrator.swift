@@ -345,6 +345,7 @@ public class GRDBSchemaMigrator {
         case addBackupAttachmentUploadQueueStateColumn
         case addBackupAttachmentUploadQueueTrigger
         case migrateRecipientDeviceIds
+        case fixUniqueConstraintOnPollVotes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -4374,6 +4375,40 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.migrateRecipientDeviceIds) { tx in
             try migrateRecipientDeviceIds(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.fixUniqueConstraintOnPollVotes) { tx in
+            try tx.database.drop(table: "PollVote")
+
+            try tx.database.create(
+                table: "PollVote"
+            ) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("optionId", .integer)
+                    .notNull()
+                    .references(
+                        "PollOption",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("voteAuthorId", .integer)
+                    .references(
+                        "model_SignalRecipient",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("voteCount", .integer)
+            }
+
+            try tx.database.create(
+                index: "index_pollVote_on_voteAuthorId_and_optionId",
+                on: "PollVote",
+                columns: ["voteAuthorId", "optionId"],
+                options: [.unique]
+            )
             return .success(())
         }
 

@@ -13,7 +13,7 @@ public struct OWSPoll: Equatable {
 
     public typealias OptionIndex = UInt32
 
-    public struct OWSPollOption {
+    public struct OWSPollOption: Equatable {
         public let optionIndex: OptionIndex
         public let text: String
         public let acis: [Aci]
@@ -56,7 +56,9 @@ public struct OWSPoll: Equatable {
     }
 
     public static func == (lhs: OWSPoll, rhs: OWSPoll) -> Bool {
-        return lhs.pollId == rhs.pollId && lhs.isEnded == rhs.isEnded
+        return lhs.pollId == rhs.pollId
+            && lhs.isEnded == rhs.isEnded
+            && lhs.options == rhs.options
     }
 
     public func totalVotes() -> Int {

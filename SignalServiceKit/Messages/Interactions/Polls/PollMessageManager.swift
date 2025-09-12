@@ -38,12 +38,12 @@ public class PollMessageManager {
         voteAuthor: Aci,
         pollVoteProto: SSKProtoDataMessagePollVote,
         transaction: DBWriteTransaction
-    ) throws {
+    ) throws -> TSMessage? {
         guard let aciBinary = pollVoteProto.targetAuthorAciBinary,
               let pollAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
         else {
             Logger.error("Failure to parse Aci from binary")
-            return
+            return nil
         }
 
         guard let targetMessage = try interactionStore.fetchMessage(
@@ -55,22 +55,25 @@ public class PollMessageManager {
               let interactionId = targetMessage.grdbId?.int64Value
         else {
             Logger.error("Can't find target poll")
-            return
+            return nil
         }
 
         let signalRecipient = recipientDatabaseTable.fetchRecipient(serviceId: voteAuthor, transaction: transaction)
 
         guard let voteAuthorId = signalRecipient?.id else {
             Logger.error("Can't find voter in recipient table")
-            return
+            return nil
         }
 
         try pollStore.updatePollWithVotes(
             interactionId: interactionId,
             optionsVoted: pollVoteProto.optionIndexes,
             voteAuthorId: voteAuthorId,
+            voteCount: pollVoteProto.voteCount,
             transaction: transaction
         )
+
+        return targetMessage
     }
 
     public func processIncomingPollTerminate(

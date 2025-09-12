@@ -2425,26 +2425,6 @@ CREATE
 ;
 
 CREATE
-    TABLE
-        IF NOT EXISTS "PollVote" (
-            "id" INTEGER PRIMARY KEY NOT NULL
-            ,"optionId" INTEGER NOT NULL REFERENCES "PollOption"("id"
-        )
-            ON DELETE
-                CASCADE
-                    ON UPDATE
-                        CASCADE
-                        ,"voteAuthorId" INTEGER UNIQUE REFERENCES "model_SignalRecipient"("id"
-)
-    ON DELETE
-        CASCADE
-            ON UPDATE
-                CASCADE
-                ,"voteCount" INTEGER
-)
-;
-
-CREATE
     INDEX "index_poll_on_interactionId"
         ON "Poll"("interactionId"
 )
@@ -2453,12 +2433,6 @@ CREATE
 CREATE
     INDEX "index_polloption_on_pollId"
         ON "PollOption"("pollId"
-)
-;
-
-CREATE
-    INDEX "index_pollvote_on_optionId"
-        ON "PollVote"("optionId"
 )
 ;
 
@@ -2489,4 +2463,31 @@ CREATE
 ;
 
 END
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "PollVote" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"optionId" INTEGER NOT NULL REFERENCES "PollOption"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"voteAuthorId" INTEGER REFERENCES "model_SignalRecipient"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,"voteCount" INTEGER
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_pollVote_on_voteAuthorId_and_optionId"
+        ON "PollVote"("voteAuthorId"
+    ,"optionId"
+)
 ;

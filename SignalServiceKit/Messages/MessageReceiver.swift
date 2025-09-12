@@ -1132,6 +1132,27 @@ public final class MessageReceiver {
             return nil
         }
 
+        if let pollVote = dataMessage.pollVote {
+            do {
+                let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                    voteAuthor: envelope.sourceAci,
+                    pollVoteProto: pollVote,
+                    transaction: tx
+                )
+
+                // Update interaction in the conversation view
+                if let targetMessage {
+                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                }
+            } catch {
+                owsFailDebug("Could not insert poll vote!")
+                return nil
+            }
+
+            // Don't store PollVote as a message.
+            return nil
+        }
+
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
         let messageBuilder = TSIncomingMessageBuilder(
