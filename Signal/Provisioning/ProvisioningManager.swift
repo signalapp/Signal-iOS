@@ -95,7 +95,8 @@ public class ProvisioningManager {
         let ephemeralBackupKey: MessageRootBackupKey?
         if
             shouldLinkNSync,
-            deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
+            deviceProvisioningUrl.capabilities.contains(.linknsync)
+                || deviceProvisioningUrl.capabilities.contains(.linknsync_backCompat)
         {
             ephemeralBackupKey = linkAndSyncManager.generateEphemeralBackupKey(aci: myAci)
         } else {
