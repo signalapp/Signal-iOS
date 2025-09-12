@@ -478,10 +478,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let migrateTask = Task {
             _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
-                .runInMainAppUntilFinished(ignorePastFailures: false, progress: progressSink)
-        }
-        Task {
-            loadingViewController?.setCancellableTask(migrateTask)
+                .runInMainAppUntilFinished(ignorePastFailures: true, progress: progressSink)
         }
         await migrateTask.value
         return (continuation, sleepBlockObject)
