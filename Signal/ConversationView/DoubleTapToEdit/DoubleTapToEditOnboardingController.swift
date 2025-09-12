@@ -55,6 +55,7 @@ private extension DoubleTapToEditOnboardingController {
         override init(frame: CGRect) {
             imageView = UIImageView(image: UIImage(named: "tap-hand"))
             imageView.setContentCompressionResistancePriority(.required, for: .vertical)
+            imageView.tintColor = UIColor.Signal.label
 
             title = UILabel()
             title.font = .dynamicTypeHeadline
