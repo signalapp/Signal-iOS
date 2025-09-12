@@ -68,16 +68,14 @@ public class UserNotificationConfig {
 
 // MARK: -
 
-class UserNotificationPresenter {
+public class UserNotificationPresenter {
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
     // Delay notification of incoming messages when it's likely to be read by a linked device to
     // avoid notifying a user on their phone while a conversation is actively happening on desktop.
     let kNotificationDelayForRemoteRead: TimeInterval = 20
 
-    init() {
-        SwiftSingletons.register(self)
-    }
+    public init() {}
 
     /// Request notification permissions.
     func registerNotificationSettings() async {
@@ -301,14 +299,14 @@ class UserNotificationPresenter {
         await cancel(cancellation: .storyMessage(storyMessageUniqueId))
     }
 
-    func clearAllNotifications() {
+    public func clearAllNotifications() {
         Logger.info("Clearing all notifications")
 
         Self.notificationCenter.removeAllPendingNotificationRequests()
         Self.notificationCenter.removeAllDeliveredNotifications()
     }
 
-    static func clearAllNonScheduledNotifications() {
+    public func clearAllNonScheduledNotifications() {
         Logger.info("Clearing all notifications except scheduled notifications")
 
         Task {
@@ -332,7 +330,7 @@ class UserNotificationPresenter {
         }
     }
 
-    static func clearDeliveredNewLinkedDevicesNotifications() {
+    public func clearDeliveredNewLinkedDevicesNotifications() {
         Logger.info("Clearing delivered new linked device notifications")
         Task {
             let pendingNotificationRequestIDs = await Self.notificationCenter.deliveredNotifications()

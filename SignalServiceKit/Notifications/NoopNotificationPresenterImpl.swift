@@ -117,10 +117,6 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public static func clearAllNonScheduledNotifications() {
-        Logger.warn("")
-    }
-
     public func clearDeliveredNewLinkedDevicesNotifications() {
         Logger.warn("")
     }

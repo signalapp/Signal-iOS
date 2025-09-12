@@ -231,7 +231,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Logger.error("Couldn't launch with broken database: \(error.grdbErrorForLogging)")
             let viewController = terminalErrorViewController()
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
-            presentDatabaseUnrecoverablyCorruptedError(from: viewController, action: .submitDebugLogsAndCrash)
+
+            presentDatabaseUnrecoverablyCorruptedError(
+                from: viewController,
+                actions: [
+                    .submitDebugLogsAndCrash,
+                    .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage)),
+                ]
+            )
             return true
         }
 
@@ -817,7 +824,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let application: UIApplication = .shared
         let userNotificationCenter: UNUserNotificationCenter = .current()
 
-        NotificationPresenterImpl.clearAllNonScheduledNotifications()
+        UserNotificationPresenter().clearAllNonScheduledNotifications()
         application.applicationIconBadgeNumber = 0
 
         userNotificationCenter.add(notificationRequest)
@@ -994,7 +1001,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         case .databaseUnrecoverablyCorrupted:
             presentDatabaseUnrecoverablyCorruptedError(
                 from: viewController,
-                action: .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: launchContext.databaseStorage)
+                actions: [
+                    .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: launchContext.databaseStorage),
+                    .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: launchContext.keychainStorage)),
+                ]
             )
             return
 
@@ -1101,7 +1111,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func presentDatabaseUnrecoverablyCorruptedError(
         from viewController: UIViewController,
-        action: LaunchFailureActionSheetAction
+        actions: [LaunchFailureActionSheetAction],
     ) {
         presentLaunchFailureActionSheet(
             from: viewController,
@@ -1115,7 +1125,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
                 comment: "Default message for the 'app launch failed' alert."
             ),
-            actions: [action]
+            actions: actions
         )
     }
 
@@ -1123,6 +1133,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         case submitDebugLogsAndCrash
         case submitDebugLogsAndLaunchApp(window: UIWindow, launchContext: LaunchContext)
         case submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: SDSDatabaseStorage)
+        case wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher)
         case launchApp(window: UIWindow, launchContext: LaunchContext)
     }
 
@@ -1179,12 +1190,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
+
             case .submitDebugLogsAndLaunchApp(let window, let launchContext):
                 addSubmitDebugLogsAction { [unowned window] in
                     DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
                         ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
                 }
+
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(let databaseStorage):
                 addSubmitDebugLogsAction { [unowned viewController] in
                     SignalApp.showDatabaseIntegrityCheckUI(from: viewController, databaseStorage: databaseStorage) {
@@ -1193,6 +1206,37 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         }
                     }
                 }
+
+            case .wipeAppDataAndCrash(let keyFetcher):
+                let wipeAppDataActionTitle = OWSLocalizedString(
+                    "APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE",
+                    comment: "Action in an action sheet offering to wipe all app data."
+                )
+
+                actionSheet.addAction(.init(
+                    title: wipeAppDataActionTitle,
+                    style: .destructive,
+                    handler: { _ in
+                        OWSActionSheets.showConfirmationAlert(
+                            title: OWSLocalizedString(
+                                "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE",
+                                comment: "Title for an action sheet confirming the user wants to wipe all app data."
+                            ),
+                            message: OWSLocalizedString(
+                                "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE",
+                                comment: "Message for an action sheet confirming the user wants to wipe all app data."
+                            ),
+                            proceedTitle: wipeAppDataActionTitle,
+                            proceedStyle: .destructive,
+                            proceedAction: { _ in
+                                ModalActivityIndicatorViewController.present(fromViewController: viewController) { _ in
+                                    SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+                                }
+                            },
+                        )
+                    }
+                ))
+
             case .launchApp(let window, let launchContext):
                 actionSheet.addAction(.init(
                     title: OWSLocalizedString(

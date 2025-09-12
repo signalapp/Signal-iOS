@@ -219,11 +219,22 @@ class AccountSettingsViewController: OWSTableViewController2 {
             title: OWSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TITLE", comment: ""),
             message: OWSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TEXT", comment: ""),
             proceedTitle: OWSLocalizedString("PROCEED_BUTTON", comment: ""),
-            proceedStyle: .destructive
-        ) { _ in
-            let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
-            SignalApp.resetLinkedAppDataWithUI(localDeviceId: deviceId)
-        }
+            proceedStyle: .destructive,
+            proceedAction: { _ in
+                let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
+                let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
+                let registrationStateChangeManager = DependenciesBridge.shared.registrationStateChangeManager
+
+                ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
+                    await SignalApp.resetLinkedAppDataAndExit(
+                        localDeviceId: localDeviceId,
+                        keyFetcher: keyFetcher,
+                        registrationStateChangeManager: registrationStateChangeManager,
+                    )
+                }
+            },
+            fromViewController: self,
+        )
     }
 
     private func unregisterUser() {
@@ -236,10 +247,15 @@ class AccountSettingsViewController: OWSTableViewController2 {
             title: OWSLocalizedString("CONFIRM_DELETE_DATA_TITLE", comment: ""),
             message: OWSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
             proceedTitle: OWSLocalizedString("PROCEED_BUTTON", comment: ""),
-            proceedStyle: .destructive
-        ) { _ in
-            SignalApp.resetAppDataWithUI()
-        }
+            proceedStyle: .destructive,
+            proceedAction: { _ in
+                ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
+                    let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
+                    SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+                }
+            },
+            fromViewController: self,
+        )
     }
 
     private func requestAccountDataReport() {
