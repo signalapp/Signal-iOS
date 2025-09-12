@@ -940,7 +940,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 // but we haven't built the UI for it.
                 return .databaseUnrecoverablyCorrupted
             }
-            guard databaseCorruptionState.count <= 3 else {
+            guard databaseCorruptionState.count <= 5 else {
                 return .databaseUnrecoverablyCorrupted
             }
             return .databaseCorruptedAndMightBeRecoverable
