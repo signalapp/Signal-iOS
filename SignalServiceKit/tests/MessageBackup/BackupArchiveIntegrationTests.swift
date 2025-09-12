@@ -552,7 +552,6 @@ private enum CrashyMocks {
         func notifyUserOfDeregistration(tx: DBWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }
         func clearAllNonScheduledNotifications() { failTest(Self.self) }
-        static func clearAllNonScheduledNotifications() { failTest(Self.self) }
         func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
         func cancelNotifications(threadId: String) { failTest(Self.self) }
         func cancelNotifications(messageIds: [String]) { failTest(Self.self) }

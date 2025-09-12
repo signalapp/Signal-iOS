@@ -262,65 +262,61 @@ extension SignalApp {
 extension SignalApp {
 
     @MainActor
-    static func resetAppDataWithUI(keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher) {
-        Logger.info("")
-
-        guard let fromVC = UIApplication.shared.frontmostViewController else { return }
-        ModalActivityIndicatorViewController.present(
-            fromViewController: fromVC,
-            canCancel: false,
-            asyncBlock: { _ in
-                SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
-            }
-        )
-    }
-
-    @MainActor
-    static func resetLinkedAppDataWithUI(
+    static func resetLinkedAppDataAndExit(
         localDeviceId: LocalDeviceId,
-        keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
-    ) {
-        Logger.info("")
-
-        guard let fromVC = UIApplication.shared.frontmostViewController else { return }
-        ModalActivityIndicatorViewController.present(
-            fromViewController: fromVC,
-            canCancel: false,
-            asyncBlock: { _ in
-                let registrationStateChangeManager = DependenciesBridge.shared.registrationStateChangeManager
-                // Best effort to unlink ourselves from the server.
-                try? await registrationStateChangeManager.unlinkLocalDevice(localDeviceId: localDeviceId, auth: .implicit())
-                resetAppDataAndExit(keyFetcher: keyFetcher)
-            }
-        )
+        keyFetcher: GRDBKeyFetcher,
+        registrationStateChangeManager: RegistrationStateChangeManager,
+    ) async -> Never {
+        // Best effort to unlink ourselves from the server.
+        try? await registrationStateChangeManager.unlinkLocalDevice(localDeviceId: localDeviceId, auth: .implicit())
+        resetAppDataAndExit(keyFetcher: keyFetcher)
     }
 
+    /// Wipe all app data, and exit the app.
+    ///
+    /// - Warning
+    /// Extremely destructive. Call with great caution.
+    ///
+    /// - Important
+    /// This is used in launch flows, before global singletons are available.
     @MainActor
     static func resetAppDataAndExit(keyFetcher: GRDBKeyFetcher) -> Never {
         resetAppData(keyFetcher: keyFetcher)
         exit(0)
     }
 
+    /// Wipe all app data.
+    ///
+    /// - Warning
+    /// Extremely destructive. Call with great caution.
+    ///
+    /// - Important
+    /// This is used in launch flows, before global singletons are available.
     @MainActor
     static func resetAppData(keyFetcher: GRDBKeyFetcher) {
-        // This _should_ be wiped out below.
-        Logger.info("")
-        Logger.flush()
-
         do {
             try keyFetcher.clear()
         } catch {
             owsFailDebug("Could not clear keychain: \(error)")
         }
 
-        // This *must not* touch any environments -- they're not always available.
-        SSKEnvironment.shared.preferencesRef.removeAllValues()
-        SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        func wipeUserDefaults(_ userDefaults: UserDefaults) {
+            for (key, _) in userDefaults.dictionaryRepresentation() {
+                userDefaults.removeObject(forKey: key)
+            }
+            userDefaults.synchronize()
+        }
+
+        wipeUserDefaults(UserDefaults.standard)
+        wipeUserDefaults(CurrentAppContext().appUserDefaults())
+
         OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
         OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
         OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
         OWSFileSystem.deleteContents(ofDirectory: NSTemporaryDirectory())
+
+        UserNotificationPresenter().clearAllNotifications()
+        UIApplication.shared.applicationIconBadgeNumber = 0
         AppDelegate.updateApplicationShortcutItems(isRegistered: false)
 
         DebugLogger.shared.wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)

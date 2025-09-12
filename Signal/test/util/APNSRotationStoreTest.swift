@@ -27,8 +27,6 @@ final class APNSRotationStoreTest: SignalBaseTest {
     }
 
     func testHasNoPushToken() {
-        // Make sure we don't have an APNS token
-        SSKEnvironment.shared.preferencesRef.removeAllValues()
         let now = Date().ows_millisecondsSince1970
 
         // Make sure we are otherwise eligible to rotate, so

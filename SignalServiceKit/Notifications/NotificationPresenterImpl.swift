@@ -1436,15 +1436,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func clearAllNonScheduledNotifications() {
-        Self.clearAllNonScheduledNotifications()
-    }
-
-    public static func clearAllNonScheduledNotifications() {
-        UserNotificationPresenter.clearAllNonScheduledNotifications()
+        presenter.clearAllNonScheduledNotifications()
     }
 
     public func clearDeliveredNewLinkedDevicesNotifications() {
-        UserNotificationPresenter.clearDeliveredNewLinkedDevicesNotifications()
+        presenter.clearDeliveredNewLinkedDevicesNotifications()
     }
 
     // MARK: - Serialization

@@ -235,6 +235,15 @@
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
 
+/* Action in an action sheet offering to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Reset App Data";
+
+/* Message for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "All app data will be permanently deleted. This is only necessary if you are unable to launch the app.";
+
+/* Title for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Reset All App Data?";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
 

@@ -200,7 +200,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             ),
             proceedStyle: .destructive
         ) { [keychainStorage] _ in
-            SignalApp.resetAppDataWithUI(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage))
+            ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
+                SignalApp.resetAppDataAndExit(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage))
+            }
         }
     }
 

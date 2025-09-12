@@ -62,7 +62,6 @@ public protocol NotificationPresenter {
 
     func clearAllNotifications()
     func clearAllNonScheduledNotifications()
-    static func clearAllNonScheduledNotifications()
     func clearDeliveredNewLinkedDevicesNotifications()
 
     func cancelNotifications(threadId: String)
