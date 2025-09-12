@@ -13096,7 +13096,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio-tungstenite 0.26.2</string>
+			<string>tokio-tungstenite 0.27.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -13250,7 +13250,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tungstenite 0.26.2</string>
+			<string>tungstenite 0.27.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
