@@ -131,7 +131,7 @@ public final class DatabaseCorruptionState: Codable, Equatable, CustomStringConv
         case .notCorrupted:
             owsFailDebug("Flagging database as recovered from corruption, but it wasn't marked corrupted")
         case .corrupted, .readCorrupted, .corruptedButAlreadyDumpedAndRestored:
-            Self(status: .notCorrupted, count: oldState.count).save(to: userDefaults)
+            Self(status: .notCorrupted, count: 0).save(to: userDefaults)
         }
     }
 
