@@ -29,8 +29,8 @@
 		04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */; };
 		04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */; };
 		04BC94D22E061D8300446C52 /* BackupArchiveAttachmentByteCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */; };
-		04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */; };
 		04CF4FCE2E724604009D6669 /* PollDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CF4FCD2E7245FC009D6669 /* PollDetailsViewController.swift */; };
+		04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
 		05104D182C8A151100F8851F /* AsyncViewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104D172C8A151100F8851F /* AsyncViewTask.swift */; };
@@ -3855,8 +3855,8 @@
 		04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStore.swift; sourceTree = "<group>"; };
 		04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceStoreTest.swift; sourceTree = "<group>"; };
 		04BC94D12E061D7500446C52 /* BackupArchiveAttachmentByteCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAttachmentByteCounter.swift; sourceTree = "<group>"; };
-		04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04CF4FCD2E7245FC009D6669 /* PollDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollDetailsViewController.swift; sourceTree = "<group>"; };
+		04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
 		05104D172C8A151100F8851F /* AsyncViewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncViewTask.swift; sourceTree = "<group>"; };
@@ -6772,7 +6772,6 @@
 		D9D321802A8FEA9C004FC110 /* StorageService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = StorageService.proto; path = SignalServiceKit/protobuf/StorageService.proto; sourceTree = SOURCE_ROOT; };
 		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SignalService.proto; path = SignalServiceKit/protobuf/SignalService.proto; sourceTree = SOURCE_ROOT; };
 		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Provisioning.proto; path = SignalServiceKit/protobuf/Provisioning.proto; sourceTree = SOURCE_ROOT; };
-		D9D321832A8FEA9C004FC110 /* cdsi.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = cdsi.proto; path = SignalServiceKit/protobuf/cdsi.proto; sourceTree = SOURCE_ROOT; };
 		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = svr2.proto; path = SignalServiceKit/protobuf/svr2.proto; sourceTree = SOURCE_ROOT; };
 		D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = WebSocketResources.proto; path = SignalServiceKit/protobuf/WebSocketResources.proto; sourceTree = SOURCE_ROOT; };
 		D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordAssociatedInteraction.swift; sourceTree = "<group>"; };
@@ -8934,6 +8933,11 @@
 				50C0203D2CA4A7A500BDC4EF /* Retry.swift */,
 				D96869442E1065F1005451E4 /* SeriallyAccessedState.swift */,
 				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
+				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
+				668A01122C2B6077007B8808 /* Threading.h */,
+				668A01132C2B6077007B8808 /* Threading.m */,
+				729E0B082CA4ADE2002EC961 /* Threading.swift */,
+				668A00E62C2B5F58007B8808 /* TSMutex.swift */,
 				726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */,
 				726C94232D6F481B00ABF9B9 /* UncooperativeTimeoutTest.swift */,
 			);
@@ -8948,7 +8952,7 @@
 			path = OrphanData;
 			sourceTree = "<group>";
 		};
-		5013365D2B2BC2CD004119F1 /* ZkParams */ = {
+		5013365D2B2BC2CD004119F1 /* ZeroKnowledge */ = {
 			isa = PBXGroup;
 			children = (
 				50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */,
@@ -8957,7 +8961,7 @@
 				50A4AC612C111FAE00D89C8E /* CallLinkAuthCredential.swift */,
 				5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */,
 			);
-			path = ZkParams;
+			path = ZeroKnowledge;
 			sourceTree = "<group>";
 		};
 		501AD1C22AF17A0B001B796A /* Curve25519 */ = {
@@ -9001,15 +9005,6 @@
 				3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */,
 			);
 			path = VoiceMessage;
-			sourceTree = "<group>";
-		};
-		503B471C2AF0566B00978266 /* Curve25519 */ = {
-			isa = PBXGroup;
-			children = (
-				503B471F2AF0569A00978266 /* ECKeyPair.swift */,
-				503B471E2AF0569A00978266 /* PublicKey.swift */,
-			);
-			path = Curve25519;
 			sourceTree = "<group>";
 		};
 		50423CA22BBF426700DCB8F5 /* Profiles */ = {
@@ -9066,17 +9061,6 @@
 				505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */,
 			);
 			path = DeviceTransfer;
-			sourceTree = "<group>";
-		};
-		506695ED29C5337700B6D8D0 /* GroupMembers */ = {
-			isa = PBXGroup;
-			children = (
-				506695E929C52F2F00B6D8D0 /* GroupMemberMergeObserver.swift */,
-				506695EB29C5305800B6D8D0 /* GroupMemberStore.swift */,
-				506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */,
-				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
-			);
-			path = GroupMembers;
 			sourceTree = "<group>";
 		};
 		5073EACC2C4F45E4001FBB3E /* Calls */ = {
@@ -9309,13 +9293,13 @@
 			path = Registration;
 			sourceTree = "<group>";
 		};
-		6600F36A298DAA4F00B1EDB7 /* DateProvider */ = {
+		6600F36A298DAA4F00B1EDB7 /* Dates */ = {
 			isa = PBXGroup;
 			children = (
 				6600F36B298DAA6200B1EDB7 /* DateProvider.swift */,
 				50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */,
 			);
-			path = DateProvider;
+			path = Dates;
 			sourceTree = "<group>";
 		};
 		6600F38C29918A5100B1EDB7 /* Registration */ = {
@@ -9668,14 +9652,6 @@
 			path = ContactShare;
 			sourceTree = "<group>";
 		};
-		666BAB0E2980B76B00867196 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				6698FC192980AB45004EFC30 /* DependenciesBridge.swift */,
-			);
-			path = Dependencies;
-			sourceTree = "<group>";
-		};
 		6673FF6A2978B5B900F96CFD /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
@@ -9781,74 +9757,21 @@
 				728BFE512C5C59E5008F20F1 /* CipherContext.swift */,
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
+				503B471F2AF0569A00978266 /* ECKeyPair.swift */,
+				503B471E2AF0569A00978266 /* PublicKey.swift */,
+				728BFE462C5BEC5C008F20F1 /* Randomness.swift */,
+				728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */,
 				7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */,
 				7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */,
 			);
 			path = Cryptography;
 			sourceTree = "<group>";
 		};
-		668A00D32C2B5E4C007B8808 /* Randomness */ = {
-			isa = PBXGroup;
-			children = (
-				728BFE462C5BEC5C008F20F1 /* Randomness.swift */,
-				728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */,
-			);
-			path = Randomness;
-			sourceTree = "<group>";
-		};
-		668A00DC2C2B5EC3007B8808 /* DebuggerUtils */ = {
-			isa = PBXGroup;
-			children = (
-				668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */,
-				668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */,
-			);
-			path = DebuggerUtils;
-			sourceTree = "<group>";
-		};
-		668A00E52C2B5F49007B8808 /* Locking */ = {
-			isa = PBXGroup;
-			children = (
-				668A00E62C2B5F58007B8808 /* TSMutex.swift */,
-			);
-			path = Locking;
-			sourceTree = "<group>";
-		};
-		668A00FC2C2B5FBA007B8808 /* OWSAsserts */ = {
-			isa = PBXGroup;
-			children = (
-				668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */,
-				668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */,
-				668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */,
-			);
-			path = OWSAsserts;
-			sourceTree = "<group>";
-		};
-		668A01032C2B5FD2007B8808 /* Logging */ = {
-			isa = PBXGroup;
-			children = (
-				668A01042C2B5FE0007B8808 /* Logger.swift */,
-				668A01052C2B5FE0007B8808 /* OWSLogs.h */,
-				668A01062C2B5FE0007B8808 /* OWSLogs.m */,
-				668A010A2C2B602F007B8808 /* StringSanitizer.swift */,
-				668A01432C2B6117007B8808 /* StringSanitizerTests.swift */,
-			);
-			path = Logging;
-			sourceTree = "<group>";
-		};
-		668A01112C2B606F007B8808 /* Threading */ = {
-			isa = PBXGroup;
-			children = (
-				668A01122C2B6077007B8808 /* Threading.h */,
-				668A01132C2B6077007B8808 /* Threading.m */,
-				729E0B082CA4ADE2002EC961 /* Threading.swift */,
-			);
-			path = Threading;
-			sourceTree = "<group>";
-		};
 		668A01282C2B6088007B8808 /* PromiseKit */ = {
 			isa = PBXGroup;
 			children = (
 				668A01172C2B6088007B8808 /* Catchable.swift */,
+				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				668A01182C2B6088007B8808 /* DispatchQueue+Promise.swift */,
 				668A01192C2B6088007B8808 /* firstly.swift */,
 				668A011A2C2B6088007B8808 /* Future.swift */,
@@ -10430,8 +10353,13 @@
 				F9C5CB66289453B200548EEE /* BadgeStore.swift */,
 				50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */,
 				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
+				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CB68289453B200548EEE /* ProfileFetcher.swift */,
 				F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */,
+				503BD2882B44D666009624FC /* ProfileManager.swift */,
+				72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */,
+				F9C5CB54289453B200548EEE /* UserProfileFinder.swift */,
+				72901D2A2C9B119E000406DC /* UserProfileWriter.swift */,
 				F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */,
 				3470249F238C85850078D72C /* VersionedProfilesImpl.swift */,
 			);
@@ -10486,23 +10414,35 @@
 			path = Stories;
 			sourceTree = "<group>";
 		};
-		7255A4CE2B98E23800E95368 /* DebugLogs */ = {
+		7255A4CE2B98E23800E95368 /* Debugging */ = {
 			isa = PBXGroup;
 			children = (
+				668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */,
+				668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */,
 				50A1CE372A00894C00730C40 /* DebugLogger.swift */,
 				5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */,
+				668A01042C2B5FE0007B8808 /* Logger.swift */,
+				668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */,
+				668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */,
+				668A01052C2B5FE0007B8808 /* OWSLogs.h */,
+				668A01062C2B5FE0007B8808 /* OWSLogs.m */,
+				668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */,
+				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
 				F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */,
 			);
-			path = DebugLogs;
+			path = Debugging;
 			sourceTree = "<group>";
 		};
 		72C905882B9A275C00E586B8 /* Environment */ = {
 			isa = PBXGroup;
 			children = (
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
-				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
-				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
-				7634F08C2A21963600BB93D5 /* Sounds.swift */,
+				6698FC192980AB45004EFC30 /* DependenciesBridge.swift */,
+				505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */,
+				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
+				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
+				50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */,
+				F9C5CB97289453B200548EEE /* TSConstants.swift */,
 			);
 			path = Environment;
 			sourceTree = "<group>";
@@ -12905,18 +12845,6 @@
 			path = AdHocCall;
 			sourceTree = "<group>";
 		};
-		D9CA61492C2F670300F99EA3 /* StoryThreads */ = {
-			isa = PBXGroup;
-			children = (
-				D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */,
-				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
-				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
-				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
-				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
-			);
-			path = StoryThreads;
-			sourceTree = "<group>";
-		};
 		D9CA8AAD2B698B2400787167 /* DeletedCallRecord */ = {
 			isa = PBXGroup;
 			children = (
@@ -12939,7 +12867,6 @@
 		D9D321792A8FEA7A004FC110 /* Specifications */ = {
 			isa = PBXGroup;
 			children = (
-				D9D321832A8FEA9C004FC110 /* cdsi.proto */,
 				D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */,
 				D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */,
 				D9D3217B2A8FEA9B004FC110 /* Groups.proto */,
@@ -13474,6 +13401,7 @@
 				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				32525F9427C74B1A0099E801 /* GroupCallManager.swift */,
 				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
+				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
 				5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */,
 				D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */,
@@ -13595,6 +13523,7 @@
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
 				7255A4C32B98D5A800E95368 /* Attachments */,
+				720547F12B9C8F5E00E2CF2F /* Avatars */,
 				665C0D5A2ADF537000539A37 /* Backups */,
 				D979DA142B8D1FCF000EEAB8 /* Badge */,
 				F945FE482984795A00C835C7 /* Calls */,
@@ -13602,35 +13531,26 @@
 				500AF3A92C58346500CB9F4F /* Concurrency */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				668A00CC2C2B5E1A007B8808 /* Cryptography */,
-				503B471C2AF0566B00978266 /* Curve25519 */,
-				6600F36A298DAA4F00B1EDB7 /* DateProvider */,
-				668A00DC2C2B5EC3007B8808 /* DebuggerUtils */,
-				7255A4CE2B98E23800E95368 /* DebugLogs */,
-				666BAB0E2980B76B00867196 /* Dependencies */,
+				6600F36A298DAA4F00B1EDB7 /* Dates */,
+				7255A4CE2B98E23800E95368 /* Debugging */,
 				F9C5CA09289453B100548EEE /* Devices */,
 				D9E5203E2C3F321C004D3D45 /* DisappearingMessagesConfiguration */,
 				72C905882B9A275C00E586B8 /* Environment */,
-				506695ED29C5337700B6D8D0 /* GroupMembers */,
 				F9C5CBA3289453B200548EEE /* Groups */,
 				D9668B30291B033800665298 /* Jobs */,
 				D98CA2AE2DF170FE0060370E /* LocalDeviceAuth */,
-				668A00E52C2B5F49007B8808 /* Locking */,
-				668A01032C2B5FD2007B8808 /* Logging */,
 				D920487D28EB8201003F5371 /* Megaphones */,
 				F9C5C8B6289453B100548EEE /* Messages */,
 				D9E335A52993269E00825677 /* Mocks */,
 				F9C5CAB2289453B200548EEE /* Network */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
-				668A00FC2C2B5FBA007B8808 /* OWSAsserts */,
 				F9C5CA9F289453B200548EEE /* Payments */,
 				6694BF662B3647F000B18764 /* PinnedThreadManager */,
 				50A76F542AF573C000FCF02D /* Preconditions */,
 				724D47B32B97C226001BE973 /* Profiles */,
 				668A01282C2B6088007B8808 /* PromiseKit */,
-				F9C5CA00289453B100548EEE /* Protocols */,
 				F9C5C9A1289453B100548EEE /* Protos */,
 				E19C3D922CF6B34200F2C496 /* QRCodes */,
-				668A00D32C2B5E4C007B8808 /* Randomness */,
 				6600F352298C8FBB00B1EDB7 /* Registration */,
 				F9C5C9C6289453B100548EEE /* RemoteAttestation */,
 				F9B0DC3B28948656004E07B7 /* Resources */,
@@ -13642,18 +13562,15 @@
 				D91A39E62AE2F42000F57A61 /* Subscriptions */,
 				F9C5C8A4289451B900548EEE /* tests */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
-				668A01112C2B606F007B8808 /* Threading */,
+				F9C5C9E3289453B100548EEE /* Threads */,
 				500AEE032A4B68D200371F05 /* UISupport */,
 				C1DF3F3B2B0283C5004B6986 /* Upload */,
 				D925F55C298C6A6000158EE4 /* Usernames */,
 				F9C5CAF8289453B200548EEE /* Util */,
 				503AECCC29B2B86200642F66 /* VoiceMessage */,
-				5013365D2B2BC2CD004119F1 /* ZkParams */,
-				04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */,
+				5013365D2B2BC2CD004119F1 /* ZeroKnowledge */,
 				F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */,
 				F9C5C899289451B900548EEE /* SignalServiceKit.h */,
-				50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */,
-				F9C5CB97289453B200548EEE /* TSConstants.swift */,
 			);
 			path = SignalServiceKit;
 			sourceTree = "<group>";
@@ -13732,6 +13649,7 @@
 				F9C5C95E289453B100548EEE /* MessagePipelineSupervisor.swift */,
 				F9C5C975289453B100548EEE /* MessageProcessor.swift */,
 				F9C5C94F289453B100548EEE /* MessageReceiver.swift */,
+				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
 				F9C5C99B289453B100548EEE /* MessageSender+Errors.swift */,
 				F9C5C954289453B100548EEE /* MessageSender+SenderKey.swift */,
 				F9C5C8D5289453B100548EEE /* MessageSender.swift */,
@@ -14027,6 +13945,7 @@
 				D90D4C4C2BB633560097C573 /* Backups */,
 				F9C5C9A2289453B100548EEE /* Generated */,
 				D9D321792A8FEA7A004FC110 /* Specifications */,
+				72901D2E2C9B1913000406DC /* ProtoUtils.swift */,
 				F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */,
 			);
 			path = Protos;
@@ -14093,13 +14012,14 @@
 				F9C5C9D5289453B100548EEE /* Discovery */,
 				B9327B3B2BBB77B800CCDBBA /* NicknameRecord */,
 				6619A1932B27C7A1004B38FE /* SignalRecipient */,
-				F9C5C9E3289453B100548EEE /* Threads */,
 				505AB9312DB2B21900592A70 /* AccountChecker.swift */,
 				50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */,
 				500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */,
 				5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */,
 				F9C5C9FE289453B100548EEE /* Contact.swift */,
+				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
 				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
+				726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */,
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
 				5077B5B72BBC7FE600EF399E /* ContactTest.swift */,
 				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
@@ -14162,8 +14082,8 @@
 		F9C5C9E3289453B100548EEE /* Threads */ = {
 			isa = PBXGroup;
 			children = (
-				D9CA61492C2F670300F99EA3 /* StoryThreads */,
 				6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */,
+				D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */,
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
 				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
@@ -14176,22 +14096,13 @@
 				F9C5C9EC289453B100548EEE /* TSGroupThread.h */,
 				F9C5C9E7289453B100548EEE /* TSGroupThread.m */,
 				880FB40528CD205F00FA1C10 /* TSGroupThread.swift */,
+				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
+				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
+				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
+				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
 				F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */,
 			);
 			path = Threads;
-			sourceTree = "<group>";
-		};
-		F9C5CA00289453B100548EEE /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
-				726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */,
-				503BD2882B44D666009624FC /* ProfileManager.swift */,
-				72901D2C2C9B1296000406DC /* ProfileManagerProtocol.swift */,
-				72901D2E2C9B1913000406DC /* ProtoUtils.swift */,
-				72901D2A2C9B119E000406DC /* UserProfileWriter.swift */,
-			);
-			path = Protocols;
 			sourceTree = "<group>";
 		};
 		F9C5CA09289453B100548EEE /* Devices */ = {
@@ -14201,6 +14112,7 @@
 				6619A1BB2B2A8132004B38FE /* SentMessageTranscriptReceiver */,
 				D970D0332E4554D4001FF608 /* SyncMessages */,
 				D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */,
+				04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */,
 				669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */,
 				C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */,
 				F9C5CA1A289453B100548EEE /* OWSDevice.swift */,
@@ -14464,7 +14376,6 @@
 		F9C5CAF8289453B200548EEE /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				720547F12B9C8F5E00E2CF2F /* Avatars */,
 				661BFE082C07FB640065435B /* ImageMetadata */,
 				C1A0F7A52BA0A11E0009DC0D /* StreamTransform */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
@@ -14481,7 +14392,6 @@
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
-				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
 				0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */,
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
@@ -14506,8 +14416,6 @@
 				F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */,
 				F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */,
 				F9C5CB51289453B200548EEE /* Error+SSK.swift */,
-				505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */,
-				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
 				F97121E92903244700C0F5F2 /* FiatMoney.swift */,
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
@@ -14545,18 +14453,15 @@
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				66A830432CEBFC6800A7656D /* OWSProgress.swift */,
 				66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */,
-				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CAFB289453B200548EEE /* ParamParser.swift */,
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
 				F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */,
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
-				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
-				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
 				502C69732B06F0A400012867 /* Result.swift */,
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
@@ -14564,17 +14469,19 @@
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
 				502346762DB039320029DB97 /* SetDeque.swift */,
+				7634F08C2A21963600BB93D5 /* Sounds.swift */,
 				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
 				F9C5CB12289453B200548EEE /* StorageService.swift */,
 				72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */,
 				F9C5CB09289453B200548EEE /* String+SSK.swift */,
+				668A010A2C2B602F007B8808 /* StringSanitizer.swift */,
+				668A01432C2B6117007B8808 /* StringSanitizerTests.swift */,
 				F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */,
 				F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */,
 				663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */,
 				663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */,
 				66FC638129E2172400F00DAC /* ThemedColor.swift */,
-				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 				7203F5342D53B83000639949 /* TimeInterval+SSK.swift */,
 				D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */,
@@ -14587,7 +14494,6 @@
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
-				F9C5CB54289453B200548EEE /* UserProfileFinder.swift */,
 				D94441302D559567005B2A54 /* UUIDv7.swift */,
 				F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */,
 				F9C5CB7F289453B200548EEE /* Weak.swift */,
@@ -14634,7 +14540,10 @@
 				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
 				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
 				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
+				506695E929C52F2F00B6D8D0 /* GroupMemberMergeObserver.swift */,
 				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
+				506695EB29C5305800B6D8D0 /* GroupMemberStore.swift */,
+				506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */,
 				50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */,
 				50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */,
 				50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */,
@@ -14655,6 +14564,7 @@
 				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
 				340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */,
+				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
 				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBA6289453B200548EEE /* TSGroupModel.h */,
 				F9C5CBA8289453B200548EEE /* TSGroupModel.m */,
