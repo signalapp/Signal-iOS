@@ -48,7 +48,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        return componentView.contentViewDefault?.wallpaperBlurView
+        return componentView.plainContentView?.wallpaperBlurView
     }
 
     public override func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
@@ -82,8 +82,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
 
         let isReusing = (componentView.rootView.superview != nil &&
-                            !themeHasChanged &&
-                            !wallpaperModeHasChanged)
+                         !themeHasChanged &&
+                         !wallpaperModeHasChanged)
         if !isReusing {
             componentView.reset(resetReusableState: true)
         }
@@ -104,58 +104,58 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
         if isReusing {
             outerStack.configureForReuse(config: outerStackConfig,
-                                          cellMeasurement: cellMeasurement,
-                                          measurementKey: Self.measurementKey_outerStack)
+                                         cellMeasurement: cellMeasurement,
+                                         measurementKey: Self.measurementKey_outerStack)
 
-            let contentViewDefault = componentView.contentViewDefault
-            let contentViewForBlur = componentView.contentViewForBlur
-            contentViewDefault?.configure(componentView: componentView,
-                                          cellMeasurement: cellMeasurement,
-                                          componentDelegate: componentDelegate,
-                                          hasWallpaper: hasWallpaper,
-                                          titleLabelConfig: titleLabelConfig,
-                                          innerStackConfig: innerStackConfig,
-                                          isReusing: true)
-            contentViewForBlur?.configure(blurBackgroundColor: blurBackgroundColor,
-                                          titleLabelConfig: titleLabelConfig,
-                                          innerStackConfig: innerStackConfig,
-                                          isReusing: true)
+            let plainContentView = componentView.plainContentView
+            plainContentView?.configure(componentView: componentView,
+                                        cellMeasurement: cellMeasurement,
+                                        componentDelegate: componentDelegate,
+                                        hasWallpaper: hasWallpaper,
+                                        titleLabelConfig: titleLabelConfigForPlainContentView,
+                                        innerStackConfig: innerStackConfig,
+                                        isReusing: true)
+
+            let contentViewVisualEffect = componentView.visualEffectContentView
+            contentViewVisualEffect?.configure(blurBackgroundColor: blurBackgroundColor,
+                                               titleLabelConfig: titleLabelConfigForVisualEffectContentView,
+                                               innerStackConfig: innerStackConfig)
         } else {
             outerStack.reset()
             doubleContentWrapper.reset()
 
             let contentView: UIView = {
-                func buildContentViewWithBlur() -> UIView {
-                    let contentView = componentView.ensureContentViewForBlur()
-                    contentView.configure(blurBackgroundColor: blurBackgroundColor,
-                                          titleLabelConfig: titleLabelConfig,
-                                          innerStackConfig: innerStackConfig,
-                                          isReusing: false)
-                    return contentView.rootView
-                }
-                func buildContentViewDefault() -> UIView {
-                    let contentView = componentView.ensureContentViewDefault()
+                func buildPlainContentView() -> UIView {
+                    let contentView = componentView.ensurePlainContentView()
                     contentView.configure(componentView: componentView,
                                           cellMeasurement: cellMeasurement,
                                           componentDelegate: componentDelegate,
                                           hasWallpaper: hasWallpaper,
-                                          titleLabelConfig: titleLabelConfig,
+                                          titleLabelConfig: titleLabelConfigForPlainContentView,
                                           innerStackConfig: innerStackConfig,
                                           isReusing: false)
                     return contentView.rootView
                 }
+                func buildVisualEffectContentView() -> UIView {
+                    let contentView = componentView.ensureVisualEffectContentView()
+                    contentView.configure(blurBackgroundColor: blurBackgroundColor,
+                                          titleLabelConfig: titleLabelConfigForVisualEffectContentView,
+                                          innerStackConfig: innerStackConfig)
+                    return contentView.rootView
+                }
 
+                // On iOS 26 always use `visual effect` content view for the sticky header.
                 if componentDelegate.isConversationPreview {
-                    return buildContentViewWithBlur()
-                } else if hasWallpaper {
-                    return buildContentViewDefault()
+                    return buildVisualEffectContentView()
+                } else if hasWallpaper, #unavailable(iOS 26) {
+                    return buildPlainContentView()
                 } else {
-                    let blurContentView = buildContentViewWithBlur()
-                    let defaultContentView = buildContentViewDefault()
-                    doubleContentWrapper.addSubviewToFillSuperviewEdges(blurContentView)
-                    doubleContentWrapper.addSubviewToFillSuperviewEdges(defaultContentView)
-                    componentView.doubleContentView = DoubleContentView(normalView: defaultContentView,
-                                                                        stickyView: blurContentView)
+                    let plainContentView = buildPlainContentView()
+                    let visualEffectContentView = buildVisualEffectContentView()
+                    doubleContentWrapper.addSubviewToFillSuperviewEdges(plainContentView)
+                    doubleContentWrapper.addSubviewToFillSuperviewEdges(visualEffectContentView)
+                    componentView.doubleContentView = DoubleContentView(normalView: plainContentView,
+                                                                        stickyView: visualEffectContentView)
                     return doubleContentWrapper
                 }
             }()
@@ -166,7 +166,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                  subviews: [ contentView ])
         }
 
-        componentView.rootView.accessibilityLabel = titleLabelConfig.text.accessibilityDescription
+        componentView.rootView.accessibilityLabel = titleLabelConfigForPlainContentView.text.accessibilityDescription
         componentView.rootView.isAccessibilityElement = true
         componentView.rootView.accessibilityTraits = .header
     }
@@ -177,15 +177,29 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         return State(text: text)
     }
 
-    private var titleLabelConfig: CVLabelConfig {
+    private func titleLabelConfig(textColor: UIColor) -> CVLabelConfig {
         return CVLabelConfig(
             text: .text(dateHeaderState.text),
-            displayConfig: .forUnstyledText(font: .dynamicTypeFootnote.semibold(), textColor: Theme.secondaryTextAndIconColor),
+            displayConfig: .forUnstyledText(font: .dynamicTypeFootnote.semibold(), textColor: textColor),
             font: UIFont.dynamicTypeFootnote.semibold(),
-            textColor: Theme.secondaryTextAndIconColor,
+            textColor: textColor,
             lineBreakMode: .byTruncatingTail,
             textAlignment: .center
         )
+    }
+
+    private var titleLabelConfigForPlainContentView: CVLabelConfig {
+        return titleLabelConfig(textColor: .Signal.secondaryLabel)
+    }
+
+    private var titleLabelConfigForVisualEffectContentView: CVLabelConfig {
+        let textColor: UIColor
+        if #available(iOS 26.0, *) {
+            textColor = .Signal.label
+        } else {
+            textColor = .Signal.secondaryLabel
+        }
+        return titleLabelConfig(textColor: textColor)
     }
 
     private var outerStackConfig: CVStackViewConfig {
@@ -212,9 +226,9 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         owsAssertDebug(maxWidth > 0)
 
         let availableWidth = max(0, maxWidth -
-                                    (innerStackConfig.layoutMargins.totalWidth +
-                                        outerStackConfig.layoutMargins.totalWidth))
-        let labelSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: availableWidth)
+                                 (innerStackConfig.layoutMargins.totalWidth +
+                                  outerStackConfig.layoutMargins.totalWidth))
+        let labelSize = CVText.measureLabel(config: titleLabelConfigForPlainContentView, maxWidth: availableWidth)
 
         let labelInfo = labelSize.asManualSubviewInfo
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
@@ -223,10 +237,10 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                                             subviewInfos: [ labelInfo ])
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                        measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_outerStack,
-                                                        subviewInfos: [ innerStackInfo ],
-                                                        maxWidth: maxWidth)
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: [ innerStackInfo ],
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 
@@ -239,24 +253,33 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         fileprivate let outerStack = ManualStackView(name: "dateHeader.outerStackView")
         fileprivate let doubleContentWrapper = ManualLayoutView(name: "dateHeader.doubleContentWrapper")
 
-        fileprivate var contentViewDefault: ContentViewDefault?
-        fileprivate func ensureContentViewDefault() -> ContentViewDefault {
-            if let contentViewDefault = self.contentViewDefault {
-                return contentViewDefault
+        fileprivate var plainContentView: ContentViewNoVisualEffect?
+        fileprivate func ensurePlainContentView() -> ContentViewNoVisualEffect {
+            if let plainContentView {
+                return plainContentView
             }
-            let contentViewDefault = ContentViewDefault()
-            self.contentViewDefault = contentViewDefault
-            return contentViewDefault
+            let plainContentView = ContentViewNoVisualEffect()
+            self.plainContentView = plainContentView
+            return plainContentView
         }
 
-        fileprivate var contentViewForBlur: ContentViewForBlur?
-        fileprivate func ensureContentViewForBlur() -> ContentViewForBlur {
-            if let contentViewForBlur = self.contentViewForBlur {
-                return contentViewForBlur
+        fileprivate var visualEffectContentView: VisualEffectContentView?
+        fileprivate func ensureVisualEffectContentView() -> VisualEffectContentView {
+            if let visualEffectContentView {
+                return visualEffectContentView
             }
-            let contentViewForBlur = ContentViewForBlur()
-            self.contentViewForBlur = contentViewForBlur
-            return contentViewForBlur
+#if compiler(>=6.2)
+            let visualEffectContentView: VisualEffectContentView
+            if #available(iOS 26.0, *) {
+                visualEffectContentView = ContentViewWithGlassEffect()
+            } else {
+                visualEffectContentView = ContentViewWithBlurEffect()
+            }
+#else
+            let visualEffectContentView = ContentViewWithBlurEffect()
+#endif
+            self.visualEffectContentView = visualEffectContentView
+            return visualEffectContentView
         }
 
         fileprivate var hasWallpaper = false
@@ -281,8 +304,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         public func reset(resetReusableState: Bool) {
             owsAssertDebug(isDedicatedCellView)
 
-            contentViewDefault?.reset(resetReusableState: resetReusableState)
-            contentViewForBlur?.reset(resetReusableState: resetReusableState)
+            plainContentView?.reset(resetReusableState: resetReusableState)
+            visualEffectContentView?.reset()
 
             if resetReusableState {
                 outerStack.reset()
@@ -298,21 +321,26 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
 // MARK: -
 
-private class ContentViewForBlur {
+private protocol VisualEffectContentView {
+    var rootView: UIView { get }
+    func configure(blurBackgroundColor: UIColor, titleLabelConfig: CVLabelConfig, innerStackConfig: CVStackViewConfig)
+    func reset()
+}
+
+// MARK: -
+
+private class ContentViewWithBlurEffect: VisualEffectContentView {
     private let titleLabel = CVLabel()
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
     private let blurOverlay = UIView()
     private let wrapper: UIView
 
-    private var layoutConstraints = [NSLayoutConstraint]()
-
     var rootView: UIView { wrapper }
 
     init() {
+        blurView.clipsToBounds = true
         blurView.contentView.addSubview(blurOverlay)
         blurOverlay.autoPinEdgesToSuperviewEdges()
-
-        blurView.clipsToBounds = true
 
         let wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
         let blurView = self.blurView
@@ -322,45 +350,64 @@ private class ContentViewForBlur {
         self.wrapper = wrapper
     }
 
-    func configure(blurBackgroundColor: UIColor,
-                   titleLabelConfig: CVLabelConfig,
-                   innerStackConfig: CVStackViewConfig,
-                   isReusing: Bool) {
-
-        if !isReusing {
-            reset(resetReusableState: true)
-        }
-
+    func configure(blurBackgroundColor: UIColor, titleLabelConfig: CVLabelConfig, innerStackConfig: CVStackViewConfig) {
         titleLabelConfig.applyForRendering(label: titleLabel)
         blurOverlay.backgroundColor = blurBackgroundColor
 
-        if isReusing {
-            // Do nothing.
-        } else {
-            if titleLabel.superview == nil {
-                blurView.contentView.addSubview(titleLabel)
-                titleLabel.setContentHuggingLow()
-            } else {
-                NSLayoutConstraint.deactivate(layoutConstraints)
-            }
-            layoutConstraints = titleLabel.autoPinEdgesToSuperviewEdges(with: innerStackConfig.layoutMargins)
+        if titleLabel.superview == nil {
+            titleLabel.setContentHuggingLow()
+            blurView.contentView.addSubview(titleLabel)
+            titleLabel.autoPinEdgesToSuperviewEdges(with: innerStackConfig.layoutMargins)
         }
     }
 
-    public func reset(resetReusableState: Bool) {
-
-        if resetReusableState {
-            titleLabel.removeFromSuperview()
-        }
-
+    func reset() {
         titleLabel.text = nil
-        layoutConstraints = []
     }
 }
 
 // MARK: -
 
-private class ContentViewDefault {
+#if compiler(>=6.2)
+@available(iOS 26.0, *)
+private class ContentViewWithGlassEffect: VisualEffectContentView {
+    private let titleLabel = CVLabel()
+    private let glassView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+    private let wrapper: UIView
+
+    private var layoutConstraints = [NSLayoutConstraint]()
+
+    var rootView: UIView { wrapper }
+
+    init() {
+        glassView.cornerConfiguration = .capsule()
+
+        /// WARNING: Must wrap into a UIView or `titleLabel` won't be properly sized.
+        self.wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(glassView)
+    }
+
+    func configure(blurBackgroundColor: UIColor,
+                   titleLabelConfig: CVLabelConfig,
+                   innerStackConfig: CVStackViewConfig) {
+
+        titleLabelConfig.applyForRendering(label: titleLabel)
+
+        if titleLabel.superview == nil {
+            titleLabel.setContentHuggingLow()
+            glassView.contentView.addSubview(titleLabel)
+            titleLabel.autoPinEdgesToSuperviewEdges(with: innerStackConfig.layoutMargins)
+        }
+    }
+
+    func reset() {
+        titleLabel.text = nil
+    }
+}
+#endif
+
+// MARK: -
+
+private class ContentViewNoVisualEffect {
     private let titleLabel = CVLabel()
     private let innerStack = ManualStackView(name: "dateHeader.innerStackView")
 
@@ -368,10 +415,16 @@ private class ContentViewDefault {
 
     fileprivate var wallpaperBlurView: CVWallpaperBlurView?
     private func ensureWallpaperBlurView() -> CVWallpaperBlurView {
-        if let wallpaperBlurView = self.wallpaperBlurView {
+        if let wallpaperBlurView {
             return wallpaperBlurView
         }
         let wallpaperBlurView = CVWallpaperBlurView()
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            // Will override `cornerRadius` set in `configure...`.
+            wallpaperBlurView.cornerConfiguration = .capsule()
+        }
+#endif
         self.wallpaperBlurView = wallpaperBlurView
         return wallpaperBlurView
     }
@@ -410,7 +463,6 @@ private class ContentViewDefault {
     }
 
     public func reset(resetReusableState: Bool) {
-
         if resetReusableState {
             innerStack.reset()
 
