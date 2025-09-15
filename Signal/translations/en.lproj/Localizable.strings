@@ -6451,6 +6451,9 @@
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 
+/* Prefix for a poll preview */
+"POLL_PREFIX" = "Poll:";
+
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
 

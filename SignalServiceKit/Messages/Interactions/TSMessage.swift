@@ -655,8 +655,19 @@ public extension TSMessage {
             }
         }
 
+        var pollPrefix: String?
+        if isPoll {
+            let locPollString = OWSLocalizedString(
+                "POLL_PREFIX",
+                comment: "Prefix for a poll preview"
+            )
+
+            pollPrefix = PollMessageManager.pollEmoji + locPollString + " "
+        }
+
         if let bodyDescription = bodyDescription?.nilIfEmpty {
-            return .body(bodyDescription, prefix: attachmentEmoji?.nilIfEmpty?.appending(" "), ranges: bodyRanges)
+            let prefix = pollPrefix ?? attachmentEmoji?.nilIfEmpty?.appending(" ")
+            return .body(bodyDescription, prefix: prefix, ranges: bodyRanges)
         } else if let attachmentDescription = attachmentDescription?.nilIfEmpty {
             return .body(attachmentDescription, prefix: nil, ranges: bodyRanges)
         } else if let contactShare {
