@@ -44,7 +44,15 @@ class AttachmentKeyboard: CustomKeyboard {
 
         super.init()
 
-        backgroundColor = Theme.backgroundColor
+        var topInset: CGFloat = 12
+        var backgroundColor = UIColor.Signal.background
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            backgroundColor = .clear
+            topInset = 4
+        }
+#endif
+        self.backgroundColor = backgroundColor
 
         let stackView = UIStackView(arrangedSubviews: [
             limitedPhotoPermissionsView,
@@ -55,7 +63,7 @@ class AttachmentKeyboard: CustomKeyboard {
         stackView.setCustomSpacing(12, after: limitedPhotoPermissionsView)
         contentView.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
         stackView.autoPinEdge(toSuperviewSafeArea: .bottom)
     }
 

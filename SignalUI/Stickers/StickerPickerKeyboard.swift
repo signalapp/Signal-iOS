@@ -18,7 +18,14 @@ public class StickerKeyboard: CustomKeyboard {
     public override init() {
         super.init()
 
-        backgroundColor = Theme.backgroundColor
+        var backgroundColor = UIColor.Signal.background
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            backgroundColor = .clear
+            headerView.layoutMargins.top = 0
+        }
+#endif
+        self.backgroundColor = backgroundColor
 
         let stackView = UIStackView(arrangedSubviews: [ headerView, stickerPickerPageView ])
         contentView.addSubview(stackView)
