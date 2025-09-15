@@ -2643,7 +2643,6 @@
 		D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
-		D96269D92C58407400152314 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D96269D82C58407400152314 /* README.md */; };
 		D962FC432E149ECF004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962FC422E149EC7004DB623 /* BackupSettingsAttachmentDownloadTrackerTest.swift */; };
 		D9680CF32DBB0B2D005DD5BE /* ChooseBackupPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */; };
 		D9683D792D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */; };
@@ -5701,7 +5700,7 @@
 		C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorBackupErrorPresenter.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C15C31142D9B3F7F0071E54C /* RegistrationChoiceButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChoiceButton.swift; sourceTree = "<group>"; };
-		C15EE0902D5D53420070838C /* Registration.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Registration.proto; path = SignalServiceKit/protobuf/Registration.proto; sourceTree = SOURCE_ROOT; };
+		C15EE0902D5D53420070838C /* Registration.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Registration.proto; sourceTree = "<group>"; };
 		C15EE0922D5D5AC00070838C /* Registration.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Registration.pb.swift; sourceTree = "<group>"; };
 		C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentHistoryItem.swift; sourceTree = "<group>"; };
 		C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentModelHistoryItem.swift; sourceTree = "<group>"; };
@@ -6764,16 +6763,16 @@
 		D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobFinderTest.swift; sourceTree = "<group>"; };
 		D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessageTest.swift; sourceTree = "<group>"; };
-		D9D3217B2A8FEA9B004FC110 /* Groups.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Groups.proto; path = SignalServiceKit/protobuf/Groups.proto; sourceTree = SOURCE_ROOT; };
-		D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = DeviceTransfer.proto; path = SignalServiceKit/protobuf/DeviceTransfer.proto; sourceTree = SOURCE_ROOT; };
-		D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Fingerprint.proto; path = SignalServiceKit/protobuf/Fingerprint.proto; sourceTree = SOURCE_ROOT; };
-		D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SessionRecord.proto; path = SignalServiceKit/protobuf/SessionRecord.proto; sourceTree = SOURCE_ROOT; };
-		D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SignalIOS.proto; path = SignalServiceKit/protobuf/SignalIOS.proto; sourceTree = SOURCE_ROOT; };
-		D9D321802A8FEA9C004FC110 /* StorageService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = StorageService.proto; path = SignalServiceKit/protobuf/StorageService.proto; sourceTree = SOURCE_ROOT; };
-		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SignalService.proto; path = SignalServiceKit/protobuf/SignalService.proto; sourceTree = SOURCE_ROOT; };
-		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Provisioning.proto; path = SignalServiceKit/protobuf/Provisioning.proto; sourceTree = SOURCE_ROOT; };
-		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = svr2.proto; path = SignalServiceKit/protobuf/svr2.proto; sourceTree = SOURCE_ROOT; };
-		D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = WebSocketResources.proto; path = SignalServiceKit/protobuf/WebSocketResources.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217B2A8FEA9B004FC110 /* Groups.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Groups.proto; sourceTree = "<group>"; };
+		D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = DeviceTransfer.proto; sourceTree = "<group>"; };
+		D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Fingerprint.proto; sourceTree = "<group>"; };
+		D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SessionRecord.proto; sourceTree = "<group>"; };
+		D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SignalIOS.proto; sourceTree = "<group>"; };
+		D9D321802A8FEA9C004FC110 /* StorageService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = StorageService.proto; sourceTree = "<group>"; };
+		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SignalService.proto; sourceTree = "<group>"; };
+		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Provisioning.proto; sourceTree = "<group>"; };
+		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = svr2.proto; sourceTree = "<group>"; };
+		D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = WebSocketResources.proto; sourceTree = "<group>"; };
 		D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordAssociatedInteraction.swift; sourceTree = "<group>"; };
 		D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessage.swift; sourceTree = "<group>"; };
 		D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteAllJobQueue.swift; sourceTree = "<group>"; };
@@ -12303,7 +12302,7 @@
 				D96269D82C58407400152314 /* README.md */,
 			);
 			name = Backups;
-			path = SignalServiceKit/protobuf/Backups;
+			path = SignalServiceKit/Protos/Backups;
 			sourceTree = SOURCE_ROOT;
 		};
 		D91A39E62AE2F42000F57A61 /* Subscriptions */ = {
@@ -12879,7 +12878,7 @@
 				D9D321842A8FEA9D004FC110 /* svr2.proto */,
 				D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */,
 			);
-			name = Specifications;
+			path = Specifications;
 			sourceTree = "<group>";
 		};
 		D9DCFDAC2A3BB22800C73C0B /* QRCodes */ = {
@@ -15200,7 +15199,6 @@
 				F9B0DC5C28948656004E07B7 /* GTSR3.crt in Resources */,
 				F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */,
 				F9B0DC5328948656004E07B7 /* isrgrootx1.crt in Resources */,
-				D96269D92C58407400152314 /* README.md in Resources */,
 				F9B0DC4F28948656004E07B7 /* schema.sql in Resources */,
 				F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */,
 			);

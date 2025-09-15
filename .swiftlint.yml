@@ -2,7 +2,7 @@ excluded:
 - Pods
 - ThirdParty
 - SignalServiceKit/Protos/Generated
-- SignalServiceKit/protobuf/Backups
+- SignalServiceKit/Protos/Backups
 # SwiftLint has trouble with these files. See <https://github.com/realm/SwiftLint/issues/3988>.
 - Signal/Emoji/Emoji+SkinTones.swift
 - Signal/Emoji/EmojiWithSkinTones+String.swift
