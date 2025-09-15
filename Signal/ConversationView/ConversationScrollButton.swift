@@ -4,6 +4,7 @@
 //
 
 import SignalUI
+import SignalServiceKit
 public import UIKit
 
 public class ConversationScrollButton: UIButton {
@@ -20,96 +21,92 @@ public class ConversationScrollButton: UIButton {
     init(iconName: String) {
         self.iconName = iconName
         super.init(frame: .zero)
-        createContents()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(themeDidChange(notification:)),
-            name: .themeDidChange,
-            object: nil)
+
+        var configuration: UIButton.Configuration?
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            configuration = .glass()
+            configuration?.imageColorTransformer = UIConfigurationColorTransformer { _ in
+                return .Signal.label
+            }
+        }
+#endif
+        if configuration == nil {
+            configuration = .gray()
+            configuration?.imageColorTransformer = UIConfigurationColorTransformer { _ in
+                return UIColor { traitCollection in
+                    return traitCollection.userInterfaceStyle == .dark ? .ows_gray15 : .ows_gray75
+                }
+            }
+            configuration?.background.backgroundColorTransformer = UIConfigurationColorTransformer { _ in
+                return UIColor { traitCollection in
+                    return traitCollection.userInterfaceStyle == .dark ? .ows_gray65 : .ows_gray02
+                }
+            }
+            if #available(iOS 18, *) {
+                configuration?.background.shadowProperties.offset = CGSize(width: 0, height: 4)
+                configuration?.background.shadowProperties.color = .black
+                configuration?.background.shadowProperties.radius = 12
+                configuration?.background.shadowProperties.opacity = 0.3
+            }
+        }
+        configuration?.cornerStyle = .capsule
+        configuration?.contentInsets = ConversationScrollButton.backgroundInsets
+        configuration?.background.backgroundInsets = ConversationScrollButton.backgroundInsets
+        configuration?.image = UIImage(named: iconName)
+        self.configuration = configuration
+
+        let widthHeightDifference =
+        ConversationScrollButton.backgroundInsets.leading + ConversationScrollButton.backgroundInsets.trailing
+        - (ConversationScrollButton.backgroundInsets.top + ConversationScrollButton.backgroundInsets.bottom)
+        addConstraint(
+            widthAnchor.constraint(equalTo: heightAnchor, multiplier: 1, constant: widthHeightDifference))
+
+        addUnreadLabel()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private class var circleSize: CGFloat { .scaleFromIPhone5To7Plus(35, 40) }
-
-    class var buttonSize: CGFloat { circleSize + 2 * 15 }
-
-    private lazy var iconView = UIImageView()
+    private class var circleDiameter: CGFloat { 40 }
+    private class var backgroundInsets: NSDirectionalEdgeInsets { .init(top: 12, leading: 15, bottom: 8, trailing: 15) }
+    public class var buttonWidth: CGFloat { circleDiameter + backgroundInsets.leading + backgroundInsets.trailing }
 
     private lazy var unreadCountLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12)
+        label.font = .dynamicTypeFootnoteClamped.semibold()
         label.textColor = .white
         label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     private lazy var unreadBadge: UIView = {
-        let view = UIView()
+        let view = PillView()
         view.isUserInteractionEnabled = false
-        view.layer.cornerRadius = 8
         view.clipsToBounds = true
+        view.backgroundColor = .Signal.accent
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(unreadCountLabel)
+        NSLayoutConstraint.activate([
+            unreadCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
+            unreadCountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            unreadCountLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 2),
+            unreadCountLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            view.widthAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor, multiplier: 1),
+        ])
+
         return view
     }()
 
-    private lazy var shadowView: UIView = {
-        let circleSize = ConversationScrollButton.circleSize
-        let view = CircleView(diameter: circleSize)
-        view.isUserInteractionEnabled = false
-        view.layer.shadowOffset = .zero
-        view.layer.shadowRadius = 4
-        view.layer.shadowOpacity = 0.05
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: .zero, size: CGSize(square: circleSize))).cgPath
-        return view
-    }()
-
-    private lazy var circleView: UIView = {
-        let circleSize = ConversationScrollButton.circleSize
-        let view = CircleView(diameter: circleSize)
-        view.isUserInteractionEnabled = false
-        view.layer.shadowOffset = CGSize(width: 0, height: 4)
-        view.layer.shadowRadius = 12
-        view.layer.shadowOpacity = 0.3
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: .zero, size: CGSize(square: circleSize))).cgPath
-        return view
-    }()
-
-    private func createContents() {
-        circleView.addSubview(iconView)
-        iconView.autoCenterInSuperview()
-        iconView.autoSetDimensions(to: CGSize(square: 20))
-        addSubview(shadowView)
-        addSubview(circleView)
-        circleView.autoHCenterInSuperview()
-        circleView.autoPinEdge(toSuperviewEdge: .bottom)
-        shadowView.autoPinEdges(toEdgesOf: circleView)
-
-        unreadBadge.addSubview(unreadCountLabel)
-        unreadCountLabel.autoPinHeightToSuperview()
-        unreadCountLabel.autoPinWidthToSuperview(withMargin: 3)
+    private func addUnreadLabel() {
+        let pillViewOverlap: CGFloat = 8 // how much unread badge pill overlaps circle
         addSubview(unreadBadge)
-        unreadBadge.autoPinEdge(.bottom, to: .top, of: circleView, withOffset: 8)
-        unreadBadge.autoHCenterInSuperview()
-        unreadBadge.autoSetDimension(.height, toSize: 16)
-        unreadBadge.autoSetDimension(.width, toSize: 16, relation: .greaterThanOrEqual)
-        unreadBadge.autoMatch(.width, to: .width, of: self, withOffset: 0, relation: .lessThanOrEqual)
-        unreadBadge.autoPinEdge(toSuperviewEdge: .top)
-
-        updateColors()
-    }
-
-    private func updateColors() {
-        unreadBadge.backgroundColor = .ows_accentBlue
-        circleView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02
-        iconView.setTemplateImageName(iconName, tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75)
-    }
-
-    @objc
-    private func themeDidChange(notification: Notification) {
-        updateColors()
+        NSLayoutConstraint.activate([
+            unreadBadge.centerXAnchor.constraint(equalTo: centerXAnchor),
+            unreadBadge.bottomAnchor.constraint(equalTo: topAnchor, constant: ConversationScrollButton.backgroundInsets.top + pillViewOverlap),
+        ])
     }
 }
