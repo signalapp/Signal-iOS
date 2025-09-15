@@ -753,7 +753,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural
                 ),
-                maxWidth: tableView.frame.width - insets.totalWidth
+                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth
             ).height
             return height + insets.totalHeight
         } else if let headerTitle = section.headerAttributedTitle, !headerTitle.isEmpty {
@@ -771,7 +771,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural
                 ),
-                maxWidth: tableView.frame.width - insets.totalWidth
+                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth
             ).height
             return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForHeaderInSection: sectionIndex) {
@@ -804,7 +804,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural
                 ),
-                maxWidth: tableView.frame.width - insets.totalWidth
+                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth
             ).height
             return height + insets.totalHeight
         } else if let footerTitle = section.footerAttributedTitle, !footerTitle.isEmpty {
@@ -822,7 +822,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural
                 ),
-                maxWidth: tableView.frame.width - insets.totalWidth
+                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth
             ).height
             return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForFooterInSection: sectionIndex) {

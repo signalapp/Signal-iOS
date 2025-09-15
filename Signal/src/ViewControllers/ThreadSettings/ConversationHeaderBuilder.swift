@@ -403,24 +403,23 @@ struct ConversationHeaderBuilder {
         return avatarView
     }
 
-    func buildThreadNameLabel() -> OWSButton {
-        let button = OWSButton()
-        button.setAttributedTitle(delegate.threadAttributedString(
+    func buildThreadNameLabel() -> UIButton {
+        var config = UIButton.Configuration.plain()
+        let title = delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
             tx: transaction
-        ), for: .normal)
-        button.titleLabel?.numberOfLines = 0
-        button.titleLabel?.textAlignment = .center
-        button.titleLabel?.lineBreakMode = .byWordWrapping
-        button.titleLabel?.setContentHuggingHigh()
-        button.titleLabel?.autoMatch(.height, to: .height, of: button)
-        if delegate.canTapThreadName {
-            button.block = { [weak delegate] in
+        ).styled(with: .alignment(.center))
+        config.attributedTitle = AttributedString(title)
+        config.titleLineBreakMode = .byWordWrapping
+        config.baseForegroundColor = UIColor.Signal.label
+        let action: UIAction? = if delegate.canTapThreadName {
+            UIAction { [weak delegate] _ in
                 delegate?.didTapThreadName()
             }
-            button.dimsWhenHighlighted = true
+        } else {
+            nil
         }
-        return button
+        return UIButton(configuration: config, primaryAction: action)
     }
 
     static func threadAttributedString(
