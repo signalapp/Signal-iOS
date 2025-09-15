@@ -280,6 +280,18 @@ public class QRCodeScanViewController: OWSViewController {
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(logSessionRuntimeError),
+            name: .AVCaptureSessionRuntimeError,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(logSessionInterruptError),
+            name: .AVCaptureSessionWasInterrupted,
+            object: nil
+        )
     }
 
     @objc
@@ -295,6 +307,28 @@ public class QRCodeScanViewController: OWSViewController {
 
         if self.view.window != nil {
             tryToStartScanning()
+        }
+    }
+
+    @objc
+    private func logSessionRuntimeError(notification: Notification) {
+        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
+            Logger.info("Error running AVCaptureSession: no specific error provided")
+            return
+        }
+
+        Logger.error("Error running AVCaptureSession: \(error.localizedDescription)")
+    }
+
+    @objc
+    private func logSessionInterruptError(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            guard let reasonValue = userInfo[AVCaptureSessionInterruptionReasonKey] as? NSNumber,
+                  let reason = AVCaptureSession.InterruptionReason(rawValue: reasonValue.intValue) else {
+                Logger.info("session was interrupted for no apparent reason")
+                return
+            }
+            Logger.info("session was interrupted with reason code: \(reason.rawValue)")
         }
     }
 
@@ -721,6 +755,12 @@ private class QRCodeScanner {
     ) {
         self.prefersFrontFacingCamera = prefersFrontFacingCamera
         output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
+
+        if #available(iOS 16.0, *) {
+            if session.isMultitaskingCameraAccessSupported {
+                session.isMultitaskingCameraAccessEnabled = true
+            }
+        }
     }
 
     deinit {
