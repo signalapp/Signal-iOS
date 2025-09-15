@@ -880,7 +880,6 @@ extension DonationSubscriptionManager {
     }
 
     public static func setShowExpirySheetOnHomeScreenKey(show: Bool, transaction: DBWriteTransaction) {
-        Logger.info("\(show)")
         subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction)
     }
 
@@ -968,8 +967,11 @@ extension DonationSubscriptionManager {
 // MARK: -
 
 extension DonationSubscriptionManager {
-    public static func reconcileBadgeStates(transaction: DBWriteTransaction) {
-        let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx: transaction)?.badges ?? []
+    public static func reconcileBadgeStates(
+        currentLocalUserProfile: OWSUserProfile,
+        transaction: DBWriteTransaction
+    ) {
+        let currentBadges = currentLocalUserProfile.badges
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }

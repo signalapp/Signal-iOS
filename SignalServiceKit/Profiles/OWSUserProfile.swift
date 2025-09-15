@@ -1174,7 +1174,10 @@ extension OWSUserProfile {
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
-            DonationSubscriptionManager.reconcileBadgeStates(transaction: tx)
+            DonationSubscriptionManager.reconcileBadgeStates(
+                currentLocalUserProfile: newInstance,
+                transaction: tx,
+            )
         }
 
         if let oldInstance {
