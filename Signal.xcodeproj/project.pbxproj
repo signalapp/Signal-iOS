@@ -3560,7 +3560,6 @@
 		F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB5289453B200548EEE /* CaptchaChallenge.swift */; };
 		F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */; };
 		F9C5CD8F289453B300548EEE /* SpamChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB7289453B200548EEE /* SpamChallenge.swift */; };
-		F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */; };
 		F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB9289453B200548EEE /* PushChallenge.swift */; };
 		F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABD289453B200548EEE /* ReachabilityManager.swift */; };
 		F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */; };
@@ -7551,7 +7550,6 @@
 		F9C5CAB5289453B200548EEE /* CaptchaChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptchaChallenge.swift; sourceTree = "<group>"; };
 		F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpamChallengeResolver.swift; sourceTree = "<group>"; };
 		F9C5CAB7289453B200548EEE /* SpamChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpamChallenge.swift; sourceTree = "<group>"; };
-		F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeElapsedChallenge.swift; sourceTree = "<group>"; };
 		F9C5CAB9289453B200548EEE /* PushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushChallenge.swift; sourceTree = "<group>"; };
 		F9C5CABC289453B200548EEE /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		F9C5CABD289453B200548EEE /* ReachabilityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReachabilityManager.swift; sourceTree = "<group>"; };
@@ -14411,7 +14409,6 @@
 				F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */,
 				F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */,
 				F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */,
-				F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */,
 			);
 			path = Spam;
 			sourceTree = "<group>";
@@ -18681,7 +18678,6 @@
 				D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,
-				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,
 				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,
 				7203F5352D53B83500639949 /* TimeInterval+SSK.swift in Sources */,
 				66485EB72CD1331D00B8613F /* TransactionCompletion.swift in Sources */,
