@@ -18,8 +18,6 @@ public enum SentMessageTranscriptTarget {
             return thread
         }
     }
-
-    var threadUniqueId: String { thread.uniqueId }
 }
 
 public enum SentMessageTranscriptType {

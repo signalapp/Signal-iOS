@@ -94,7 +94,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // Don't continue processing lest we print a bubble for the session reset.
             return .success(nil)
         case .paymentNotification(let paymentNotification):
-            Logger.info("Recording payment notification from sync transcript in thread: \(paymentNotification.target.threadUniqueId) timestamp: \(transcript.timestamp)")
+            Logger.info("Recording payment notification from sync transcript in thread: \(paymentNotification.target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {
                 return .failure(OWSAssertionError("Timestamp validation failed"))
             }
@@ -144,7 +144,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
             return .success(message)
         case .expirationTimerUpdate(let target):
-            Logger.info("Recording expiration timer update transcript in thread: \(target.threadUniqueId) timestamp: \(transcript.timestamp)")
+            Logger.info("Recording expiration timer update transcript in thread: \(target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {
                 return .failure(OWSAssertionError("Timestamp validation failed"))
             }
@@ -156,7 +156,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             return .success(nil)
 
         case .message(let messageParams):
-            Logger.info("Recording transcript in thread: \(messageParams.target.threadUniqueId) timestamp: \(transcript.timestamp)")
+            Logger.info("Recording transcript in thread: \(messageParams.target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {
                 return .failure(OWSAssertionError("Timestamp validation failed"))
             }
