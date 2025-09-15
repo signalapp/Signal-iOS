@@ -36,6 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case deregistration
     case newDeviceLinked
     case backupsEnabled
+    case pollEndNotification
 }
 
 /// Represents "custom" notification actions. These are the ones that appear
@@ -193,6 +194,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.newDeviceLinked"
         case .backupsEnabled:
             return "Signal.AppNotificationCategory.backupsEnabled"
+        case .pollEndNotification:
+            return "Signal.AppNotificationCategory.pollEndNotification"
         }
     }
 
@@ -230,6 +233,8 @@ extension AppNotificationCategory {
         case .newDeviceLinked:
             return []
         case .backupsEnabled:
+            return []
+        case .pollEndNotification:
             return []
         }
     }
@@ -593,6 +598,66 @@ public class NotificationPresenterImpl: NotificationPresenter {
             thread: thread,
             transaction: transaction
         )
+    }
+
+    public func notifyUserOfPollEnd(
+        forMessage message: TSIncomingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
+        guard !isThreadMuted(thread, transaction: transaction) else { return }
+
+        // Poll terminate notifications only get displayed if we can include the poll details.
+        let previewType = self.previewType(tx: transaction)
+        guard previewType == .namePreview else {
+            return
+        }
+        owsPrecondition(Self.shouldShowActions(for: previewType))
+
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: message.authorAddress,
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: transaction
+        )
+
+        let pollEndedFormat = OWSLocalizedString(
+            "POLL_ENDED_NOTIFICATION",
+            comment: "Notification that {{contact}} ended a poll with question {{poll question}}"
+        )
+        guard let pollQuestion = message.body else {
+            return
+        }
+
+        let pollAuthorName = SSKEnvironment.shared.contactManagerRef.nameForAddress(
+            message.authorAddress,
+            localUserDisplayMode: .noteToSelf,
+            short: false,
+            transaction: transaction
+        )
+
+        let notificationBody: String = "\u{1F4CA}" + String(format: pollEndedFormat, pollAuthorName.string, pollQuestion)
+
+        let intent = thread.generateSendMessageIntent(context: .senderAddress(message.authorAddress), transaction: transaction)
+
+        let threadUniqueId = thread.uniqueId
+        enqueueNotificationAction(afterCommitting: transaction) {
+            await self.notifyViaPresenter(
+                category: .pollEndNotification,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadUniqueId,
+                userInfo: AppNotificationUserInfo(),
+                intent: intent.map { ($0, .incoming) },
+                soundQuery: .thread(threadUniqueId)
+            )
+        }
     }
 
     private enum NotifiableThread {

@@ -1122,6 +1122,10 @@ public final class MessageReceiver {
 
                 if let targetMessage {
                     SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                    if let incomingMessage = targetMessage as? TSIncomingMessage {
+                        SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollEnd(forMessage: incomingMessage, thread: thread, transaction: tx)
+                    }
                 }
             } catch {
                 owsFailDebug("Could not terminate poll!")

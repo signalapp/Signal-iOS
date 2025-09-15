@@ -6445,6 +6445,9 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Poll Details";
 
+/* Notification that {{contact}} ended a poll with question {{poll question}} */
+"POLL_ENDED_NOTIFICATION" = "%@ ended the poll “%@”";
+
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 

@@ -64,6 +64,14 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func notifyUserOfPollEnd(
+        forMessage message: TSIncomingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.warn("")
+    }
+
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
         owsAssertDebug(expectErrors, "Internal error message: \(errorString)")
         Logger.warn("")

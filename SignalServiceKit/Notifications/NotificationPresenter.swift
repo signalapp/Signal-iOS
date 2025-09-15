@@ -18,6 +18,8 @@ public protocol NotificationPresenter {
 
     func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction)
 
+    func notifyUserOfPollEnd(forMessage message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction)
+
     func notifyUser(forPreviewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction)
 
     func notifyTestPopulation(ofErrorMessage errorString: String)
