@@ -67,7 +67,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
 
         // Pair<SignalProtocolAddress, byte[]> plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
         let bobPlaintext = try! bobCipher.decryptMessage(
-            trustRoot: trustRoot.publicKey,
+            trustRoots: [trustRoot.publicKey],
             cipherTextData: ciphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
@@ -134,7 +134,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // }
         do {
             _ = try bobCipher.decryptMessage(
-                trustRoot: trustRoot.publicKey,
+                trustRoots: [trustRoot.publicKey],
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
@@ -214,7 +214,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // }
         do {
             _ = try bobCipher.decryptMessage(
-                trustRoot: trustRoot.publicKey,
+                trustRoots: [trustRoot.publicKey],
                 cipherTextData: ciphertext,
                 timestamp: 31338,
                 localIdentifiers: bobMockClient.localIdentifiers,
@@ -291,7 +291,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // }
         do {
             _ = try bobCipher.decryptMessage(
-                trustRoot: trustRoot.publicKey,
+                trustRoots: [trustRoot.publicKey],
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
@@ -353,7 +353,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // Test: Bob decrypts the ciphertext
         let bobCipher = bobMockClient.createSecretSessionCipher()
         let bobPlaintext = try! bobCipher.decryptMessage(
-            trustRoot: trustRoot.publicKey,
+            trustRoots: [trustRoot.publicKey],
             cipherTextData: singleRecipientCiphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
@@ -408,7 +408,7 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         let bobCipher = bobMockClient.createSecretSessionCipher()
         do {
             _ = try bobCipher.decryptMessage(
-                trustRoot: trustRoot.publicKey,
+                trustRoots: [trustRoot.publicKey],
                 cipherTextData: singleRecipientCiphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,

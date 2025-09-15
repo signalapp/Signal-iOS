@@ -49,7 +49,7 @@ class MessageDecryptionTest: SSKBaseTest {
         }
 
         (SSKEnvironment.shared.notificationPresenterRef as! NoopNotificationPresenterImpl).expectErrors = true
-        (SSKEnvironment.shared.udManagerRef as! OWSUDManagerImpl).trustRoot = sealedSenderTrustRoot.publicKey
+        (SSKEnvironment.shared.udManagerRef as! OWSUDManagerImpl).trustRoots = [sealedSenderTrustRoot.publicKey]
     }
 
     // MARK: - Tests

@@ -52,7 +52,7 @@ public class TSConstants {
     public static var svr2URL: String { shared.svr2URL }
     public static var registrationCaptchaURL: String { shared.registrationCaptchaURL }
     public static var challengeCaptchaURL: String { shared.challengeCaptchaURL }
-    public static var kUDTrustRoot: String { shared.kUDTrustRoot }
+    public static var kUDTrustRoots: [String] { shared.kUDTrustRoots }
     public static var updatesURL: String { shared.updatesURL }
     public static var updates2URL: String { shared.updates2URL }
 
@@ -108,7 +108,7 @@ public protocol TSConstantsProtocol: AnyObject {
     var svr2URL: String { get }
     var registrationCaptchaURL: String { get }
     var challengeCaptchaURL: String { get }
-    var kUDTrustRoot: String { get }
+    var kUDTrustRoots: [String] { get }
     var updatesURL: String { get }
     var updates2URL: String { get }
 
@@ -166,7 +166,7 @@ public class TSConstantsProduction: TSConstantsProtocol {
     public let svr2URL = "wss://svr2.signal.org"
     public let registrationCaptchaURL = "https://signalcaptchas.org/registration/generate.html"
     public let challengeCaptchaURL = "https://signalcaptchas.org/challenge/generate.html"
-    public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
+    public let kUDTrustRoots = ["BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF", "BUkY0I+9+oPgDCn4+Ac6Iu813yvqkDr/ga8DzLxFxuk6"]
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
 
@@ -221,7 +221,7 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let challengeCaptchaURL = "https://signalcaptchas.org/staging/challenge/generate.html"
     // There's no separate test SFU for staging.
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
-    public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+    public let kUDTrustRoots = ["BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx", "BYhU6tPjqP46KGZEzRs1OL4U39V5dlPJ/X09ha4rErkm"]
     // There's no separate updates endpoint for staging.
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
@@ -290,7 +290,7 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var challengeCaptchaURL = defaultValues.challengeCaptchaURL
 
-    public lazy var kUDTrustRoot = defaultValues.kUDTrustRoot
+    public lazy var kUDTrustRoots = defaultValues.kUDTrustRoots
 
     public lazy var updatesURL = defaultValues.updatesURL
 

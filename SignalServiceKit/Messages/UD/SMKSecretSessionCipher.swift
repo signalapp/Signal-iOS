@@ -171,7 +171,7 @@ public class SMKSecretSessionCipher: NSObject {
     // public Pair<SignalProtocolAddress, byte[]> decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
     //    throws InvalidMetadataMessageException, InvalidMetadataVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyException, ProtocolNoSessionException, ProtocolLegacyMessageException, ProtocolInvalidVersionException, ProtocolDuplicateMessageException, ProtocolInvalidKeyIdException, ProtocolUntrustedIdentityException
     public func decryptMessage(
-        trustRoot: PublicKey,
+        trustRoots: [PublicKey],
         cipherTextData: Data,
         timestamp: UInt64,
         localIdentifiers: LocalIdentifiers,
@@ -205,7 +205,7 @@ public class SMKSecretSessionCipher: NSObject {
 
         do {
             // validator.validate(content.getSenderCertificate(), timestamp);
-            guard messageContent.senderCertificate.validate(trustRoot: trustRoot, time: timestamp) else {
+            guard messageContent.senderCertificate.validate(trustRoots: trustRoots, time: timestamp) else {
                 throw SMKSecretSessionCipherError.invalidCertificate
             }
 

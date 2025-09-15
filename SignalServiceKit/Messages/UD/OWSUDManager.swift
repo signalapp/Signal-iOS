@@ -90,7 +90,7 @@ public struct SenderCertificates {
 
 public protocol OWSUDManager {
 
-    var trustRoot: PublicKey { get }
+    var trustRoots: [PublicKey] { get }
 
     // MARK: - Recipient State
 
@@ -145,13 +145,13 @@ public class OWSUDManagerImpl: OWSUDManager {
     // MARK: Recipient State
 
     // Exposed for testing
-    public internal(set) var trustRoot: PublicKey
+    public internal(set) var trustRoots: [PublicKey]
 
     private let appReadiness: AppReadiness
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        self.trustRoot = OWSUDManagerImpl.trustRoot()
+        self.trustRoots = OWSUDManagerImpl.trustRoots()
 
         SwiftSingletons.register(self)
 
@@ -428,23 +428,26 @@ public class OWSUDManagerImpl: OWSUDManager {
         let nowMs = NSDate.ows_millisecondTimeStamp()
         let anHourFromNowMs = nowMs + UInt64.hourInMs
 
-        guard certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) else {
+        guard certificate.validate(trustRoots: trustRoots, time: anHourFromNowMs) else {
             throw OWSUDError.invalidData(description: "Sender certificate failed validation")
         }
     }
 
-    public class func trustRoot() -> PublicKey {
-        guard let trustRootData = Data(base64Encoded: TSConstants.kUDTrustRoot) else {
-            // This exits.
-            owsFail("Invalid trust root data.")
+    public class func trustRoots() -> [PublicKey] {
+        var trustRoots = [PublicKey]()
+        for trustRoot in TSConstants.kUDTrustRoots {
+            do {
+                guard let data = Data(base64Encoded: trustRoot) else {
+                    // This exits.
+                    owsFail("Invalid trust root data.")
+                }
+                trustRoots.append(try PublicKey(data))
+            } catch {
+                // This exits.
+                owsFail("Invalid trust root.")
+            }
         }
-
-        do {
-            return try PublicKey(trustRootData as Data)
-        } catch {
-            // This exits.
-            owsFail("Invalid trust root.")
-        }
+        return trustRoots
     }
 
     // MARK: - Unrestricted Access
