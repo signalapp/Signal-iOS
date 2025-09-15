@@ -54,7 +54,6 @@ public class GroupsV2OutgoingChanges {
     /// Full, pending profile key or pending request members to remove.
     private var membersToRemove = [ServiceId]()
     private var membersToChangeRole = [Aci: TSGroupMemberRole]()
-    private var invalidInvitesToRemove = [Data: InvalidInvite]()
 
     /// These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
@@ -135,11 +134,6 @@ public class GroupsV2OutgoingChanges {
     public func setShouldLeaveGroupDeclineInvite() {
         owsAssertDebug(!shouldLeaveGroupDeclineInvite)
         shouldLeaveGroupDeclineInvite = true
-    }
-
-    public func removeInvalidInvite(invalidInvite: InvalidInvite) {
-        owsAssertDebug(invalidInvitesToRemove[invalidInvite.userId] == nil)
-        invalidInvitesToRemove[invalidInvite.userId] = invalidInvite
     }
 
     public func setAccessForMembers(_ value: GroupV2Access) {
@@ -515,19 +509,6 @@ public class GroupsV2OutgoingChanges {
             for invalidlyInvitedUserId in currentGroupMembership.invalidInviteUserIds {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 actionBuilder.setDeletedUserID(invalidlyInvitedUserId)
-                actionsBuilder.addDeletePendingMembers(actionBuilder.buildInfallibly())
-                didChange = true
-            }
-        } else {
-            for invalidInvite in invalidInvitesToRemove.values {
-                guard currentGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) else {
-                    // Another user has already removed this invite.
-                    // We don't treat that as a conflict.
-                    continue
-                }
-
-                var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                actionBuilder.setDeletedUserID(invalidInvite.userId)
                 actionsBuilder.addDeletePendingMembers(actionBuilder.buildInfallibly())
                 didChange = true
             }
