@@ -60,7 +60,7 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    static var allRepetitionIntervals: [TimeInterval] = [12 * .hour, 1 * .day, 3 * .day, 7 * .day, 14 * .day]
+    static var allRepetitionIntervals: [TimeInterval] = [1 * .day, 3 * .day, 7 * .day, 14 * .day, 28 * .day]
     var defaultRepetitionInterval: TimeInterval {
         return Self.allRepetitionIntervals.first!
     }
