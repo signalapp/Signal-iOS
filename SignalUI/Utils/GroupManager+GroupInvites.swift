@@ -73,6 +73,7 @@ public extension GroupManager {
                 "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
                 comment: "Error indicating that an error occurred while accepting an invite."
             ))
+            throw error
         }
     }
 }
