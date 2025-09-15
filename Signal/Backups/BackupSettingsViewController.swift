@@ -447,10 +447,26 @@ class BackupSettingsViewController:
                 comment: "Title for a button in an action sheet confirming the user wants to disable Backups."
             ),
             style: .destructive,
-            handler: { _ in
-                Task { [weak self] in
-                    guard let self else { return }
-                    await _disableBackups()
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                let isRegisteredPrimaryDevice = db.read { tx in
+                    self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+                }
+
+                guard isRegisteredPrimaryDevice else {
+                    OWSActionSheets.showActionSheet(
+                        message: OWSLocalizedString(
+                            "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
+                            comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
+                        ),
+                        fromViewController: self
+                    )
+                    return
+                }
+
+                Task {
+                    await self._disableBackups(aepSideEffect: nil)
                 }
             },
         ))
@@ -460,24 +476,13 @@ class BackupSettingsViewController:
     }
 
     @MainActor
-    private func _disableBackups() async {
-        guard db.read(block: { tx in
-            tsAccountManager.localIdentifiers(tx: tx) != nil
-        }) else {
-            OWSActionSheets.showActionSheet(
-                message: OWSLocalizedString(
-                    "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED",
-                    comment: "Message shown in an action sheet when the user tries to disable Backups, but is not registered."
-                ),
-                fromViewController: self
-            )
-            return
-        }
-
+    private func _disableBackups(aepSideEffect: BackupDisablingManager.AEPSideEffect?) async {
         // Start disabling Backups, which may result in us starting
         // downloads. When disabling completes, we'll be notified via
         // `BackupPlan` going from `.disabling` to `.disabled`.
-        let currentDownloadQueueStatus = await backupDisablingManager.startDisablingBackups()
+        let currentDownloadQueueStatus = await backupDisablingManager.startDisablingBackups(
+            aepSideEffect: aepSideEffect,
+        )
 
         switch currentDownloadQueueStatus {
         case .empty, .suspended, .notRegisteredAndReady, .appBackgrounded:
@@ -890,31 +895,35 @@ class BackupSettingsViewController:
     private func showCreateNewRecoveryKeyWarningSheet(
         fromViewController: BackupRecordKeyViewController,
     ) {
-        let currentBackupPlan = db.read { tx in
-            backupSettingsStore.backupPlan(tx: tx)
+        let (
+            currentBackupPlan,
+            isRegisteredPrimaryDevice,
+        ) = db.read { tx in
+            return (
+                backupSettingsStore.backupPlan(tx: tx),
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+            )
         }
 
-        // Only allow creating a new Recovery Key if Backups are already disabled.
-        let primary: HeroSheetViewController.Button
-        let secondary: HeroSheetViewController.Button?
-        switch currentBackupPlan {
+        guard isRegisteredPrimaryDevice else {
+            OWSActionSheets.showActionSheet(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED",
+                    comment: "Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered."
+                ),
+                fromViewController: self
+            )
+            return
+        }
+
+        let primaryButtonTitle: String = switch currentBackupPlan {
         case .disabled:
-            primary = HeroSheetViewController.Button(
-                title: CommonStrings.continueButton,
-                action: { sheet in
-                    sheet.dismiss(animated: true) { [weak self] in
-                        guard let self else { return }
-                        showRecordNewRecoveryKey()
-                    }
-                }
-            )
-            secondary = .dismissing(
-                title: CommonStrings.cancelButton,
-                style: .secondary,
-            )
+            CommonStrings.continueButton
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            primary = .dismissing(title: CommonStrings.okayButton)
-            secondary = nil
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE",
+                comment: "TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key."
+            )
         }
 
         let warningSheet = HeroSheetViewController(
@@ -927,8 +936,19 @@ class BackupSettingsViewController:
                 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY",
                 comment: "Body for a sheet warning users about creating a new Recovery Key."
             ),
-            primary: .button(primary),
-            secondary: secondary.map { .button($0) },
+            primary: .button(HeroSheetViewController.Button(
+                title: primaryButtonTitle,
+                action: { sheet in
+                    sheet.dismiss(animated: true) { [weak self] in
+                        guard let self else { return }
+                        showRecordNewRecoveryKey()
+                    }
+                }
+            )),
+            secondary: .button(.dismissing(
+                title: CommonStrings.cancelButton,
+                style: .secondary,
+            )),
         )
         fromViewController.present(warningSheet, animated: true)
     }
@@ -953,9 +973,7 @@ class BackupSettingsViewController:
             onContinue: { [weak self] in
                 guard let self else { return }
 
-                db.write { tx in
-                    self.setAEPAndRotateMRBK(newCandidateAEP: newCandidateAEP, tx: tx)
-                }
+                self.finalizeNewRecoveryKey(newCandidateAEP: newCandidateAEP)
 
                 // Pop all the way back to Backup Settings.
                 navigationController?.popToViewController(self, animated: true) {
@@ -976,26 +994,25 @@ class BackupSettingsViewController:
         navigationController?.pushViewController(confirmKeyViewController, animated: true)
     }
 
-    /// Sets the given AEP, and rotates the MRBK. A big deal – approach with
-    /// great caution.
-    private func setAEPAndRotateMRBK(
-        newCandidateAEP: AccountEntropyPool,
-        tx: DBWriteTransaction,
-    ) {
-        switch backupSettingsStore.backupPlan(tx: tx) {
-        case .disabled:
-            break
-        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            owsFail("Attempting to set AEP, but Backups are not disabled!")
+    private func finalizeNewRecoveryKey(newCandidateAEP: AccountEntropyPool) {
+        db.write { tx in
+            switch backupSettingsStore.backupPlan(tx: tx) {
+            case .disabled:
+                Logger.warn("Rotating AEP.")
+
+                accountEntropyPoolManager.setAccountEntropyPool(
+                    newAccountEntropyPool: newCandidateAEP,
+                    disablePIN: false,
+                    tx: tx
+                )
+            case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+                Logger.warn("Disabling Backups, then rotating AEP.")
+
+                Task {
+                    await _disableBackups(aepSideEffect: .rotate(newAEP: newCandidateAEP))
+                }
+            }
         }
-
-        Logger.warn("Rotating AEP: Create New Key!")
-
-        accountEntropyPoolManager.setAccountEntropyPool(
-            newAccountEntropyPool: newCandidateAEP,
-            disablePIN: false,
-            tx: tx
-        )
     }
 }
 
@@ -2264,7 +2281,6 @@ private extension BackupSettingsViewModel {
             func setShouldAllowBackupDownloadsOnCellular() { print("Downloads on cellular: true") }
 
             func showViewRecoveryKey() { print("Showing View Recovery Key!") }
-            func showCreateNewRecoveryKey() { print("Showing Create New Recovery Key!") }
         }
 
         let viewModel = BackupSettingsViewModel(

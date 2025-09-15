@@ -11,21 +11,26 @@ import Testing
 struct BackupDisablingManagerTest {
     @Test
     func testPreviousFailurePersistsUntilFutureSuccess() async throws {
+        let mockAccountEntropyPoolManager = MockAccountEntropyPoolManager()
+        let mockAuthCredentialStore = AuthCredentialStore(dateProvider: { Date() })
         let mockBackupAttachmentDownloadQueueStatusManager = MockBackupAttachmentDownloadQueueStatusManager()
+        let mockBackupCDNCredentialStore = BackupCDNCredentialStore()
         let mockBackupKeyService = MockBackupKeyService()
         let mockBackupPlanManager = MockBackupPlanManager()
         let mockBackupListMediaManager = MockBackupListMediaManager()
         let mockDB = InMemoryDB()
+        let mockBackupSettingsStore = BackupSettingsStore()
         let mockTSAccountManager = MockTSAccountManager()
 
         let disablingManager = BackupDisablingManager(
-            authCredentialStore: AuthCredentialStore(dateProvider: { Date() }),
+            accountEntropyPoolManager: mockAccountEntropyPoolManager,
+            authCredentialStore: mockAuthCredentialStore,
             backupAttachmentDownloadQueueStatusManager: mockBackupAttachmentDownloadQueueStatusManager,
-            backupCDNCredentialStore: BackupCDNCredentialStore(),
+            backupCDNCredentialStore: mockBackupCDNCredentialStore,
             backupKeyService: mockBackupKeyService,
             backupListMediaManager: mockBackupListMediaManager,
             backupPlanManager: mockBackupPlanManager,
-            backupSettingsStore: BackupSettingsStore(),
+            backupSettingsStore: mockBackupSettingsStore,
             db: mockDB,
             tsAccountManager: mockTSAccountManager
         )
@@ -33,7 +38,7 @@ struct BackupDisablingManagerTest {
         struct DeleteBackupError: Error {}
         mockBackupKeyService.deleteBackupKeyMock = { throw DeleteBackupError() }
 
-        _ = await disablingManager.startDisablingBackups()
+        _ = await disablingManager.startDisablingBackups(aepSideEffect: nil)
         await disablingManager.disableRemotelyIfNecessary()
         mockDB.read { tx in
             #expect(disablingManager.disableRemotelyFailed(tx: tx))
@@ -45,7 +50,7 @@ struct BackupDisablingManagerTest {
         }
 
         mockBackupKeyService.deleteBackupKeyMock = { }
-        _ = await disablingManager.startDisablingBackups()
+        _ = await disablingManager.startDisablingBackups(aepSideEffect: nil)
         await disablingManager.disableRemotelyIfNecessary()
         mockDB.read { tx in
             #expect(!disablingManager.disableRemotelyFailed(tx: tx))

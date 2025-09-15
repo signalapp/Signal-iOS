@@ -924,7 +924,20 @@ public class AppSetup {
             dateProvider: dateProvider
         )
 
+        let accountEntropyPoolManager = AccountEntropyPoolManagerImpl(
+            accountAttributesUpdater: accountAttributesUpdater,
+            accountKeyStore: accountKeyStore,
+            appContext: appContext,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            storageServiceManager: storageServiceManager,
+            svr: svr,
+            syncManager: syncManager,
+            tsAccountManager: tsAccountManager,
+        )
+
         let backupDisablingManager = BackupDisablingManager(
+            accountEntropyPoolManager: accountEntropyPoolManager,
             authCredentialStore: authCredentialStore,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupCDNCredentialStore: backupCDNCredentialStore,
@@ -1467,18 +1480,6 @@ public class AppSetup {
         )
         let backupExportJobRunner = BackupExportJobRunnerImpl(
             backupExportJob: backupExportJob
-        )
-
-        let accountEntropyPoolManager = AccountEntropyPoolManagerImpl(
-            accountAttributesUpdater: accountAttributesUpdater,
-            accountKeyStore: accountKeyStore,
-            appContext: appContext,
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            storageServiceManager: storageServiceManager,
-            svr: svr,
-            syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
         )
 
         let pollMessageManager = PollMessageManager(

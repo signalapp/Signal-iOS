@@ -715,11 +715,17 @@
 /* Notice that backups is a beta feature */
 "BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
 
+/* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
+
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
 
+/* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Disable and Create New Key";
+
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nYou will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nAfter disabling Backups and creating a new key, you will need to re-enable and re-upload your Backup.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Recovery Key";

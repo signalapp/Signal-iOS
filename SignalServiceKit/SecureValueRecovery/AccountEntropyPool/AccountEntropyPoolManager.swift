@@ -43,7 +43,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         self.appContext = appContext
         self.backupSettingsStore = backupSettingsStore
         self.db = db
-        self.logger = PrefixedLogger(prefix: "AEPMgr")
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.storageServiceManager = storageServiceManager
         self.svr = svr
         self.syncManager = syncManager
