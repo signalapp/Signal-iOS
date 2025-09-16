@@ -295,7 +295,6 @@ extension HTTPResponseImpl: HTTPResponse {
     public var responseBodyString: String? {
         guard let data = bodyData,
               let string = String(data: data, encoding: stringEncoding) else {
-                  Logger.warn("Invalid body string.")
                   return nil
               }
         return string
