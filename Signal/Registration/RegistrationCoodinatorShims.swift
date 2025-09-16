@@ -335,7 +335,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             await DependenciesBridge.shared.db.awaitableWrite { tx in
                 _ = manager.reuploadLocalProfile(
                     unsavedRotatedProfileKey: nil,
-                    mustReuploadAvatar: false,
+                    mustReuploadAvatar: true,
                     authedAccount: authedAccount,
                     tx: tx
                 )
