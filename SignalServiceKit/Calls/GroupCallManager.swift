@@ -82,8 +82,20 @@ public class GroupCallManager {
         }
 
         let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx) }
-        guard let groupThread, groupThread.isLocalUserFullMember else {
-            logger.warn("Ignoring peek request for non-member thread!")
+        guard let groupThread else {
+            logger.warn("Ignoring peek request for non-existent thread!")
+            return
+        }
+
+        guard groupThread.isLocalUserFullMember else {
+            logger.info("Cleaning up unended calls for non-member thread")
+            await self.databaseStorage.awaitableWrite { tx in
+                _ = self.cleanUpUnendedCallMessagesAsNecessary(
+                    currentCallId: nil,
+                    groupThread: groupThread,
+                    tx: tx,
+                )
+            }
             return
         }
 
