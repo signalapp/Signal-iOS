@@ -212,10 +212,10 @@ struct ConversationHeaderBuilder {
         if options.contains(.message) {
             buttons.append(buildIconButton(
                 icon: .settingsChats,
-                text: OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
-                        comment: "Button to message the chat"
-                    ),
+                title: OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
+                    comment: "Button to message the chat"
+                ),
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
                     SignalApp.shared.presentConversationForThread(
@@ -243,7 +243,7 @@ struct ConversationHeaderBuilder {
             if options.contains(.videoCall) {
                 buttons.append(buildIconButton(
                     icon: .buttonVideoCall,
-                    text: OWSLocalizedString(
+                    title: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
                         comment: "Button to start a video call"
                     ),
@@ -257,7 +257,7 @@ struct ConversationHeaderBuilder {
             if !delegate.thread.isGroupThread, options.contains(.audioCall) {
                 buttons.append(buildIconButton(
                     icon: .buttonVoiceCall,
-                    text: OWSLocalizedString(
+                    title: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
                         comment: "Button to start a voice call"
                     ),
@@ -272,15 +272,15 @@ struct ConversationHeaderBuilder {
         if options.contains(.mute) {
             buttons.append(buildIconButton(
                 icon: .buttonMute,
-                text: delegate.threadViewModel.isMuted
-                    ? OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_MUTED_BUTTON",
-                        comment: "Button to unmute the chat"
-                    )
-                    : OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_MUTE_BUTTON",
-                        comment: "Button to mute the chat"
-                    ),
+                title: delegate.threadViewModel.isMuted
+                ? OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_MUTED_BUTTON",
+                    comment: "Button to unmute the chat"
+                )
+                : OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_MUTE_BUTTON",
+                    comment: "Button to mute the chat"
+                ),
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
                     ConversationSettingsViewController.showMuteUnmuteActionSheet(
@@ -296,7 +296,7 @@ struct ConversationHeaderBuilder {
         if options.contains(.search), !delegate.isGroupV1Thread {
             buttons.append(buildIconButton(
                 icon: .buttonSearch,
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_SEARCH_BUTTON",
                     comment: "Button to search the chat"
                 ),
@@ -338,16 +338,14 @@ struct ConversationHeaderBuilder {
     }
 
     private var maxIconButtonWidth: CGFloat = 0
-    mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
-        let button = SettingsHeaderButton(
-            text: text,
-            icon: icon,
-            backgroundColor: delegate.tableViewController.cellBackgroundColor,
-            isEnabled: isEnabled
-        ) { [weak delegate] in
+    mutating func buildIconButton(icon: ThemeIcon, title: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
+        let button = SettingsHeaderButton(title: title.capitalized, icon: icon) { [weak delegate] in
             delegate?.tappedButton()
             action()
         }
+        button.isEnabled = isEnabled
+        button.buttonBackgroundColor = delegate.tableViewController.cellBackgroundColor
+        button.selectedButtonBackgroundColor = delegate.tableViewController.cellSelectedBackgroundColor
 
         if maxIconButtonWidth < button.minimumWidth {
             maxIconButtonWidth = button.minimumWidth

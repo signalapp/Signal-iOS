@@ -127,41 +127,32 @@ class ContactViewController: OWSTableViewController2 {
         // Message, Video, Audio buttons for Signal contacts as a horizontal stack of buttons
         if viewMode == .systemContactWithSignal {
             let buttonMessage = SettingsHeaderButton(
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
                     comment: "Button to message the chat"
-                ),
-                icon: .settingsChats,
-                backgroundColor: Theme.tableCell2BackgroundColor,
-                isEnabled: true,
-                block: { [weak self] in
-                    self?.didPressSendMessage()
-                }
-            )
+                ).capitalized,
+                icon: .settingsChats
+            ) { [weak self] in
+                self?.didPressSendMessage()
+            }
             let buttonVideoCall = SettingsHeaderButton(
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
                     comment: "Button to start a video call"
-                ),
-                icon: .buttonVideoCall,
-                backgroundColor: Theme.tableCell2BackgroundColor,
-                isEnabled: true,
-                block: { [weak self] in
-                    self?.didPressVideoCall()
-                }
-            )
+                ).capitalized,
+                icon: .buttonVideoCall
+            ) { [weak self] in
+                self?.didPressVideoCall()
+            }
             let buttonAudioCall = SettingsHeaderButton(
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
                     comment: "Button to start a voice call"
-                ),
-                icon: .buttonVoiceCall,
-                backgroundColor: Theme.tableCell2BackgroundColor,
-                isEnabled: true,
-                block: { [weak self] in
-                    self?.didPressAudioCall()
-                }
-            )
+                ).capitalized,
+                icon: .buttonVoiceCall
+            ) { [weak self] in
+                self?.didPressAudioCall()
+            }
             let buttonStack = UIStackView(arrangedSubviews: [ buttonMessage, buttonVideoCall, buttonAudioCall ])
             buttonStack.axis = .horizontal
             buttonStack.spacing = 8

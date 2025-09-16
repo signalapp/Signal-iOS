@@ -185,24 +185,18 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     // MARK: Action buttons
 
     private func buildActionButton(
-        text: String,
+        title: String,
         icon: ThemeIcon,
         block: @escaping (SettingsHeaderButton) -> Void
     ) -> SettingsHeaderButton {
-        let button = SettingsHeaderButton(
-            text: text,
-            icon: icon,
-            backgroundColor: OWSTableViewController2.cellBackgroundColor(
-                isUsingPresentedStyle: true
-            ),
-            isEnabled: true,
-            block: nil
-        )
 
-        button.block = { [weak button] in
+        let button = SettingsHeaderButton(title: title.capitalized, icon: icon)
+        button.buttonBackgroundColor = Self.cellBackgroundColor(isUsingPresentedStyle: true)
+        button.selectedButtonBackgroundColor = Self.cellSelectedBackgroundColor()
+        button.addActionHandler({ [weak button] in
             guard let button else { return }
             block(button)
-        }
+        })
 
         button.autoSetDimension(
             .width,
@@ -215,7 +209,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     private func buildActionButtonsView() -> UIView {
         let usernameLinkButton = buildActionButton(
-            text: OWSLocalizedString(
+            title: OWSLocalizedString(
                 "USERNAME_LINK_SHEET_BUTTON",
                 comment: "Title for a button to open a sheet for copying and sharing your username link."
             ),
@@ -246,7 +240,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         )
 
         let shareQRCodeButton = buildActionButton(
-            text: OWSLocalizedString(
+            title: OWSLocalizedString(
                 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON",
                 comment: "Title for a button to share your username link QR code. Lowercase styling is intentional."
             ),
@@ -257,7 +251,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         )
 
         let colorQRCodeButton = buildActionButton(
-            text: OWSLocalizedString(
+            title: OWSLocalizedString(
                 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON",
                 comment: "Title for a button to pick the color of your username link QR code. Lowercase styling is intentional."
             ),

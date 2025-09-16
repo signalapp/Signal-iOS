@@ -357,7 +357,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         return [
             buildHeaderButton(
                 icon: .buttonCamera,
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
                     comment: "Text indicating the user can select an avatar from their camera"
                 ),
@@ -373,7 +373,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             ),
             buildHeaderButton(
                 icon: .buttonPhotoLibrary,
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
                     comment: "Text indicating the user can select an avatar from their photos"
                 ),
@@ -388,7 +388,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             ),
             buildHeaderButton(
                 icon: .buttonText,
-                text: OWSLocalizedString(
+                title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
                     comment: "Text indicating the user can create a new avatar with text"
                 ),
@@ -448,15 +448,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private var maxIconButtonWidth: CGFloat = 0
-    private func buildHeaderButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
-
-        let button = SettingsHeaderButton(
-            text: text,
-            icon: icon,
-            backgroundColor: Self.cellBackgroundColor(isUsingPresentedStyle: true),
-            isEnabled: isEnabled,
-            block: action
-        )
+    private func buildHeaderButton(icon: ThemeIcon, title: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
+        let button = SettingsHeaderButton(title: title.capitalized, icon: icon, actionHandler: action)
+        button.buttonBackgroundColor = Self.cellBackgroundColor(isUsingPresentedStyle: true)
+        button.selectedButtonBackgroundColor = Self.cellSelectedBackgroundColor()
+        button.isEnabled = isEnabled
 
         if maxIconButtonWidth < button.minimumWidth {
             maxIconButtonWidth = button.minimumWidth
