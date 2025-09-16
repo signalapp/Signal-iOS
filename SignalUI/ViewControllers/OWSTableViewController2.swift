@@ -957,15 +957,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     public var cellSelectedBackgroundColor: UIColor {
-        if isUsingPresentedStyle {
-            return forceDarkMode
-            ? Theme.darkThemeTableCell2PresentedSelectedBackgroundColor
-            : Theme.tableCell2PresentedSelectedBackgroundColor
-        } else {
-            return forceDarkMode
-            ? Theme.darkThemeTableCell2SelectedBackgroundColor
-            : Theme.tableCell2SelectedBackgroundColor
+        Self.cellSelectedBackgroundColor(forceDarkMode: forceDarkMode)
+   }
+
+    public static func cellSelectedBackgroundColor(forceDarkMode: Bool = false) -> UIColor {
+        if forceDarkMode {
+            return Theme.tableCell2SelectedBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
         }
+        return Theme.tableCell2SelectedBackgroundColor
     }
 
     public var separatorColor: UIColor {

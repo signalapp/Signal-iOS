@@ -2285,6 +2285,8 @@ private extension CallsListViewController {
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+            multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
+
             let bodyVStack = UIStackView(arrangedSubviews: [
                 titleLabel,
                 subtitleLabel,
@@ -2479,7 +2481,7 @@ private extension CallsListViewController {
         private func applyTheme() {
             backgroundColor = Theme.backgroundColor
             selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
 
             titleLabel.textColor = Theme.primaryTextColor
             subtitleLabel.textColor = Theme.snippetColor

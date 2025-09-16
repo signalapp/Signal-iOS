@@ -288,7 +288,7 @@ public class OWSTableItem {
     public class func configureCell(_ cell: UITableViewCell) {
         cell.backgroundColor = Theme.backgroundColor
         cell.selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-        cell.multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+        cell.multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
 
         cell.textLabel?.font = self.primaryLabelFont
         cell.textLabel?.textColor = Theme.primaryTextColor

@@ -395,19 +395,12 @@ final public class Theme: NSObject {
     }
 
     public class var tableCell2SelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled
-        ? darkThemeTableCell2SelectedBackgroundColor
-        : UIColor.Signal.primaryFill.resolvedColor(with: lightTraitCollection)
-    }
-
-    public class var tableCell2MultiSelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled ? .ows_gray75 : .ows_gray05
-    }
-
-    public class var tableCell2PresentedSelectedBackgroundColor: UIColor {
-        isDarkThemeEnabled
-        ? darkThemeTableCell2PresentedSelectedBackgroundColor
-        : UIColor.Signal.primaryFill.resolvedColor(with: elevatedLightTraitCollection)
+        UIColor(
+            light: UIColor(rgbHex: 0xD4D4D6),
+            lightHighContrast: UIColor(rgbHex: 0xD4D4D6), // TBD
+            dark: UIColor(rgbHex: 0x3A3A3D),
+            darkHighContrast: UIColor(rgbHex: 0x3A3A3D)   // TBD
+        )
     }
 
     public class var tableView2BackgroundColor: UIColor {
@@ -472,14 +465,6 @@ final public class Theme: NSObject {
 
     public class var darkThemeTableCell2PresentedBackgroundColor: UIColor {
         UIColor.Signal.secondaryGroupedBackground.resolvedColor(with: elevatedDarkTraitCollection)
-    }
-
-    public class var darkThemeTableCell2SelectedBackgroundColor: UIColor {
-        UIColor.Signal.primaryFill.resolvedColor(with: darkTraitCollection)
-    }
-
-    public class var darkThemeTableCell2PresentedSelectedBackgroundColor: UIColor {
-        UIColor.Signal.primaryFill.resolvedColor(with: elevatedDarkTraitCollection)
     }
 
     public class var darkThemeTableView2BackgroundColor: UIColor {
