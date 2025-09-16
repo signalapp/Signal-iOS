@@ -335,7 +335,6 @@ public class QRCodeScanViewController: OWSViewController {
     // MARK: - Scanning
 
     private func stopScanning() {
-        Logger.info("")
         scanner = nil
         viewfinderAnimator?.stopAnimation(true)
         viewfinderAnimator = nil
@@ -344,7 +343,6 @@ public class QRCodeScanViewController: OWSViewController {
     @objc
     public func tryToStartScanning() {
         AssertIsOnMainThread()
-        Logger.info("")
 
         guard nil == scanner else {
             Logger.info("Early return because scanner is not nil")
@@ -395,8 +393,6 @@ public class QRCodeScanViewController: OWSViewController {
     private func startScanning() {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
         guard
             scanner == nil,
             !delegateHasAcceptedScanResults.get()
@@ -413,7 +409,6 @@ public class QRCodeScanViewController: OWSViewController {
 
         view.removeAllSubviews()
 
-        Logger.info("Set previewView")
         let previewView = scanner.previewView
         view.addSubview(previewView)
         previewView.autoPinEdgesToSuperviewEdges()
@@ -686,8 +681,6 @@ extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
     }
 
     public func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
-        Logger.info("")
-
         guard
             let delegate = self.delegate,
             !delegateHasAcceptedScanResults.get()
@@ -703,7 +696,6 @@ extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
 
         switch outcome {
         case .stopScanning:
-            Logger.info("QR code scanned. Stop scanning.")
             self.delegateHasAcceptedScanResults.set(true)
             self.stopScanning()
 
@@ -814,8 +806,6 @@ private class QRCodeScanner {
     public func startVideoCapture(initialOrientation: UIInterfaceOrientation) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
         guard !Platform.isSimulator else {
             // Trying to actually set up the capture session will fail on a simulator
             // since we don't have actual capture devices. But it's useful to be able
@@ -856,7 +846,6 @@ private class QRCodeScanner {
                 connection.preferredVideoStabilizationMode = .auto
             }
         }.done(on: sessionQueue) {
-            Logger.info("startVideoCapture() - inputs/outputs set up, start running session")
             self.session.startRunning()
             self._updateVideoPreviewConnectionOrientation()
         }
