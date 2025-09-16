@@ -533,7 +533,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "以后再说";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "恢复密钥已拷贝";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "恢复密钥";
@@ -566,7 +566,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "再次查看密钥";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "请输入您刚刚记录的恢复密钥";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "确认您的恢复密钥";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "备份详情";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "此为测试功能，我们将会不时对其进行优化。";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "新密钥已创建！";
@@ -884,7 +884,7 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "稍后备份";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "欢迎使用 Signal 安全备份。现在开始备份吧。";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "安全备份";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "最近 45 天的媒体";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB 存储空间";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "出错了，请联系支持团队。";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "已到期";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "您有一笔捐款正在等待处理。如果您取消定期捐款，您之后将不会续捐，但您的待处理捐款不会取消。";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "捐款待处理";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "投票";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "选择一个或多个选项";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "选择一个选项";
@@ -6824,7 +6824,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "无法完成转移";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "请确保您输入的是启用 Signal 备份时保存的同一个 64 位恢复密钥。如果没有此密钥，备份将无法恢复。";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "恢复密钥不正确";
@@ -6914,7 +6914,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "没有恢复密钥？";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "如果没有 64 个字符的恢复代码，备份将无法恢复。如果您丢失了自己的恢复密钥，Signal 将无法帮助您恢复备份。\n\n如果您的旧设备可用，您可以在“设置 > 聊天 > 备份”中查看您的恢复密钥。点击“查看恢复密钥”即可查看。";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "没有恢复密钥？";

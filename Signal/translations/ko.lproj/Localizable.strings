@@ -494,7 +494,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "음성 메시지를 사용할 수 없음";
 
 /* Username for recovery key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal 안전한 백업";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal 안전 백업";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "색상 선택";
@@ -533,7 +533,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "나중에";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "복구 키 복사됨";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "복구 키";
@@ -566,7 +566,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "키 다시 보기";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "방금 기록해 뒀던 복구 키를 입력하세요";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "복구 키를 확인하세요";
@@ -584,7 +584,7 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal의 안전한 엔드투엔드 암호화 저장소 서비스를 사용하여 메시지와 미디어를 백업하세요. 새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 안전한 백업";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 안전 백업";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "복구 키는 Signal을 다시 설치할 경우 백업을 복원하는 데 사용할 수 있는 64자리 코드입니다.\n\n키를 잊어버리면 백업을 복원할 수 없습니다. Signal은 백업을 복원하도록 도와드릴 수 없습니다.";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "백업 세부 정보";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "이 기능은 베타 기능이며 시간이 지남에 따라 개선될 예정입니다.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "새 키를 생성했습니다!";
@@ -884,10 +884,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "나중에 백업";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal 안전 백업에 오신 걸 환영합니다. 지금 백업을 시작하세요.";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "안전한 백업";
+"BACKUPS_SETTINGS_TITLE" = "안전 백업";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "%1$@에 이 계정의 Signal 백업을 켰습니다. 탭하여 확인하세요.";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "지난 45일간의 미디어";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB의 저장 공간";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "만료됨";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "보류 중인 기부가 있습니다. 구독을 취소하면 기부가 갱신되지 않지만, 보류 중인 기부는 취소되지 않습니다.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "기부 대기 중";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "투표";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "하나 이상 선택";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "하나 선택";
@@ -6824,7 +6824,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "전송을 완료할 수 없음";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Signal 백업 기능을 활성화할 때 저장해 둔 64자 복구 키를 동일하게 입력했는지 확인하세요. 이 키 없이는 백업을 복구할 수 없습니다.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "잘못된 복구 키";
@@ -6914,7 +6914,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "복구 키가 없으신가요?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "64자 복구 코드 없이는 백업을 복구할 수 없습니다. 복구 키를 분실한 경우 Signal에서 백업을 복구할 수 없습니다.\n\n이전 기기를 가지고 있다면 설정 > 대화 > 백업에서 복구 키를 확인할 수 있습니다. 복구 키 보기를 탭하세요.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "복구 키가 없으신가요?";

@@ -533,7 +533,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Ei nyt";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Palautusavain kopioitu";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Palautusavain";
@@ -566,7 +566,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Näytä avain uudelleen";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Anna juuri tallentamasi palautusavain";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Vahvista palautusavain";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Varmuuskopion tiedot";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Tämä on beta-ominaisuus ja sitä parannetaan ajan myötä.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Uusi avain luotu!";
@@ -884,7 +884,7 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Varmuuskopioi myöhemmin";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Tervetuloa Signal Secure -varmuuskopioihin. Aloita varmuuskopiointi nyt.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal Secure -varmuuskopiointi";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Mediasisältö viimeisen 45 päivän ajalta";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100 Gt tallennustilaa";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Jokin meni pieleen. Ota yhteys tukeen.";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Vanhentunut";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Sinulla on käsittelyssä oleva lahjoitus. Jos peruutat tilauksen, lahjoitustasi ei uusita, mutta keskeneräistä lahjoitusta ei peruuteta.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Lahjoitus on pankin käsittelyssä";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "Kysely";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Valitse yksi tai useampi";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Valitse yksi";
@@ -6824,7 +6824,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Siirtoa ei voitu suorittaa loppuun";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Varmista, että käytät samaa puhelinnumeroa ja 64-merkkistä palautusavainta, jonka tallensit ottaessasi Signal-varmuuskopiot käyttöön. Varmuuskopioita ei voi palauttaa ilman koodia.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Virheellinen palautusavain";
@@ -6914,7 +6914,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Eikö sinulla ole palautusavainta?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Varmuuskopioita ei voi palauttaa ilman 64 merkkiä sisältävää palautuskoodia. Jos olet kadottanut palautusavaimen, Signal ei voi palauttaa varmuuskopiota.\n\nJos vanha laite on tallella, löydät palautusavaimen kohdasta Asetukset > Keskustelut > Signal-varmuuskopiot. Napauta sitten Näytä palautusavain.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Eikö sinulla ole palautusavainta?";

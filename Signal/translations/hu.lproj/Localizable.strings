@@ -494,7 +494,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Hangüzenet nem érhető el";
 
 /* Username for recovery key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Biztonságos Biztonsági mentések";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Biztonságos biztonsági mentések";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Szín kiválasztása";
@@ -533,7 +533,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Később";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Helyreállítási kulcs másolva";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Helyreállítási kulcs";
@@ -566,7 +566,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Kulcs újbóli megtekintése";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Írd be az imént feljegyzett helyreállítási kulcsot";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Erősítsd meg a helyreállítási kulcsodat";
@@ -584,7 +584,7 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Készíts biztonsági másolatot az üzeneteidről és a médiafájljaidról, és használd a Signal biztonságos, végpontok közötti titkosított tárolási szolgáltatását. Soha ne veszíts el egy üzenetet sem új telefon vásárlásakor vagy a Signal újratelepítésekor.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Biztonságos Biztonsági mentések";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Biztonságos biztonsági mentések";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "A helyreállítási kulcs egy 64 karakteres kód, amely lehetővé teszi a helyreállítási másolat visszaállítását a Signal újratelepítésekor.\n\nHa elfelejted a kulcsodat, nem tudod visszaállítani a biztonsági másolatot. A Signal nem tud segíteni a biztonsági másolat helyreállításában.";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Biztonsági mentés részletei";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Ez egy béta funkció, amelyet idővel fejleszteni fogunk.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Új kulcs létrehozva!";
@@ -884,7 +884,7 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Biztonsági mentés később";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Üdvözlünk a Signal Biztonságos biztonsági mentések oldalán! Kezdd el a biztonsági mentést most.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Biztonságos biztonsági mentések";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Médiafájl az elmúlt 45 napban";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100 GB tárhely";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Probléma merült fel! Kérjük, vedd fel a kapcsolatot az ügyfélszolgálattal!";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Lejárt";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Van egy függőben lévő adományod. Ha lemondod az előfizetésedet, az adományod nem újul meg, de a függőben lévő adományod nem kerül törlésre.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Adomány függőben";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "Szavazás";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Válassz legalább egyet";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Válassz egyet";
@@ -6791,7 +6791,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Túl gyakran próbálkoztál. Kérlek várj egy percet mielőtt újra nekifutnál.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "A megadott helyreállítási kulcs helyes, de nincs hozzá társítva biztonsági másolat. Ha még mindig megvan a régi telefonod, ellenőrizd, hogy a biztonsági mentések engedélyezve vannak-e, és hogy a biztonsági mentés befejeződött-e, majd próbálja újra.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "A megadott helyreállítási kulcs helyes, de nincs hozzá társítva biztonsági másolat. Ha még mindig megvan a régi telefonod, ellenőrizd, hogy a biztonsági mentések engedélyezve vannak-e, és hogy a biztonsági mentés befejeződött-e, majd próbáld újra.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "A biztonsági mentés nem található";
@@ -6824,7 +6824,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Nem sikerült befejezni az átvitelt";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Ellenőrizd, hogy ugyanazt a 64 karakteres biztonsági mentési kulcsot adtad-e meg, amelyet a Signal biztonsági mentések engedélyezésekor mentettél el. A biztonsági mentések nem állíthatók vissza e kulcs nélkül.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Helytelen helyreállítási kulcs";
@@ -6914,7 +6914,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Nincs helyreállítási kulcs?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "A biztonsági másolatokat nem lehet visszaállítani a 64 karakterből álló helyreállítási kód nélkül. Ha elvesztetted a biztonsági kulcsodat, a Signal nem tud segíteni a biztonsági másolat visszaállításában.\n\nHa rendelkezel a régi eszközzel, megtekintheted a biztonsági kulcsot a Beállítások > Csevegés > Signal biztonsági mentések menüpontban. Ezután koppints a Helyreállítási kulcs megtekintése lehetőségre.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Nincs helyreállítási kulcs?";

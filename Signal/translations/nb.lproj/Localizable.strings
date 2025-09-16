@@ -494,7 +494,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Talemeldingen er ikke tilgjengelig";
 
 /* Username for recovery key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Sikkerhetskopiering av Signal";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Sikre sikkerhetskopier på Signal";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Velg en farge";
@@ -533,7 +533,7 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Ikke nå";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Sikkerhetskoden er kopiert";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Sikkerhetskode";
@@ -566,7 +566,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Se koden igjen";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Skriv inn sikkerhetskoden du akkurat laget";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Bekreft sikkerhetskoden din";
@@ -584,7 +584,7 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sikkerhetskopier meldingene og mediefilene dine med Signals sikre ende-til-ende-krypterte lagringstjeneste. Behold alt innholdet ditt når du må bytte mobil eller installere Signal på nytt.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Sikkerhetskopiering av Signal";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Sikre sikkerhetskopier på Signal";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Sikkerhetskoden din består av 64 tegn. Du trenger den for å gjenopprette sikkerhetskopien din når du installerer Signal på nytt.\n\nHvis du glemmer koden, vil du ikke kunne gjenopprette sikkerhetskopien. Signal kan ikke hjelpe deg med dette.";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Info om sikkerhetskopiering";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Dette er en betafunksjon som kommer til å forbedre seg over tid.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Den nye koden ble opprettet!";
@@ -884,10 +884,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Sikkerhetskopier senere";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Velkommen til Sikre sikkerhetskopier på Signal. Du kan nå sikkerhetskopiere filene dine.";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Sikkerhetskopiering";
+"BACKUPS_SETTINGS_TITLE" = "Sikre sikkerhetskopier";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Sikkerhetskopiering av Signal ble skrudd på %1$@. Trykk for å lese mer.";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Mediefiler sendt de siste 45 dagene";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100 GB lagringsplass";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Noe gikk galt. Ta kontakt med brukerstøtten vår.";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Utløpt";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Pengegave under behandling. Hvis du sier opp abonnementet, vil det ikke bli gitt flere pengegaver i fremtiden, utenom den som er under behandling akkurat nå.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Pengegaven venter";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "Avstemning";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Velg minst ett svar";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Velg ett";
@@ -6824,7 +6824,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Overføringen stoppet";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Skriv inn den samme sikkerhetskoden (64 tegn) som du brukte da du aktiverte Sikre sikkerhetskopier på Signal. Det er ikke mulig å gjenopprette sikkerhetskopier uten denne koden.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Feil sikkerhetskode";
@@ -6914,7 +6914,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Ingen sikkerhetskode?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Det er ikke mulig å gjenopprette sikkerhetskopier uten sikkerhetskoden på 64 tegn. Dersom du mister den, kan ikke Signal hjelpe deg med å gjenopprette sikkerhetskopien.\n\nHvis du har den gamle enheten din, finner du sikkerhetskoden ved å gå til Innstillinger > Samtaler > Sikkerhetskopiering. Der trykker du på «Se sikkerhetskoden».";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Ingen sikkerhetskode?";

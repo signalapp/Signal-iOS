@@ -533,10 +533,10 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Şimdi Değil";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Kurtarma Anahtarı kopyalandı";
 
 /* Text used as placeholder in recovery key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Kurtarma anahtarı";
+"BACKUP_KEY_PLACEHOLDER" = "Kurtarma Anahtarı";
 
 /* Title of button to tap if you forgot your recovery key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Anahtarı mı unuttun?";
@@ -548,7 +548,7 @@
 "BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "Hâlâ bildiğinden emin olmak için zaman zaman anahtarını doğrulamanı isteyeceğiz";
 
 /* Title for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Kurtarma anahtarını doğrula";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Kurtarma Anahtarını doğrula";
 
 /* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Şimdi Değil";
@@ -566,10 +566,10 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Anahtarı tekrar gör";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Az önce kaydettiğin kurtarma anahtarını gir";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Kurtarma anahtarını onayla";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Kurtarma Anahtarını onayla";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "Uçtan Uca Şifreli";
@@ -590,7 +590,7 @@
 "BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Kurtarma anahtarın, Signal'ı yeniden kurduğunda yedeklemeni geri yüklemeni sağlayan 64 karakterli bir koddur.\n\nAnahtarını unutursan yedeklemeni geri yükleyemezsin. Signal, yedeklemeni kurtarmana yardımcı olamaz.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Kurtarma anahtarın";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Kurtarma Anahtarın";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Panoya Kopyala";
@@ -602,7 +602,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Hesabını ve verilerini kurtarmak için bu anahtar gereklidir. Bu anahtarı güvenli bir yerde sakla. Kaybedersen, hesabını kurtarmanız mümkün olmaz.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Kurtarma anahtarını kaydet";
+"BACKUP_RECORD_KEY_TITLE" = "Kurtarma Anahtarını kaydet";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ / %2$@ (%3$@)";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Yedekleme detayları";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Bu bir beta özelliğidir ve zamanla geliştirilecektir.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Yeni anahtar oluşturuldu!";
@@ -725,7 +725,7 @@
 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Yeni bir anahtar oluşturmak, yalnızca başka biri anahtarını biliyorsa gereklidir. Yeni bir anahtar oluşturmak için ilk önce yedeklemeler devre dışı bırakılmalıdır.\n\nYeni bir anahtar oluşturduktan sonra, medya dahil olmak üzere Yedeklemeni yeniden etkinleştirmen ve yeniden yüklemen gerekir.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Yeni bir kurtarma anahtarı oluştur";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Yeni Bir Kurtarma Anahtarı Oluştur";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Bu işlem tüm yedekleme verilerini siler. Yeni yedekleme oluşturulmaz.";
@@ -809,7 +809,7 @@
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Dün %1$@";
 
 /* Label for a menu item offering to show the user their recovery key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Kurtarma anahtarını görüntüle";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Kurtarma Anahtarını Görüntüle";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Şimdi yedekle";
@@ -884,7 +884,7 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Daha sonra yedekle";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal Güvenli Yedeklemelere hoş geldin. Yedeklemeni şimdi başlat.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Güvenli Yedeklemeler";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Medyanın son 45 günü";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100 GB depolama";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Bir şeyler ters gitti. Lütfen destek ekibiyle iletişime geç.";
@@ -2720,10 +2720,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Süresi doldu";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Bekleyen bir bağışın var. Aboneliğini iptal edersen, bağışın yenilenmeyecek ancak beklemedeki bağışın iptal edilmeyecektir.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Bağış bekleniyor";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Bağış Bekleniyor";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "iDEAL bağışın hâlâ işleniyor. Başka bir bağış yapmadan önce, ödemeni onaylamak için bankacılık uygulamanı kontrol et.";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "Anket";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Bir veya daha fazla seç";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Birini Seç";
@@ -6791,7 +6791,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Çok sık denediniz. Lütfen tekrar denemeden önce biraz bekleyin.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Girdiğin kurtarma anahtarı doğru, ancak bununla ilişkili bir yedekleme yok. Hala eski telefonun varsa, yedeklemelerin etkinleştirildiğinden ve bir yedeklemenin tamamlandığından emin ol ve tekrar dene.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Girdiğin kurtarma anahtarı doğru, ancak bununla ilişkili bir yedekleme yok. Hâlâ eski telefonun varsa, yedeklemelerin etkinleştirildiğinden ve bir yedeklemenin tamamlandığından emin ol ve tekrar dene.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Yedek bulunamadı";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Aktarımı tamamlanamadı";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Signal Yedeklemelerini etkinleştirirken kaydettiğin aynı 64 karakterli kurtarma anahtarını girdiğinden emin ol. Yedeklemeler bu anahtar olmadan kurtarılamaz.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Hatalı kurtarma anahtarı";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Hatalı Kurtarma Anahtarı";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Yedeklemen şu anda geri yüklenemiyor. İnternet bağlantını kontrol et ve tekrar dene.";
@@ -6887,7 +6887,7 @@
 "REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Kurtarma anahtarın, hesabını ve verilerini kurtarmak için gereken 64 karakterli bir koddur.";
 
 /* Title for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Kurtarma anahtarını gir";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Kurtarma Anahtarını Gir";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Numarayı Gir";
@@ -6911,13 +6911,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Bağlantıyı Denetle";
 
 /* Title of button to tap if you do not have a recovery key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Kurtarma anahtarın mı yok?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Kurtarma Anahtarın mı yok?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Yedeklemeler 64 karakterli kurtarma kodu olmadan kurtarılamaz. Kurtarma anahtarını kaybettiysen, Signal yedeklemeni geri yüklemene yardımcı olamaz.\n\nEski cihazın varsa, kurtarma anahtarını Ayarlar > Sohbetler > Yedeklemeler bölümünden görüntüleyebilirsin. Ardından Kurtarma Anahtarını Görüntüle tuşuna dokun.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Kurtarma anahtarın mı yok?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Kurtarma Anahtarın mı yok?";
 
 /* Title for button on sheet for when you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Atla ve Geri Yükleme";

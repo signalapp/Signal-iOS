@@ -533,10 +533,10 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Не зараз";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Код для аднаўлення скапіраваны";
 
 /* Text used as placeholder in recovery key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Ключ для аднаўлення";
+"BACKUP_KEY_PLACEHOLDER" = "Код для аднаўлення";
 
 /* Title of button to tap if you forgot your recovery key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Забылі свой ключ?";
@@ -548,13 +548,13 @@
 "BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "Час ад часу мы будзем прасіць вас праверыць свой ключ, каб быць упэўненымі, што вы яго ведаеце";
 
 /* Title for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Праверце свой ключ для аднаўлення";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Праверце свой код для аднаўлення";
 
 /* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Не зараз";
 
 /* Toast indicating that the Recovery Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Ключ для аднаўлення правільны. Захоўвайце свой ключ у бяспецы.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Код для аднаўлення правільны. Захоўвайце свой код у бяспецы.";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Калі вы страціце ключ, Signal не зможа аднавіць вашу рэзервовую копію. Захоўвайце яго ў бяспечным месцы і нікому не паказвайце яго.";
@@ -566,10 +566,10 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Прагледзець ключ яшчэ раз";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Увядзіце код для аднаўлення, што вы зараз запісалі";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Пацвердзіце свой ключ для аднаўлення";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Пацвердзіце свой код для аднаўлення";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "Абаронена скразным шыфраваннем";
@@ -587,10 +587,10 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Бяспечнае рэзервовае капіраванне Signal";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Ваш ключ для аднаўлення – гэта 64-значны код, які дазваляе аднавіць рэзервовую копію, калі вы нанова ўсталёўваеце Signal.\n\nКалі вы забудзеце свой ключ, вы больш не зможаце аднавіць рэзервовую копію. Signal не можа аднавіць вашу рэзервовую копію.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Ваш код для аднаўлення – гэта 64-значны код, які дазваляе аднавіць рэзервовую копію, калі вы нанова ўсталёўваеце Signal.\n\nКалі вы забудзеце свой код, вы больш не зможаце аднавіць рэзервовую копію. Signal не можа аднавіць вашу рэзервовую копію.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Ваш ключ для аднаўлення";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Ваш код для аднаўлення";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Скапіраваць у буфер абмену";
@@ -602,7 +602,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Гэты ключ патрэбны, каб аднавіць ваш уліковы запіс і вашы даныя. Захоўвайце гэты ключ у бяспечным месцы. Калі вы забудзеце яго, вы больш не зможаце аднавіць свой уліковы запіс.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Запішыце свой ключ для аднаўлення";
+"BACKUP_RECORD_KEY_TITLE" = "Запішыце свой код для аднаўлення";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ з %2$@ (%3$@)";
@@ -716,16 +716,16 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Звесткі аб рэзервовым капіраванні";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Гэта бэта-функцыя, каторая з часам будзе паляпшацца.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Новы ключ створаны!";
 
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Ствараць новы ключ неабходна толькі тады, калі нехта ведае ваш ключ. Каб стварыць новы ключ, спачатку трэба адключыць рэзервовае капіраванне.\n\nПасля стварэння новага ключа вам патрэбна будзе зноў уключыць рэзервовае капіраванне i зноў запампаваць сваю рэзервовую копію, у тым ліку медыяфайлы.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Ствараць новы код неабходна толькі тады, калі нехта ведае ваш код. Каб стварыць новы код, спачатку трэба адключыць рэзервовае капіраванне.\n\nПасля стварэння новага кода вам патрэбна будзе зноў уключыць рэзервовае капіраванне i зноў запампаваць сваю рэзервовую копію, у тым ліку медыяфайлы.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Стварыце новы ключ для аднаўлення";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Стварыце новы код для аднаўлення";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Усе вашы рэзервовыя копіі будуць выдалены. Новае рэзервовае капіраванне не адбудзецца.";
@@ -809,7 +809,7 @@
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Учора ў %1$@";
 
 /* Label for a menu item offering to show the user their recovery key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Прагледзець ключ для аднаўлення";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Прагледзець код для аднаўлення";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Пачаць рэзервовае капіраванне";
@@ -884,7 +884,7 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Пачаць рэзервовае капіраванне пазней";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Сардэчна запрашаем у «Бяспечнае рэзервовае капіраванне Signal». Пачынайце рэзервовае капіраванне.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Бяспечнае рэзервовае капіраванне";
@@ -1586,7 +1586,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Апошнія 45 дзён утрымання медыяфайлаў";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "Сховішча: 100 ГБ";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Штосьці не так. Калі ласка, звярніцеся да службы падтрымкі.";
@@ -2720,7 +2720,7 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Тэрмін дзеяння скончыўся";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Ваша ахвяраванне чакае разгляду. Калі вы скасуеце падпіску, ваша ахвяраванне не будзе адноўлена, але ж разгляд ахвяравання не будзе скасаваны.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Ахвяраванне чакае разгляду";
@@ -3161,10 +3161,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Званок не атрымаўся";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Няправільны ключ для аднаўлення";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Няправільны код для аднаўлення";
 
 /* Label explaining that an entered 'Recovery Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Несапраўдны ключ для аднаўлення";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Несапраўдны код для аднаўлення";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Не атрымалася пераслаць паведамленне.";
@@ -6446,7 +6446,7 @@
 "POLL_LABEL" = "Апытанне";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Выберыце адзін ці больш";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Выберыце адзін";
@@ -6791,7 +6791,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Вы зрабілі занадта шмат спроб. Пачакайце хвілінку, перш чым паўтарыць спробу.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Ключ для аднаўлення, што вы ўвялі, правільны, але няма рэзервовых копій, з якімі ён суадносіцца. Калі вы яшчэ маеце свой стары тэлефон, праверце, каб былі ўключаны рэзервовыя копіі і каб было завершана рэзервовае капіраванне, потым паспрабуйце яшчэ раз.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Код для аднаўлення, што вы ўвялі, правільны, але няма рэзервовых копій, з якімі ён суадносіцца. Калі вы яшчэ маеце свой стары тэлефон, праверце, каб былі ўключаны рэзервовыя копіі і каб было завершана рэзервовае капіраванне, потым паспрабуйце яшчэ раз.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Рэзервовая копія не знойдзена";
@@ -6824,10 +6824,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Немагчыма завершыць перанос";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Праверце, што вы ўвялі той самы 64-значны код для аднаўлення, які вы захавалі, калі ўключалі рэзервовыя копіі Signal. Без гэтага кода немагчыма аднавіць рэзервовыя копіі.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Няправільны ключ для аднаўлення";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Няправільны код для аднаўлення";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Зараз немагчыма аднавіць вашу рэзервовую копію. Праверце падключэнне да інтэрнэту і паўтарыце спробу.";
@@ -6884,10 +6884,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перанесці ўліковы запіс & паведамленні";
 
 /* Description for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Ваш ключ для аднаўлення – гэта 64-значны код, які неабходны для аднаўлення вашага ўліковага запісу і даных.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Ваш код для аднаўлення – гэта 64-значны код, які неабходны для аднаўлення вашага ўліковага запісу і даных.";
 
 /* Title for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Увядзіце свой ключ для аднаўлення";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Увядзіце свой код для аднаўлення";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Увесці нумар";
@@ -6911,13 +6911,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Праверце падключэнне";
 
 /* Title of button to tap if you do not have a recovery key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Няма ключа для аднаўлення?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Няма кода для аднаўлення?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Без 64-значнага кода для аднаўлення немагчыма аднавіць рэзервовыя копіі. Калі вы згубіце свой код для аднаўлення, Signal не зможа аднавіць вашу рэзервовую копію.\n\nНа вашай старой прыладзе вы можаце прагледзець свой код для аднаўлення ў меню Налады > Чаты > Рэзервовыя копіі. Потым націсніце «Прагледзець код для аднаўлення».";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Няма ключа для аднаўлення?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Няма кода для аднаўлення?";
 
 /* Title for button on sheet for when you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Прапусціць і не аднаўляць";
