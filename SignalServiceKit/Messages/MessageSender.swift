@@ -1353,18 +1353,13 @@ public class MessageSender {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        struct MissingSession {
-            var deviceId: DeviceId
-            var plaintextContent: Data
-        }
-
         var deviceMessages: [DeviceMessage]
-        let missingSessions: [MissingSession]
-        (deviceMessages, missingSessions) = try await databaseStorage.awaitableWrite { tx -> ([DeviceMessage], [MissingSession]) in
+        let missingSessionPlaintextContent: [DeviceId: Data]
+        (deviceMessages, missingSessionPlaintextContent) = try await databaseStorage.awaitableWrite { tx -> ([DeviceMessage], [DeviceId: Data]) in
             let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)
 
             guard let recipient, recipient.isRegistered else {
-                return ([], [])
+                return ([], [:])
             }
 
             var deviceIds = recipient.deviceIds
@@ -1375,7 +1370,7 @@ public class MessageSender {
             }
 
             var deviceMessages = [DeviceMessage]()
-            var missingSessions = [MissingSession]()
+            var missingSessionPlaintextContent = [DeviceId: Data]()
             for deviceId in deviceIds {
                 let plaintextContent = try buildPlaintextContent(deviceId, tx)
                 do {
@@ -1388,14 +1383,14 @@ public class MessageSender {
                         tx: tx
                     ))
                 } catch SignalError.sessionNotFound(_) {
-                    missingSessions.append(MissingSession(deviceId: deviceId, plaintextContent: plaintextContent))
+                    missingSessionPlaintextContent[deviceId] = plaintextContent
                 }
             }
 
-            return (deviceMessages, missingSessions)
+            return (deviceMessages, missingSessionPlaintextContent)
         }
 
-        if !missingSessions.isEmpty {
+        if !missingSessionPlaintextContent.isEmpty {
             if isTransient {
                 // When users re-register, we don't want transient messages (like typing
                 // indicators) to cause users to hit the prekey fetch rate limit. So we
@@ -1419,12 +1414,12 @@ public class MessageSender {
                 }
             } else {
                 try await withThrowingTaskGroup { taskGroup in
-                    for missingSession in missingSessions {
+                    for (deviceId, _) in missingSessionPlaintextContent {
                         taskGroup.addTask {
                             do {
                                 try await self.createSession(
                                     serviceId: serviceId,
-                                    deviceId: .specific(missingSession.deviceId),
+                                    deviceId: .specific(deviceId),
                                     sealedSenderParameters: sealedSenderParameters
                                 )
                             } catch where error.httpStatusCode == 404 {
@@ -1434,7 +1429,7 @@ public class MessageSender {
                                     self.updateDevices(
                                         serviceId: serviceId,
                                         devicesToAdd: [],
-                                        devicesToRemove: [missingSession.deviceId],
+                                        devicesToRemove: [deviceId],
                                         transaction: tx
                                     )
                                 }
@@ -1446,15 +1441,25 @@ public class MessageSender {
             }
 
             deviceMessages += try await databaseStorage.awaitableWrite { tx -> [DeviceMessage] in
-                let deviceIds = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
+                // Re-fetch the list of deviceIds so that we can handle devices that get
+                // added/removed when fetching pre keys. (We may learn about added/removed
+                // devices when fetching keys for all devices, and we may learn about
+                // removed devices when fetching keys for a specific device.)
+                var deviceIds = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
+                if isSelfSend {
+                    let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
+                    deviceIds.removeAll(where: { localDeviceId.equals($0) })
+                }
 
-                return try missingSessions.filter({ deviceIds.contains($0.deviceId) }).map {
+                let missingDeviceIds = Set(deviceIds).subtracting(deviceMessages.map(\.destinationDeviceId))
+
+                return try missingDeviceIds.map {
                     do {
                         return try self.buildDeviceMessage(
                             serviceId: serviceId,
-                            deviceId: $0.deviceId,
+                            deviceId: $0,
                             encryptionStyle: encryptionStyle,
-                            plaintextContent: $0.plaintextContent,
+                            plaintextContent: missingSessionPlaintextContent[$0] ?? buildPlaintextContent($0, tx),
                             sealedSenderParameters: sealedSenderParameters,
                             tx: tx
                         )
