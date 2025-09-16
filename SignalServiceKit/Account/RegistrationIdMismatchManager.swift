@@ -70,9 +70,9 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
 
     private func _checkRegistrationIdMatches(identity: OWSIdentity, serviceId: ServiceId) async throws {
 
-        let (udAccess, deviceId) = db.read {(
-            udManager.udAccess(for: serviceId, tx: $0),
-            tsAccountManager.storedDeviceId(tx: $0)
+        let (udAccess, deviceId) = db.read { tx in (
+            (serviceId as? Aci).flatMap { udManager.udAccess(for: $0, tx: tx) },
+            tsAccountManager.storedDeviceId(tx: tx),
         )}
 
         // Fetch a key bundle for yourself.

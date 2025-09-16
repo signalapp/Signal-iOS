@@ -94,11 +94,11 @@ public protocol OWSUDManager {
 
     // MARK: - Recipient State
 
-    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, for serviceId: ServiceId, tx: DBWriteTransaction)
+    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, for aci: Aci, tx: DBWriteTransaction)
 
-    func udAccessKey(for serviceId: ServiceId, tx: DBReadTransaction) -> SMKUDAccessKey?
+    func udAccessKey(for aci: Aci, tx: DBReadTransaction) -> SMKUDAccessKey?
 
-    func udAccess(for serviceId: ServiceId, tx: DBReadTransaction) -> OWSUDAccess?
+    func udAccess(for aci: Aci, tx: DBReadTransaction) -> OWSUDAccess?
 
     func fetchAllAciUakPairs(tx: DBReadTransaction) -> [Aci: SMKUDAccessKey]
 
@@ -131,7 +131,7 @@ public protocol OWSUDManager {
 public class OWSUDManagerImpl: OWSUDManager {
 
     private let keyValueStore = KeyValueStore(collection: "kUDCollection")
-    private let serviceIdAccessStore = KeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
+    private let aciAccessStore = KeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
 
     // MARK: Local Configuration State
 
@@ -199,9 +199,9 @@ public class OWSUDManagerImpl: OWSUDManager {
 
     // MARK: - Recipient state
 
-    private func unidentifiedAccessMode(for serviceId: ServiceId, tx: DBReadTransaction) -> UnidentifiedAccessMode {
+    private func unidentifiedAccessMode(for aci: Aci, tx: DBReadTransaction) -> UnidentifiedAccessMode {
         let existingValue: UnidentifiedAccessMode? = {
-            guard let rawValue = serviceIdAccessStore.getInt(serviceId.serviceIdUppercaseString, transaction: tx) else {
+            guard let rawValue = aciAccessStore.getInt(aci.serviceIdUppercaseString, transaction: tx) else {
                 return nil
             }
             return UnidentifiedAccessMode(rawValue: rawValue)
@@ -211,15 +211,15 @@ public class OWSUDManagerImpl: OWSUDManager {
 
     public func setUnidentifiedAccessMode(
         _ mode: UnidentifiedAccessMode,
-        for serviceId: ServiceId,
+        for aci: Aci,
         tx: DBWriteTransaction
     ) {
-        serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx)
+        aciAccessStore.setInt(mode.rawValue, key: aci.serviceIdUppercaseString, transaction: tx)
     }
 
     public func fetchAllAciUakPairs(tx: DBReadTransaction) -> [Aci: SMKUDAccessKey] {
-        let acis: [Aci] = serviceIdAccessStore.allKeys(transaction: tx).compactMap { serviceIdString in
-            guard let aci = try? ServiceId.parseFrom(serviceIdString: serviceIdString) as? Aci else {
+        let acis: [Aci] = aciAccessStore.allKeys(transaction: tx).compactMap { aciString in
+            guard let aci = Aci.parseFrom(aciString: aciString) else {
                 return nil
             }
             switch unidentifiedAccessMode(for: aci, tx: tx) {
@@ -238,36 +238,31 @@ public class OWSUDManagerImpl: OWSUDManager {
 
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
-    public func udAccessKey(for serviceId: ServiceId, tx: DBReadTransaction) -> SMKUDAccessKey? {
+    public func udAccessKey(for aci: Aci, tx: DBReadTransaction) -> SMKUDAccessKey? {
         let profileManager = SSKEnvironment.shared.profileManagerRef
-        guard let profileKey = profileManager.userProfile(for: SignalServiceAddress(serviceId), tx: tx)?.profileKey else {
+        guard let profileKey = profileManager.userProfile(for: SignalServiceAddress(aci), tx: tx)?.profileKey else {
             return nil
         }
         return SMKUDAccessKey(profileKey: profileKey)
     }
 
     // Returns the UD access key for sending to a given recipient or fetching a profile
-    public func udAccess(for serviceId: ServiceId, tx: DBReadTransaction) -> OWSUDAccess? {
+    public func udAccess(for aci: Aci, tx: DBReadTransaction) -> OWSUDAccess? {
         let accessKey: SMKUDAccessKey
         let accessMode: OWSUDAccess.Mode
 
-        // Never allow UAKs for PNIs.
-        if serviceId is Pni {
-            return nil
-        }
-
-        switch unidentifiedAccessMode(for: serviceId, tx: tx) {
+        switch unidentifiedAccessMode(for: aci, tx: tx) {
         case .unrestricted:
             accessKey = .zeroedKey
             accessMode = .unrestricted
         case .unknown:
             // If we're not sure, try our best to use the right key.
-            accessKey = udAccessKey(for: serviceId, tx: tx) ?? .zeroedKey
+            accessKey = udAccessKey(for: aci, tx: tx) ?? .zeroedKey
             accessMode = .unknown
         case .enabled:
-            guard let knownAccessKey = udAccessKey(for: serviceId, tx: tx) else {
+            guard let knownAccessKey = udAccessKey(for: aci, tx: tx) else {
                 // Shouldn't happen because we need a profile key to enable it.
-                Logger.warn("Missing profile key for UD-enabled user: \(serviceId).")
+                Logger.warn("Missing profile key for UD-enabled user: \(aci)")
                 return nil
             }
             accessKey = knownAccessKey

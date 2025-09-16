@@ -733,7 +733,7 @@ public class MessageSender {
             }()
 
             let udAccessMap = self.fetchSealedSenderAccess(
-                for: serviceIds,
+                for: serviceIds.compactMap { $0 as? Aci },
                 message: message,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
@@ -920,18 +920,18 @@ public class MessageSender {
     }
 
     private func fetchSealedSenderAccess(
-        for serviceIds: [ServiceId],
+        for acis: [Aci],
         message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction
-    ) -> [ServiceId: OWSUDAccess] {
-        var result = [ServiceId: OWSUDAccess]()
-        for serviceId in serviceIds {
-            if localIdentifiers.contains(serviceId: serviceId) {
+    ) -> [Aci: OWSUDAccess] {
+        var result = [Aci: OWSUDAccess]()
+        for aci in acis {
+            if localIdentifiers.contains(serviceId: aci) {
                 continue
             }
-            result[serviceId] = SSKEnvironment.shared.udManagerRef.udAccess(for: serviceId, tx: tx)
+            result[aci] = SSKEnvironment.shared.udManagerRef.udAccess(for: aci, tx: tx)
         }
         return result
     }

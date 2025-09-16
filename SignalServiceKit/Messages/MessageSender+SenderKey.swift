@@ -58,7 +58,7 @@ extension MessageSender {
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
         endorsements: GroupSendEndorsements?,
-        udAccessMap: [ServiceId: OWSUDAccess],
+        udAccessMap: [Aci: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
@@ -354,7 +354,7 @@ extension MessageSender {
         in thread: TSThread,
         originalMessage: TSOutgoingMessage,
         endorsements: GroupSendEndorsements?,
-        udAccessMap: [ServiceId: OWSUDAccess],
+        udAccessMap: [Aci: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx writeTx: DBWriteTransaction
@@ -402,7 +402,7 @@ extension MessageSender {
             let sealedSenderParameters = SealedSenderParameters(
                 message: skdmMessage,
                 senderCertificate: senderCertificate,
-                accessKey: udAccessMap[serviceId],
+                accessKey: (serviceId as? Aci).flatMap { udAccessMap[$0] },
                 endorsement: endorsements?.tokenBuilder(forServiceId: serviceId)
             )
 

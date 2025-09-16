@@ -196,8 +196,12 @@ final class RequestMaker {
     }
 
     private func updateUdAccessMode(_ newValue: UnidentifiedAccessMode) async {
+        guard let aci = self.serviceId as? Aci else {
+            owsFailDebug("Can't use UAKs with PNIs")
+            return
+        }
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newValue, for: self.serviceId, tx: tx)
+            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newValue, for: aci, tx: tx)
         }
         fetchProfileIfNeeded()
     }

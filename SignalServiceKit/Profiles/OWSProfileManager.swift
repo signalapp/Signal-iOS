@@ -1059,7 +1059,9 @@ extension OWSProfileManager: ProfileManager {
         // If this is the profile for the local user, we always want to defer to local state
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
-            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+            if let aci = serviceId as? Aci {
+                SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(.unknown, for: aci, tx: SDSDB.shimOnlyBridge(tx))
+            }
             if shouldFetchProfile {
                 tx.addSyncCompletion {
                     let profileFetcher = SSKEnvironment.shared.profileFetcherRef

@@ -405,12 +405,14 @@ public class ProfileFetcherJob {
         let serviceId = profile.serviceId
 
         await db.awaitableWrite { transaction in
-            self.updateUnidentifiedAccess(
-                serviceId: serviceId,
-                verifier: profile.unidentifiedAccessVerifier,
-                hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess,
-                tx: transaction
-            )
+            if let aci = serviceId as? Aci {
+                self.updateUnidentifiedAccess(
+                    aci: aci,
+                    verifier: profile.unidentifiedAccessVerifier,
+                    hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess,
+                    tx: transaction
+                )
+            }
 
             // First, we add ensure we have a copy of any new badge in our badge store
             let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
@@ -478,7 +480,7 @@ public class ProfileFetcherJob {
     }
 
     private func updateUnidentifiedAccess(
-        serviceId: ServiceId,
+        aci: Aci,
         verifier: Data?,
         hasUnrestrictedAccess: Bool,
         tx: DBWriteTransaction
@@ -494,7 +496,7 @@ public class ProfileFetcherJob {
                 return .unrestricted
             }
 
-            guard let udAccessKey = udManager.udAccessKey(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
+            guard let udAccessKey = udManager.udAccessKey(for: aci, tx: tx) else {
                 return .disabled
             }
 
@@ -506,7 +508,7 @@ public class ProfileFetcherJob {
 
             return .enabled
         }()
-        udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: aci, tx: tx)
     }
 
     private func updateCapabilitiesIfNeeded(
