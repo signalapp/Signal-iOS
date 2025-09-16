@@ -70,7 +70,7 @@ class BackupOnboardingCoordinator {
                     showRecoveryKeyIntro()
                 },
                 onNotNow: { [self] in
-                    onboardingNavController?.dismiss(animated: true)
+                    onboardingNavController?.popViewController(animated: true)
                 }
             )
 
