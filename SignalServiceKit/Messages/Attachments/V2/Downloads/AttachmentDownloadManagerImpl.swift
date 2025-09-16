@@ -187,7 +187,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) -> Promise<URL> {
         return Promise.wrapAsync {
             // We want to avoid large downloads from a compromised or buggy service.
-            let maxDownloadSize = RemoteConfig.current.maxAttachmentDownloadSizeBytes
+            let maxDownloadSize = RemoteConfig.current.attachmentMaxEncryptedReceiveBytes
             let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
 
             let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
@@ -861,7 +861,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             do {
                 downloadedFileUrl = try await downloadQueue.enqueueDownload(
                     downloadState: .init(type: .attachment(downloadMetadata, id: attachment.id)),
-                    maxDownloadSizeBytes: RemoteConfig.current.maxAttachmentDownloadSizeBytes,
+                    maxDownloadSizeBytes: RemoteConfig.current.attachmentMaxEncryptedReceiveBytes,
                     expectedDownloadSize: downloadSizeSource,
                     progress: nil
                 )

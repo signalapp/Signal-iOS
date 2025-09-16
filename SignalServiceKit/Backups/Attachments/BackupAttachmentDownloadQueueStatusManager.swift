@@ -607,7 +607,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     }
 
     private nonisolated func getRequiredDiskSpace() -> UInt64 {
-        return UInt64(remoteConfigManager.currentConfig().maxAttachmentDownloadSizeBytes) * 5
+        return UInt64(remoteConfigManager.currentConfig().attachmentMaxEncryptedBytes) * 5
     }
 
     @objc

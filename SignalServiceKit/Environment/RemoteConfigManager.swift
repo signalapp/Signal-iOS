@@ -202,8 +202,13 @@ public class RemoteConfig {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    public var maxAttachmentDownloadSizeBytes: UInt {
-        return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
+    public var attachmentMaxEncryptedBytes: UInt {
+        return getUIntValue(forFlag: .attachmentMaxEncryptedBytes, defaultValue: 100 * 1024 * 1024)
+    }
+
+    public var attachmentMaxEncryptedReceiveBytes: UInt {
+        // TODO: Use the Remote Config value and new fallback value.
+        return self.attachmentMaxEncryptedBytes
     }
 
     public var tsAttachmentMigrationBatchDelayMs: UInt64 {
@@ -214,7 +219,7 @@ public class RemoteConfig {
         getUInt32Value(forFlag: .mediaTierFallbackCdnNumber, defaultValue: 3)
     }
 
-    // Hardcoded value (but lives alongside `maxAttachmentDownloadSizeBytes`).
+    // Hardcoded value (but lives alongside `attachmentMaxEncryptedBytes`).
     public var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
 
     public var enableGifSearch: Bool {
@@ -527,6 +532,7 @@ private enum IsEnabledFlag: String, FlagType {
 
 private enum ValueFlag: String, FlagType {
     case applePayDisabledRegions = "global.donations.apayDisabledRegions"
+    case attachmentMaxEncryptedBytes = "global.attachments.maxBytes"
     case automaticSessionResetAttemptInterval = "ios.automaticSessionResetAttemptInterval"
     case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
     case cdsSyncInterval = "cds.syncInterval.seconds"
@@ -534,7 +540,6 @@ private enum ValueFlag: String, FlagType {
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case libsignalChatRequestConnectionCheckTimeoutMillis = "ios.libsignal.chatRequestConnectionCheckTimeoutMillis"
-    case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
     case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
@@ -560,6 +565,7 @@ private enum ValueFlag: String, FlagType {
     var isHotSwappable: Bool {
         switch self {
         case .applePayDisabledRegions: true
+        case .attachmentMaxEncryptedBytes: false
         case .automaticSessionResetAttemptInterval: true
         case .backgroundRefreshInterval: true
         case .cdsSyncInterval: false
@@ -567,7 +573,6 @@ private enum ValueFlag: String, FlagType {
         case .creditAndDebitCardDisabledRegions: true
         case .idealEnabledRegions: true
         case .libsignalChatRequestConnectionCheckTimeoutMillis: true
-        case .maxAttachmentDownloadSizeBytes: false
         case .maxGroupCallRingSize: true
         case .maxGroupSizeHardLimit: true
         case .maxGroupSizeRecommended: true
