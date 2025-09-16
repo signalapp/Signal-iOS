@@ -207,29 +207,6 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
-        let isThrottled = { () -> Bool in
-            guard options.contains(.throttle) else {
-                return false
-            }
-            guard let lastSuccessfulRefreshDate = self.lastSuccessfulRefreshDate(forGroupId: groupId) else {
-                return false
-            }
-            // Don't auto-refresh more often than once every N minutes.
-            let refreshFrequency: TimeInterval = .minute * 5
-            return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
-        }()
-
-        try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            // - If we're blocked, it's an immediate error
-            if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
-                throw GroupsV2Error.groupBlocked
-            }
-        }
-
-        if isThrottled {
-            return
-        }
-
         let taskQueue: ConcurrentTaskQueue
         switch source {
         case .groupMessage:
@@ -243,21 +220,45 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
 
         try await taskQueue.run {
+            let isThrottled = { () -> Bool in
+                guard options.contains(.throttle) else {
+                    return false
+                }
+                guard let lastSuccessfulRefreshDate = self.lastSuccessfulRefreshDate(forGroupId: groupId) else {
+                    return false
+                }
+                // Don't auto-refresh more often than once every N minutes.
+                let refreshFrequency: TimeInterval = .minute * 5
+                return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
+            }()
+
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            try databaseStorage.read { tx in
+                // - If we're blocked, it's an immediate error
+                if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: tx) {
+                    throw GroupsV2Error.groupBlocked
+                }
+            }
+
+            if isThrottled {
+                return
+            }
+
             try await self.runUpdateOperation(
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
                 source: source,
                 options: options
             )
-        }
 
-        switch source {
-        case .groupMessage:
-            // We may or may not have updated to the very latest state, so we still
-            // want to be able to refresh again when you open the conversation.
-            break
-        case .other:
-            await self.didUpdateGroupToLatestRevision(groupId: groupId)
+            switch source {
+            case .groupMessage:
+                // We may or may not have updated to the very latest state, so we still
+                // want to be able to refresh again when you open the conversation.
+                break
+            case .other:
+                await self.didUpdateGroupToLatestRevision(groupId: groupId)
+            }
         }
     }
 
