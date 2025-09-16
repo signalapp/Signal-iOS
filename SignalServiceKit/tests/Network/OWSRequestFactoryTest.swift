@@ -195,7 +195,8 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testSubscriptionRedeemReceiptCredential() {
         let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
-            receiptCredentialPresentation: .init([255, 128])
+            receiptCredentialPresentation: .init([255, 128]),
+            displayBadgesOnProfile: false,
         )
 
         XCTAssertEqual(request.url.path, "v1/donation/redeem-receipt")

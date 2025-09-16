@@ -255,7 +255,6 @@ public class SSKEnvironment: NSObject {
         self.paymentsHelperRef.warmCaches()
         self.paymentsCurrenciesRef.warmCaches()
         StoryManager.setup(appReadiness: appReadiness)
-        DonationSubscriptionManager.warmCaches()
         dependenciesBridge.db.read { tx in appExpiryRef.warmCaches(with: tx) }
     }
 

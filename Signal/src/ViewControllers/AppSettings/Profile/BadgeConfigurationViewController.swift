@@ -62,7 +62,7 @@ final class BadgeConfigurationViewController: OWSTableViewController2, BadgeColl
 
     static func load(delegate: BadgeConfigurationDelegate, tx: DBReadTransaction) -> Self {
         let badges = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.badges ?? []
-        let shouldDisplayOnProfile = DonationSubscriptionManager.displayBadgesOnProfile
+        let shouldDisplayOnProfile = DonationSubscriptionManager.displayBadgesOnProfile(transaction: tx)
         return Self(availableBadges: badges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }
 

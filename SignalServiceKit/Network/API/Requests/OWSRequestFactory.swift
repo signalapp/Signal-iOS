@@ -398,7 +398,8 @@ public enum OWSRequestFactory {
     }
 
     static func subscriptionRedeemReceiptCredential(
-        receiptCredentialPresentation: Data
+        receiptCredentialPresentation: Data,
+        displayBadgesOnProfile: Bool,
     ) -> TSRequest {
         return TSRequest(
             url: .init(pathComponents: [
@@ -409,7 +410,7 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: [
                 "receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString(),
-                "visible": DonationSubscriptionManager.displayBadgesOnProfile,
+                "visible": displayBadgesOnProfile,
                 "primary": false,
             ]
         )

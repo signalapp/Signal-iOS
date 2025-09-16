@@ -111,10 +111,15 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        let localProfile = SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))!
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let localProfile: OWSUserProfile
+        (localProfile, displayBadgesOnProfile) = databaseStorage.read { tx in (
+            profileManager.localUserProfile(tx: tx)!,
+            DonationSubscriptionManager.displayBadgesOnProfile(transaction: tx),
+        )}
 
         allBadges = localProfile.badges
-        displayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile
         let visibleBadgeIds = localProfile.visibleBadges.map { $0.badgeId }
         profileValues = ProfileValues(
             givenName: .init(oldValue: localProfile.filteredGivenName, changedValue: .noChange),
