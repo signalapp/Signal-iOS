@@ -134,6 +134,15 @@ open class HeroSheetViewController: StackSheetViewController {
         super.init()
     }
 
+    // .formSheet makes a blank sheet appear behind it
+    public override var modalPresentationStyle: UIModalPresentationStyle {
+        willSet {
+            if newValue == .formSheet {
+                owsFailDebug("Can't use formSheet for interactive sheets")
+            }
+        }
+    }
+
     public override var stackViewInsets: UIEdgeInsets {
         .init(top: 8, leading: 24, bottom: 32, trailing: 24)
     }

@@ -83,7 +83,6 @@ class RegistrationQuickRestoreQRCodeViewController:
                         self?.presentedViewController?.dismiss(animated: true)
                     })
                 )
-                sheet.modalPresentationStyle = .formSheet
                 present(sheet, animated: true)
             }
         }

@@ -66,7 +66,6 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             ),
             primary: .hero(.animation(named: "circular_indeterminate", height: 60))
         )
-        sheet.modalPresentationStyle = .formSheet
         internalNavigationController.present(sheet, animated: true)
     }
 
@@ -97,7 +96,6 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             ),
             primaryButton: .dismissing(title: CommonStrings.okayButton)
         )
-        sheet.modalPresentationStyle = .formSheet
         await presentingViewController.awaitablePresent(sheet, animated: true)
     }
 
@@ -136,7 +134,6 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 presentingViewController.dismiss(animated: false)
             })
         )
-        sheet.modalPresentationStyle = .formSheet
         await presentingViewController.presentedViewController?.awaitableDismiss(animated: true)
         await internalNavigationController.awaitablePresent(sheet, animated: true)
     }
@@ -266,7 +263,6 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 presentingViewController.dismiss(animated: true)
             })
         )
-        sheet.modalPresentationStyle = .formSheet
         await presentingViewController.awaitableDismiss(animated: true)
         await presentingViewController.awaitablePresent(sheet, animated: true)
     }
