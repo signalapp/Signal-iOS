@@ -73,18 +73,7 @@ fileprivate extension RemoteAttestation.Auth {
         auth: ChatServiceAuth
     ) async throws -> RemoteAttestation.Auth {
         var request = service.authRequest()
-
-        switch auth.credentials {
-        case .implicit:
-            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                throw OWSGenericError("Not registered.")
-            }
-        case .explicit:
-            break
-        }
-
         request.auth = .identified(auth)
-
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         #if TESTABLE_BUILD
