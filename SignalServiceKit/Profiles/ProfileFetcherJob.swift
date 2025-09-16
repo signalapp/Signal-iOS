@@ -272,6 +272,9 @@ public class ProfileFetcherJob {
     }
 
     private func readGroupSendEndorsement(groupId: GroupIdentifier, tx: DBReadTransaction) throws -> GroupSendFullTokenBuilder? {
+        guard let aci = serviceId as? Aci else {
+            return nil
+        }
         let threadStore = DependenciesBridge.shared.threadStore
         guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
             throw OWSAssertionError("Can't find group that should exist.")
@@ -286,7 +289,7 @@ public class ProfileFetcherJob {
             return nil
         }
         guard
-            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx),
+            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx),
             let individualEndorsement = try endorsementStore.fetchIndividualEndorsement(
                 groupThreadId: groupThread.sqliteRowId!,
                 recipientId: recipient.id!,
@@ -438,16 +441,18 @@ public class ProfileFetcherJob {
                 avatarFilename = .noChange
             }
 
-            self.profileManager.updateProfile(
-                address: OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers),
-                decryptedProfile: fetchedProfile.decryptedProfile,
-                avatarUrlPath: avatarDownloadResult.remoteRelativePath,
-                avatarFileName: avatarFilename,
-                profileBadges: profileBadgeMetadata,
-                lastFetchDate: Date(),
-                userProfileWriter: .profileFetch,
-                tx: SDSDB.shimOnlyBridge(transaction)
-            )
+            if !localIdentifiers.contains(serviceId: serviceId) || localIdentifiers.aci == serviceId {
+                self.profileManager.updateProfile(
+                    address: OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers),
+                    decryptedProfile: fetchedProfile.decryptedProfile,
+                    avatarUrlPath: avatarDownloadResult.remoteRelativePath,
+                    avatarFileName: avatarFilename,
+                    profileBadges: profileBadgeMetadata,
+                    lastFetchDate: Date(),
+                    userProfileWriter: .profileFetch,
+                    tx: SDSDB.shimOnlyBridge(transaction)
+                )
+            }
 
             self.updateCapabilitiesIfNeeded(
                 serviceId: serviceId,
@@ -456,7 +461,7 @@ public class ProfileFetcherJob {
                 tx: transaction
             )
 
-            if localIdentifiers.contains(serviceId: serviceId) {
+            if localIdentifiers.aci == serviceId {
                 self.reconcileLocalProfileIfNeeded(fetchedProfile: fetchedProfile)
             }
 
@@ -515,7 +520,7 @@ public class ProfileFetcherJob {
         var shouldSendProfileSync = false
 
         if
-            localIdentifiers.contains(serviceId: serviceId),
+            localIdentifiers.aci == serviceId,
             fetchedCapabilities.dummyCapability
         {
             // Space to detect changes to our own capabilities, and run code
