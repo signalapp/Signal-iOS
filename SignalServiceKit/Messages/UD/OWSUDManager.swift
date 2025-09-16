@@ -251,6 +251,11 @@ public class OWSUDManagerImpl: OWSUDManager {
         let accessKey: SMKUDAccessKey
         let accessMode: OWSUDAccess.Mode
 
+        // Never allow UAKs for PNIs.
+        if serviceId is Pni {
+            return nil
+        }
+
         switch unidentifiedAccessMode(for: serviceId, tx: tx) {
         case .unrestricted:
             accessKey = .zeroedKey
