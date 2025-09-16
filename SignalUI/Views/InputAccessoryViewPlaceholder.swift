@@ -193,6 +193,14 @@ public class InputAccessoryViewPlaceholder: UIView {
 
     @objc
     private func keyboardWillPresent(_ notification: Notification) {
+        switch keyboardState {
+        case .presented, .presenting:
+            Logger.info("Ignoring keyboardWillPresent notification while keyboard is already presented or presenting")
+            return
+        case .dismissed, .dismissing:
+            break
+        }
+
         guard let userInfo = notification.userInfo,
             let beginFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
             let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
