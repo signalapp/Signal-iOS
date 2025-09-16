@@ -8,7 +8,7 @@ public import LibSignalClient
 
 // MARK: - GroupMemberState
 
-private enum GroupMemberState: Equatable {
+private enum GroupMemberState: Equatable, Codable, CustomStringConvertible {
     case fullMember(
         role: TSGroupMemberRole,
         didJoinFromInviteLink: Bool,
@@ -52,9 +52,9 @@ private enum GroupMemberState: Equatable {
         default: return false
         }
     }
-}
 
-extension GroupMemberState: Codable {
+    // MARK: -
+
     private enum TypeKey: UInt, Codable {
         case fullMember = 0
         case invited = 1
@@ -115,9 +115,9 @@ extension GroupMemberState: Codable {
             try container.encode(TypeKey.requesting, forKey: .typeKey)
         }
     }
-}
 
-extension GroupMemberState: CustomStringConvertible {
+    // MARK: -
+
     public var description: String {
         switch self {
         case .fullMember: return ".fullMember"
@@ -364,35 +364,7 @@ public class GroupMembership: MTLModel {
         return result
     }
 
-    // MARK: - Accessors
-
-    public var fullMemberAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter { $0.value.isAdministrator && $0.value.isFullMember }.map { $0.key })
-    }
-
-    public var fullMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter { $0.value.isFullMember }.map { $0.key })
-    }
-
-    public var invitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter { $0.value.isInvited }.map { $0.key })
-    }
-
-    public var requestingMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter { $0.value.isRequesting }.map { $0.key })
-    }
-
-    public var fullOrInvitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter {
-            $0.value.isFullMember || $0.value.isInvited
-        }.map { $0.key })
-    }
-
-    public var invitedOrRequestMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.lazy.filter {
-            $0.value.isInvited || $0.value.isRequesting
-        }.map { $0.key })
-    }
+    // MARK: -
 
     public var allMembersOfAnyKind: Set<SignalServiceAddress> {
         return Set(memberStates.keys)
@@ -401,6 +373,16 @@ public class GroupMembership: MTLModel {
     public var allMembersOfAnyKindServiceIds: Set<ServiceId> {
         return Set(memberStates.keys.lazy.compactMap { $0.serviceId })
     }
+
+    public func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
+        return memberStates[address] != nil
+    }
+
+    public func isMemberOfAnyKind(_ serviceId: ServiceId) -> Bool {
+        return isMemberOfAnyKind(SignalServiceAddress(serviceId))
+    }
+
+    // MARK: -
 
     public func role(for serviceId: ServiceId) -> TSGroupMemberRole? {
         return role(for: SignalServiceAddress(serviceId))
@@ -413,22 +395,14 @@ public class GroupMembership: MTLModel {
         return memberState.role
     }
 
-    public func isFullOrInvitedAdministrator(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStates[address] else {
-            return false
-        }
-        switch memberState {
-        case .fullMember(let role, _, _):
-            return role == .administrator
-        case .invited(let role, _):
-            return role == .administrator
-        case .requesting:
-            return false
-        }
+    // MARK: -
+
+    public var fullMemberAdministrators: Set<SignalServiceAddress> {
+        return Set(memberStates.lazy.filter { $0.value.isAdministrator && $0.value.isFullMember }.map { $0.key })
     }
 
-    public func isFullOrInvitedAdministrator(_ serviceId: ServiceId) -> Bool {
-        return isFullOrInvitedAdministrator(SignalServiceAddress(serviceId))
+    public var fullMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.lazy.filter { $0.value.isFullMember }.map { $0.key })
     }
 
     public func isFullMemberAndAdministrator(_ address: SignalServiceAddress) -> Bool {
@@ -452,62 +426,6 @@ public class GroupMembership: MTLModel {
 
     public func isFullMember(_ serviceId: ServiceId) -> Bool {
         return isFullMember(SignalServiceAddress(serviceId))
-    }
-
-    public func isInvitedMember(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStates[address] else {
-            return false
-        }
-        return memberState.isInvited
-    }
-
-    public func isInvitedMember(_ serviceId: ServiceId) -> Bool {
-        return isInvitedMember(SignalServiceAddress(serviceId))
-    }
-
-    public func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStates[address] else {
-            return false
-        }
-        return memberState.isRequesting
-    }
-
-    public func isRequestingMember(_ serviceId: ServiceId) -> Bool {
-        return isRequestingMember(SignalServiceAddress(serviceId))
-    }
-
-    public func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
-        return memberStates[address] != nil
-    }
-
-    public func isMemberOfAnyKind(_ serviceId: ServiceId) -> Bool {
-        return isMemberOfAnyKind(SignalServiceAddress(serviceId))
-    }
-
-    public func isBannedMember(_ aci: Aci) -> Bool {
-        return bannedMembers[aci] != nil
-    }
-
-    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
-        return invalidInviteMap[userId] != nil
-    }
-
-    /// This method should only be called on invited members.
-    public func addedByAci(forInvitedMember address: SignalServiceAddress) -> Aci? {
-        guard let memberState = memberStates[address] else {
-            return nil
-        }
-        switch memberState {
-        case .invited(_, let addedByAci):
-            return addedByAci
-        default:
-            owsFailDebug("Not a pending profile key member.")
-            return nil
-        }
-    }
-
-    public func addedByAci(forInvitedMember serviceId: ServiceId) -> Aci? {
-        return addedByAci(forInvitedMember: SignalServiceAddress(serviceId))
     }
 
     /// This method should only be called for full members.
@@ -539,6 +457,70 @@ public class GroupMembership: MTLModel {
             return false
         }
     }
+
+    // MARK: -
+
+    public var invitedMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.lazy.filter { $0.value.isInvited }.map { $0.key })
+    }
+
+    public func isInvitedMember(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.isInvited
+    }
+
+    public func isInvitedMember(_ serviceId: ServiceId) -> Bool {
+        return isInvitedMember(SignalServiceAddress(serviceId))
+    }
+
+    /// This method should only be called on invited members.
+    public func addedByAci(forInvitedMember address: SignalServiceAddress) -> Aci? {
+        guard let memberState = memberStates[address] else {
+            return nil
+        }
+        switch memberState {
+        case .invited(_, let addedByAci):
+            return addedByAci
+        default:
+            owsFailDebug("Not a pending profile key member.")
+            return nil
+        }
+    }
+
+    public func addedByAci(forInvitedMember serviceId: ServiceId) -> Aci? {
+        return addedByAci(forInvitedMember: SignalServiceAddress(serviceId))
+    }
+
+    // MARK: -
+
+    public var requestingMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.lazy.filter { $0.value.isRequesting }.map { $0.key })
+    }
+
+    public func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.isRequesting
+    }
+
+    public func isRequestingMember(_ serviceId: ServiceId) -> Bool {
+        return isRequestingMember(SignalServiceAddress(serviceId))
+    }
+
+    // MARK: -
+
+    public func isBannedMember(_ aci: Aci) -> Bool {
+        return bannedMembers[aci] != nil
+    }
+
+    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
+        return invalidInviteMap[userId] != nil
+    }
+
+    // MARK: -
 
     /// Is this user's profile key exposed to the group?
     public func hasProfileKeyInGroup(serviceId: ServiceId) -> Bool {

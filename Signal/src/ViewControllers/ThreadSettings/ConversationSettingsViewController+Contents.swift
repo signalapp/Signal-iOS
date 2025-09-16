@@ -830,10 +830,11 @@ extension ConversationSettingsViewController {
 
         let itemTitle = OWSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
                                           comment: "Label for 'member requests & invites' action in conversation settings view.")
+        let invitedOrRequestingCount = groupModelV2.groupMembership.invitedMembers.count + groupModelV2.groupMembership.requestingMembers.count
         section.add(OWSTableItem.disclosureItem(
             icon: .groupInfoRequestAndInvites,
             withText: itemTitle,
-            accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
+            accessoryText: OWSFormat.formatInt(invitedOrRequestingCount),
             actionBlock: { [weak self] in
                 self?.showMemberRequestsAndInvitesView()
             })

@@ -168,7 +168,9 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
-        return oldGroupModel.groupMembership.fullOrInvitedMembers.count + newRecipientSet.count
+        let currentFullMembers = oldGroupModel.groupMembership.fullMembers
+        let currentInvitedMembers = oldGroupModel.groupMembership.invitedMembers
+        return currentFullMembers.count + currentInvitedMembers.count + newRecipientSet.count
     }
 
     func groupMemberViewIsGroupFull_HardLimit() -> Bool {

@@ -87,7 +87,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         groupMemberViewGroupMemberCount(withSelf: false)
     }
 
-    func groupMemberViewGroupMemberCount(withSelf: Bool) -> Int {
+    private func groupMemberViewGroupMemberCount(withSelf: Bool) -> Int {
         // We sometimes add one for the local user.
         newGroupState.recipientSet.count + (withSelf ? 1 : 0)
     }

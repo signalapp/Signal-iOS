@@ -248,66 +248,43 @@ public extension GroupUpdateSource {
 
 // MARK: -
 
-private enum MembershipStatus {
-    case normalMember
-    case invited(invitedBy: Aci?)
-    case requesting
-    case none
-
-    static func local(
-        localIdentifiers: LocalIdentifiers,
-        groupMembership: GroupMembership
-    ) -> MembershipStatus {
-        let aciMembership = of(
-            serviceId: localIdentifiers.aci,
-            groupMembership: groupMembership
-        )
-
-        switch aciMembership {
-        case .invited, .requesting, .normalMember:
-            return aciMembership
-        case .none:
-            break
-        }
-
-        if let localPni = localIdentifiers.pni {
-            return of(
-                serviceId: localPni,
-                groupMembership: groupMembership
-            )
-        }
-
-        return .none
-    }
+private enum MembershipStatus: Equatable {
+    case normalMember(Aci, role: TSGroupMemberRole)
+    case invited(ServiceId, role: TSGroupMemberRole, invitedBy: Aci?)
+    case requesting(Aci)
 
     static func of(
         address: SignalServiceAddress,
         groupMembership: GroupMembership
-    ) -> MembershipStatus {
+    ) -> MembershipStatus? {
         guard let serviceId = address.serviceId else {
-            return .none
+            return nil
         }
 
-        return of(
-            serviceId: serviceId,
-            groupMembership: groupMembership
-        )
-    }
-
-    private static func of(
-        serviceId: ServiceId,
-        groupMembership: GroupMembership
-    ) -> MembershipStatus {
-        if groupMembership.isFullMember(serviceId) {
-            return .normalMember
-        } else if groupMembership.isInvitedMember(serviceId) {
-            return .invited(invitedBy: groupMembership.addedByAci(
-                forInvitedMember: serviceId
-            ))
-        } else if groupMembership.isRequestingMember(serviceId) {
-            return .requesting
+        if
+            let aci = serviceId as? Aci,
+            groupMembership.isFullMember(address),
+            let role = groupMembership.role(for: address)
+        {
+            return .normalMember(aci, role: role)
+        } else if
+            groupMembership.isInvitedMember(address),
+            let role = groupMembership.role(for: address)
+        {
+            return .invited(
+                serviceId,
+                role: role,
+                invitedBy: groupMembership.addedByAci(
+                    forInvitedMember: serviceId
+                )
+            )
+        } else if
+            let aci = serviceId as? Aci,
+            groupMembership.isRequestingMember(serviceId)
+        {
+            return .requesting(aci)
         } else {
-            return .none
+            return nil
         }
     }
 }
@@ -1018,10 +995,28 @@ private struct NewGroupUpdateItemBuilder {
         newGroupModel: TSGroupModelV2,
         newGroupMembership: GroupMembership
     ) -> PersistableGroupUpdateItem? {
-        switch MembershipStatus.local(
-            localIdentifiers: localIdentifiers,
-            groupMembership: newGroupMembership
-        ) {
+        let localMembershipStatus: MembershipStatus
+        if
+            let aciMembership: MembershipStatus = .of(
+                address: SignalServiceAddress(localIdentifiers.aci),
+                groupMembership: newGroupMembership,
+            )
+        {
+            localMembershipStatus = aciMembership
+        } else if
+            let localPni = localIdentifiers.pni,
+            let pniMembership: MembershipStatus = .of(
+                address: SignalServiceAddress(localPni),
+                groupMembership: newGroupMembership
+            )
+        {
+            localMembershipStatus = pniMembership
+        } else {
+            owsFailDebug("Group was inserted without local membership!")
+            return nil
+        }
+
+        switch localMembershipStatus {
         case .normalMember:
             switch groupUpdateSource {
             case let .aci(updaterAci):
@@ -1038,7 +1033,7 @@ private struct NewGroupUpdateItemBuilder {
             default:
                 return .localUserAddedByUnknownUser
             }
-        case .invited(invitedBy: let inviterAci):
+        case .invited(_, _, let inviterAci):
             if let inviterAci {
                 return .localUserWasInvitedByOtherUser(
                     updaterAci: inviterAci.codableUuid
@@ -1048,9 +1043,6 @@ private struct NewGroupUpdateItemBuilder {
             }
         case .requesting:
             return .localUserRequestedToJoin
-        case .none:
-            owsFailDebug("Group was inserted without local membership!")
-            return nil
         }
     }
 
@@ -1099,7 +1091,13 @@ private struct NewGroupUpdateItemBuilder {
 private struct DiffingGroupUpdateItemBuilder {
     typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
-    private let localIdentifiers: LocalIdentifiersWrapper
+    /// - Important
+    /// The PNI in `localIdentifiers` represents the user's *current* PNI, but
+    /// PNIs can change. This can result in inaccurate comparisons when
+    /// comparing against a PNI in an old group model; all we can say is whether
+    /// that PNI *currently* matches ours, not whether it matched ours at the
+    /// time the group model was created/persisted.
+    private let localIdentifiers: LocalIdentifiers
     private let groupUpdateSource: GroupUpdateSource
     private let isReplacingJoinRequestPlaceholder: Bool
 
@@ -1118,7 +1116,7 @@ private struct DiffingGroupUpdateItemBuilder {
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers
     ) {
-        self.localIdentifiers = .init(localIdentifiers: localIdentifiers)
+        self.localIdentifiers = localIdentifiers
         self.groupUpdateSource = groupUpdateSource
 
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
@@ -1140,69 +1138,6 @@ private struct DiffingGroupUpdateItemBuilder {
             Logger.warn("Missing updater info!")
         default:
             break
-        }
-    }
-
-    fileprivate struct LocalIdentifiersWrapper {
-        // Guard the actual identifiers; we don't want arbitrary unsafe
-        // pni comparisons
-        private let localIdentifiers: LocalIdentifiers
-
-        init(localIdentifiers: LocalIdentifiers) {
-            self.localIdentifiers = localIdentifiers
-        }
-
-        // Comparing the aci is always safe since it doesn't change.
-        // Expose it freely.
-        var aci: Aci { localIdentifiers.aci }
-
-        /// Move the given service ID to the front of ``allUsersSorted``, if it
-        /// is present therein.
-        func moveLocalAddressToFrontOfGroupMembers(
-            _ addresses: inout [SignalServiceAddress]
-        ) {
-            var foundAciAddress = false
-            var foundPniAddress = false
-            addresses.removeAll(where: {
-                switch $0.serviceId?.concreteType {
-                case .aci(let aci) where aci == localIdentifiers.aci:
-                    foundAciAddress = true
-                    return true
-                case .pni(let pni) where pni == localIdentifiers.pni:
-                    foundPniAddress = true
-                    return true
-                default:
-                    return false
-                }
-            })
-            if foundPniAddress, let pni = localIdentifiers.pni {
-                addresses.insert(.init(pni), at: 0)
-            }
-            if foundAciAddress {
-                addresses.insert(localIdentifiers.aciAddress, at: 0)
-            }
-        }
-
-        func localGroupMembersOnly(_ addresses: Set<SignalServiceAddress>) -> [SignalServiceAddress] {
-            return addresses.filter(localIdentifiers.contains(address:))
-        }
-
-        /// Note that this is error prone when comparing a pni since those can change.
-        ///
-        /// This method is used in two cases:
-        /// 1. Diffing models for a new group udpate we just learned about, and are about
-        ///   to persist as PersistableGroupUpdateItem on a TSInfoMessage.
-        /// 2. Diffing two models we persisted in a legacy TSInfoMessage
-        ///
-        /// In the first case, this is "safe". Maybe our pni changed since this update was created,
-        /// but this is the first time we are learning about it, so now is when we determine if the
-        /// invitee was us or not.
-        ///
-        /// In the seceond case, this is super error prone. But historically we did NOT store whether
-        /// the invitee Pni was ours (we did store whether the updater was us, but not the invitee).
-        /// Not having stored it then means the best we can do is compare it now.
-        func isInviteeLocalUser(_ invitee: ServiceId) -> Bool {
-            return localIdentifiers.contains(serviceId: invitee)
         }
     }
 
@@ -1433,173 +1368,206 @@ private struct DiffingGroupUpdateItemBuilder {
     ) {
         var unnamedInviteCounts = UnnamedInviteCounts()
 
-        let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
-        let allUsersSorted: [SignalServiceAddress] = {
-            guard !forLocalUserOnly else {
-                return localIdentifiers.localGroupMembersOnly(allUsersUnsorted)
-            }
-            var allUsersSorted = allUsersUnsorted.sorted(by: {
-                ($0.serviceId?.serviceIdString ?? $0.phoneNumber ?? "") < ($1.serviceId?.serviceIdString ?? $1.phoneNumber ?? "")
-            })
+        struct MembershipChange {
+            let serviceId: ServiceId
+            let oldMembership: MembershipStatus?
+            let newMembership: MembershipStatus?
 
-            // If the local user has a membership update, sort it to the front.
-            localIdentifiers.moveLocalAddressToFrontOfGroupMembers(&allUsersSorted)
-
-            // If the updater has changed their membership status, ensure it appears _last_.
-            // This trumps the re-ordering of the local user above.
-            let updaterAddress: SignalServiceAddress?
-            switch groupUpdateSource {
-            case .unknown:
-                updaterAddress = nil
-            case .legacyE164(let e164):
-                updaterAddress = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
-            case .aci(let aci):
-                updaterAddress = .init(aci)
-            case .rejectedInviteToPni(let pni):
-                updaterAddress = .init(pni)
-            case .localUser(let originalSource):
-                switch originalSource {
-                case .unknown, .localUser:
-                    updaterAddress = nil
-                case .legacyE164(let e164):
-                    updaterAddress = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
-                case .aci(let aci):
-                    updaterAddress = .init(aci)
-                case .rejectedInviteToPni(let pni):
-                    updaterAddress = .init(pni)
+            init?(
+                address: SignalServiceAddress,
+                oldGroupMembership: GroupMembership,
+                newGroupMembership: GroupMembership
+            ) {
+                guard let serviceId = address.serviceId else {
+                    // No membership change if no serviceId.
+                    return nil
                 }
+
+                let before: MembershipStatus? = .of(address: address, groupMembership: oldGroupMembership)
+                let after: MembershipStatus? = .of(address: address, groupMembership: newGroupMembership)
+
+                guard before != after else {
+                    // Nothing changed!
+                    return nil
+                }
+
+                self.serviceId = serviceId
+                self.oldMembership = before
+                self.newMembership = after
             }
-            if let updaterAddress {
-                allUsersSorted = allUsersSorted.filter { $0 != updaterAddress } + [updaterAddress]
+        }
+        var membershipChanges: [MembershipChange] = []
+
+        if forLocalUserOnly {
+            if let aciMembershipChange = MembershipChange(
+                address: SignalServiceAddress(localIdentifiers.aci),
+                oldGroupMembership: oldGroupMembership,
+                newGroupMembership: newGroupMembership,
+            ) {
+                membershipChanges.append(aciMembershipChange)
             }
-            return allUsersSorted
-        }()
 
-        for address in allUsersSorted {
+            if
+                let localPni = localIdentifiers.pni,
+                let pniMembershipChange = MembershipChange(
+                    address: SignalServiceAddress(localPni),
+                    oldGroupMembership: oldGroupMembership,
+                    newGroupMembership: newGroupMembership
+                )
+            {
+                membershipChanges.append(pniMembershipChange)
+            }
+        } else {
+            let allMembers = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
 
-            let oldMembershipStatus: MembershipStatus = .of(address: address, groupMembership: oldGroupMembership)
-            let newMembershipStatus: MembershipStatus = .of(address: address, groupMembership: newGroupMembership)
+            membershipChanges = allMembers.compactMap { address in
+                return MembershipChange(
+                    address: address,
+                    oldGroupMembership: oldGroupMembership,
+                    newGroupMembership: newGroupMembership
+                )
+            }
+        }
 
-            switch oldMembershipStatus {
-            case .normalMember:
-                switch newMembershipStatus {
-                case .normalMember:
+        // We want to sort updates about the updater to the end of the updates
+        // list, so get their service ID.
+        let updaterServiceId: ServiceId?
+        switch groupUpdateSource {
+        case .unknown:
+            updaterServiceId = nil
+        case .legacyE164:
+            updaterServiceId = nil
+        case .aci(let aci):
+            updaterServiceId = aci
+        case .rejectedInviteToPni(let pni):
+            updaterServiceId = pni
+        case .localUser:
+            // We're going to sort local-user updates to the front, so we can
+            // ignore them for the purposes of the updater.
+            updaterServiceId = nil
+        }
+
+        // Sort such that the eventual updates are always added to this builder
+        // in a stable order.
+        membershipChanges.sort { lhs, rhs in
+            // If equal to the updater, sort to the back.
+            if let updaterServiceId, lhs.serviceId == updaterServiceId {
+                return false
+            } else if let updaterServiceId, rhs.serviceId == updaterServiceId {
+                return true
+            }
+
+            // If we find our own ServiceId, sort it to the front, preferring
+            // our ACI over our PNI.
+            if lhs.serviceId == localIdentifiers.aci {
+                return true
+            } else if rhs.serviceId == localIdentifiers.aci {
+                return false
+            } else if lhs.serviceId == localIdentifiers.pni {
+                return true
+            } else if rhs.serviceId == localIdentifiers.pni {
+                return false
+            }
+
+            // Otherwise, arbitrary stable sort.
+            return lhs.serviceId < rhs.serviceId
+        }
+
+        for membershipChange in membershipChanges {
+
+            switch membershipChange.oldMembership {
+            case .normalMember(let memberAci, let roleBefore):
+                switch membershipChange.newMembership {
+                case .normalMember(_, let roleAfter):
                     // Membership status didn't change.
                     // Check for role changes.
-                    if let userAci = address.aci {
-                        addMemberRoleUpdates(
-                            userAci: userAci,
-                            oldGroupMembership: oldGroupMembership,
-                            newGroupMembership: newGroupMembership,
-                            newGroupModel: newGroupModel
-                        )
-                    }
+                    addMemberRoleUpdates(
+                        userAci: memberAci,
+                        oldRole: roleBefore,
+                        newRole: roleAfter,
+                        newGroupModel: newGroupModel
+                    )
                 case .invited:
-                    if let userAci = address.aci {
-                        addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(
-                            userAci: userAci
-                        )
-                    }
+                    addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(
+                        userAci: memberAci,
+                    )
                 case .requesting:
                     // This could happen if a user leaves a group, the requests to rejoin
                     // and we do not have access to the intervening revisions.
-                    if let userAci = address.aci {
-                        addUserRequestedToJoinGroup(requesterAci: userAci)
-                    }
-                case .none:
-                    if let userAci = address.aci {
-                        addUserLeftOrWasKickedOutOfGroup(userAci: userAci)
-                    }
+                    addUserRequestedToJoinGroup(requesterAci: memberAci)
+                case nil:
+                    addUserLeftOrWasKickedOutOfGroup(userAci: memberAci)
                 }
-            case .invited:
-                switch newMembershipStatus {
-                case .normalMember:
-                    if let inviteeAci = address.aci {
-                        addUserInvitedByAciAcceptedOrWasAdded(
-                            inviteeAci: inviteeAci,
-                            oldGroupMembership: oldGroupMembership
-                        )
-                    }
+
+            case .invited(let inviteeServiceId, _, let inviterAci):
+                switch membershipChange.newMembership {
+                case .normalMember(let inviteeAci, _):
+                    // Note that invited-by-PNI, accepted-by-ACI is handled
+                    // specially elsewhere.
+                    addUserInvitedByAciAcceptedOrWasAdded(
+                        inviteeAci: inviteeAci,
+                        inviterAci: inviterAci,
+                    )
                 case .invited:
                     // Membership status didn't change.
                     break
-                case .requesting:
-                    if let requesterAci = address.aci {
-                        addUserRequestedToJoinGroup(requesterAci: requesterAci)
-                    }
+                case .requesting(let inviteeAci):
+                    addUserRequestedToJoinGroup(requesterAci: inviteeAci)
                 case .none:
-                    if let inviteeServiceId = address.serviceId {
-                        addUserInviteWasDeclinedOrRevoked(
-                            inviteeServiceId: inviteeServiceId,
-                            oldGroupMembership: oldGroupMembership,
-                            unnamedInviteCounts: &unnamedInviteCounts
-                        )
-                    }
+                    addUserInviteWasDeclinedOrRevoked(
+                        inviteeServiceId: inviteeServiceId,
+                        inviterAci: inviterAci,
+                        unnamedInviteCounts: &unnamedInviteCounts
+                    )
                 }
-            case .requesting:
-                switch newMembershipStatus {
+
+            case .requesting(let requesterAci):
+                switch membershipChange.newMembership {
                 case .normalMember:
-                    if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: address) {
-                        if let requesterAci = address.aci {
-                            addUserRequestWasApproved(
-                                requesterAci: requesterAci
-                            )
-                        }
-                    } else {
-                        if let newMemberAci = address.aci {
-                            addUserWasAddedToTheGroup(
-                                newMember: newMemberAci,
-                                newGroupModel: newGroupModel
-                            )
-                        }
-                    }
-                case .invited:
-                    if let invitee = address.serviceId {
-                        addUserWasInvitedToTheGroup(
-                            invitee: invitee,
-                            unnamedInviteCounts: &unnamedInviteCounts
-                        )
-                    }
-                case .requesting:
-                    // Membership status didn't change.
-                    break
-                case .none:
-                    if let requesterAci = address.aci {
-                        addUserRequestWasRejected(requesterAci: requesterAci)
-                    }
-                }
-            case .none:
-                switch newMembershipStatus {
-                case .normalMember:
-                    if
-                        newGroupMembership.didJoinFromInviteLink(forFullMember: address),
-                        let newMemberAci = address.aci
-                    {
-                        addUserJoinedFromInviteLink(newMember: newMemberAci)
-                    } else if
-                        newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: address),
-                        let requesterAci = address.aci
-                    {
+                    if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: SignalServiceAddress(requesterAci)) {
                         addUserRequestWasApproved(
                             requesterAci: requesterAci
                         )
-                    } else if let newMemberAci = address.aci {
+                    } else {
                         addUserWasAddedToTheGroup(
-                            newMember: newMemberAci,
+                            newMember: requesterAci,
                             newGroupModel: newGroupModel
                         )
                     }
                 case .invited:
-                    if let invitee = address.serviceId {
-                        addUserWasInvitedToTheGroup(
-                            invitee: invitee,
-                            unnamedInviteCounts: &unnamedInviteCounts
+                    addUserWasInvitedToTheGroup(
+                        invitee: requesterAci,
+                        unnamedInviteCounts: &unnamedInviteCounts
+                    )
+                case .requesting:
+                    // Membership status didn't change.
+                    break
+                case nil:
+                    addUserRequestWasRejected(requesterAci: requesterAci)
+                }
+
+            case nil:
+                switch membershipChange.newMembership {
+                case .normalMember(let memberAci, _):
+                    if newGroupMembership.didJoinFromInviteLink(forFullMember: SignalServiceAddress(memberAci)) {
+                        addUserJoinedFromInviteLink(newMember: memberAci)
+                    } else if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: SignalServiceAddress(memberAci)) {
+                        addUserRequestWasApproved(
+                            requesterAci: memberAci
+                        )
+                    } else {
+                        addUserWasAddedToTheGroup(
+                            newMember: memberAci,
+                            newGroupModel: newGroupModel
                         )
                     }
-                case .requesting:
-                    if let requesterAci = address.aci {
-                        addUserRequestedToJoinGroup(requesterAci: requesterAci)
-                    }
+                case .invited(let inviteeServiceId, _, _):
+                    addUserWasInvitedToTheGroup(
+                        invitee: inviteeServiceId,
+                        unnamedInviteCounts: &unnamedInviteCounts
+                    )
+                case .requesting(let requesterAci):
+                    addUserRequestedToJoinGroup(requesterAci: requesterAci)
                 case .none:
                     // Membership status didn't change.
                     break
@@ -1657,25 +1625,19 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addMemberRoleUpdates(
         userAci: Aci,
-        oldGroupMembership: GroupMembership,
-        newGroupMembership: GroupMembership,
+        oldRole: TSGroupMemberRole,
+        newRole: TSGroupMemberRole,
         newGroupModel: TSGroupModel
     ) {
-
-        let oldIsAdministrator = oldGroupMembership.isFullMemberAndAdministrator(userAci)
-        let newIsAdministrator = newGroupMembership.isFullMemberAndAdministrator(userAci)
-
-        guard oldIsAdministrator != newIsAdministrator else {
-            // Role didn't change.
-            return
-        }
-
-        if newIsAdministrator {
+        switch (oldRole, newRole) {
+        case (.normal, .normal), (.administrator, .administrator):
+            break
+        case (.normal, .administrator):
             addUserWasGrantedAdministrator(
                 userAci: userAci,
                 newGroupModel: newGroupModel
             )
-        } else {
+        case (.administrator, .normal):
             addUserWasRevokedAdministrator(userAci: userAci)
         }
     }
@@ -1852,10 +1814,8 @@ private struct DiffingGroupUpdateItemBuilder {
     /// (or, historically, a ``LegacyPersistableGroupUpdateItem``).
     mutating func addUserInvitedByAciAcceptedOrWasAdded(
         inviteeAci: Aci,
-        oldGroupMembership: GroupMembership
+        inviterAci: Aci?,
     ) {
-        let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: inviteeAci)
-
         if localIdentifiers.aci == inviteeAci {
             switch groupUpdateSource {
             case .localUser:
@@ -1920,12 +1880,10 @@ private struct DiffingGroupUpdateItemBuilder {
     /// `unnamedInviteCounts` to see if an unnamed invite was affected.
     mutating func addUserInviteWasDeclinedOrRevoked(
         inviteeServiceId: ServiceId,
-        oldGroupMembership: GroupMembership,
+        inviterAci: Aci?,
         unnamedInviteCounts: inout UnnamedInviteCounts
     ) {
-        let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: inviteeServiceId)
-
-        if localIdentifiers.isInviteeLocalUser(inviteeServiceId) {
+        if localIdentifiers.contains(serviceId: inviteeServiceId) {
             switch groupUpdateSource {
             case .localUser:
                 if let inviterAci {
@@ -2058,7 +2016,7 @@ private struct DiffingGroupUpdateItemBuilder {
         invitee: ServiceId,
         unnamedInviteCounts: inout UnnamedInviteCounts
     ) {
-        if localIdentifiers.isInviteeLocalUser(invitee) {
+        if localIdentifiers.contains(serviceId: invitee) {
             switch groupUpdateSource {
             case .localUser:
                 owsFailDebug("User invited themselves to the group!")

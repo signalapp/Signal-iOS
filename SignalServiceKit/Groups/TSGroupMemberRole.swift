@@ -6,9 +6,16 @@
 import Foundation
 
 @objc
-public enum TSGroupMemberRole: UInt, Codable {
+public enum TSGroupMemberRole: UInt, Codable, CustomStringConvertible {
     case normal = 0
     case administrator = 1
+
+    public var description: String {
+        switch self {
+        case .normal: "normal"
+        case .administrator: "admin"
+        }
+    }
 
     public static func role(for value: GroupsProtoMemberRole) -> TSGroupMemberRole? {
         switch value {

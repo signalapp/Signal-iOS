@@ -366,7 +366,9 @@ public class GroupsV2OutgoingChanges {
         var membersToUnban = [Aci]()
 
         if !membersToAdd.isEmpty {
-            var fullOrInvitedMembers = Set(currentGroupModel.groupMembership.fullOrInvitedMembers.compactMap { $0.serviceId })
+            let fullOrInvitedMemberAddresses = currentGroupMembership.fullMembers.union(currentGroupMembership.invitedMembers)
+            var fullOrInvitedMembers = Set(fullOrInvitedMemberAddresses.compactMap { $0.serviceId })
+
             for serviceId in membersToAdd {
                 if currentGroupMembership.isFullMember(serviceId) {
                     // Another user has already added this member. They may have been added
