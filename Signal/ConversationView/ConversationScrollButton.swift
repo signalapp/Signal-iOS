@@ -51,16 +51,8 @@ public class ConversationScrollButton: UIButton {
             }
         }
         configuration?.cornerStyle = .capsule
-        configuration?.contentInsets = ConversationScrollButton.backgroundInsets
-        configuration?.background.backgroundInsets = ConversationScrollButton.backgroundInsets
         configuration?.image = UIImage(named: iconName)
         self.configuration = configuration
-
-        let widthHeightDifference =
-        ConversationScrollButton.backgroundInsets.leading + ConversationScrollButton.backgroundInsets.trailing
-        - (ConversationScrollButton.backgroundInsets.top + ConversationScrollButton.backgroundInsets.bottom)
-        addConstraint(
-            widthAnchor.constraint(equalTo: heightAnchor, multiplier: 1, constant: widthHeightDifference))
 
         addUnreadLabel()
     }
@@ -69,9 +61,11 @@ public class ConversationScrollButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    public override var intrinsicContentSize: CGSize {
+        .square(ConversationScrollButton.circleDiameter)
+    }
+
     private class var circleDiameter: CGFloat { 40 }
-    private class var backgroundInsets: NSDirectionalEdgeInsets { .init(top: 12, leading: 15, bottom: 8, trailing: 15) }
-    public class var buttonWidth: CGFloat { circleDiameter + backgroundInsets.leading + backgroundInsets.trailing }
 
     private lazy var unreadCountLabel: UILabel = {
         let label = UILabel()
@@ -106,7 +100,7 @@ public class ConversationScrollButton: UIButton {
         addSubview(unreadBadge)
         NSLayoutConstraint.activate([
             unreadBadge.centerXAnchor.constraint(equalTo: centerXAnchor),
-            unreadBadge.bottomAnchor.constraint(equalTo: topAnchor, constant: ConversationScrollButton.backgroundInsets.top + pillViewOverlap),
+            unreadBadge.bottomAnchor.constraint(equalTo: topAnchor, constant: pillViewOverlap),
         ])
     }
 }

@@ -281,20 +281,18 @@ extension ConversationViewController {
         scrollDownButton.isHidden = true
         scrollDownButton.alpha = 0
         view.addSubview(scrollDownButton)
-        scrollDownButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonWidth)
         scrollDownButton.accessibilityIdentifier = "scrollDownButton"
 
-        scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBar, withOffset: -16)
-        scrollDownButton.autoPinEdge(toSuperviewSafeArea: .trailing)
+        scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBar, withOffset: -24)
+        scrollDownButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
 
         scrollToNextMentionButton.addTarget(self, action: #selector(scrollToNextMentionButtonTapped), for: .touchUpInside)
         scrollToNextMentionButton.isHidden = true
         scrollToNextMentionButton.alpha = 0
         view.addSubview(scrollToNextMentionButton)
-        scrollToNextMentionButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonWidth)
         scrollToNextMentionButton.accessibilityIdentifier = "scrollToNextMentionButton"
 
-        scrollToNextMentionButton.autoPinEdge(.bottom, to: .top, of: scrollDownButton, withOffset: -10)
-        scrollToNextMentionButton.autoPinEdge(toSuperviewSafeArea: .trailing)
+        scrollToNextMentionButton.autoPinEdge(.bottom, to: .top, of: scrollDownButton, withOffset: -30)
+        scrollToNextMentionButton.autoPinEdge(.trailing, to: .trailing, of: scrollDownButton)
     }
 }
