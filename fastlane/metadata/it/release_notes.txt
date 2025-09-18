@@ -1,1 +1,1 @@
-• Da ora puoi toccare su un nome nella schermata delle chiamate per vedere più informazioni prima di iniziare una chiamata con quel contatto. Comunque c'è ancora la possibilità di usare una shortcut… a te la scelta!
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

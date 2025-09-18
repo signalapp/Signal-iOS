@@ -1,1 +1,1 @@
-• Jetzt kannst du auf einen Namen im Tab »Anrufe« klicken, um dir mehr Infos anzeigen zu lassen, anstatt direkt einen Anruf mit diesem Kontakt zu starten. Natürlich kannst du jemanden auch direkt zurückrufen, ohne vorher weitere Infos einzuholen – das liegt ganz allein bei dir.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

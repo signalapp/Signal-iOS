@@ -1,1 +1,1 @@
-• अब आप चाहें, कॉल टैब में किसी नाम पर टैप करें, बेफ़िक्र रहें, कॉल नहीं लगेगी, बल्कि कॉन्टैक्ट की अतिरिक्त जानकारी दिखेगी। किसी को तुरंत कॉल बैक करने का शॉर्टकट अब भी मौजूद है, लेकिन उसका इस्तेमाल करना या न करना आपके हाथ में है।
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

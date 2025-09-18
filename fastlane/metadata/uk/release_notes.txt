@@ -1,1 +1,1 @@
-• Натиснувши на ім'я у вкладці викликів, тепер ви зможете переглянути додаткову інформацію, а не почнете дзвонити цьому контакту. Швидкий спосіб передзвонити ми теж залишили, щоб ви завжди були на зв'язку.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

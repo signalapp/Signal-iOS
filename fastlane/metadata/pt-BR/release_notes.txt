@@ -1,1 +1,1 @@
-• Agora você pode tocar em um nome na aba de chamadas para ver mais informações em vez de começar uma ligação na hora.  O atalho para retornar a chamada continua lá, usar ou não fica por sua conta.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

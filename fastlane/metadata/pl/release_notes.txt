@@ -1,1 +1,1 @@
-• Teraz możesz dotknąć imienia i nazwiska na karcie połączeń, aby wyświetlić dodatkowe informacje, zamiast od razu rozpoczynać nową rozmowę z tą osobą. Nadal dostępny jest skrót umożliwiający szybkie oddzwonienie, ale to, czy z niego skorzystasz, zależy wyłącznie od Ciebie.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

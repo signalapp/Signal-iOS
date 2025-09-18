@@ -1,1 +1,1 @@
-• Je kunt nu op een naam tikken in het tabblad Oproepen om aanvullende informatie te bekijken in plaats van meteen een nieuw gesprek met dat contact te starten. Er is ook nog steeds een snelkoppeling om snel iemand terug te bellen. 
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

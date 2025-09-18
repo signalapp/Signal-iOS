@@ -1,1 +1,1 @@
-• 現在，你可以在通話選項標籤中輕按名字來檢視更多資料，而不會立即與該聯絡人開始新通話。快速回撥的捷徑依然存在，但是否使用完全由你決定。
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

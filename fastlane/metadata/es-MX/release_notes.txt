@@ -1,1 +1,1 @@
-• Ahora, al tocar el nombre de una llamada en la pestaña Llamadas, verás información adicional en lugar de iniciar inmediatamente una nueva llamada con ese contacto. El atajo para devolver llamadas sigue ahí, listo para usar… pero la decisión de tocar el botón es completamente tuya.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

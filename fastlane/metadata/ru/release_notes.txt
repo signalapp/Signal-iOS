@@ -1,1 +1,1 @@
-• Теперь вы можете нажать на имя на вкладке звонков, чтобы просмотреть дополнительную информацию, вместо того, чтобы сразу начинать новый звонок с этим контактом. Ярлык для быстрого перезвона по-прежнему есть, но использовать его или нет — это на ваше усмотрение.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.

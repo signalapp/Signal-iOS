@@ -1,1 +1,1 @@
-• Di pembaruan kali ini, kami mengoptimalkan fungsi dalam tab panggilan. Kini, saat mengetuk nama di tab panggilan, Anda akan melihat informasi tambahan, alih-alih menelepon kontak tersebut. Pintasan untuk menelepon balik orang tetap tersedia, tapi terserah Anda apakah ingin dipakai atau tidak.
+• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
