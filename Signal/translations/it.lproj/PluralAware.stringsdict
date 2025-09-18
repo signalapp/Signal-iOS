@@ -1336,6 +1336,22 @@
 			<string>Annullare %1$d inviti mandati da &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
+	<key>POLL_VOTE_COUNT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Vote</string>
+			<key>other</key>
+			<string>%1$d Votes</string>
+		</dict>
+	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -235,6 +235,15 @@
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Het overzetten van je Signal-account kon niet succesvol worden afgerond";
 
+/* Action in an action sheet offering to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Reset App Data";
+
+/* Message for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "All app data will be permanently deleted. This is only necessary if you are unable to launch the app.";
+
+/* Title for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Reset All App Data?";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Voer je naam in";
 
@@ -524,10 +533,10 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Niet nu";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Herstelsleutel gekopieerd";
 
 /* Text used as placeholder in recovery key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Recovery Key";
+"BACKUP_KEY_PLACEHOLDER" = "Herstelsleutel";
 
 /* Title of button to tap if you forgot your recovery key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Sleutel vergeten?";
@@ -539,13 +548,13 @@
 "BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je sleutel te verifiëren om te bevestigen dat je die nog steeds weet";
 
 /* Title for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Recovery Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verifieer je herstelsleutel";
 
 /* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Niet nu";
 
 /* Toast indicating that the Recovery Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Recovery key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Juiste herstelsleutel. Bewaar je sleutel op een veilige manier.";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal kan je niet helpen met het herstellen van je back-up als je je sleutel kwijtraakt. Bewaar de sleutel op een veilige manier en deel deze niet met anderen.";
@@ -557,10 +566,10 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Sleutel opnieuw weergeven";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Voer de herstelsleutel in die je zojuist hebt vastgelegd";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Recovery Key";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Bevestig je herstelsleutel";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end versleuteld";
@@ -578,10 +587,10 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Secure Backups";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your recovery key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Je herstelsleutel is een code van 64 tekens waarmee je je back-up kunt herstellen wanneer je Signal opnieuw installeert.\n\nAls je je sleutel vergeet, kun je je back-up niet herstellen. Signal kan je niet helpen je back-up te herstellen.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Je herstelsleutel";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Kopiëren naar klembord";
@@ -593,7 +602,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Deze sleutel is nodig om je account en gegevens te herstellen. Bewaar deze sleutel op een veilige manier. Als je hem kwijtraakt, kun je je account niet meer herstellen.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "Je herstelsleutel vastleggen";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ van %2$@ (%3$@)";
@@ -619,17 +628,14 @@
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Er ging iets mis bij het maken van je back-up. Controleer je internetverbinding en probeer het opnieuw.";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Back-up exporteren…";
+/* Description for a progress bar tracking the optimizing of Backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optimizing media...";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Back-upmedia beheren...";
+/* Description for a progress bar tracking the preparation of a Backup. Embeds 1:{{ the percentage completed preformatted as a percent, e.g. 10% }}. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Preparing backup (%1$@)";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Back-up uploaden…";
-
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Back-upmedia uploaden…";
+/* Description for a progress bar tracking the processing of Backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Processing media...";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
@@ -707,16 +713,22 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Back-updetails";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Dit is een bètafunctie die in de loop van de tijd wordt verbeterd.";
+
+/* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Nieuwe sleutel aangemaakt!";
 
+/* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Disable and Create New Key";
+
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nYou will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nAfter disabling Backups and creating a new key, you will need to re-enable and re-upload your Backup.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Recovery Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Een nieuwe herstelsleutel aanmaken";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Hiermee worden al je back-upgegevens verwijderd. Er worden geen nieuwe back-ups gemaakt.";
@@ -800,7 +812,7 @@
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Gisteren om %1$@";
 
 /* Label for a menu item offering to show the user their recovery key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Recovery Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Herstelsleutel weergeven";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Nu back-up maken";
@@ -862,23 +874,17 @@
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload van media gepauzeerd: wachten op wifi";
 
-/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ van %2$@ aan het uploaden";
+/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ van %2$@ (%3$@) aan het uploaden";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Afhankelijk van de grootte van je back-up kan dit even duren. Tijdens het maken van de back-up kun je je telefoon gebruiken zoals je normaal doet.";
-
-/* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Nu back-up maken";
-
-/* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Back-up later maken";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use Signal as you normally do while the backup takes place.";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welkom bij Signal Secure Backups. Maak nu je back-up.";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Secure Backups";
+"BACKUPS_SETTINGS_TITLE" = "Signal Secure Backups";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal back-ups zijn ingeschakeld voor dit account op %1$@. Tik om te bekijken.";
@@ -1577,7 +1583,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Media van de afgelopen 45 dagen";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100 GB opslag";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Er ging iets mis. Neem contact op met ondersteuning.";
@@ -2555,7 +2561,7 @@
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Houd de apparaten bij elkaar in de buurt en houd de Signal-app open op beide apparaten. Het overzetten is beveiligd via een end-to-end versleutelde verbinding.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Er worden nu gegevens ontvangen";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "Gegevens worden ontvangen";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Verbinding aan het maken…";
@@ -2711,10 +2717,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Verlopen";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Je donatie is in behandeling. Als je je maandelijkse donatie annuleert, wordt je donatie niet verlengd. De donatie die in behandeling is, wordt nog wel verwerkt.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donation Pending";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donatie is in behandeling";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Je donatie via iDEAL is nog in behandeling. Ga naar je bankapp om je betaling goed te keuren voordat je opnieuw een donatie doet.";
@@ -3152,10 +3158,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect recovery key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Onjuiste herstelsleutel";
 
 /* Label explaining that an entered 'Recovery Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid recovery key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Ongeldige herstelsleutel";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kan bericht niet doorsturen";
@@ -6433,11 +6439,29 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
 
+/* Button to view poll results */
+"POLL_BUTTON_VIEW_RESULTS" = "View Results";
+
+/* Button to view poll votes */
+"POLL_BUTTON_VIEW_VOTES" = "View Votes";
+
+/* Label for button to end a poll */
+"POLL_DETAILS_END_POLL" = "End Poll";
+
+/* Title of poll details pane */
+"POLL_DETAILS_TITLE" = "Poll Details";
+
+/* Notification that {{contact}} ended a poll with question {{poll question}} */
+"POLL_ENDED_NOTIFICATION" = "%1$@ ended the poll “%2$@”";
+
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Peiling";
 
+/* Prefix for a poll preview */
+"POLL_PREFIX" = "Poll:";
+
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Selecteer een of meer";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Selecteer een antwoord";
@@ -6782,7 +6806,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Je hebt het te vaak geprobeerd. Wacht een minuut voordat je het opnieuw probeert.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The recovery key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "De herstelsleutel die je hebt ingevoerd is juist, maar er is geen back-up aan gekoppeld. Als je je oude telefoon nog hebt, zorg er dan voor dat back-ups zijn ingeschakeld en dat er een back-up is gemaakt. Probeer het dan opnieuw.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Back-up niet gevonden";
@@ -6815,10 +6839,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Het overzetten kon niet worden voltooid";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Zorg ervoor dat je de herstelsleutel van 64 tekens invoert die je hebt opgeslagen bij het inschakelen van Signal back-ups. Back-ups kunnen niet worden hersteld zonder deze sleutel.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Onjuiste herstelsleutel";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Je back-up kan op dit moment niet worden teruggezet. Controleer je internetverbinding en probeer het opnieuw.";
@@ -6875,10 +6899,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Account & berichten overzetten";
 
 /* Description for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your recovery key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Je herstelsleutel is een code van 64 tekens die je nodig hebt om je account en gegevens te herstellen.";
 
 /* Title for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Recovery Key";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Voer je herstelsleutel in";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vul nummer in";
@@ -6902,13 +6926,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Controleer je netwerkverbinding";
 
 /* Title of button to tap if you do not have a recovery key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Recovery Key?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Geen herstelsleutel?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Back-ups kunnen niet worden hersteld zonder de herstelcode van 64 tekens. Als je de herstelsleutel kwijt bent, kan Signal je niet helpen je back-up te herstellen.\n\nAls je je oude apparaat nog hebt, kun je de herstelsleutel bekijken in Instellingen > Chats > Back-ups. Tik vervolgens op Herstelsleutel weergeven.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Recovery Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Geen herstelsleutel?";
 
 /* Title for button on sheet for when you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Overslaan en niet herstellen";

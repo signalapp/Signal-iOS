@@ -1168,6 +1168,20 @@
 			<string>&quot;%2$@&quot; 님이 보낸 %1$d개 초대를 취소할까요?</string>
 		</dict>
 	</dict>
+	<key>POLL_VOTE_COUNT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Votes</string>
+		</dict>
+	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

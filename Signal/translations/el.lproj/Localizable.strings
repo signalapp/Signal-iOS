@@ -235,6 +235,15 @@
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς";
 
+/* Action in an action sheet offering to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Reset App Data";
+
+/* Message for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "All app data will be permanently deleted. This is only necessary if you are unable to launch the app.";
+
+/* Title for an action sheet confirming the user wants to wipe all app data. */
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Reset All App Data?";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Συμπλήρωσε το όνομά σου";
 
@@ -485,7 +494,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Το ηχητικό μήνυμα δεν είναι διαθέσιμο";
 
 /* Username for recovery key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Signal Secure Backups";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Ασφαλή αντίγραφα Signal";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Επιλογή χρώματος";
@@ -524,10 +533,10 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Όχι τώρα";
 
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Recovery Key copied";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Το κλειδί ανάκτησης αντιγράφηκε";
 
 /* Text used as placeholder in recovery key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Recovery Key";
+"BACKUP_KEY_PLACEHOLDER" = "Κλειδί ανάκτησης";
 
 /* Title of button to tap if you forgot your recovery key. */
 "BACKUP_KEY_REMINDER_FORGOT_KEY" = "Ξέχασες το κλειδί;";
@@ -539,13 +548,13 @@
 "BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "Θα σου ζητάμε κατά καιρούς να επιβεβαιώνεις το κλειδί σου για να βεβαιωθούμε ότι το θυμάσαι";
 
 /* Title for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verify your Recovery Key";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Επαλήθευσε το κλειδί ανάκτησης";
 
 /* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "Όχι τώρα";
 
 /* Toast indicating that the Recovery Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Recovery key correct. Keep your key safe.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Το κλειδί ανάκτησης είναι σωστό. Κράτησε το κλειδί σου ασφαλές.";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Το Signal δεν θα μπορεί να σε βοηθήσει να επαναφέρεις το αντίγραφο ασφαλείας σου εάν χάσεις το κλειδί σου. Αποθήκευσέ το με ασφάλεια και μην το μοιράζεσαι με άλλους.";
@@ -557,10 +566,10 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Επαναπροβολή κλειδιού";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just recorded";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Γράψε το κλειδί ανάκτησης που μόλις κατέγραψες";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirm Your Recovery Key";
+"BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Επιβεβαίωσε το κλειδί ανάκτησης";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "Κρυπτογράφηση από άκρο σε άκρο";
@@ -575,13 +584,13 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Δημιούργησε αντίγραφα ασφαλείας των μηνυμάτων και των πολυμέσων σου χρησιμοποιώντας την ασφαλή, κρυπτογραφημένη από άκρο σε άκρο υπηρεσία αποθήκευσης του Signal. Δε θα χάσεις τα μηνύματά σου αν αγοράσεις νέο τηλέφωνο ή επανεγκαταστήσεις το Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Secure Backups";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Ασφαλή αντίγραφα Signal";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your recovery key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Το κλειδί ανάκτησής σου είναι ένας κωδικός 64 χαρακτήρων που σου επιτρέπει να επαναφέρεις το αντίγραφο ασφαλείας σου κατά την επανεγκατάσταση του Signal.\n\nΕάν ξεχάσεις τον κλειδί σου, δεν θα μπορέσεις να επαναφέρεις τα αντίγραφα ασφαλείας σου. Το Signal δεν μπορεί να σε βοηθήσει να ανακτήσεις τα αντίγραφα ασφαλείας σου.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Το κλειδί ανάκτησής σου";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Αντιγραφή στο πρόχειρο";
@@ -593,7 +602,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Αυτό το κλειδί απαιτείται για την ανάκτηση του λογαριασμού και των δεδομένων σου. Αποθήκευσε αυτό το κλειδί με ασφάλεια. Εάν το χάσεις, δεν θα μπορείς να ανακτήσεις τον λογαριασμό σου.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Record Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "Κατάγραψε το κλειδί ανάκτησης";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ από %2$@ (%3$@)";
@@ -619,17 +628,14 @@
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Κάτι πήγε στραβά με τη δημιουργία του αντιγράφου ασφαλείας σου. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και δοκιμάστε ξανά.";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently creating the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_CREATING_BACKUP" = "Εξαγωγή αντιγράφου ασφαλείας...";
+/* Description for a progress bar tracking the optimizing of Backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optimizing media...";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently managing our backed-up media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_LISTING_MEDIA" = "Διαχείριση αντιγράφου ασφαλείας πολυμέσων...";
+/* Description for a progress bar tracking the preparation of a Backup. Embeds 1:{{ the percentage completed preformatted as a percent, e.g. 10% }}. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Preparing backup (%1$@)";
 
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading the backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_BACKUP" = "Μεταφόρτωση αντιγράφου ασφαλείας...";
-
-/* Description for a progress bar tracking a multi-step backup operation, where we are currently uploading backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_UPLOADING_MEDIA" = "Μεταφόρτωση αντιγράφου ασφαλείας πολυμέσων...";
+/* Description for a progress bar tracking the processing of Backup media. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Processing media...";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Αναβάθμιση";
@@ -707,16 +713,22 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Λεπτομέρειες αντιγράφου ασφαλείας";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Αυτή είναι μια λειτουργία beta και θα βελτιωθεί με την πάροδο του χρόνου.";
+
+/* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Δημιουργήθηκε νέο κλειδί!";
 
+/* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Disable and Create New Key";
+
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nYou will need to re-enable and re-upload your Backup, including media, after creating a new key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nAfter disabling Backups and creating a new key, you will need to re-enable and re-upload your Backup.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Create A New Recovery Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Δημιουργία νέου κλειδιού ανάκτησης";
 
 /* Footer for a menu section allowing users to turn off Backups. */
 "BACKUP_SETTINGS_DISABLE_BACKUPS_BUTTON_FOOTER" = "Αυτό θα διαγράψει όλα τα αντίγραφα ασφαλείας σου. Δεν θα δημιουργηθούν νέα αντίγραφα ασφαλείας.";
@@ -800,7 +812,7 @@
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT" = "Χθες στις %1$@";
 
 /* Label for a menu item offering to show the user their recovery key. */
-"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Recovery Key";
+"BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Προβολή κλειδιού ανάκτησης";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Δημιουργία αντίγραφου τώρα";
@@ -862,23 +874,17 @@
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Η μεταφόρτωση πολυμέσων διακόπηκε: αναμονή για Wi-Fi";
 
-/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Μεταφόρτωση %1$@ από %2$@";
+/* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Μεταφόρτωση: %1$@ από %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Ανάλογα με το μέγεθος του αντιγράφου ασφαλείας σου, αυτό μπορεί να διαρκέσει πολύ. Μπορείς να χρησιμοποιείς το τηλέφωνό σου όπως συνήθως, κατά τη διάρκεια της δημιουργίας αντιγράφων ασφαλείας.";
-
-/* Title for the primary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_PRIMARY_BUTTON" = "Δημιουργία αντίγραφου τώρα";
-
-/* Title for the secondary button for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_SECONDARY_BUTTON" = "Δημιουργία αντιγράφων ασφαλείας αργότερα";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use Signal as you normally do while the backup takes place.";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Καλωσόρισες στα Ασφαλή Αντίγραφα Signal. Ξεκίνα τη δημιουργία αντιγράφων ασφαλείας τώρα.";
 
 /* Title for the 'Backup' settings menu. */
-"BACKUPS_SETTINGS_TITLE" = "Secure Backups";
+"BACKUPS_SETTINGS_TITLE" = "Ασφαλή αντίγραφα";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Τα αντίγραφα ασφαλείας σήματος ενεργοποιήθηκαν για αυτόν τον λογαριασμό στις %1$@. Πάτα για να δεις.";
@@ -1577,7 +1583,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Τελευταίες 45 ημέρες πολυμέσων";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB αποθηκευτικού χώρου";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Κάτι πήγε στραβά. Επικοινώνησε με την υποστήριξη.";
@@ -2711,10 +2717,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Έληξε";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "You have a donation pending. If you cancel your subscription, your donation will not renew but your pending donation will not be canceled.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Μια δωρεά σου εκκρεμεί. Εάν ακυρώσεις τη συνδρομή σου, η δωρεά σου δεν θα ανανεωθεί, αλλά η εκκρεμής δωρεά σου δεν θα ακυρωθεί.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donation Pending";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Η δωρεά εκκρεμεί";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Η δωρεά σου στην iDEAL βρίσκεται ακόμη υπό επεξεργασία. Έλεγξε την εφαρμογή σου στην τράπεζα για να εγκρίνεις την πληρωμή σου πριν κάνεις άλλη δωρεά.";
@@ -3152,10 +3158,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Η κλήση απέτυχε";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect recovery key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Λανθασμένο κλειδί ανάκτησης";
 
 /* Label explaining that an entered 'Recovery Key' is malformed. */
-"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Invalid recovery key";
+"ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL" = "Μη έγκυρο κλειδί ανάκτησης";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Αδυναμία προώθησης μηνύματος.";
@@ -6433,11 +6439,29 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή πολυμέσων";
 
+/* Button to view poll results */
+"POLL_BUTTON_VIEW_RESULTS" = "View Results";
+
+/* Button to view poll votes */
+"POLL_BUTTON_VIEW_VOTES" = "View Votes";
+
+/* Label for button to end a poll */
+"POLL_DETAILS_END_POLL" = "End Poll";
+
+/* Title of poll details pane */
+"POLL_DETAILS_TITLE" = "Poll Details";
+
+/* Notification that {{contact}} ended a poll with question {{poll question}} */
+"POLL_ENDED_NOTIFICATION" = "%1$@ ended the poll “%2$@”";
+
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Δημοσκόπηση";
 
+/* Prefix for a poll preview */
+"POLL_PREFIX" = "Poll:";
+
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";
+"POLL_SELECT_LABEL_MULTIPLE" = "Επίλεξε ένα ή περισσότερα";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Επίλεξε μία";
@@ -6782,7 +6806,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Έχεις δοκιμάσει πάρα πολλές φορές. Παρακαλώ περίμενε ένα λεπτό πριν ξαναδοκιμάσεις.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "The recovery key you entered is correct, but there is no backup associated with it. If you still have your old phone, make sure backups are enabled and that a backup has been completed and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Το κλειδί ανάκτησης που εισήγαγες είναι σωστό, αλλά δεν υπάρχει αντίγραφο ασφαλείας που να σχετίζεται με αυτό. Εάν εξακολουθείς να έχεις το παλιό σου τηλέφωνο, βεβαιώσου ότι τα αντίγραφα ασφαλείας είναι ενεργοποιημένα και ότι έχει ολοκληρωθεί το αντίγραφο ασφαλείας και δοκίμασε ξανά.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Το αντίγραφο ασφαλείας δεν βρέθηκε";
@@ -6815,10 +6839,10 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Make sure you’ve entered the same 64-character recovery key you saved when enabling Signal Backups. Backups can not be recovered without this key.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Βεβαιώσου ότι εισήγαγες το ίδιο κλειδί ανάκτησης 64 χαρακτήρων που αποθήκευσες κατά την ενεργοποίηση των Αντιγράφων ασφαλείας Signal. Τα Αντίγραφα ασφαλείας δεν μπορούν να ανακτηθούν χωρίς αυτό το κλειδί.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Λανθασμένο κλειδί ανάκτησης";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Δεν είναι δυνατή η επαναφορά του αντιγράφου ασφαλείας σου προς το παρόν. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
@@ -6875,10 +6899,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Μεταφορά λογαριασμού & μηνυμάτων";
 
 /* Description for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your recovery key is a 64-character code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Το κλειδί ανάκτησής σου είναι ένας κωδικός 64 χαρακτήρων που απαιτείται για την ανάκτηση του λογαριασμού και των δεδομένων σου.";
 
 /* Title for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Recovery Key";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Γράψε το κλειδί ανάκτησής σου";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Εισαγωγή αριθμού";
@@ -6902,13 +6926,13 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Έλεγχος σύνδεσης";
 
 /* Title of button to tap if you do not have a recovery key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Recovery Key?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Δεν υπάρχει κλειδί ανάκτησης;";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Backups can’t be recovered without their 64-character recovery code. If you’ve lost your recovery key, Signal can’t help restore your backup.\n\nIf you have your old device, you can view your recovery key in Settings > Chats > Backups. Then tap View Recovery Key.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Τα αντίγραφα ασφαλείας δεν μπορούν να ανακτηθούν χωρίς τον κωδικό ανάκτησης 64 χαρακτήρων. Εάν έχεις χάσει το κλειδί ανάκτησής σου, το Signal δεν μπορεί να βοηθήσει στην επαναφορά του αντιγράφου ασφαλείας σου.\n\nΕάν έχεις την παλιά σου συσκευή, μπορείς να δεις το κλειδί ανάκτησης στις Ρυθμίσεις > Συνομιλίες > Αντίγραφα ασφαλείας. Στη συνέχεια, πάτα Προβολή κλειδιού ανάκτησης.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "No Recovery Key?";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Δεν υπάρχει κλειδί ανάκτησης;";
 
 /* Title for button on sheet for when you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE" = "Παράλειψη, χωρίς επαναφορά";

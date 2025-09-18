@@ -2008,6 +2008,30 @@
 			<string>هل ترغبُ بإلغاء %1$d دعوةٍ أَرسلها &quot;%2$@&quot;؟</string>
 		</dict>
 	</dict>
+	<key>POLL_VOTE_COUNT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d Votes</string>
+			<key>one</key>
+			<string>%1$d Vote</string>
+			<key>two</key>
+			<string>%1$d Votes</string>
+			<key>few</key>
+			<string>%1$d Votes</string>
+			<key>many</key>
+			<string>%1$d Votes</string>
+			<key>other</key>
+			<string>%1$d Votes</string>
+		</dict>
+	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
