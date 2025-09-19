@@ -74,7 +74,7 @@ extension ConversationViewController {
         updateContentInsetsEvent.requestNotify()
     }
 
-    internal func updateContentInsets() {
+    internal func updateContentInsets(animationDuration: TimeInterval = UIView.inheritedAnimationDuration) {
         AssertIsOnMainThread()
 
         guard !isMeasuringKeyboardHeight, !isSwitchingKeyboard else {
@@ -93,9 +93,13 @@ extension ConversationViewController {
                 return
             }
         }
-
-        view.layoutIfNeeded()
-
+        
+        // Layout changes have to be animated to prevent items that move out of the frame
+        // to fade out instead of moving with the whole collection.
+        UIView.animate(withDuration: animationDuration) {
+            self.view.layoutIfNeeded()
+        }
+        
         let oldInsets = collectionView.contentInset
         var newInsets = oldInsets
 
