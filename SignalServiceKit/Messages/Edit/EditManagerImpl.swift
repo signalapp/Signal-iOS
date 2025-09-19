@@ -25,8 +25,8 @@ public class EditManagerImpl: EditManager {
         // original message
         static let editSendWindowMilliseconds: UInt64 = UInt64.dayInMs
 
-        // Message can only be edited 10 times
-        static let maxSendEdits: UInt = UInt(10)
+        // Message can only be edited 100 times
+        static let maxSendEdits: UInt = UInt(100)
     }
 
     public struct Context {
