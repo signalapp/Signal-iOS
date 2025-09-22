@@ -1488,6 +1488,8 @@ public class AppSetup {
             interactionStore: interactionStore
         )
 
+        let backupFailureStateManager = BackupFailureStateManager(dateProvider: dateProvider)
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             accountEntropyPoolManager: accountEntropyPoolManager,
@@ -1519,6 +1521,7 @@ public class AppSetup {
             backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,
+            backupFailureStateManager: backupFailureStateManager,
             backupIdService: backupIdService,
             backupKeyService: backupKeyService,
             backupListMediaManager: backupListMediaManager,

@@ -523,8 +523,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         homeVC.chatListViewController.showAppSettings()
     }
 
-    func showAppSettingsWithMode(_ mode: ChatListViewController.ShowAppSettingsMode) {
-        homeVC.chatListViewController.showAppSettings(mode: mode)
+    func showAppSettingsWithMode(_ mode: ChatListViewController.ShowAppSettingsMode, completion: (() -> Void)? = nil) {
+        homeVC.chatListViewController.showAppSettings(mode: mode, completion: completion)
     }
 
     @objc

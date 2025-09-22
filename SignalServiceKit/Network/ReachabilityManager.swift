@@ -182,8 +182,19 @@ private extension NetworkInterface {
 #if TESTABLE_BUILD
 
 public class MockSSKReachabilityManager: SSKReachabilityManager {
-    public var isReachable: Bool = false
-    public func isReachable(via reachabilityType: ReachabilityType) -> Bool { isReachable }
+    public var isReachableViaWifi: Bool = false
+    public var isReachableViaCellular: Bool = false
+
+    public var isReachable: Bool {
+        return isReachableViaCellular || isReachableViaWifi
+    }
+    public func isReachable(via reachabilityType: ReachabilityType) -> Bool {
+        switch reachabilityType {
+        case .wifi: return isReachableViaWifi
+        case .cellular: return isReachableViaCellular
+        case .any: return isReachable
+        }
+    }
 }
 
 #endif

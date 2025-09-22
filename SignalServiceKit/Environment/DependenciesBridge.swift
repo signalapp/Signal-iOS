@@ -75,6 +75,7 @@ public class DependenciesBridge {
     public let backupDisablingManager: BackupDisablingManager
     public let backupExportJob: BackupExportJob
     public let backupExportJobRunner: BackupExportJobRunner
+    public let backupFailureStateManager: BackupFailureStateManager
     public let backupIdService: BackupIdService
     public let backupKeyService: BackupKeyService
     public let backupListMediaManager: BackupListMediaManager
@@ -211,6 +212,7 @@ public class DependenciesBridge {
         backupDisablingManager: BackupDisablingManager,
         backupExportJob: BackupExportJob,
         backupExportJobRunner: BackupExportJobRunner,
+        backupFailureStateManager: BackupFailureStateManager,
         backupIdService: BackupIdService,
         backupKeyService: BackupKeyService,
         backupListMediaManager: BackupListMediaManager,
@@ -346,6 +348,7 @@ public class DependenciesBridge {
         self.backupDisablingManager = backupDisablingManager
         self.backupExportJob = backupExportJob
         self.backupExportJobRunner = backupExportJobRunner
+        self.backupFailureStateManager = backupFailureStateManager
         self.backupIdService = backupIdService
         self.backupKeyService = backupKeyService
         self.backupListMediaManager = backupListMediaManager

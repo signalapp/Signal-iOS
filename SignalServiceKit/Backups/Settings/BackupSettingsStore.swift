@@ -76,12 +76,18 @@ public struct BackupSettingsStore {
         static let haveSetBackupID = "haveSetBackupID"
         static let lastBackupRefreshDate = "lastBackupRefreshDate"
         static let lastBackupEnabledDetails = "lastBackupEnabledDetails"
+        static let lastBackupFailed = "lastBackupFailed"
+
+        static let mostRecentDateKey = "mostRecentPromptDate"
+        static let promptCountKey = "promptCount"
     }
 
     private let kvStore: KeyValueStore
+    private let errorStateStore: KeyValueStore
 
     public init() {
         kvStore = KeyValueStore(collection: "BackupSettingsStore")
+        errorStateStore = KeyValueStore(collection: "BackupSettingsErrorStateStore")
     }
 
     // MARK: -
@@ -205,6 +211,10 @@ public struct BackupSettingsStore {
         }
 
         setLastBackupRefreshDate(lastBackupDate, tx: tx)
+
+        // Clear any persisted error state
+        kvStore.removeValue(forKey: Keys.lastBackupFailed, transaction: tx)
+        errorStateStore.removeAll(transaction: tx)
     }
 
     public func resetLastBackupDate(tx: DBWriteTransaction) {
@@ -237,6 +247,30 @@ public struct BackupSettingsStore {
     public func resetLastBackupSizeBytes(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Keys.lastBackupFileSizeBytes, transaction: tx)
         kvStore.removeValue(forKey: Keys.lastBackupSizeBytes, transaction: tx)
+    }
+
+    public func getLastBackupFailed(tx: DBReadTransaction) -> Bool {
+        kvStore.getBool(Keys.lastBackupFailed, defaultValue: false, transaction: tx)
+    }
+
+    public func setLastBackupFailed(tx: DBWriteTransaction) {
+        kvStore.setBool(true, key: Keys.lastBackupFailed, transaction: tx)
+    }
+
+    public func getBackupErrorPromptCount(tx: DBReadTransaction) -> Int {
+        errorStateStore.getInt(Keys.promptCountKey, defaultValue: 0, transaction: tx)
+    }
+
+    public func setBackupErrorPromptCount(_ count: Int, tx: DBWriteTransaction) {
+        errorStateStore.setInt(count, key: Keys.promptCountKey, transaction: tx)
+    }
+
+    public func getBackupErrorLastPromptDate(tx: DBReadTransaction) -> Date? {
+        errorStateStore.getDate(Keys.mostRecentDateKey, transaction: tx)
+    }
+
+    public func setBackupErrorLastPromptDate(_ date: Date, tx: DBWriteTransaction) {
+        errorStateStore.setDate(date, key: Keys.mostRecentDateKey, transaction: tx)
     }
 
     // MARK: -
