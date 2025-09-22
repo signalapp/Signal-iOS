@@ -66,4 +66,26 @@ public class BackupFailureStateManager {
         backupSettingsStore.setBackupErrorPromptCount(promptCount + 1, tx: tx)
         backupSettingsStore.setBackupErrorLastPromptDate(dateProvider(), tx: tx)
     }
+
+    /// Allow for managing backup badge state from arbitrary points.
+    /// This allows each target to be separately cleared, and also allows
+    /// backups to reset the state for all of them on a failure
+    public func shouldShowErrorBadge(target: String, tx: DBReadTransaction) -> Bool {
+        // Check that the last backup failed
+        guard backupSettingsStore.getLastBackupFailed(tx: tx) else {
+            return false
+        }
+
+        // See if this badge has been muted
+        if backupSettingsStore.getErrorBadgeMuted(target: target, tx: tx) {
+            return false
+        }
+
+        return true
+    }
+
+    public func clearErrorBadge(target: String, tx: DBWriteTransaction) {
+        // set this target as muted
+        backupSettingsStore.setErrorBadgeMuted(target: target, tx: tx)
+    }
 }

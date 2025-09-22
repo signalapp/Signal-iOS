@@ -221,6 +221,59 @@ extension UIImage {
         return UIImage(cgImage: outputCGImage)
     }
 
+    public func withBadge(
+        color: UIColor,
+        borderColor: UIColor = .white
+    ) -> UIImage {
+        let render = UIGraphicsImageRenderer(size: size)
+        let badgeSize = CGSize(width: 8, height: 8)
+        return render.image { _ in
+            let iconTintedImage = withRenderingMode(.alwaysTemplate)
+            iconTintedImage.draw(at: .zero)
+            Self.renderBadge(
+                size: badgeSize,
+                origin: CGPoint(x: size.width - badgeSize.width, y: 0),
+                color: color,
+                borderColor: borderColor
+            )
+        }
+        .withRenderingMode(.alwaysOriginal)
+    }
+
+    public static func buildBadgeImage(
+        size: CGSize,
+        color: UIColor,
+        borderColor: UIColor = .white
+    ) -> UIImage {
+        let render = UIGraphicsImageRenderer(size: size)
+        return render.image { _ in
+            renderBadge(
+                size: size,
+                origin: .zero,
+                color: color,
+                borderColor: borderColor
+            )
+        }.withRenderingMode(.alwaysOriginal)
+    }
+
+    private static func renderBadge(
+        size: CGSize,
+        origin: CGPoint,
+        color: UIColor,
+        borderColor: UIColor = .white
+    ) {
+        let badgeSize = size
+        let badgeOrigin = CGPoint(x: 0, y: 0)
+        let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
+        let badgePath = UIBezierPath(ovalIn: badgeRect)
+
+        color.setFill()
+        badgePath.fill()
+
+        borderColor.setStroke()
+        badgePath.stroke()
+    }
+
     var withNativeScale: UIImage {
         let scale = UIScreen.main.scale
         if self.scale == scale {

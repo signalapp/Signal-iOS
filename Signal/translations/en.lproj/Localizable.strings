@@ -649,6 +649,9 @@
 /* Description for a progress bar tracking the processing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Processing media...";
 
+/* Message describing to the user that the last backup failed. */
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Backup Up Now\" to try again";
+
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
 
@@ -4275,6 +4278,9 @@
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the conversation list's failed to backup context menu action. */
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";

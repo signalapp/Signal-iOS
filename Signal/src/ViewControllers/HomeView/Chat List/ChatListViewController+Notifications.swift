@@ -97,6 +97,12 @@ extension ChatListViewController {
             name: .inactivePrimaryDeviceChanged,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(backupDidRun),
+            name: .backupExportJobDidRun,
+            object: nil
+        )
 
         viewState.backupDownloadProgressViewState.downloadQueueStatus =
             DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
@@ -131,6 +137,12 @@ extension ChatListViewController {
     }
 
     // MARK: -
+
+    @objc
+    private func backupDidRun(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        updateBackupErrorStateWithSneakyTransaction()
+    }
 
     @objc
     private func preferContactAvatarsPreferenceDidChange(_ notification: NSNotification) {

@@ -64,13 +64,7 @@ public class PaymentsViewUtils {
     // MARK: -
 
     static func addUnreadBadge(toView: UIView) {
-        let avatarBadge = OWSLayerView.circleView(size: 12)
-        avatarBadge.backgroundColor = Theme.accentBlueColor
-        avatarBadge.layer.borderColor = UIColor.ows_white.cgColor
-        avatarBadge.layer.borderWidth = 1
-        toView.addSubview(avatarBadge)
-        avatarBadge.autoPinEdge(toSuperviewEdge: .top, withInset: -3)
-        avatarBadge.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
+        toView.addCircleBadge(color: Theme.accentBlueColor)
     }
 
     static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {

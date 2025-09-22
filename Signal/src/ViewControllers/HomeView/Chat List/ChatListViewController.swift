@@ -146,6 +146,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
+        // Update Backup error state
+        updateBackupErrorStateWithSneakyTransaction()
+
         // During main app launch, the chat list becomes visible _before_
         // app is foreground and active.  Therefore we need to make an
         // exception and update the view contents; otherwise, the home
@@ -438,11 +441,43 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }()
 
     private func settingsBarButtonItem() -> UIBarButtonItem {
+        let db = SSKEnvironment.shared.databaseStorageRef
         let barButtonItem = createSettingsBarButtonItem(
-            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+            databaseStorage: db,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
+            shouldShowBackupFailureBadge: viewState.settingsButtonCreator.showAvatarBackupBadge,
+            delegate: self,
             buildActions: { settingsAction -> [UIMenuElement] in
                 var contextMenuActions: [UIMenuElement] = []
+
+                if viewState.settingsButtonCreator.hasBackupError {
+                    var image = Theme.iconImage(.backup)
+                    if viewState.settingsButtonCreator.showMenuBackupBadge {
+                        image = image.withBadge(color: UIColor.Signal.yellow)
+                    }
+
+                    contextMenuActions.append(
+                        UIMenu(options: [.displayInline], children: [
+                            UIAction(
+                                title: OWSLocalizedString(
+                                    "HOME_VIEW_TITLE_FAILED_TO_BACKUP",
+                                    comment: "Title for the conversation list's failed to backup context menu action."
+                                ),
+                                image: image,
+                                handler: { [weak self] _ in
+                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    db.write {
+                                        DependenciesBridge.shared.backupFailureStateManager.clearErrorBadge(
+                                            target: CLVViewState.BackupFailureBadgeType.menu.target,
+                                            tx: $0
+                                        )
+                                    }
+                                    self?.updateBackupErrorStateWithSneakyTransaction()
+                                }
+                            )
+                        ])
+                    )
+                }
 
                 // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
                 switch viewState.inboxFilter {
@@ -1495,5 +1530,21 @@ extension ChatListViewController: ChatListFilterControlDelegate {
                 loadCoordinator.loadIfNecessary()
             }
         }
+    }
+}
+
+extension ChatListViewController: ContextMenuButtonDelegate {
+    func contextMenuWillDisplay(from contextMenuButton: ContextMenuButton) { }
+
+    func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton) {
+        if viewState.settingsButtonCreator.showAvatarBackupBadge {
+            SSKEnvironment.shared.databaseStorageRef.write {
+                DependenciesBridge.shared.backupFailureStateManager.clearErrorBadge(
+                    target: CLVViewState.BackupFailureBadgeType.avatar.target,
+                    tx: $0
+                )
+            }
+        }
+        updateBackupErrorStateWithSneakyTransaction()
     }
 }

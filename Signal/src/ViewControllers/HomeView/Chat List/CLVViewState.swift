@@ -53,6 +53,41 @@ class CLVViewState {
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 
+    public struct BackupFailureBadgeType: OptionSet, CaseIterable {
+        let rawValue: Int
+
+        static let avatar = BackupFailureBadgeType(rawValue: 1 << 0)
+        static let menu = BackupFailureBadgeType(rawValue: 1 << 1)
+
+        public static var allCases: [CLVViewState.BackupFailureBadgeType] {[ .avatar, .menu ]}
+
+        var target: String {
+            return switch self {
+            case .avatar: "avatar"
+            case .menu: "menu"
+            default: "unknown"
+            }
+        }
+    }
+
+    var hasBackupFailure: BackupFailureBadgeType? {
+        didSet {
+            if let hasBackupFailure {
+                settingsButtonCreator.updateState(
+                    hasBackupError: true,
+                    showAvatarBackupBadge: hasBackupFailure.contains(.avatar),
+                    showMenuBackupBadge: hasBackupFailure.contains(.menu)
+                )
+            } else {
+                settingsButtonCreator.updateState(
+                    hasBackupError: false,
+                    showAvatarBackupBadge: false,
+                    showMenuBackupBadge: false
+                )
+            }
+        }
+    }
+
     let backupDownloadProgressViewState = CLVBackupDownloadProgressView.State()
 
     // MARK: - Initializer

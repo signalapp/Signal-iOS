@@ -72,6 +72,12 @@ public protocol BackupExportJob {
 
 // MARK: -
 
+extension NSNotification.Name {
+    public static let backupExportJobDidRun = Notification.Name("BackupExportJob.backupExportJobDidRun")
+}
+
+// MARK: -
+
 class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
     private let attachmentOffloadingManager: AttachmentOffloadingManager
@@ -154,6 +160,12 @@ class BackupExportJobImpl: BackupExportJob {
     private func _exportAndUploadBackup(
         mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
+        defer {
+            NotificationCenter.default.postOnMainThread(
+                name: .backupExportJobDidRun,
+                object: nil
+            )
+        }
         logger.info("\(mode)")
 
         let (
@@ -359,8 +371,15 @@ class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Done!")
         } catch is CancellationError {
+            await db.awaitableWrite {
+                self.backupSettingsStore.setLastBackupFailed(tx: $0)
+            }
             throw .cancellationError
         } catch {
+            await db.awaitableWrite {
+                self.backupSettingsStore.setLastBackupFailed(tx: $0)
+            }
+
             if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
                 throw .networkRequestError(error)
             } else {

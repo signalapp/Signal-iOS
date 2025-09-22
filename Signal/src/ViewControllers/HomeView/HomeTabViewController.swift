@@ -16,6 +16,8 @@ extension HomeTabViewController {
     func createSettingsBarButtonItem(
         databaseStorage: SDSDatabaseStorage,
         shouldShowUnreadPaymentBadge: Bool = false,
+        shouldShowBackupFailureBadge: Bool = false,
+        delegate: ContextMenuButtonDelegate? = nil,
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
@@ -27,6 +29,7 @@ extension HomeTabViewController {
 
         let contextButton = ContextMenuButton(actions: buildActions(settingsAction))
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
+        contextButton.delegate = delegate
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
         if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
@@ -51,7 +54,13 @@ extension HomeTabViewController {
 
         let barButtonView: UIView
 
-        if shouldShowUnreadPaymentBadge {
+        if shouldShowBackupFailureBadge {
+            let wrapper = UIView.container()
+            wrapper.addSubview(contextButton)
+            contextButton.autoPinEdgesToSuperviewEdges()
+            wrapper.addCircleBadge(color: UIColor.Signal.yellow)
+            barButtonView = wrapper
+        } else if shouldShowUnreadPaymentBadge {
             let wrapper = UIView.container()
             wrapper.addSubview(contextButton)
             contextButton.autoPinEdgesToSuperviewEdges()

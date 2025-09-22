@@ -205,6 +205,11 @@ extension ChatListViewController {
         set { viewState.firstUnreadPaymentModel = newValue }
     }
 
+    var hasBackupFailureState: CLVViewState.BackupFailureBadgeType? {
+        get { viewState.hasBackupFailure }
+        set { viewState.hasBackupFailure = newValue }
+    }
+
     public var reminderViewCell: UITableViewCell { reminderViews.reminderViewCell }
 
     fileprivate var reminderStackView: UIStackView { reminderViews.reminderStackView }
@@ -258,6 +263,25 @@ extension ChatListViewController {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateUsernameStateViews(tx: tx)
         }
+    }
+
+    public func updateBackupErrorStateWithSneakyTransaction() {
+        var result: CLVViewState.BackupFailureBadgeType?
+        let stateManager = DependenciesBridge.shared.backupFailureStateManager
+        let backupSettingsStore = BackupSettingsStore()
+
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
+            if backupSettingsStore.getLastBackupFailed(tx: tx) {
+                result = []
+                CLVViewState.BackupFailureBadgeType.allCases.forEach { type in
+                    if stateManager.shouldShowErrorBadge(target: type.target, tx: tx) {
+                        result?.update(with: type)
+                    }
+                }
+            }
+        }
+
+        self.hasBackupFailureState = result
     }
 
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {

@@ -117,7 +117,8 @@ class BackupSettingsViewController:
                 latestBackupAttachmentUploadUpdate: nil,
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
-                shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
+                shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
+                hasBackupFailed: backupSettingsStore.getLastBackupFailed(tx: tx)
             )
 
             return viewModel
@@ -201,6 +202,7 @@ class BackupSettingsViewController:
                         db.read { tx in
                             self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
                             self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
+                            self.viewModel.hasBackupFailed = self.backupSettingsStore.getLastBackupFailed(tx: tx)
                         }
                     }
                 }
@@ -1068,6 +1070,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
     @Published var shouldAllowBackupUploadsOnCellular: Bool
+    @Published var hasBackupFailed: Bool
 
     weak var actionsDelegate: ActionsDelegate?
 
@@ -1081,6 +1084,7 @@ private class BackupSettingsViewModel: ObservableObject {
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
         shouldAllowBackupUploadsOnCellular: Bool,
+        hasBackupFailed: Bool,
     ) {
         self.backupSubscriptionLoadingState = backupSubscriptionLoadingState
         self.backupPlan = backupPlan
@@ -1093,6 +1097,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
         self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
+        self.hasBackupFailed = hasBackupFailed
     }
 
     // MARK: -
@@ -1286,6 +1291,23 @@ struct BackupSettingsView: View {
             switch contents {
             case .enabled:
                 SignalSection {
+                    if viewModel.hasBackupFailed {
+                        Label {
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE",
+                                comment: "Message describing to the user that the last backup failed."
+                            ))
+                            .font(.footnote)
+                            .multilineTextAlignment(.leading)
+                        } icon: {
+                            Image(
+                                uiImage: UIImage.buildBadgeImage(
+                                    size: .square(8),
+                                    color: UIColor.Signal.yellow
+                                )
+                            )
+                        }
+                    }
                     Button {
                         viewModel.performManualBackup()
                     } label: {
@@ -2304,7 +2326,8 @@ private extension BackupSettingsViewModel {
             },
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
-            shouldAllowBackupUploadsOnCellular: false
+            shouldAllowBackupUploadsOnCellular: false,
+            hasBackupFailed: false
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate

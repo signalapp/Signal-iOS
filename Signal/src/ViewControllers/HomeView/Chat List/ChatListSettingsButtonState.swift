@@ -15,13 +15,19 @@ final class ChatListSettingsButtonState {
     var hasInboxChats: Bool = false
     var hasArchivedChats: Bool = false
     var hasUnreadPaymentNotification: Bool = false
+    var hasBackupError: Bool = false
+    var showAvatarBackupBadge: Bool = false
+    var showMenuBackupBadge: Bool = false
 
     weak var delegate: ChatListSettingsButtonDelegate?
 
     func updateState(
         hasInboxChats: Bool? = nil,
         hasArchivedChats: Bool? = nil,
-        hasUnreadPaymentNotification: Bool? = nil
+        hasUnreadPaymentNotification: Bool? = nil,
+        hasBackupError: Bool? = nil,
+        showAvatarBackupBadge: Bool? = nil,
+        showMenuBackupBadge: Bool? = nil,
     ) {
         var didUpdate = false
         if let hasInboxChats {
@@ -35,6 +41,18 @@ final class ChatListSettingsButtonState {
         if let hasUnreadPaymentNotification {
             didUpdate = didUpdate || self.hasUnreadPaymentNotification != hasUnreadPaymentNotification
             self.hasUnreadPaymentNotification = hasUnreadPaymentNotification
+        }
+        if let hasBackupError {
+            didUpdate = didUpdate || self.hasBackupError != hasBackupError
+            self.hasBackupError = hasBackupError
+        }
+        if let showAvatarBackupBadge {
+            didUpdate = didUpdate || self.showAvatarBackupBadge != showAvatarBackupBadge
+            self.showAvatarBackupBadge = showAvatarBackupBadge
+        }
+        if let showMenuBackupBadge {
+            didUpdate = didUpdate || self.showMenuBackupBadge != showMenuBackupBadge
+            self.showMenuBackupBadge = showMenuBackupBadge
         }
         if didUpdate {
             delegate?.didUpdateButton(self)
