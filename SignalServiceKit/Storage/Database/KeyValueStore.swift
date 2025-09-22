@@ -397,31 +397,6 @@ public struct KeyValueStore {
         }
     }
 
-    public func numberOfKeys(transaction: DBReadTransaction) -> UInt {
-        do {
-            let sql = """
-                SELECT COUNT(*)
-                FROM \(TableMetadata.tableName)
-                WHERE \(TableMetadata.Columns.collection) == ?
-            """
-
-            guard let numberOfKeys = try UInt.fetchOne(
-                transaction.database,
-                sql: sql,
-                arguments: [collection]
-            ) else {
-                throw OWSAssertionError("numberOfKeys was unexpectedly nil")
-            }
-            return numberOfKeys
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("error: \(error)")
-        }
-    }
-
     // MARK: -
 
     @available(*, deprecated, message: "Did you mean removeValue(forKey:transaction:) or setCodable(optional:key:transaction)?")

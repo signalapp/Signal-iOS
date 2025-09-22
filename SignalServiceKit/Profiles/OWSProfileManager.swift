@@ -85,10 +85,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
             self.whitelistedPhoneNumbersStore.removeAll(transaction: transaction)
             self.whitelistedServiceIdsStore.removeAll(transaction: transaction)
             self.whitelistedGroupsStore.removeAll(transaction: transaction)
-
-            owsAssertDebug(self.whitelistedPhoneNumbersStore.numberOfKeys(transaction: transaction) == 0)
-            owsAssertDebug(self.whitelistedServiceIdsStore.numberOfKeys(transaction: transaction) == 0)
-            owsAssertDebug(self.whitelistedGroupsStore.numberOfKeys(transaction: transaction) == 0)
         }
     }
 
