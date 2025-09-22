@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 
 /**
  * We synchronize access to state in this class using this queue.
@@ -68,6 +69,15 @@ public func owsFail(
     owsFailDebug(logMessage, logger: logger, file: file, function: function, line: line)
     logger.flush()
     fatalError(logMessage)
+}
+
+public func failIfThrowsDatabaseError<T>(
+    block: () throws(GRDB.DatabaseError) -> T,
+    file: String = #fileID,
+    function: String = #function,
+    line: Int = #line,
+) -> T {
+    failIfThrows(block: block, file: file, function: function, line: line)
 }
 
 public func failIfThrows<T>(

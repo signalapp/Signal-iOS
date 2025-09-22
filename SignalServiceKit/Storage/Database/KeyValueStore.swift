@@ -6,18 +6,8 @@
 import GRDB
 
 public struct KeyValueStore {
-    private enum TableMetadata {
-        enum Columns {
-            static let collection = "collection"
-            static let key = "key"
-            static let value = "value"
-        }
-
-        static let tableName = "keyvalue"
-    }
-
-    static var tableName: String { TableMetadata.tableName }
-    static var collectionColumnName: String { TableMetadata.Columns.collection }
+    static var tableName: String { NewKeyValueStore.tableName }
+    static var collectionColumnName: String { NewKeyValueStore.collectionColumnName }
 
     private let collection: String
 
@@ -25,48 +15,10 @@ public struct KeyValueStore {
         self.collection = collection
     }
 
-    public static func logCollectionStatistics(tx: DBReadTransaction) {
-        Logger.info("KeyValueStore statistics:")
-        do {
-            let sql = """
-                SELECT \(TableMetadata.Columns.collection), COUNT(*)
-                FROM \(TableMetadata.tableName)
-                GROUP BY \(TableMetadata.Columns.collection)
-                ORDER BY COUNT(*) DESC
-                LIMIT 10
-                """
-            let cursor = try Row.fetchCursor(tx.database, sql: sql)
-            while let row = try cursor.next() {
-                let collection: String = row[0]
-                let count: UInt = row[1]
-                Logger.info("- \(collection): \(count) items")
-            }
-        } catch {
-            Logger.error("\(error)")
-        }
-    }
-
     // MARK: -
 
     public func hasValue(_ key: String, transaction: DBReadTransaction) -> Bool {
-        do {
-            let count = try UInt.fetchOne(
-                transaction.database,
-                sql: """
-                    SELECT
-                    COUNT(*)
-                    FROM \(TableMetadata.tableName)
-                    WHERE \(TableMetadata.Columns.key) = ?
-                    AND \(TableMetadata.Columns.collection) == ?
-                    """,
-                arguments: [key, collection]
-            ) ?? 0
-
-            return count > 0
-        } catch {
-            owsFailDebug("error: \(error)")
-            return false
-        }
+        return getData(key, transaction: transaction) != nil
     }
 
     // MARK: - String
@@ -135,17 +87,7 @@ public struct KeyValueStore {
 
     public func getData(_ key: String, transaction: DBReadTransaction) -> Data? {
         do {
-            return try Data.fetchOne(
-                transaction.database,
-                sql: """
-                    SELECT \(TableMetadata.Columns.value)
-                    FROM \(TableMetadata.tableName)
-                    WHERE
-                        \(TableMetadata.Columns.key) = ?
-                        AND \(TableMetadata.Columns.collection) == ?
-                """,
-                arguments: [key, collection]
-            )
+            return try NewKeyValueStore(collection: collection).fetchValueOrThrow(Data.self, forKey: key, tx: transaction)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -158,47 +100,12 @@ public struct KeyValueStore {
 
     public func setData(_ data: Data?, key: String, transaction: DBWriteTransaction) {
         do {
-            let sql: String
-            let arguments: StatementArguments
-            if let data {
-                // See: https://www.sqlite.org/lang_UPSERT.html
-                sql = """
-                    INSERT INTO \(TableMetadata.tableName) (
-                        \(TableMetadata.Columns.key),
-                        \(TableMetadata.Columns.collection),
-                        \(TableMetadata.Columns.value)
-                    ) VALUES (?, ?, ?)
-                    ON CONFLICT (
-                        \(TableMetadata.Columns.key),
-                        \(TableMetadata.Columns.collection)
-                    ) DO UPDATE
-                    SET \(TableMetadata.Columns.value) = ?
-                """
-                arguments = [key, collection, data, data]
-            } else {
-                // Setting to nil is a delete.
-                sql = """
-                    DELETE FROM \(TableMetadata.tableName)
-                    WHERE
-                        \(TableMetadata.Columns.key) == ?
-                        AND \(TableMetadata.Columns.collection) == ?
-                """
-                arguments = [key, collection]
-            }
-
-            let statement = try transaction.database.cachedStatement(sql: sql)
-            try statement.setArguments(arguments)
-
-            do {
-                try statement.execute()
-            } catch {
-                DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                throw error
-            }
+            try NewKeyValueStore(collection: collection).writeValueOrThrow(data, forKey: key, tx: transaction)
         } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Error: \(error)")
         }
     }
@@ -315,14 +222,15 @@ public struct KeyValueStore {
     }
 
     public func removeAll(transaction: DBWriteTransaction) {
-        transaction.database.executeAndCacheStatementHandlingErrors(
-            sql: """
-                DELETE
-                FROM \(TableMetadata.tableName)
-                WHERE \(TableMetadata.Columns.collection) == ?
-            """,
-            arguments: [collection]
-        )
+        do {
+            try NewKeyValueStore(collection: collection).removeAllOrThrow(tx: transaction)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Error: \(error)")
+        }
     }
 
     public func allDataValues(transaction: DBReadTransaction) -> [Data] {
@@ -346,14 +254,14 @@ public struct KeyValueStore {
     }
 
     public func allKeys(transaction: DBReadTransaction) -> [String] {
-        let sql = """
-            SELECT \(TableMetadata.Columns.key)
-            FROM \(TableMetadata.tableName)
-            WHERE \(TableMetadata.Columns.collection) == ?
-        """
-
-        return transaction.database.strictRead { database in
-            try String.fetchAll(database, sql: sql, arguments: [collection])
+        do {
+            return try NewKeyValueStore(collection: collection).fetchKeysOrThrow(tx: transaction)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Error: \(error)")
         }
     }
 

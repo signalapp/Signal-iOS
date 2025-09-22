@@ -576,6 +576,7 @@
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
+		501376162E69F92A009FF5D3 /* NewKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */; };
 		50150DAC2C80E2CE0047F1CB /* CallLinkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */; };
 		50159CDD2B4EF75600D344D4 /* LocalProfileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
@@ -4515,6 +4516,7 @@
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigrator.swift; sourceTree = "<group>"; };
 		501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigratorTest.swift; sourceTree = "<group>"; };
+		501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyValueStore.swift; sourceTree = "<group>"; };
 		50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProfileChecker.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
@@ -14181,6 +14183,7 @@
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
 				D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */,
 				F9C5CA4B289453B100548EEE /* KeyValueStore.swift */,
+				501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */,
 				72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
 				F9C5CA32289453B100548EEE /* SDSError.swift */,
@@ -18111,6 +18114,7 @@
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
 				725465172BA00CDB00EABFD2 /* NewAccountDiscovery.swift in Sources */,
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
+				501376162E69F92A009FF5D3 /* NewKeyValueStore.swift in Sources */,
 				B9327B3A2BBB76E900CCDBBA /* NicknameManager.swift in Sources */,
 				B93296652BB5CF3200B8BD39 /* NicknameRecord.swift in Sources */,
 				B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */,

@@ -39,7 +39,7 @@ public struct DebugLogDumper {
                     }
                 }
                 if DebugFlags.internalLogging {
-                    KeyValueStore.logCollectionStatistics(tx: tx)
+                    NewKeyValueStore.logCollectionStatistics(tx: tx)
                 }
             }
         }
