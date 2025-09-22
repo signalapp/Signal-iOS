@@ -333,46 +333,6 @@ public struct KeyValueStore {
 
     // MARK: -
 
-    private struct PairRecord: Codable, FetchableRecord, PersistableRecord {
-        let key: String
-        let value: Data
-    }
-
-    public func allUIntValuesMap(transaction: DBReadTransaction) -> [String: UInt] {
-        let allPairs: [PairRecord] = {
-            do {
-                let sql = """
-                    SELECT
-                        \(TableMetadata.Columns.key),
-                        \(TableMetadata.Columns.value)
-                    FROM \(TableMetadata.tableName)
-                    WHERE \(TableMetadata.Columns.collection) == ?
-                """
-
-                return try PairRecord.fetchAll(
-                    transaction.database,
-                    sql: sql,
-                    arguments: [collection]
-                )
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return []
-            }
-        }()
-
-        var result = [String: UInt]()
-        for pair in allPairs {
-            guard let numberValue = parseArchivedValue(pair.value, ofClass: NSNumber.self) else {
-                owsFailDebug("Could not parse value.")
-                continue
-            }
-            result[pair.key] = numberValue.uintValue
-        }
-        return result
-    }
-
-    // MARK: -
-
     public func anyDataValue(transaction: DBReadTransaction) -> Data? {
         let randomKey = allKeys(transaction: transaction).randomElement()
         guard let randomKey else {
