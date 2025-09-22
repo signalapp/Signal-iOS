@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import SignalServiceKit
 import SignalUI
 
@@ -309,10 +310,6 @@ enum OWSOrphanDataCleaner {
             return nil
         }
 
-        guard isMainAppAndActive else {
-            return nil
-        }
-
         var allReactionIds: Set<String> = []
         var allMentionIds: Set<String> = []
         var orphanInteractionIds: Set<String> = []
@@ -324,17 +321,27 @@ enum OWSOrphanDataCleaner {
             let threadIds: Set<String> = Set(TSThread.anyAllUniqueIds(transaction: transaction))
 
             var allInteractionIds: Set<String> = []
-            TSInteraction.anyEnumerate(transaction: transaction, batched: true) { interaction, stop in
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    stop.pointee = true
-                    return
+            do {
+                let fetchCursor = try Row.fetchCursor(
+                    transaction.database,
+                    sql: "SELECT \(interactionColumn: .threadUniqueId), \(interactionColumn: .uniqueId) FROM \(InteractionRecord.databaseTableName)",
+                )
+                while let row = try fetchCursor.next() {
+                    let threadUniqueId = row[0] as String
+                    let uniqueId = row[1] as String
+                    guard isMainAppAndActive else {
+                        shouldAbort = true
+                        return
+                    }
+                    if threadUniqueId.isEmpty || !threadIds.contains(threadUniqueId) {
+                        orphanInteractionIds.insert(uniqueId)
+                    }
+                    allInteractionIds.insert(uniqueId)
                 }
-                if interaction.uniqueThreadId.isEmpty || !threadIds.contains(interaction.uniqueThreadId) {
-                    orphanInteractionIds.insert(interaction.uniqueId)
-                }
-
-                allInteractionIds.insert(interaction.uniqueId)
+            } catch {
+                owsFailDebug("Couldn't enumerate TSInteractions: \(error.grdbErrorForLogging)")
+                shouldAbort = true
+                return
             }
 
             if shouldAbort {
