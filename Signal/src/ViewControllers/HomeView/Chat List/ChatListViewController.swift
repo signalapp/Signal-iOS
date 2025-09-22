@@ -441,8 +441,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let barButtonItem = createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
-            buildActions: { settingsAction -> [UIAction] in
-                var contextMenuActions: [UIAction] = []
+            buildActions: { settingsAction -> [UIMenuElement] in
+                var contextMenuActions: [UIMenuElement] = []
 
                 // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
                 switch viewState.inboxFilter {

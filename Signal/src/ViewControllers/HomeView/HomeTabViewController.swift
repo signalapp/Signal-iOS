@@ -16,7 +16,7 @@ extension HomeTabViewController {
     func createSettingsBarButtonItem(
         databaseStorage: SDSDatabaseStorage,
         shouldShowUnreadPaymentBadge: Bool = false,
-        buildActions: (_ settingsAction: UIAction) -> [UIAction],
+        buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
         let settingsAction = UIAction(

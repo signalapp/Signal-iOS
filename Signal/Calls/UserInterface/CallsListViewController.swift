@@ -185,7 +185,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func profileBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            buildActions: { settingsAction -> [UIAction] in
+            buildActions: { settingsAction -> [UIMenuElement] in
                 return [
                     UIAction(
                         title: Strings.selectCallsButtonTitle,

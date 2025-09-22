@@ -23,7 +23,7 @@ class ContextMenuButton: UIButton {
     weak var delegate: (any ContextMenuButtonDelegate)?
 
     /// Creates a context menu button with the given actions.
-    init(actions: [UIAction]) {
+    init(actions: [UIMenuElement]) {
         super.init(frame: .zero)
         setActions(actions: actions)
     }
@@ -36,7 +36,7 @@ class ContextMenuButton: UIButton {
     }
 
     /// Set the actions for this button's context menu.
-    func setActions(actions: [UIAction]) {
+    func setActions(actions: [UIMenuElement]) {
         showsMenuAsPrimaryAction = true
         menu = UIMenu(children: actions)
     }

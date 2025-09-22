@@ -20,9 +20,9 @@ protocol ChatListFilterActions: NSObjectProtocol {
 
 extension UIResponder: ChatListFilterActions {}
 
-// MARK: - UIAction
+// MARK: - UIMenuElement
 
-extension UIAction {
+extension UIMenuElement {
     static func enableChatListFilter(target: AnyObject? = nil) -> UIAction {
         UIAction(
             title: OWSLocalizedString("CHAT_LIST_UNREAD_FILTER_MENU_ACTION", comment: "Title for context menu action to enable Filter by Unread"),
