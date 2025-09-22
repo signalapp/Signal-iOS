@@ -310,11 +310,9 @@ enum OWSOrphanDataCleaner {
             return nil
         }
 
-        var allReactionIds: Set<String> = []
-        var allMentionIds: Set<String> = []
         var orphanInteractionIds: Set<String> = []
-        var allMessageReactionIds: Set<String> = []
-        var allMessageMentionIds: Set<String> = []
+        var orphanReactionIds: Set<String> = []
+        var orphanMentionIds: Set<String> = []
         var activeStickerFilePaths: Set<String> = []
         var hasOrphanedPacksOrStickers = false
         databaseStorage.read { transaction in
@@ -354,9 +352,8 @@ enum OWSOrphanDataCleaner {
                     stop.pointee = true
                     return
                 }
-                allReactionIds.insert(reaction.uniqueId)
-                if allInteractionIds.contains(reaction.uniqueMessageId) {
-                    allMessageReactionIds.insert(reaction.uniqueId)
+                if !allInteractionIds.contains(reaction.uniqueMessageId) {
+                    orphanReactionIds.insert(reaction.uniqueId)
                 }
             }
 
@@ -370,9 +367,8 @@ enum OWSOrphanDataCleaner {
                     stop.pointee = true
                     return
                 }
-                allMentionIds.insert(mention.uniqueId)
-                if allInteractionIds.contains(mention.uniqueMessageId) {
-                    allMessageMentionIds.insert(mention.uniqueId)
+                if !allInteractionIds.contains(mention.uniqueMessageId) {
+                    orphanMentionIds.insert(mention.uniqueId)
                 }
             }
 
@@ -392,16 +388,6 @@ enum OWSOrphanDataCleaner {
         orphanFilePaths.subtract(profileAvatarFilePaths)
         orphanFilePaths.subtract(groupAvatarFilePaths)
         orphanFilePaths.subtract(activeStickerFilePaths)
-
-        var orphanReactionIds = allReactionIds
-        orphanReactionIds.subtract(allMessageReactionIds)
-        var missingReactionIds = allMessageReactionIds
-        missingReactionIds.subtract(allReactionIds)
-
-        var orphanMentionIds = allMentionIds
-        orphanMentionIds.subtract(allMessageMentionIds)
-        var missingMentionIds = allMessageMentionIds
-        missingMentionIds.subtract(allMentionIds)
 
         var orphanFileAndDirectoryPaths: Set<String> = []
         orphanFileAndDirectoryPaths.formUnion(voiceMessageDraftOrphanedPaths)
