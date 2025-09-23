@@ -521,6 +521,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         )
     }
 
+    public func pollButtonPressed() {
+        present(NewPollViewController(), animated: true)
+    }
+
     public func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
         AssertIsOnMainThread()
 

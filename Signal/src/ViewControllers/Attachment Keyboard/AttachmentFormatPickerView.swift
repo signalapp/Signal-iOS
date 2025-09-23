@@ -14,6 +14,7 @@ protocol AttachmentFormatPickerDelegate: AnyObject {
     func didTapContact()
     func didTapLocation()
     func didTapPayment()
+    func didTapPoll()
 }
 
 class AttachmentFormatPickerView: UIView {
@@ -73,6 +74,8 @@ class AttachmentFormatPickerView: UIView {
                 delegate.didTapContact()
             case .location:
                 delegate.didTapLocation()
+            case .poll:
+                delegate.didTapPoll()
             }
         }
     }
@@ -177,20 +180,28 @@ class AttachmentFormatPickerView: UIView {
         case photo
         case gif
         case file
+        case poll
         case contact
         case location
         case payment
 
         private static var contactCases: [AttachmentType] {
-            if SUIEnvironment.shared.paymentsRef.shouldShowPaymentsUI {
-                return cases(except: [])
-            } else {
-                return cases(except: [.payment])
+            var casesToExclude: [AttachmentType] = []
+            if !SUIEnvironment.shared.paymentsRef.shouldShowPaymentsUI {
+                casesToExclude.append(.payment)
             }
+            if !FeatureFlags.pollSend {
+                casesToExclude.append(.poll)
+            }
+
+            return cases(except: casesToExclude)
         }
 
         private static var groupCases: [AttachmentType] {
-            cases(except: [.payment])
+            if !FeatureFlags.pollSend {
+                return cases(except: [.payment, .poll])
+            }
+            return cases(except: [.payment])
         }
 
         private static func cases(except: [AttachmentType]) -> [AttachmentType] {
@@ -339,6 +350,9 @@ class AttachmentFormatPickerView: UIView {
             case .payment:
                 text = OWSLocalizedString("ATTACHMENT_KEYBOARD_PAYMENT", comment: "A button to select a payment from the Attachment Keyboard")
                 imageName = "payment-28"
+            case .poll:
+                text = OWSLocalizedString("ATTACHMENT_KEYBOARD_POLL", comment: "A button to select a poll from the Attachment Keyboard")
+                imageName = "poll-28"
             }
 
             textLabel.text = text

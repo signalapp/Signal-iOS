@@ -72,6 +72,8 @@ public enum FeatureFlags {
 #else
     public static let iOS26SDKIsAvailable = false
 #endif
+
+    public static let pollSend = build.includes(.dev)
 }
 
 // MARK: -

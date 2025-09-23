@@ -427,6 +427,9 @@
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
+/* A button to select a poll from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Attachment";
 
@@ -6451,11 +6454,17 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
+/* Title for a toggle allowing multiple votes for a poll. */
+"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "View Results";
 
 /* Button to view poll votes */
 "POLL_BUTTON_VIEW_VOTES" = "View Votes";
+
+/* Title of create poll pane */
+"POLL_CREATE_TITLE" = "New Poll";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "End Poll";
@@ -6469,8 +6478,20 @@
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 
+/* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+
+/* Header for the poll options text boxes when making a new poll */
+"POLL_OPTIONS_LABEL" = "Options";
+
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "Poll:";
+
+/* Header for the poll question text box when making a new poll */
+"POLL_QUESTION_LABEL" = "Question";
+
+/* Placeholder text for poll question */
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Select one or more";

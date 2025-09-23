@@ -33,6 +33,7 @@
 		04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
+		04FAAD0C2E7F067C00E4AAC3 /* NewPollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAAD0B2E7F067300E4AAC3 /* NewPollViewController.swift */; };
 		05104D182C8A151100F8851F /* AsyncViewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104D172C8A151100F8851F /* AsyncViewTask.swift */; };
 		05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */; };
 		0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */; };
@@ -3861,6 +3862,7 @@
 		04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
+		04FAAD0B2E7F067300E4AAC3 /* NewPollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPollViewController.swift; sourceTree = "<group>"; };
 		05104D172C8A151100F8851F /* AsyncViewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncViewTask.swift; sourceTree = "<group>"; };
 		05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleLayoutMetric.swift; sourceTree = "<group>"; };
 		0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollBounceBehaviorIfAvailable.swift; sourceTree = "<group>"; };
@@ -7849,6 +7851,7 @@
 		04CF4FCC2E7245F3009D6669 /* Polls */ = {
 			isa = PBXGroup;
 			children = (
+				04FAAD0B2E7F067300E4AAC3 /* NewPollViewController.swift */,
 				04CF4FCD2E7245FC009D6669 /* PollDetailsViewController.swift */,
 			);
 			path = Polls;
@@ -17200,6 +17203,7 @@
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				B9B7BC652D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift in Sources */,
+				04FAAD0C2E7F067C00E4AAC3 /* NewPollViewController.swift in Sources */,
 				B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */,
 				88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
