@@ -49,7 +49,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
         var updateObservers: [UpdateObserver] = []
         var currentExportJobTask: Task<Void, Never>?
 
-        var latestProgressUpdateTimestamp: MonotonicDate?
+        var progressUpdateDebounceUntil: [BackupExportJobStep: MonotonicDate] = [:]
 
         var latestUpdate: BackupExportJobRunnerUpdate? {
             didSet {
@@ -149,23 +149,40 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                 return
             }
 
-            if
-                let latestProgressUpdateTimestamp = _state.latestProgressUpdateTimestamp,
-                latestProgressUpdateTimestamp.adding(0.1) > MonotonicDate()
-            {
-                // Debounce updates to at most 1x/0.1s, lest we overwhelm the UI.
+            let currentStep = exportJobProgress.currentStep
+            let now = MonotonicDate()
+            let shortDebounceUntil = now.adding(0.1)
+            let longDebounceUntil = now.adding(0.5)
+
+            // If this is our first update, publish immediately.
+            if _state.progressUpdateDebounceUntil.isEmpty {
+                _state.progressUpdateDebounceUntil[currentStep] = shortDebounceUntil
+                _state.latestUpdate = .progress(exportJobProgress)
                 return
             }
 
-            _state.latestProgressUpdateTimestamp = MonotonicDate()
-            _state.latestUpdate = .progress(exportJobProgress)
+            if let debounceUntil = _state.progressUpdateDebounceUntil[currentStep] {
+                if now > debounceUntil {
+                    _state.progressUpdateDebounceUntil[currentStep] = shortDebounceUntil
+                    _state.latestUpdate = .progress(exportJobProgress)
+                } else {
+                    // We're debounced: ignore this update.
+                }
+            } else {
+                // Skip updates for a longer debounce the first time we start a
+                // new step. This helps prevent short-lived steps from flashing
+                // on and then off screen.
+                _state.progressUpdateDebounceUntil[currentStep] = longDebounceUntil
+            }
         }
     }
 
     private func exportJobDidComplete(result: Result<Void, BackupExportJobError>) {
         self.state.enqueueUpdate { _state in
             _state.currentExportJobTask = nil
-            _state.latestProgressUpdateTimestamp = nil
+
+            // Reset all debounces.
+            _state.progressUpdateDebounceUntil = [:]
 
             // Push through the completion update...
             _state.latestUpdate = .completion(result)

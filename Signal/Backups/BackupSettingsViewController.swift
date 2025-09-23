@@ -1414,7 +1414,7 @@ struct BackupSettingsView: View {
             case .disabling:
                 SignalSection {
                     VStack(alignment: .leading) {
-                        IndeterminateProgressBar()
+                        StyledProgressBar(style: .indeterminate)
 
                         Spacer().frame(height: 8)
 
@@ -1529,12 +1529,7 @@ struct BackupSettingsView: View {
 
 private struct BackupExportProgressView: View {
     private struct ProgressBarState {
-        enum Mode {
-            case determinate(percentComplete: Float)
-            case indeterminate
-        }
-
-        let mode: Mode
+        let style: StyledProgressBar.Style
         let label: String
     }
 
@@ -1549,7 +1544,7 @@ private struct BackupExportProgressView: View {
             let percentUploadCompleted = latestExportProgressUpdate.progress(for: .backupUpload)?.percentComplete ?? 0
             let percentComplete = (0.95 * percentExportCompleted) + (0.05 * percentUploadCompleted)
             return ProgressBarState(
-                mode: .determinate(percentComplete: percentComplete),
+                style: .determinate(percentComplete: percentComplete),
                 label: String(
                     format: OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP",
@@ -1561,7 +1556,7 @@ private struct BackupExportProgressView: View {
 
         case .listMedia, .attachmentOrphaning:
             return ProgressBarState(
-                mode: .indeterminate,
+                style: .indeterminate,
                 label: OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA",
                     comment: "Description for a progress bar tracking the processing of Backup media."
@@ -1570,7 +1565,7 @@ private struct BackupExportProgressView: View {
 
         case .attachmentUpload:
             return ProgressBarState(
-                mode: .determinate(percentComplete: latestAttachmentUploadUpdate?.percentageUploaded ?? 0),
+                style: .determinate(percentComplete: latestAttachmentUploadUpdate?.percentageUploaded ?? 0),
                 label: BackupAttachmentUploadProgressView.subtitleText(
                     uploadUpdate: latestAttachmentUploadUpdate,
                 )
@@ -1578,7 +1573,7 @@ private struct BackupExportProgressView: View {
 
         case .offloading:
             return ProgressBarState(
-                mode: .indeterminate,
+                style: .indeterminate,
                 label: OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA",
                     comment: "Description for a progress bar tracking the optimizing of Backup media."
@@ -1591,15 +1586,7 @@ private struct BackupExportProgressView: View {
         VStack(alignment: .leading) {
             let progressBarState = self.progressBarState
 
-            switch progressBarState.mode {
-            case .determinate(let percentComplete):
-                PulsingProgressBar(value: percentComplete)
-                    .tint(.Signal.accent)
-                    .scaleEffect(x: 1, y: 1.5)
-                    .padding(.vertical, 12)
-            case .indeterminate:
-                IndeterminateProgressBar()
-            }
+            StyledProgressBar(style: progressBarState.style)
 
             Text(progressBarState.label)
                 .font(.subheadline)
@@ -1620,6 +1607,35 @@ private struct BackupExportProgressView: View {
 }
 
 // MARK: -
+
+private struct StyledProgressBar: View {
+    enum Style {
+        case determinate(percentComplete: Float)
+        case indeterminate
+    }
+
+    let style: Style
+
+    var body: some View {
+        VStack {
+            switch style {
+            case .determinate(let percentComplete):
+                PulsingProgressBar(value: percentComplete)
+                    .tint(.Signal.accent)
+                    .clipShape(RoundedRectangle(cornerRadius: 3))
+            case .indeterminate:
+                LottieView(animation: .named("linear_indeterminate"))
+                    .playing(loopMode: .loop)
+                    .background {
+                        Capsule().fill(Color.Signal.secondaryFill)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 3))
+            }
+        }
+        .scaleEffect(x: 1, y: 1.5)
+        .padding(.vertical, 12)
+    }
+}
 
 private struct PulsingProgressBar: View {
     struct ClearTrackProgressView: UIViewRepresentable {
@@ -1734,20 +1750,6 @@ private struct PulsingProgressBar: View {
             }
         )
         self.lastValue = value
-    }
-}
-
-// MARK: -
-
-private struct IndeterminateProgressBar: View {
-    var body: some View {
-        LottieView(animation: .named("linear_indeterminate"))
-            .playing(loopMode: .loop)
-            .background {
-                Capsule().fill(Color.Signal.secondaryFill)
-            }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 8)
     }
 }
 

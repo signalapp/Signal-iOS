@@ -107,8 +107,6 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
     func reserveBackupId(localAci: Aci, auth: ChatServiceAuth) async throws { }
 
-    func registerBackupKeys(localAci: Aci, auth: ChatServiceAuth) async throws {}
-
     func fetchBackupUploadForm(
         backupByteLength: UInt32,
         auth: BackupServiceAuth
