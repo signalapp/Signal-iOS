@@ -71,14 +71,4 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
         try container.encode(aciString, forKey: .aciString)
         try container.encode(creationDate, forKey: .creationTimestamp)
     }
-
-    @objc
-    public static func anyEnumerateObjc(
-        transaction: DBReadTransaction,
-        batched: Bool,
-        block: @escaping (TSMention, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
-        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
-    }
 }
