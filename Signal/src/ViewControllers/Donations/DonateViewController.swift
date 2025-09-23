@@ -100,9 +100,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         stackView.isLayoutMarginsRelativeArrangement = true
 
         view.addSubview(scrollView)
-        scrollView.autoPinWidthToSuperview()
-        scrollView.autoPinEdge(toSuperviewEdge: .top)
-        scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         NotificationCenter.default.addObserver(
             self,

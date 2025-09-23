@@ -88,32 +88,38 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         topStackView.axis = .horizontal
         topStackView.isLayoutMarginsRelativeArrangement = true
         topStackView.spacing = 8
-
         if allowReactionConfiguration {
             topStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16)
             topStackView.addArrangedSubviews([searchBar, configureButton])
         } else {
             topStackView.addArrangedSubview(searchBar)
         }
-
         contentView.addSubview(topStackView)
+        topStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            topStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            topStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+        ])
 
-        topStackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-
-        contentView.addSubview(collectionView)
-        collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
-        collectionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         collectionView.pickerDelegate = self
         collectionView.alwaysBounceVertical = true
+        contentView.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: topStackView.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
 
-        // NOTE: the toolbar is a subview of the keyboard layout view so it
-        // properly animates as the keyboard rises. making it part of the content view
-        // cancels those animations and makes it pop into place which looks bad.
-        // might be worth ripping apart at some point.
-        keyboardLayoutGuideView.addSubview(sectionToolbar)
-        sectionToolbar.autoPinEdge(.leading, to: .leading, of: contentView)
-        sectionToolbar.autoPinEdge(.trailing, to: .trailing, of: contentView)
-        sectionToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
+        contentView.addSubview(sectionToolbar)
+        sectionToolbar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            sectionToolbar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            sectionToolbar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            sectionToolbar.bottomAnchor.constraint(equalTo: contentView.keyboardLayoutGuide.topAnchor),
+        ])
 
 #if compiler(>=6.2)
         // Obscures content underneath the emoji section toolbar to improve legibility.
@@ -147,7 +153,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: bottomInset, trailing: 0)
         collectionView.contentInset = contentInset
         collectionView.scrollIndicatorInsets = contentInset
-
     }
 
     @objc

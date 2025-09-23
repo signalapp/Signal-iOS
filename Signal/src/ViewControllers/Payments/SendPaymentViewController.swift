@@ -702,16 +702,16 @@ public class SendPaymentViewController: OWSViewController {
     // MARK: -
 
     private func createSubviews() {
-
         rootStack.axis = .vertical
         rootStack.alignment = .fill
-        rootStack.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 24, trailing: 0)
-        rootStack.isLayoutMarginsRelativeArrangement = true
+        rootStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(rootStack)
-        rootStack.autoPinEdge(toSuperviewMargin: .leading, withInset: 20)
-        rootStack.autoPinEdge(toSuperviewMargin: .trailing, withInset: 20)
-        rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        NSLayoutConstraint.activate([
+            rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 20),
+            rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -20),
+            rootStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24),
+        ])
 
         bigAmountLabel.font = UIFont.regularFont(ofSize: 60)
         bigAmountLabel.textAlignment = .center

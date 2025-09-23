@@ -190,7 +190,6 @@ class ImageEditorViewController: OWSViewController {
     var discardTextEditsOnEditingEnd = false
     var currentTextItem: (textItem: ImageEditorTextItem, isNewItem: Bool)?
     var pinchFontSizeStart: CGFloat = ImageEditorTextItem.defaultFontSize
-    var textViewContainerBottomConstraint: NSLayoutConstraint? // to bottom of self.view
     lazy var textViewContainer: UIView = {
         let view = UIView(frame: view.bounds)
         view.preservesSuperviewLayoutMargins = true
@@ -279,12 +278,6 @@ class ImageEditorViewController: OWSViewController {
             }
             self.startEditingTextOnViewAppear = false
         }
-    }
-
-    override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
-        super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
-
-        updateTextViewContainerBottomLayoutConstraint(forKeyboardFrame: newFrame)
     }
 
     override var prefersStatusBarHidden: Bool {

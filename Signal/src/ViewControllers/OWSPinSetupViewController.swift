@@ -246,8 +246,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         if case .confirming = self.initialMode {
             owsFailDebug("pin setup flow should never start in the confirming state")
         }
-
-        super.keyboardObservationBehavior = .whileLifecycleVisible
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
@@ -321,9 +319,13 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         stackView.axis = .vertical
         stackView.alignment = .center
         view.addSubview(stackView)
-
-        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         [pinTextField, validationWarningLabel, recommendationLabel].forEach {
             $0.autoSetDimension(.width, toSize: 227)

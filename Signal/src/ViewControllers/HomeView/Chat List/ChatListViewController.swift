@@ -42,8 +42,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        keyboardObservationBehavior = .never
-
         switch viewState.chatListMode {
         case .inbox:
             title = NSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode.")

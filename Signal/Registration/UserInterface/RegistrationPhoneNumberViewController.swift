@@ -243,9 +243,12 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
-        self.view.addSubview(cancelButton)
-        cancelButton.autoHCenterInSuperview()
-        cancelButton.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea, withOffset: -24)
+        view.addSubview(cancelButton)
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cancelButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24),
+        ])
 
         render()
     }

@@ -31,13 +31,13 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         self.price = price
         self.paymentMethodsConfiguration = paymentMethodsConfiguration
         self.thread = thread
+
+        super.init()
     }
 
     // MARK: - Callbacks
 
     public override func viewDidLoad() {
-        self.shouldAvoidKeyboard = true
-
         super.viewDidLoad()
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
@@ -47,10 +47,11 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             comment: "Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend."
         )
 
+        shouldAvoidKeyboard = true
         updateTableContents()
         setUpBottomFooter()
 
-        tableView.keyboardDismissMode = .onDrag
+        tableView.keyboardDismissMode = .interactive
     }
 
     public override func themeDidChange() {

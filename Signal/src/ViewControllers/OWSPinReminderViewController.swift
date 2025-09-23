@@ -82,11 +82,14 @@ public class PinReminderViewController: OWSViewController {
         view.backgroundColor = .clear
 
         containerView.backgroundColor = Theme.backgroundColor
-
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(containerView)
-        containerView.autoPinWidthToSuperview()
-        containerView.autoPin(toTopLayoutGuideOf: self, withInset: 0, relation: .greaterThanOrEqual)
-        containerView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset

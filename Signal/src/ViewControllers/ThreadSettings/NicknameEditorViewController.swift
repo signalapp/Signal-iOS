@@ -205,9 +205,9 @@ class NicknameEditorViewController: OWSTableViewController2 {
     // MARK: Lifecycle
 
     override func viewDidLoad() {
-        self.shouldAvoidKeyboard = true
-
         super.viewDidLoad()
+
+        shouldAvoidKeyboard = true
         self.updateTableContents()
         self.updateFonts()
 

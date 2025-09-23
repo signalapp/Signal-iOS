@@ -49,23 +49,18 @@ class ProfileBioViewController: OWSTableViewController2 {
         self.profileDelegate = profileDelegate
 
         super.init()
-
-        self.bioTextField.text = bio
-        self.bioEmojiLabel.text = bioEmoji
-
-        self.shouldAvoidKeyboard = true
     }
 
     // MARK: -
 
-    public override func loadView() {
-        view = UIView()
-        createViews()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        bioTextField.text = originalBio
+        bioEmojiLabel.text = originalBioEmoji
+
+        shouldAvoidKeyboard = true
+        createViews()
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + Self.bioButtonHeight + OWSTableItem.iconSpacing
 
         updateNavigation()

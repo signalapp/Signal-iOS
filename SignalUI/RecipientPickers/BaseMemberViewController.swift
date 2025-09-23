@@ -92,10 +92,13 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
 
-        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
-        recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        recipientPicker.view.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
+        recipientPicker.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recipientPicker.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            recipientPicker.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            recipientPicker.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            recipientPicker.view.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         updateMemberCount()
     }

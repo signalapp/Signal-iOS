@@ -258,9 +258,13 @@ class RegistrationProfileViewController: OWSViewController {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.autoPinWidthToSuperviewMargins()
-        scrollView.autoPinEdge(toSuperviewEdge: .top)
-        scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         let stackView = UIStackView()
         stackView.axis = .vertical

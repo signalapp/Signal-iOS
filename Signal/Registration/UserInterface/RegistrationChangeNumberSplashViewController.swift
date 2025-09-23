@@ -49,24 +49,36 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
-        scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+        ])
 
         scrollingStack.axis = .vertical
         scrollingStack.alignment = .fill
         scrollingStack.isLayoutMarginsRelativeArrangement = true
         scrollingStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
         scrollView.addSubview(scrollingStack)
-        scrollingStack.autoMatch(.width, to: .width, of: scrollView)
-        scrollingStack.autoPinEdgesToSuperviewEdges()
+        scrollingStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollingStack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            scrollingStack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            scrollingStack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            scrollingStack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            scrollingStack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+        ])
 
         bottomContainer.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
         view.addSubview(bottomContainer)
-        bottomContainer.autoPinEdge(toSuperviewSafeArea: .leading)
-        bottomContainer.autoPinEdge(toSuperviewSafeArea: .trailing)
-        bottomContainer.autoPinEdge(.top, to: .bottom, of: scrollView)
-        bottomContainer.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        bottomContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            bottomContainer.topAnchor.constraint(equalTo: scrollView.frameLayoutGuide.bottomAnchor),
+            bottomContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            bottomContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            bottomContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+        ])
 
         updateContents()
     }

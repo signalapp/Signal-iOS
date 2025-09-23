@@ -53,7 +53,18 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         title = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
                                   comment: "Title for the 'change phone number' views in settings.")
 
-        createContents()
+        rootView.axis = .vertical
+        rootView.alignment = .fill
+        rootView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(rootView)
+        NSLayoutConstraint.activate([
+            rootView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            rootView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            rootView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            rootView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+        ])
+
+        updateContents()
     }
 
     private var rateLimitErrorTimer: Timer?
@@ -75,20 +86,6 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
 
         rateLimitErrorTimer?.invalidate()
         rateLimitErrorTimer = nil
-    }
-
-    private func createContents() {
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        rootView.isLayoutMarginsRelativeArrangement = true
-        rootView.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
-        view.addSubview(rootView)
-        rootView.autoPinEdge(toSuperviewSafeArea: .leading)
-        rootView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
-
-        updateContents()
     }
 
     public override func themeDidChange() {

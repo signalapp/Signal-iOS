@@ -70,10 +70,9 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     // MARK: - View callbacks
 
     public override func viewDidLoad() {
-        shouldAvoidKeyboard = true
-
         super.viewDidLoad()
 
+        shouldAvoidKeyboard = true
         render()
 
         let sections = [donationAmountSection] + formSections()

@@ -34,9 +34,9 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     override func viewDidLoad() {
-        shouldAvoidKeyboard = true
-
         super.viewDidLoad()
+
+        shouldAvoidKeyboard = true
 
         navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         navigationItem.rightBarButtonItem = .init(title: CommonStrings.deleteButton, style: .done, target: self, action: #selector(didTapDelete))

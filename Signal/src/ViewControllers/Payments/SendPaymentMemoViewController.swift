@@ -30,7 +30,25 @@ public class SendPaymentMemoViewController: OWSViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        createContents()
+        navigationItem.title = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+                                                 comment: "Label for the 'add memo' ui in the 'send payment' UI.")
+        navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDoneMemo()
+        }
+
+        rootStack.axis = .vertical
+        rootStack.alignment = .fill
+        rootStack.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(rootStack)
+        NSLayoutConstraint.activate([
+            rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            rootStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
+        ])
+
+        updateContents()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -47,27 +65,6 @@ public class SendPaymentMemoViewController: OWSViewController {
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
-    }
-
-    private func createContents() {
-        navigationItem.title = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
-                                                 comment: "Label for the 'add memo' ui in the 'send payment' UI.")
-        navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
-        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-            self?.didTapDoneMemo()
-        }
-
-        rootStack.axis = .vertical
-        rootStack.alignment = .fill
-        rootStack.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0)
-        rootStack.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(rootStack)
-        rootStack.autoPinEdge(toSuperviewMargin: .leading)
-        rootStack.autoPinEdge(toSuperviewMargin: .trailing)
-        rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
-
-        updateContents()
     }
 
     private func updateContents() {

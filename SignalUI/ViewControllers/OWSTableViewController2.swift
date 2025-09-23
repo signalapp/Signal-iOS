@@ -44,17 +44,28 @@ open class OWSTableViewController2: OWSViewController {
     // * The top header view's edge align with the edges of the cells.
     open var topHeader: UIView?
 
-    open var bottomFooter: UIView?
+    open var bottomFooter: UIView? {
+        didSet {
+            guard isViewLoaded else { return }
+            updateBottomConstraint()
+        }
+    }
 
     public var forceDarkMode = false {
         didSet {
+            guard isViewLoaded else { return }
             applyTheme()
         }
     }
 
     /// Whether or not this table view should avoid being hidden behind the
     /// keyboard.
-    public var shouldAvoidKeyboard = false
+    public var shouldAvoidKeyboard = false {
+        didSet {
+            guard isViewLoaded else { return }
+            updateBottomConstraint()
+        }
+    }
 
     public enum SelectionBehavior {
         case actionWithAutoDeselect
@@ -175,33 +186,36 @@ open class OWSTableViewController2: OWSViewController {
     public var shouldHideBottomFooter = false {
         didSet {
             let didChange = oldValue != shouldHideBottomFooter
-            if didChange, isViewLoaded {
-                updateBottomConstraint()
-            }
+            guard didChange, isViewLoaded else { return }
+            updateBottomConstraint()
         }
     }
 
     private var bottomFooterConstraint: NSLayoutConstraint?
 
     private func updateBottomConstraint() {
-        bottomFooterConstraint?.autoRemove()
-        bottomFooterConstraint = nil
-
-        // Pin bottom edge of tableView.
-        if !shouldHideBottomFooter,
-           let bottomFooter = bottomFooter {
-            if shouldAvoidKeyboard {
-                bottomFooterConstraint = bottomFooter.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
-            } else {
-                bottomFooterConstraint = bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
-            }
-        } else if shouldAvoidKeyboard {
-            bottomFooterConstraint = tableView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
-        } else {
-            bottomFooterConstraint = tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        if let bottomFooterConstraint {
+            NSLayoutConstraint.deactivate([bottomFooterConstraint])
+            self.bottomFooterConstraint = nil
         }
 
+        // Pin bottom edge of tableView.
+        let bottomFooterConstraint: NSLayoutConstraint
+        if !shouldHideBottomFooter, let bottomFooter {
+            if shouldAvoidKeyboard {
+                bottomFooterConstraint = bottomFooter.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            } else {
+                bottomFooterConstraint = bottomFooter.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            }
+        } else if shouldAvoidKeyboard {
+            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        } else {
+            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        }
+        NSLayoutConstraint.activate([bottomFooterConstraint])
+
         bottomFooter?.isHidden = shouldHideBottomFooter
+        self.bottomFooterConstraint = bottomFooterConstraint
 
         guard hasViewAppeared else {
             return

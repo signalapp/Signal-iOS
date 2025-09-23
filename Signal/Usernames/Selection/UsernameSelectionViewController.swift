@@ -312,10 +312,13 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         wrapperScrollView.addSubview(usernameErrorTextView)
         wrapperScrollView.addSubview(usernameFooterTextView)
 
-        wrapperScrollView.autoPinTopToSuperviewMargin()
-        wrapperScrollView.autoPinLeadingToSuperviewMargin()
-        wrapperScrollView.autoPinTrailingToSuperviewMargin()
-        wrapperScrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        wrapperScrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            wrapperScrollView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            wrapperScrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            wrapperScrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            wrapperScrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         let contentLayoutGuide = wrapperScrollView.contentLayoutGuide
 

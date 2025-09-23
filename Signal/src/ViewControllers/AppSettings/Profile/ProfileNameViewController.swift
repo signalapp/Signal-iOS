@@ -55,21 +55,18 @@ class ProfileNameViewController: OWSTableViewController2 {
         self.profileDelegate = profileDelegate
 
         super.init()
-
-        self.givenNameTextField.text = givenName
-        self.familyNameTextField.text = familyName
-
-        self.shouldAvoidKeyboard = true
     }
 
     // MARK: -
 
-    public override func loadView() {
-        view = UIView()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        shouldAvoidKeyboard = true
+        tableView.keyboardDismissMode = .interactive
+
+        givenNameTextField.text = originalGivenName
+        familyNameTextField.text = originalFamilyName
 
         updateNavigation()
         updateTableContents()

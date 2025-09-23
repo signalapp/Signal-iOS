@@ -58,6 +58,8 @@ public class FindByUsernameViewController: OWSTableViewController2 {
             action: #selector(didTapNext)
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
+
+        shouldAvoidKeyboard = true
     }
 
     public override func viewDidAppear(_ animated: Bool) {

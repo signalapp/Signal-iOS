@@ -290,10 +290,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         let bottomBanner = UIView()
         bottomBannerContainer.addSubview(bottomBanner)
-
-        bottomBanner.autoPinEdge(toSuperviewEdge: .top)
-        bottomBanner.autoPinWidthToSuperview()
-        bottomBanner.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        bottomBanner.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            bottomBanner.topAnchor.constraint(equalTo: bottomBannerContainer.topAnchor),
+            bottomBanner.leadingAnchor.constraint(equalTo: bottomBannerContainer.leadingAnchor),
+            bottomBanner.trailingAnchor.constraint(equalTo: bottomBannerContainer.trailingAnchor),
+            bottomBanner.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named: "giphy_logo")

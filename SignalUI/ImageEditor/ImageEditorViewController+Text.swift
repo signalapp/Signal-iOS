@@ -72,8 +72,14 @@ extension ImageEditorViewController {
         textViewWrapperView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
 
         view.addSubview(textViewContainer)
+        textViewContainer.translatesAutoresizingMaskIntoConstraints = false
         textViewContainer.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        textViewContainerBottomConstraint = textViewContainer.autoPinEdge(toSuperviewEdge: .bottom)
+        NSLayoutConstraint.activate([
+            textViewContainer.topAnchor.constraint(equalTo: view.topAnchor),
+            textViewContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            textViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            textViewContainer.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         textViewContainer.addGestureRecognizer(ImageEditorPinchGestureRecognizer(target: self, action: #selector(handleTextPinchGesture(_:))))
         textViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapDimmerView(_:))))
@@ -110,19 +116,6 @@ extension ImageEditorViewController {
         let fontPointSize = textView.font?.pointSize ?? ImageEditorTextItem.defaultFontSize
         textView.update(using: textToolbar, fontPointSize: fontPointSize)
         textViewBackgroundView.backgroundColor = textToolbar.textBackgroundColor
-    }
-
-    func updateTextViewContainerBottomLayoutConstraint(forKeyboardFrame keyboardFrame: CGRect) {
-        guard mode == .text, let textViewContainerBottomConstraint else {
-            return
-        }
-        let keyboardHeight: CGFloat
-        if keyboardFrame.width >= view.bounds.width {
-            keyboardHeight = keyboardFrame.height
-        } else {
-            keyboardHeight = 0
-        }
-        textViewContainerBottomConstraint.constant = -keyboardHeight
     }
 
     func updateTextUIVisibility() {

@@ -12,6 +12,8 @@ class ProxySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        shouldAvoidKeyboard = true
+
         title = OWSLocalizedString(
             "PROXY_SETTINGS_TITLE",
             comment: "Title for the signal proxy settings"

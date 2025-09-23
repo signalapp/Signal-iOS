@@ -43,6 +43,8 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         oldValueViews.delegate = self
         newValueViews.delegate = self
+
+        shouldAvoidKeyboard = true
     }
 
     public func updateState(_ newState: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry) {
