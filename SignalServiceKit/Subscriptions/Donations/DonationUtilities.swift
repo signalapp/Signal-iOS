@@ -152,18 +152,31 @@ public class DonationUtilities {
     /// Can the user donate in the given donation mode?
     public static func canDonate(
         inMode donationMode: DonationMode,
-        localNumber: String?
+        tsAccountManager: TSAccountManager,
     ) -> Bool {
-        !supportedDonationPaymentMethods(
+        let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+
+        guard registrationState.isRegistered else {
+            // Don't allow donations if unregistered.
+            return false
+        }
+
+        return !supportedDonationPaymentMethods(
             forDonationMode: donationMode,
             localNumber: localNumber
         ).isEmpty
     }
 
     /// Can the user donate in any donation mode?
-    public static func canDonateInAnyWay(localNumber: String?) -> Bool {
+    public static func canDonateInAnyWay(
+        tsAccountManager: TSAccountManager,
+    ) -> Bool {
         DonationMode.allCases.contains { mode in
-            canDonate(inMode: mode, localNumber: localNumber)
+            canDonate(
+                inMode: mode,
+                tsAccountManager: tsAccountManager,
+            )
         }
     }
 

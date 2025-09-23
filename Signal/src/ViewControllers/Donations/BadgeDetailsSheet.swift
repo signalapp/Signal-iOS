@@ -159,7 +159,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     private func didTapDonate() {
         dismiss(animated: true) {
             if DonationUtilities.canDonateInAnyWay(
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             ) {
                 let frontVc = { CurrentAppContext().frontmostViewController() }
 

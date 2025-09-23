@@ -53,7 +53,8 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
-        reachabilityManager: SSKReachabilityManager
+        reachabilityManager: SSKReachabilityManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.jobRunnerFactory = DonationReceiptCredentialRedemptionJobRunnerFactory(
             dateProvider: dateProvider,
@@ -61,7 +62,8 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             logger: .donations,
             networkManager: networkManager,
-            profileManager: profileManager
+            profileManager: profileManager,
+            tsAccountManager: tsAccountManager,
         )
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,
@@ -229,6 +231,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
     private let logger: PrefixedLogger
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
+    private let tsAccountManager: TSAccountManager
 
     init(
         dateProvider: @escaping DateProvider,
@@ -236,7 +239,8 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         logger: PrefixedLogger,
         networkManager: NetworkManager,
-        profileManager: ProfileManager
+        profileManager: ProfileManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.dateProvider = dateProvider
         self.db = db
@@ -244,6 +248,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
         self.logger = logger
         self.networkManager = networkManager
         self.profileManager = profileManager
+        self.tsAccountManager = tsAccountManager
     }
 
     func buildRunner() -> DonationReceiptCredentialRedemptionJobRunner { buildRunner(continuation: nil) }
@@ -255,7 +260,8 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             networkManager: networkManager,
-            profileManager: profileManager
+            profileManager: profileManager,
+            tsAccountManager: tsAccountManager,
         )
     }
 }
@@ -270,6 +276,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
+    private let tsAccountManager: TSAccountManager
 
     private var logger: PrefixedLogger = .donations
     private var transientFailureCount: UInt = 0
@@ -280,7 +287,8 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         networkManager: NetworkManager,
-        profileManager: ProfileManager
+        profileManager: ProfileManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.continuation = continuation
 
@@ -289,6 +297,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.networkManager = networkManager
         self.profileManager = profileManager
+        self.tsAccountManager = tsAccountManager
     }
 
     /// Represents the type of payment that resulted in this receipt credential
@@ -511,6 +520,22 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         // Now that we know what type of job we are, suffix the logger.
         logger = logger.suffixed(with: "[\(configuration.paymentType)]")
 
+        let (
+            registrationState,
+            badgesSnapshotBeforeJob,
+        ) = db.read { tx in
+            return (
+                tsAccountManager.registrationState(tx: tx),
+                // In order to properly show the "you have a new badge" UI after this job
+                // succeeds, we need to know what badges we had beforehand.
+                ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx),
+            )
+        }
+
+        guard registrationState.isRegistered else {
+            throw OWSAssertionError("Attempting to redeem a donation, but not registered!")
+        }
+
         logger.info("Running job.")
 
         // When the app relaunches, we'll try to restart all pending redemption
@@ -519,12 +544,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         if let retryDelay = sepaRetryDelay(configuration: configuration) {
             logger.info("Skipping SEPA job: in SEPA retry-delay period!")
             return .retryAfter(retryDelay, canRetryEarly: false)
-        }
-
-        // In order to properly show the "you have a new badge" UI after this job
-        // succeeds, we need to know what badges we had beforehand.
-        let badgesSnapshotBeforeJob = db.read { tx in
-            ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
         }
 
         let badge: ProfileBadge

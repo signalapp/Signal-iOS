@@ -14,7 +14,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     ) -> Bool {
         DonationUtilities.canDonate(
             inMode: donateMode.asDonationMode,
-            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 

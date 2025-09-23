@@ -71,14 +71,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private static var canDonateInAnyWay: Bool {
         DonationUtilities.canDonateInAnyWay(
-            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 
     private static var canSendGiftBadges: Bool {
         DonationUtilities.canDonate(
             inMode: .gift,
-            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
 

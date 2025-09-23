@@ -274,7 +274,7 @@ class BadgeIssueSheet: OWSTableSheetViewController {
             badge: badge,
             mode: mode,
             canDonate: DonationUtilities.canDonateInAnyWay(
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             )
         )
         owsAssertDebug(state.badge.assets != nil)

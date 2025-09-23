@@ -1678,7 +1678,8 @@ public class AppSetup {
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             networkManager: networkManager,
             profileManager: profileManager,
-            reachabilityManager: reachabilityManager
+            reachabilityManager: reachabilityManager,
+            tsAccountManager: tsAccountManager,
         )
 
         let groupCallPeekClient = GroupCallPeekClient(db: db, groupsV2: groupsV2)

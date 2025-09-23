@@ -93,7 +93,7 @@ class RemoteMegaphone: MegaphoneView {
             }
 
             guard DonationUtilities.canDonateInAnyWay(
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             ) else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
@@ -137,7 +137,7 @@ class RemoteMegaphone: MegaphoneView {
 
             guard DonationUtilities.canDonate(
                 inMode: .gift,
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             ) else {
                 done()
                 DonationViewsUtil.openDonateWebsite()

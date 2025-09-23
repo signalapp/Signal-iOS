@@ -109,8 +109,8 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
             )
         }
 
-        guard registrationState.isRegisteredPrimaryDevice else {
-            /// Only primaries manage subscriptions!
+        guard registrationState.isRegistered else {
+            // Only registered devices should try and redeem.
             return
         }
 

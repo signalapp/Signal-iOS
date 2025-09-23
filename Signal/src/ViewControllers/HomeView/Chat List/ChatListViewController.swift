@@ -1321,7 +1321,7 @@ extension ChatListViewController {
         case let .donate(donateMode):
             guard DonationUtilities.canDonate(
                 inMode: donateMode.asDonationMode,
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             ) else {
                 DonationViewsUtil.openDonateWebsite()
                 return
