@@ -77,35 +77,31 @@ enum TimeGatedBatch {
         processBatch: (DBWriteTransaction) throws(E) -> Int
     ) async throws(E) -> Int {
         var itemCount = 0
-        outerloop: while true {
-            let txResult = await db.awaitableWriteWithTxCompletion { (tx) -> TransactionCompletion<Result<(txItemCount: Int, mightHaveMore: Bool), E>> in
-                let startTime = CACurrentMediaTime()
-                do throws(E) {
-                    return try .commit(.success(processSome(
-                        yieldDeadline: startTime + maximumDuration,
-                        processBatch: processBatch,
-                        tx: tx
-                    )))
-                } catch let error {
-                    switch errorTxCompletion {
-                    case .commit:
-                        return .commit(.failure(error))
-                    case .rollback:
-                        return .rollback(.failure(error))
-                    }
-                }
+        while true {
+            let dbBlock: (DBWriteTransaction) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) = { tx in
+                return try processSome(
+                    maximumDuration: maximumDuration,
+                    processBatch: processBatch,
+                    tx: tx
+                )
             }
-            switch txResult {
-            case .success(let result):
-                let (txItemCount, mightHaveMore) = result
-                itemCount += txItemCount
-                guard mightHaveMore else {
-                    break outerloop
-                }
-            case .failure(let error):
-                throw error
+
+            let (txItemCount, mightHaveMore): (Int, Bool) = switch errorTxCompletion {
+            case .commit:
+                try await db.awaitableWrite(block: dbBlock)
+            case .rollback:
+                try await db.awaitableWriteWithRollbackIfThrows(block: dbBlock)
+            }
+
+            itemCount += txItemCount
+
+            if mightHaveMore {
+                continue
+            } else {
+                break
             }
         }
+
         return itemCount
     }
 
@@ -134,43 +130,40 @@ enum TimeGatedBatch {
         processBatch: (DBWriteTransaction) throws(E) -> Int
     ) throws(E) -> Int {
         var itemCount = 0
-        outerloop: while true {
-            let txResult = db.writeWithTxCompletion { (tx) -> TransactionCompletion<Result<(txItemCount: Int, mightHaveMore: Bool), E>> in
-                let startTime = CACurrentMediaTime()
-                do throws(E) {
-                    return try .commit(.success(processSome(
-                        yieldDeadline: startTime + maximumDuration,
-                        processBatch: processBatch,
-                        tx: tx
-                    )))
-                } catch let error {
-                    switch errorTxCompletion {
-                    case .commit:
-                        return .commit(.failure(error))
-                    case .rollback:
-                        return .rollback(.failure(error))
-                    }
-                }
+        while true {
+            let dbBlock: (DBWriteTransaction) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) = { tx in
+                return try processSome(
+                    maximumDuration: maximumDuration,
+                    processBatch: processBatch,
+                    tx: tx
+                )
             }
-            switch txResult {
-            case .success(let result):
-                let (txItemCount, mightHaveMore) = result
-                itemCount += txItemCount
-                guard mightHaveMore else {
-                    break outerloop
-                }
-            case .failure(let error):
-                throw error
+
+            let (txItemCount, mightHaveMore): (Int, Bool) = switch errorTxCompletion {
+            case .commit:
+                try db.write(block: dbBlock)
+            case .rollback:
+                try db.writeWithRollbackIfThrows(block: dbBlock)
+            }
+
+            itemCount += txItemCount
+
+            if mightHaveMore {
+                continue
+            } else {
+                break
             }
         }
+
         return itemCount
     }
 
     private static func processSome<E>(
-        yieldDeadline: CFTimeInterval,
+        maximumDuration: CFTimeInterval,
         processBatch: (DBWriteTransaction) throws(E) -> Int,
         tx: DBWriteTransaction
     ) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) {
+        let yieldDeadline = CACurrentMediaTime() + maximumDuration
         var itemCount = 0
         while true {
             let batchCount = try autoreleasepool { () throws(E) -> Int in

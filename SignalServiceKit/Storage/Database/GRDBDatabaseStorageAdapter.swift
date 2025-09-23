@@ -304,7 +304,7 @@ extension GRDBDatabaseStorageAdapter {
 
 // MARK: -
 
-extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
+extension GRDBDatabaseStorageAdapter {
 
     #if TESTABLE_BUILD
     // TODO: We could eventually eliminate all nested transactions.
@@ -340,25 +340,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    @discardableResult
-    public func writeWithTxCompletion<T>(
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) throws -> T {
-
-        var value: T!
-        let _: Void = try writeWithTxCompletion { (transaction) in
-            let result = block(transaction)
-            switch result {
-            case .commit(let t):
-                value = t
-            case .rollback(let t):
-                value = t
-            }
-            return result.typeErased
-        }
-        return value
-    }
-
     public func read(block: (DBReadTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD
@@ -381,7 +362,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    public func writeWithTxCompletion(block: (DBWriteTransaction) -> TransactionCompletion<Void>) throws {
+    public func writeWithTxCompletion(block: (DBWriteTransaction) -> Database.TransactionCompletion) throws {
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
@@ -399,16 +380,16 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
 
         try pool.writeWithoutTransaction { database in
-            try database.inTransaction {
-                let txCompletion: TransactionCompletion<Void> = autoreleasepool {
+            try database.inTransaction { () -> Database.TransactionCompletion in
+                return autoreleasepool {
                     let tx = DBWriteTransaction(database: database)
-                    let txComplection = block(tx)
-                    tx.finalizeTransaction()
-                    txCompletionBlocks = tx.completionBlocks
+                    defer {
+                        tx.finalizeTransaction()
+                        txCompletionBlocks = tx.completionBlocks
+                    }
 
-                    return txComplection
+                    return block(tx)
                 }
-                return txCompletion.asGRDBCompletion
             }
         }
 

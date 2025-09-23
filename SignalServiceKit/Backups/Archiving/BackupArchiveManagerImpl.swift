@@ -862,50 +862,42 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
 
-        let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                let backupInfo = try BenchMemory(
-                    title: benchTitle,
-                    memorySamplerRatio: Constants.memorySamplerFrameRatio,
-                    logInProduction: true
-                ) { memorySampler -> BackupProto_BackupInfo in
-                    return try self.databaseChangeObserver.disable(tx: tx) { tx in
-                        let inputStream: BackupArchiveProtoInputStream
-                        switch openInputStreamBlock(fileUrl, frameRestoreProgress, tx) {
-                        case .success(let protoStream, _):
-                            inputStream = protoStream
-                        case .fileNotFound:
-                            throw OWSAssertionError("File not found!")
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open input stream!")
-                        case .hmacValidationFailedOnEncryptedFile:
-                            throw OWSAssertionError("HMAC validation failed!")
-                        }
-
-                        guard let inputFileSize = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
-                            throw OWSAssertionError("Failed to get size of file!")
-                        }
-
-                        return try self._importBackup(
-                            inputStream: inputStream,
-                            inputFileSize: inputFileSize,
-                            localIdentifiers: localIdentifiers,
-                            isPrimaryDevice: isPrimaryDevice,
-                            backupPurpose: backupPurpose,
-                            recreateIndexesProgress: recreateIndexesProgress,
-                            memorySampler: memorySampler,
-                            tx: tx
-                        )
+        let backupInfo = try await db.awaitableWriteWithRollbackIfThrows { tx in
+            return try BenchMemory(
+                title: benchTitle,
+                memorySamplerRatio: Constants.memorySamplerFrameRatio,
+                logInProduction: true
+            ) { memorySampler -> BackupProto_BackupInfo in
+                return try self.databaseChangeObserver.disable(tx: tx) { tx in
+                    let inputStream: BackupArchiveProtoInputStream
+                    switch openInputStreamBlock(fileUrl, frameRestoreProgress, tx) {
+                    case .success(let protoStream, _):
+                        inputStream = protoStream
+                    case .fileNotFound:
+                        throw OWSAssertionError("File not found!")
+                    case .unableToOpenFileStream:
+                        throw OWSAssertionError("Unable to open input stream!")
+                    case .hmacValidationFailedOnEncryptedFile:
+                        throw OWSAssertionError("HMAC validation failed!")
                     }
-                }
 
-                return .commit(.success(backupInfo))
-            } catch let error {
-                return .rollback(.failure(error))
+                    guard let inputFileSize = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
+                        throw OWSAssertionError("Failed to get size of file!")
+                    }
+
+                    return try self._importBackup(
+                        inputStream: inputStream,
+                        inputFileSize: inputFileSize,
+                        localIdentifiers: localIdentifiers,
+                        isPrimaryDevice: isPrimaryDevice,
+                        backupPurpose: backupPurpose,
+                        recreateIndexesProgress: recreateIndexesProgress,
+                        memorySampler: memorySampler,
+                        tx: tx
+                    )
+                }
             }
         }
-
-        let backupInfo = try result.get()
 
         appVersion.didRestoreFromBackup(
             backupCurrentAppVersion: backupInfo.currentAppVersion.nilIfEmpty,

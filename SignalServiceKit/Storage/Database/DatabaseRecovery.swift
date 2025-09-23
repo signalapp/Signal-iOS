@@ -56,10 +56,10 @@ public extension DatabaseRecovery {
                 do {
                     try SqliteUtil.reindex(db: tx.database)
                     Logger.info("Reindexed database")
-                    return .commit(())
+                    return .commit
                 } catch {
                     Logger.warn("Failed to reindex database")
-                    return .rollback(())
+                    return .rollback
                 }
             }
         } catch {

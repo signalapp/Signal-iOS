@@ -27,15 +27,6 @@ public protocol DB {
         completion: ((T) -> Void)?
     )
 
-    func asyncWriteWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
-        completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
-    )
-
     // MARK: - Awaitable Methods
 
     func awaitableWrite<T, E>(
@@ -51,13 +42,6 @@ public protocol DB {
         line: Int,
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T
-
-    func awaitableWriteWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) async -> T
 
     // MARK: - Value Methods
 
@@ -81,13 +65,6 @@ public protocol DB {
         line: Int,
         block: (DBWriteTransaction) throws(E) -> T
     ) throws(E) -> T
-
-    func writeWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) -> T
 
     // MARK: - Observation
 
@@ -134,17 +111,6 @@ extension DB {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }
 
-    public func asyncWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
-        completionQueue: DispatchQueue = .main,
-        completion: ((T) -> Void)? = nil
-    ) {
-        asyncWriteWithTxCompletion(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
-    }
-
     // MARK: - Awaitable Methods
 
     public func awaitableWrite<T, E>(
@@ -163,15 +129,6 @@ extension DB {
         block: (DBWriteTransaction) throws(E) -> T
     ) async throws(E) -> T {
         return try await awaitableWriteWithRollbackIfThrows(file: file, function: function, line: line, block: block)
-    }
-
-    public func awaitableWriteWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) async -> T {
-        return await awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 
     // MARK: - Value Methods
@@ -201,14 +158,5 @@ extension DB {
         block: (DBWriteTransaction) throws(E) -> T
     ) throws(E) -> T {
         return try writeWithRollbackIfThrows(file: file, function: function, line: line, block: block)
-    }
-
-    public func writeWithTxCompletion<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) -> T {
-        return writeWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 }

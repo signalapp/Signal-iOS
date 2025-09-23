@@ -483,7 +483,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private func persistListedMediaPage(
         _ page: BackupArchive.Response.ListMediaResult
     ) async throws {
-        let error: Error? = await db.awaitableWriteWithTxCompletion { tx in
+        try await db.awaitableWriteWithRollbackIfThrows { tx in
             for listedMediaObject in page.storedMediaObjects {
                 guard let mediaId = try? Data.data(fromBase64Url: listedMediaObject.mediaId) else {
                     owsFailDebug("Invalid mediaId from server!")
@@ -498,11 +498,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     cdnNumber: listedMediaObject.cdn,
                     objectLength: objectLength
                 )
-                do {
-                    try record.insert(tx.database)
-                } catch let error {
-                    return .rollback(error)
-                }
+
+                try record.insert(tx.database)
             }
             if let cursor = page.cursor {
                 kvStore.setString(
@@ -519,10 +516,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     transaction: tx
                 )
             }
-            return .commit(nil)
-        }
-        if let error {
-            throw error
         }
     }
 

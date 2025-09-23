@@ -84,20 +84,6 @@ public final class InMemoryDB: DB {
         }
     }
 
-    public func asyncWriteWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
-        completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
-    ) {
-        DispatchQueue.global().async {
-            let result = self.writeWithTxCompletion(file: file, function: function, line: line, block: block)
-            if let completion { completionQueue.async({ completion(result) }) }
-        }
-    }
-
     public func awaitableWrite<T, E>(
         file: String,
         function: String,
@@ -116,16 +102,6 @@ public final class InMemoryDB: DB {
     ) async throws(E) -> T {
         await Task.yield()
         return try writeWithRollbackIfThrows(file: file, function: function, line: line, block: block)
-    }
-
-    public func awaitableWriteWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) async -> T {
-        await Task.yield()
-        return writeWithTxCompletion(file: file, function: function, line: line, block: block)
     }
 
     // MARK: - Value Methods
@@ -163,7 +139,7 @@ public final class InMemoryDB: DB {
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             block: block,
-            completionIfThrows: .commit(()),
+            completionIfThrows: .commit,
             rescue: { err throws(E) in throw err }
         )
     }
@@ -176,23 +152,14 @@ public final class InMemoryDB: DB {
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             block: block,
-            completionIfThrows: .rollback(()),
+            completionIfThrows: .rollback,
             rescue: { err throws(E) in throw err }
         )
     }
 
-    public func writeWithTxCompletion<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) -> T {
-        return _writeWithTxCompletion(block: block)
-    }
-
     private func _writeWithTxCompletionIfThrows<T, E>(
         block: (DBWriteTransaction) throws(E) -> T,
-        completionIfThrows: TransactionCompletion<Void>,
+        completionIfThrows: Database.TransactionCompletion,
         rescue: (E) throws(E) -> Never,
     ) throws(E) -> T {
         var result: T!
@@ -200,7 +167,7 @@ public final class InMemoryDB: DB {
         _writeWithTxCompletion { tx in
             do throws(E) {
                 result = try block(tx)
-                return .commit(())
+                return .commit
             } catch {
                 thrown = error
                 return completionIfThrows
@@ -212,31 +179,24 @@ public final class InMemoryDB: DB {
         return result!
     }
 
-    private func _writeWithTxCompletion<T>(
-        block: (DBWriteTransaction) -> TransactionCompletion<T>
-    ) -> T {
+    private func _writeWithTxCompletion(
+        block: (DBWriteTransaction) -> Database.TransactionCompletion,
+    ) {
         var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
-        let result: T = try! databaseQueue.writeWithoutTransaction { db in
-            var result: T!
-            try db.inTransaction {
-                let tx = DBWriteTransaction(database: db)
-                defer {
-                    tx.finalizeTransaction()
-                    txCompletionBlocks = tx.completionBlocks
-                }
-                switch block(tx) {
-                case .commit(let t):
-                    result = t
-                    return .commit
-                case .rollback(let t):
-                    result = t
-                    return .rollback
+        try! databaseQueue.writeWithoutTransaction { db in
+            try db.inTransaction { () -> Database.TransactionCompletion in
+                return autoreleasepool {
+                    let tx = DBWriteTransaction(database: db)
+                    defer {
+                        tx.finalizeTransaction()
+                        txCompletionBlocks = tx.completionBlocks
+                    }
+
+                    return block(tx)
                 }
             }
-            return result
         }
         txCompletionBlocks.forEach { $0() }
-        return result
     }
 
     // MARK: - Helpers
