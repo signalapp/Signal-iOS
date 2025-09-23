@@ -12,6 +12,8 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
         self.threadViewModel = threadViewModel
     }
 
+    private lazy var muteContextButton = ContextMenuButton(empty: ())
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -105,15 +107,32 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                 accessoryType: .disclosureIndicator
             )
 
+            // I wasn't able to get the button to present context menu by
+            // invoking `sendActions(for:)`. Therefore the button is sized
+            // to take the entire cell.
+            muteContextButton.backgroundColor = .clear
+            muteContextButton.menu = ConversationSettingsViewController.muteUnmuteMenu(
+                for: threadViewModel,
+                actionExecuted: { [weak self] in
+                    self?.updateTableContents()
+                }
+            )
+            cell.contentView.addSubview(muteContextButton)
+            muteContextButton.autoPinEdgesToSuperviewEdges()
+
+            // Select / deselect row.
+            muteContextButton.addAction(UIAction(handler: { [weak self, weak cell] _ in
+                guard let self, let cell else { return }
+                self.tableView.selectRow(at: self.tableView.indexPath(for: cell)!, animated: true, scrollPosition: .none)
+            }), for: .touchDown)
+            muteContextButton.addAction(UIAction(handler: { [weak self, weak cell] _ in
+                guard let self, let cell else { return }
+                self.tableView.deselectRow(at: self.tableView.indexPath(for: cell)!, animated: true)
+            }), for: [.touchUpInside, .touchUpOutside, .touchDragExit, .touchCancel])
+
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mute")
 
             return cell
-        },
-        actionBlock: { [weak self] in
-            guard let self = self else { return }
-            ConversationSettingsViewController.showMuteUnmuteActionSheet(for: self.threadViewModel, from: self) {
-                self.updateTableContents()
-            }
         }))
 
         if threadViewModel.threadRecord.allowsMentionSend {

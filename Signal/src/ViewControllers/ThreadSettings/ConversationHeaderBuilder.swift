@@ -281,15 +281,12 @@ struct ConversationHeaderBuilder {
                     "CONVERSATION_SETTINGS_MUTE_BUTTON",
                     comment: "Button to mute the chat"
                 ),
-                action: { [weak delegate] in
-                    guard let delegate = delegate else { return }
-                    ConversationSettingsViewController.showMuteUnmuteActionSheet(
-                        for: delegate.threadViewModel,
-                        from: delegate
-                    ) { [weak delegate] in
+                menu: ConversationSettingsViewController.muteUnmuteMenu(
+                    for: delegate.threadViewModel,
+                    actionExecuted: { [weak delegate] in
                         delegate?.updateTableContents(shouldReload: true)
                     }
-                }
+                )
             ))
         }
 
@@ -344,6 +341,20 @@ struct ConversationHeaderBuilder {
             action()
         }
         button.isEnabled = isEnabled
+        button.buttonBackgroundColor = delegate.tableViewController.cellBackgroundColor
+        button.selectedButtonBackgroundColor = delegate.tableViewController.cellSelectedBackgroundColor
+
+        if maxIconButtonWidth < button.minimumWidth {
+            maxIconButtonWidth = button.minimumWidth
+        }
+
+        return button
+    }
+
+    mutating func buildIconButton(icon: ThemeIcon, title: String, isEnabled: Bool = true, menu: UIMenu) -> UIView {
+        let button = SettingsHeaderButton(title: title.capitalized, icon: icon)
+        button.isEnabled = isEnabled
+        button.menu = menu
         button.buttonBackgroundColor = delegate.tableViewController.cellBackgroundColor
         button.selectedButtonBackgroundColor = delegate.tableViewController.cellSelectedBackgroundColor
 

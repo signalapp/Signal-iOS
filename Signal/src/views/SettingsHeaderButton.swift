@@ -79,6 +79,16 @@ class SettingsHeaderButton: UIView {
 
     // MARK: - Properties
 
+    var menu: UIMenu? {
+        get {
+            return button.menu
+        }
+        set {
+            button.menu = newValue
+            button.showsMenuAsPrimaryAction = (newValue != nil)
+        }
+    }
+
     var buttonBackgroundColor: UIColor = Theme.tableCell2BackgroundColor {
         didSet {
             updateButtonBackgroundColorTransformer()
