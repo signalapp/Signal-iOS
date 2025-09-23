@@ -45,6 +45,9 @@ public extension UIDevice {
         case 2688:
             // iPhone X Max
             return true
+        case 2736:
+            // iPhone Air
+            return true
         case 2778:
             // iPhone 12 Pro Max
             return true
@@ -96,9 +99,13 @@ public extension UIDevice {
             return false
         case 2622:
             // iPhone 16 Pro
+            // iPhone 17/Pro
             return false
         case 2688:
             // iPhone X Max
+            return true
+        case 2736:
+            // iPhone Air
             return true
         case 2778:
             // iPhone 12 Pro Max
@@ -108,7 +115,7 @@ public extension UIDevice {
             // iPhone 16 Plus
             return true
         case 2868:
-            // iPhone 16 Pro Max
+            // iPhone 16/17 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
