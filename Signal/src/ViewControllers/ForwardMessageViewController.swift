@@ -255,50 +255,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 // MARK: - Sending
 
 extension ForwardMessageViewController {
-
-    private static let keyValueStore = KeyValueStore(collection: "ForwardMessageViewController")
-    private static let hasForwardedKey = "hasForwardedKey"
-
-    private var hasForwardedWithSneakyTransaction: Bool {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction)
-        }
-    }
-    private static func markHasForwardedWithSneakyTransaction() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction)
-        }
-    }
-
     func sendStep() {
-        if hasForwardedWithSneakyTransaction {
-            tryToSend()
-        } else {
-            showFirstForwardAlert()
-        }
-    }
-
-    private func showFirstForwardAlert() {
-        let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_TITLE",
-                                     comment: "Title for alert with information about forwarding messages."),
-            message: OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE",
-                                     comment: "Message for alert with information about forwarding messages.")
-            )
-
-        let format = OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d", tableName: "PluralAware",
-                                       comment: "Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }}")
-        let actionTitle = String.localizedStringWithFormat(format, content.allItems.count)
-        actionSheet.addAction(ActionSheetAction(title: actionTitle) { [weak self] _ in
-            Self.markHasForwardedWithSneakyTransaction()
-
-            self?.tryToSend()
-        })
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        presentActionSheet(actionSheet)
-    }
-
-    private func tryToSend() {
         AssertIsOnMainThread()
 
         Task {

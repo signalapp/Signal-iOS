@@ -488,22 +488,6 @@
 			<string>Only %d edits can be applied to this message.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Send message</string>
-			<key>other</key>
-			<string>Send %d messages</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
