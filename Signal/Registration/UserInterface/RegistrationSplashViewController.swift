@@ -238,7 +238,7 @@ private class RestoreOrTransferPickerController: StackSheetViewController {
                 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY",
                 comment: "Explanation of 'have old device' flow for the 'Restore or Transfer' prompt"
             ),
-            iconName: Theme.iconName(.qrCodeLight)
+            iconName: "qr-code-48"
         )
         hasDeviceButton.addTarget(target: self, selector: #selector(hasDevice))
         stackView.addArrangedSubview(hasDeviceButton)
@@ -252,7 +252,7 @@ private class RestoreOrTransferPickerController: StackSheetViewController {
                 "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY",
                 comment: "Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt"
             ),
-            iconName: Theme.iconName(.noDevice)
+            iconName: "no-phone-48"
         )
         noDeviceButton.addTarget(target: self, selector: #selector(noDevice))
         stackView.addArrangedSubview(noDeviceButton)

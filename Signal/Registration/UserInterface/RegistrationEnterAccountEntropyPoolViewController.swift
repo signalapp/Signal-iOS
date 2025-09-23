@@ -120,13 +120,13 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                     self?.presenter?.forgotKeyAction()
                 }
             },
-            secondaryButton: .init(title: CommonStrings.learnMore) { [weak self] sheet in
+            secondaryButton: .init(title: CommonStrings.learnMore, style: .secondary, action: .custom({ [weak self] sheet in
                 guard let self else { return }
                 let vc = SFSafariViewController(url: URL.Support.backups)
                 self.dismiss(animated: true) {
                     self.present(vc, animated: true, completion: nil)
                 }
-            }
+            }))
         )
         self.present(sheet, animated: true)
     }

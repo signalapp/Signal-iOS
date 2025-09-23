@@ -76,8 +76,8 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
             comment: "The body for the device transfer 'choice' view 'transfer' option"
         ),
-        iconName: "backup-light",
-        iconSize: 32,
+        iconName: "signal-backups-48",
+        iconSize: 48,
         selector: #selector(didSelectRestoreFromBackup)
     )
 
@@ -90,7 +90,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY",
             comment: "The body for the device transfer 'choice' view 'transfer' option"
         ),
-        iconName: Theme.iconName(.transfer),
+        iconName: "transfer-48",
         selector: #selector(didSelectDeviceTransfer)
     )
 
@@ -103,7 +103,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY",
             comment: "The body for the skip restore 'choice' option"
         ),
-        iconName: Theme.iconName(.register),
+        iconName: "continue-48",
         selector: #selector(didSkipRestore)
     )
 

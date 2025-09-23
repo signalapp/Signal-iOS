@@ -8,6 +8,7 @@ import SignalUI
 
 class RegistrationChoiceButton: OWSFlatButton
 {
+    var iconView: UIImageView?
     let titleLabel = UILabel()
     let bodyLabel = UILabel()
     let disclosureView = UILabel()
@@ -25,7 +26,7 @@ class RegistrationChoiceButton: OWSFlatButton
         // Icon
 
         let iconContainer = UIView()
-        let iconView = UIImageView(image: UIImage(named: iconName))
+        let iconView = UIImageView(image: UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate))
         iconView.contentMode = .scaleAspectFit
         iconContainer.addSubview(iconView)
         iconContainer.autoSetDimensions(to: CGSize(square: 48))
@@ -35,6 +36,7 @@ class RegistrationChoiceButton: OWSFlatButton
         } else {
             iconView.autoPinEdgesToSuperviewEdges()
         }
+        self.iconView = iconView
 
         // Labels
 
@@ -91,5 +93,6 @@ class RegistrationChoiceButton: OWSFlatButton
         // Unfortunately, these don't update automatically because they're
         // being converted to images for UIButton's background API.
         setBackgroundColors(upColor: UIColor.Signal.quaternaryFill, downColor: UIColor.Signal.tertiaryFill)
+        iconView?.tintColor = UIColor.Signal.ultramarine
     }
 }
