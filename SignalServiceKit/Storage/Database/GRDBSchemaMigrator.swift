@@ -346,6 +346,7 @@ public class GRDBSchemaMigrator {
         case addBackupAttachmentUploadQueueTrigger
         case migrateRecipientDeviceIds
         case fixUniqueConstraintOnPollVotes
+        case migrateTSAccountManagerKeyValueStore
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -409,7 +410,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 128
+    public static let grdbSchemaVersionLatest: UInt = 129
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4409,6 +4410,28 @@ public class GRDBSchemaMigrator {
                 columns: ["voteAuthorId", "optionId"],
                 options: [.unique]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateTSAccountManagerKeyValueStore) { tx in
+            let migrator = KeyValueStoreMigrator(collection: "TSStorageUserAccountCollection")
+            try migrator.migrateUInt32("TSStorageLocalRegistrationId", tx: tx)
+            try migrator.migrateUInt32("TSStorageLocalPniRegistrationId", tx: tx)
+            try migrator.migrateBool("TSAccountManager_ManualMessageFetchKey", tx: tx)
+            try migrator.migrateBool("TSAccountManager_IsDiscoverableByPhoneNumber", tx: tx)
+            try migrator.migrateDate("TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey", tx: tx)
+            try migrator.migrateString("TSStorageRegisteredNumberKey", tx: tx)
+            try migrator.migrateString("TSStorageRegisteredUUIDKey", tx: tx)
+            try migrator.migrateString("TSAccountManager_RegisteredPNIKey", tx: tx)
+            try migrator.migrateUInt32("TSAccountManager_DeviceId", tx: tx)
+            try migrator.migrateString("TSStorageServerAuthToken", tx: tx)
+            try migrator.migrateDate("TSAccountManager_RegistrationDateKey", tx: tx)
+            try migrator.migrateBool("TSAccountManager_IsDeregisteredKey", tx: tx)
+            try migrator.migrateString("TSAccountManager_ReregisteringPhoneNumberKey", tx: tx)
+            try migrator.migrateString("TSAccountManager_ReregisteringUUIDKey", tx: tx)
+            try migrator.migrateBool("TSAccountManager_ReregisteringWasPrimaryDeviceKey", tx: tx)
+            try migrator.migrateBool("TSAccountManager_IsTransferInProgressKey", tx: tx)
+            try migrator.migrateBool("TSAccountManager_WasTransferredKey", tx: tx)
             return .success(())
         }
 

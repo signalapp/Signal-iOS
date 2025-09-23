@@ -12,7 +12,7 @@ public class TSAccountManagerImpl: TSAccountManager {
     private let dateProvider: DateProvider
     private let db: any DB
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
 
     private let accountStateLock = UnfairLock()
     private var cachedAccountState: AccountState?
@@ -27,7 +27,7 @@ public class TSAccountManagerImpl: TSAccountManager {
         self.dateProvider = dateProvider
         self.db = db
 
-        let kvStore = KeyValueStore(
+        let kvStore = NewKeyValueStore(
             collection: "TSStorageUserAccountCollection"
         )
         self.kvStore = kvStore
@@ -105,7 +105,7 @@ public class TSAccountManagerImpl: TSAccountManager {
         case .aci: Self.aciRegistrationIdKey
         case .pni: Self.pniRegistrationIdKey
         }
-        return kvStore.getUInt32(key, transaction: tx)
+        return kvStore.fetchValue(Int64.self, forKey: key, tx: tx).map(UInt32.init(truncatingIfNeeded:))
     }
 
     public func setRegistrationId(_ newRegistrationId: UInt32, for identity: OWSIdentity, tx: DBWriteTransaction) {
@@ -113,12 +113,12 @@ public class TSAccountManagerImpl: TSAccountManager {
         case .aci: Self.aciRegistrationIdKey
         case .pni: Self.pniRegistrationIdKey
         }
-        kvStore.setUInt32(newRegistrationId, key: key, transaction: tx)
+        kvStore.writeValue(Int64(newRegistrationId), forKey: key, tx: tx)
     }
 
     public func clearRegistrationIds(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: Self.aciRegistrationIdKey, transaction: tx)
-        kvStore.removeValue(forKey: Self.pniRegistrationIdKey, transaction: tx)
+        kvStore.removeValue(forKey: Self.aciRegistrationIdKey, tx: tx)
+        kvStore.removeValue(forKey: Self.pniRegistrationIdKey, tx: tx)
     }
 
     // MARK: - Manual Message Fetch
@@ -129,7 +129,7 @@ public class TSAccountManagerImpl: TSAccountManager {
 
     public func setIsManualMessageFetchEnabled(_ isEnabled: Bool, tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
-            kvStore.setBool(isEnabled, key: Keys.isManualMessageFetchEnabled, transaction: tx)
+            kvStore.writeValue(isEnabled, forKey: Keys.isManualMessageFetchEnabled, tx: tx)
         }
     }
 
@@ -148,16 +148,16 @@ extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 
     public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability, tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
-            kvStore.setBool(
+            kvStore.writeValue(
                 phoneNumberDiscoverability == .everybody,
-                key: Keys.isDiscoverableByPhoneNumber,
-                transaction: tx
+                forKey: Keys.isDiscoverableByPhoneNumber,
+                tx: tx
             )
 
-            kvStore.setDate(
+            kvStore.writeValue(
                 dateProvider(),
-                key: Keys.lastSetIsDiscoverableByPhoneNumber,
-                transaction: tx
+                forKey: Keys.lastSetIsDiscoverableByPhoneNumber,
+                tx: tx
             )
         }
     }
@@ -174,32 +174,28 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         tx: DBWriteTransaction
     ) {
         mutateWithLock(tx: tx) {
-            let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
+            let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
             Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(e164)")
-            kvStore.setString(e164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
+            kvStore.writeValue(e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
 
-            let oldAci = Aci.parseFrom(aciString: kvStore.getString(Keys.localAci, transaction: tx))
+            let oldAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx))
             Self.regStateLogger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
-            kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
+            kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
-            let oldPni = Pni.parseFrom(pniString: kvStore.getString(Keys.localPni, transaction: tx))
+            let oldPni = Pni.parseFrom(pniString: kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx))
             Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.setString(pni.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+            kvStore.writeValue(pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
 
             Self.regStateLogger.info("device id is primary? \(deviceId == .primary)")
-            kvStore.setUInt32(deviceId.uint32Value, key: Keys.deviceId, transaction: tx)
-            kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
+            kvStore.writeValue(Int64(deviceId.uint32Value), forKey: Keys.deviceId, tx: tx)
+            kvStore.writeValue(serverAuthToken, forKey: Keys.serverAuthToken, tx: tx)
 
-            kvStore.setDate(dateProvider(), key: Keys.registrationDate, transaction: tx)
-            kvStore.removeValues(
-                forKeys: [
-                    Keys.isDeregisteredOrDelinked,
-                    Keys.reregistrationPhoneNumber,
-                    Keys.reregistrationAci
-                ],
-                transaction: tx
-            )
+            kvStore.writeValue(dateProvider(), forKey: Keys.registrationDate, tx: tx)
+
+            kvStore.removeValue(forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            kvStore.removeValue(forKey: Keys.reregistrationPhoneNumber, tx: tx)
+            kvStore.removeValue(forKey: Keys.reregistrationAci, tx: tx)
         }
     }
 
@@ -210,24 +206,24 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         tx: DBWriteTransaction
     ) {
         mutateWithLock(tx: tx) {
-            let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
+            let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
             Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(newE164.stringValue)")
-            kvStore.setString(newE164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
+            kvStore.writeValue(newE164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
 
-            let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
+            let oldAci = kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx)
             Self.regStateLogger.info("local aci \(oldAci ?? "nil") -> \(aci)")
-            kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
+            kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
-            let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
+            let oldPni = kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx)
             Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.setString(pni.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+            kvStore.writeValue(pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
         }
     }
 
     public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool {
         return mutateWithLock(tx: tx) {
-            let oldValue = kvStore.getBool(Keys.isDeregisteredOrDelinked, defaultValue: false, transaction: tx)
+            let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false
             guard oldValue != isDeregisteredOrDelinked else {
                 return false
             }
@@ -236,7 +232,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             } else {
                 Self.regStateLogger.info("Resetting isDeregistered/Delinked")
             }
-            kvStore.setBool(isDeregisteredOrDelinked, key: Keys.isDeregisteredOrDelinked, transaction: tx)
+            kvStore.writeValue(isDeregisteredOrDelinked, forKey: Keys.isDeregisteredOrDelinked, tx: tx)
             return true
         }
     }
@@ -250,11 +246,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     ) {
         mutateWithLock(tx: tx) {
             Self.regStateLogger.info("Resetting for reregistration, was primary? \(wasPrimaryDevice)")
-            kvStore.removeAll(transaction: tx)
+            kvStore.removeAll(tx: tx)
 
-            kvStore.setString(localNumber.stringValue, key: Keys.reregistrationPhoneNumber, transaction: tx)
-            kvStore.setString(localAci.serviceIdUppercaseString, key: Keys.reregistrationAci, transaction: tx)
-            kvStore.setBool(wasPrimaryDevice, key: Keys.reregistrationWasPrimaryDevice, transaction: tx)
+            kvStore.writeValue(localNumber.stringValue, forKey: Keys.reregistrationPhoneNumber, tx: tx)
+            kvStore.writeValue(localAci.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
+            kvStore.writeValue(wasPrimaryDevice, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
         }
 
         if let discoverability {
@@ -263,7 +259,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool {
-        let oldValue = kvStore.getBool(Keys.isTransferInProgress, transaction: tx)
+        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.isTransferInProgress, tx: tx)
         guard oldValue != isTransferInProgress else {
             return false
         }
@@ -273,13 +269,13 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             Self.regStateLogger.info("Resetting isTransferInProgress")
         }
         mutateWithLock(tx: tx) {
-            kvStore.setBool(isTransferInProgress, key: Keys.isTransferInProgress, transaction: tx)
+            kvStore.writeValue(isTransferInProgress, forKey: Keys.isTransferInProgress, tx: tx)
         }
         return true
     }
 
     public func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool {
-        let oldValue = kvStore.getBool(Keys.wasTransferred, transaction: tx)
+        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx)
         guard oldValue != wasTransferred else {
             return false
         }
@@ -289,7 +285,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             Self.regStateLogger.info("Resetting wasTransferred")
         }
         mutateWithLock(tx: tx) {
-            kvStore.setBool(wasTransferred, key: Keys.wasTransferred, transaction: tx)
+            kvStore.writeValue(wasTransferred, forKey: Keys.wasTransferred, tx: tx)
         }
         return true
     }
@@ -301,11 +297,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         }
         db.write { tx in
             mutateWithLock(tx: tx) {
-                guard kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx) else {
+                guard kvStore.fetchValue(Bool.self, forKey: Keys.isTransferInProgress, tx: tx) ?? false else {
                     return
                 }
                 Self.regStateLogger.info("Transfer was in progress but app relaunched; resetting")
-                kvStore.setBool(false, key: Keys.isTransferInProgress, transaction: tx)
+                kvStore.writeValue(false, forKey: Keys.isTransferInProgress, tx: tx)
             }
         }
     }
@@ -428,7 +424,7 @@ extension TSAccountManagerImpl {
         /// Logger is optional so we don't log every time we load state (which is a lot),
         /// and can just do so once per app launch.
         init(
-            kvStore: KeyValueStore,
+            kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) {
@@ -442,7 +438,7 @@ extension TSAccountManagerImpl {
             )
             self.localIdentifiers = localIdentifiers
 
-            let persistedDeviceId = kvStore.getUInt32(Keys.deviceId, transaction: tx)
+            let persistedDeviceId = kvStore.fetchValue(Int64.self, forKey: Keys.deviceId, tx: tx).map(UInt32.init(truncatingIfNeeded:))
 
             if let persistedDeviceId {
                 if let validatedDeviceId = DeviceId(validating: persistedDeviceId) {
@@ -455,7 +451,7 @@ extension TSAccountManagerImpl {
                 self.deviceId = .valid(.primary)
             }
 
-            self.serverAuthToken = kvStore.getString(Keys.serverAuthToken, transaction: tx)
+            self.serverAuthToken = kvStore.fetchValue(String.self, forKey: Keys.serverAuthToken, tx: tx)
 
             logger?.info("Has server auth token: \(self.serverAuthToken != nil)")
 
@@ -468,7 +464,7 @@ extension TSAccountManagerImpl {
                 logger?.info("Using default primary device id")
             }
 
-            let isTransferInProgress = kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx)
+            let isTransferInProgress = kvStore.fetchValue(Bool.self, forKey: Keys.isTransferInProgress, tx: tx) ?? false
             self.isTransferInProgress = isTransferInProgress
 
             self.registrationState = Self.loadRegistrationState(
@@ -482,39 +478,32 @@ extension TSAccountManagerImpl {
             if self.registrationState.isRegistered {
                 owsPrecondition(localIdentifiers != nil, "If we're registered, we must have LocalIdentifiers.")
             }
-            self.registrationDate = kvStore.getDate(Keys.registrationDate, transaction: tx)
+            self.registrationDate = kvStore.fetchValue(Date.self, forKey: Keys.registrationDate, tx: tx)
 
-            self.phoneNumberDiscoverability = kvStore.getBool(Keys.isDiscoverableByPhoneNumber, transaction: tx).map {
+            self.phoneNumberDiscoverability = kvStore.fetchValue(Bool.self, forKey: Keys.isDiscoverableByPhoneNumber, tx: tx).map {
                 return $0 ? .everybody : .nobody
             }
-            self.lastSetIsDiscoverableByPhoneNumberAt = kvStore.getDate(
-                Keys.lastSetIsDiscoverableByPhoneNumber,
-                transaction: tx
-            ) ?? .distantPast
+            self.lastSetIsDiscoverableByPhoneNumberAt = kvStore.fetchValue(Date.self, forKey: Keys.lastSetIsDiscoverableByPhoneNumber, tx: tx) ?? .distantPast
 
-            self.isManualMessageFetchEnabled = kvStore.getBool(
-                Keys.isManualMessageFetchEnabled,
-                defaultValue: false,
-                transaction: tx
-            )
+            self.isManualMessageFetchEnabled = kvStore.fetchValue(Bool.self, forKey: Keys.isManualMessageFetchEnabled, tx: tx) ?? false
         }
 
         private static func loadLocalIdentifiers(
-            kvStore: KeyValueStore,
+            kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) -> LocalIdentifiers? {
             guard
-                let localNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
+                let localNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
             else {
                 logger?.info("No local phone number!")
                 return nil
             }
-            guard let localAci = Aci.parseFrom(aciString: kvStore.getString(Keys.localAci, transaction: tx)) else {
+            guard let localAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx)) else {
                 logger?.info("No local aci!")
                 return nil
             }
-            let localPni = Pni.parseFrom(pniString: kvStore.getString(Keys.localPni, transaction: tx))
+            let localPni = Pni.parseFrom(pniString: kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx))
             logger?.info("Has local pni? \(localPni != nil)")
             return LocalIdentifiers(aci: localAci, pni: localPni, phoneNumber: localNumber)
         }
@@ -523,30 +512,15 @@ extension TSAccountManagerImpl {
             localIdentifiers: LocalIdentifiers?,
             isPrimaryDevice: Bool?,
             isTransferInProgress: Bool,
-            kvStore: KeyValueStore,
+            kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) -> TSRegistrationState {
-            let reregistrationPhoneNumber = kvStore.getString(
-                Keys.reregistrationPhoneNumber,
-                transaction: tx
-            )
+            let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
             // TODO: Eventually require reregistrationAci during re-registration.
-            let reregistrationAci = Aci.parseFrom(aciString: kvStore.getString(
-                Keys.reregistrationAci,
-                transaction: tx
-            ))
-
-            let isDeregisteredOrDelinked = kvStore.getBool(
-                Keys.isDeregisteredOrDelinked,
-                transaction: tx
-            )
-
-            let wasTransferred = kvStore.getBool(
-                Keys.wasTransferred,
-                defaultValue: false,
-                transaction: tx
-            )
+            let reregistrationAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx))
+            let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            let wasTransferred = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx) ?? false
 
             // Go in semi-reverse order; with higher priority stuff going first.
             if wasTransferred {
@@ -576,11 +550,7 @@ extension TSAccountManagerImpl {
                 // isDeregistered is probably also true; this takes precedence.
 
                 let shouldDefaultToPrimaryDevice = UIDevice.current.userInterfaceIdiom == .phone
-                if kvStore.getBool(
-                    Keys.reregistrationWasPrimaryDevice,
-                    defaultValue: shouldDefaultToPrimaryDevice,
-                    transaction: tx
-                ) {
+                if kvStore.fetchValue(Bool.self, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx) ?? shouldDefaultToPrimaryDevice {
                     logger?.info("rereg phone number set, and wasPrimaryDevice true; reregistering")
                     return .reregistering(
                         phoneNumber: reregistrationPhoneNumber,
