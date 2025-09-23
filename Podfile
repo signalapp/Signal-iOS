@@ -11,8 +11,8 @@ source 'https://cdn.cocoapods.org/'
 pod 'blurhash', podspec: './ThirdParty/blurhash.podspec'
 pod 'SwiftProtobuf', "1.30.0"
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '0fd6842cff034e76f792029e698c5c5fa7d6fbd987e79d04d2e3be1e01c42c47'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.80.3', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '2cf93a85bb516db46fdf17b25280770ff22f0ff8ce071d66dc3c30ec0f2ded2e'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.81.1', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal', testspecs: ["Tests"]
 
 ENV['RINGRTC_PREBUILD_CHECKSUM'] = '16d03a8f5f0e93baef045b7db1fadd1e64a19e6e45f21ca4ff42fd129424d7c7'

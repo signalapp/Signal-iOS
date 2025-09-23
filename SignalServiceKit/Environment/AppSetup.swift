@@ -142,6 +142,7 @@ public class AppSetup {
                 libsignalRemoteConfig["chatRequestConnectionCheckTimeoutMillis"] = String(connectionCheckTimeoutMillis)
             }
         }
+        libsignalRemoteConfig["chatPermessageDeflate"] = "true"
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
             userAgent: HttpHeaders.userAgentHeaderValueSignalIos,
