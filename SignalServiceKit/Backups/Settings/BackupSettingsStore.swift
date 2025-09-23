@@ -249,6 +249,8 @@ public struct BackupSettingsStore {
         kvStore.removeValue(forKey: Keys.lastBackupSizeBytes, transaction: tx)
     }
 
+    // MARK: -
+
     public func getLastBackupFailed(tx: DBReadTransaction) -> Bool {
         kvStore.getBool(Keys.lastBackupFailed, defaultValue: false, transaction: tx)
     }
@@ -257,15 +259,17 @@ public struct BackupSettingsStore {
         kvStore.setBool(true, key: Keys.lastBackupFailed, transaction: tx)
     }
 
+    // MARK: -
+
     public func getErrorBadgeMuted(target: String, tx: DBReadTransaction) -> Bool {
         errorStateStore.getBool(target + "_muted", defaultValue: false, transaction: tx)
     }
 
-    // MARK: -
-
     public func setErrorBadgeMuted(target: String, tx: DBWriteTransaction) {
         errorStateStore.setBool(true, key: target + "_muted", transaction: tx)
     }
+
+    // MARK: -
 
     public func getBackupErrorPromptCount(tx: DBReadTransaction) -> Int {
         errorStateStore.getInt(Keys.promptCountKey, defaultValue: 0, transaction: tx)

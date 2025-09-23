@@ -371,9 +371,15 @@ class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Done!")
         } catch is CancellationError {
-            await db.awaitableWrite {
-                self.backupSettingsStore.setLastBackupFailed(tx: $0)
+            switch mode {
+            case .bgProcessingTask:
+                await db.awaitableWrite {
+                    self.backupSettingsStore.setLastBackupFailed(tx: $0)
+                }
+            case .manual:
+                break
             }
+
             throw .cancellationError
         } catch {
             await db.awaitableWrite {
