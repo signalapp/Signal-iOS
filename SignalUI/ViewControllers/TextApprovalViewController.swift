@@ -31,14 +31,6 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     private let textView = BodyRangesTextView()
     private let footerView = ApprovalFooterView()
-    private var bottomConstraint: NSLayoutConstraint?
-
-    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
-        let placeholder = InputAccessoryViewPlaceholder()
-        placeholder.delegate = self
-        placeholder.referenceView = view
-        return placeholder
-    }()
 
     private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
@@ -60,18 +52,6 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         super.init()
 
         self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
-    }
-
-    // MARK: - UIViewController
-
-    public override var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    var currentInputAcccessoryView: UIView?
-
-    public override var inputAccessoryView: UIView? {
-        return inputAccessoryPlaceholder
     }
 
     // MARK: - View Lifecycle
@@ -159,10 +139,13 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         let stackView = UIStackView(arrangedSubviews: [linkPreviewView, textView, footerView])
         stackView.axis = .vertical
         view.addSubview(stackView)
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPinEdge(toSuperviewSafeArea: .leading)
-        stackView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        bottomConstraint = stackView.autoPinEdge(toSuperviewEdge: .bottom)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
 
         // Text View
         textView.bodyRangesDelegate = self
@@ -226,51 +209,6 @@ extension TextApprovalViewController: ApprovalFooterDelegate {
     }
 
     public func approvalFooterDidBeginEditingText() {}
-}
-
-// MARK: -
-
-extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
-    public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidPresent() {
-        updateFooterViewPosition()
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidDismiss() {
-        updateFooterViewPosition()
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
-        updateFooterViewPosition()
-    }
-
-    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        guard animationDuration > 0 else { return updateFooterViewPosition() }
-
-        UIView.animate(
-            withDuration: animationDuration,
-            delay: 0,
-            options: animationCurve.asAnimationOptions,
-            animations: { [self] in
-                updateFooterViewPosition()
-            }
-        )
-    }
-
-    func updateFooterViewPosition() {
-        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
-
-        // We always want to apply the new bottom bar position immediately,
-        // as this only happens during animations (interactive or otherwise)
-        view.layoutIfNeeded()
-    }
 }
 
 // MARK: -
