@@ -19,7 +19,6 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     let bottomBar = UIView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true, spoilerState: spoilerState)
-    private lazy var bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
     private enum BottomBarMode {
@@ -28,13 +27,6 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         case blockedByAnnouncementOnly
     }
     private var bottomBarMode: BottomBarMode?
-
-    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
-        let placeholder = InputAccessoryViewPlaceholder()
-        placeholder.delegate = self
-        placeholder.referenceView = view
-        return placeholder
-    }()
 
     private lazy var emptyStateView: UIView = {
         let label = UILabel()
@@ -83,12 +75,22 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         tableView.addInteraction(contextMenu)
 
         view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
         inputToolbar.delegate = self
         view.addSubview(bottomBar)
-        bottomBar.autoPinWidthToSuperview()
-        bottomBarBottomConstraint.isActive = true
+        bottomBar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            bottomBar.topAnchor.constraint(equalTo: tableView.bottomAnchor),
+            bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bottomBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+        ])
         // Its a bit silly but this is the easiest way to capture touches
         // and not let them pass up to any parent scrollviews. pans inside the
         // bottom bar shouldn't scroll anything.
@@ -106,10 +108,74 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         emptyStateView.autoPinEdge(.bottom, to: .top, of: bottomBar)
 
         updateBottomBarContents()
-        updateBottomBarPosition()
     }
 
-    public override var inputAccessoryView: UIView? { inputAccessoryPlaceholder }
+    func updateBottomBarContents() {
+        // Fetch the latest copy of the thread
+        thread = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
+
+        guard let groupThread = thread as? TSGroupThread else {
+            bottomBar.removeAllSubviews()
+            return owsFailDebug("Unexpectedly missing group thread")
+        }
+
+        if groupThread.canSendChatMessagesToThread() {
+            switch bottomBarMode {
+            case .member:
+                // Nothing to do, we're already in the right state
+                break
+            case .nonMember, .blockedByAnnouncementOnly, .none:
+                bottomBar.removeAllSubviews()
+                bottomBar.addSubview(inputToolbar)
+                inputToolbar.autoPinEdgesToSuperviewEdges()
+            }
+
+            bottomBarMode = .member
+        } else if groupThread.isBlockedByAnnouncementOnly {
+            switch bottomBarMode {
+            case .blockedByAnnouncementOnly:
+                // Nothing to do, we're already in the right state
+                break
+            case .member, .nonMember, .none:
+                bottomBar.removeAllSubviews()
+
+                let view = BlockingAnnouncementOnlyView(thread: groupThread, fromViewController: self, forceDarkMode: true)
+                bottomBar.addSubview(view)
+                view.autoPinWidthToSuperview()
+                view.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+                view.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
+            }
+
+            bottomBarMode = .blockedByAnnouncementOnly
+        } else {
+            switch bottomBarMode {
+            case .nonMember:
+                // Nothing to do, we're already in the right state
+                break
+            case .member, .blockedByAnnouncementOnly, .none:
+                bottomBar.removeAllSubviews()
+
+                let label = UILabel()
+                label.font = .dynamicTypeSubheadline
+                label.text = OWSLocalizedString(
+                    "STORIES_GROUP_REPLY_NOT_A_MEMBER",
+                    comment: "Text indicating you can't reply to a group story because you're not a member of the group"
+                )
+                label.textColor = .ows_gray05
+                label.textAlignment = .center
+                label.numberOfLines = 0
+                label.alpha = 0.7
+                label.setContentHuggingVerticalHigh()
+
+                bottomBar.addSubview(label)
+                label.autoPinWidthToSuperview(withMargin: 37)
+                label.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+                label.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
+            }
+
+            bottomBarMode = .nonMember
+        }
+    }
 
     func didSendMessage() {
         replyLoader?.reload()
@@ -201,144 +267,9 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
     }
 }
 
-extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
-    public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidPresent() {
-        updateBottomBarPosition()
-        updateContentInsets(animated: false)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidDismiss() {
-        updateBottomBarPosition()
-        updateContentInsets(animated: false)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
-        updateBottomBarPosition()
-    }
-
-    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        guard animationDuration > 0 else {
-            updateBottomBarPosition()
-            updateContentInsets(animated: false)
-            return
-        }
-
-        UIView.animate(
-            withDuration: animationDuration,
-            delay: 0,
-            options: animationCurve.asAnimationOptions,
-            animations: { [self] in
-                self.updateBottomBarPosition()
-                self.updateContentInsets(animated: true)
-            }
-        )
-    }
-
-    func updateBottomBarPosition() {
-        guard isViewLoaded else {
-            return
-        }
-
-        bottomBarBottomConstraint.constant = -inputAccessoryPlaceholder.keyboardOverlap
-
-        // We always want to apply the new bottom bar position immediately,
-        // as this only happens during animations (interactive or otherwise)
-        bottomBar.superview?.layoutIfNeeded()
-    }
-
-    func updateBottomBarContents() {
-        // Fetch the latest copy of the thread
-        thread = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
-
-        guard let groupThread = thread as? TSGroupThread else {
-            bottomBar.removeAllSubviews()
-            return owsFailDebug("Unexpectedly missing group thread")
-        }
-
-        if groupThread.canSendChatMessagesToThread() {
-            switch bottomBarMode {
-            case .member:
-                // Nothing to do, we're already in the right state
-                break
-            case .nonMember, .blockedByAnnouncementOnly, .none:
-                bottomBar.removeAllSubviews()
-                bottomBar.addSubview(inputToolbar)
-                inputToolbar.autoPinEdgesToSuperviewEdges()
-            }
-
-            bottomBarMode = .member
-        } else if groupThread.isBlockedByAnnouncementOnly {
-            switch bottomBarMode {
-            case .blockedByAnnouncementOnly:
-                // Nothing to do, we're already in the right state
-                break
-            case .member, .nonMember, .none:
-                bottomBar.removeAllSubviews()
-
-                let view = BlockingAnnouncementOnlyView(thread: groupThread, fromViewController: self, forceDarkMode: true)
-                bottomBar.addSubview(view)
-                view.autoPinWidthToSuperview()
-                view.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-                view.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
-            }
-
-            bottomBarMode = .blockedByAnnouncementOnly
-        } else {
-            switch bottomBarMode {
-            case .nonMember:
-                // Nothing to do, we're already in the right state
-                break
-            case .member, .blockedByAnnouncementOnly, .none:
-                bottomBar.removeAllSubviews()
-
-                let label = UILabel()
-                label.font = .dynamicTypeSubheadline
-                label.text = OWSLocalizedString(
-                    "STORIES_GROUP_REPLY_NOT_A_MEMBER",
-                    comment: "Text indicating you can't reply to a group story because you're not a member of the group"
-                )
-                label.textColor = .ows_gray05
-                label.textAlignment = .center
-                label.numberOfLines = 0
-                label.alpha = 0.7
-                label.setContentHuggingVerticalHigh()
-
-                bottomBar.addSubview(label)
-                label.autoPinWidthToSuperview(withMargin: 37)
-                label.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-                label.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
-            }
-
-            bottomBarMode = .nonMember
-        }
-
-        updateBottomBarPosition()
-    }
-
-    func updateContentInsets(animated: Bool) {
-        let wasScrolledToBottom = replyLoader?.isScrolledToBottom ?? false
-        tableView.contentInset.bottom = inputAccessoryPlaceholder.keyboardOverlap + bottomBar.height - view.safeAreaInsets.bottom
-        if wasScrolledToBottom {
-            replyLoader?.scrollToBottomOfLoadWindow(animated: animated)
-        }
-    }
-}
-
 extension StoryGroupReplyViewController: StoryReplyInputToolbarDelegate {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
         delegate?.storyGroupReplyViewControllerDidBeginEditing(self)
-    }
-
-    func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-        updateContentInsets(animated: false)
     }
 }
 
