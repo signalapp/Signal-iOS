@@ -3538,7 +3538,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountIdentity: accountIdentity,
                 progress: inMemoryState.restoreFromBackupProgressSink,
             )
+
             return .restored
+        }
+
+        if
+            persistedState.restoreMethod?.isBackup == true {
+            // If restoring from backup, and the PIN hasn't been set,
+            // read the restored PIN and skip prompting the user.
+            if inMemoryState.pinFromUser == nil && inMemoryState.pinFromDisk == nil {
+                deps.db.read { tx in
+                    inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
+                    inMemoryState.pinFromUser = inMemoryState.pinFromDisk
+                }
+            }
         }
 
         if let step = await performSVRBackupStepsIfNeeded(
