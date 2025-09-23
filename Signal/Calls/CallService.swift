@@ -288,6 +288,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             audioSession.isRTCAudioEnabled = false
         }
         audioSession.endAudioActivity(call.commonState.audioActivity)
+        updateIsVideoEnabled()
 
         switch call.mode {
         case .individual:
@@ -519,7 +520,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         switch call.mode {
         case .individual(let individualCall):
-            if individualCall.state == .connected || individualCall.state == .reconnecting {
+            if individualCall.isEnded {
+                individualCall.videoCaptureController.stopCapture()
+            } else if individualCall.state == .connected || individualCall.state == .reconnecting {
                 callManager.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack, call: call)
             } else if individualCall.isViewLoaded, individualCall.hasLocalVideo, !Platform.isSimulator {
                 // If we're not yet connected, just enable the camera but don't tell RingRTC
@@ -529,10 +532,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 individualCall.videoCaptureController.stopCapture()
             }
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            if shouldHaveLocalVideoTrack {
-                call.videoCaptureController.startCapture()
-            } else {
+            if call.shouldTerminateOnEndEvent {
                 call.videoCaptureController.stopCapture()
+            } else {
+                if shouldHaveLocalVideoTrack {
+                    call.videoCaptureController.startCapture()
+                } else {
+                    call.videoCaptureController.stopCapture()
+                }
             }
         }
     }
