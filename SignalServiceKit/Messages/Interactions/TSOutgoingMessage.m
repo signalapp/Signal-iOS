@@ -593,6 +593,19 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [builder setGiftBadge:[giftBadgeBuilder buildInfallibly]];
     }
 
+    if (self.isPoll) {
+        SSKProtoDataMessagePollCreate *_Nullable pollCreateProto = [self buildPollProtoWithTx:transaction];
+
+        if (!pollCreateProto) {
+            OWSFailDebug(@"Could not build poll protobuf");
+        }
+        [builder setPollCreate:pollCreateProto];
+
+        if ([self shouldBumpProtoForPolls]) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPolls;
+        }
+    }
+
     [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
     return builder;
 }

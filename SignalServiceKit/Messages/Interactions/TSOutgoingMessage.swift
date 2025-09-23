@@ -601,6 +601,25 @@ extension TSOutgoingMessage {
             tx: tx
         )
     }
+
+    // MARK: - Polls
+
+    @objc
+    func buildPollProto(tx: DBReadTransaction) -> SSKProtoDataMessagePollCreate? {
+        do {
+            return try DependenciesBridge.shared.pollMessageManager.buildProtoForSending(
+                parentMessage: self,
+                tx: tx
+            )
+        } catch {
+            return nil
+        }
+    }
+
+    @objc
+    func shouldBumpProtoForPolls() -> Bool {
+        return !FeatureFlags.pollKeepProtoVersion
+    }
 }
 
 // MARK: - Receipts

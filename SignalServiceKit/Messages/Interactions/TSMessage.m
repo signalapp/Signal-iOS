@@ -57,6 +57,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
 
+@property (nonatomic) BOOL isPoll;
+
 @end
 
 #pragma mark -
@@ -442,6 +444,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) { message.contactShare = contactShare; }];
+}
+
+- (void)updateWithIsPoll:(BOOL)isPoll transaction:(DBWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateMessageWithTransaction:transaction block:^(TSMessage *message) { message.isPoll = isPoll; }];
 }
 
 #ifdef TESTABLE_BUILD

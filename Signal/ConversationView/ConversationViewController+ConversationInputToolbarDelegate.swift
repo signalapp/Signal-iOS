@@ -522,7 +522,17 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     }
 
     public func pollButtonPressed() {
-        present(NewPollViewController(), animated: true)
+        AssertIsOnMainThread()
+
+        if !FeatureFlags.pollSend {
+            return
+        }
+
+        dismissKeyBoard()
+
+        let newPollViewController = NewPollViewController()
+        newPollViewController.sendDelegate = self
+        present(newPollViewController, animated: true)
     }
 
     public func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
@@ -1000,5 +1010,27 @@ extension ConversationViewController: StickerPickerSheetDelegate {
         let manageStickersView = ManageStickersViewController()
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
         return navigationController
+    }
+}
+
+// MARK: - PollSendDelegate
+
+extension ConversationViewController: PollSendDelegate {
+    public func sendPoll(question: String, options: [String], allowMultipleVotes: Bool) {
+        ThreadUtil.enqueueMessage(
+            withPoll:
+                OWSPoll(
+                    // We don't know the pollID yet since it hasn't been inserted in the DB.
+                    // That is OK since this OWSPoll instance will not be used to re-render
+                    // the conversation view (when pollID is needed to determine equatability).
+                    pollId: 0,
+                    question: question,
+                    options: options,
+                    allowsMultiSelect: allowMultipleVotes,
+                    votes: [:],
+                    isEnded: false
+                ),
+            thread: self.thread
+        )
     }
 }

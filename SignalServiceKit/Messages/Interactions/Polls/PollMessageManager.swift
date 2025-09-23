@@ -36,6 +36,20 @@ public class PollMessageManager {
         )
     }
 
+    public func processOutgoingPollCreate(
+        interactionId: Int64,
+        pollOptions: [String],
+        allowsMultiSelect: Bool,
+        transaction: DBWriteTransaction
+    ) throws {
+        try pollStore.createPoll(
+            interactionId: interactionId,
+            allowsMultiSelect: allowsMultiSelect,
+            options: pollOptions,
+            transaction: transaction
+        )
+    }
+
     public func processIncomingPollVote(
         voteAuthor: Aci,
         pollVoteProto: SSKProtoDataMessagePollVote,
@@ -107,5 +121,23 @@ public class PollMessageManager {
         }
 
         return try pollStore.owsPoll(question: question, interactionId: interactionId, transaction: transaction)
+    }
+
+    public func buildProtoForSending(
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessagePollCreate? {
+        guard let poll = try buildPoll(message: parentMessage, transaction: tx) else {
+            return nil
+        }
+
+        let pollBuilder = SSKProtoDataMessagePollCreate.builder()
+        pollBuilder.setQuestion(poll.question)
+        pollBuilder.setOptions(poll.sortedOptions().map(\.text))
+        pollBuilder.setAllowMultiple(poll.allowsMultiSelect)
+
+        let pollCreateProto = pollBuilder.buildInfallibly()
+
+        return pollCreateProto
     }
 }

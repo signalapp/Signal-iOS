@@ -333,6 +333,57 @@ extension ThreadUtil {
     }
 }
 
+// MARK: - Polls
+
+public extension ThreadUtil {
+
+    class func enqueueMessage(
+        withPoll poll: OWSPoll,
+        thread: TSThread
+    ) {
+        AssertIsOnMainThread()
+        guard poll.question.count <= OWSPoll.Constants.maxCharacterLength
+                && poll.question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
+        else {
+            owsFailDebug("Poll question too large")
+            return
+        }
+
+        let validatedPollQuestion = SSKEnvironment.shared.databaseStorageRef.write { tx in DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+            MessageBody(text: poll.question, ranges: .empty),
+            tx: tx)
+        }
+
+        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: validatedPollQuestion)
+        let message: TSOutgoingMessage = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx)
+            return builder.build(transaction: tx)
+        }
+
+        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+            message,
+            body: nil,
+            poll: poll
+        )
+
+        Self.enqueueSendQueue.enqueue {
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
+                    owsFailDebug("Unable to build message for sending!")
+                    return
+                }
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+                if
+                    let messageForIntent = preparedMessage.messageForIntentDonation(tx: transaction),
+                    let thread = messageForIntent.thread(tx: transaction)
+                {
+                    thread.donateSendMessageIntent(for: messageForIntent, transaction: transaction)
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Sharing Suggestions
 
 extension TSThread {

@@ -8,7 +8,12 @@ import LibSignalClient
 import SignalUI
 import SwiftUI
 
+public protocol PollSendDelegate: AnyObject {
+    func sendPoll(question: String, options: [String], allowMultipleVotes: Bool)
+}
+
 class NewPollViewController: HostingController<NewPollView>, ObservableObject {
+    public weak var sendDelegate: PollSendDelegate?
     private let viewModel: NewPollViewModel
 
     init() {
@@ -22,17 +27,48 @@ extension NewPollViewController: NewPollViewModel.ActionsDelegate {
     fileprivate func onDismiss() {
         dismiss(animated: true)
     }
+
+    fileprivate func onSend(
+        pollOptions: [String],
+        question: String,
+        allowMultipleVotes: Bool
+    ) {
+        sendDelegate?.sendPoll(
+            question: question,
+            options: pollOptions,
+            allowMultipleVotes: allowMultipleVotes
+        )
+
+        dismiss(animated: true)
+    }
 }
 
 private class NewPollViewModel {
     protocol ActionsDelegate: AnyObject {
         func onDismiss()
+        func onSend(
+            pollOptions: [String],
+            question: String,
+            allowMultipleVotes: Bool
+        )
     }
 
     weak var actionsDelegate: ActionsDelegate?
 
     func onDismiss() {
         actionsDelegate?.onDismiss()
+    }
+
+    func onSend(
+        pollOptions: [String],
+        question: String,
+        allowMultipleVotes: Bool
+    ) {
+        actionsDelegate?.onSend(
+            pollOptions: pollOptions,
+            question: question,
+            allowMultipleVotes: allowMultipleVotes
+        )
     }
 }
 
@@ -109,8 +145,11 @@ struct NewPollView: View {
 
                     let sendButtonEnabled = pollOptions.count >= 3 && !pollQuestion.isEmpty ? true : false
                     Button(MessageStrings.sendButton, action: {
-                        // TODO: do a message send
-                        viewModel.onDismiss()
+                        viewModel.onSend(
+                            pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
+                            question: pollQuestion,
+                            allowMultipleVotes: allowMultipleVotes
+                        )
                     })
                     .foregroundColor(Color.Signal.label)
                     .padding()

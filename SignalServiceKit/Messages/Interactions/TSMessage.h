@@ -218,6 +218,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithContactShare:(OWSContact *)contactShare transaction:(DBWriteTransaction *)transaction;
 
+- (void)updateWithIsPoll:(BOOL)isPoll transaction:(DBWriteTransaction *)transaction;
+
 #ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
