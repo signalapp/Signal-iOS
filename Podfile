@@ -39,11 +39,7 @@ pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS'
 
 pod 'SDWebImage'
 pod 'SDWebImageWebPCoder'
-pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
-pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
-pod 'libwebp', podspec: './ThirdParty/libwebp.podspec.json'
-# pod 'YYImage', path: '../YYImage'
-# pod 'YYImage/libwebp', path:'../YYImage'
+pod 'libwebp' 
 
 ###
 # third party pods

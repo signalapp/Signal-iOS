@@ -11,15 +11,18 @@ PODS:
   - libPhoneNumber-iOS (1.2.0)
   - LibSignalClient (0.80.3)
   - LibSignalClient/Tests (0.80.3)
-  - libwebp (1.3.2):
-    - libwebp/demux (= 1.3.2)
-    - libwebp/mux (= 1.3.2)
-    - libwebp/webp (= 1.3.2)
-  - libwebp/demux (1.3.2):
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
     - libwebp/webp
-  - libwebp/mux (1.3.2):
+  - libwebp/mux (1.5.0):
     - libwebp/demux
-  - libwebp/webp (1.3.2)
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
   - Logging (1.4.0)
   - lottie-ios (4.4.3)
   - Mantle (2.1.0):
@@ -45,12 +48,6 @@ PODS:
   - SQLCipher/standard (4.6.1):
     - SQLCipher/common
   - SwiftProtobuf (1.30.0)
-  - YYImage (1.0.4):
-    - YYImage/Core (= 1.0.4)
-  - YYImage/Core (1.0.4)
-  - YYImage/libwebp (1.0.4):
-    - libwebp
-    - YYImage/Core
 
 DEPENDENCIES:
   - blurhash (from `./ThirdParty/blurhash.podspec`)
@@ -61,7 +58,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.80.3`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.80.3`)
-  - libwebp (from `./ThirdParty/libwebp.podspec.json`)
+  - libwebp
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
@@ -72,14 +69,13 @@ DEPENDENCIES:
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.57.1`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.30.0)
-  - YYImage (from `https://github.com/signalapp/YYImage`)
-  - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
 
 SPEC REPOS:
   trunk:
     - BonMot
     - CocoaLumberjack
     - GRDB.swift
+    - libwebp
     - Logging
     - lottie-ios
     - PureLayout
@@ -101,8 +97,6 @@ EXTERNAL SOURCES:
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
     :tag: v0.80.3
-  libwebp:
-    :podspec: "./ThirdParty/libwebp.podspec.json"
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -115,8 +109,6 @@ EXTERNAL SOURCES:
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
-  YYImage:
-    :git: https://github.com/signalapp/YYImage
 
 CHECKOUT OPTIONS:
   blurhash:
@@ -144,9 +136,6 @@ CHECKOUT OPTIONS:
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
-  YYImage:
-    :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
-    :git: https://github.com/signalapp/YYImage
 
 SPEC CHECKSUMS:
   blurhash: f588a9d659f4c742a325bbbbd438d1ef3c34af19
@@ -156,7 +145,7 @@ SPEC CHECKSUMS:
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
   libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
   LibSignalClient: 832ac5a0f24a862122d7d617b709cd5209be63c6
-  libwebp: 1b5562124e3ca3336fb7506e76501bed7758963a
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -168,8 +157,7 @@ SPEC CHECKSUMS:
   SignalRingRTC: be4ad58e35c0fa7f1a33b115b7a59c60f601a3fa
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 3697407f0d5b23bedeba9c2eaaf3ec6fdff69349
-  YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 7f838064e06ba60613598a9dbd6046c7b47844e4
+PODFILE CHECKSUM: 5cc9e6f3cd89eeca4b89d4f96b5193691115bb91
 
 COCOAPODS: 1.15.2
