@@ -687,6 +687,8 @@
 		509085B82C498C3F00409B85 /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABC289453B200548EEE /* HTMLMetadata.swift */; };
 		509085BA2C498C4400409B85 /* HTMLMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */; };
 		509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */; };
+		509085BE2C49C29400409B85 /* PaddingBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BD2C49C29400409B85 /* PaddingBucket.swift */; };
+		509085C02C49C2A500409B85 /* PaddingBucketTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BF2C49C2A500409B85 /* PaddingBucketTest.swift */; };
 		50925DEA2DA86E3A00DAB484 /* GroupMessageProcessorJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */; };
 		50925DEC2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */; };
 		509527FA2E26F02B00A03829 /* ConnectionLockTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509527F92E26F02B00A03829 /* ConnectionLockTest.swift */; };
@@ -4637,6 +4639,8 @@
 		508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponseTest.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
 		509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
+		509085BD2C49C29400409B85 /* PaddingBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingBucket.swift; sourceTree = "<group>"; };
+		509085BF2C49C2A500409B85 /* PaddingBucketTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingBucketTest.swift; sourceTree = "<group>"; };
 		50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJob.swift; sourceTree = "<group>"; };
 		50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJobTest.swift; sourceTree = "<group>"; };
 		509527F92E26F02B00A03829 /* ConnectionLockTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionLockTest.swift; sourceTree = "<group>"; };
@@ -10407,6 +10411,8 @@
 		7255A4C32B98D5A800E95368 /* Attachments */ = {
 			isa = PBXGroup;
 			children = (
+				509085BD2C49C29400409B85 /* PaddingBucket.swift */,
+				509085BF2C49C2A500409B85 /* PaddingBucketTest.swift */,
 				664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */,
 				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
@@ -18303,6 +18309,7 @@
 				F9C5CCFE289453B300548EEE /* OWSVerificationStateSyncMessage.m in Sources */,
 				F9C5CCFC289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m in Sources */,
 				F9C5CCFF289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.m in Sources */,
+				509085BE2C49C29400409B85 /* PaddingBucket.swift in Sources */,
 				668B5BFC2C7E46D30018CF36 /* PaletteChatColor+Constants.swift in Sources */,
 				F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */,
 				F9C5CD89289453B300548EEE /* PaymentFinder.swift in Sources */,
@@ -18907,6 +18914,7 @@
 				F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */,
 				F942629F289B1B5600460798 /* OWSUDManagerTest.swift in Sources */,
 				F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */,
+				509085C02C49C2A500409B85 /* PaddingBucketTest.swift in Sources */,
 				50468F2529EDD46500948E02 /* ParamParserTest.swift in Sources */,
 				50468F2B29EE19C300948E02 /* PhoneNumberChangedMessageInserterTest.swift in Sources */,
 				F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */,
