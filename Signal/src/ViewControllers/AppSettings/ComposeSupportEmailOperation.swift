@@ -10,9 +10,6 @@ import SignalUI
 struct SupportEmailModel {
 
     enum LogPolicy {
-        /// Do not upload logs
-        case none
-
         /// Attempt to upload the logs and include the resulting URL in the email body
         /// If the upload fails for one reason or another, continue anyway
         case attemptUpload(DebugLogDumper)
@@ -24,29 +21,48 @@ struct SupportEmailModel {
         case link(URL)
     }
 
-    public static let supportFilterDefault = "Signal iOS Support Request"
-    public static let supportFilterPayments = "Signal iOS Support Request - Payments"
-
     /// An unlocalized string used for filtering by support
-    var supportFilter: String = SupportEmailModel.supportFilterDefault
+    let supportFilter: String
 
-    var localizedSubject: String = OWSLocalizedString(
-        "SUPPORT_EMAIL_SUBJECT",
-        comment: "Localized subject for support request emails"
-    )
-    var deviceType: String = UIDevice.current.model
-    var deviceIdentifier: String = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
-    var iosVersion: String = AppVersionImpl.shared.iosVersionString
-    var signalAppVersion: String = AppVersionImpl.shared.currentAppVersion
-    var locale: String = NSLocale.current.identifier
+    let localizedSubject: String
+    let deviceType: String
+    let deviceIdentifier: String
+    let iosVersion: String
+    let signalAppVersion: String
+    let locale: String
+    let userDescription: String
+    let emojiMood: EmojiMoodPickerView.Mood?
+    let debugLogPolicy: LogPolicy?
+    let hasRecentChallenge: Bool
 
-    var userDescription: String? = OWSLocalizedString(
-        "SUPPORT_EMAIL_DEFAULT_DESCRIPTION",
-        comment: "Default prompt for user description in support email requests"
-    )
-    var emojiMood: EmojiMoodPickerView.Mood?
-    var debugLogPolicy: LogPolicy = .none
     fileprivate var resolvedDebugString: String?
+
+    init(
+        userDescription: String?,
+        emojiMood: EmojiMoodPickerView.Mood?,
+        supportFilter: String?,
+        debugLogPolicy: LogPolicy?,
+        hasRecentChallenge: Bool
+    ) {
+        self.localizedSubject = OWSLocalizedString(
+            "SUPPORT_EMAIL_SUBJECT",
+            comment: "Localized subject for support request emails"
+        )
+        self.deviceType = UIDevice.current.model
+        self.deviceIdentifier = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
+        self.iosVersion = AppVersionImpl.shared.iosVersionString
+        self.signalAppVersion = AppVersionImpl.shared.currentAppVersion
+        self.locale = Locale.current.identifier
+
+        self.userDescription = userDescription ?? OWSLocalizedString(
+            "SUPPORT_EMAIL_DEFAULT_DESCRIPTION",
+            comment: "Default prompt for user description in support email requests"
+        )
+        self.emojiMood = emojiMood
+        self.supportFilter = supportFilter ?? "Signal iOS Support Request"
+        self.debugLogPolicy = debugLogPolicy
+        self.hasRecentChallenge = hasRecentChallenge
+    }
 }
 
 // MARK: -
@@ -89,20 +105,22 @@ final class ComposeSupportEmailOperation: NSObject {
     private var model: SupportEmailModel
     private var isCancelled: Bool = false
 
-    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) async {
+    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL, hasRecentChallenge: Bool) async {
         do {
-            try await sendEmail(supportFilter: supportFilter, logUrl: logUrl)
+            try await sendEmail(supportFilter: supportFilter, logUrl: logUrl, hasRecentChallenge: hasRecentChallenge)
         } catch {
             OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
-    class func sendEmail(supportFilter: String, logUrl: URL? = nil) async throws {
-        var model = SupportEmailModel()
-        model.supportFilter = supportFilter
-        if let logUrl {
-            model.debugLogPolicy = .link(logUrl)
-        }
+    class func sendEmail(supportFilter: String, logUrl: URL?, hasRecentChallenge: Bool) async throws {
+        let model = SupportEmailModel(
+            userDescription: nil,
+            emojiMood: nil,
+            supportFilter: supportFilter,
+            debugLogPolicy: logUrl.map { .link($0) },
+            hasRecentChallenge: hasRecentChallenge
+        )
         try await sendEmail(model: model)
     }
 
@@ -127,7 +145,7 @@ final class ComposeSupportEmailOperation: NSObject {
 
         let debugUrlString: String?
         switch model.debugLogPolicy {
-        case .none:
+        case nil:
             debugUrlString = nil
         case .link(let url):
             debugUrlString = url.absoluteString
@@ -202,6 +220,10 @@ final class ComposeSupportEmailOperation: NSObject {
                     "SUPPORT_EMAIL_FILTER_LABEL_FORMAT",
                     comment: "Localized label for support request email filter string. Embeds {{filter text}}."
                 ), model.supportFilter
+            ),
+            String(
+                format: "Challenge Received: %@",
+                    model.hasRecentChallenge ? "yes" : "no"
             ),
             String(
                 format: OWSLocalizedString(

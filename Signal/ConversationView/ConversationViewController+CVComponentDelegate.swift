@@ -897,6 +897,9 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
         if SSKEnvironment.shared.spamChallengeResolverRef.isPausingMessages {
             SpamCaptchaViewController.presentActionSheet(from: self)
+            DependenciesBridge.shared.db.write { tx in
+                SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
+            }
         } else {
             SSKEnvironment.shared.spamChallengeResolverRef.retryPausedMessagesIfReady()
         }

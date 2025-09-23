@@ -131,6 +131,10 @@ extension SignalApp {
     @objc
     private func spamChallenge() {
         SpamCaptchaViewController.presentActionSheet(from: AppEnvironment.shared.windowManagerRef.captchaWindow.findFrontmostViewController(ignoringAlerts: true)!)
+
+        DependenciesBridge.shared.db.write { tx in
+            SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
+        }
     }
 
     @objc

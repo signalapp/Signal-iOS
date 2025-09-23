@@ -19,6 +19,7 @@
 		04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573652E4CEE560019651F /* CVComponentPoll.swift */; };
 		04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736A2E4CF1BD0019651F /* CVPollView.swift */; };
 		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
+		04A573722E53A3BF0019651F /* SupportKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573712E53A3B40019651F /* SupportKeyValueStore.swift */; };
 		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
 		04AB61C62E5E37A800405699 /* PollRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C52E5E37A400405699 /* PollRecord.swift */; };
 		04AB61C82E5E399700405699 /* PollOptionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C72E5E399400405699 /* PollOptionRecord.swift */; };
@@ -3851,6 +3852,7 @@
 		04AB61C52E5E37A400405699 /* PollRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollRecord.swift; sourceTree = "<group>"; };
 		04AB61C72E5E399400405699 /* PollOptionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollOptionRecord.swift; sourceTree = "<group>"; };
 		04AB61C92E5E448A00405699 /* PollManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollManagerTest.swift; sourceTree = "<group>"; };
+		04A573712E53A3B40019651F /* SupportKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportKeyValueStore.swift; sourceTree = "<group>"; };
 		04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManager.swift; sourceTree = "<group>"; };
 		04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManagerTest.swift; sourceTree = "<group>"; };
 		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -7919,6 +7921,7 @@
 				32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */,
 				32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */,
 				32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */,
+				04A573712E53A3B40019651F /* SupportKeyValueStore.swift */,
 			);
 			name = Help;
 			sourceTree = "<group>";
@@ -17401,6 +17404,7 @@
 				88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */,
 				88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */,
 				D9E43C102CC194140001536E /* SupplementalCallControlsForFullscreenLocalMember.swift in Sources */,
+				04A573722E53A3BF0019651F /* SupportKeyValueStore.swift in Sources */,
 				6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */,
 				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
 				506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */,

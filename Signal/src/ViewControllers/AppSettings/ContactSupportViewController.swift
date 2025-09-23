@@ -241,13 +241,15 @@ final class ContactSupportViewController: OWSTableViewController2 {
     private var currentEmailComposeTask: Task<Void, any Error>?
 
     private func didTapNext() {
-        var emailRequest = SupportEmailModel()
-        emailRequest.userDescription = descriptionField.text
-        emailRequest.emojiMood = emojiPicker.selectedMood
-        emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload(.fromGlobals()) : .none
-        if let selectedFilter = selectedFilter {
-            emailRequest.supportFilter = "iOS \(selectedFilter.emailFilterString)"
-        }
+        let logDumper = DebugLogDumper.fromGlobals()
+        let emailRequest = SupportEmailModel(
+            userDescription: descriptionField.text,
+            emojiMood: emojiPicker.selectedMood,
+            supportFilter: selectedFilter.map { "iOS \($0.emailFilterString)" },
+            debugLogPolicy: debugSwitch.isOn ? .attemptUpload(logDumper) : nil,
+            hasRecentChallenge: logDumper.challengeReceivedRecently()
+        )
+
         showSpinnerOnNextButton = true
 
         Task { @MainActor in

@@ -25,6 +25,17 @@ public struct DebugLogDumper {
         )
     }
 
+    public func challengeReceivedRecently() -> Bool {
+        guard let db else {
+            return false
+        }
+
+        let challengeFloorDate = Date().addingTimeInterval(.day * -3)
+        return db.read { tx in
+            SupportKeyValueStore().lastChallengeWithinTimeframe(transaction: tx, lastChallengeFloor: challengeFloorDate)
+        }
+    }
+
     fileprivate func dump() {
         appVersion.dumpToLog()
         if let db {
@@ -90,7 +101,8 @@ enum DebugLogs {
                         Task {
                             await ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(
                                 supportFilter: supportFilter,
-                                logUrl: url
+                                logUrl: url,
+                                hasRecentChallenge: dumper.challengeReceivedRecently()
                             )
                         }
                         submitLogsCompletion()

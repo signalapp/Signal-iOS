@@ -47,9 +47,13 @@ enum ContactSupportActionSheet {
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            var emailRequest = SupportEmailModel()
-            emailRequest.supportFilter = emailFilter.asString
-            emailRequest.debugLogPolicy = .requireUpload(logDumper)
+            let emailRequest = SupportEmailModel(
+                userDescription: nil,
+                emojiMood: nil,
+                supportFilter: emailFilter.asString,
+                debugLogPolicy: .requireUpload(logDumper),
+                hasRecentChallenge: logDumper.challengeReceivedRecently()
+            )
 
             ModalActivityIndicatorViewController.present(
                 fromViewController: fromViewController,
@@ -81,7 +85,11 @@ enum ContactSupportActionSheet {
             guard let fromViewController = fromViewController else { return }
             Task {
                 do {
-                    try await ComposeSupportEmailOperation.sendEmail(supportFilter: emailFilter.asString)
+                    try await ComposeSupportEmailOperation.sendEmail(
+                        supportFilter: emailFilter.asString,
+                        logUrl: nil,
+                        hasRecentChallenge: logDumper.challengeReceivedRecently()
+                    )
                 } catch {
                     showError(error, emailFilter: emailFilter, logDumper: logDumper, fromViewController: fromViewController)
                 }

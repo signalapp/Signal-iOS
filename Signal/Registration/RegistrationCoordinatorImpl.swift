@@ -2992,6 +2992,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Our third choice: a captcha challenge
             if requestsCaptchaChallenge {
                 Logger.info("Showing the CAPTCHA challenge to the user")
+                db.write { transaction in
+                    SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: transaction)
+                }
                 return .captchaChallenge
             }
 
