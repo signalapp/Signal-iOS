@@ -188,4 +188,74 @@ class DBTimeBatchingTest: XCTestCase {
         }
         XCTAssertEqual(numRows, 10)
     }
+
+    // MARK: -
+
+    func testTxContext_sync() {
+        let maxBatchCount = 3
+        var buildTxContextCount = 0
+        var processBatchCount = 0
+        var concludeTxCount = 0
+
+        struct TxContext {
+            var id = 0
+        }
+
+        _ = TimeGatedBatch.processAll(
+            db: InMemoryDB(),
+            yieldTxAfter: -1, // Each iteration a new transaction
+            buildTxContext: { _ in
+                buildTxContextCount += 1
+                return TxContext()
+            },
+            processBatch: { _, context in
+                XCTAssertEqual(context.id, 0)
+                context.id += 1
+                processBatchCount += 1
+                return processBatchCount == maxBatchCount ? 0 : 1
+            },
+            concludeTx: { _, context in
+                XCTAssertEqual(context.id, 1)
+                concludeTxCount += 1
+            },
+        )
+
+        XCTAssertEqual(buildTxContextCount, maxBatchCount)
+        XCTAssertEqual(processBatchCount, maxBatchCount)
+        XCTAssertEqual(concludeTxCount, maxBatchCount)
+    }
+
+    func testTxContext_async() async {
+        let maxBatchCount = 3
+        var buildTxContextCount = 0
+        var processBatchCount = 0
+        var concludeTxCount = 0
+
+        struct TxContext {
+            var id = 0
+        }
+
+        _ = await TimeGatedBatch.processAllAsync(
+            db: InMemoryDB(),
+            yieldTxAfter: -1, // Each iteration a new transaction
+            buildTxContext: { _ in
+                buildTxContextCount += 1
+                return TxContext()
+            },
+            processBatch: { _, context in
+                XCTAssertEqual(context.id, 0)
+                context.id += 1
+                processBatchCount += 1
+                return processBatchCount == maxBatchCount ? 0 : 1
+            },
+            concludeTx: { _, context in
+                XCTAssertEqual(context.id, 1)
+                concludeTxCount += 1
+            },
+        )
+
+        XCTAssertEqual(buildTxContextCount, maxBatchCount)
+        XCTAssertEqual(processBatchCount, maxBatchCount)
+        XCTAssertEqual(concludeTxCount, maxBatchCount)
+    }
 }
