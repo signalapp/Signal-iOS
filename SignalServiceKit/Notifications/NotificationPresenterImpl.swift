@@ -1254,8 +1254,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                     switch infoMessage.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
                     case .legacyRawString, .nonGroupUpdate:
                         groupUpdateAuthor = nil
-                    case .newGroup(_, let updateMetadata), .modelDiff(_, _, let updateMetadata):
-                        switch updateMetadata.source {
+                    case .newGroup(_, let source), .modelDiff(_, _, let source):
+                        switch source {
                         case .unknown, .localUser:
                             groupUpdateAuthor = nil
                         case .legacyE164(let e164):

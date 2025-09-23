@@ -109,11 +109,11 @@ extension GroupUpdateItemBuilder {
 }
 
 public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
-    private let contactsManager: Shims.ContactsManager
+    private let contactsManager: ContactManager
     private let recipientDatabaseTable: RecipientDatabaseTable
 
     init(
-        contactsManager: Shims.ContactsManager,
+        contactsManager: ContactManager,
         recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.contactsManager = contactsManager
@@ -311,9 +311,9 @@ private struct UnnamedInviteCounts {
 /// and persisted. Consequently, all new group updates should go through this
 /// struct.
 private struct PrecomputedGroupUpdateItemBuilder {
-    private let contactsManager: Shims.ContactsManager
+    private let contactsManager: ContactManager
 
-    init(contactsManager: Shims.ContactsManager) {
+    init(contactsManager: ContactManager) {
         self.contactsManager = contactsManager
     }
 
@@ -326,7 +326,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             let address = SignalServiceAddress(aci.wrappedValue)
 
             return (
-                contactsManager.displayName(address: address, tx: tx),
+                contactsManager.displayNameString(for: address, transaction: tx),
                 address
             )
         }
@@ -598,9 +598,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
         case .otherUserWasInvitedByLocalUser(let invitee):
             let inviteeAddress = SignalServiceAddress(invitee.wrappedValue)
-            let inviteeName = contactsManager.displayName(
-                address: inviteeAddress,
-                tx: tx
+            let inviteeName = contactsManager.displayNameString(
+                for: inviteeAddress,
+                transaction: tx
             )
             return .otherUserWasInvitedByLocalUser(
                 userName: inviteeName,
@@ -669,9 +669,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
         case .localUserDeclinedInviteFromInviter(let inviterAci):
             return .localUserDeclinedInviteFromInviter(
-                inviterName: contactsManager.displayName(
-                    address: .init(inviterAci.wrappedValue),
-                    tx: tx
+                inviterName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(inviterAci.wrappedValue),
+                    transaction: tx,
                 ),
                 inviterAddress: .init(inviterAci.wrappedValue)
             )
@@ -679,18 +679,18 @@ private struct PrecomputedGroupUpdateItemBuilder {
             return .localUserDeclinedInviteFromUnknownUser
         case .otherUserDeclinedInviteFromLocalUser(let invitee):
             return .otherUserDeclinedInviteFromLocalUser(
-                userName: contactsManager.displayName(
-                    address: .init(invitee.wrappedValue),
-                    tx: tx
+                userName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(invitee.wrappedValue),
+                    transaction: tx,
                 ),
-                userAddress: .init(invitee.wrappedValue)
+                userAddress: SignalServiceAddress(invitee.wrappedValue)
             )
         case let .otherUserDeclinedInviteFromInviter(_, inviterAci),
             let .unnamedUserDeclinedInviteFromInviter(inviterAci):
             return .otherUserDeclinedInviteFromInviter(
-                inviterName: contactsManager.displayName(
-                    address: .init(inviterAci.wrappedValue),
-                    tx: tx
+                inviterName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(inviterAci.wrappedValue),
+                    transaction: tx,
                 ),
                 inviterAddress: .init(inviterAci.wrappedValue)
             )
@@ -699,9 +699,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
             return .otherUserDeclinedInviteFromUnknownUser
         case .localUserInviteRevoked(let revokerAci):
             return .localUserInviteRevoked(
-                revokerName: contactsManager.displayName(
-                    address: .init(revokerAci.wrappedValue),
-                    tx: tx
+                revokerName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(revokerAci.wrappedValue),
+                    transaction: tx,
                 ),
                 revokerAddress: .init(revokerAci.wrappedValue)
             )
@@ -709,9 +709,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
             return .localUserInviteRevokedByUnknownUser
         case .otherUserInviteRevokedByLocalUser(let invitee):
             return .otherUserInviteRevokedByLocalUser(
-                userName: contactsManager.displayName(
-                    address: .init(invitee.wrappedValue),
-                    tx: tx
+                userName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(invitee.wrappedValue),
+                    transaction: tx,
                 ),
                 userAddress: .init(invitee.wrappedValue)
             )
@@ -719,9 +719,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
             return .unnamedUserInvitesWereRevokedByLocalUser(count: count)
         case let .unnamedUserInvitesWereRevokedByOtherUser(updaterAci, count):
             return .unnamedUserInvitesWereRevokedByOtherUser(
-                updaterName: contactsManager.displayName(
-                    address: .init(updaterAci.wrappedValue),
-                    tx: tx
+                updaterName: contactsManager.displayNameString(
+                    for: SignalServiceAddress(updaterAci.wrappedValue),
+                    transaction: tx,
                 ),
                 updaterAddress: .init(updaterAci.wrappedValue),
                 count: count
@@ -878,7 +878,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
         tx: DBReadTransaction
     ) -> DisplayableGroupUpdateItem {
         let updaterAddress = SignalServiceAddress(requesterAci)
-        let updaterName = contactsManager.displayName(address: updaterAddress, tx: tx)
+        let updaterName = contactsManager.displayNameString(for: updaterAddress, transaction: tx)
 
         guard count > 0 else {
             // We haven't actually collapsed anything, so we should fall back to
@@ -915,9 +915,9 @@ private struct NewGroupUpdateItemBuilder {
 
     public typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
-    private let contactsManager: Shims.ContactsManager
+    private let contactsManager: ContactManager
 
-    init(contactsManager: Shims.ContactsManager) {
+    init(contactsManager: ContactManager) {
         self.contactsManager = contactsManager
     }
 
@@ -2409,45 +2409,5 @@ private struct DiffingGroupUpdateItemBuilder {
     ) {
         owsAssertDebug(newGroupModel.wasJustMigratedToV2)
         addItem(.wasMigrated)
-    }
-}
-
-// MARK: -
-
-private extension LocalIdentifiers {
-    func isLocalUser(address: SignalServiceAddress?) -> Bool {
-        guard let address else { return false }
-        return contains(address: address)
-    }
-}
-
-// MARK: - Dependencies
-
-private typealias Shims = GroupUpdateItemBuilderImpl.Shims
-private typealias IsLocalUserBlock = (SignalServiceAddress) -> Bool
-
-extension GroupUpdateItemBuilderImpl {
-    enum Shims {
-        typealias ContactsManager = _GroupUpdateCopy_ContactsManager_Shim
-    }
-
-    enum Wrappers {
-        typealias ContactsManager = _GroupUpdateCopy_ContactsManager_Wrapper
-    }
-}
-
-protocol _GroupUpdateCopy_ContactsManager_Shim {
-    func displayName(address: SignalServiceAddress, tx: DBReadTransaction) -> String
-}
-
-class _GroupUpdateCopy_ContactsManager_Wrapper: _GroupUpdateCopy_ContactsManager_Shim {
-    private let contactsManager: any ContactManager
-
-    init(_ contactsManager: any ContactManager) {
-        self.contactsManager = contactsManager
-    }
-
-    func displayName(address: SignalServiceAddress, tx: DBReadTransaction) -> String {
-        return contactsManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx)).resolvedValue()
     }
 }

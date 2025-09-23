@@ -683,7 +683,7 @@ public class AppSetup {
         )
 
         let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
-            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactManager),
+            contactsManager: contactManager,
             recipientDatabaseTable: recipientDatabaseTable
         )
 

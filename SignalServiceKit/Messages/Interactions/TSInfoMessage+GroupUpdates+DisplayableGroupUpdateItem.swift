@@ -186,25 +186,8 @@ public enum DisplayableGroupUpdateItem {
     case otherUserJoinedViaInviteLink(userName: String, userAddress: SignalServiceAddress)
 
     case sequenceOfInviteLinkRequestAndCancels(userName: String, userAddress: SignalServiceAddress, count: UInt, isTail: Bool)
-}
 
-public extension TSInfoMessage.PersistableGroupUpdateItem {
-
-    /// Should this update appear as a group preview in the inbox?
-    var shouldAppearInInbox: Bool {
-        switch self {
-        case
-                .wasMigrated,
-                .localUserLeft,
-                .otherUserLeft:
-            return false
-        default:
-            return true
-        }
-    }
-}
-
-extension DisplayableGroupUpdateItem {
+    // MARK: -
 
     /// Localized text representing this update.
     public var localizedText: NSAttributedString {

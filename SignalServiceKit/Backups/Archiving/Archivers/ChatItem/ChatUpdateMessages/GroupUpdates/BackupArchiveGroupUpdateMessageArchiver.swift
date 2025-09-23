@@ -41,22 +41,22 @@ final class BackupArchiveGroupUpdateMessageArchiver {
             )))
         case .legacyRawString:
             return .skippableInteraction(.skippableGroupUpdate(.legacyRawString))
-        case .newGroup(let groupModel, let updateMetadata):
+        case .newGroup(let groupModel, let source):
             groupUpdateItems = groupUpdateBuilder.precomputedUpdateItemsForNewGroup(
                 newGroupModel: groupModel.groupModel,
                 newDisappearingMessageToken: groupModel.dmToken,
                 localIdentifiers: context.recipientContext.localIdentifiers,
-                groupUpdateSource: updateMetadata.source,
+                groupUpdateSource: source,
                 tx: context.tx
             )
-        case .modelDiff(let old, let new, let updateMetadata):
+        case .modelDiff(let old, let new, let source):
             groupUpdateItems = groupUpdateBuilder.precomputedUpdateItemsByDiffingModels(
                 oldGroupModel: old.groupModel,
                 newGroupModel: new.groupModel,
                 oldDisappearingMessageToken: old.dmToken,
                 newDisappearingMessageToken: new.dmToken,
                 localIdentifiers: context.recipientContext.localIdentifiers,
-                groupUpdateSource: updateMetadata.source,
+                groupUpdateSource: source,
                 tx: context.tx
             )
         case .precomputed(let persistableGroupUpdateItemsWrapper):
