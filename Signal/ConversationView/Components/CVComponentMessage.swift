@@ -69,6 +69,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var poll: CVComponent?
 
+    private var bottomLabel: CVComponent?
+
     private var swipeActionProgress: CVMessageSwipeActionState.Progress?
 
     private var hasSendFailureBadge = false
@@ -147,6 +149,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.bottomButtons
         case .poll:
             return self.poll
+        case .bottomLabel:
+            return self.bottomLabel
 
         // We don't render sender avatars with a subcomponent.
         case .senderAvatar:
@@ -270,6 +274,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let bottomButtonsState = componentState.bottomButtons {
             bottomButtons = CVComponentBottomButtons(itemModel: itemModel,
                                                      bottomButtonsState: bottomButtonsState)
+        }
+
+        if let bottomLabelState = componentState.bottomLabel {
+            bottomLabel = CVComponentBottomLabel(itemModel: itemModel, bottomLabelState: bottomLabelState)
         }
 
         if let paymentAttachment = componentState.paymentAttachment {
@@ -907,6 +915,20 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
             }
 
+            if nil != bottomLabel {
+                if let componentAndView = configureSubcomponent(
+                    messageView: componentView,
+                    cellMeasurement: cellMeasurement,
+                    componentDelegate: componentDelegate,
+                    key: .bottomLabel
+                ) {
+                    let subview = componentAndView.componentView.rootView
+                    contentSubviews.append(subview)
+                } else {
+                    owsFailDebug("Couldn't configure bottomLabel.")
+                }
+            }
+
             let contentStack = componentView.contentStack
             contentStack.reset()
             contentStack.configure(config: buildContentStackConfig(),
@@ -947,13 +969,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         case bottomNestedShare
         case bottomNestedText
         case bottomButtons
+        case bottomLabel
 
         // Ordering of the keys in each section determines the ordering of the subcomponents.
         var hasStack: Bool {
             switch self {
             case .topFullWidth, .topNested, .bottomFullWidth, .bottomNestedShare, .bottomNestedText:
                 return true
-            case .bottomButtons:
+            case .bottomButtons, .bottomLabel:
                 return false
             }
         }
@@ -962,7 +985,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             switch self {
             case .topNested, .bottomNestedShare, .bottomNestedText:
                 return true
-            case .topFullWidth, .bottomFullWidth, .bottomButtons:
+            case .topFullWidth, .bottomFullWidth, .bottomButtons, .bottomLabel:
                 return false
             }
         }
@@ -982,6 +1005,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return CVComponentMessage.bottomNestedTextCVComponentKeys
             case .bottomButtons:
                 return [.bottomButtons]
+            case .bottomLabel:
+                return [.bottomLabel]
             }
         }
 
@@ -997,7 +1022,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return CVComponentMessage.measurementKey_bottomNestedShareStackView
             case .bottomNestedText:
                 return CVComponentMessage.measurementKey_bottomNestedTextStackView
-            case .bottomButtons:
+            case .bottomButtons, .bottomLabel:
                 owsFailDebug("Invalid section")
                 return nil
             }
@@ -1015,7 +1040,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return componentView.bottomNestedShareStackView
             case .bottomNestedText:
                 return componentView.bottomNestedTextStackView
-            case .bottomButtons:
+            case .bottomButtons, .bottomLabel:
                 return nil
             }
         }
@@ -1140,7 +1165,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             return buildNestedStackConfig(topMargin: topMargin,
                                           bottomMargin: bottomMargin)
-        case .bottomButtons:
+        case .bottomButtons, .bottomLabel:
             owsFailDebug("Section does not use a stack.")
             return CVStackViewConfig(axis: .vertical, alignment: .center, spacing: 0, layoutMargins: .zero)
         }
@@ -1165,8 +1190,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let topComponentKey = topSectionItem.componentKey
         let bottomComponentKey = bottomSectionItem.componentKey
 
-        // Special case: Bottom buttons are not in a stack.
-        if bottomComponentKey == .bottomButtons {
+        // Special case: Bottom buttons and labels are not in a stack.
+        if bottomComponentKey == .bottomButtons || bottomComponentKey == .bottomLabel {
             return .bottomMargin
         }
 
@@ -1204,7 +1229,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return false
             case .footer:
                 return false
-            case .bottomButtons:
+            case .bottomButtons, .bottomLabel:
                 return true
             case .poll:
                 return true
@@ -1652,6 +1677,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 subviewSizes.append(subviewSize)
             }
 
+            if let bottomLabel = bottomLabel {
+                let subviewSize = bottomLabel.measure(maxWidth: contentMaxWidth,
+                                                        measurementBuilder: measurementBuilder)
+                subviewSizes.append(subviewSize)
+            }
+
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
                 subviewSize.asManualSubviewInfo
             }
@@ -2011,6 +2042,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var archivedPaymentView: CVComponentView?
         var contactShareView: CVComponentView?
         var bottomButtonsView: CVComponentView?
+        var bottomLabelView: CVComponentView?
         var pollView: CVComponentView?
 
         private var allSubcomponentViews: [CVComponentView] {
@@ -2031,7 +2063,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 undownloadableAttachmentView,
                 archivedPaymentView,
                 contactShareView,
-                bottomButtonsView
+                bottomButtonsView,
+                bottomLabelView
             ].compactMap { $0 }
         }
 
@@ -2073,6 +2106,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return bottomButtonsView
             case .poll:
                 return pollView
+            case .bottomLabel:
+                return bottomLabelView
 
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:
@@ -2122,6 +2157,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 bottomButtonsView = subcomponentView
             case .poll:
                 pollView = subcomponentView
+            case .bottomLabel:
+                bottomLabelView = subcomponentView
 
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:

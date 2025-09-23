@@ -35,6 +35,7 @@
 		04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
 		04FAAD0C2E7F067C00E4AAC3 /* NewPollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAAD0B2E7F067300E4AAC3 /* NewPollViewController.swift */; };
+		04FAAD0E2E82EEAE00E4AAC3 /* CVComponentBottomLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAAD0D2E82EEA900E4AAC3 /* CVComponentBottomLabel.swift */; };
 		05104D182C8A151100F8851F /* AsyncViewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104D172C8A151100F8851F /* AsyncViewTask.swift */; };
 		05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */; };
 		0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */; };
@@ -3864,6 +3865,7 @@
 		04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
 		04FAAD0B2E7F067300E4AAC3 /* NewPollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPollViewController.swift; sourceTree = "<group>"; };
+		04FAAD0D2E82EEA900E4AAC3 /* CVComponentBottomLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentBottomLabel.swift; sourceTree = "<group>"; };
 		05104D172C8A151100F8851F /* AsyncViewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncViewTask.swift; sourceTree = "<group>"; };
 		05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleLayoutMetric.swift; sourceTree = "<group>"; };
 		0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollBounceBehaviorIfAvailable.swift; sourceTree = "<group>"; };
@@ -8206,6 +8208,7 @@
 				347C3840252CE6C900F3D941 /* CVComponentBodyMedia.swift */,
 				347C383C252CE6C900F3D941 /* CVComponentBodyText.swift */,
 				3426A3792563F0EA0036407F /* CVComponentBottomButtons.swift */,
+				04FAAD0D2E82EEA900E4AAC3 /* CVComponentBottomLabel.swift */,
 				3470C8792555DE5F00F5847C /* CVComponentContactShare.swift */,
 				347C3848252D004C00F3D941 /* CVComponentDateHeader.swift */,
 				348815C3255343FC00D4F4C4 /* CVComponentDelegate.swift */,
@@ -16941,6 +16944,7 @@
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
 				347C3843252CE6C900F3D941 /* CVComponentBodyText.swift in Sources */,
 				3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */,
+				04FAAD0E2E82EEAE00E4AAC3 /* CVComponentBottomLabel.swift in Sources */,
 				3470C87A2555DE5F00F5847C /* CVComponentContactShare.swift in Sources */,
 				347C3849252D004C00F3D941 /* CVComponentDateHeader.swift in Sources */,
 				348815C4255343FC00D4F4C4 /* CVComponentDelegate.swift in Sources */,

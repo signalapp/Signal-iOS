@@ -6478,6 +6478,9 @@
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";
 
+/* String to display when a poll has no votes */
+"POLL_NO_VOTES" = "No Votes";
+
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
 "POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
 

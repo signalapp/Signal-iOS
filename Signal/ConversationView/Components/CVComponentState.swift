@@ -446,6 +446,8 @@ public class CVComponentState: Equatable {
     }
     let bottomButtons: BottomButtons?
 
+    let bottomLabel: String?
+
     struct FailedOrPendingDownloads: Equatable {
         let attachmentPointers: [AttachmentPointer]
 
@@ -488,6 +490,7 @@ public class CVComponentState: Equatable {
         unknownThreadWarning: UnknownThreadWarning?,
         defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?,
         bottomButtons: BottomButtons?,
+        bottomLabel: String?,
         failedOrPendingDownloads: FailedOrPendingDownloads?,
         sendFailureBadge: SendFailureBadge?,
         messageHasBodyAttachments: Bool,
@@ -519,6 +522,7 @@ public class CVComponentState: Equatable {
         self.unknownThreadWarning = unknownThreadWarning
         self.defaultDisappearingMessageTimer = defaultDisappearingMessageTimer
         self.bottomButtons = bottomButtons
+        self.bottomLabel = bottomLabel
         self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
         self.messageHasBodyAttachments = messageHasBodyAttachments
@@ -554,6 +558,7 @@ public class CVComponentState: Equatable {
                     lhs.unknownThreadWarning == rhs.unknownThreadWarning &&
                     lhs.defaultDisappearingMessageTimer == rhs.defaultDisappearingMessageTimer &&
                     lhs.bottomButtons == rhs.bottomButtons &&
+                    lhs.bottomLabel == rhs.bottomLabel &&
                     lhs.failedOrPendingDownloads == rhs.failedOrPendingDownloads &&
                     lhs.sendFailureBadge == rhs.sendFailureBadge &&
                     lhs.poll == rhs.poll)
@@ -626,6 +631,7 @@ public class CVComponentState: Equatable {
         var poll: Poll?
 
         var bottomButtonsActions = [CVMessageAction]()
+        var bottomLabel: String?
 
         init(interaction: TSInteraction, itemBuildingContext: CVItemBuildingContext) {
             self.interaction = interaction
@@ -666,6 +672,7 @@ public class CVComponentState: Equatable {
                 unknownThreadWarning: unknownThreadWarning,
                 defaultDisappearingMessageTimer: defaultDisappearingMessageTimer,
                 bottomButtons: bottomButtons,
+                bottomLabel: bottomLabel,
                 failedOrPendingDownloads: failedOrPendingDownloads,
                 sendFailureBadge: sendFailureBadge,
                 messageHasBodyAttachments: messageHasBodyAttachments,
@@ -829,6 +836,9 @@ public class CVComponentState: Equatable {
         }
         if bottomButtons != nil {
             result.insert(.bottomButtons)
+        }
+        if bottomLabel != nil {
+            result.insert(.bottomLabel)
         }
         if failedOrPendingDownloads != nil {
             result.insert(.failedOrPendingDownloads)
@@ -1772,6 +1782,11 @@ fileprivate extension CVComponentState.Builder {
             )
 
             bottomButtonsActions.append(viewVotesAction)
+        } else {
+            bottomLabel = OWSLocalizedString(
+                "POLL_NO_VOTES",
+                comment: "String to display when a poll has no votes"
+            )
         }
 
         return build()
@@ -1856,7 +1871,7 @@ public extension CVComponentState {
                 break
             case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
                 hasPrimaryContent = true
-            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
+            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .bottomLabel, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
                 // "Primary" content is not just metadata / UI.
                 break
             case .giftBadge:

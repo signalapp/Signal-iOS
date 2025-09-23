@@ -340,6 +340,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case bottomButtons
     case sendFailureBadge
     case poll
+    case bottomLabel
 
     case systemMessage
     case dateHeader
@@ -411,6 +412,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".messageRoot"
         case .poll:
             return ".poll"
+        case .bottomLabel:
+            return ".bottomLabel"
         }
     }
 
