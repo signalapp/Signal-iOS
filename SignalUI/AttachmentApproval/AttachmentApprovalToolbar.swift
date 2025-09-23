@@ -27,6 +27,8 @@ class AttachmentApprovalToolbar: UIView {
 
     var configuration: Configuration
 
+    let contentLayoutGuide = UILayoutGuide()
+
     // Only visible when there's one media item and contains "Add Media" and "View Once" buttons.
     // Displayed in place of galleryRailView.
     private lazy var singleMediaActionButtonsContainer: UIView = {
@@ -95,6 +97,14 @@ class AttachmentApprovalToolbar: UIView {
         super.init(frame: frame)
 
         createContents()
+
+        addLayoutGuide(contentLayoutGuide)
+        NSLayoutConstraint.activate([
+            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentLayoutGuide.bottomAnchor.constraint(equalTo: opaqueContentView.bottomAnchor),
+        ])
     }
 
     @available(*, unavailable, message: "Use init(frame:) instead")
