@@ -236,13 +236,13 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Пренос података није успео";
 
 /* Action in an action sheet offering to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Reset App Data";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Ресетуј податке апликације";
 
 /* Message for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "All app data will be permanently deleted. This is only necessary if you are unable to launch the app.";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "Сви подаци апликације биће трајно избрисани. То је неопходно само ако не можете да покренете апликацију.";
 
 /* Title for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Reset All App Data?";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Желите ли да ресетујете све податке апликације?";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Унесите име";
@@ -427,6 +427,9 @@
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Слике";
 
+/* A button to select a poll from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Прилог";
 
@@ -494,7 +497,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Гласовна порука није доступна";
 
 /* Username for recovery key autofill */
-"AUTOFILL_BACKUP_KEY_USERNAME" = "Безбедне резервне копије Signal-а";
+"AUTOFILL_BACKUP_KEY_USERNAME" = "Безбедне резервне копије";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Изаберите боју";
@@ -531,6 +534,18 @@
 
 /* Snooze text for Backup enablement reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Не сада";
+
+/* Title for action from backups error prompt to try again now. */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+
+/* Body for error prompt shown when backups haven't succeeded in 7 days */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+
+/* Title for error prompt shown when backups haven't succeeded in 7 days */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+
+/* Title for action from backups error prompt to try again later. */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Кључ за опоравак је копиран";
@@ -584,10 +599,10 @@
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Направите резервне копије ваших порука и медија и користите Signal-ову безбедну, потпуно шифровану услугу складиштења. Нека вам се сачувају поруке када набављате нови телефон или поново инсталирате Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_TITLE" = "Безбедне резервне копије Signal-а";
+"BACKUP_ONBOARDING_INTRO_TITLE" = "Безбедне резервне копије";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Кључ за опоравак је шифра од 64 знака која вам омогућава да вратите резервну копију када поново инсталирате Signal.\n\nАко заборавите кључ, нећете моћи да вратите резервну копију. Signal вам не може помоћи да повратите резервну копију.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Кључ за опоравак је шифра од 64 знака која вам омогућава да вратите резервну копију када поново инсталирате Signal.\n\nАко заборавите кључ, нећете моћи да вратите резервну копију. Signal вам не може помоћи да вратите резервну копију.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Ваш кључ за опоравак";
@@ -629,13 +644,16 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Дошло је до грешке приликом креирања резервне копије. Проверите да ли сте повезани на интернет и пробајте поново.";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optimizing media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Оптимизујемо медије…";
 
 /* Description for a progress bar tracking the preparation of a Backup. Embeds 1:{{ the percentage completed preformatted as a percent, e.g. 10% }}. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Preparing backup (%1$@)";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Припрема резервне копије (%1$@)";
 
 /* Description for a progress bar tracking the processing of Backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Processing media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Медији се обрађују…";
+
+/* Message describing to the user that the last backup failed. */
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Ажурирај";
@@ -716,16 +734,16 @@
 "BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Ово је бета функционалност и временом ће се побољшавати.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Морате бити регистровани да бисте креирали нови кључ за опоравак.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Креиран је нови кључ!";
 
 /* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Disable and Create New Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Деактивирај и креирај нови кључ";
 
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nAfter disabling Backups and creating a new key, you will need to re-enable and re-upload your Backup.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Креирање новог кључа је потребно само ако неко други зна ваш кључ. Резервне копије прво морају бити деактивиране да бисте креирали нови кључ.\n\nНакон што деактивирате резервне копије и креирате нови кључ, мораћете поново да их активирате и поново отпремите резервну копију.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Креирајте нови кључ за опоравак";
@@ -878,10 +896,10 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Отпремање %1$@ од %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use Signal as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "У зависности од величине ваше резервне копије, то може дуже потрајати. Можете нормално да користите Signal док се прави резервна копија.";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Добро дошли у безбедне резервне копије Signal-а. Покрените креирање резервне копије.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Добро дошли у безбедне резервне копије. Покрените креирање резервне копије.";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Безбедне резервне копије";
@@ -3352,12 +3370,6 @@
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Опција за окретање камере је премештена овде, додирните видео да је испробате";
 
-/* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Прослеђене поруке се сада шаљу одмах.";
-
-/* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Брже прослеђивање";
-
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Порука је послата";
 
@@ -4263,6 +4275,9 @@
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архива";
+
+/* Title for the conversation list's failed to backup context menu action. */
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Изаберите ћаскања";
@@ -5521,14 +5536,20 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Желите ли да прескочите унос PIN-а?";
 
-/* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Вратите текстуалне поруке и медије помоћу плаћеног пакета за резервне копије Signal-а";
+/* The body for the device transfer 'choice' view 'restore backup' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
 
-/* The title for the device transfer 'choice' view 'transfer' option */
+/* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Врати резервну копију Signal-а";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Изаберите начин на који желите да вратите историју порука и податке о налогу.";
+
+/* Message body displayed to a user during registration if there are no restore options available. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+
+/* Title displayed to a user during registration if there are no restore options available. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Наставите без преноса порука и медија";
@@ -6439,26 +6460,47 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Пусти медиј";
 
+/* Title for a toggle allowing multiple votes for a poll. */
+"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+
 /* Button to view poll results */
-"POLL_BUTTON_VIEW_RESULTS" = "View Results";
+"POLL_BUTTON_VIEW_RESULTS" = "Прикажи резултате";
 
 /* Button to view poll votes */
-"POLL_BUTTON_VIEW_VOTES" = "View Votes";
+"POLL_BUTTON_VIEW_VOTES" = "Прикажи гласове";
+
+/* Title of create poll pane */
+"POLL_CREATE_TITLE" = "New Poll";
 
 /* Label for button to end a poll */
-"POLL_DETAILS_END_POLL" = "End Poll";
+"POLL_DETAILS_END_POLL" = "Прекини анкету";
 
 /* Title of poll details pane */
-"POLL_DETAILS_TITLE" = "Poll Details";
+"POLL_DETAILS_TITLE" = "Детаљи анкете";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
-"POLL_ENDED_NOTIFICATION" = "%1$@ ended the poll “%2$@”";
+"POLL_ENDED_NOTIFICATION" = "%1$@ је прекинуо/-ла анкету „ %2$@“";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Анкета";
 
+/* String to display when a poll has no votes */
+"POLL_NO_VOTES" = "No Votes";
+
+/* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+
+/* Header for the poll options text boxes when making a new poll */
+"POLL_OPTIONS_LABEL" = "Options";
+
 /* Prefix for a poll preview */
-"POLL_PREFIX" = "Poll:";
+"POLL_PREFIX" = "Анкета:";
+
+/* Header for the poll question text box when making a new poll */
+"POLL_QUESTION_LABEL" = "Question";
+
+/* Placeholder text for poll question */
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Изаберите један или више одговора";
@@ -6806,7 +6848,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Имали сте превише учесталих покушаја. Сачекајте минут пре наредног покушаја.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Кључ за опоравак који сте унели је исправан, али нема резервне копије повезане с њим. Ако и даље имате свој стари телефон, проверите да ли је креирање резервне копије омогућено, потом да ли је довршено, и покушајте поново.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Кључ за опоравак који сте унели је исправан, али нема резервне копије повезане с њим. Ако и даље имате свој стари телефон, проверите да ли је креирање резервних копија активирано и да ли је резервна копија креирана, а затим пробајте поново.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Резервна копија није пронађена.";
@@ -6993,6 +7035,15 @@
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal није успео да пошаље SMS код због проблема са SMS провајдером. Пробајте поново за неколико сати.";
+
+/* Third step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+
+/* First step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+
+/* Second step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Морате се регистровати да бисте могли да пошаљете поруку.";

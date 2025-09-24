@@ -612,26 +612,6 @@
 			<string>Толькі %1$d змяненняў могуць быць унесены да гэтага паведамлення.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Адправіць паведамленне</string>
-			<key>few</key>
-			<string>Адправіць %1$d паведамленні</string>
-			<key>many</key>
-			<string>Адправіць %1$d паведамленняў</string>
-			<key>other</key>
-			<string>Адправіць %1$d паведамленняў</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1683,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d голас</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d галасы</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d галасоў</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d галасоў</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

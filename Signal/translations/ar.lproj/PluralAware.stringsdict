@@ -736,30 +736,6 @@
 			<string>يمكن تطبيق %1$d تعديلٍ فقط على هذه الرسالة.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>أرسل %1$d رسائل</string>
-			<key>one</key>
-			<string>أرسل رسالة واحدة</string>
-			<key>two</key>
-			<string>أرسل %1$d رسالتين</string>
-			<key>few</key>
-			<string>أرسل %1$d رسائل</string>
-			<key>many</key>
-			<string>أرسل %1$d رسالةً</string>
-			<key>other</key>
-			<string>أرسل %1$d رسالةٍ</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -2019,17 +1995,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Votes</string>
+			<string>%1$d أصوات</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d صوت</string>
 			<key>two</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوتين</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d أصوات</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوت</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوت</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

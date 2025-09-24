@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• Vi har rettet en fejl, der forårsagede, at kameraet blev vist tomt, når vi forsøgte at forbinde en ny enhed. Nu vil søgeren kun se sådan ud, hvis du prøver at forbinde en ny enhed i et meget mørkt rum.

@@ -236,13 +236,13 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Nie udało się przenieść danych";
 
 /* Action in an action sheet offering to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Reset App Data";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Zresetuj dane aplikacji";
 
 /* Message for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "All app data will be permanently deleted. This is only necessary if you are unable to launch the app.";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "Wszystkie dane aplikacji zostaną trwale usunięte. Jest to konieczne tylko wtedy, gdy nie można uruchomić aplikacji.";
 
 /* Title for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Reset All App Data?";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "Zresetować wszystkie dane aplikacji?";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Wpisz swoje imię";
@@ -427,6 +427,9 @@
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Zdjęcia";
 
+/* A button to select a poll from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Załącznik";
 
@@ -532,8 +535,20 @@
 /* Snooze text for Backup enablement reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Nie teraz";
 
+/* Title for action from backups error prompt to try again now. */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+
+/* Body for error prompt shown when backups haven't succeeded in 7 days */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+
+/* Title for error prompt shown when backups haven't succeeded in 7 days */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+
+/* Title for action from backups error prompt to try again later. */
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+
 /* Toast indicating that the user has copied their recovery key. */
-"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Skopiowano kod odzyskiwania";
+"BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Kod odzyskiwania skopiowany";
 
 /* Text used as placeholder in recovery key text view. */
 "BACKUP_KEY_PLACEHOLDER" = "Kod odzyskiwania";
@@ -587,7 +602,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Bezpieczne kopie zapasowe Signal";
 
 /* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Kod odzyskiwania, składający się z 64 znaków, umożliwi Ci przywrócenie kopii zapasowej po ponownej instalacji aplikacji Signal.\n\nJeśli go zapomnisz, stracisz możliwość przywrócenia kopii zapasowej. Signal nie będzie mógł pomóc w jej odzyskaniu.";
+"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Kod odzyskiwania, składający się z 64 znaków, umożliwi Ci przywrócenie kopii zapasowej, gdy ponownie zainstalujesz aplikację Signal.\n\nJeśli go zapomnisz, stracisz możliwość przywrócenia kopii zapasowej. Signal nie będzie mógł pomóc w jej odzyskaniu.";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Twój kod odzyskiwania";
@@ -602,7 +617,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Ten kod będzie potrzebny do odzyskania konta i danych. Przechowuj go w bezpiecznym miejscu. Jeśli go zgubisz, stracisz możliwość przywrócenia konta.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Potwierdź kod odzyskiwania";
+"BACKUP_RECORD_KEY_TITLE" = "Zapisz swój kod odzyskiwania";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ z %2$@ (%3$@)";
@@ -629,13 +644,16 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Podczas tworzenia kopii zapasowej wystąpił błąd. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optimizing media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optymalizacja multimediów…";
 
 /* Description for a progress bar tracking the preparation of a Backup. Embeds 1:{{ the percentage completed preformatted as a percent, e.g. 10% }}. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Preparing backup (%1$@)";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP" = "Przygotowywanie kopii zapasowej (%1$@)";
 
 /* Description for a progress bar tracking the processing of Backup media. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Processing media...";
+"BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Przetwarzanie multimediów…";
+
+/* Message describing to the user that the last backup failed. */
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Aktywuj tryb rozszerzony";
@@ -677,7 +695,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Zarządzaj usługą";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Płatne (bezpłatne dla użytkowników TestFlight)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Usługa płatna (bezpłatna dla użytkowników TestFlight)";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Wiadomości tekstowe i wszystkie multimedia";
@@ -713,19 +731,19 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Szczegóły kopii zapasowej";
 
 /* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "To funkcja beta, która będzie udoskonalana z czasem.";
+"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Jest to funkcja w wersji beta – wciąż pracujemy nad jej ulepszeniem.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Aby utworzyć nowy kod odzyskiwania, najpierw musisz zarejestrować urządzenie.";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "Nowy kod utworzony";
 
 /* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Disable and Create New Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "Wyłącz i utwórz nowy kod";
 
 /* Body for a sheet warning users about creating a new Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Creating a new key is only necessary if someone else knows your key. Backups must first be disabled to create a new key.\n\nAfter disabling Backups and creating a new key, you will need to re-enable and re-upload your Backup.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Utworzenie nowego kodu jest konieczne tylko wtedy, gdy ktoś inny zna Twój obecny kod. Aby utworzyć nowy kod, najpierw musisz wyłączyć usługę tworzenia kopii zapasowych.\n\nPo zmianie kodu włącz tę usługę z powrotem i utwórz kopię zapasową.";
 
 /* Title for a sheet warning users about creating a new Recovery Key. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_TITLE" = "Utwórz nowy kod odzyskiwania";
@@ -773,7 +791,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Pobieranie wstrzymane: niski poziom naładowania baterii";
 
 /* Subtitle for a progress bar tracking downloads that are paused because of low power mode. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Pobieranie wstrzymane: tryb niskiego poboru mocy";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Pobieranie wstrzymane: tryb niskiego zużycia energii";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "Za mało miejsca, aby pobrać multimedia. Aby kontynuować, zwolnij %1$@ miejsca.";
@@ -833,7 +851,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Pobrać pozostałe multimedia?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Multimedia usunięte z urządzenia pozostaną dostępne do pobrania, dopóki używasz aplikacji TestFlight. Pamiętaj, aby pobrać wszystkie multimedia na urządzenie przed zakończeniem testowania usługi.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Multimedia usunięte z urządzenia będą dostępne do pobrania, dopóki będziesz używać aplikacji TestFlight. Pamiętaj, aby pobrać wszystkie multimedia na urządzenie, zanim zakończysz testowanie.";
 
 /* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testujesz funkcję usuwania multimediów z urządzenia";
@@ -842,7 +860,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Nieużywane multimedia zostaną usunięte z urządzenia, ale w dowolnym momencie można je będzie pobrać z kopii zapasowej.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Nieużywane multimedia zostaną usunięte z urządzenia, ale dopóki korzystasz z aplikacji TestFlight, w dowolnym momencie możesz pobrać te multimedia z kopii zapasowej.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Nieużywane multimedia zostaną usunięte z urządzenia, ale dopóki korzystasz z aplikacji TestFlight, w dowolnym momencie możesz je pobrać z kopii zapasowej.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Optymalizacja pamięci jest dostępna tylko w ramach płatnej usługi kopii zapasowych Signal. Aby korzystać z tej funkcji, wykup płatny tryb tworzenia kopii zapasowych.";
@@ -866,7 +884,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Przesyłanie multimediów wstrzymane: niski poziom naładowania baterii";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low power mode. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Przesyłanie multimediów wstrzymane: tryb niskiego poboru mocy";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Przesyłanie multimediów wstrzymane: tryb niskiego zużycia energii";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Przesyłanie multimediów wstrzymane: brak połączenia z internetem…";
@@ -878,7 +896,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Przesyłanie %1$@ z %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Depending on the size of your backup, this could take a long time. You can use Signal as you normally do while the backup takes place.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "W przypadku dużej ilości danych tworzenie kopii zapasowej może zająć sporo czasu. Podczas gdy to się dzieje, możesz normalnie korzystać z aplikacji Signal.";
 
 /* Title for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Wszystko gotowe. Możesz już utworzyć bezpieczną kopię zapasową";
@@ -887,7 +905,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Bezpieczne kopie zapasowe";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
-"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Kopie zapasowe Signal zostały włączone dla tego konta o %1$@. Dotknij, aby wyświetlić.";
+"BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Kopie zapasowe Signal zostały włączone na tym koncie o godz. %1$@. Dotknij, aby wyświetlić.";
 
 /* Title for system notification or megaphone when backups is enabled */
 "BACKUPS_TURNED_ON_TITLE" = "Włączasz tworzenie kopii zapasowych";
@@ -2717,10 +2735,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Wygasła";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Twoja darowizna oczekuje na realizację. Jeśli anulujesz subskrypcję, Twoja darowizna nie zostanie odnowiona, ale oczekująca darowizna nie zostanie anulowana.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "Darowizna od Ciebie oczekuje już na realizację. Jeśli anulujesz darowiznę cykliczną, kolejne darowizny nie zostaną przekazane, ale ta, która już jest w realizacji, nie zostanie anulowana.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Darowizna oczekuje na realizację";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Darowizna jest już w realizacji";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Twoja darowizna metodą iDEAL jest jeszcze przetwarzana. Zanim przekażesz kolejną darowiznę, przejdź do swojej aplikacji bankowej i zatwierdź płatność.";
@@ -3351,12 +3369,6 @@
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Opcja przełączania aparatu została przeniesiona tutaj. Aby ją wypróbować, dotknij swojego wideo";
-
-/* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Wiadomości, które przekazujesz, są teraz natychmiast wysyłane.";
-
-/* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Szybsze przekazywanie";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Wiadomość wysłana";
@@ -4263,6 +4275,9 @@
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archiwum";
+
+/* Title for the conversation list's failed to backup context menu action. */
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Zaznacz czaty";
@@ -5521,14 +5536,20 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pominąć wpisywanie PIN-u?";
 
-/* The body for the device transfer 'choice' view 'transfer' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Przywróć wiadomości i multimedia ze swojej płatnej kopii zapasowej Signal";
+/* The body for the device transfer 'choice' view 'restore backup' option */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
 
-/* The title for the device transfer 'choice' view 'transfer' option */
+/* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Przywróć kopię zapasową Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Zdecyduj, w jaki sposób chcesz przywrócić historię wiadomości i dane konta.";
+
+/* Message body displayed to a user during registration if there are no restore options available. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+
+/* Title displayed to a user during registration if there are no restore options available. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Kontynuuj bez przenoszenia wiadomości i multimediów";
@@ -6439,32 +6460,53 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
 
+/* Title for a toggle allowing multiple votes for a poll. */
+"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+
 /* Button to view poll results */
-"POLL_BUTTON_VIEW_RESULTS" = "View Results";
+"POLL_BUTTON_VIEW_RESULTS" = "Wyświetl wyniki";
 
 /* Button to view poll votes */
-"POLL_BUTTON_VIEW_VOTES" = "View Votes";
+"POLL_BUTTON_VIEW_VOTES" = "Wyświetl głosy";
+
+/* Title of create poll pane */
+"POLL_CREATE_TITLE" = "New Poll";
 
 /* Label for button to end a poll */
-"POLL_DETAILS_END_POLL" = "End Poll";
+"POLL_DETAILS_END_POLL" = "Zakończ ankietę";
 
 /* Title of poll details pane */
-"POLL_DETAILS_TITLE" = "Poll Details";
+"POLL_DETAILS_TITLE" = "Szczegóły ankiety";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
-"POLL_ENDED_NOTIFICATION" = "%1$@ ended the poll “%2$@”";
+"POLL_ENDED_NOTIFICATION" = "%1$@ zamyka ankietę „%2$@”";
 
 /* Label specifying the message type as a poll */
-"POLL_LABEL" = "Głosowanie";
+"POLL_LABEL" = "Ankieta";
+
+/* String to display when a poll has no votes */
+"POLL_NO_VOTES" = "No Votes";
+
+/* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+
+/* Header for the poll options text boxes when making a new poll */
+"POLL_OPTIONS_LABEL" = "Options";
 
 /* Prefix for a poll preview */
-"POLL_PREFIX" = "Poll:";
+"POLL_PREFIX" = "Ankieta:";
+
+/* Header for the poll question text box when making a new poll */
+"POLL_QUESTION_LABEL" = "Question";
+
+/* Placeholder text for poll question */
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Wybierz co najmniej jedną opcję lub więcej";
+"POLL_SELECT_LABEL_MULTIPLE" = "Wybierz jedną lub więcej opcji";
 
 /* Label specifying the user can select one option */
-"POLL_SELECT_LABEL_SINGULAR" = "Wybierz opcję";
+"POLL_SELECT_LABEL_SINGULAR" = "Wybierz jedną opcję";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowany kontakt";
@@ -6806,7 +6848,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zbyt wiele prób. Odczekaj chwilę, zanim spróbujesz ponownie.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Wprowadzony kod odzyskiwania jest poprawny, ale nie została z nim powiązana żadna kopia zapasowa. Jeśli nadal masz swój poprzedni telefon, upewnij się, że włączona jest na nim funkcja tworzenia kopii zapasowych, a kopia zapasowa została utworzona. Następnie spróbuj ponownie.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Podany kod odzyskiwania jest poprawny, ale nie została z nim powiązana żadna kopia zapasowa. Jeśli nadal masz swój poprzedni telefon, upewnij się, że włączona jest na nim funkcja tworzenia kopii zapasowych, a kopia zapasowa została utworzona. Następnie spróbuj ponownie.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Nie udało się znaleźć kopii zapasowej";
@@ -6902,7 +6944,7 @@
 "REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Kod odzyskiwania to sekwencja 64 znaków potrzebna do przywrócenia konta i danych.";
 
 /* Title for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Wprowadź kod odzyskiwania";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Podaj kod odzyskiwania";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Wpisz numer";
@@ -6929,7 +6971,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Nie masz kodu odzyskiwania?";
 
 /* Body text on a sheet with info for what to do if you don't have a recovery key */
-"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Bez kodu odzyskiwania składającego się z 64 znaków nie odzyskasz kopii zapasowej. Jeśli nie pamiętasz kodu odzyskiwania, nie będziemy w stanie przywrócić kopii zapasowej Twojego konta Signal.\n\nJeśli masz dostęp do swojego starego urządzenia, kod odzyskiwania znajdziesz w sekcji Ustawienia > Czaty > Kopie zapasowe. Następnie wybierz opcję Wyświetl kod odzyskiwania.";
+"REGISTRATION_NO_BACKUP_KEY_SHEET_BODY" = "Bez kodu odzyskiwania składającego się z 64 znaków nie odzyskasz kopii zapasowej. Jeśli nie masz swojego kodu, nie będziemy w stanie przywrócić kopii zapasowej Twojego konta Signal.\n\nJeśli masz dostęp do swojego starego urządzenia, kod odzyskiwania znajdziesz w sekcji Ustawienia > Czaty > Kopie zapasowe. Następnie wybierz opcję „Wyświetl kod odzyskiwania”.";
 
 /* Title for sheet with info for what to do if you don't have a recovery key */
 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE" = "Nie masz kodu odzyskiwania?";
@@ -6993,6 +7035,15 @@
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Nie możemy wysłać kodu SMS z powodu problemów z dostawcą usługi SMS. Spróbuj ponownie za kilka godzin.";
+
+/* Third step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+
+/* First step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+
+/* Second step in directions for how to make a backup */
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Aby wysyłać wiadomości, musisz się zarejestrować.";
@@ -7097,7 +7148,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE" = "Niski poziom naładowania baterii";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode */
-"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Tryb niskiego poboru mocy";
+"RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Tryb niskiego zużycia energii";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
 "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Brak internetu…";
@@ -7499,7 +7550,7 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Wyłącz PIN";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Aby wyłączyć PIN, musisz najpierw wyłączyć kopie zapasowe.";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Aby wyłączyć PIN, musisz najpierw wyłączyć tworzenie kopii zapasowych.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Aby wyłączyć PIN, musisz najpierw wyłączyć blokadę rejestracji.";

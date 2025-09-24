@@ -674,28 +674,6 @@
 			<string>Ní féidir ach %1$d eagarthóireacht a dhéanamh ar an teachtaireacht seo.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Seol teachtaireacht</string>
-			<key>two</key>
-			<string>Seol %1$d theachtaireacht</string>
-			<key>few</key>
-			<string>Seol %1$d theachtaireacht</string>
-			<key>many</key>
-			<string>Seol %1$d dteachtaireacht</string>
-			<key>other</key>
-			<string>Seol %1$d teachtaireacht</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1851,15 +1829,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d Vóta</string>
 			<key>two</key>
-			<string>%1$d Votes</string>
+			<string>%1$d Vóta</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d Vóta</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d Vóta</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d Vóta</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

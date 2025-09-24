@@ -612,26 +612,6 @@
 			<string>Poruku je moguće uređivati samo %1$d puta.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Pošalji %1$d poruku</string>
-			<key>few</key>
-			<string>Pošalji %1$d poruke</string>
-			<key>many</key>
-			<string>Pošalji %1$d poruka</string>
-			<key>other</key>
-			<string>Pošalji %1$d poruka</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1683,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d glas</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d glasa</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d glasova</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d glasova</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

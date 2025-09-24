@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• Corrigimos um erro que fazia com que a câmara aparecesse em branco quando se tentava ligar um novo dispositivo.

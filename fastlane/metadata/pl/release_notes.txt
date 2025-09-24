@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• Naprawiliśmy błąd, przez który podczas próby połączenia nowego urządzenia aparat nie działał. Od teraz ekran aparatu będzie taki ciemny tylko nocą, gdy nie zapalisz wokół siebie żadnego światła.

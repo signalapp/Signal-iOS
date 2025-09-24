@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• 我们修复了一个漏洞，当用户尝试链接新设备时，该漏洞会导致相机显示空白画面。现在只有在非常黑暗的房间里尝试链接新设备时，取景器才会显示空白画面。

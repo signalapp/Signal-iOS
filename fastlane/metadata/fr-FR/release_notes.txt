@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• Au moment de scanner un code QR pour associer un nouvel appareil, l'appareil photo vous jouait des tours et n'affichait rien à l'écran ? Vous ne devriez plus rencontrer ce problème. À moins que vous ne tentiez d'associer un nouvel appareil dans le noir complet !

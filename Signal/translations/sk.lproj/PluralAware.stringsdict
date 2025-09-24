@@ -612,26 +612,6 @@
 			<string>Na túto správu je možné použiť iba %1$d úprav.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Odoslať %1$d správu</string>
-			<key>few</key>
-			<string>Odoslať %1$d správy</string>
-			<key>many</key>
-			<string>Odoslať %1$d správy</string>
-			<key>other</key>
-			<string>Odoslať %1$d správ</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1683,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d hlas</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d hlasy</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d hlasu</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d hlasov</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

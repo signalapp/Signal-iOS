@@ -612,26 +612,6 @@
 			<string>Це повідомлення можна змінити тільки %1$d раза.</string>
 		</dict>
 	</dict>
-	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Надіслати %1$d повідомлення</string>
-			<key>few</key>
-			<string>Надіслати %1$d повідомлення</string>
-			<key>many</key>
-			<string>Надіслати %1$d повідомлень</string>
-			<key>other</key>
-			<string>Надіслати %1$d повідомлення</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1683,13 +1663,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d голос</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d голоси</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d голосів</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d голосу</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

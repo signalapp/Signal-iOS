@@ -1,1 +1,1 @@
-• We fixed a bug that caused the camera to appear blank when attempting to link a new device. Now the viewfinder will only look like that if you're trying to link a new device in a really dark room.
+• Kijavítottunk egy hibát, amely miatt a Kamera üresen jelent meg új eszköz csatlakoztatásakor. A kereső mostantól csak akkor fog így kinézni, ha egy nagyon sötét szobában próbálsz új eszközt csatlakoztatni.
