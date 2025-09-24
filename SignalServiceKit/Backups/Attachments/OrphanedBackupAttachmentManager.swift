@@ -73,7 +73,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             tsAccountManager: tsAccountManager
         )
         self.taskQueue = TaskQueueLoader(
-            maxConcurrentTasks: 1, /* one at a time, speed isn't critical */
+            maxConcurrentTasks: 8,
             dateProvider: dateProvider,
             db: db,
             runner: taskRunner
