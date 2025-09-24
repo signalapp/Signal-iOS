@@ -204,6 +204,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             owsFailDebug("Missing inputToolbar.")
             return
         }
+
+        updateInputAccessoryPlaceholderHeight()
+        updateBottomBarPosition()
         updateContentInsets()
     }
 

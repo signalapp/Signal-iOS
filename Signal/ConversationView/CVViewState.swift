@@ -23,7 +23,9 @@ public class CVViewState: NSObject {
     public var inputToolbar: ConversationInputToolbar?
     public let headerView = ConversationHeaderView()
 
+    public let inputAccessoryPlaceholder = InputAccessoryViewPlaceholder()
     public var bottomBar = UIView.container()
+    public var bottomBarBottomConstraint: NSLayoutConstraint?
     public var requestView: UIView?
     public var bannerView: UIView?
     public var groupNameCollisionFinder: GroupMembershipNameCollisionFinder?
@@ -195,8 +197,17 @@ extension ConversationViewController {
         set { viewState.inputToolbar = newValue }
     }
 
+    var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder {
+        viewState.inputAccessoryPlaceholder
+    }
+
     var bottomBar: UIView {
         viewState.bottomBar
+    }
+
+    var bottomBarBottomConstraint: NSLayoutConstraint? {
+        get { viewState.bottomBarBottomConstraint }
+        set { viewState.bottomBarBottomConstraint = newValue }
     }
 
     var requestView: UIView? {
@@ -258,6 +269,14 @@ extension ConversationViewController {
     var isDarkThemeEnabled: Bool {
         get { viewState.isDarkThemeEnabled }
         set { viewState.isDarkThemeEnabled = newValue }
+    }
+
+    var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
+
+    var isSwitchingKeyboard: Bool {
+        // See comment in `ConversationInputToolbar.isSwitchingKeyboard`.
+        guard #available(iOS 17, *) else { return false }
+        return inputToolbar?.isSwitchingKeyboard ?? false
     }
 
     var mediaCache: CVMediaCache { viewState.mediaCache }

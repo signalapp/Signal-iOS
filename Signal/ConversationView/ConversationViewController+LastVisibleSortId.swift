@@ -80,6 +80,9 @@ extension ConversationViewController {
         guard hasAppearedAndHasAppliedFirstLoad else {
             return
         }
+        guard !isMeasuringKeyboardHeight else {
+            return
+        }
 
         let newValue: TSThread.LastVisibleInteraction? = {
             guard

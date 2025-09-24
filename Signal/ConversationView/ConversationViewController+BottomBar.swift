@@ -141,6 +141,8 @@ public extension ConversationViewController {
             }
         }
 
+        updateInputAccessoryPlaceholderHeight()
+        updateBottomBarPosition()
         updateContentInsets()
     }
 
@@ -208,6 +210,59 @@ public extension ConversationViewController {
             return
         }
         inputToolbar.setMessageBody(messageDraft, animated: false)
+    }
+
+    func updateBottomBarPosition() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
+
+        guard !isSwitchingKeyboard else { return }
+
+        if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
+            // Don't update the bottom bar position if an interactive pop is in progress
+            switch interactivePopGestureRecognizer.state {
+            case .possible, .failed:
+                break
+            default:
+                return
+            }
+        }
+
+        guard let bottomBarBottomConstraint = bottomBarBottomConstraint,
+              let bottomBarSuperview = bottomBar.superview else {
+            return
+        }
+        let bottomBarPosition = -inputAccessoryPlaceholder.keyboardOverlap
+        let didChange = bottomBarBottomConstraint.constant != bottomBarPosition
+        guard didChange else {
+            return
+        }
+        bottomBarBottomConstraint.constant = bottomBarPosition
+
+        // We always want to apply the new bottom bar position immediately,
+        // as this only happens during animations (interactive or otherwise)
+        bottomBarSuperview.layoutIfNeeded()
+    }
+
+    func updateInputAccessoryPlaceholderHeight() {
+        AssertIsOnMainThread()
+
+        // If we're currently dismissing interactively, skip updating the
+        // input accessory height. Changing it while dismissing can lead to
+        // an infinite loop of keyboard frame changes as the listeners in
+        // InputAcessoryViewPlaceholder will end up calling back here if
+        // a dismissal is in progress.
+        if isDismissingInteractively {
+            return
+        }
+
+        // Apply any pending layout changes to ensure we're measuring the up-to-date height.
+        bottomBar.superview?.layoutIfNeeded()
+
+        inputAccessoryPlaceholder.desiredHeight = bottomBar.height
     }
 
     // MARK: - Message Request
