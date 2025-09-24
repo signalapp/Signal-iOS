@@ -106,12 +106,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardFrameDidChange(notification:)),
-            name: UIResponder.keyboardDidChangeFrameNotification,
-            object: nil
-        )
     }
 
     required init?(coder: NSCoder) {
@@ -137,17 +131,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     public override var bounds: CGRect {
         didSet {
             guard abs(oldValue.size.height - bounds.size.height) > 1 else { return }
-
-            // Compensate for autolayout frame/bounds changes when animating in/out the quoted reply view.
-            // This logic ensures the input toolbar stays pinned to the keyboard visually
-            if isAnimatingHeightChange && inputTextView.isFirstResponder {
-                var frame = frame
-                frame.origin.y = 0
-                // In this conditional, bounds change is captured in an animation block, which we don't want here.
-                UIView.performWithoutAnimation {
-                    self.frame = frame
-                }
-            }
 
             inputToolbarDelegate?.updateToolbarHeight()
         }
@@ -1870,21 +1853,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Keyboards
 
-    private(set) var isMeasuringKeyboardHeight = false
-    private var hasMeasuredKeyboardHeight = false
-
-    // Workaround for keyboard & chat flashing when switching between keyboards on iOS 17.
-    // When swithing keyboards sometimes! we get "keyboard will show" notification
-    // with keyboard frame being slightly (45 dp) shorter, immediately followed by another
-    // notification with previous (correct) keyboard frame.
-    //
-    // Because this does not always happen and because this does not happen on a Simulator
-    // I concluded this is an iOS 17 bug.
-    //
-    // In the future it might be better to implement different keyboard managing
-    // by making UIViewController a first responder and vending input bar as `inputView`.
-    private(set) var isSwitchingKeyboard = false
-
     private enum KeyboardType {
         case system
         case sticker
@@ -1970,14 +1938,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         ensureButtonVisibility(withAnimation: animated, doLayout: true)
 
         if isInputViewFirstResponder {
-            isSwitchingKeyboard = true
             // If any keyboard is presented, make sure the correct
             // keyboard is presented.
             beginEditingMessage()
-
-            DispatchQueue.main.async {
-                self.isSwitchingKeyboard = false
-            }
         } else {
             // Make sure neither keyboard is presented.
             endEditingMessage()
@@ -1994,33 +1957,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         if desiredKeyboardType != .system && !desiredFirstResponder.isFirstResponder {
             desiredFirstResponder.becomeFirstResponder()
         }
-    }
-
-    private func cacheKeyboardIfNecessary() {
-        // Preload the keyboard if we're not showing it already, this
-        // allows us to calculate the appropriate initial height for
-        // our custom inputViews and in general to present it faster
-        // We disable animations so this preload is invisible to the
-        // user.
-        //
-        // We only measure the keyboard if the toolbar isn't hidden.
-        // If it's hidden, we're likely here from a peek interaction
-        // and don't want to show the keyboard. We'll measure it later.
-        guard !hasMeasuredKeyboardHeight && !inputTextView.isFirstResponder && !isHidden else { return }
-
-        // Flag that we're measuring the system keyboard's height, so
-        // even if though it won't be the first responder by the time
-        // the notifications fire, we'll still read its measurement
-        isMeasuringKeyboardHeight = true
-
-        UIView.setAnimationsEnabled(false)
-
-        _ = inputTextView.becomeFirstResponder()
-        _ = inputTextView.resignFirstResponder()
-
-        inputTextView.reloadMentionState()
-
-        UIView.setAnimationsEnabled(true)
     }
 
     var isInputViewFirstResponder: Bool {
@@ -2054,31 +1990,12 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     func viewDidAppear() {
         ensureButtonVisibility(withAnimation: false, doLayout: false)
-        cacheKeyboardIfNecessary()
     }
 
     @objc
     private func applicationDidBecomeActive(notification: Notification) {
         AssertIsOnMainThread()
         restoreDesiredKeyboardIfNecessary()
-    }
-
-    @objc
-    private func keyboardFrameDidChange(notification: Notification) {
-        guard let keyboardEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame is nil")
-            return
-        }
-
-        guard inputTextView.isFirstResponder || isMeasuringKeyboardHeight else { return }
-        let newHeight = keyboardEndFrame.size.height - frame.size.height
-        guard newHeight > 0 else { return }
-        stickerKeyboard?.updateSystemKeyboardHeight(newHeight)
-        attachmentKeyboard.updateSystemKeyboardHeight(newHeight)
-        if isMeasuringKeyboardHeight {
-            isMeasuringKeyboardHeight = false
-            hasMeasuredKeyboardHeight = true
-        }
     }
 }
 

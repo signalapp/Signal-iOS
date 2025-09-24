@@ -170,8 +170,6 @@ public final class ConversationViewController: OWSViewController {
         self.viewState.selectionState.delegate = self
         self.hidesBottomBarWhenPushed = true
 
-        self.inputAccessoryPlaceholder.delegate = self
-
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         self.actionOnOpen = action
@@ -185,10 +183,6 @@ public final class ConversationViewController: OWSViewController {
         )
 
         searchController.delegate = self
-
-        // because the search bar view is hosted in the navigation bar, it's not in the CVC's responder
-        // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
-        searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder
 
         self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(
             mode: .firstLast,
@@ -269,8 +263,10 @@ public final class ConversationViewController: OWSViewController {
         setUpWallpaper()
 
         self.view.addSubview(bottomBar)
-        self.bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
         bottomBar.autoPinWidthToSuperview()
+        NSLayoutConstraint.activate([
+            bottomBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        ])
 
         self.selectionToolbar = self.buildSelectionToolbar()
 
@@ -309,10 +305,6 @@ public final class ConversationViewController: OWSViewController {
         }
 
         return result
-    }
-
-    public override var inputAccessoryView: UIView? {
-        inputAccessoryPlaceholder
     }
 
     public override var textInputContextIdentifier: String? {
@@ -503,7 +495,7 @@ public final class ConversationViewController: OWSViewController {
         guard hasViewWillAppearEverBegun else {
             return
         }
-        guard nil != inputToolbar else {
+        guard let inputToolbar else {
             owsFailDebug("Missing inputToolbar.")
             return
         }
@@ -513,7 +505,9 @@ public final class ConversationViewController: OWSViewController {
         // in the view hierarchy. Since it's not in the view hierarchy, it hasn't been laid out and has no width,
         // which is used to determine height.
         // So here we unsure the proper height once we know everything's been laid out.
-        self.inputToolbar?.ensureTextViewHeight()
+        inputToolbar.ensureTextViewHeight()
+
+        updateContentInsets()
 
         self.positionGroupCallTooltip()
     }

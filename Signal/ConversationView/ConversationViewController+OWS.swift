@@ -77,10 +77,6 @@ extension ConversationViewController {
     internal func updateContentInsets() {
         AssertIsOnMainThread()
 
-        guard !isMeasuringKeyboardHeight, !isSwitchingKeyboard else {
-            return
-        }
-
         // Don't update the content insets if an interactive pop is in progress
         guard let navigationController = self.navigationController else {
             return
@@ -99,10 +95,7 @@ extension ConversationViewController {
         let oldInsets = collectionView.contentInset
         var newInsets = oldInsets
 
-        let keyboardOverlap = inputAccessoryPlaceholder.keyboardOverlap
-        newInsets.bottom = (keyboardOverlap +
-                                bottomBar.height -
-                                view.safeAreaInsets.bottom)
+        newInsets.bottom = view.keyboardLayoutGuide.layoutFrame.height - view.safeAreaInsets.bottom + (bottomBar.frame.height - bottomBar.safeAreaInsets.bottom)
         newInsets.top = (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom
