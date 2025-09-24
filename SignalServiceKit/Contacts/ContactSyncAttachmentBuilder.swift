@@ -74,6 +74,11 @@ enum ContactSyncAttachmentBuilder {
             by: { ($0.recipientPhoneNumber ?? "") < ($1.recipientPhoneNumber ?? "") }
         )
 
+        // De-duplicate threads by their address. This de-duping works correctly
+        // because we no longer allow stale information on TSThreads and removed
+        // all existing stale information via removeRedundantPhoneNumbers.
+        var seenAddresses = Set<SignalServiceAddress>()
+
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
         for signalAccount in signalAccounts {
@@ -95,12 +100,17 @@ enum ContactSyncAttachmentBuilder {
                     inboxPosition: inboxPosition,
                     tx: tx
                 )
+                seenAddresses.insert(signalRecipient.address)
             }
         }
 
         for (rowId, inboxPosition) in threadPositions.sorted(by: { $0.key < $1.key }) {
             try autoreleasepool {
                 guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
+                    return
+                }
+                guard seenAddresses.insert(contactThread.contactAddress).inserted else {
+                    Logger.warn("Skipping duplicate thread for \(contactThread.contactAddress)")
                     return
                 }
                 try writeContact(
