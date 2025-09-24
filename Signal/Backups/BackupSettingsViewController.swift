@@ -2220,13 +2220,13 @@ private struct BackupDetailsView: View {
             }
         }
 
-        HStack {
-            Text(OWSLocalizedString(
-                "BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL",
-                comment: "Label for a menu item explaining the size of the user's backup."
-            ))
-            Spacer()
-            if let lastBackupSizeBytes {
+        if let lastBackupSizeBytes {
+            HStack {
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL",
+                    comment: "Label for a menu item explaining the size of the user's backup."
+                ))
+                Spacer()
                 Text(lastBackupSizeBytes.formatted(.owsByteCount))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }

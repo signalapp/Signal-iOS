@@ -231,8 +231,15 @@ public struct BackupSettingsStore {
 
     /// The total size of a user's most recent Backup, including their Backup
     /// proto file and backed-up media.
+    ///
+    /// Only relevant on the paid tier.
     public func lastBackupSizeBytes(tx: DBReadTransaction) -> UInt64? {
-        return kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
+        switch backupPlan(tx: tx) {
+        case .disabled, .disabling, .free:
+            return nil
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            return kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
+        }
     }
 
     public func setLastBackupSizeBytes(
