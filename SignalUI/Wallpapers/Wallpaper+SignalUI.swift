@@ -23,7 +23,7 @@ extension Wallpaper {
         return viewBuilder(
             for: resolvedWallpaper,
             customPhoto: {
-                fetchResolvedValue(
+                WallpaperStore.fetchResolvedValue(
                     for: thread,
                     fetchBlock: {
                         if let thread = $0 {
@@ -33,7 +33,7 @@ extension Wallpaper {
                         }
                     })
             },
-            shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkMode(for: thread?.uniqueId, tx: tx)
+            shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkModeForRendering(for: thread?.uniqueId, tx: tx),
         )
     }
 
@@ -52,12 +52,6 @@ extension Wallpaper {
             owsFailDebug("Couldn't create wallpaper view builder.")
             return nil
         }
-    }
-
-    /// Fetches a thread-specific value (if set) or the global value.
-    private static func fetchResolvedValue<T>(for thread: TSThread?, fetchBlock: (TSThread?) -> T?) -> T? {
-        if let thread, let threadValue = fetchBlock(thread) { return threadValue }
-        return fetchBlock(nil)
     }
 }
 

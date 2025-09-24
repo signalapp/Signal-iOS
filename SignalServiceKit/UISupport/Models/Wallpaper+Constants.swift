@@ -6,6 +6,8 @@
 import Foundation
 
 extension Wallpaper {
+    public static let shouldDimInDarkModeDefaultValue = true
+
     public var asColorOrGradientSetting: ColorOrGradientSetting? {
         func parseAngleDegreesFromSpec(_ angleDegreesFromSpec: CGFloat) -> CGFloat {
             // In our models:

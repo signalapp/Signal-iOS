@@ -330,7 +330,7 @@ private class WallpaperPage: UIViewController {
         view = rootView
 
         let shouldDimInDarkTheme = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
+            DependenciesBridge.shared.wallpaperStore.fetchDimInDarkModeForRendering(
                 for: thread?.uniqueId,
                 tx: transaction
             )

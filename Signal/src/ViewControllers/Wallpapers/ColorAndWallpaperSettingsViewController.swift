@@ -153,7 +153,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "dim_wallpaper"),
             isOn: { () -> Bool in
                 SSKEnvironment.shared.databaseStorageRef.read {
-                    return DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
+                    return DependenciesBridge.shared.wallpaperStore.fetchDimInDarkModeForRendering(
                         for: self.thread?.uniqueId,
                         tx: $0
                     )

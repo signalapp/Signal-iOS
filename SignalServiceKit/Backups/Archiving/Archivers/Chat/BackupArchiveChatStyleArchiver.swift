@@ -269,7 +269,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             }
         }
 
-        let dimWallpaperInDarkMode = wallpaperStore.fetchOptionalDimInDarkMode(
+        let dimWallpaperInDarkMode = wallpaperStore.fetchDimInDarkMode(
             for: thread?.tsThread.uniqueId,
             tx: context.tx
         )
