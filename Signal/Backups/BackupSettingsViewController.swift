@@ -1261,33 +1261,6 @@ struct BackupSettingsView: View {
                 )
             }
 
-            if let latestBackupExportProgressUpdate = viewModel.latestBackupExportProgressUpdate {
-                BackupExportProgressView(
-                    latestExportProgressUpdate: latestBackupExportProgressUpdate,
-                    latestAttachmentUploadUpdate: viewModel.latestBackupAttachmentUploadUpdate,
-                    viewModel: viewModel,
-                )
-            } else if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
-                switch contents {
-                case .disabling, .disablingDownloadsRunning:
-                    // We'll show a download progress bar below if necessary.
-                    EmptyView()
-                case .enabled, .disabled, .disabledFailedToDisableRemotely:
-                    SignalSection {
-                        BackupAttachmentDownloadProgressView(
-                            latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
-                            viewModel: viewModel,
-                        )
-                    }
-                }
-            } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
-                SignalSection {
-                    BackupAttachmentUploadProgressView(
-                        latestUploadUpdate: latestBackupAttachmentUploadUpdate
-                    )
-                }
-            }
-
             switch contents {
             case .enabled:
                 SignalSection {
@@ -1308,22 +1281,47 @@ struct BackupSettingsView: View {
                             )
                         }
                     }
-                    Button {
-                        viewModel.performManualBackup()
-                    } label: {
-                        Label {
-                            Text(OWSLocalizedString(
-                                "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
-                                comment: "Title for a button allowing users to trigger a manual backup."
-                            ))
-                        } icon: {
-                            Image(uiImage: .backup)
-                                .resizable()
-                                .frame(width: 24, height: 24)
+
+                    if let latestBackupExportProgressUpdate = viewModel.latestBackupExportProgressUpdate {
+                        BackupExportProgressView(
+                            latestExportProgressUpdate: latestBackupExportProgressUpdate,
+                            latestAttachmentUploadUpdate: viewModel.latestBackupAttachmentUploadUpdate,
+                            viewModel: viewModel,
+                        )
+                    } else {
+                        if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
+                            switch contents {
+                            case .disabling, .disablingDownloadsRunning:
+                                // We'll show a download progress bar below if necessary.
+                                EmptyView()
+                            case .enabled, .disabled, .disabledFailedToDisableRemotely:
+                                BackupAttachmentDownloadProgressView(
+                                    latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
+                                    viewModel: viewModel,
+                                )
+                            }
+                        } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
+                            BackupAttachmentUploadProgressView(
+                                latestUploadUpdate: latestBackupAttachmentUploadUpdate
+                            )
                         }
+
+                        Button {
+                            viewModel.performManualBackup()
+                        } label: {
+                            Label {
+                                Text(OWSLocalizedString(
+                                    "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
+                                    comment: "Title for a button allowing users to trigger a manual backup."
+                                ))
+                            } icon: {
+                                Image(uiImage: .backup)
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                            }
+                        }
+                        .foregroundStyle(Color.Signal.label)
                     }
-                    .foregroundStyle(Color.Signal.label)
-                    .disabled(viewModel.latestBackupExportProgressUpdate != nil)
                 } header: {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER",
