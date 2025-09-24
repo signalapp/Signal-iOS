@@ -2019,17 +2019,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Votes</string>
+			<string>%1$d أصوات</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>%1$d صوت</string>
 			<key>two</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوتين</string>
 			<key>few</key>
-			<string>%1$d Votes</string>
+			<string>%1$d أصوات</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوت</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d صوت</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

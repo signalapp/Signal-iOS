@@ -1683,13 +1683,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Vote</string>
+			<string>הצבעה %1$d</string>
 			<key>two</key>
-			<string>%1$d Votes</string>
+			<string>%1$d הצבעות</string>
 			<key>many</key>
-			<string>%1$d Votes</string>
+			<string>%1$d הצבעות</string>
 			<key>other</key>
-			<string>%1$d Votes</string>
+			<string>%1$d הצבעות</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
