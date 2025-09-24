@@ -1747,11 +1747,27 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     @MainActor
     private func nextStepForQuickRestore() -> RegistrationStep {
-        if inMemoryState.accountEntropyPool == nil {
+        guard
+            inMemoryState.accountEntropyPool != nil,
+            let registrationMessage = inMemoryState.registrationMessage
+        else {
             return .scanQuickRegistrationQrCode
         }
-        if case .deviceTransfer = persistedState.restoreMethod {
-            if let restoreToken = inMemoryState.registrationMessage?.restoreMethodToken {
+
+        let backupTier: RegistrationStep.RestorePath.BackupTier? = switch registrationMessage.tier {
+        case .free: .free
+        case .paid: .paid
+        case .none: nil
+        }
+
+        let platform: RegistrationStep.RestorePath.Platform = switch registrationMessage.platform {
+        case .ios: .ios
+        case .android: .android
+        }
+
+        switch persistedState.restoreMethod {
+        case .deviceTransfer:
+            if let restoreToken = registrationMessage.restoreMethodToken {
                 let transferStatusState = RegistrationTransferStatusState(
                     deviceTransferService: deps.deviceTransferService,
                     quickRestoreManager: deps.quickRestoreManager,
@@ -1761,12 +1777,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .scanQuickRegistrationQrCode
             }
-        }
-
-        if
-            persistedState.restoreMethod?.isBackup == true,
-            let registrationMessage = inMemoryState.registrationMessage
-        {
+        case .remoteBackup, .localBackup:
             // if backup, show the confirmation screen
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
@@ -1775,8 +1786,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     lastBackupDate: registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
                     lastBackupSizeBytes: registrationMessage.backupSizeBytes.map(UInt.init)
                 ))
-        } else {
-            return .chooseRestoreMethod(.quickRestore)
+        case .declined:
+            // We shouldn't get back into the QuickRestore pathway after declining, so warn about it
+            owsFailDebug("Quick restore declined, but attempting to ask for restore method again.")
+            fallthrough
+        case .none:
+            return .chooseRestoreMethod(.quickRestore(backupTier, platform))
         }
     }
 

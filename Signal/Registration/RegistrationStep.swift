@@ -65,9 +65,19 @@ public enum RegistrationStep: Equatable {
     // MARK: - Post-Registration
 
     /// The path taken to get to the restore options screen
-    public enum RestorePath {
+    public enum RestorePath: Equatable {
+        public enum BackupTier {
+            case free
+            case paid
+        }
+
+        public enum Platform {
+            case android
+            case ios
+        }
+
         /// Restore backup, transfer from old device, small skip button
-        case quickRestore
+        case quickRestore(BackupTier?, Platform)
         /// Restore backup, prominent skip button
         case manualRestore
         /// Transfer from device, restore backup, prominent skip button
