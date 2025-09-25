@@ -141,9 +141,9 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
 
         let stackView = UIStackView()
+        var anchorView: UIView?
         switch self.restorePath {
         case .quickRestore(let tier, let platform) where platform == .android:
             switch tier {
@@ -165,12 +165,14 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                     restoreFromBackupButton
                 ])
                 addSmallSkipRestoreButton()
+                anchorView = smallSkipRestoreButton
             case .paid:
                 stackView.addArrangedSubviews([
                     restoreFromBackupButton,
                     transferButton
                 ])
                 addSmallSkipRestoreButton()
+                anchorView = smallSkipRestoreButton
             case .none:
                 stackView.addArrangedSubviews([
                     transferButton,
@@ -186,6 +188,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             view.addSubview(cancelButton)
             cancelButton.autoHCenterInSuperview()
             cancelButton.autoPinBottomToSuperviewMargin(withInset: 14)
+            anchorView = cancelButton
         case .unspecified:
             addDefaultTitle(stackView)
             stackView.addArrangedSubviews([
@@ -201,7 +204,17 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         stackView.layoutMargins = .init(hMargin: 20, vMargin: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
+
+        scrollView.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
+        if let anchorView {
+            scrollView.autoPinEdge(.bottom, to: .top, of: anchorView)
+        } else {
+            scrollView.autoPinEdge(toSuperviewEdge: .bottom)
+        }
+
         stackView.autoPinWidth(toWidthOf: scrollView)
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinHeightToSuperviewMargins()
 
         render()
     }

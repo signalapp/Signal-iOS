@@ -52,6 +52,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         view.backgroundColor = colorConfig.background
         navigationItem.rightBarButtonItem = nextBarButtonItem
 
+        let scrollView = UIScrollView()
+        self.view.addSubview(scrollView)
+
         let stackView = UIStackView(arrangedSubviews: [
             usernameTextField,
             titleLabel,
@@ -60,14 +63,19 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
             aepIssueLabel,
             footerButton,
         ])
-        self.view.addSubview(stackView)
+        scrollView.addSubview(stackView)
         stackView.axis = .vertical
         stackView.spacing = 24
         stackView.setCustomSpacing(16, after: aepTextView)
         stackView.setCustomSpacing(20, after: aepIssueLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
-        stackView.autoPinWidthToSuperview(withMargin: 20)
-        stackView.autoPinEdge(toSuperviewMargin: .top)
+
+        scrollView.autoPinEdgesToSuperviewEdges()
+
+        stackView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 20)
+        stackView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -20)
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)

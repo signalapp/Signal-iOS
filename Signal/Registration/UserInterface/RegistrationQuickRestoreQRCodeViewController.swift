@@ -118,30 +118,33 @@ private struct ContentStack: View {
     let cancelAction: () -> Void
 
     var body: some View {
-        VStack {
-            Spacer()
-            Text(OWSLocalizedString(
-                "REGISTRATION_SCAN_QR_CODE_TITLE",
-                comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
-            ))
-                .font(.title)
-                .fontWeight(.semibold)
-                .padding(.horizontal, 8)
-                .multilineTextAlignment(.center)
-            Spacer()
+        ScrollView {
+            VStack {
+                Spacer()
+                Text(OWSLocalizedString(
+                    "REGISTRATION_SCAN_QR_CODE_TITLE",
+                    comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
+                ))
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 8)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
 
-            RotatingQRCodeView(model: model)
-                .padding(.horizontal, 50)
+                RotatingQRCodeView(model: model)
+                    .padding(.horizontal, 50)
 
-            Spacer()
-            TutorialStack()
-            Spacer()
-            Spacer()
-            Button(CommonStrings.cancelButton, action: self.cancelAction)
-                .font(.body.weight(.bold))
-                .tint(Color.Signal.ultramarine)
-                .padding(.vertical, 14)
-            Spacer()
+                Spacer()
+                TutorialStack()
+                Spacer()
+                Spacer()
+                Button(CommonStrings.cancelButton, action: self.cancelAction)
+                    .font(.body.weight(.bold))
+                    .tint(Color.Signal.ultramarine)
+                    .padding(.vertical, 14)
+                Spacer()
+            }
         }
     }
 }
@@ -156,6 +159,7 @@ private struct TutorialStack: View {
                 ),
                 image: "device-phone"
             )
+            .fixedSize(horizontal: false, vertical: true)
             Label(
                 OWSLocalizedString(
                 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA",
@@ -163,6 +167,7 @@ private struct TutorialStack: View {
                 ),
                 image: "camera"
             )
+            .fixedSize(horizontal: false, vertical: true)
             Label(
                 OWSLocalizedString(
                 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN",
@@ -170,6 +175,7 @@ private struct TutorialStack: View {
                 ),
                 image: "qr_code"
             )
+            .fixedSize(horizontal: false, vertical: true)
         }
         .foregroundStyle(.secondary)
         .padding(.horizontal, 8)

@@ -162,6 +162,7 @@ public class RegistrationSplashViewController: OWSViewController {
                 target: self,
                 selector: #selector(didTapRestoreOrTransfer)
             )
+            restoreOrTransferButton.enableMultilineLabel()
             restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
             stackView.addArrangedSubview(restoreOrTransferButton)
             restoreOrTransferButton.autoSetDimension(.width, toSize: 280)
