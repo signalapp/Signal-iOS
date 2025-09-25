@@ -98,6 +98,8 @@ public protocol BackupAttachmentDownloadStore {
 
     // MARK: Banner state
 
+    func getDownloadCompleteBannerByteCount(tx: DBReadTransaction) -> UInt64?
+
     /// Whether the banner for downloads being complete was dismissed. Reset when new downloads
     /// are scheduled (when `setTotalPendingDownloadByteCount` is set.)
     func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool
@@ -330,6 +332,10 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
     }
 
     public func deleteAllDone(tx: DBWriteTransaction) throws {
+        if let byteCountSnapshot = try computeEstimatedFinishedFullsizeByteCount(tx: tx) {
+            kvStore.setUInt64(byteCountSnapshot, key: self.downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
+        }
+
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
                     QueuedBackupAttachmentDownload.State.done.rawValue)
@@ -359,6 +365,14 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
     }
 
     private let didDismissDownloadCompleteBannerKey = "didDismissDownloadCompleteBannerKey"
+    private let downloadCompleteBannerByteCountSnapshotKey = "downloadCompleteBannerByteCountSnapshotKey"
+
+    public func getDownloadCompleteBannerByteCount(tx: DBReadTransaction) -> UInt64? {
+        if let snapshot = kvStore.getUInt64(self.downloadCompleteBannerByteCountSnapshotKey, transaction: tx) {
+            return snapshot
+        }
+        return try? self.computeEstimatedFinishedFullsizeByteCount(tx: tx)
+    }
 
     public func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool {
         return kvStore.getBool(didDismissDownloadCompleteBannerKey, defaultValue: false, transaction: tx)
@@ -366,10 +380,12 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     public func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction) {
         kvStore.setBool(true, key: didDismissDownloadCompleteBannerKey, transaction: tx)
+        kvStore.removeValue(forKey: downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
     }
 
     public func resetDidDismissDownloadCompleteBanner(tx: DBWriteTransaction) {
         kvStore.setBool(false, key: didDismissDownloadCompleteBannerKey, transaction: tx)
+        kvStore.removeValue(forKey: downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
     }
 }
 

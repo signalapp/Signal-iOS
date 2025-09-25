@@ -13,7 +13,7 @@ public class CLVBackupDownloadProgressView {
         var downloadQueueStatus: BackupAttachmentDownloadQueueStatus?
         var backupPlan: BackupPlan?
         var didDismissDownloadCompleteBanner: Bool?
-        var totalPendingBackupAttachmentDownloadByteCount: UInt64?
+        var downloadCompleteBannerByteCount: UInt64?
         var downloadProgress: OWSProgress?
         var downloadProgressObserver: BackupAttachmentDownloadProgress.Observer?
 
@@ -27,8 +27,8 @@ public class CLVBackupDownloadProgressView {
             self.backupPlan = BackupSettingsStore().backupPlan(tx: tx)
             self.didDismissDownloadCompleteBanner = backupAttachmentDownloadStore
                 .getDidDismissDownloadCompleteBanner(tx: tx)
-            self.totalPendingBackupAttachmentDownloadByteCount =
-                try? backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx)
+            self.downloadCompleteBannerByteCount =
+                backupAttachmentDownloadStore.getDownloadCompleteBannerByteCount(tx: tx)
 
         }
     }
@@ -207,7 +207,7 @@ public class CLVBackupDownloadProgressView {
         case .empty:
             if
                 viewState.didDismissDownloadCompleteBanner == false,
-                let downloadSize = viewState.totalPendingBackupAttachmentDownloadByteCount
+                let downloadSize = viewState.downloadCompleteBannerByteCount
             {
                 return .complete(size: downloadSize, dismissAction: completeDismissAction)
             } else {
@@ -899,7 +899,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 Task {
                     // Wipe this proactively so we don't briefly flash the completed state.
                     self?.chatListViewController?.viewState.backupDownloadProgressViewState
-                        .totalPendingBackupAttachmentDownloadByteCount = nil
+                        .downloadCompleteBannerByteCount = nil
                     await self?.db.awaitableWrite { tx in
                         self?.backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
                     }
