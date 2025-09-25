@@ -12,6 +12,7 @@ public enum ImageFormat: CustomStringConvertible {
     case tiff
     case jpeg
     case bmp
+    case dng
     case webp
     case heic
     case heif
@@ -30,6 +31,8 @@ public enum ImageFormat: CustomStringConvertible {
             "ImageFormat_Jpeg"
         case .bmp:
             "ImageFormat_Bmp"
+        case .dng:
+            "ImageFormat_Dng"
         case .webp:
             "ImageFormat_Webp"
         case .heic:
@@ -51,6 +54,8 @@ public enum ImageFormat: CustomStringConvertible {
             return MimeType.imageJpeg
         case .bmp:
             return MimeType.imageBmp
+        case .dng:
+            return MimeType.imageDng
         case .webp:
             return MimeType.imageWebp
         case .heic:
@@ -66,7 +71,7 @@ public enum ImageFormat: CustomStringConvertible {
         switch self {
         case .unknown:
             return false
-        case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
+        case .png, .tiff, .jpeg, .bmp, .dng, .webp, .heic, .heif:
             return true
         case .gif:
             return source.ows_hasValidGifSize
@@ -98,6 +103,9 @@ public enum ImageFormat: CustomStringConvertible {
             guard let mimeType else { return true }
             return (mimeType.caseInsensitiveCompare(MimeType.imageBmp.rawValue) == .orderedSame ||
                     mimeType.caseInsensitiveCompare(MimeType.imageXWindowsBmp.rawValue) == .orderedSame)
+        case .dng:
+            guard let mimeType else { return true }
+            return mimeType.caseInsensitiveCompare(MimeType.imageDng.rawValue) == .orderedSame
         case .webp:
             guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame
