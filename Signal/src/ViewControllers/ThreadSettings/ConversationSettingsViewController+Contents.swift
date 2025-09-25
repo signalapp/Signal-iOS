@@ -86,7 +86,12 @@ extension ConversationSettingsViewController {
         emptySection.customFooterHeight = 24
         contents.add(emptySection)
 
-        setContents(contents, shouldReload: shouldReload)
+        // This DispatchQueue.main.async remedies an issue (worsened on iOS 26)
+        // where the contents of custom cells would grow from the corner during
+        // transition animations.
+        DispatchQueue.main.async {
+            self.setContents(contents, shouldReload: shouldReload)
+        }
     }
 
     // MARK: Calls section
