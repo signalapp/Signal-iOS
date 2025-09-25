@@ -35,14 +35,12 @@ extension BackupArchive {
             _ protoKeyPath: WritableKeyPath<Proto, UInt64>,
             allowZero: Bool
         ) {
-            let timestamp = source[keyPath: sourceKeyPath]
-            guard isValid(timestamp) else {
-                return
-            }
-            if !allowZero, timestamp == 0 {
-                return
-            }
-            proto[keyPath: protoKeyPath] = timestamp
+            _setTimestampIfValid(
+                source[keyPath: sourceKeyPath],
+                on: &proto,
+                protoKeyPath,
+                allowZero: allowZero
+            )
         }
 
         static func setTimestampIfValid<Source, Proto>(
@@ -52,13 +50,28 @@ extension BackupArchive {
             _ protoKeyPath: WritableKeyPath<Proto, UInt64>,
             allowZero: Bool
         ) {
-            let timestamp = source[keyPath: sourceKeyPath]
-            guard let timestamp, isValid(timestamp) else {
+            _setTimestampIfValid(
+                source[keyPath: sourceKeyPath],
+                on: &proto,
+                protoKeyPath,
+                allowZero: allowZero
+            )
+        }
+
+        private static func _setTimestampIfValid<Proto>(
+            _ timestamp: UInt64?,
+            on proto: inout Proto,
+            _ protoKeyPath: WritableKeyPath<Proto, UInt64>,
+            allowZero: Bool,
+        ) {
+            guard
+                let timestamp,
+                isValid(timestamp),
+                (timestamp > 0 || allowZero)
+            else {
                 return
             }
-            if !allowZero, timestamp == 0 {
-                return
-            }
+
             proto[keyPath: protoKeyPath] = timestamp
         }
     }

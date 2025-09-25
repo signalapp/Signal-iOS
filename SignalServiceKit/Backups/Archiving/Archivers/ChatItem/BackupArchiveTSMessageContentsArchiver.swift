@@ -666,13 +666,21 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         proto.url = url
         linkPreview.title.map { proto.title = $0 }
         linkPreview.previewDescription.map { proto.description_p = $0 }
-        BackupArchive.Timestamps.setTimestampIfValid(
-            from: linkPreview,
-            \.date?.ows_millisecondsSince1970,
-            on: &proto,
-            \.date,
-            allowZero: true
-        )
+
+        // Link preview dates could be arbitrarily old, and .ows_millisecondsSince1970
+        // crashes if date.timeIntervalSince1970 is negative.
+        if
+            let date = linkPreview.date,
+            date.timeIntervalSince1970 >= 0
+        {
+            BackupArchive.Timestamps.setTimestampIfValid(
+                from: date,
+                \.ows_millisecondsSince1970,
+                on: &proto,
+                \.date,
+                allowZero: true,
+            )
+        }
 
         // Returns nil if no link preview image; this is both how we check presence and how we archive.
         let imageResult = attachmentsArchiver.archiveLinkPreviewAttachment(
