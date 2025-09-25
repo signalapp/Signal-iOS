@@ -2003,6 +2003,33 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
         case .rejectedVerificationMethod:
+            // If the user attempted to register the account using an incorrect AEP (sourced either
+            // from a QuickRestore registration message or manual entry), present an error, reset some
+            // state, and route the user back to the key entry method used to get here.
+            if
+                let restoreMode = persistedState.restoreMode,
+                inMemoryState.accountEntropyPool != nil
+            {
+                let result = await self.deps.registrationBackupErrorPresenter.presentError(
+                    error: .incorrectRecoveryKey,
+                    isQuickRestore: (restoreMode == .quickRestore)
+                )
+                db.write { tx in
+                    updatePersistedState(tx) {
+                        $0.restoreMethod = nil
+                    }
+                }
+                switch result {
+                case .skipRestore, .none:
+                    owsFailDebug("Encountered unexpected recovery path for incorrect recovery key.")
+                    fallthrough
+                case .incorrectRecoveryKey, .tryAgain:
+                    return .enterRecoveryKey(.init(canShowBackButton: true))
+                case .restartQuickRestore:
+                    return .scanQuickRegistrationQrCode
+                }
+            }
+
             // The reg recovery password was wrong. This can happen for two reasons:
             // 1) We have the wrong SVR master key locally
             // 2) We have been reglock challenged, forcing us to re-register via session

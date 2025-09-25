@@ -126,7 +126,9 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
         var actions = [ActionSheetAction]()
 
         switch error {
-        case .generic where isQuickRestore:
+        case
+                .generic where isQuickRestore,
+                .incorrectRecoveryKey where isQuickRestore:
             // If this is QuickRestore flow, present message about re-scanning
             title = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE",
