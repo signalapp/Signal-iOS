@@ -223,11 +223,11 @@ public class SpoilerRenderer {
     // 7 (2 duration + 5 "extra").
 
     // If nil, we are not currently animating and therefore not tracking time changes.
-    private var animationStartMs: UInt32?
-    private var extraAnimationDurationMs: UInt32 = 0
+    private var animationStart: CFTimeInterval?
+    private var extraAnimationDuration: CFTimeInterval = 0
 
     // Reset duration every hour so numbers don't get too big.
-    private static var maxDurationMs: UInt32 = 60 * 60 * 1000
+    private static var maxDuration: CFTimeInterval = .hour
 
     private func didChangeAnimationState() {
         self.particleViews.removeAll(where: { $0.value == nil })
@@ -235,43 +235,39 @@ public class SpoilerRenderer {
             isAppInForeground
             && !UIAccessibility.isReduceMotionEnabled
             && !self.particleViews.isEmpty
-        let wasAnimating = animationStartMs != nil
+        let wasAnimating = animationStart != nil
 
         guard wantsToAnimate != wasAnimating else {
             return
         }
 
-        // Ok to drop higher order bits; we only care about duration
-        // measured in shorter timescales.
-        let currentDateMs = UInt32(truncatingIfNeeded: Date().ows_millisecondsSince1970)
+        let currentDate = CACurrentMediaTime()
         if wantsToAnimate {
             // resuming, set the current date (and preserve any extra)
-            animationStartMs = currentDateMs
+            animationStart = currentDate
         } else {
             // pausing, write the current duration to the extra.
-            extraAnimationDurationMs += currentDateMs - (animationStartMs ?? currentDateMs)
-            if extraAnimationDurationMs > Self.maxDurationMs {
-                extraAnimationDurationMs = 0
+            extraAnimationDuration += currentDate - (animationStart ?? currentDate)
+            if extraAnimationDuration > Self.maxDuration {
+                extraAnimationDuration = 0
             }
-            animationStartMs = nil
+            animationStart = nil
         }
     }
 
     /// This method is on the hot path of rendering; should be as efficient as possible.
     public func getAnimationDuration() -> UInt32 {
-        guard let animationStartMs else {
-            return extraAnimationDurationMs
+        guard let animationStart else {
+            return UInt32(extraAnimationDuration * 1000)
         }
-        // Ok to drop higher order bits; we only care about duration
-        // measured in shorter timescales.
-        let currentDateMs = UInt32(truncatingIfNeeded: Date().ows_millisecondsSince1970)
-        let duration = (currentDateMs - animationStartMs) + extraAnimationDurationMs
-        if duration > Self.maxDurationMs {
-            self.extraAnimationDurationMs = 0
-            self.animationStartMs = currentDateMs
+        let currentDate = CACurrentMediaTime()
+        let duration = (currentDate - animationStart) + extraAnimationDuration
+        if duration > Self.maxDuration {
+            self.extraAnimationDuration = 0
+            self.animationStart = currentDate
             return 0
         } else {
-            return duration
+            return UInt32(duration * 1000)
         }
     }
 
