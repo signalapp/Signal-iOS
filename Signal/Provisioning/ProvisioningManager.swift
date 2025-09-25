@@ -96,7 +96,6 @@ public class ProvisioningManager {
         if
             shouldLinkNSync,
             deviceProvisioningUrl.capabilities.contains(.linknsync)
-                || deviceProvisioningUrl.capabilities.contains(.linknsync_backCompat)
         {
             ephemeralBackupKey = linkAndSyncManager.generateEphemeralBackupKey(aci: myAci)
         } else {

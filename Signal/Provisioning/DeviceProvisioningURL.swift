@@ -13,7 +13,6 @@ public class DeviceProvisioningURL {
     /// scoped specifically to provisioning to communicate between the primary
     /// and secondary device.
     public enum Capability: String {
-        case linknsync_backCompat = "backup4"
         case linknsync = "backup5"
     }
 
