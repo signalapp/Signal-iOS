@@ -541,12 +541,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             simpleChatUpdateInteraction = .simpleInfoMessage(.acceptedMessageRequest)
         }
 
-        guard let directionalDetails = chatItem.directionalDetails else {
-            return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
-            ))
-        }
-
         switch simpleChatUpdateInteraction {
         case .simpleInfoMessage(let infoMessageType):
             let infoMessage = TSInfoMessage(
@@ -559,7 +553,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     infoMessage,
                     in: chatThread,
                     chatId: chatItem.typedChatId,
-                    directionalDetails: directionalDetails,
                     context: context
                 )
             } catch let error {
@@ -571,7 +564,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     infoMessage,
                     in: chatThread,
                     chatId: chatItem.typedChatId,
-                    directionalDetails: directionalDetails,
                     context: context
                 )
             } catch let error {
@@ -583,7 +575,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     errorMessage,
                     in: chatThread,
                     chatId: chatItem.typedChatId,
-                    directionalDetails: directionalDetails,
                     context: context
                 )
             } catch let error {

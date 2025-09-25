@@ -108,18 +108,11 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
             phoneNumber: e164.stringValue
         )
 
-        guard let directionalDetails = chatItem.directionalDetails else {
-            return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
-            ))
-        }
-
         do {
             try interactionStore.insert(
                 sessionSwitchoverInfoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
-                directionalDetails: directionalDetails,
                 context: context
             )
         } catch let error {

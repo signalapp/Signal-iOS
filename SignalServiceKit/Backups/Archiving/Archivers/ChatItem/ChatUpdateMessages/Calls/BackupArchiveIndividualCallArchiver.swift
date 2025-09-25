@@ -233,6 +233,7 @@ final class BackupArchiveIndividualCallArchiver {
             thread: contactThread,
             sentAtTimestamp: chatItem.dateSent
         )
+        individualCallInteraction.wasRead = individualCall.read
 
         do {
             try interactionStore.insert(

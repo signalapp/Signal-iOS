@@ -322,7 +322,7 @@ public class EditManagerImpl: EditManager {
         let editRecord = EditRecord(
             latestRevisionId: latestRevisionRowId,
             pastRevisionId: priorRevisionRowId,
-            read: editTargetWrapper.wasRead
+            read: editTargetWrapper.wasRead,
         )
         do {
             try context.editMessageStore.insert(editRecord, tx: tx)

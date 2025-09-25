@@ -181,6 +181,7 @@ final class BackupArchiveGroupCallArchiver {
             thread: groupThread,
             sentAtTimestamp: chatItem.dateSent
         )
+        groupCallInteraction.wasRead = groupCall.read
 
         do {
             try interactionStore.insert(

@@ -195,8 +195,6 @@ public class BackupArchivePostFrameRestoreActionManager {
             infoMessage,
             in: chatThread,
             chatId: chatId,
-            // This info message is directionless
-            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             context: chatItemContext
         )
     }
