@@ -8,7 +8,7 @@ import Foundation
 
 typealias PerformTSRequestBlock = ((TSRequest) async throws -> any HTTPResponse)
 typealias PerformRequestBlock = ((URLRequest) async throws -> any HTTPResponse)
-typealias PerformUploadBlock = ((URLRequest, URL, OWSProgressSource?) async throws -> any HTTPResponse)
+typealias PerformUploadBlock = ((URLRequest, Data, OWSProgressSource?) async throws -> any HTTPResponse)
 
 enum MockRequestType {
     case uploadForm(PerformTSRequestBlock)
@@ -153,12 +153,12 @@ class AttachmentUploadManagerMockHelper {
             }
         }
 
-        mockURLSession.performUploadFileBlock = { request, url, _, progress in
+        mockURLSession.performUploadDataBlock = { request, data, progress in
             guard case let .uploadTask(requestBlock) = self.activeUploadRequestMocks.removeFirst() else {
                 throw OWSAssertionError("Mock request missing")
             }
             self.capturedRequests.append(.uploadTask(request))
-            return try await requestBlock(request, url, progress)
+            return try await requestBlock(request, data, progress)
         }
     }
 

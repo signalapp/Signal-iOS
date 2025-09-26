@@ -46,8 +46,8 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
 
     func deleteFile(url: URL) throws { }
 
-    func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
-        return (url, size - start)
+    func readMemoryMappedFileData(url: URL) throws -> Data {
+        return Data(repeating: 0, count: size)
     }
 }
 

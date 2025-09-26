@@ -98,17 +98,24 @@ struct UploadEndpointCDN3: UploadEndpoint {
             throw .missingFile
         }
 
+        let originalFileData: Data
+        do {
+            originalFileData = try fileSystem.readMemoryMappedFileData(url: attempt.fileUrl)
+        } catch {
+            Logger.error("Unable to map upload file into memory")
+            throw .missingFile
+        }
+
         let method: HTTPMethod
-        let temporaryFileUrl: URL
-        var fileToCleanup: URL?
         let uploadURL: String
+        let uploadData: Data
         if startPoint == 0 {
             // Either first attempt or no progress so far, use entire encrypted data.
-            uploadURL = attempt.uploadLocation.absoluteString
-
             // For initial uploads, send a POST to create the file
             method = .post
-            temporaryFileUrl = attempt.fileUrl
+            uploadURL = attempt.uploadLocation.absoluteString
+            uploadData = originalFileData
+
             headers["Content-Length"] = "\(totalDataLength)"
             headers["Upload-Length"] = "\(totalDataLength)"
 
@@ -117,37 +124,12 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 headers[Constants.checksumHeaderKey] = metadata.digest.base64EncodedString()
             }
         } else {
-            // Resuming, slice attachment data in memory.
-            // TODO[CDN3]: Avoid slicing file and instead use a input stream
-            let dataSliceFileUrl: URL
-            let dataSliceLength: Int
-            do {
-                (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
-                    url: attempt.fileUrl,
-                    start: startPoint
-                )
-            } catch {
-                attempt.logger.warn("Failed to create temp file slice.")
-                throw Upload.Error.unknown
-            }
-
-            uploadURL = attempt.uploadLocation.absoluteString + "/" + uploadForm.cdnKey
-
             // Use PATCH to resume the upload
             method = .patch
-            temporaryFileUrl = dataSliceFileUrl
-            fileToCleanup = dataSliceFileUrl
-            headers["Content-Length"] = "\(dataSliceLength)"
-        }
+            uploadURL = attempt.uploadLocation.absoluteString + "/" + uploadForm.cdnKey
+            uploadData = originalFileData[(originalFileData.startIndex + startPoint)...]
 
-        defer {
-            if let fileToCleanup {
-                do {
-                    try fileSystem.deleteFile(url: fileToCleanup)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+            headers["Content-Length"] = "\(originalFileData.count - startPoint)"
         }
 
         do {
@@ -155,7 +137,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 uploadURL,
                 method: method,
                 headers: headers,
-                fileUrl: temporaryFileUrl,
+                requestData: uploadData,
                 progress: progress
             )
 
