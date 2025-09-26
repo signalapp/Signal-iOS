@@ -163,11 +163,9 @@ extension MessageSender {
                     return await self.sendSenderKeyCiphertext(
                         ciphertextResult,
                         to: recipients,
-                        in: thread,
                         message: message,
                         payloadId: serializedMessage.payloadId,
                         authBuilder: { return authBuilder(recipients.map(\.serviceId)) },
-                        senderCertificate: senderCertificate,
                         localIdentifiers: localIdentifiers
                     )
                 }
@@ -266,11 +264,9 @@ extension MessageSender {
             failedRecipients += await sendSenderKeyCiphertext(
                 ciphertextResult,
                 to: readyRecipients,
-                in: thread,
                 message: message,
                 payloadId: serializedMessage.payloadId,
                 authBuilder: { return authBuilder(readyRecipients.map(\.serviceId)) },
-                senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
             )
         }
@@ -280,22 +276,18 @@ extension MessageSender {
     private func sendSenderKeyCiphertext(
         _ ciphertextResult: Result<Data, any Error>,
         to recipients: [Recipient],
-        in thread: TSThread,
         message: TSOutgoingMessage,
         payloadId: Int64?,
         authBuilder: () -> TSRequest.SealedSenderAuth,
-        senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers
     ) async -> [(ServiceId, any Error)] {
         let sendResult: SenderKeySendResult
         do {
             sendResult = try await self.sendSenderKeyRequest(
                 to: recipients,
-                in: thread,
                 message: message,
                 ciphertextResult: ciphertextResult,
                 authBuilder: authBuilder,
-                senderCertificate: senderCertificate
             )
         } catch {
             // If the sender key message failed to send, fail each recipient that we
@@ -479,11 +471,9 @@ extension MessageSender {
     /// *except* those returned as unregistered in the result.
     private func sendSenderKeyRequest(
         to recipients: [Recipient],
-        in thread: TSThread,
         message: TSOutgoingMessage,
         ciphertextResult: Result<Data, any Error>,
         authBuilder: () -> TSRequest.SealedSenderAuth,
-        senderCertificate: SenderCertificate
     ) async throws -> SenderKeySendResult {
         Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(recipients.map(\.serviceId).sorted())")
         let ciphertext = try ciphertextResult.get()
@@ -495,7 +485,6 @@ extension MessageSender {
                     timestamp: message.timestamp,
                     isOnline: message.isOnline,
                     isUrgent: message.isUrgent,
-                    thread: thread,
                     recipients: recipients,
                     auth: auth
                 )
@@ -517,7 +506,6 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
-        thread: TSThread,
         recipients: [Recipient],
         auth: TSRequest.SealedSenderAuth
     ) async throws -> SenderKeySendResult {
@@ -527,8 +515,6 @@ extension MessageSender {
                 timestamp: timestamp,
                 isOnline: isOnline,
                 isUrgent: isUrgent,
-                thread: thread,
-                recipients: recipients,
                 auth: auth
             )
 
@@ -647,8 +633,6 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
-        thread: TSThread,
-        recipients: [Recipient],
         auth: TSRequest.SealedSenderAuth
     ) async throws -> HTTPResponse {
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
