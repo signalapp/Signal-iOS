@@ -28,6 +28,11 @@ public class RegistrationNavigationController: OWSNavigationController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.isEnabled = false
+#if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
+#endif
     }
 
     public override func viewWillAppear(_ animated: Bool) {
