@@ -6,7 +6,6 @@
 import LibSignalClient
 
 public enum BackupExportJobStep: String, OWSSequentialProgressStep {
-    case registerBackupId
     case backupExport
     case backupUpload
     case listMedia
@@ -18,11 +17,10 @@ public enum BackupExportJobStep: String, OWSSequentialProgressStep {
     /// a given step should take.
     public var progressUnitCount: UInt64 {
         switch self {
-        case .registerBackupId: 1
         case .backupExport: 40
         case .backupUpload: 10
         case .listMedia: 5
-        case .attachmentOrphaning: 2
+        case .attachmentOrphaning: 3
         case .attachmentUpload: 40
         case .offloading: 2
         }
@@ -245,18 +243,6 @@ class BackupExportJobImpl: BackupExportJob {
         }
 
         do {
-            logger.info("Starting...")
-
-            let registeredBackupKeyToken = try await withEstimatedProgressUpdates(
-                estimatedTimeToCompletion: 0.5,
-                progress: progress?.child(for: .registerBackupId).addSource(withLabel: "", unitCount: 1),
-            ) { [backupKeyService] in
-                try await backupKeyService.registerBackupKey(
-                    localIdentifiers: localIdentifiers,
-                    auth: .implicit()
-                )
-            }
-
             logger.info("Exporting backup...")
 
             let uploadMetadata = try await backupArchiveManager.exportEncryptedBackup(
@@ -298,7 +284,6 @@ class BackupExportJobImpl: BackupExportJob {
                     _ = try await backupArchiveManager.uploadEncryptedBackup(
                         backupKey: backupKey,
                         metadata: uploadMetadata,
-                        registeredBackupKeyToken: registeredBackupKeyToken,
                         auth: .implicit(),
                         progress: progress?.child(for: .backupUpload),
                     )

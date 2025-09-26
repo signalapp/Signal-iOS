@@ -1537,7 +1537,7 @@ private struct BackupExportProgressView: View {
 
     private var progressBarState: ProgressBarState {
         switch latestExportProgressUpdate.currentStep {
-        case .registerBackupId, .backupExport, .backupUpload:
+        case .backupExport, .backupUpload:
             let percentExportCompleted = latestExportProgressUpdate.progress(for: .backupExport)?.percentComplete ?? 0
             let percentUploadCompleted = latestExportProgressUpdate.progress(for: .backupUpload)?.percentComplete ?? 0
             let percentComplete = (0.95 * percentExportCompleted) + (0.05 * percentUploadCompleted)

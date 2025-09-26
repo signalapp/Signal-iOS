@@ -5,11 +5,6 @@
 
 import LibSignalClient
 
-/// An opaque token returned after registering a BackupKey, which can be
-/// required by APIs that require a BackupKey to have been previously registered
-/// in order to succeed.
-public struct RegisteredBackupKeyToken {}
-
 /// Responsible for CRUD of the "BackupKey", which is an asymmetric key used to
 /// sign Backup auth credentials.
 ///
@@ -23,7 +18,7 @@ public protocol BackupKeyService {
     func registerBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
-    ) async throws -> RegisteredBackupKeyToken
+    ) async throws
 
     /// De-initialize Backups by deleting a previously-registered BackupKey.
     /// This is effectively a "delete Backup" operation, as subsequent to this
@@ -88,7 +83,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
     func registerBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
-    ) async throws -> RegisteredBackupKeyToken {
+    ) async throws {
         try await _registerBackupKey(
             localIdentifiers: localIdentifiers,
             auth: auth,
@@ -100,7 +95,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         retryOnFail: Bool
-    ) async throws -> RegisteredBackupKeyToken {
+    ) async throws {
         let (messageBackupKey, mediaBackupKey) = try await db.awaitableWrite { tx in
             try rootBackupKeys(localIdentifiers: localIdentifiers, tx: tx)
         }
@@ -125,9 +120,6 @@ final class BackupKeyServiceImpl: BackupKeyService {
             _ = try await networkManager.asyncRequest(
                 .backupSetPublicKeyRequest(backupAuth: mediaBackupAuth)
             )
-
-            return RegisteredBackupKeyToken()
-
         } catch SignalError.verificationFailed where retryOnFail {
             // This error is thrown if the backupID was never registered remotely.
             // We *should* set it above in registerBackupIDIfNecessary based on local state,
@@ -258,8 +250,8 @@ private extension TSRequest {
 #if TESTABLE_BUILD
 
 class MockBackupKeyService: BackupKeyService {
-    func registerBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> RegisteredBackupKeyToken {
-        return RegisteredBackupKeyToken()
+    func registerBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
+        // Do nothing
     }
 
     var deleteBackupKeyMock: (() async throws -> Void)?

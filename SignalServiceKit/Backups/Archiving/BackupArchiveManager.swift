@@ -42,7 +42,6 @@ public protocol BackupArchiveManager {
     func uploadEncryptedBackup(
         backupKey: MessageRootBackupKey,
         metadata: Upload.EncryptedBackupUploadMetadata,
-        registeredBackupKeyToken: RegisteredBackupKeyToken,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>

@@ -137,8 +137,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
         }
 
         if mode != .registration {
-            backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") {
-                self.exportMessageBackupProto()
+            backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") { [self] in
+                Task {
+                    await exportMessageBackupProto()
+                }
             })
         }
         if FeatureFlags.Backups.showOptimizeMedia {
@@ -368,152 +370,69 @@ private extension InternalSettingsViewController {
         SpinningCheckmarks.shouldSpin = !wasSpinning
     }
 
-    func exportMessageBackupProto() {
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            canCancel: false
-        ) { modal in
-            func dismissModalAndToast(_ message: String) {
-                DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {
-                    modal.dismiss {
-                        self.presentToast(text: message)
-                    }
-                })
-            }
-
-            func exportMessageBackupProtoFile() {
-                Task {
-                    let result = await Result(catching: {
-                        try await self.exportMessageBackupProtoFile(presentingFrom: modal)
-                    })
-                    await MainActor.run {
-                        switch result {
-                        case .success:
-                            dismissModalAndToast("Success! Key copied to clipboard")
-                        case .failure(let error):
-                            dismissModalAndToast("Failed! \(error.localizedDescription)")
-                        }
-                    }
-                }
-            }
-
-            DispatchQueue.main.async {
-                let actionSheet = ActionSheetController(title: "Choose backup destination:")
-
-                let localFileAction = ActionSheetAction(title: "Local device") { _ in
-                    exportMessageBackupProtoFile()
-                }
-
-                let remoteFileAction = ActionSheetAction(title: "Remote server") { _ in
-                    Task {
-                        let result = await Result(catching: {
-                            try await self.exportMessageBackupProtoRemotely()
-                        })
-                        await MainActor.run {
-                            switch result {
-                            case .success:
-                                dismissModalAndToast("Done")
-                            case .failure(let error):
-                                dismissModalAndToast("Failed! \(error.localizedDescription)")
-                            }
-                        }
-                    }
-                }
-
-                actionSheet.addAction(localFileAction)
-                actionSheet.addAction(remoteFileAction)
-                modal.presentActionSheet(actionSheet)
-            }
-        }
-    }
-
-    // Right now this "local" backup uses the same format and encryption scheme
-    // as the remote backup. In the future, this should use the local backup
-    // format and encryption scheme.
-    func exportMessageBackupProtoFile(
-        presentingFrom vc: UIViewController
-    ) async throws {
+    func exportMessageBackupProto() async {
         let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
+        let db = DependenciesBridge.shared.db
+        let errorPresenter = DependenciesBridge.shared.backupArchiveErrorPresenter
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let (messageBackupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
-            return (
-                try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx),
-                localIdentifiers
-            )
+        func presentBackupErrorsAndToast(_ message: String) {
+            errorPresenter.presentOverTopmostViewController { [self] in
+                presentToast(text: message)
+            }
         }
 
-        guard let messageBackupKey else {
-            return
-        }
+        let backupKey: MessageBackupKey
+        let exportMetadata: Upload.EncryptedBackupUploadMetadata
+        do {
+            (backupKey, exportMetadata) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+                from: self
+            ) {
+                let (messageBackupKey, localIdentifiers) = try db.read { tx in
+                    let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
+                    return (
+                        try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx)!,
+                        localIdentifiers,
+                    )
+                }
 
-        let backupEncryptionKey = try MessageBackupKey(
-            backupKey: messageBackupKey.backupKey,
-            backupId: messageBackupKey.backupId
-        )
-
-        let metadata = try await backupArchiveManager.exportEncryptedBackup(
-            localIdentifiers: localIdentifiers,
-            backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
-            progress: nil
-        )
-
-        let keyString = "AES key: \(backupEncryptionKey.aesKey.base64EncodedString())"
-            + "\nHMAC key: \(backupEncryptionKey.hmacKey.base64EncodedString())"
-
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                let activityVC = UIActivityViewController(
-                    activityItems: [metadata.fileUrl],
-                    applicationActivities: nil
+                let backupKey = try MessageBackupKey(
+                    backupKey: messageBackupKey.backupKey,
+                    backupId: messageBackupKey.backupId
                 )
-                activityVC.popoverPresentationController?.sourceView = self.view
-                activityVC.completionWithItemsHandler = { _, _, _, _ in
-                    UIPasteboard.general.string = keyString
-                    continuation.resume()
-                }
-                vc.present(activityVC, animated: true)
+
+                let exportMetadata = try await backupArchiveManager.exportEncryptedBackup(
+                    localIdentifiers: localIdentifiers,
+                    backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
+                    progress: nil
+                )
+
+                return (backupKey, exportMetadata)
             }
-        }
-    }
-
-    func exportMessageBackupProtoRemotely() async throws {
-        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
-        let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
-        let backupKeyService = DependenciesBridge.shared.backupKeyService
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-
-        let (messageBackupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
-            return (
-                try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx),
-                localIdentifiers
-            )
-        }
-
-        guard let messageBackupKey else {
+        } catch {
+            owsFailDebug("Failed to export Backup proto! \(error)")
+            presentBackupErrorsAndToast("Failed to export Backup proto!")
             return
         }
 
-        let metadata = try await backupArchiveManager.exportEncryptedBackup(
-            localIdentifiers: localIdentifiers,
-            backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
-            progress: nil
-        )
+        let keyString = "AES key: \(backupKey.aesKey.base64EncodedString())"
+        + "\nHMAC key: \(backupKey.hmacKey.base64EncodedString())"
 
-        let registeredBackupKeyToken = try await backupKeyService.registerBackupKey(
-            localIdentifiers: localIdentifiers,
-            auth: .implicit()
+        let activityVC = UIActivityViewController(
+            activityItems: [exportMetadata.fileUrl],
+            applicationActivities: nil
         )
+        activityVC.popoverPresentationController?.sourceView = view
+        activityVC.completionWithItemsHandler = { _, _, _, _ in
+            UIPasteboard.general.setItems(
+                [[UIPasteboard.typeAutomatic: keyString]],
+                options: [.expirationDate: Date().addingTimeInterval(120)]
+            )
 
-        _ = try await backupArchiveManager.uploadEncryptedBackup(
-            backupKey: messageBackupKey,
-            metadata: metadata,
-            registeredBackupKeyToken: registeredBackupKeyToken,
-            auth: .implicit(),
-            progress: nil,
-        )
+            presentBackupErrorsAndToast("Success! Encryption key copied.")
+        }
+
+        present(activityVC, animated: true)
     }
 }
