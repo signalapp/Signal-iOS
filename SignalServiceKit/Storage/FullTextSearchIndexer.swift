@@ -137,6 +137,7 @@ extension FullTextSearchIndexer {
     public static let ftsTableName = "indexable_text_fts"
 
     static let contentTableName = "indexable_text"
+    static let interactionTableName = "model_TSInteraction"
     static let uniqueIdColumn = "uniqueId"
     static let collectionColumn = "collection"
     static let ftsContentColumn = "ftsIndexableContent"
@@ -220,6 +221,22 @@ extension FullTextSearchIndexer {
         tx: DBReadTransaction,
         block: (_ message: TSMessage, _ snippet: String, _ stop: inout Bool) -> Void
     ) {
+        search(
+            for: searchText,
+            maxResults: maxResults,
+            threadUniqueId: nil,
+            tx: tx,
+            block: block
+        )
+    }
+
+    public static func search(
+        for searchText: String,
+        maxResults: Int,
+        threadUniqueId: String?,
+        tx: DBReadTransaction,
+        block: (_ message: TSMessage, _ snippet: String, _ stop: inout Bool) -> Void
+    ) {
         let query = buildQuery(for: searchText)
 
         if query.isEmpty {
@@ -236,19 +253,43 @@ extension FullTextSearchIndexer {
             // Determines the length of the snippet.
             let numTokens: UInt = 15
             let matchSnippet = "match_snippet"
-            let sql: String = """
-            SELECT
-                \(contentTableName).\(collectionColumn),
-                \(contentTableName).\(uniqueIdColumn),
-                SNIPPET(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens)) AS \(matchSnippet)
-            FROM \(ftsTableName)
-            LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
-            WHERE \(ftsTableName).\(ftsContentColumn) MATCH ?
-            ORDER BY rank
-            LIMIT \(maxResults)
-            """
+            
+            let sql: String
+            let arguments: StatementArguments
+            
+            if let threadUniqueId = threadUniqueId {
+                // When searching within a specific conversation, join with the interaction table to filter by thread
+                sql = """
+                SELECT
+                    \(contentTableName).\(collectionColumn),
+                    \(contentTableName).\(uniqueIdColumn),
+                    SNIPPET(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens)) AS \(matchSnippet)
+                FROM \(ftsTableName)
+                LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
+                LEFT JOIN \(interactionTableName) ON \(interactionTableName).uniqueId = \(contentTableName).\(uniqueIdColumn)
+                WHERE \(ftsTableName).\(ftsContentColumn) MATCH ?
+                AND \(interactionTableName).uniqueThreadId = ?
+                ORDER BY rank
+                LIMIT \(maxResults)
+                """
+                arguments = [query, threadUniqueId]
+            } else {
+                // Global search - use the original query
+                sql = """
+                SELECT
+                    \(contentTableName).\(collectionColumn),
+                    \(contentTableName).\(uniqueIdColumn),
+                    SNIPPET(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens)) AS \(matchSnippet)
+                FROM \(ftsTableName)
+                LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
+                WHERE \(ftsTableName).\(ftsContentColumn) MATCH ?
+                ORDER BY rank
+                LIMIT \(maxResults)
+                """
+                arguments = [query]
+            }
 
-            let cursor = try Row.fetchCursor(tx.database, sql: sql, arguments: [query])
+            let cursor = try Row.fetchCursor(tx.database, sql: sql, arguments: arguments)
             while let row = try cursor.next() {
                 let collection: String = row[collectionColumn]
                 guard collection == legacyCollectionName else {
