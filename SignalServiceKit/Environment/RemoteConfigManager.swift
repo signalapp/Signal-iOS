@@ -79,6 +79,24 @@ public class RemoteConfig {
         }
     }
 
+    public func netConfig() -> [String: String] {
+        return Dictionary(
+            uniqueKeysWithValues: self.valueFlags
+                .lazy
+                .compactMap { (key: String, value: String) -> (key: String, value: String)? in
+                    // Omit values that are false.
+                    // TODO: Remove this once v2/config omits these by default.
+                    if value == "false" {
+                        return nil
+                    }
+                    guard let range = key.range(of: "ios.libsignal.", options: [.anchored]) else {
+                        return nil
+                    }
+                    return (String(key[range.upperBound...]), value)
+                },
+        )
+    }
+
     public var maxGroupSizeRecommended: UInt {
         getUIntValue(forFlag: .maxGroupSizeRecommended, defaultValue: 151)
     }
@@ -479,7 +497,6 @@ private enum IsEnabledFlag: String, FlagType {
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
-    case libsignalEnforceMinTlsVersion = "ios.libsignalEnforceMinTlsVersion"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -509,7 +526,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardOneTimeDonationKillSwitch: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .libsignalEnforceMinTlsVersion: true // cached during launch, so not hot-swapped in practice
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -539,7 +555,6 @@ private enum ValueFlag: String, FlagType {
     case clientExpiration = "ios.clientExpiration"
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
-    case libsignalChatRequestConnectionCheckTimeoutMillis = "ios.libsignal.chatRequestConnectionCheckTimeoutMillis"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
     case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
@@ -572,7 +587,6 @@ private enum ValueFlag: String, FlagType {
         case .clientExpiration: true
         case .creditAndDebitCardDisabledRegions: true
         case .idealEnabledRegions: true
-        case .libsignalChatRequestConnectionCheckTimeoutMillis: true
         case .maxGroupCallRingSize: true
         case .maxGroupSizeHardLimit: true
         case .maxGroupSizeRecommended: true
@@ -891,12 +905,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             in: appUserDefaults
         )
 
-        let libsignalEnforceMinTlsVersion = mergedConfig.isEnabled(.libsignalEnforceMinTlsVersion, defaultValue: FeatureFlags.libsignalEnforceMinTlsVersion)
-        LibsignalUserDefaults.saveShouldEnforceMinTlsVersion(libsignalEnforceMinTlsVersion, in: appUserDefaults)
-
-        let libsignalConnectionCheckTimeout = mergedConfig.value(.libsignalChatRequestConnectionCheckTimeoutMillis).flatMap { Int($0) } ?? 0
-        LibsignalUserDefaults.saveChatRequestConnectionCheckTimeoutMillis(libsignalConnectionCheckTimeout, in: appUserDefaults)
-
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 
         mergedConfig.logFlags()
@@ -1089,45 +1097,5 @@ private extension KeyValueStore {
 
     func setETag(_ newValue: String?, tx: DBWriteTransaction) {
         setString(newValue, key: eTagKey, transaction: tx)
-    }
-}
-
-// MARK: -
-
-/// Workaround (hopefully temporary) for the libsignal Net instance being created before RemoteConfig is ready to access.
-enum LibsignalUserDefaults {
-
-    private static let shouldEnforceMinTlsVersionKey: String = "LibsignalEnforceMinTlsVersion"
-
-    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
-    ///
-    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
-    /// add the arguments "-LibsignalEnforceMinTlsVersion YES" to the invocation of the app.
-    static func saveShouldEnforceMinTlsVersion(
-        _ shouldEnforceMinTlsVersion: Bool,
-        in defaults: UserDefaults
-    ) {
-        defaults.set(shouldEnforceMinTlsVersion, forKey: shouldEnforceMinTlsVersionKey)
-    }
-
-    static func readShouldEnforceMinTlsVersion(from defaults: UserDefaults) -> Bool {
-        return defaults.bool(forKey: shouldEnforceMinTlsVersionKey)
-    }
-
-    private static let chatRequestConnectionCheckTimeoutMillis: String = "LibsignalChatRequestConnectionCheckTimeoutMillis"
-
-    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
-    ///
-    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
-    /// add the arguments "-LibsignalChatRequestConnectionCheckTimeoutMillis 2000" to the invocation of the app.
-    static func saveChatRequestConnectionCheckTimeoutMillis(
-        _ timeoutMillis: Int,
-        in defaults: UserDefaults
-    ) {
-        defaults.set(timeoutMillis, forKey: chatRequestConnectionCheckTimeoutMillis)
-    }
-
-    static func readChatRequestConnectionCheckTimeoutMillis(from defaults: UserDefaults) -> Int {
-        return defaults.integer(forKey: chatRequestConnectionCheckTimeoutMillis)
     }
 }

@@ -83,6 +83,22 @@ struct RemoteConfigTests {
         #expect(mergedConfig.testNonSwappableValue == "abc")
         #expect(mergedConfig.lastKnownClockSkew == 3)
     }
+
+    @Test
+    func testNetConfig() {
+        let remoteConfig = RemoteConfig(clockSkew: 0, valueFlags: [
+            "ios.libsignal.config1": "true",
+            "ios.libsignal.config2": "false",
+            "global.libsignal.config3": "value",
+            "global.libsignal.config4": "4",
+            "ios.libsignal.config4": "four",
+        ])
+        let netConfig = remoteConfig.netConfig()
+        #expect(netConfig == [
+            "config1": "true",
+            "config4": "four",
+        ])
+    }
 }
 
 struct RemoteConfigStoreTests {

@@ -205,7 +205,6 @@ extension AppSetup.GlobalsContinuation {
         owsPrecondition(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
         let tsConstants = TSConstants.shared
-        let appUserDefaults = appContext.appUserDefaults()
         let dateProvider = testDependencies.dateProvider ?? Date.provider
 
         let tsAccountManager = TSAccountManagerImpl(
@@ -216,29 +215,15 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let remoteConfigProvider = RemoteConfigProviderImpl(tsAccountManager: tsAccountManager)
-        _ = databaseStorage.read { tx in
+        let remoteConfig = databaseStorage.read { tx in
             tsAccountManager.warmCaches(tx: tx)
             return remoteConfigProvider.warmCaches(tx: tx)
         }
 
-        // TODO: Replace this manual key-by-key configuration of libsignal's remote config
-        // with something that handles a whole group of settings generically.
-        var libsignalRemoteConfig: [String: String] = [:]
-        if LibsignalUserDefaults.readShouldEnforceMinTlsVersion(from: appUserDefaults) {
-            // The actual value does not matter as long as the key is present
-            libsignalRemoteConfig["enforceMinimumTls"] = "true"
-        }
-        do {
-            let connectionCheckTimeoutMillis = LibsignalUserDefaults.readChatRequestConnectionCheckTimeoutMillis(from: appUserDefaults)
-            if connectionCheckTimeoutMillis > 0 {
-                libsignalRemoteConfig["chatRequestConnectionCheckTimeoutMillis"] = String(connectionCheckTimeoutMillis)
-            }
-        }
-        libsignalRemoteConfig["chatPermessageDeflate"] = "true"
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
             userAgent: HttpHeaders.userAgentHeaderValueSignalIos,
-            remoteConfig: libsignalRemoteConfig
+            remoteConfig: remoteConfig.netConfig(),
         )
 
         let recipientDatabaseTable = RecipientDatabaseTable()
