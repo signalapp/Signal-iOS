@@ -74,6 +74,7 @@ public enum FeatureFlags {
 #endif
 
     public static let pollSend = build.includes(.dev)
+    public static let pollReceive = build.includes(.dev)
     public static let pollKeepProtoVersion = build.includes(.dev)
 }
 
