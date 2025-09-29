@@ -56,7 +56,6 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         self.view.addSubview(scrollView)
 
         let stackView = UIStackView(arrangedSubviews: [
-            usernameTextField,
             titleLabel,
             subtitleLabel,
             aepTextView,
@@ -136,20 +135,6 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         button.setTitleColor(UIColor.Signal.ultramarine, for: .normal)
         button.addTarget(self, action: #selector(didTapNoKeyButton), for: .touchUpInside)
         return button
-    }()
-
-    private lazy var usernameTextField: UITextField = {
-        let usernameField = UITextField()
-        usernameField.font = UIFont.systemFont(ofSize: 1)
-        usernameField.autoSetDimension(.height, toSize: 1)
-        usernameField.textContentType = .username
-        usernameField.backgroundColor = view.backgroundColor
-        usernameField.textColor = view.backgroundColor
-        usernameField.text = OWSLocalizedString(
-            "AUTOFILL_BACKUP_KEY_USERNAME",
-            comment: "Username for recovery key autofill"
-        )
-        return usernameField
     }()
 
     // MARK: -
