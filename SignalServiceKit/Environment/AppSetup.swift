@@ -206,6 +206,20 @@ extension AppSetup.GlobalsContinuation {
 
         let tsConstants = TSConstants.shared
         let appUserDefaults = appContext.appUserDefaults()
+        let dateProvider = testDependencies.dateProvider ?? Date.provider
+
+        let tsAccountManager = TSAccountManagerImpl(
+            appReadiness: appReadiness,
+            dateProvider: dateProvider,
+            databaseChangeObserver: databaseStorage.databaseChangeObserver,
+            db: databaseStorage,
+        )
+
+        let remoteConfigProvider = RemoteConfigProviderImpl(tsAccountManager: tsAccountManager)
+        _ = databaseStorage.read { tx in
+            tsAccountManager.warmCaches(tx: tx)
+            return remoteConfigProvider.warmCaches(tx: tx)
+        }
 
         // TODO: Replace this manual key-by-key configuration of libsignal's remote config
         // with something that handles a whole group of settings generically.
@@ -247,7 +261,6 @@ extension AppSetup.GlobalsContinuation {
         )
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
-        let dateProvider = testDependencies.dateProvider ?? Date.provider
         let dateProviderMonotonic = MonotonicDate.provider
 
         let avatarDefaultColorManager = AvatarDefaultColorManager()
@@ -258,13 +271,6 @@ extension AppSetup.GlobalsContinuation {
 
         let db = databaseStorage
         let dbFileSizeProvider = SDSDBFileSizeProvider(databaseStorage: databaseStorage)
-
-        let tsAccountManager = TSAccountManagerImpl(
-            appReadiness: appReadiness,
-            dateProvider: dateProvider,
-            databaseChangeObserver: databaseStorage.databaseChangeObserver,
-            db: db,
-        )
 
         let networkManager = testDependencies.networkManager ?? NetworkManager(
             appReadiness: appReadiness,
@@ -278,6 +284,7 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
+            remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager
         )
 
@@ -1961,6 +1968,13 @@ extension AppSetup.FinalContinuation {
         // the AWebPCoder last, which used the native ImageIO, if supported
         SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
         SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+
+        if self.didRunLaunchTasks {
+            sskEnvironment.databaseStorageRef.read { tx in
+                dependenciesBridge.tsAccountManager.warmCaches(tx: tx)
+                _ = sskEnvironment.remoteConfigManagerRef.warmCaches(tx: tx)
+            }
+        }
 
         // Warm (or re-warm) all of the caches. In theory, every cache is
         // susceptible to diverging state between the Main App & NSE and should be

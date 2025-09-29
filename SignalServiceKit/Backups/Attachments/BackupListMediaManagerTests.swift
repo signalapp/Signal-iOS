@@ -59,7 +59,7 @@ public class BackupListMediaManagerTests {
         let localUploadEra = "1"
 
         let remoteConfigCdnNumber: UInt32 = 100
-        remoteConfigManager.cachedConfig = RemoteConfig(
+        remoteConfigManager._currentConfig = RemoteConfig(
             clockSkew: 0,
             valueFlags: ["global.backups.mediaTierFallbackCdnNumber": "\(remoteConfigCdnNumber)"],
         )

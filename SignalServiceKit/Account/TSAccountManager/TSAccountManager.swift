@@ -8,7 +8,7 @@ public import LibSignalClient
 
 public protocol TSAccountManager {
 
-    func warmCaches()
+    func warmCaches(tx: DBReadTransaction)
 
     // MARK: - Local Identifiers
 

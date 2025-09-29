@@ -14,7 +14,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
         super.setUp()
 
         let remoteConfigManager = SSKEnvironment.shared.remoteConfigManagerRef as! StubbableRemoteConfigManager
-        remoteConfigManager.cachedConfig = RemoteConfig(
+        remoteConfigManager._currentConfig = RemoteConfig(
             clockSkew: 0,
             valueFlags: ["ios.enableAutoAPNSRotation": "true"],
         )

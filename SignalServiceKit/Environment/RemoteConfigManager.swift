@@ -623,6 +623,66 @@ private protocol FlagType: CaseIterable {
 
 public protocol RemoteConfigProvider {
     func currentConfig() -> RemoteConfig
+    func warmCaches(tx: DBReadTransaction) -> RemoteConfig
+}
+
+// MARK: -
+
+class RemoteConfigProviderImpl: RemoteConfigProvider {
+    private let tsAccountManager: any TSAccountManager
+
+    fileprivate let keyValueStore: KeyValueStore
+
+    init(tsAccountManager: any TSAccountManager) {
+        self.tsAccountManager = tsAccountManager
+
+        self.keyValueStore = KeyValueStore(collection: "RemoteConfigManager")
+    }
+
+    private let _cachedConfig = AtomicValue<RemoteConfig?>(nil, lock: .init())
+    private var cachedConfig: RemoteConfig? {
+        let result = _cachedConfig.get()
+        owsAssertDebug(result != nil, "cachedConfig not yet set.")
+        return result
+    }
+
+    public func currentConfig() -> RemoteConfig {
+        return cachedConfig ?? .emptyConfig
+    }
+
+    fileprivate func updateCachedConfig(_ updateBlock: (RemoteConfig?) -> RemoteConfig) -> RemoteConfig {
+        return _cachedConfig.update { mutableValue in
+            let newValue = updateBlock(mutableValue)
+            mutableValue = newValue
+            return newValue
+        }
+    }
+
+    public func warmCaches(tx: DBReadTransaction) -> RemoteConfig {
+        let (clockSkew, valueFlags) = { () -> (TimeInterval?, [String: String]?) in
+            guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
+                return (nil, nil)
+            }
+            let valueFlags = RemoteConfigStore(keyValueStore: self.keyValueStore).loadValueFlags(tx: tx)
+            guard let valueFlags else {
+                return (nil, nil)
+            }
+            let clockSkew = self.keyValueStore.getLastKnownClockSkew(transaction: tx)
+            return (clockSkew, valueFlags)
+        }()
+
+        return updateCachedConfig { oldConfig in
+            if let oldConfig {
+                // If we're calling warmCaches for the second or later time, we can only
+                // update the flags that are hot-swappable.
+                return oldConfig.merging(newValueFlags: valueFlags ?? [:], newClockSkew: clockSkew ?? 0)
+            } else {
+                // If we're calling warmCaches for first time, we can set hot swappable and
+                // non-hot swappable flags.
+                return RemoteConfig(clockSkew: clockSkew ?? 0, valueFlags: valueFlags ?? [:])
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -630,7 +690,8 @@ public protocol RemoteConfigProvider {
 #if TESTABLE_BUILD
 
 public class MockRemoteConfigProvider: RemoteConfigProvider {
-    var _currentConfig: RemoteConfig = .emptyConfig
+    public func warmCaches(tx: DBReadTransaction) -> RemoteConfig { _currentConfig }
+    public var _currentConfig: RemoteConfig = .emptyConfig
     public func currentConfig() -> RemoteConfig { _currentConfig }
 }
 
@@ -639,8 +700,6 @@ public class MockRemoteConfigProvider: RemoteConfigProvider {
 // MARK: -
 
 public protocol RemoteConfigManager: RemoteConfigProvider {
-    func warmCaches() -> RemoteConfig
-    var cachedConfig: RemoteConfig? { get }
     /// Refresh the remote config from the server if it's been too long since we
     /// last fetched it.
     func refreshIfNeeded() async throws
@@ -650,19 +709,8 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
 
 #if TESTABLE_BUILD
 
-public class StubbableRemoteConfigManager: RemoteConfigManager {
-    public var cachedConfig: RemoteConfig?
-
-    public func warmCaches() -> RemoteConfig {
-        return currentConfig()
-    }
-
-    public func refreshIfNeeded() async throws {
-    }
-
-    public func currentConfig() -> RemoteConfig {
-        return cachedConfig ?? .emptyConfig
-    }
+public class StubbableRemoteConfigManager: MockRemoteConfigProvider, RemoteConfigManager {
+    public func refreshIfNeeded() async throws {}
 }
 
 #endif
@@ -676,43 +724,27 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let db: any DB
     private let keyValueStore: KeyValueStore
     private let networkManager: NetworkManager
+    private let remoteConfigProvider: RemoteConfigProviderImpl
     private let tsAccountManager: TSAccountManager
 
     // MARK: -
 
-    private let _cachedConfig = AtomicValue<RemoteConfig?>(nil, lock: .init())
-    public var cachedConfig: RemoteConfig? {
-        let result = _cachedConfig.get()
-        owsAssertDebug(result != nil, "cachedConfig not yet set.")
-        return result
-    }
-
-    public func currentConfig() -> RemoteConfig {
-        return cachedConfig ?? .emptyConfig
-    }
-
-    private func updateCachedConfig(_ updateBlock: (RemoteConfig?) -> RemoteConfig) -> RemoteConfig {
-        return _cachedConfig.update { mutableValue in
-            let newValue = updateBlock(mutableValue)
-            mutableValue = newValue
-            return newValue
-        }
-    }
-
-    public init(
+    init(
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
-        tsAccountManager: TSAccountManager
+        remoteConfigProvider: RemoteConfigProviderImpl,
+        tsAccountManager: TSAccountManager,
     ) {
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
         self.dateProvider = dateProvider
         self.db = db
-        self.keyValueStore = KeyValueStore(collection: "RemoteConfigManager")
+        self.keyValueStore = remoteConfigProvider.keyValueStore
         self.networkManager = networkManager
+        self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
@@ -727,6 +759,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
     }
 
+    public func warmCaches(tx: DBReadTransaction) -> RemoteConfig {
+        return remoteConfigProvider.warmCaches(tx: tx)
+    }
+
+    public func currentConfig() -> RemoteConfig {
+        return remoteConfigProvider.currentConfig()
+    }
+
     // MARK: -
 
     @objc
@@ -736,32 +776,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         Logger.info("Forcing a refresh because the registration state changed.")
         self.refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: true)
-    }
-
-    public func warmCaches() -> RemoteConfig {
-        let (clockSkew, valueFlags) = db.read { (tx) -> (TimeInterval?, [String: String]?) in
-            guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
-                return (nil, nil)
-            }
-            let valueFlags = RemoteConfigStore(keyValueStore: self.keyValueStore).loadValueFlags(tx: tx)
-            guard let valueFlags else {
-                return (nil, nil)
-            }
-            let clockSkew = self.keyValueStore.getLastKnownClockSkew(transaction: tx)
-            return (clockSkew, valueFlags)
-        }
-
-        return updateCachedConfig { oldConfig in
-            if let oldConfig {
-                // If we're calling warmCaches for the second or later time, we can only
-                // update the flags that are hot-swappable.
-                return oldConfig.merging(newValueFlags: valueFlags ?? [:], newClockSkew: clockSkew ?? 0)
-            } else {
-                // If we're calling warmCaches for first time, we can set hot swappable and
-                // non-hot swappable flags.
-                return RemoteConfig(clockSkew: clockSkew ?? 0, valueFlags: valueFlags ?? [:])
-            }
-        }
     }
 
     private static let refreshInterval: TimeInterval = 2 * .hour
@@ -861,7 +875,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
 
         // This has hot-swappable new values and non-hot-swappable old values.
-        let mergedConfig = updateCachedConfig { oldConfig in
+        let mergedConfig = remoteConfigProvider.updateCachedConfig { oldConfig in
             return (oldConfig ?? .emptyConfig).merging(newValueFlags: valueFlags, newClockSkew: clockSkew)
         }
 

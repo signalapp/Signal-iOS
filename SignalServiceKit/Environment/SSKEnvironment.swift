@@ -239,11 +239,9 @@ public class SSKEnvironment: NSObject {
     ///
     /// Re-warming helps ensure the NSE sees the same state as the Main App.
     @MainActor
-    public func warmCaches(appReadiness: AppReadiness, dependenciesBridge: DependenciesBridge) {
+    func warmCaches(appReadiness: AppReadiness, dependenciesBridge: DependenciesBridge) {
         // Note: All of these methods must be safe to invoke repeatedly.
 
-        dependenciesBridge.tsAccountManager.warmCaches()
-        _ = self.remoteConfigManagerRef.warmCaches()
         self.verifyPniAndPniIdentityKey(dependenciesBridge: dependenciesBridge)
         self.fixLocalRecipientIfNeeded(dependenciesBridge: dependenciesBridge)
         SignalProxy.warmCaches(appReadiness: appReadiness)

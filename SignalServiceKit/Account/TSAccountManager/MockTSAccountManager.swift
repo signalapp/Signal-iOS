@@ -12,10 +12,10 @@ public class MockTSAccountManager: TSAccountManager {
 
     public init() {}
 
-    public var warmCachesMock: (() -> Void)?
+    public var warmCachesMock: ((DBReadTransaction) -> Void)?
 
-    open func warmCaches() {
-        warmCachesMock?()
+    open func warmCaches(tx: DBReadTransaction) {
+        warmCachesMock?(tx)
     }
 
     // MARK: - Local Identifiers

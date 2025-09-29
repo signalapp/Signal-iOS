@@ -39,12 +39,9 @@ public class TSAccountManagerImpl: TSAccountManager {
 
     fileprivate static let regStateLogger = PrefixedLogger(prefix: "TSRegistrationState")
 
-    public func warmCaches() {
+    public func warmCaches(tx: DBReadTransaction) {
         // Load account state into the cache and log.
-        db.read { tx in
-            reloadAccountState(logger: Self.regStateLogger, tx: tx).log(Self.regStateLogger)
-        }
-
+        reloadAccountState(logger: Self.regStateLogger, tx: tx).log(Self.regStateLogger)
     }
 
     // MARK: - Local Identifiers
