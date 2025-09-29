@@ -266,6 +266,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             }
             defer { backgroundTask.end() }
             try await taskQueue.loadAndRunTasks()
+            logger.info("Finished \(logString) Backup uploads.")
         case .empty:
             logger.info("Skipping \(logString) Backup uploads: queue is empty.")
             return
