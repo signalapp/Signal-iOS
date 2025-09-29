@@ -95,6 +95,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         deviceSleepManager: DeviceSleepManagerImpl,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
+        remoteConfig: RemoteConfig,
         tsAccountManager: any TSAccountManager
     ) {
         self.appReadiness = appReadiness
@@ -102,7 +103,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         let httpClient = CallHTTPClient()
         self.callManager = CallManager<SignalCall, CallService>(
             httpClient: httpClient.ringRtcHttpClient,
-            fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
+            fieldTrials: RingrtcFieldTrials.trials(with: remoteConfig)
         )
         self.callManagerHttpClient = httpClient
         let callUIAdapter = CallUIAdapter()

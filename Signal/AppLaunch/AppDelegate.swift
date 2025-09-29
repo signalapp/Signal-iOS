@@ -472,6 +472,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 deviceSleepManager: launchContext.deviceSleepManager,
                 mutableCurrentCall: _currentCall,
                 networkManager: dataMigrationContinuation.sskEnvironment.networkManagerRef,
+                remoteConfig: dataMigrationContinuation.sskEnvironment.remoteConfigManagerRef.currentConfig(),
                 tsAccountManager: dataMigrationContinuation.dependenciesBridge.tsAccountManager
             )
         )

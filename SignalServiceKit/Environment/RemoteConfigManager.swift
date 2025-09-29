@@ -287,6 +287,10 @@ public class RemoteConfig {
         return FeatureFlags.Backups.supported && isEnabled(.allowBackupSettings)
     }
 
+    public var ringrtcNwPathMonitorTrial: Bool {
+        return !isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
+    }
+
     #if TESTABLE_BUILD
     public var testHotSwappable: Bool? {
         if self.valueFlags[IsEnabledFlag.hotSwappable.rawValue] != nil {
@@ -895,18 +899,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         let mergedConfig = remoteConfigProvider.updateCachedConfig { oldConfig in
             return (oldConfig ?? .emptyConfig).merging(newValueFlags: valueFlags, newClockSkew: clockSkew)
         }
-
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-
-        // As a special case, persist RingRTC field trials. See comments in
-        // ``RingrtcFieldTrials`` for details.
-        RingrtcFieldTrials.saveNwPathMonitorTrialState(
-            isEnabled: {
-                let isKilled = mergedConfig.isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
-                return !isKilled
-            }(),
-            in: appUserDefaults
-        )
 
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 

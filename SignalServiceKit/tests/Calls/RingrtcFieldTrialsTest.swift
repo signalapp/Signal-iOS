@@ -3,33 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import Testing
 @testable import SignalServiceKit
 
-final class RingrtcFieldTrialsTest: XCTestCase {
-    func testNwPathMonitorEnabledWhenUnspecified() {
-        let userDefaults = TestUtils.userDefaults()
-
-        let trials = RingrtcFieldTrials.trials(with: userDefaults)
-
-        XCTAssertEqual(trials["WebRTC-Network-UseNWPathMonitor"], "Enabled")
-    }
-
-    func testNwPathMonitorExplicitlyEnabled() {
-        let userDefaults = TestUtils.userDefaults()
-        RingrtcFieldTrials.saveNwPathMonitorTrialState(isEnabled: true, in: userDefaults)
-
-        let trials = RingrtcFieldTrials.trials(with: userDefaults)
-
-        XCTAssertEqual(trials["WebRTC-Network-UseNWPathMonitor"], "Enabled")
-    }
-
-    func testNwPathMonitorDisabled() {
-        let userDefaults = TestUtils.userDefaults()
-        RingrtcFieldTrials.saveNwPathMonitorTrialState(isEnabled: false, in: userDefaults)
-
-        let trials = RingrtcFieldTrials.trials(with: userDefaults)
-
-        XCTAssertNil(trials["WebRTC-Network-UseNWPathMonitor"])
+struct RingrtcFieldTrialsTest {
+    @Test(arguments: [
+        (nil, true),
+        ("true", false),
+        ("false", true),
+    ])
+    func testNwPathMonitorEnabled(testCase: (valueFlag: String?, isEnabled: Bool)) {
+        let valueFlags = testCase.valueFlag.map { ["ios.ringrtcNwPathMonitorTrialKillSwitch": $0] } ?? [:]
+        let remoteConfig = RemoteConfig(clockSkew: 0, valueFlags: valueFlags)
+        let trials = RingrtcFieldTrials.trials(with: remoteConfig)
+        #expect(trials["WebRTC-Network-UseNWPathMonitor"] == (testCase.isEnabled ? "Enabled" : nil))
     }
 }
