@@ -56,22 +56,27 @@ class NSEEnvironment {
         )
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
-        let finalContinuation = await AppSetup().start(
-            appContext: CurrentAppContext(),
-            appReadiness: appReadiness,
-            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
-            databaseStorage: databaseStorage,
-            deviceBatteryLevelManager: nil,
-            deviceSleepManager: nil,
-            paymentsEvents: PaymentsEventsAppExtension(),
-            mobileCoinHelper: MobileCoinHelperMinimal(),
-            callMessageHandler: NSECallMessageHandler(),
-            currentCallProvider: CurrentCallNoOpProvider(),
-            notificationPresenter: NotificationPresenterImpl(),
-            incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-        ).prepareDatabase()
-        self.finalContinuation = finalContinuation
+        let finalContinuation = await AppSetup()
+            .start(
+                appContext: CurrentAppContext(),
+                databaseStorage: databaseStorage,
+            )
+            .migrateDatabaseSchema()
+            .initGlobals(
+                appReadiness: appReadiness,
+                backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
+                deviceBatteryLevelManager: nil,
+                deviceSleepManager: nil,
+                paymentsEvents: PaymentsEventsAppExtension(),
+                mobileCoinHelper: MobileCoinHelperMinimal(),
+                callMessageHandler: NSECallMessageHandler(),
+                currentCallProvider: CurrentCallNoOpProvider(),
+                notificationPresenter: NotificationPresenterImpl(),
+                incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
+            )
+            .migrateDatabaseData()
 
+        self.finalContinuation = finalContinuation
         return finalContinuation
     }
 

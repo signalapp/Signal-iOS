@@ -27,8 +27,6 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
     }
 
     public func warmCaches() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.currentCurrencyCode = Self.loadCurrentCurrencyCode(transaction: transaction)
         }

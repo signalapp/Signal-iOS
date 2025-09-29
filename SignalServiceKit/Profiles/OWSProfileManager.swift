@@ -91,8 +91,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
     #endif
 
     public func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
         let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
 
         localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction)

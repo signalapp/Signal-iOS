@@ -57,27 +57,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
-        let databaseContinuation = AppSetup().start(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
-            databaseStorage: databaseStorage,
-            deviceBatteryLevelManager: nil,
-            deviceSleepManager: nil,
-            paymentsEvents: PaymentsEventsAppExtension(),
-            mobileCoinHelper: MobileCoinHelperMinimal(),
-            callMessageHandler: NoopCallMessageHandler(),
-            currentCallProvider: CurrentCallNoOpProvider(),
-            notificationPresenter: NoopNotificationPresenterImpl(),
-            incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-        )
-
-        // Configure the rest of the globals before preparing the database.
-        SUIEnvironment.shared.setUp(
-            appReadiness: appReadiness,
-            authCredentialManager: databaseContinuation.authCredentialManager
-        )
-
         let shareViewNavigationController = OWSNavigationController()
         shareViewNavigationController.presentationController?.delegate = self
         shareViewNavigationController.delegate = self
@@ -99,7 +78,32 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 self.showPrimaryViewController(initialLoadViewController)
             }()
 
-            let finalContinuation = await databaseContinuation.prepareDatabase()
+            let databaseContinuation = await AppSetup()
+                .start(
+                    appContext: appContext,
+                    databaseStorage: databaseStorage,
+                )
+                .migrateDatabaseSchema()
+                .initGlobals(
+                    appReadiness: appReadiness,
+                    backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
+                    deviceBatteryLevelManager: nil,
+                    deviceSleepManager: nil,
+                    paymentsEvents: PaymentsEventsAppExtension(),
+                    mobileCoinHelper: MobileCoinHelperMinimal(),
+                    callMessageHandler: NoopCallMessageHandler(),
+                    currentCallProvider: CurrentCallNoOpProvider(),
+                    notificationPresenter: NoopNotificationPresenterImpl(),
+                    incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
+                )
+
+            // Configure the rest of the globals before preparing the database.
+            SUIEnvironment.shared.setUp(
+                appReadiness: appReadiness,
+                authCredentialManager: databaseContinuation.authCredentialManager
+            )
+
+            let finalContinuation = await databaseContinuation.migrateDatabaseData()
             finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
             switch finalContinuation.setUpLocalIdentifiers(
                 willResumeInProgressRegistration: false,

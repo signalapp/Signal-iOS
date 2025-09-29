@@ -9,22 +9,18 @@ import GRDB
 
 public class GRDBSchemaMigrator {
 
-    private static let _areMigrationsComplete = AtomicBool(false, lock: .sharedGlobal)
-    public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }
     public static let migrationSideEffectsCollectionName = "MigrationSideEffects"
     public static let avatarRepairAttemptCount = "Avatar Repair Attempt Count"
 
     /// Migrate a database to the latest version. Throws if migrations fail.
     ///
     /// - Parameter databaseStorage: The database to migrate.
-    /// - Parameter isMainDatabase: A boolean indicating whether this is the main database. If so, some global state will be set.
     /// - Parameter runDataMigrations: A boolean indicating whether to include data migrations. Typically, you want to omit this value or set it to `true`, but we want to skip them when recovering a corrupted database.
     /// - Returns: `true` if incremental migrations were performed, and `false` otherwise.
     @discardableResult
     static func migrateDatabase(
         databaseStorage: SDSDatabaseStorage,
-        isMainDatabase: Bool,
-        runDataMigrations: Bool = true
+        runDataMigrations: Bool = true,
     ) throws -> Bool {
         let didPerformIncrementalMigrations: Bool
 
@@ -52,11 +48,6 @@ public class GRDBSchemaMigrator {
                 owsFailDebug("New user migrator failed: \(error.grdbErrorForLogging)")
                 throw error
             }
-        }
-
-        if isMainDatabase {
-            SSKPreferences.markGRDBSchemaAsLatest()
-            Self._areMigrationsComplete.set(true)
         }
 
         return didPerformIncrementalMigrations
@@ -174,12 +165,12 @@ public class GRDBSchemaMigrator {
         case createStoryMessageTable
         case addColumnsForStoryContextRedux
         case addIsStoriesCapableToUserProfiles
-        case addStoryContextIndexToInteractions
+        case createDonationReceiptTable
+        case addBoostAmountToSubscriptionDurableJob
         case updateConversationLoadInteractionCountIndex
         case updateConversationLoadInteractionDistanceIndex
         case updateConversationUnreadCountIndex
-        case createDonationReceiptTable
-        case addBoostAmountToSubscriptionDurableJob
+        case addStoryContextIndexToInteractions
         case improvedDisappearingMessageIndices
         case addProfileBadgeDuration
         case addGiftBadges
@@ -218,8 +209,8 @@ public class GRDBSchemaMigrator {
         case addStoryMessageReplyCount
         case populateStoryMessageReplyCount
         case addIndexToFindFailedAttachments
-        case dropMessageSendLogTriggers
         case addEditMessageChanges
+        case dropMessageSendLogTriggers
         case threadReplyInfoServiceIds
         case updateEditMessageUnreadIndex
         case updateEditRecordTable
@@ -894,9 +885,7 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.removeEarlyReceiptTables) { transaction in
             try transaction.database.drop(table: "model_TSRecipientReadReceipt")
             try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
-
-            let viewOnceStore = KeyValueStore(collection: "viewOnceMessages")
-            viewOnceStore.removeAll(transaction: transaction)
+            try transaction.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: ["viewOnceMessages"])
             return .success(())
         }
 
@@ -1988,130 +1977,13 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.addStoryContextAssociatedDataTable) { transaction in
-            try transaction.database.create(table: StoryContextAssociatedData.databaseTableName) { table in
-                table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
-                    .notNull()
-                table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
-                    .notNull()
-                table.column(StoryContextAssociatedData.columnName(.uniqueId))
-                    .notNull()
-                    .unique(onConflict: .fail)
-                table.column(StoryContextAssociatedData.columnName(.contactAci), .text)
-                table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
-                table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
-                    .notNull()
-                    .defaults(to: false)
-                table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
-                table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
-                table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
-            }
-            try transaction.database.create(
-                index: "index_story_context_associated_data_contact_on_contact_uuid",
-                on: StoryContextAssociatedData.databaseTableName,
-                columns: [StoryContextAssociatedData.columnName(.contactAci)]
-            )
-            try transaction.database.create(
-                index: "index_story_context_associated_data_contact_on_group_id",
-                on: StoryContextAssociatedData.databaseTableName,
-                columns: [StoryContextAssociatedData.columnName(.groupId)]
-            )
+            try createStoryContextAssociatedData(tx: transaction)
             return .success(())
         }
 
         migrator.registerMigration(.populateStoryContextAssociatedDataTableAndRemoveOldColumns) { transaction in
-            // All we need to do is iterate over ThreadAssociatedData; one exists for every
-            // thread, so we can pull hidden state from the associated data and received/viewed
-            // timestamps from their threads and have a copy of everything we need.
-            try Row.fetchCursor(transaction.database, sql: """
-                SELECT * FROM thread_associated_data
-            """).forEach { threadAssociatedDataRow in
-                guard
-                    let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
-                    let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
-                else {
-                    owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
-                    return
-                }
-                let insertSQL = """
-                INSERT INTO model_StoryContextAssociatedData (
-                    recordType,
-                    uniqueId,
-                    contactUuid,
-                    groupId,
-                    isHidden,
-                    latestUnexpiredTimestamp,
-                    lastReceivedTimestamp,
-                    lastViewedTimestamp
-                )
-                VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
-                """
-
-                if
-                    let threadRow = try? Row.fetchOne(
-                        transaction.database,
-                        sql: """
-                            SELECT * FROM model_TSThread
-                            WHERE uniqueId = ?
-                        """,
-                        arguments: [threadUniqueId]
-                    )
-                {
-                    let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
-                    let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - UInt64.dayInMs
-                        ? lastReceivedStoryTimestamp : nil
-                    let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
-                    if
-                        let groupModelData = threadRow["groupModel"] as? Data,
-                        let unarchivedObject = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(groupModelData),
-                        let groupId = (unarchivedObject as? TSGroupModel)?.groupId
-                    {
-                        try transaction.database.execute(
-                            sql: insertSQL,
-                            arguments: [
-                                UUID().uuidString,
-                                nil,
-                                groupId,
-                                hideStory,
-                                latestUnexpiredTimestamp,
-                                lastReceivedStoryTimestamp,
-                                lastViewedStoryTimestamp
-                            ]
-                        )
-                    } else if
-                        let contactUuidString = threadRow["contactUUID"] as? String
-                    {
-                        // Okay to ignore e164 addresses because we can't have updated story metadata
-                        // for those contact threads anyway.
-                        try transaction.database.execute(
-                            sql: insertSQL,
-                            arguments: [
-                                UUID().uuidString,
-                                contactUuidString,
-                                nil,
-                                hideStory,
-                                latestUnexpiredTimestamp,
-                                lastReceivedStoryTimestamp,
-                                lastViewedStoryTimestamp
-                            ]
-                        )
-                    }
-                } else {
-                    // If we couldn't find a thread, that means this associated data was
-                    // created for a group we don't know about yet.
-                    // Stories is in beta at the time of this migration, so we will just drop it.
-                    Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
-                }
-
-            }
-
-            // Drop the old columns since they are no longer needed.
-            try transaction.database.alter(table: "model_TSThread") { alteration in
-                alteration.drop(column: "lastViewedStoryTimestamp")
-                alteration.drop(column: "lastReceivedStoryTimestamp")
-            }
-            try transaction.database.alter(table: "thread_associated_data") { alteration in
-                alteration.drop(column: "hideStory")
-            }
+            try populateStoryContextAssociatedData(tx: transaction)
+            try dropColumnsMigratedToStoryContextAssociatedData(tx: transaction)
             return .success(())
         }
 
@@ -2283,50 +2155,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.populateStoryMessageReplyCount) { transaction in
-            let storyMessagesSql = """
-                SELECT id, timestamp, authorUuid, groupId
-                FROM model_StoryMessage
-            """
-            let storyMessages = try Row.fetchAll(transaction.database, sql: storyMessagesSql)
-            for storyMessage in storyMessages {
-                guard
-                    let id = storyMessage["id"] as? Int64,
-                    let timestamp = storyMessage["timestamp"] as? Int64,
-                    let authorUuid = storyMessage["authorUuid"] as? String
-                else {
-                    continue
-                }
-                guard authorUuid != "00000000-0000-0000-0000-000000000001" else {
-                    // Skip the system story
-                    continue
-                }
-                let groupId = storyMessage["groupId"] as? Data
-                let isGroupStoryMessage = groupId != nil
-                // Use the index we have on storyTimestamp, storyAuthorUuidString, isGroupStoryReply
-                let replyCountSql = """
-                    SELECT COUNT(*)
-                    FROM model_TSInteraction
-                    WHERE (
-                        storyTimestamp = ?
-                        AND storyAuthorUuidString = ?
-                        AND isGroupStoryReply = ?
-                    )
-                """
-                let replyCount = try Int.fetchOne(
-                    transaction.database,
-                    sql: replyCountSql,
-                    arguments: [timestamp, authorUuid, isGroupStoryMessage]
-                ) ?? 0
-
-                try transaction.database.execute(
-                    sql: """
-                        UPDATE model_StoryMessage
-                        SET replyCount = ?
-                        WHERE id = ?
-                    """,
-                    arguments: [replyCount, id]
-                )
-            }
+            try populateStoryMessageReplyCount(tx: transaction)
             return .success(())
         }
 
@@ -3166,93 +2995,8 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        /// Historically, we persisted a map of `[GroupId: ThreadUniqueId]` for
-        /// all group threads. For V1 groups that were migrated to V2 groups
-        /// this map would hold entries for both the V1 and V2 group ID to the
-        /// same group thread; this allowed us to find the same logical group
-        /// thread if we encountered either ID.
-        ///
-        /// However, it's possible that we could have persisted an entry for a
-        /// given group ID without having actually created a `TSGroupThread`,
-        /// since both the V2 group ID and the eventual `TSGroupThread/uniqueId`
-        /// were derivable from the V1 group ID. For example, code that was
-        /// removed in `72345f1` would have created a mapping when restoring a
-        /// record of a V1 group from Storage Service, but not actually have
-        /// created the `TSGroupThread`. A user who had run this code, but who
-        /// never had reason to create the `TSGroupThread` (e.g., because the
-        /// migrated group was inactive), would have a "dead-end" mapping of a
-        /// V1 group ID and its derived V2 group ID to a `uniqueId` that did not
-        /// actually belong to a `TSGroupThread`.
-        ///
-        /// Later, `f1f4e69` stopped checking for mappings when instantiating a
-        /// new `TSGroupThread` for a V2 group. However, other sites such as (at
-        /// the time of writing) `GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage`
-        /// would consult the mapping to get a `uniqueId` for a given group ID,
-        /// then check if a `TSGroupThread` exists for that `uniqueId`, and if
-        /// not create a new one. This is problematic, since that new
-        /// `TSGroupThread` will give itself a `uniqueId` derived from its V2
-        /// group ID, rather than using the `uniqueId` persisted in the mapping
-        /// that's based on the original V1 group ID. Phew.
-        ///
-        /// This in turn means that every time `GroupManager.tryToUpsert...` is
-        /// called it will fail to find the `TSGroupThread` that was previously
-        /// created, and will instead attempt to create a new `TSGroupThread`
-        /// each time (with the same derived `uniqueId`), which we believe is at
-        /// the root of an issue reported in the wild.
-        ///
-        /// This migration iterates through our persisted mappings and deletes
-        /// any of these "dead-end" mappings, since V1 group IDs are no longer
-        /// used anywhere and those mappings are therefore now useless.
         migrator.registerMigration(.removeDeadEndGroupThreadIdMappings) { tx in
-            let mappingStoreCollection = "TSGroupThread.uniqueIdMappingStore"
-
-            let rows = try Row.fetchAll(
-                tx.database,
-                sql: "SELECT * FROM keyvalue WHERE collection = ?",
-                arguments: [mappingStoreCollection]
-            )
-
-            /// Group IDs that have a mapping to a thread ID, but for which the
-            /// thread ID has no actual thread.
-            var deadEndGroupIds = [String]()
-
-            for row in rows {
-                guard
-                    let groupIdKey = row["key"] as? String,
-                    let targetThreadIdData = row["value"] as? Data,
-                    let targetThreadId = (try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: targetThreadIdData)) as String?
-                else {
-                    continue
-                }
-
-                if try Bool.fetchOne(
-                    tx.database,
-                    sql: """
-                        SELECT EXISTS(
-                            SELECT 1
-                            FROM model_TSThread
-                            WHERE uniqueId = ?
-                            LIMIT 1
-                        )
-                    """,
-                    arguments: [targetThreadId]
-                ) != true {
-                    deadEndGroupIds.append(groupIdKey)
-                }
-            }
-
-            for deadEndGroupId in deadEndGroupIds {
-                try tx.database.execute(
-                    sql: """
-                        DELETE FROM keyvalue
-                        WHERE collection = ? AND key = ?
-                    """,
-                    arguments: [mappingStoreCollection, deadEndGroupId]
-                )
-
-                Logger.warn("Deleting dead-end group ID mapping: \(deadEndGroupId)")
-            }
-
+            try removeDeadEndGroupThreadIdMappings(tx: tx)
             return .success(())
         }
 
@@ -4172,7 +3916,7 @@ public class GRDBSchemaMigrator {
 
         /// Ensure the migration value and the live app value are identical; if we change the live app
         /// value we need a new migration to update the CHECK clause below.
-        owsAssertDebug(BackupOversizeTextCache.maxTextLengthBytes  == 128 * 1024)
+        owsAssertDebug(BackupOversizeTextCache.maxTextLengthBytes == 128 * 1024)
 
         migrator.registerMigration(.addBackupOversizeTextRedux) { tx in
             // NOTE: recreated because of < vs <=; okay to drop existing table
@@ -4913,6 +4657,179 @@ public class GRDBSchemaMigrator {
 
     // MARK: - Migrations
 
+    static func createStoryContextAssociatedData(tx transaction: DBWriteTransaction) throws {
+        try transaction.database.create(table: StoryContextAssociatedData.databaseTableName) { table in
+            table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
+                .notNull()
+            table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
+                .notNull()
+            table.column(StoryContextAssociatedData.columnName(.uniqueId))
+                .notNull()
+                .unique(onConflict: .fail)
+            table.column(StoryContextAssociatedData.columnName(.contactAci), .text)
+            table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
+            table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
+                .notNull()
+                .defaults(to: false)
+            table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
+            table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
+            table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
+        }
+        try transaction.database.create(
+            index: "index_story_context_associated_data_contact_on_contact_uuid",
+            on: StoryContextAssociatedData.databaseTableName,
+            columns: [StoryContextAssociatedData.columnName(.contactAci)]
+        )
+        try transaction.database.create(
+            index: "index_story_context_associated_data_contact_on_group_id",
+            on: StoryContextAssociatedData.databaseTableName,
+            columns: [StoryContextAssociatedData.columnName(.groupId)]
+        )
+    }
+
+    static func populateStoryContextAssociatedData(tx transaction: DBWriteTransaction) throws {
+        // All we need to do is iterate over ThreadAssociatedData; one exists for every
+        // thread, so we can pull hidden state from the associated data and received/viewed
+        // timestamps from their threads and have a copy of everything we need.
+        try Row.fetchCursor(transaction.database, sql: """
+            SELECT * FROM thread_associated_data
+        """).forEach { threadAssociatedDataRow in
+            guard
+                let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
+                let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
+            else {
+                owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
+                return
+            }
+            let insertSQL = """
+            INSERT INTO model_StoryContextAssociatedData (
+                recordType,
+                uniqueId,
+                contactUuid,
+                groupId,
+                isHidden,
+                latestUnexpiredTimestamp,
+                lastReceivedTimestamp,
+                lastViewedTimestamp
+            )
+            VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
+            """
+
+            if
+                let threadRow = try? Row.fetchOne(
+                    transaction.database,
+                    sql: """
+                        SELECT * FROM model_TSThread
+                        WHERE uniqueId = ?
+                    """,
+                    arguments: [threadUniqueId]
+                )
+            {
+                let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
+                let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - UInt64.dayInMs
+                    ? lastReceivedStoryTimestamp : nil
+                let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
+                if
+                    let groupModelData = threadRow["groupModel"] as? Data,
+                    let groupId = try decodeGroupIdFromGroupModelData(groupModelData)
+                {
+                    try transaction.database.execute(
+                        sql: insertSQL,
+                        arguments: [
+                            UUID().uuidString,
+                            nil,
+                            groupId,
+                            hideStory,
+                            latestUnexpiredTimestamp,
+                            lastReceivedStoryTimestamp,
+                            lastViewedStoryTimestamp
+                        ]
+                    )
+                } else if
+                    let contactUuidString = threadRow["contactUUID"] as? String
+                {
+                    // Okay to ignore e164 addresses because we can't have updated story metadata
+                    // for those contact threads anyway.
+                    try transaction.database.execute(
+                        sql: insertSQL,
+                        arguments: [
+                            UUID().uuidString,
+                            contactUuidString,
+                            nil,
+                            hideStory,
+                            latestUnexpiredTimestamp,
+                            lastReceivedStoryTimestamp,
+                            lastViewedStoryTimestamp
+                        ]
+                    )
+                }
+            } else {
+                // If we couldn't find a thread, that means this associated data was
+                // created for a group we don't know about yet.
+                // Stories is in beta at the time of this migration, so we will just drop it.
+                Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
+            }
+        }
+    }
+
+    static func dropColumnsMigratedToStoryContextAssociatedData(tx transaction: DBWriteTransaction) throws {
+        // Drop the old columns since they are no longer needed.
+        try transaction.database.alter(table: "model_TSThread") { alteration in
+            alteration.drop(column: "lastViewedStoryTimestamp")
+            alteration.drop(column: "lastReceivedStoryTimestamp")
+        }
+        try transaction.database.alter(table: "thread_associated_data") { alteration in
+            alteration.drop(column: "hideStory")
+        }
+    }
+
+    static func populateStoryMessageReplyCount(tx transaction: DBWriteTransaction) throws {
+        let storyMessagesSql = """
+            SELECT id, timestamp, authorUuid, groupId
+            FROM model_StoryMessage
+        """
+        let storyMessages = try Row.fetchAll(transaction.database, sql: storyMessagesSql)
+        for storyMessage in storyMessages {
+            guard
+                let id = storyMessage["id"] as? Int64,
+                let timestamp = storyMessage["timestamp"] as? Int64,
+                let authorUuid = storyMessage["authorUuid"] as? String
+            else {
+                continue
+            }
+            guard authorUuid != "00000000-0000-0000-0000-000000000001" else {
+                // Skip the system story
+                continue
+            }
+            let groupId = storyMessage["groupId"] as? Data
+            let isGroupStoryMessage = groupId != nil
+            // Use the index we have on storyTimestamp, storyAuthorUuidString, isGroupStoryReply
+            let replyCountSql = """
+                SELECT COUNT(*)
+                FROM model_TSInteraction
+                WHERE (
+                    storyTimestamp = ?
+                    AND storyAuthorUuidString = ?
+                    AND isGroupStoryReply = ?
+                )
+            """
+            let replyCount = try Int.fetchOne(
+                transaction.database,
+                sql: replyCountSql,
+                arguments: [timestamp, authorUuid, isGroupStoryMessage]
+            ) ?? 0
+
+            try transaction.database.execute(
+                sql: """
+                    UPDATE model_StoryMessage
+                    SET replyCount = ?
+                    WHERE id = ?
+                """,
+                arguments: [replyCount, id]
+            )
+        }
+    }
+
     static func migrateThreadReplyInfos(transaction: DBWriteTransaction) throws {
         let collection = "TSThreadReplyInfo"
         try transaction.database.execute(
@@ -5515,6 +5432,94 @@ public class GRDBSchemaMigrator {
         )
 
         return .success(())
+    }
+
+    /// Historically, we persisted a map of `[GroupId: ThreadUniqueId]` for
+    /// all group threads. For V1 groups that were migrated to V2 groups
+    /// this map would hold entries for both the V1 and V2 group ID to the
+    /// same group thread; this allowed us to find the same logical group
+    /// thread if we encountered either ID.
+    ///
+    /// However, it's possible that we could have persisted an entry for a
+    /// given group ID without having actually created a `TSGroupThread`,
+    /// since both the V2 group ID and the eventual `TSGroupThread/uniqueId`
+    /// were derivable from the V1 group ID. For example, code that was
+    /// removed in `72345f1` would have created a mapping when restoring a
+    /// record of a V1 group from Storage Service, but not actually have
+    /// created the `TSGroupThread`. A user who had run this code, but who
+    /// never had reason to create the `TSGroupThread` (e.g., because the
+    /// migrated group was inactive), would have a "dead-end" mapping of a
+    /// V1 group ID and its derived V2 group ID to a `uniqueId` that did not
+    /// actually belong to a `TSGroupThread`.
+    ///
+    /// Later, `f1f4e69` stopped checking for mappings when instantiating a
+    /// new `TSGroupThread` for a V2 group. However, other sites such as (at
+    /// the time of writing) `GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage`
+    /// would consult the mapping to get a `uniqueId` for a given group ID,
+    /// then check if a `TSGroupThread` exists for that `uniqueId`, and if
+    /// not create a new one. This is problematic, since that new
+    /// `TSGroupThread` will give itself a `uniqueId` derived from its V2
+    /// group ID, rather than using the `uniqueId` persisted in the mapping
+    /// that's based on the original V1 group ID. Phew.
+    ///
+    /// This in turn means that every time `GroupManager.tryToUpsert...` is
+    /// called it will fail to find the `TSGroupThread` that was previously
+    /// created, and will instead attempt to create a new `TSGroupThread`
+    /// each time (with the same derived `uniqueId`), which we believe is at
+    /// the root of an issue reported in the wild.
+    ///
+    /// This migration iterates through our persisted mappings and deletes
+    /// any of these "dead-end" mappings, since V1 group IDs are no longer
+    /// used anywhere and those mappings are therefore now useless.
+    static func removeDeadEndGroupThreadIdMappings(tx: DBWriteTransaction) throws {
+        let mappingStoreCollection = "TSGroupThread.uniqueIdMappingStore"
+
+        let rows = try Row.fetchAll(
+            tx.database,
+            sql: "SELECT * FROM keyvalue WHERE collection = ?",
+            arguments: [mappingStoreCollection]
+        )
+
+        /// Group IDs that have a mapping to a thread ID, but for which the
+        /// thread ID has no actual thread.
+        var deadEndGroupIds = [String]()
+
+        for row in rows {
+            guard
+                let groupIdKey = row["key"] as? String,
+                let targetThreadIdData = row["value"] as? Data,
+                let targetThreadId = (try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: targetThreadIdData)) as String?
+            else {
+                continue
+            }
+
+            if try Bool.fetchOne(
+                tx.database,
+                sql: """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM model_TSThread
+                        WHERE uniqueId = ?
+                        LIMIT 1
+                    )
+                """,
+                arguments: [targetThreadId]
+            ) != true {
+                deadEndGroupIds.append(groupIdKey)
+            }
+        }
+
+        for deadEndGroupId in deadEndGroupIds {
+            try tx.database.execute(
+                sql: """
+                    DELETE FROM keyvalue
+                    WHERE collection = ? AND key = ?
+                """,
+                arguments: [mappingStoreCollection, deadEndGroupId]
+            )
+
+            Logger.warn("Deleting dead-end group ID mapping: \(deadEndGroupId)")
+        }
     }
 
     static func migrateBlockedRecipients(tx: DBWriteTransaction) throws {

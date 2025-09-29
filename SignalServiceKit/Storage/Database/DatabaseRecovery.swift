@@ -242,7 +242,6 @@ public extension DatabaseRecovery {
             do {
                 let didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
                     databaseStorage: databaseStorage,
-                    isMainDatabase: false,
                     runDataMigrations: {
                         switch mode {
                             // We skip old data migrations because we suspect data is more likely to be corrupted.

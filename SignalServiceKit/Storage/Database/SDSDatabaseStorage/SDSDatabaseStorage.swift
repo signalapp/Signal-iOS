@@ -66,13 +66,10 @@ public class SDSDatabaseStorage: NSObject, DB {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
-    func runGrdbSchemaMigrationsOnMainDatabase() {
+    func runGrdbSchemaMigrations() {
         let didPerformIncrementalMigrations: Bool
         do {
-            didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
-                databaseStorage: self,
-                isMainDatabase: true
-            )
+            didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(databaseStorage: self, runDataMigrations: false)
         } catch {
             DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -87,6 +84,21 @@ public class SDSDatabaseStorage: NSObject, DB {
             } catch {
                 owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
             }
+        }
+    }
+
+    /// Note: This *technically* runs schema migrations as well, though it
+    /// should be impossible to execute this method when there are any
+    /// outstanding schema migrations.
+    func runGrdbDataMigrations() {
+        do {
+            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: self, runDataMigrations: true)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
         }
     }
 

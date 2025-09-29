@@ -96,8 +96,6 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     private let paymentStateCache = AtomicOptional<PaymentsState>(nil, lock: .sharedGlobal)
 
     public func warmCaches() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.paymentStateCache.set(Self.loadPaymentsState(transaction: transaction))
         }

@@ -36,13 +36,14 @@ public class MockSSKEnvironment {
 
         let finalContinuation = await AppSetup().start(
             appContext: testAppContext,
-            appReadiness: appReadiness,
-            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
             databaseStorage: try! SDSDatabaseStorage(
                 appReadiness: appReadiness,
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: MockKeychainStorage()
             ),
+        ).migrateDatabaseSchema().initGlobals(
+            appReadiness: appReadiness,
+            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
             deviceBatteryLevelManager: nil,
             deviceSleepManager: nil,
             paymentsEvents: PaymentsEventsNoop(),
@@ -73,7 +74,7 @@ public class MockSSKEnvironment {
                 versionedProfiles: MockVersionedProfiles(),
                 webSocketFactory: WebSocketFactoryMock()
             )
-        ).prepareDatabase()
+        ).migrateDatabaseData()
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
     }
 

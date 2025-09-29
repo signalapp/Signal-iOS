@@ -17,10 +17,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             keychainStorage: MockKeychainStorage()
         )
 
-        try GRDBSchemaMigrator.migrateDatabase(
-            databaseStorage: databaseStorage,
-            isMainDatabase: false
-        )
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
 
         databaseStorage.read { transaction in
             let db = transaction.database
@@ -31,8 +28,124 @@ class GRDBSchemaMigratorTest: XCTestCase {
         }
     }
 
+    func testSchemaMigrations() throws {
+        let databaseStorage = try SDSDatabaseStorage(
+            appReadiness: AppReadinessMock(),
+            databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
+            keychainStorage: MockKeychainStorage()
+        )
+        // Create the initial schema (the one from 2019).
+        databaseStorage.write { tx in
+            try! tx.database.execute(sql: sqlToCreateInitialSchema)
+            try! tx.database.execute(sql: """
+                CREATE TABLE IF NOT EXISTS grdb_migrations (identifier TEXT NOT NULL PRIMARY KEY);
+                INSERT INTO grdb_migrations (identifier) VALUES ('createInitialSchema');
+                """
+            )
+        }
+        // Run all schema migrations. This should succeed without globals!
+        try GRDBSchemaMigrator.migrateDatabase(
+            databaseStorage: databaseStorage,
+            runDataMigrations: false,
+        )
+    }
+
     private func keyedArchiverData(rootObject: Any) -> Data {
         try! NSKeyedArchiver.archivedData(withRootObject: rootObject, requiringSecureCoding: true)
+    }
+
+    private func encodeGroupIdInGroupModel(groupId: Data) -> Data {
+        @objc(TSGroupModelWithOnlyGroupId)
+        class TSGroupModelWithOnlyGroupId: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            let groupId: NSData
+            init(groupId: Data) { self.groupId = groupId as NSData }
+            required init?(coder: NSCoder) { owsFail("Don't decode these!") }
+            func encode(with coder: NSCoder) {
+                coder.encode(groupId, forKey: "groupId")
+            }
+        }
+        let coder = NSKeyedArchiver(requiringSecureCoding: true)
+        coder.setClassName("SignalServiceKit.TSGroupModelV2", for: TSGroupModelWithOnlyGroupId.self)
+        coder.encode(TSGroupModelWithOnlyGroupId(groupId: groupId), forKey: NSKeyedArchiveRootObjectKey)
+        return coder.encodedData
+    }
+
+    func testPopulateStoryContextAssociatedData() throws {
+        let nowMs = Date().ows_millisecondsSince1970
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "thread_associated_data" (hideStory BOOLEAN NOT NULL, threadUniqueId TEXT NOT NULL);
+            CREATE TABLE "model_TSThread" (uniqueId TEXT NOT NULL, lastReceivedStoryTimestamp INTEGER, lastViewedStoryTimestamp INTEGER, groupModel BLOB, contactUUID TEXT);
+
+            INSERT INTO "thread_associated_data" (hideStory, threadUniqueId) VALUES (TRUE, 'A'), (FALSE, 'B');
+            """)
+            try db.execute(
+                sql: """
+                    INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, contactUUID) VALUES (?, ?, ?, ?)
+                    """,
+                arguments: ["A", nowMs - 20_002, nowMs - 20_001, "00000000-0000-4000-8000-00000000000A"],
+            )
+            try db.execute(
+                sql: """
+                    INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, groupModel) VALUES (?, ?, ?, ?)
+                    """,
+                arguments: ["B", nowMs - 86400_002, nowMs - 86400_001, encodeGroupIdInGroupModel(groupId: Data(repeating: 9, count: 32))],
+            )
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.createStoryContextAssociatedData(tx: tx)
+            try GRDBSchemaMigrator.populateStoryContextAssociatedData(tx: tx)
+            try GRDBSchemaMigrator.dropColumnsMigratedToStoryContextAssociatedData(tx: tx)
+        }
+        let rows = try databaseQueue.read { db in
+            return try Row.fetchAll(db, sql: "SELECT * FROM model_StoryContextAssociatedData")
+        }
+        XCTAssertEqual(rows.count, 2)
+
+        XCTAssertEqual(rows[0]["contactUuid"] as String?, "00000000-0000-4000-8000-00000000000A")
+        XCTAssertEqual(rows[0]["groupId"] as Data?, nil)
+        XCTAssertEqual(rows[0]["isHidden"] as Bool, true)
+        XCTAssertEqual(rows[0]["latestUnexpiredTimestamp"] as UInt64?, nowMs - 20_002)
+        XCTAssertEqual(rows[0]["lastReceivedTimestamp"] as UInt64?, nowMs - 20_002)
+        XCTAssertEqual(rows[0]["lastViewedTimestamp"] as UInt64?, nowMs - 20_001)
+
+        XCTAssertEqual(rows[1]["contactUuid"] as String?, nil)
+        XCTAssertEqual(rows[1]["groupId"] as Data?, Data(repeating: 9, count: 32))
+        XCTAssertEqual(rows[1]["isHidden"] as Bool, false)
+        XCTAssertEqual(rows[1]["latestUnexpiredTimestamp"] as UInt64?, nil)
+        XCTAssertEqual(rows[1]["lastReceivedTimestamp"] as UInt64?, nowMs - 86400_002)
+        XCTAssertEqual(rows[1]["lastViewedTimestamp"] as UInt64?, nowMs - 86400_001)
+    }
+
+    func testPopulateStoryMessageReplyCount() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSInteraction" (
+                storyTimestamp INTEGER,
+                storyAuthorUuidString TEXT,
+                isGroupStoryReply BOOLEAN
+            );
+            CREATE TABLE "model_StoryMessage" (
+                id INTEGER PRIMARY KEY,
+                timestamp INTEGER NOT NULL,
+                authorUuid TEXT NOT NULL,
+                groupId BLOB,
+                replyCount INTEGER NOT NULL DEFAULT 0
+            );
+            INSERT INTO "model_TSInteraction" (storyTimestamp, storyAuthorUuidString, isGroupStoryReply) VALUES (1234, '00000000-0000-4000-8000-00000000000A', TRUE);
+            INSERT INTO "model_StoryMessage" (timestamp, authorUuid, groupId) VALUES (1234, '00000000-0000-4000-8000-00000000000A', X'00000000000000000000000000001234');
+            """)
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.populateStoryMessageReplyCount(tx: tx)
+        }
+        let replyCount = try databaseQueue.read { db in
+            return try Int.fetchOne(db, sql: "SELECT replyCount FROM model_StoryMessage")
+        }
+        XCTAssertEqual(replyCount, 1)
     }
 
     func testMigrateVoiceMessageDrafts() throws {
@@ -218,9 +331,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         XCTAssertTrue(exists)
         XCTAssertFalse(tempExists)
     }
-}
 
-extension GRDBSchemaMigratorTest {
     fileprivate func checkTableExists(tableName: String, databaseQueue: DatabaseQueue) -> Bool {
         do {
             try databaseQueue.read({ db in
@@ -346,6 +457,44 @@ extension GRDBSchemaMigratorTest {
             XCTAssertEqual(row[2] as String?, nil)
             XCTAssertNil(try cursor.next())
         }
+    }
+
+    func testRemoveDeadEndGroupThreadIdMappings() throws {
+        let collection = "TSGroupThread.uniqueIdMappingStore"
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSThread" (uniqueId TEXT NOT NULL);
+            CREATE TABLE "keyvalue" (
+                collection TEXT NOT NULL,
+                key TEXT NOT NULL,
+                value BLOB NOT NULL
+            );
+            INSERT INTO "model_TSThread" VALUES ('A'), ('B');
+            """)
+            let uniqueIdMappings: [(Data, String)] = [
+                (Data(repeating: 0, count: 16), "A"),
+                (Data(repeating: 1, count: 32), "B"),
+                (Data(repeating: 2, count: 16), "C"),
+                (Data(repeating: 3, count: 32), "C"),
+            ]
+            for (groupId, uniqueId) in uniqueIdMappings {
+                try db.execute(
+                    sql: "INSERT INTO keyvalue VALUES (?, ?, ?)",
+                    arguments: [collection, groupId.hexadecimalString, keyedArchiverData(rootObject: uniqueId)],
+                )
+            }
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.removeDeadEndGroupThreadIdMappings(tx: tx)
+        }
+        let groupIdKeys = try databaseQueue.read { db in
+            return try String.fetchAll(db, sql: "SELECT key FROM keyvalue")
+        }
+        XCTAssertEqual(Set(groupIdKeys), [
+            Data(repeating: 0, count: 16).hexadecimalString,
+            Data(repeating: 1, count: 32).hexadecimalString,
+        ])
     }
 
     func testMigrateBlockedRecipients() throws {
@@ -564,22 +713,7 @@ extension GRDBSchemaMigratorTest {
     }
 
     func testPopulateDefaultAvatarColorsTable() throws {
-        @objc(TSGroupModelForMigrations)
-        class TSGroupModelForMigrations: NSObject, NSSecureCoding {
-            static var supportsSecureCoding: Bool { true }
-            let groupId: NSData
-            init(groupId: Data) { self.groupId = groupId as NSData }
-            required init?(coder: NSCoder) { owsFail("Don't decode these!") }
-            func encode(with coder: NSCoder) {
-                coder.encode(groupId, forKey: "groupId")
-            }
-        }
-        let coder = NSKeyedArchiver(requiringSecureCoding: true)
-        coder.setClassName("SignalServiceKit.TSGroupModelV2", for: TSGroupModelForMigrations.self)
         let groupId = Data(repeating: 9, count: 32)
-        let groupModel = TSGroupModelForMigrations(groupId: groupId)
-        coder.encode(groupModel, forKey: NSKeyedArchiveRootObjectKey)
-
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
             try db.execute(sql: """
@@ -589,7 +723,7 @@ extension GRDBSchemaMigratorTest {
                 ,"groupModel" BLOB
             );
             INSERT INTO model_TSThread VALUES
-                (1, 'g\(groupId.base64EncodedString())', X'\(coder.encodedData.hexadecimalString)');
+                (1, 'g\(groupId.base64EncodedString())', X'\(encodeGroupIdInGroupModel(groupId: groupId).hexadecimalString)');
 
             CREATE TABLE model_SignalRecipient(
                 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -789,3 +923,718 @@ extension GRDBSchemaMigratorTest {
         }
     }
 }
+
+// MARK: -
+
+private let sqlToCreateInitialSchema = """
+CREATE
+    TABLE
+        keyvalue (
+            KEY TEXT NOT NULL
+            ,collection TEXT NOT NULL
+            ,VALUE BLOB NOT NULL
+            ,PRIMARY KEY (
+                KEY
+                ,collection
+            )
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSThread" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"conversationColorName" TEXT NOT NULL
+            ,"creationDate" DOUBLE
+            ,"isArchived" INTEGER NOT NULL
+            ,"lastInteractionRowId" INTEGER NOT NULL
+            ,"messageDraft" TEXT
+            ,"mutedUntilDate" DOUBLE
+            ,"shouldThreadBeVisible" INTEGER NOT NULL
+            ,"contactPhoneNumber" TEXT
+            ,"contactUUID" TEXT
+            ,"groupModel" BLOB
+            ,"hasDismissedOffers" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_model_TSThread_on_uniqueId"
+        ON "model_TSThread"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSInteraction" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"receivedAtTimestamp" INTEGER NOT NULL
+            ,"timestamp" INTEGER NOT NULL
+            ,"uniqueThreadId" TEXT NOT NULL
+            ,"attachmentIds" BLOB
+            ,"authorId" TEXT
+            ,"authorPhoneNumber" TEXT
+            ,"authorUUID" TEXT
+            ,"body" TEXT
+            ,"callType" INTEGER
+            ,"configurationDurationSeconds" INTEGER
+            ,"configurationIsEnabled" INTEGER
+            ,"contactShare" BLOB
+            ,"createdByRemoteName" TEXT
+            ,"createdInExistingGroup" INTEGER
+            ,"customMessage" TEXT
+            ,"envelopeData" BLOB
+            ,"errorType" INTEGER
+            ,"expireStartedAt" INTEGER
+            ,"expiresAt" INTEGER
+            ,"expiresInSeconds" INTEGER
+            ,"groupMetaMessage" INTEGER
+            ,"hasLegacyMessageState" INTEGER
+            ,"hasSyncedTranscript" INTEGER
+            ,"isFromLinkedDevice" INTEGER
+            ,"isLocalChange" INTEGER
+            ,"isViewOnceComplete" INTEGER
+            ,"isViewOnceMessage" INTEGER
+            ,"isVoiceMessage" INTEGER
+            ,"legacyMessageState" INTEGER
+            ,"legacyWasDelivered" INTEGER
+            ,"linkPreview" BLOB
+            ,"messageId" TEXT
+            ,"messageSticker" BLOB
+            ,"messageType" INTEGER
+            ,"mostRecentFailureText" TEXT
+            ,"preKeyBundle" BLOB
+            ,"protocolVersion" INTEGER
+            ,"quotedMessage" BLOB
+            ,"read" INTEGER
+            ,"recipientAddress" BLOB
+            ,"recipientAddressStates" BLOB
+            ,"sender" BLOB
+            ,"serverTimestamp" INTEGER
+            ,"sourceDeviceId" INTEGER
+            ,"storedMessageState" INTEGER
+            ,"storedShouldStartExpireTimer" INTEGER
+            ,"unregisteredAddress" BLOB
+            ,"verificationState" INTEGER
+            ,"wasReceivedByUD" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueId"
+        ON "model_TSInteraction"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_StickerPack" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"author" TEXT
+            ,"cover" BLOB NOT NULL
+            ,"dateCreated" DOUBLE NOT NULL
+            ,"info" BLOB NOT NULL
+            ,"isInstalled" INTEGER NOT NULL
+            ,"items" BLOB NOT NULL
+            ,"title" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_StickerPack_on_uniqueId"
+        ON "model_StickerPack"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_InstalledSticker" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"emojiString" TEXT
+            ,"info" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_InstalledSticker_on_uniqueId"
+        ON "model_InstalledSticker"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_KnownStickerPack" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"dateCreated" DOUBLE NOT NULL
+            ,"info" BLOB NOT NULL
+            ,"referenceCount" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_KnownStickerPack_on_uniqueId"
+        ON "model_KnownStickerPack"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSAttachment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"albumMessageId" TEXT
+            ,"attachmentType" INTEGER NOT NULL
+            ,"blurHash" TEXT
+            ,"byteCount" INTEGER NOT NULL
+            ,"caption" TEXT
+            ,"contentType" TEXT NOT NULL
+            ,"encryptionKey" BLOB
+            ,"serverId" INTEGER NOT NULL
+            ,"sourceFilename" TEXT
+            ,"cachedAudioDurationSeconds" DOUBLE
+            ,"cachedImageHeight" DOUBLE
+            ,"cachedImageWidth" DOUBLE
+            ,"creationTimestamp" DOUBLE
+            ,"digest" BLOB
+            ,"isUploaded" INTEGER
+            ,"isValidImageCached" INTEGER
+            ,"isValidVideoCached" INTEGER
+            ,"lazyRestoreFragmentId" TEXT
+            ,"localRelativeFilePath" TEXT
+            ,"mediaSize" BLOB
+            ,"pointerType" INTEGER
+            ,"state" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_model_TSAttachment_on_uniqueId"
+        ON "model_TSAttachment"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_SSKJobRecord" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"failureCount" INTEGER NOT NULL
+            ,"label" TEXT NOT NULL
+            ,"status" INTEGER NOT NULL
+            ,"attachmentIdMap" BLOB
+            ,"contactThreadId" TEXT
+            ,"envelopeData" BLOB
+            ,"invisibleMessage" BLOB
+            ,"messageId" TEXT
+            ,"removeMessageAfterSending" INTEGER
+            ,"threadId" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_SSKJobRecord_on_uniqueId"
+        ON "model_SSKJobRecord"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSMessageContentJob" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"createdAt" DOUBLE NOT NULL
+            ,"envelopeData" BLOB NOT NULL
+            ,"plaintextData" BLOB
+            ,"wasReceivedByUD" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSMessageContentJob_on_uniqueId"
+        ON "model_OWSMessageContentJob"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSRecipientIdentity" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"accountId" TEXT NOT NULL
+            ,"createdAt" DOUBLE NOT NULL
+            ,"identityKey" BLOB NOT NULL
+            ,"isFirstKnownKey" INTEGER NOT NULL
+            ,"verificationState" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSRecipientIdentity_on_uniqueId"
+        ON "model_OWSRecipientIdentity"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_ExperienceUpgrade" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+        )
+;
+
+CREATE
+    INDEX "index_model_ExperienceUpgrade_on_uniqueId"
+        ON "model_ExperienceUpgrade"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSDisappearingMessagesConfiguration" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"durationSeconds" INTEGER NOT NULL
+            ,"enabled" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSDisappearingMessagesConfiguration_on_uniqueId"
+        ON "model_OWSDisappearingMessagesConfiguration"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_SignalRecipient" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"devices" BLOB NOT NULL
+            ,"recipientPhoneNumber" TEXT
+            ,"recipientUUID" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_SignalRecipient_on_uniqueId"
+        ON "model_SignalRecipient"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_SignalAccount" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"contact" BLOB
+            ,"multipleAccountLabelText" TEXT NOT NULL
+            ,"recipientPhoneNumber" TEXT
+            ,"recipientUUID" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_SignalAccount_on_uniqueId"
+        ON "model_SignalAccount"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSUserProfile" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"avatarFileName" TEXT
+            ,"avatarUrlPath" TEXT
+            ,"profileKey" BLOB
+            ,"profileName" TEXT
+            ,"recipientPhoneNumber" TEXT
+            ,"recipientUUID" TEXT
+            ,"username" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSUserProfile_on_uniqueId"
+        ON "model_OWSUserProfile"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSRecipientReadReceipt" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"recipientMap" BLOB NOT NULL
+            ,"sentTimestamp" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_TSRecipientReadReceipt_on_uniqueId"
+        ON "model_TSRecipientReadReceipt"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSLinkedDeviceReadReceipt" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"messageIdTimestamp" INTEGER NOT NULL
+            ,"readTimestamp" INTEGER NOT NULL
+            ,"senderPhoneNumber" TEXT
+            ,"senderUUID" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSLinkedDeviceReadReceipt_on_uniqueId"
+        ON "model_OWSLinkedDeviceReadReceipt"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSDevice" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"createdAt" DOUBLE NOT NULL
+            ,"deviceId" INTEGER NOT NULL
+            ,"lastSeenAt" DOUBLE NOT NULL
+            ,"name" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSDevice_on_uniqueId"
+        ON "model_OWSDevice"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_OWSContactQuery" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"lastQueried" DOUBLE NOT NULL
+            ,"nonce" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_OWSContactQuery_on_uniqueId"
+        ON "model_OWSContactQuery"("uniqueId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TestModel" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"dateValue" DOUBLE
+            ,"doubleValue" DOUBLE NOT NULL
+            ,"floatValue" DOUBLE NOT NULL
+            ,"int64Value" INTEGER NOT NULL
+            ,"nsIntegerValue" INTEGER NOT NULL
+            ,"nsNumberValueUsingInt64" INTEGER
+            ,"nsNumberValueUsingUInt64" INTEGER
+            ,"nsuIntegerValue" INTEGER NOT NULL
+            ,"uint64Value" INTEGER NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_TestModel_on_uniqueId"
+        ON "model_TestModel"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_threadUniqueId_and_id"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"id"
+)
+;
+
+CREATE
+    INDEX "index_jobs_on_label_and_id"
+        ON "model_SSKJobRecord"("label"
+    ,"id"
+)
+;
+
+CREATE
+    INDEX "index_jobs_on_status_and_label_and_id"
+        ON "model_SSKJobRecord"("label"
+    ,"status"
+    ,"id"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_view_once"
+        ON "model_TSInteraction"("isViewOnceMessage"
+    ,"isViewOnceComplete"
+)
+;
+
+CREATE
+    INDEX "index_key_value_store_on_collection_and_key"
+        ON "keyvalue"("collection"
+    ,"key"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_recordType_and_threadUniqueId_and_errorType"
+        ON "model_TSInteraction"("recordType"
+    ,"uniqueThreadId"
+    ,"errorType"
+)
+;
+
+CREATE
+    INDEX "index_attachments_on_albumMessageId"
+        ON "model_TSAttachment"("albumMessageId"
+    ,"recordType"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_uniqueId_and_threadUniqueId"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_signal_accounts_on_recipientPhoneNumber"
+        ON "model_SignalAccount"("recipientPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_signal_accounts_on_recipientUUID"
+        ON "model_SignalAccount"("recipientUUID"
+)
+;
+
+CREATE
+    INDEX "index_signal_recipients_on_recipientPhoneNumber"
+        ON "model_SignalRecipient"("recipientPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_signal_recipients_on_recipientUUID"
+        ON "model_SignalRecipient"("recipientUUID"
+)
+;
+
+CREATE
+    INDEX "index_thread_on_contactPhoneNumber"
+        ON "model_TSThread"("contactPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_thread_on_contactUUID"
+        ON "model_TSThread"("contactUUID"
+)
+;
+
+CREATE
+    INDEX "index_thread_on_shouldThreadBeVisible"
+        ON "model_TSThread"("shouldThreadBeVisible"
+    ,"isArchived"
+    ,"lastInteractionRowId"
+)
+;
+
+CREATE
+    INDEX "index_user_profiles_on_recipientPhoneNumber"
+        ON "model_OWSUserProfile"("recipientPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_user_profiles_on_recipientUUID"
+        ON "model_OWSUserProfile"("recipientUUID"
+)
+;
+
+CREATE
+    INDEX "index_user_profiles_on_username"
+        ON "model_OWSUserProfile"("username"
+)
+;
+
+CREATE
+    INDEX "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp"
+        ON "model_OWSLinkedDeviceReadReceipt"("senderPhoneNumber"
+    ,"messageIdTimestamp"
+)
+;
+
+CREATE
+    INDEX "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp"
+        ON "model_OWSLinkedDeviceReadReceipt"("senderUUID"
+    ,"messageIdTimestamp"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
+        ON "model_TSInteraction"("timestamp"
+    ,"sourceDeviceId"
+    ,"authorUUID"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"
+        ON "model_TSInteraction"("timestamp"
+    ,"sourceDeviceId"
+    ,"authorPhoneNumber"
+)
+;
+
+CREATE
+    INDEX "index_interactions_unread_counts"
+        ON "model_TSInteraction"("read"
+    ,"uniqueThreadId"
+    ,"recordType"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_expiresInSeconds_and_expiresAt"
+        ON "model_TSInteraction"("expiresAt"
+    ,"expiresInSeconds"
+)
+;
+
+CREATE
+    INDEX "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt"
+        ON "model_TSInteraction"("expiresAt"
+    ,"expireStartedAt"
+    ,"storedShouldStartExpireTimer"
+    ,"uniqueThreadId"
+)
+;
+
+CREATE
+    INDEX "index_contact_queries_on_lastQueried"
+        ON "model_OWSContactQuery"("lastQueried"
+)
+;
+
+CREATE
+    INDEX "index_attachments_on_lazyRestoreFragmentId"
+        ON "model_TSAttachment"("lazyRestoreFragmentId"
+)
+;
+
+CREATE
+    VIRTUAL TABLE
+        "signal_grdb_fts"
+            USING fts5 (
+            collection UNINDEXED
+            ,uniqueId UNINDEXED
+            ,ftsIndexableContent
+            ,tokenize = 'unicode61'
+        ) /* signal_grdb_fts(collection,uniqueId,ftsIndexableContent) */
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'signal_grdb_fts_data' (
+            id INTEGER PRIMARY KEY
+            ,block BLOB
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'signal_grdb_fts_idx' (
+            segid
+            ,term
+            ,pgno
+            ,PRIMARY KEY (
+                segid
+                ,term
+            )
+        ) WITHOUT ROWID
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'signal_grdb_fts_content' (
+            id INTEGER PRIMARY KEY
+            ,c0
+            ,c1
+            ,c2
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'signal_grdb_fts_docsize' (
+            id INTEGER PRIMARY KEY
+            ,sz BLOB
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS 'signal_grdb_fts_config' (
+            k PRIMARY KEY
+            ,v
+        ) WITHOUT ROWID
+;
+"""

@@ -493,8 +493,6 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     func prepareCache() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             let bulkFetcher: BulkPhoneNumberVisibilityFetcher?
             do {

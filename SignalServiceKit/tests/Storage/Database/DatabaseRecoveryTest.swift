@@ -37,7 +37,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testRebuildExistingDatabase() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         DatabaseRecovery.rebuildExistingDatabase(databaseStorage: try cloneDatabaseStorage(databaseStorage))
@@ -74,7 +74,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
         let expectedTableNames: Set<String> = try {
             let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
             return databaseStorage.read { allNormalTableNames(transaction: $0) }
         }()
         XCTAssertEqual(allTableNamesSet, expectedTableNames)
@@ -83,7 +83,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     func testColumnSafety() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
         let tableNames: Set<String> = try {
-            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
             return databaseStorage.read { allNormalTableNames(transaction: $0) }
         }()
 
@@ -100,7 +100,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testDumpAndRestoreOfEmptyDatabase() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestore(
@@ -130,7 +130,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testDumpAndRestoreOnHappyDatabase() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
 
         let contactAci = Aci.randomForTesting()
 
@@ -256,7 +256,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testDumpAndRestoreWithInvalidEssentialTable() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         databaseStorage.write { transaction in
             try! transaction.database.drop(table: KeyValueStore.tableName)
         }
@@ -277,7 +277,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testDumpAndRestoreWithInvalidNonessentialTable() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         databaseStorage.write { transaction in
             try! transaction.database.drop(table: OWSReaction.databaseTableName)
         }
@@ -310,7 +310,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func testFullTextSearchRestoration() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
 
         databaseStorage.write { transaction in
             let contactAci = Aci.randomForTesting()

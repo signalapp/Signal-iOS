@@ -437,11 +437,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let _currentCall = AtomicValue<SignalCall?>(nil, lock: .init())
         let currentCall = CurrentCall(rawValue: _currentCall)
 
-        let databaseContinuation = AppSetup().start(
+        let schemaMigrationContinuation = AppSetup().start(
             appContext: launchContext.appContext,
+            databaseStorage: launchContext.databaseStorage
+        )
+        let globalsContinuation = await schemaMigrationContinuation.migrateDatabaseSchema()
+        let dataMigrationContinuation = globalsContinuation.initGlobals(
             appReadiness: appReadiness,
             backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactoryInternal(),
-            databaseStorage: launchContext.databaseStorage,
             deviceBatteryLevelManager: launchContext.deviceBatteryLevelManager,
             deviceSleepManager: launchContext.deviceSleepManager,
             paymentsEvents: PaymentsEventsMainApp(),
@@ -453,29 +456,29 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         SUIEnvironment.shared.setUp(
             appReadiness: appReadiness,
-            authCredentialManager: databaseContinuation.authCredentialManager
+            authCredentialManager: dataMigrationContinuation.authCredentialManager
         )
         AppEnvironment.shared.setUp(
             appReadiness: appReadiness,
             callService: CallService(
                 appContext: launchContext.appContext,
                 appReadiness: appReadiness,
-                authCredentialManager: databaseContinuation.authCredentialManager,
-                callLinkPublicParams: databaseContinuation.callLinkPublicParams,
-                callLinkStore: DependenciesBridge.shared.callLinkStore,
-                callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
-                callRecordStore: DependenciesBridge.shared.callRecordStore,
-                db: DependenciesBridge.shared.db,
+                authCredentialManager: dataMigrationContinuation.authCredentialManager,
+                callLinkPublicParams: dataMigrationContinuation.callLinkPublicParams,
+                callLinkStore: dataMigrationContinuation.dependenciesBridge.callLinkStore,
+                callRecordDeleteManager: dataMigrationContinuation.dependenciesBridge.callRecordDeleteManager,
+                callRecordStore: dataMigrationContinuation.dependenciesBridge.callRecordStore,
+                db: dataMigrationContinuation.dependenciesBridge.db,
                 deviceSleepManager: launchContext.deviceSleepManager,
                 mutableCurrentCall: _currentCall,
-                networkManager: SSKEnvironment.shared.networkManagerRef,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager
+                networkManager: dataMigrationContinuation.sskEnvironment.networkManagerRef,
+                tsAccountManager: dataMigrationContinuation.dependenciesBridge.tsAccountManager
             )
         )
-        let continuation = await databaseContinuation.prepareDatabase()
-        continuation.runLaunchTasksIfNeededAndReloadCaches()
+        let finalContinuation = await dataMigrationContinuation.migrateDatabaseData()
+        finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
         guard FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch else {
-            return (continuation, sleepBlockObject)
+            return (finalContinuation, sleepBlockObject)
         }
 
         let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
@@ -484,11 +487,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         let migrateTask = Task {
-            _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
+            _ = await finalContinuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
                 .runInMainAppUntilFinished(ignorePastFailures: true, progress: progressSink)
         }
         await migrateTask.value
-        return (continuation, sleepBlockObject)
+        return (finalContinuation, sleepBlockObject)
     }
 
     private func checkEnoughDiskSpaceAvailable() -> Bool {

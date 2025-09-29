@@ -739,8 +739,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     }
 
     public func warmCaches() -> RemoteConfig {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
         let (clockSkew, valueFlags) = db.read { (tx) -> (TimeInterval?, [String: String]?) in
             guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
                 return (nil, nil)

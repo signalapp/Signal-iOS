@@ -9,8 +9,72 @@ import SDWebImage
 import SDWebImageWebPCoder
 
 public class AppSetup {
-    public init() {}
+    fileprivate let backgroundTask: OWSBackgroundTask
+    public init() {
+        self.backgroundTask = OWSBackgroundTask(label: #function)
+    }
+}
 
+extension AppSetup {
+    public func start(
+        appContext: any AppContext,
+        databaseStorage: SDSDatabaseStorage,
+    ) -> AppSetup.SchemaMigrationContinuation {
+        return SchemaMigrationContinuation(
+            appContext: appContext,
+            backgroundTask: backgroundTask,
+            databaseStorage: databaseStorage,
+        )
+    }
+
+    public class SchemaMigrationContinuation {
+        fileprivate let appContext: any AppContext
+        fileprivate let backgroundTask: OWSBackgroundTask
+        fileprivate let databaseStorage: SDSDatabaseStorage
+
+        fileprivate init(
+            appContext: any AppContext,
+            backgroundTask: OWSBackgroundTask,
+            databaseStorage: SDSDatabaseStorage,
+        ) {
+            self.appContext = appContext
+            self.backgroundTask = backgroundTask
+            self.databaseStorage = databaseStorage
+        }
+    }
+}
+
+// MARK: - SchemaMigrationContinuation
+
+extension AppSetup.SchemaMigrationContinuation {
+    public func migrateDatabaseSchema() async -> AppSetup.GlobalsContinuation {
+        if self.shouldTruncateGrdbWal() {
+            // Try to truncate GRDB WAL before any readers or writers are active.
+            do {
+                databaseStorage.logFileSizes()
+                try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
+                databaseStorage.logFileSizes()
+            } catch {
+                owsFailDebug("Failed to truncate database: \(error)")
+            }
+        }
+        databaseStorage.runGrdbSchemaMigrations()
+        SSKPreferences.markGRDBSchemaAsLatest()
+        return AppSetup.GlobalsContinuation(
+            appContext: appContext,
+            backgroundTask: backgroundTask,
+            databaseStorage: databaseStorage,
+        )
+    }
+
+    private func shouldTruncateGrdbWal() -> Bool {
+        appContext.isMainApp && appContext.mainApplicationStateOnLaunch() != .background
+    }
+}
+
+// MARK: - GlobalsContinuation
+
+extension AppSetup {
     /// Injectable mocks for global singletons accessed by tests for components
     /// that cannot be isolated in tests.
     ///
@@ -89,12 +153,28 @@ public class AppSetup {
         }
     }
 
+    public class GlobalsContinuation {
+        fileprivate let appContext: any AppContext
+        fileprivate let backgroundTask: OWSBackgroundTask
+        fileprivate let databaseStorage: SDSDatabaseStorage
+
+        fileprivate init(
+            appContext: any AppContext,
+            backgroundTask: OWSBackgroundTask,
+            databaseStorage: SDSDatabaseStorage,
+        ) {
+            self.appContext = appContext
+            self.backgroundTask = backgroundTask
+            self.databaseStorage = databaseStorage
+        }
+    }
+}
+
+extension AppSetup.GlobalsContinuation {
     @MainActor
-    public func start(
-        appContext: AppContext,
+    public func initGlobals(
         appReadiness: AppReadiness,
         backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactory,
-        databaseStorage: SDSDatabaseStorage,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         deviceSleepManager: (any DeviceSleepManager)?,
         paymentsEvents: PaymentsEvents,
@@ -103,11 +183,9 @@ public class AppSetup {
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
         incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory,
-        testDependencies: TestDependencies = TestDependencies()
-    ) -> AppSetup.DatabaseContinuation {
+        testDependencies: AppSetup.TestDependencies = AppSetup.TestDependencies(),
+    ) -> AppSetup.DataMigrationContinuation {
         configureUnsatisfiableConstraintLogging()
-
-        let backgroundTask = OWSBackgroundTask(label: #function)
 
         // Order matters here.
         //
@@ -1761,7 +1839,7 @@ public class AppSetup {
 
         Sounds.performStartupTasks(appReadiness: appReadiness)
 
-        return AppSetup.DatabaseContinuation(
+        return AppSetup.DataMigrationContinuation(
             appContext: appContext,
             appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
@@ -1779,17 +1857,17 @@ public class AppSetup {
     }
 }
 
-// MARK: - DatabaseContinuation
+// MARK: - DataMigrationContinuation
 
 extension AppSetup {
-    public class DatabaseContinuation {
-        private let appContext: AppContext
-        private let appReadiness: AppReadiness
-        private let authCredentialStore: AuthCredentialStore
-        private let dependenciesBridge: DependenciesBridge
-        private let remoteConfigManager: RemoteConfigManager
-        private let sskEnvironment: SSKEnvironment
-        private let backgroundTask: OWSBackgroundTask
+    public class DataMigrationContinuation {
+        fileprivate let appContext: AppContext
+        fileprivate let appReadiness: AppReadiness
+        fileprivate let authCredentialStore: AuthCredentialStore
+        public let dependenciesBridge: DependenciesBridge
+        fileprivate let remoteConfigManager: RemoteConfigManager
+        public let sskEnvironment: SSKEnvironment
+        fileprivate let backgroundTask: OWSBackgroundTask
 
         // We need this in AppDelegate, but it doesn't need to be a global/attached
         // to DependenciesBridge.shared. We'll need some mechanism for this in the
@@ -1821,21 +1899,11 @@ extension AppSetup {
     }
 }
 
-extension AppSetup.DatabaseContinuation {
-    public func prepareDatabase() async -> AppSetup.FinalContinuation {
+extension AppSetup.DataMigrationContinuation {
+    public func migrateDatabaseData() async -> AppSetup.FinalContinuation {
         let databaseStorage = sskEnvironment.databaseStorageRef
 
-        if self.shouldTruncateGrdbWal() {
-            // Try to truncate GRDB WAL before any readers or writers are active.
-            do {
-                databaseStorage.logFileSizes()
-                try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
-                databaseStorage.logFileSizes()
-            } catch {
-                owsFailDebug("Failed to truncate database: \(error)")
-            }
-        }
-        databaseStorage.runGrdbSchemaMigrationsOnMainDatabase()
+        databaseStorage.runGrdbDataMigrations()
         do {
             try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
         } catch {
@@ -1850,10 +1918,6 @@ extension AppSetup.DatabaseContinuation {
             dependenciesBridge: self.dependenciesBridge,
             sskEnvironment: self.sskEnvironment
         )
-    }
-
-    private func shouldTruncateGrdbWal() -> Bool {
-        appContext.isMainApp && appContext.mainApplicationStateOnLaunch() != .background
     }
 }
 
