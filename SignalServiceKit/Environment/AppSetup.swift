@@ -268,6 +268,7 @@ extension AppSetup.GlobalsContinuation {
             appReadiness: appReadiness,
             dateProvider: dateProvider,
             db: db,
+            net: libsignalNet,
             networkManager: networkManager,
             remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager
@@ -1836,6 +1837,7 @@ extension AppSetup.GlobalsContinuation {
             appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
             dependenciesBridge: dependenciesBridge,
+            libsignalNet: libsignalNet,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask,
             authCredentialManager: authCredentialManager,
@@ -1857,6 +1859,7 @@ extension AppSetup {
         fileprivate let appReadiness: AppReadiness
         fileprivate let authCredentialStore: AuthCredentialStore
         public let dependenciesBridge: DependenciesBridge
+        fileprivate let libsignalNet: Net
         fileprivate let remoteConfigManager: RemoteConfigManager
         public let sskEnvironment: SSKEnvironment
         fileprivate let backgroundTask: OWSBackgroundTask
@@ -1872,6 +1875,7 @@ extension AppSetup {
             appReadiness: AppReadiness,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
+            libsignalNet: Net,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask,
             authCredentialManager: any AuthCredentialManager,
@@ -1882,6 +1886,7 @@ extension AppSetup {
             self.appReadiness = appReadiness
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
+            self.libsignalNet = libsignalNet
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
             self.authCredentialManager = authCredentialManager
@@ -1908,6 +1913,7 @@ extension AppSetup.DataMigrationContinuation {
             appReadiness: self.appReadiness,
             authCredentialStore: self.authCredentialStore,
             dependenciesBridge: self.dependenciesBridge,
+            libsignalNet: self.libsignalNet,
             sskEnvironment: self.sskEnvironment
         )
     }
@@ -1921,6 +1927,7 @@ extension AppSetup {
         private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         public let dependenciesBridge: DependenciesBridge
+        private let libsignalNet: Net
         private let sskEnvironment: SSKEnvironment
 
         @MainActor private var didRunLaunchTasks = false
@@ -1930,12 +1937,14 @@ extension AppSetup {
             appReadiness: AppReadiness,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
+            libsignalNet: Net,
             sskEnvironment: SSKEnvironment
         ) {
             self.appContext = appContext
             self.appReadiness = appReadiness
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
+            self.libsignalNet = libsignalNet
             self.sskEnvironment = sskEnvironment
         }
     }
@@ -1955,10 +1964,11 @@ extension AppSetup.FinalContinuation {
         SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
 
         if self.didRunLaunchTasks {
-            sskEnvironment.databaseStorageRef.read { tx in
+            let remoteConfig = sskEnvironment.databaseStorageRef.read { tx in
                 dependenciesBridge.tsAccountManager.warmCaches(tx: tx)
-                _ = sskEnvironment.remoteConfigManagerRef.warmCaches(tx: tx)
+                return sskEnvironment.remoteConfigManagerRef.warmCaches(tx: tx)
             }
+            libsignalNet.setRemoteConfig(remoteConfig.netConfig())
         }
 
         // Warm (or re-warm) all of the caches. In theory, every cache is

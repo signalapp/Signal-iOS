@@ -737,6 +737,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let keyValueStore: KeyValueStore
+    private let net: Net
     private let networkManager: NetworkManager
     private let remoteConfigProvider: RemoteConfigProviderImpl
     private let tsAccountManager: TSAccountManager
@@ -748,6 +749,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        net: Net,
         networkManager: NetworkManager,
         remoteConfigProvider: RemoteConfigProviderImpl,
         tsAccountManager: TSAccountManager,
@@ -757,6 +759,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         self.dateProvider = dateProvider
         self.db = db
         self.keyValueStore = remoteConfigProvider.keyValueStore
+        self.net = net
         self.networkManager = networkManager
         self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
@@ -906,6 +909,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         )
 
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
+
+        net.setRemoteConfig(mergedConfig.netConfig())
 
         mergedConfig.logFlags()
     }
