@@ -233,7 +233,7 @@ open class ActionSheetController: OWSViewController {
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
         stackView.axis = .vertical
-        stackView.spacing = 10
+        stackView.spacing = 8
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = .init(margin: 16)
         stackView.insetsLayoutMarginsFromSafeArea = false
@@ -261,7 +261,7 @@ open class ActionSheetController: OWSViewController {
 #if compiler(>=6.2)
         if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
             let glassEffect = UIGlassEffect(style: .regular)
-            glassEffect.tintColor = UIColor.Signal.secondaryBackground.withAlphaComponent(0.2)
+            glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2/3)
             let background = UIVisualEffectView(effect: glassEffect)
             background.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
             return background
@@ -346,9 +346,11 @@ open class ActionSheetController: OWSViewController {
         headerStack.axis = .vertical
         headerStack.alignment = .leading
         headerStack.isLayoutMarginsRelativeArrangement = true
-        headerStack.layoutMargins = UIEdgeInsets(top: 8, leading: 12, bottom: 10, trailing: 12)
+        headerStack.layoutMargins = UIEdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 12)
         headerStack.spacing = 4
+
         stackView.addArrangedSubview(headerStack)
+        stackView.setCustomSpacing(20, after: headerStack)
 
         // Title
         if let title = title {
@@ -446,17 +448,12 @@ public class ActionSheetAction: NSObject {
             super.init(frame: .zero)
 
             var config = UIButton.Configuration.filled()
-            config.baseBackgroundColor = UIColor { traitCollection in
-                switch traitCollection.userInterfaceStyle {
-                case .dark: .white.withAlphaComponent(0.2)
-                default: .white.withAlphaComponent(0.8)
-                }
-            }
+            config.baseBackgroundColor = UIColor.Signal.secondaryFill
             config.cornerStyle = .capsule
             config.title = action.title
             config.baseForegroundColor = style.textColor
             config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody.medium())
-            config.contentInsets = .init(margin: 15)
+            config.contentInsets = .init(margin: 14)
             self.configuration = config
 
             addTarget(self, action: #selector(didTouchUpInside), for: .touchUpInside)
@@ -505,7 +502,7 @@ private class ActionSheetPresentationController: UIPresentationController {
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView.backgroundColor = Theme.backdropColor
+        backdropView.backgroundColor = UIColor.black.withAlphaComponent(0.16)
     }
 
     override func presentationTransitionWillBegin() {
