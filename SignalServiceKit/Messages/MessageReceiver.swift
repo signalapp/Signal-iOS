@@ -1097,6 +1097,13 @@ public final class MessageReceiver {
             }
         }
 
+        if dataMessage.pollCreate != nil || dataMessage.pollTerminate != nil || dataMessage.pollVote != nil {
+            guard FeatureFlags.pollReceive else {
+                Logger.warn("Polls not supported on this device")
+                return nil
+            }
+        }
+
         let pollCreate = dataMessage.pollCreate
         if let pollCreate, let question = pollCreate.question {
             guard question.count <= OWSPoll.Constants.maxCharacterLength
