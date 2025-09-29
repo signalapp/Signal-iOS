@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentContactShare: CVComponentBase, CVComponent {
+final public class CVComponentContactShare: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .contactShare }
 

@@ -32,7 +32,7 @@ public protocol KeychainStorage {
 
 // MARK: -
 
-public class KeychainStorageImpl: KeychainStorage {
+final public class KeychainStorageImpl: KeychainStorage {
     private let isUsingProductionService: Bool
 
     public init(isUsingProductionService: Bool) {

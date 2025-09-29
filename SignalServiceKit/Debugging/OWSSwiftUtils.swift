@@ -130,7 +130,7 @@ public func owsPrecondition(
 // MARK: -
 
 @objc
-public class OWSSwiftUtils: NSObject {
+final public class OWSSwiftUtils: NSObject {
     // This method can be invoked from Obj-C to exit the app.
     @objc
     public class func owsFailObjC(

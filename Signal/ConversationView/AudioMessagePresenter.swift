@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 
 // Defines the look of audio messages in the conversation view.
-class AudioMessagePresenter: AudioPresenter {
+final class AudioMessagePresenter: AudioPresenter {
     let name = "AudioMessageView"
     let isIncoming: Bool
     let playbackTimeLabel = CVLabel()

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class WallpaperStore {
+final public class WallpaperStore {
     public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")
 
     private enum Constants {

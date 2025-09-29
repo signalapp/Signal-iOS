@@ -7,7 +7,7 @@ import Foundation
 
 /// Represents an attachment that exists (or existed) on the media tier.
 /// May be downloaded as well, independent of its presence on the transit tier.
-public class AttachmentBackupPointer {
+final public class AttachmentBackupPointer {
 
     public let attachment: Attachment
 

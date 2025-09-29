@@ -6,7 +6,7 @@
 public import Contacts
 
 @objc(OWSContactEmail)
-public class OWSContactEmail: MTLModel, OWSContactField {
+final public class OWSContactEmail: MTLModel, OWSContactField {
 
     @objc(OWSContactEmailType)
     public enum `Type`: Int, CustomStringConvertible {

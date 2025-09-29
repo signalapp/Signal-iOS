@@ -10,7 +10,7 @@ import XCTest
 // LastResort
 //
 
-class KyberPreKeyStoreImplTest: XCTestCase {
+final class KyberPreKeyStoreImplTest: XCTestCase {
     var dateProvider: DateProvider!
     var currentDate = Date()
     var db = InMemoryDB()

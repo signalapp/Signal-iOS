@@ -66,7 +66,7 @@ public final class BulkDeleteInteractionJobQueue {
 
 // MARK: -
 
-private class BulkDeleteInteractionJobRunner: JobRunner {
+final private class BulkDeleteInteractionJobRunner: JobRunner {
     typealias JobRecordType = BulkDeleteInteractionJobRecord
 
     private enum Constants {
@@ -250,7 +250,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
 
 // MARK: -
 
-private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
+final private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = BulkDeleteInteractionJobRunner
 
     private let addressableMessageFinder: DeleteForMeAddressableMessageFinder

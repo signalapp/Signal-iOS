@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
+final public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
     var recipientSet: OrderedSet<PickedRecipient> = []
 
     public override var hasUnsavedChanges: Bool { !recipientSet.isEmpty }

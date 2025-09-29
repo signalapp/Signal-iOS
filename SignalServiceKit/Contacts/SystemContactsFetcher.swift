@@ -15,7 +15,7 @@ protocol ContactStoreAdaptee {
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
-public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
+final public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     private let contactStoreForLargeRequests = CNContactStore()
     private let contactStoreForSmallRequests = CNContactStore()
     private var changeHandler: (() -> Void)?
@@ -160,7 +160,7 @@ protocol SystemContactsFetcherDelegate: AnyObject {
     )
 }
 
-public class SystemContactsFetcher {
+final public class SystemContactsFetcher {
 
     private let serialQueue = DispatchQueue(label: "org.signal.contacts.system-fetcher")
 

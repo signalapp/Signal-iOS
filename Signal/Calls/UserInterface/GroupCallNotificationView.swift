@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 
-class GroupCallNotificationView: UIView {
+final class GroupCallNotificationView: UIView {
     private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
     private var callService: CallService { AppEnvironment.shared.callService }
@@ -153,7 +153,7 @@ extension GroupCallNotificationView: GroupCallObserver {
     }
 }
 
-private class BannerView: UIView {
+final private class BannerView: UIView {
     enum Action: Equatable { case join, leave }
 
     init(addresses: [SignalServiceAddress], action: Action) {

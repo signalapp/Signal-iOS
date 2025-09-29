@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class ConversationInternalViewController: OWSTableViewController2 {
+final public class ConversationInternalViewController: OWSTableViewController2 {
 
     private let thread: TSThread
 

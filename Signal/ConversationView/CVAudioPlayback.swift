@@ -27,7 +27,7 @@ protocol CVAudioPlayerListener {
 //     * The cell is scrolled offscreen and unloaded.
 //     * etc.
 // * Ensure thread safety.
-public class CVAudioPlayer: NSObject {
+final public class CVAudioPlayer: NSObject {
     // The currently playing audio, if any.
     private var _audioPlayback: CVAudioPlayback?
     private var audioPlayback: CVAudioPlayback? {
@@ -308,7 +308,7 @@ private protocol CVAudioPlaybackDelegate: AnyObject {
 // Used for playback of a given audio attachment.
 //
 // TODO: Should we combine this with AudioPlayer?
-private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
+final private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
 
     fileprivate weak var delegate: CVAudioPlaybackDelegate?
 

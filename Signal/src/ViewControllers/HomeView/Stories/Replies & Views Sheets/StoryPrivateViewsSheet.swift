@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class StoryPrivateViewsSheet: InteractiveSheetViewController {
+final class StoryPrivateViewsSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [viewsViewController.tableView] }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 

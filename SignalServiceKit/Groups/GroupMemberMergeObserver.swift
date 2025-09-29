@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class GroupMemberMergeObserverImpl: RecipientMergeObserver {
+final class GroupMemberMergeObserverImpl: RecipientMergeObserver {
     private let threadStore: ThreadStore
     private let groupMemberUpdater: GroupMemberUpdater
     private let groupMemberStore: GroupMemberStore

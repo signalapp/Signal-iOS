@@ -7,7 +7,7 @@ import SignalUI
 import SignalServiceKit
 import SwiftUI
 
-class QRCodeView: UIView {
+final class QRCodeView: UIView {
     private let qrCodeTintColor: QRCodeColor
 
     private let loadingSpinner = UIActivityIndicatorView()

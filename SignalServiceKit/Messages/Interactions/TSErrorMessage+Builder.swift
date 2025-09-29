@@ -4,7 +4,7 @@
 //
 
 @objcMembers
-public class TSErrorMessageBuilder: TSMessageBuilder {
+final public class TSErrorMessageBuilder: TSMessageBuilder {
     public let errorType: TSErrorMessageType
     public var recipientAddress: SignalServiceAddress?
     public var senderAddress: SignalServiceAddress?

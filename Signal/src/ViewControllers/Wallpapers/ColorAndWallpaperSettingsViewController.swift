@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
+final public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -363,7 +363,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
 // MARK: -
 
-private class MiniPreviewView: UIView {
+final private class MiniPreviewView: UIView {
     private let hasWallpaper: Bool
     private let chatColor: ColorOrGradientSetting
 

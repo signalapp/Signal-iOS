@@ -8,7 +8,7 @@ public import LibSignalClient
 
 private let lastPreKeyRotationDate = "lastKeyRotationDate"
 
-public class SignedPreKeyStoreImpl: LibSignalClient.SignedPreKeyStore {
+final public class SignedPreKeyStoreImpl: LibSignalClient.SignedPreKeyStore {
 
     private let identity: OWSIdentity
     private let keyStore: KeyValueStore

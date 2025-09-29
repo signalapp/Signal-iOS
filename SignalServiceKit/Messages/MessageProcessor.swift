@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-public class MessageProcessor {
+final public class MessageProcessor {
     public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")
 
     private var hasPendingEnvelopes: Bool {
@@ -378,7 +378,7 @@ private struct ProcessingRequest {
     }
 }
 
-private class RelatedProcessingRequests {
+final private class RelatedProcessingRequests {
     private(set) var processingRequests = [ProcessingRequest]()
 
     func add(_ processingRequest: ProcessingRequest) {
@@ -630,7 +630,7 @@ public enum EnvelopeSource {
 
 // MARK: -
 
-private class PendingEnvelopes {
+final private class PendingEnvelopes {
     private let unfairLock = UnfairLock()
     private var pendingEnvelopes = [ReceivedEnvelope]()
 

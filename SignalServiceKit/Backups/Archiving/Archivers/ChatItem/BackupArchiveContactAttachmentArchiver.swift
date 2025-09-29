@@ -5,7 +5,7 @@
 
 import Foundation
 
-internal class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
+final internal class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
     typealias RestoreInteractionResult = BackupArchive.RestoreInteractionResult
     private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>

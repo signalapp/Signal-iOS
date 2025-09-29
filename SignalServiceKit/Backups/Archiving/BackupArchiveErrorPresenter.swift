@@ -31,7 +31,7 @@ public protocol BackupArchiveErrorPresenter {
     func presentOverTopmostViewController(completion: @escaping () -> Void)
 }
 
-public class NoOpBackupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactory {
+final public class NoOpBackupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactory {
 
     public init() {}
 
@@ -43,7 +43,7 @@ public class NoOpBackupArchiveErrorPresenterFactory: BackupArchiveErrorPresenter
     }
 }
 
-public class NoOpBackupArchiveErrorPresenter: BackupArchiveErrorPresenter {
+final public class NoOpBackupArchiveErrorPresenter: BackupArchiveErrorPresenter {
 
     public init() {}
 

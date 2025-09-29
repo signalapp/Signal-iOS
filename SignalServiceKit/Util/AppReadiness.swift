@@ -188,7 +188,7 @@ public protocol AppReadinessSetter: AppReadiness {
     func setUIIsReady()
 }
 
-public class AppReadinessImpl: AppReadinessSetter {
+final public class AppReadinessImpl: AppReadinessSetter {
 
     public init() {}
 
@@ -329,7 +329,7 @@ public class AppReadinessImpl: AppReadinessSetter {
 }
 
 @objc
-public class AppReadinessObjcBridge: NSObject {
+final public class AppReadinessObjcBridge: NSObject {
 
     fileprivate static var readyFlag: ReadyFlag?
 

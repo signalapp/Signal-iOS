@@ -47,7 +47,7 @@ public extension OWSVerificationStateChangeMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
+final class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
 
     private let model: OWSVerificationStateChangeMessage
     public init(model: OWSVerificationStateChangeMessage) {

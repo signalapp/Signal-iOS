@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class CGPointExtensionsTest: XCTestCase {
+final class CGPointExtensionsTest: XCTestCase {
     func testPlusEquals() throws {
         var point = CGPoint(x: 1, y: 2)
         point += CGPoint(x: 3, y: 4)

@@ -6,7 +6,7 @@
 import Foundation
 
 @objc(Contact)
-public class Contact: NSObject, NSSecureCoding {
+final public class Contact: NSObject, NSSecureCoding {
     public static var supportsSecureCoding: Bool { true }
 
     public let cnContactId: String?

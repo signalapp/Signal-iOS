@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class CallMessagePushPayload: CustomStringConvertible {
+final public class CallMessagePushPayload: CustomStringConvertible {
     private static let identifierKey = "CallMessageRelayPayload"
     public let identifier: String
 
@@ -28,7 +28,7 @@ public class CallMessagePushPayload: CustomStringConvertible {
     }
 }
 
-public class CallMessageRelay {
+final public class CallMessageRelay {
     private static let pendingCallMessageStore = KeyValueStore(collection: "PendingCallMessageStore")
 
     public static func handleVoipPayload(_ payload: CallMessagePushPayload) {

@@ -20,7 +20,7 @@ public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate
 
 // MARK: -
 
-public class ConversationSearchController: NSObject {
+final public class ConversationSearchController: NSObject {
 
     public static let kMinimumSearchTextLength: UInt = 2
 
@@ -149,7 +149,7 @@ protocol SearchResultsBarDelegate: AnyObject {
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public class SearchResultsBar: UIView {
+final public class SearchResultsBar: UIView {
 
     weak var resultsBarDelegate: SearchResultsBarDelegate?
 

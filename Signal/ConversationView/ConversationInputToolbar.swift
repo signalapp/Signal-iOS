@@ -58,7 +58,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
     func showUnblockConversationUI(completion: ((Bool) -> Void)?)
 }
 
-public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewDelegate {
+final public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewDelegate {
 
     private var conversationStyle: ConversationStyle
     private let spoilerState: SpoilerRenderState

@@ -8,7 +8,7 @@ import SignalServiceKit
 public import SignalUI
 
 /// Presents information about legacy (V1) and new (V2) groups.
-public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController {
+final public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController {
 
     public enum Mode {
         case explainUnsupportedLegacyGroups

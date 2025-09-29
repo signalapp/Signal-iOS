@@ -10,7 +10,7 @@ import SignalServiceKit
 // * Tries to fail quickly to avoid conflicts with other GRs, especially pans/swipes.
 // * Captures a bunch of useful "pan state" that makes using this GR much easier
 //   than UIPanGestureRecognizer.
-class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
+final class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
 
     weak var referenceView: UIView?
 

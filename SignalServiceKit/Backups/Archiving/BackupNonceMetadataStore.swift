@@ -138,7 +138,7 @@ extension BackupNonce.MetadataHeader {
     }
 }
 
-public class BackupNonceMetadataStore {
+final public class BackupNonceMetadataStore {
 
     private let kvStore = KeyValueStore(collection: "BackupNonceMetadataStore")
 

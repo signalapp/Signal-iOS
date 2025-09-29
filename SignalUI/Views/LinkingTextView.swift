@@ -6,7 +6,7 @@
 import SafariServices
 import SignalServiceKit
 
-public class LinkingTextView: UITextView {
+final public class LinkingTextView: UITextView {
 
     public var shouldInteractWithURLOverride: ((URL) -> Bool)?
 

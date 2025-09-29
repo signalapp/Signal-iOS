@@ -11,7 +11,7 @@ import Foundation
 /// taking Response objects that it uses to respond to requests in FIFO order.
 /// Every request made should have a response added to this mock, or it will
 /// fatalError.
-public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
+final public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
 
     public struct Response {
         let matcher: (TSRequest) -> Bool

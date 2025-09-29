@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class PaymentFinder {
+final public class PaymentFinder {
 
     public class func paymentModels(paymentStates: [TSPaymentState],
                                     transaction: DBReadTransaction) -> [TSPaymentModel] {

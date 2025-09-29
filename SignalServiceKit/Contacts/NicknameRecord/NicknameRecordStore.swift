@@ -15,7 +15,7 @@ public protocol NicknameRecordStore {
     func delete(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
 }
 
-public class NicknameRecordStoreImpl: NicknameRecordStore {
+final public class NicknameRecordStoreImpl: NicknameRecordStore {
     public init() {}
 
     // MARK: Read

@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class MessageSelectionView: ManualLayoutView {
+final public class MessageSelectionView: ManualLayoutView {
 
     public var isSelected: Bool = false {
         didSet {

@@ -153,7 +153,7 @@ final class AuthorMergeHelperBuilder {
 
 }
 
-private class AuthorMergeHelperBuilderBatch {
+final private class AuthorMergeHelperBuilderBatch {
     private let recipientDatabaseTable: RecipientDatabaseTable
 
     private var phoneNumberAciStringCache = [String: String?]()
@@ -227,7 +227,7 @@ class _AuthorMergeHelperBuilder_ModelReadCachesWrapper: _AuthorMergeHelperBuilde
 
 #if TESTABLE_BUILD
 
-class AuthorMergeHelperBuilder_MockModelReadCaches: _AuthorMergeHelperBuilder_ModelReadCachesShim {
+final class AuthorMergeHelperBuilder_MockModelReadCaches: _AuthorMergeHelperBuilder_ModelReadCachesShim {
     func evacuateAllCaches() {}
 }
 

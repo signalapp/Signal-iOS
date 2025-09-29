@@ -65,7 +65,7 @@ enum CDNEndpoint: UInt32, CaseIterable {
     case cdn3 = 3
 }
 
-class AttachmentUploadManagerMockHelper {
+final class AttachmentUploadManagerMockHelper {
     let mockAccountKeyStore = AccountKeyStore(
         backupSettingsStore: BackupSettingsStore(),
     )

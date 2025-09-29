@@ -98,7 +98,7 @@ extension StickerMetadata {
     }
 }
 
-public class DecryptedStickerMetadata: StickerMetadata {
+final public class DecryptedStickerMetadata: StickerMetadata {
 
     public let stickerInfo: StickerInfo
     public let stickerType: StickerType
@@ -134,7 +134,7 @@ public class DecryptedStickerMetadata: StickerMetadata {
     }
 }
 
-public class EncryptedStickerMetadata: StickerMetadata {
+final public class EncryptedStickerMetadata: StickerMetadata {
 
     public let stickerInfo: StickerInfo
     public let stickerType: StickerType

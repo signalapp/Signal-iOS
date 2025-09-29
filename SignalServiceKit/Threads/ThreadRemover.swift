@@ -18,7 +18,7 @@ public protocol ThreadRemover {
     func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction)
 }
 
-class ThreadRemoverImpl: ThreadRemover {
+final class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
@@ -119,11 +119,11 @@ class _ThreadRemoverImpl_DatabaseStorageWrapper: _ThreadRemoverImpl_DatabaseStor
 
 #if TESTABLE_BUILD
 
-class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {
+final class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {
     func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
 }
 
-class ThreadRemover_MockDatabaseStorage: ThreadRemoverImpl.Shims.DatabaseStorage {
+final class ThreadRemover_MockDatabaseStorage: ThreadRemoverImpl.Shims.DatabaseStorage {
     func updateIdMapping(thread: TSThread, tx: DBWriteTransaction) {}
 }
 

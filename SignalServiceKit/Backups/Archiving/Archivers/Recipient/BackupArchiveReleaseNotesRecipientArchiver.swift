@@ -8,7 +8,7 @@
 /// - Important
 /// The Release Notes Channel has yet to be built on iOS, and consequently this
 /// class is implemented with stubs.
-public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 

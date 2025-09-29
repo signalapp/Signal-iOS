@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class AudioMessageView: ManualStackView {
+final class AudioMessageView: ManualStackView {
     private enum Constants {
         static let animationSize: CGFloat = 40
         static let waveformHeight: CGFloat = 32

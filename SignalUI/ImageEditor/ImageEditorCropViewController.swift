@@ -20,7 +20,7 @@ private extension CGFloat {
 // MARK: -
 
 // A view for editing text item in image editor.
-class ImageEditorCropViewController: OWSViewController {
+final class ImageEditorCropViewController: OWSViewController {
 
     private let model: ImageEditorModel
 

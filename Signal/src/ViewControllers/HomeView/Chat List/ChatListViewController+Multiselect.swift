@@ -374,7 +374,7 @@ extension ChatListViewController {
 
 // MARK: - object encapsulating the complete state of the MultiSelect process
 
-public class MultiSelectState {
+final public class MultiSelectState {
 
     static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
 

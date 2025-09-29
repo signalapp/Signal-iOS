@@ -12,7 +12,7 @@ protocol GroupAttributesViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-class GroupAttributesViewController: OWSTableViewController2 {
+final class GroupAttributesViewController: OWSTableViewController2 {
 
     public enum EditAction {
         case none

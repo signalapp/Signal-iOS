@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class OWSFileSystemTest: XCTestCase {
+final class OWSFileSystemTest: XCTestCase {
     func testFreeSpaceInBytes() throws {
         let path = URL(fileURLWithPath: "/tmp")
         let result = try XCTUnwrap(OWSFileSystem.freeSpaceInBytes(forPath: path))

@@ -7,7 +7,7 @@ extension Notification.Name {
     public static let inactivePrimaryDeviceChanged = Notification.Name("inactivePrimaryDeviceChanged")
 }
 
-public class InactivePrimaryDeviceStore: NSObject {
+final public class InactivePrimaryDeviceStore: NSObject {
     private enum StoreKeys {
         static let hasInactivePrimaryDeviceAlert: String = "hasInactivePrimaryDevice"
     }

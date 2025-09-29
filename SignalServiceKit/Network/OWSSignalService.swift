@@ -10,7 +10,7 @@ extension Notification.Name {
     public static let isCensorshipCircumventionActiveDidChange = Notification.Name("NSNotificationNameIsCensorshipCircumventionActiveDidChange")
 }
 
-public class OWSSignalService: OWSSignalServiceProtocol {
+final public class OWSSignalService: OWSSignalServiceProtocol {
     private let keyValueStore = KeyValueStore(collection: "kTSStorageManager_OWSSignalService")
     private let libsignalNet: Net?
 

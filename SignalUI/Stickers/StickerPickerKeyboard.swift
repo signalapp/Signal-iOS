@@ -7,7 +7,7 @@ public import SignalServiceKit
 
 // MARK: - StickerKeyboard
 
-public class StickerKeyboard: CustomKeyboard {
+final public class StickerKeyboard: CustomKeyboard {
 
     public typealias StickerKeyboardDelegate = StickerPickerDelegate & StickerPacksToolbarDelegate
     public weak var delegate: StickerKeyboardDelegate?

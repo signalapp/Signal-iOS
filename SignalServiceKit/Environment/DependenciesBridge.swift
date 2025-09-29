@@ -22,7 +22,7 @@ import Foundation
 ///
 /// It is preferred **NOT** to use this class, and to take dependencies on init instead, but it is
 /// better to use this class than to use `Dependencies`.
-public class DependenciesBridge {
+final public class DependenciesBridge {
 
     /// Only available after calling `setupSingleton(...)`.
     public static var shared: DependenciesBridge {

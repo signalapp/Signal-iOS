@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class StickerPackViewController: OWSViewController {
+final public class StickerPackViewController: OWSViewController {
 
     // MARK: Properties
 
@@ -414,7 +414,7 @@ public class StickerPackViewController: OWSViewController {
 
 // MARK: -
 
-private class StickerPackViewControllerAnimationController: UIPresentationController {
+final private class StickerPackViewControllerAnimationController: UIPresentationController {
 
     let backdropView: UIView = UIView()
 

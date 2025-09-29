@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class HttpHeadersTest: XCTestCase {
+final class HttpHeadersTest: XCTestCase {
     func testFormatAcceptLanguageHeader() throws {
         func chars(_ str: String) -> [String] {
             str.map { String($0) }

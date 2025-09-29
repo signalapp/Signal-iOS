@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
+final class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     private enum UsernameLinkState {
         case available(
             usernameLink: Usernames.UsernameLink,

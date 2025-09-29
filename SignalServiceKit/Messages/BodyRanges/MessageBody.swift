@@ -9,7 +9,7 @@ public import LibSignalClient
 /// MessageBody is a container for a message's body as well as the `MessageBodyRanges` that
 /// apply to it.
 /// Most of the work is done by `MessageBodyRanges`; this is just a container for the text too.
-public class MessageBody: NSObject, NSCopying, NSSecureCoding {
+final public class MessageBody: NSObject, NSCopying, NSSecureCoding {
     typealias Style = MessageBodyRanges.Style
     typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 

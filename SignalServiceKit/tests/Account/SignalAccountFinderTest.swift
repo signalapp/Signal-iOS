@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalAccountFinderTest: SSKBaseTest {
+final class SignalAccountFinderTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
         // Create local account.

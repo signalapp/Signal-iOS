@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
+final public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 
     private var captchaView: CaptchaView?
 

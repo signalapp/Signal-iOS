@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 public import XCTest
 
-public class UnknownEnumCodableTest: XCTestCase {
+final public class UnknownEnumCodableTest: XCTestCase {
 
     enum StringEnum: String, UnknownEnumCodable {
         case first

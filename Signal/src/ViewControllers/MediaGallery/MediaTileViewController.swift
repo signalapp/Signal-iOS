@@ -52,7 +52,7 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
     }
 }
 
-class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
+final class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
 
     private typealias Cell = (UICollectionViewCell & MediaGalleryCollectionViewCell)
     private typealias CollectionViewLayout = UICollectionViewFlowLayout & ScrollPositionPreserving
@@ -1277,7 +1277,7 @@ extension MediaTileViewController: MediaPresentationContextProvider {
 
 // MARK: - Private Helper Classes
 
-private class MediaGalleryStaticHeader: UICollectionReusableView {
+final private class MediaGalleryStaticHeader: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGalleryStaticHeader"
 
@@ -1303,7 +1303,7 @@ private class MediaGalleryStaticHeader: UICollectionReusableView {
     }
 }
 
-private class MediaGalleryDateHeader: UICollectionReusableView {
+final private class MediaGalleryDateHeader: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGalleryDateHeader"
 
@@ -1355,7 +1355,7 @@ private class MediaGalleryDateHeader: UICollectionReusableView {
     }
 }
 
-private class MediaGalleryEmptyContentView: UICollectionReusableView {
+final private class MediaGalleryEmptyContentView: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGalleryEmptyContentView"
 
@@ -1794,7 +1794,7 @@ private extension IndexPath {
     }
 }
 
-private class MediaTileCollectionViewCell: PhotoGridViewCell, MediaGalleryCollectionViewCell {
+final private class MediaTileCollectionViewCell: PhotoGridViewCell, MediaGalleryCollectionViewCell {
 
     var item: MediaGalleryCellItem?
 

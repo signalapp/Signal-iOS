@@ -8,7 +8,7 @@ import MessageUI
 public import SignalServiceKit
 import SwiftUI
 
-public class RecipientPickerViewController: OWSViewController, OWSNavigationChildController {
+final public class RecipientPickerViewController: OWSViewController, OWSNavigationChildController {
 
     public enum SelectionMode {
         case `default`
@@ -1509,7 +1509,7 @@ extension RecipientPickerViewController {
 
 // MARK: - ContactAccessDeniedReminderTableViewCell
 
-private class ContactAccessDeniedReminderTableViewCell: UITableViewCell {
+final private class ContactAccessDeniedReminderTableViewCell: UITableViewCell {
     private let tapAction: () -> Void
 
     init(openSettingsAction: @escaping () -> Void) {
@@ -1563,7 +1563,7 @@ extension ContactAccessDeniedReminderTableViewCell: CustomBackgroundColorCell {
 
 // MARK: - ContactAccessLimitedReminderTableViewCell
 
-class ContactAccessLimitedReminderTableViewCell: UITableViewCell {}
+final class ContactAccessLimitedReminderTableViewCell: UITableViewCell {}
 
 extension ContactAccessLimitedReminderTableViewCell: CustomBackgroundColorCell {
     func customBackgroundColor(forceDarkMode: Bool) -> UIColor {

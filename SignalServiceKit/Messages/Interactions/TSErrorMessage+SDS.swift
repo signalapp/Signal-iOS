@@ -47,7 +47,7 @@ public extension TSErrorMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSErrorMessageSerializer: SDSSerializer {
+final class TSErrorMessageSerializer: SDSSerializer {
 
     private let model: TSErrorMessage
     public init(model: TSErrorMessage) {

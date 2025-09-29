@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class VoiceMessageTooltip: TooltipView {
+final class VoiceMessageTooltip: TooltipView {
 
     class func present(fromView: UIView,
                        widthReferenceView: UIView,

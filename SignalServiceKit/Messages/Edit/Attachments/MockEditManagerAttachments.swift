@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockEditManagerAttachments: EditManagerAttachments {
+final public class MockEditManagerAttachments: EditManagerAttachments {
 
     public init() {}
 

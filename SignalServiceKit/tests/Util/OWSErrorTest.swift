@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSErrorTest: XCTestCase {
+final class OWSErrorTest: XCTestCase {
 
     func testErrorProperties1() {
         enum FooError: Error {

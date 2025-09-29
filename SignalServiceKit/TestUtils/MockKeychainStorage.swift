@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockKeychainStorage: KeychainStorage {
+final public class MockKeychainStorage: KeychainStorage {
     private let values = AtomicDictionary<String, Data>([:], lock: .init())
 
     private func buildKey(service: String, key: String) -> String {

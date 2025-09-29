@@ -25,7 +25,7 @@ import SignalServiceKit
 /// It will also attempt to determine if the most recent calls in this state are
 /// still ongoing, and if so will notify the user as if the call had just
 /// started.
-class GroupCallRecordRingingCleanupManager {
+final class GroupCallRecordRingingCleanupManager {
     private enum Constants {
         /// The max number of ringing calls to peek to determine if they are
         /// still ongoing. Any calls beyond this limit will not be peeked, and
@@ -185,7 +185,7 @@ private protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim
     )
 }
 
-private class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
+final private class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
     private let notificationPresenter: any NotificationPresenter
 
     init(notificationPresenter: any NotificationPresenter) {

@@ -1323,7 +1323,7 @@ private protocol AmountsDelegate: AnyObject {
 
 // MARK: -
 
-private class Amounts {
+final private class Amounts {
 
     weak var delegate: AmountsDelegate?
 
@@ -1637,7 +1637,7 @@ private struct InputString: Equatable {
 // This view's contents must adapt to a wide variety of form factors.
 // We use vertical spacers of equal height to ensure the layout is
 // both responsive and balanced.
-class SpacerFactory {
+final class SpacerFactory {
     private var hSpacers = [UIView]()
     private var vSpacers = [UIView]()
 

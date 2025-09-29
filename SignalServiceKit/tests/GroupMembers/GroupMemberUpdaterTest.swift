@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryShims {
+final private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryShims {
     var fetchableLatestInteractionTimestamps = [(
         groupThreadId: String,
         serviceId: String,
@@ -32,7 +32,7 @@ private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryS
     }
 }
 
-class GroupMemberUpdaterTest: XCTestCase {
+final class GroupMemberUpdaterTest: XCTestCase {
     private lazy var mockGroupMemberUpdaterTemporaryShims = MockGroupMemberUpdaterTemporaryShims()
     private lazy var mockGroupMemberStore = MockGroupMemberStore()
     private lazy var mockPhoneNumberVisibilityFetcher = MockPhoneNumberVisibilityFetcher()

@@ -307,7 +307,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 /// This class snoops on the "create" and "update" methods, so we can verify
 /// they're being called – the real implementation of those methods are tested
 /// separately.
-private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManagerImpl {
+final private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManagerImpl {
     var didAskToCreateRecord: CallRecord.CallStatus.IndividualCallStatus?
     var didAskToUpdateRecord: CallRecord.CallStatus.IndividualCallStatus?
 

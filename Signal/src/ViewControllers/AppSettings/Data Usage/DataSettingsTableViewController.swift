@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class DataSettingsTableViewController: OWSTableViewController2 {
+final class DataSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

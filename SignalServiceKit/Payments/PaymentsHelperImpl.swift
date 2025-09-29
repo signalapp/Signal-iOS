@@ -5,7 +5,7 @@
 
 public import LibSignalClient
 
-public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
+final public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
     public init() {
         self.observeNotifications()

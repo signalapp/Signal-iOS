@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransition, UIGestureRecognizerDelegate {
+final class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransition, UIGestureRecognizerDelegate {
     weak var pageViewController: StoryPageViewController!
     lazy var panGestureRecognizer = UIPanGestureRecognizer(
         target: self,

@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class FakeAdapter: ModelCacheAdapter<String, String> {
+final private class FakeAdapter: ModelCacheAdapter<String, String> {
     var storage = [String: String]()
 
     override func read(key: String, transaction: DBReadTransaction) -> String? {
@@ -28,7 +28,7 @@ private class FakeAdapter: ModelCacheAdapter<String, String> {
     }
 }
 
-class ModelReadCacheTest: XCTestCase {
+final class ModelReadCacheTest: XCTestCase {
     private var adapter: FakeAdapter!
     private var cache: ModelReadCache<String, String>!
     private var db: InMemoryDB!

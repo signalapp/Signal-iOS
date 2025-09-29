@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class MessageRequestPendingReceipts: PendingReceiptRecorder {
+final public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
     public init(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
@@ -185,7 +185,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
 // MARK: - Persistence
 
-public class PendingReceiptFinder {
+final public class PendingReceiptFinder {
     public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) throws {
         guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")

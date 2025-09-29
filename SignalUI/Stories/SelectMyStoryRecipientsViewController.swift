@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
+final public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread
     let mode: TSThreadStoryViewMode
     var recipientSet: OrderedSet<PickedRecipient>

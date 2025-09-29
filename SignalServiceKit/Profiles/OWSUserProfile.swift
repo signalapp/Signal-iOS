@@ -8,7 +8,7 @@ public import GRDB
 public import LibSignalClient
 
 @objc
-public class OWSUserProfileBadgeInfo: NSObject, Codable {
+final public class OWSUserProfileBadgeInfo: NSObject, Codable {
     @objc
     public let badgeId: String
 

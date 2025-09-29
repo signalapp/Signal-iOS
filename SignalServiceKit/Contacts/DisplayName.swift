@@ -233,7 +233,7 @@ public struct ComparableDisplayName {
     }
 }
 
-public class CollatableComparableDisplayName {
+final public class CollatableComparableDisplayName {
     private let rawValue: ComparableDisplayName
 
     public init(_ rawValue: ComparableDisplayName) {

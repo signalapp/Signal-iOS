@@ -89,7 +89,7 @@ public enum LinkPreviewLinkType {
 
 // MARK: -
 
-public class LinkPreviewLoading: LinkPreviewState {
+final public class LinkPreviewLoading: LinkPreviewState {
 
     public let linkType: LinkPreviewLinkType
 
@@ -147,7 +147,7 @@ public class LinkPreviewLoading: LinkPreviewState {
 
 // MARK: -
 
-public class LinkPreviewDraft: LinkPreviewState {
+final public class LinkPreviewDraft: LinkPreviewState {
 
     let linkPreviewDraft: OWSLinkPreviewDraft
 
@@ -236,7 +236,7 @@ public class LinkPreviewDraft: LinkPreviewState {
 
 // MARK: -
 
-public class LinkPreviewSent: LinkPreviewState {
+final public class LinkPreviewSent: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
     private let imageAttachment: ReferencedAttachment?

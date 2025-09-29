@@ -24,7 +24,7 @@ import Foundation
 //   blocks should be enqueued and performed on the main thread.
 //   Other flags will want to do their work off the main thread.
 @objc
-public class ReadyFlag: NSObject {
+final public class ReadyFlag: NSObject {
 
     private let unfairLock = UnfairLock()
 

@@ -13,7 +13,7 @@ import SafariServices
 
 // MARK: - Profile badge lookup
 
-public class ProfileBadgeLookup {
+final public class ProfileBadgeLookup {
     let boostBadge: ProfileBadge?
     let giftBadge: ProfileBadge?
     let badgesBySubscriptionLevel: [UInt: ProfileBadge]
@@ -67,7 +67,7 @@ public class ProfileBadgeLookup {
 
 // MARK: - Currency picker view
 
-public class DonationCurrencyPickerButton: UIStackView {
+final public class DonationCurrencyPickerButton: UIStackView {
     init(
         currentCurrencyCode: Currency.Code,
         hasLabel: Bool,
@@ -133,7 +133,7 @@ public class DonationCurrencyPickerButton: UIStackView {
 
 // MARK: - Gift badge cell view
 
-public class GiftBadgeCellView: UIStackView {
+final public class GiftBadgeCellView: UIStackView {
     init(badge: ProfileBadge, price: FiatMoney) {
         super.init(frame: .zero)
 

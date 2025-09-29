@@ -100,7 +100,7 @@ struct VisibleBadgeResolver {
 
 }
 
-class BadgeThanksSheet: OWSTableSheetViewController {
+final class BadgeThanksSheet: OWSTableSheetViewController {
 
     enum ThanksType {
         /// We redeemed a badge that was paid for via bank transfer.

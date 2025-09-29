@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class OutgoingDeviceTransferNavigationController: UINavigationController {
+final class OutgoingDeviceTransferNavigationController: UINavigationController {
 
     init() {
         super.init(nibName: nil, bundle: nil)

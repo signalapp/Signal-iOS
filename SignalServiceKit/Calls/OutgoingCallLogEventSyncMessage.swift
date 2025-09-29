@@ -8,7 +8,7 @@
 ///
 /// - SeeAlso ``IncomingCallLogEventSyncMessageManager``
 @objc(OutgoingCallLogEventSyncMessage)
-public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
+final public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 
     /// The call log event.
     ///

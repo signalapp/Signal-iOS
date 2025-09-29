@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class EmojiReactionPickerConfigViewController: UIViewController {
+final public class EmojiReactionPickerConfigViewController: UIViewController {
 
     private lazy var reactionPicker: MessageReactionPicker = {
         return MessageReactionPicker(

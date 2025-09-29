@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import UIKit
 
-class BlurredToolbarContainer: UIView {
+final class BlurredToolbarContainer: UIView {
     let toolbar = UIToolbar()
     private var blurEffectView: UIVisualEffectView?
 

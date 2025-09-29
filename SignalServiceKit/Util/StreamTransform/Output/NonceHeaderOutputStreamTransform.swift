@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class NonceHeaderOutputStreamTransform: StreamTransform {
+final public class NonceHeaderOutputStreamTransform: StreamTransform {
 
     private let metadataHeader: BackupNonce.MetadataHeader
 

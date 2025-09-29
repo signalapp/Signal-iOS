@@ -110,7 +110,7 @@ public class BaseStickerPackDataSource: NSObject {
 // MARK: -
 
 // Supplies sticker pack data for installed sticker packs.
-public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
+final public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
     // MARK: Properties
 
@@ -291,7 +291,7 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
 //
 // It uses a InstalledStickerPackDataSource internally so that
 // we use any installed data, if possible.
-public class TransientStickerPackDataSource: BaseStickerPackDataSource {
+final public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     // MARK: Properties
 
@@ -592,7 +592,7 @@ extension TransientStickerPackDataSource: StickerPackDataSourceDelegate {
 // MARK: -
 
 // Supplies sticker pack data for recently used stickers.
-public class RecentStickerPackDataSource: BaseStickerPackDataSource {
+final public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
     public override init() {
         super.init()

@@ -16,7 +16,7 @@ protocol GroupViewHelperDelegate: AnyObject {
 
 // MARK: -
 
-class GroupViewHelper {
+final class GroupViewHelper {
 
     weak var delegate: GroupViewHelperDelegate?
 

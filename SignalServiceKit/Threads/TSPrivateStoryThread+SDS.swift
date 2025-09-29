@@ -47,7 +47,7 @@ public extension TSPrivateStoryThread {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSPrivateStoryThreadSerializer: SDSSerializer {
+final class TSPrivateStoryThreadSerializer: SDSSerializer {
 
     private let model: TSPrivateStoryThread
     public init(model: TSPrivateStoryThread) {

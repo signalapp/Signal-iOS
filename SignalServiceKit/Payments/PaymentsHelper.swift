@@ -141,7 +141,7 @@ public enum PaymentsState: Equatable {
 
 // MARK: -
 
-public class MockPaymentsHelper {}
+final public class MockPaymentsHelper {}
 
 // MARK: -
 

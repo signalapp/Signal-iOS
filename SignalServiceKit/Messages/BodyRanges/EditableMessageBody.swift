@@ -24,7 +24,7 @@ public protocol EditableMessageBodyDelegate: AnyObject {
     func didInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph)
 }
 
-public class EditableMessageBodyTextStorage: NSTextStorage {
+final public class EditableMessageBodyTextStorage: NSTextStorage {
 
     public typealias Style = MessageBodyRanges.Style
     public typealias SingleStyle = MessageBodyRanges.SingleStyle

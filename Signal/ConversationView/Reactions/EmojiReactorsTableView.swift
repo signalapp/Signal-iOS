@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class EmojiReactorsTableView: UITableView {
+final class EmojiReactorsTableView: UITableView {
     struct ReactorItem {
         let address: SignalServiceAddress
         let displayName: String
@@ -68,7 +68,7 @@ extension EmojiReactorsTableView: UITableViewDataSource {
     }
 }
 
-private class EmojiReactorCell: UITableViewCell {
+final private class EmojiReactorCell: UITableViewCell {
     static let reuseIdentifier = "EmojiReactorCell"
 
     let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)

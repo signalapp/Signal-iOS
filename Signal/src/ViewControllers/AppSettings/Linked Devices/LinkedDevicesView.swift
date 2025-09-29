@@ -16,7 +16,7 @@ private var shouldShowDeviceIdsBecauseUserIsInternal: Bool { DebugFlags.internal
 // MARK: - LinkedDevicesViewModel
 
 @MainActor
-class LinkedDevicesViewModel: ObservableObject {
+final class LinkedDevicesViewModel: ObservableObject {
 
     @Published fileprivate var editMode: EditMode = .inactive
     @Published fileprivate var displayableDevices: [DisplayableDevice] = []
@@ -370,7 +370,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
 
 // MARK: - LinkedDevicesHostingController
 
-class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
+final class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
     private let viewModel: LinkedDevicesViewModel
 
     private var subscriptions = Set<AnyCancellable>()
@@ -990,7 +990,7 @@ struct LinkedDevicesView: View {
 
 // MARK: - EditDeviceNameViewController
 
-class EditDeviceNameViewController: NameEditorViewController {
+final class EditDeviceNameViewController: NameEditorViewController {
     override class var nameByteLimit: Int { 225 }
     override class var nameGlyphLimit: Int { 50 }
 

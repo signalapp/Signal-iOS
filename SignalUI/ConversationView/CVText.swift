@@ -274,7 +274,7 @@ public struct CVTextViewConfig {
 
 // MARK: -
 
-public class CVText {
+final public class CVText {
     public typealias CacheKey = String
 
     private static var cacheMeasurements = true

@@ -128,7 +128,7 @@ public enum StorageServiceManagerManifestRotationMode {
 
 // MARK: -
 
-public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
+final public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     private let appReadiness: AppReadiness
 
@@ -666,7 +666,7 @@ private struct PendingMutations {
 
 // MARK: -
 
-class StorageServiceOperation {
+final class StorageServiceOperation {
 
     private static let migrationStore: KeyValueStore = KeyValueStore(collection: "StorageServiceMigration")
     private static let versionKey = "Version"

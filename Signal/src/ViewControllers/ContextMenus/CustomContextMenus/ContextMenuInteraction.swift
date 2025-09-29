@@ -265,7 +265,7 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
 }
 
 // Custom subclass for chat history CVC interactions
-public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
+final public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public let itemViewModel: CVItemViewModelImpl
     public let thread: TSThread

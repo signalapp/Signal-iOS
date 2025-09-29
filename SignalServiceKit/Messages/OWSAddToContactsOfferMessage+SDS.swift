@@ -47,7 +47,7 @@ public extension OWSAddToContactsOfferMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
+final class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSAddToContactsOfferMessage
     public init(model: OWSAddToContactsOfferMessage) {

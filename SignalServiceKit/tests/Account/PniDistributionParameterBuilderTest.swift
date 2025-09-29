@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class PniDistributionParameterBuilderTest: XCTestCase {
+final class PniDistributionParameterBuilderTest: XCTestCase {
     private var messageSenderMock: MessageSenderMock!
     private var pniKyberPreKeyStoreMock: KyberPreKeyStoreImpl!
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
@@ -137,7 +137,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
 // MARK: - MessageSender
 
-private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.MessageSender {
+final private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.MessageSender {
     private let db: any DB
     init(db: any DB) {
         self.db = db

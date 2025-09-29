@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class TappableStackView: UIStackView {
+final public class TappableStackView: UIStackView {
     let actionBlock: (() -> Void)
 
     // MARK: - Initializers

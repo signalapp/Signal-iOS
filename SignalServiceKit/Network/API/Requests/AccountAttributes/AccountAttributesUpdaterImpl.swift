@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
+final public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let accountAttributesGenerator: AccountAttributesGenerator
     private let appReadiness: AppReadiness
     private let appVersion: AppVersion

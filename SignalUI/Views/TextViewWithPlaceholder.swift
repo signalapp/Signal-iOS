@@ -29,7 +29,7 @@ public extension TextViewWithPlaceholderDelegate {
 
 // MARK: -
 
-public class TextViewWithPlaceholder: UIView {
+final public class TextViewWithPlaceholder: UIView {
     // MARK: - Public Properties
 
     /// A delegate to receive callbacks on any data updates

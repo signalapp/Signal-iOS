@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ErrorTest: XCTestCase {
+final class ErrorTest: XCTestCase {
 
     func testShortDescription() {
         let error = CocoaError(.fileReadNoSuchFile, userInfo: [ NSUnderlyingErrorKey: POSIXError(.ENOENT) ])

@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
+final public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
 
     public let type: SentMessageTranscriptType
 

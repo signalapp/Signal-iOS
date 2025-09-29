@@ -734,7 +734,7 @@ private extension MessageLoader {
 
 // MARK: -
 
-private class ItemBuilder {
+final private class ItemBuilder {
     let interaction: TSInteraction
     let thread: TSThread
     let threadAssociatedData: ThreadAssociatedData
@@ -783,7 +783,7 @@ private class ItemBuilder {
 
 // MARK: -
 
-class DisplayNameCache {
+final class DisplayNameCache {
     private var displayNameCache = [ServiceId: DisplayName]()
 
     private func _displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName {

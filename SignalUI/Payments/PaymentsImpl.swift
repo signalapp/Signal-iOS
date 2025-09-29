@@ -8,7 +8,7 @@ public import LibSignalClient
 public import MobileCoin
 public import SignalServiceKit
 
-public class PaymentsImpl: NSObject, PaymentsSwift {
+final public class PaymentsImpl: NSObject, PaymentsSwift {
 
     private let appReadiness: AppReadiness
     private var refreshBalanceEvent: RefreshEvent?
@@ -1041,7 +1041,7 @@ public extension PaymentsImpl {
 
 // MARK: -
 
-public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
+final public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         let payments = SUIEnvironment.shared.paymentsRef as! PaymentsImpl
 

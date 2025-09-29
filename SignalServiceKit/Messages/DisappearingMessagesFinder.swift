@@ -5,7 +5,7 @@
 
 import Foundation
 
-class DisappearingMessagesFinder {
+final class DisappearingMessagesFinder {
     public func fetchAllMessageUniqueIdsWhichFailedToStartExpiring(tx: DBReadTransaction) -> [String] {
         InteractionFinder.fetchAllMessageUniqueIdsWhichFailedToStartExpiring(transaction: tx)
     }

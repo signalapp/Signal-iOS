@@ -6,7 +6,7 @@
 import Contacts
 public import SignalServiceKit
 
-public class ContactFieldViewHelper {
+final public class ContactFieldViewHelper {
 
     public class func contactFieldView(forAvatarImage avatarImage: UIImage) -> UIView {
         let avatarView = AvatarImageView()

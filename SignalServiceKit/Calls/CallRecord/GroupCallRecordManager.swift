@@ -97,7 +97,7 @@ public extension GroupCallRecordManager {
     }
 }
 
-public class GroupCallRecordManagerImpl: GroupCallRecordManager {
+final public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
     private let outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
@@ -297,7 +297,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
 // MARK: -
 
-class GroupCallRecordStatusTransitionManager {
+final class GroupCallRecordStatusTransitionManager {
     typealias GroupCallStatus = CallRecord.CallStatus.GroupCallStatus
 
     enum TransitionQueryResult {

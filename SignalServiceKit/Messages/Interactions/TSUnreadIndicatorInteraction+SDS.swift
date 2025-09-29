@@ -47,7 +47,7 @@ public extension TSUnreadIndicatorInteraction {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
+final class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
 
     private let model: TSUnreadIndicatorInteraction
     public init(model: TSUnreadIndicatorInteraction) {

@@ -15,7 +15,7 @@ public enum ProfileRequestError: Error {
 
 // MARK: -
 
-public class ProfileFetcherJob {
+final public class ProfileFetcherJob {
     private let serviceId: ServiceId
     private let groupIdContext: GroupIdentifier?
     private let mustFetchNewCredential: Bool

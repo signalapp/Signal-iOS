@@ -21,7 +21,7 @@ extension GroupAttributesEditorHelperDelegate {
 // A helper class used to DRY up the common views/logic
 // used when editing group names & avatars in the
 // "create new group" and "edit group" views.
-class GroupAttributesEditorHelper: NSObject {
+final class GroupAttributesEditorHelper: NSObject {
 
     public enum EditAction {
         case none

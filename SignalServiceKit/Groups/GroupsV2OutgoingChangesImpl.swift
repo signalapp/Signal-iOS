@@ -23,7 +23,7 @@ public import LibSignalClient
 /// only add Bob. If our change turns into a no-op (e.g., both Alice and Bob
 /// are added by somebody else), we'll throw GroupsV2Error.redundantChange;
 /// callers should typically interpret this as a successful outcome.
-public class GroupsV2OutgoingChanges {
+final public class GroupsV2OutgoingChanges {
 
     public let groupSecretParams: GroupSecretParams
 

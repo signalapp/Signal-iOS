@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class MediaDownloadSettingsViewController: OWSTableViewController2 {
+final class MediaDownloadSettingsViewController: OWSTableViewController2 {
 
     private let mediaDownloadType: MediaBandwidthPreferences.MediaType
 

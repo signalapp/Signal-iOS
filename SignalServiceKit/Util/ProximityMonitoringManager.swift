@@ -10,7 +10,7 @@ public protocol OWSProximityMonitoringManager: AnyObject {
     func remove(lifetime: AnyObject)
 }
 
-public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
+final public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
     public init() {}
 
     private struct State {

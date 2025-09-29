@@ -478,7 +478,7 @@ public enum RecipientHidingError: Error, CustomStringConvertible {
 // MARK: - Objc-Compat
 
 @objc
-public class RecipientHidingManagerObjcBridge: NSObject {
+final public class RecipientHidingManagerObjcBridge: NSObject {
 
     @objc
     public static func isHiddenAddress(_ address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {

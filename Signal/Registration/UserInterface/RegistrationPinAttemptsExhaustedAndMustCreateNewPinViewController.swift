@@ -29,7 +29,7 @@ protocol RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter: AnyObject
 
 // MARK: - RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController
 
-class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSViewController {
+final class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSViewController {
     private var state: RegistrationPinAttemptsExhaustedViewState
 
     public init(

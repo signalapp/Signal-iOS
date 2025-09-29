@@ -15,7 +15,7 @@ public enum SignalIOSProtoError: Error {
 // MARK: - SignalIOSProtoDeviceName
 
 @objc
-public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
+final public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: IOSProtos_DeviceName
 
@@ -133,7 +133,7 @@ extension SignalIOSProtoDeviceName {
 }
 
 @objc
-public class SignalIOSProtoDeviceNameBuilder: NSObject {
+final public class SignalIOSProtoDeviceNameBuilder: NSObject {
 
     private var proto = IOSProtos_DeviceName()
 

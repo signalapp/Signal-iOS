@@ -25,7 +25,7 @@ public protocol BackupAttachmentUploadQueueRunner {
     func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction)
 }
 
-class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
+final class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     private let accountKeyStore: AccountKeyStore
     private let attachmentStore: AttachmentStore

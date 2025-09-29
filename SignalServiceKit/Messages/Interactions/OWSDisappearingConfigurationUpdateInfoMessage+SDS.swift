@@ -47,7 +47,7 @@ public extension OWSDisappearingConfigurationUpdateInfoMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
+final class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
 
     private let model: OWSDisappearingConfigurationUpdateInfoMessage
     public init(model: OWSDisappearingConfigurationUpdateInfoMessage) {

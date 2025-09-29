@@ -9,7 +9,7 @@ import Foundation
 public import LibSignalClient
 public import SignalRingRTC
 
-public class FakeStorageServiceManager: StorageServiceManager {
+final public class FakeStorageServiceManager: StorageServiceManager {
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
 
     public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }

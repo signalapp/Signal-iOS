@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BlockingLegacyGroupView: UIStackView {
+final class BlockingLegacyGroupView: UIStackView {
 
     private weak var fromViewController: UIViewController?
 

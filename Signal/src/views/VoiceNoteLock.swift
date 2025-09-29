@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class VoiceMemoLockView: UIView {
+final class VoiceMemoLockView: UIView {
 
     private var offsetConstraint: NSLayoutConstraint!
 

@@ -336,7 +336,7 @@ public extension StickerPack {
 // MARK: - StickerPackCursor
 
 @objc
-public class StickerPackCursor: NSObject, SDSCursor {
+final public class StickerPackCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<StickerPackRecord>?
 
@@ -563,7 +563,7 @@ public extension StickerPack {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class StickerPackSerializer: SDSSerializer {
+final class StickerPackSerializer: SDSSerializer {
 
     private let model: StickerPack
     public init(model: StickerPack) {

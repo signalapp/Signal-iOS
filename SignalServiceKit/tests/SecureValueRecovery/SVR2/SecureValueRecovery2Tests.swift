@@ -8,7 +8,7 @@ import XCTest
 
 @testable public import SignalServiceKit
 
-class SecureValueRecovery2Tests: XCTestCase {
+final class SecureValueRecovery2Tests: XCTestCase {
 
     private var db: InMemoryDB!
     private var svr: SecureValueRecovery2Impl!

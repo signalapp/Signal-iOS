@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUISessionState: DebugUIPage {
+final class DebugUISessionState: DebugUIPage {
 
     let name = "Session State"
 

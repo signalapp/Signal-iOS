@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BlockingManagerTests: SSKBaseTest {
+final class BlockingManagerTests: SSKBaseTest {
     // Some tests will use this to simulate the state as seen by another process
     private var otherBlockingManager: BlockingManager!
     private var blockingManager: BlockingManager { SSKEnvironment.shared.blockingManagerRef }

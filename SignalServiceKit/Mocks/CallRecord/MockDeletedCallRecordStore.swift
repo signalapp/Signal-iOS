@@ -7,7 +7,7 @@ import GRDB
 
 #if TESTABLE_BUILD
 
-class MockDeletedCallRecordStore: DeletedCallRecordStore {
+final class MockDeletedCallRecordStore: DeletedCallRecordStore {
     var deletedCallRecords = [DeletedCallRecord]()
 
     func fetch(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBReadTransaction) -> DeletedCallRecord? {

@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 
 /// Container for stateful objects needed to render spoilers.
-public class SpoilerRenderState {
+final public class SpoilerRenderState {
     public let revealState: SpoilerRevealState
     public let animationManager: SpoilerAnimationManager
 

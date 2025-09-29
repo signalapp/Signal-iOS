@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class ThreadReplyInfoStore {
+final public class ThreadReplyInfoStore {
     private let keyValueStore: KeyValueStore
     init() {
         self.keyValueStore = KeyValueStore(collection: "TSThreadReplyInfo")

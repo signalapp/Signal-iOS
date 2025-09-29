@@ -17,7 +17,7 @@ public protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchDidSelectRow()
 }
 
-public class ConversationSearchViewController: UITableViewController {
+final public class ConversationSearchViewController: UITableViewController {
 
     // MARK: -
 
@@ -626,7 +626,7 @@ extension ConversationSearchViewController {
 
 // MARK: -
 
-class EmptySearchResultCell: UITableViewCell {
+final class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
 
     let messageLabel: UILabel

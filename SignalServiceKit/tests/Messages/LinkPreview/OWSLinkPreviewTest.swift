@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
-class OWSLinkPreviewTest: XCTestCase {
+final class OWSLinkPreviewTest: XCTestCase {
     var mockDB: InMemoryDB!
     var linkPreviewManager: LinkPreviewManagerImpl!
 

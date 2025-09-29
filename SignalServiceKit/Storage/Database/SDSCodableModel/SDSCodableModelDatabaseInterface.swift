@@ -99,4 +99,4 @@ protocol SDSCodableModelDatabaseInterface {
 /// The implementations of these methods previously existed as extensions on
 /// ``SDSCodableModel``, and convenience stubs still exist there that forward
 /// to this class. They have largely been migrated here as they were there.
-public class SDSCodableModelDatabaseInterfaceImpl: SDSCodableModelDatabaseInterface {}
+final public class SDSCodableModelDatabaseInterfaceImpl: SDSCodableModelDatabaseInterface {}

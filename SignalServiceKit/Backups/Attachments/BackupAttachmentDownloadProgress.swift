@@ -5,7 +5,7 @@
 
 public import GRDB
 
-public class BackupAttachmentDownloadProgressObserver {
+final public class BackupAttachmentDownloadProgressObserver {
     private weak var progress: BackupAttachmentDownloadProgress?
     fileprivate let id: UUID = UUID()
     fileprivate let block: (OWSProgress) -> Void

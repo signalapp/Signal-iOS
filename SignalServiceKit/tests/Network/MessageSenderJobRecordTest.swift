@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class SSKMessageSenderJobRecordTest: SSKBaseTest {
+final class SSKMessageSenderJobRecordTest: SSKBaseTest {
 
     func test_savedVisibleMessage() {
         let message = OutgoingMessageFactory().create()

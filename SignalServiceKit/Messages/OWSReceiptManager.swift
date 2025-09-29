@@ -63,7 +63,7 @@ struct ReceiptForLinkedDevice: Codable {
 ///
 /// This manager is responsible for handling and emitting all four kinds.
 @objc
-public class OWSReceiptManager: NSObject {
+final public class OWSReceiptManager: NSObject {
 
     private let appReadiness: any AppReadiness
     private let messageSenderJobQueue: MessageSenderJobQueue

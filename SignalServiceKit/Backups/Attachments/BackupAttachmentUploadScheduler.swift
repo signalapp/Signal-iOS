@@ -66,7 +66,7 @@ extension BackupAttachmentUploadScheduler {
     }
 }
 
-public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadScheduler {
+final public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadScheduler {
 
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore

@@ -8,7 +8,7 @@ import SignalServiceKit
 public import SignalUI
 import UIKit
 
-public class RegistrationTransferProgressViewController: OWSViewController {
+final public class RegistrationTransferProgressViewController: OWSViewController {
 
     let progressView: TransferProgressView
 
@@ -163,7 +163,7 @@ extension RegistrationTransferProgressViewController: DeviceTransferServiceObser
     }
 }
 
-private class TransferRelaunchSheet: InteractiveSheetViewController {
+final private class TransferRelaunchSheet: InteractiveSheetViewController {
     let stackView = UIStackView()
 
     public override var canBeDismissed: Bool { false }

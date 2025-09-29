@@ -48,7 +48,7 @@ final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
 
 // MARK: -
 
-private class MockInteractionCursor: DeleteForMeAddressableMessageCursor {
+final private class MockInteractionCursor: DeleteForMeAddressableMessageCursor {
     private var messages: [TSMessage]
 
     init(messages: [TSMessage]) {

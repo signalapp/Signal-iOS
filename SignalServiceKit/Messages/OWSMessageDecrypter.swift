@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class OWSMessageDecrypter {
+final public class OWSMessageDecrypter {
 
     private let senderIdsResetDuringCurrentBatch = AtomicValue<Set<String>>(Set(), lock: .init())
 

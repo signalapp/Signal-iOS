@@ -60,7 +60,7 @@ public class OnboardingStoryManagerStoryMessageFactory {
     }
 }
 
-public class SystemStoryManager: SystemStoryManagerProtocol {
+final public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
     private let messageProcessor: any Shims.MessageProcessor

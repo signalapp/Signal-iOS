@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIDiskUsage: DebugUIPage {
+final class DebugUIDiskUsage: DebugUIPage {
 
     let name =  "Orphans & Disk Usage"
 

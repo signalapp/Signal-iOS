@@ -7,7 +7,7 @@ import MobileCoin
 import SignalServiceKit
 import SignalUI
 
-class TestingViewController: OWSTableViewController2 {
+final class TestingViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

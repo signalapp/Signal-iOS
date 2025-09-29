@@ -18,7 +18,7 @@ public protocol NewMembersBarDelegate: NewMemberCellDelegate {
 
 // MARK: -
 
-public class NewMembersBar: UIView {
+final public class NewMembersBar: UIView {
 
     weak var delegate: NewMembersBarDelegate?
 
@@ -153,7 +153,7 @@ public protocol NewMemberCellDelegate: AnyObject {
 
 // MARK: -
 
-private class NewMemberCell: UICollectionViewCell {
+final private class NewMemberCell: UICollectionViewCell {
 
     static let reuseIdentifier = "NewMemberCell"
 
@@ -272,7 +272,7 @@ private protocol NewMembersBarLayoutDelegate: AnyObject {
 // MARK: -
 
 // A simple horizontal layout.
-private class NewMembersBarLayout: UICollectionViewLayout {
+final private class NewMembersBarLayout: UICollectionViewLayout {
 
     fileprivate weak var layoutDelegate: NewMembersBarLayoutDelegate?
 

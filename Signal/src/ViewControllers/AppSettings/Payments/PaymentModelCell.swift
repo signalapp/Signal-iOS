@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
-public class PaymentModelCell: UITableViewCell {
+final public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
     let contactAvatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser)

@@ -10,7 +10,7 @@ public import LibSignalClient
 // * The "remote" methods are used in response to remote activity (incoming messages,
 //   sync transcripts, group syncs, etc.).
 @objc
-public class GroupManager: NSObject {
+final public class GroupManager: NSObject {
 
     // Never instantiate this class.
     private override init() {}

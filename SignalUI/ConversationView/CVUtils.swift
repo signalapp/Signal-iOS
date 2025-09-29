@@ -7,7 +7,7 @@ import SignalServiceKit
 import UIKit
 public import SDWebImage
 
-public class CVUtils {
+final public class CVUtils {
 
     @available(*, unavailable, message: "use other init() instead.")
     private init() {}
@@ -199,7 +199,7 @@ open class CVImageView: UIImageView, CVView {
 
 // MARK: -
 
-public class CVAnimatedImageView: SDAnimatedImageView, CVView {
+final public class CVAnimatedImageView: SDAnimatedImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
 

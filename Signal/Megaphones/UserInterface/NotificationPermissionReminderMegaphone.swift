@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class NotificationPermissionReminderMegaphone: MegaphoneView {
+final class NotificationPermissionReminderMegaphone: MegaphoneView {
     weak var actionSheetController: ActionSheetController?
 
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
@@ -83,7 +83,7 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
     }
 }
 
-class TurnOnPermissionView: UIStackView {
+final class TurnOnPermissionView: UIStackView {
     struct Step {
         let icon: UIImage?
         let text: String

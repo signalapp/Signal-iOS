@@ -4,7 +4,7 @@
 //
 
 @objc(TSOutgoingMessageRecipientState)
-public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
+final public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
     /// The status of the outgoing message send to this recipient.
     public private(set) var status: OWSOutgoingMessageRecipientStatus
 

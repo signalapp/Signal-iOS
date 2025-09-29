@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
+final public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
 
     private var isPreview = false
 

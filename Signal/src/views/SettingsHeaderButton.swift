@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import UIKit
 
-class SettingsHeaderButton: UIView {
+final class SettingsHeaderButton: UIView {
 
     private let button = UIButton(configuration: .gray())
     private let titleLabel = UILabel()

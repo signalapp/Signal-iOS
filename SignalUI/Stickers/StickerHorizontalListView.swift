@@ -14,7 +14,7 @@ public protocol StickerHorizontalListViewItem {
 
 // MARK: -
 
-public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem {
+final public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem {
     private let stickerInfo: StickerInfo
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
@@ -72,7 +72,7 @@ public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem
 
 // MARK: -
 
-public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem {
+final public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem {
 
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
@@ -106,7 +106,7 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
 
 // MARK: -
 
-public class StickerHorizontalListView: UICollectionView {
+final public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
     private let cellInset: CGFloat

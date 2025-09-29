@@ -265,7 +265,7 @@ fileprivate extension ConversationViewController {
 // MARK: -
 
 // A convenience view that allows block-based gesture handling.
-public class GestureView: UIView {
+final public class GestureView: UIView {
     public init() {
         super.init(frame: .zero)
 
@@ -303,7 +303,7 @@ public class GestureView: UIView {
     }
 }
 
-private class NameCollisionBanner: UIView {
+final private class NameCollisionBanner: UIView {
 
     private enum Constants {
         static let avatarSize = CGSize(square: 24)

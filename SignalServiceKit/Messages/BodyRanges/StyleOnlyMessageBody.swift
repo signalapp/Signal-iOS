@@ -6,7 +6,7 @@
 import Foundation
 
 /// Like MessageBody but with styles only, no mentions.
-public class StyleOnlyMessageBody: Codable, Equatable {
+final public class StyleOnlyMessageBody: Codable, Equatable {
     public typealias Style = MessageBodyRanges.Style
     public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 

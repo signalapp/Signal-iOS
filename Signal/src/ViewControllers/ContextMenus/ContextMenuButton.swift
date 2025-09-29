@@ -17,7 +17,7 @@ protocol ContextMenuButtonDelegate: AnyObject {
 /// A button that shows a fixed context menu when tapped.
 ///
 /// - SeeAlso: ``DelegatingContextMenuButton``
-class ContextMenuButton: UIButton {
+final class ContextMenuButton: UIButton {
     override var intrinsicContentSize: CGSize { .zero }
 
     weak var delegate: (any ContextMenuButtonDelegate)?

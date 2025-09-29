@@ -9,7 +9,7 @@ import SignalServiceKit
 
 // MARK: - ContactAboutSheet
 
-class ContactAboutSheet: StackSheetViewController {
+final class ContactAboutSheet: StackSheetViewController {
     struct Context {
         let contactManager: any ContactManager
         let identityManager: any OWSIdentityManager

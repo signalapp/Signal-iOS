@@ -13,7 +13,7 @@ protocol MockConversationDelegate: AnyObject {
 
 // MARK: -
 
-class MockConversationView: UIView {
+final class MockConversationView: UIView {
 
     weak var delegate: MockConversationDelegate?
 
@@ -198,7 +198,7 @@ class MockConversationView: UIView {
 
 // MARK: - Mock Classes
 
-private class MockThread: TSContactThread {
+final private class MockThread: TSContactThread {
     public override var shouldBeSaved: Bool {
         return false
     }
@@ -213,7 +213,7 @@ private class MockThread: TSContactThread {
 
 // MARK: -
 
-private class MockIncomingMessage: TSIncomingMessage {
+final private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: ValidatedInlineMessageBody, thread: MockThread) {
         let builder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
@@ -242,7 +242,7 @@ private class MockIncomingMessage: TSIncomingMessage {
 
 // MARK: -
 
-private class MockOutgoingMessage: TSOutgoingMessage {
+final private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: ValidatedInlineMessageBody, thread: TSThread, transaction: DBReadTransaction) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, messageBody: messageBody)
         super.init(

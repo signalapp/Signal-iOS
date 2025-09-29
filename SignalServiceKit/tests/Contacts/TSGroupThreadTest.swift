@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class TSGroupThreadTest: XCTestCase {
+final class TSGroupThreadTest: XCTestCase {
     func testHasSafetyNumbers() throws {
         let groupThread = try TSGroupThread(dictionary: [:])
         XCTAssertFalse(groupThread.hasSafetyNumbers())

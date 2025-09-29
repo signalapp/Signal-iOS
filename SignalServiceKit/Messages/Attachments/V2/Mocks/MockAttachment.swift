@@ -128,7 +128,7 @@ extension Attachment.ConstructionParams {
 
 // MARK: - Attachment
 
-public class MockAttachment: Attachment {
+final public class MockAttachment: Attachment {
 
     public static func mock(
         blurHash: String? = nil,
@@ -169,7 +169,7 @@ public class MockAttachment: Attachment {
     }
 }
 
-public class MockAttachmentStream: AttachmentStream {
+final public class MockAttachmentStream: AttachmentStream {
 
     public static func mock(
         blurHash: String? = nil,

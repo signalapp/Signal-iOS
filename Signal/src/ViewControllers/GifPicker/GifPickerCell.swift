@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SDWebImage
 
-class GifPickerCell: UICollectionViewCell {
+final class GifPickerCell: UICollectionViewCell {
 
     private let imageView = SDAnimatedImageView()
     private let mp4View = LoopingVideoView()

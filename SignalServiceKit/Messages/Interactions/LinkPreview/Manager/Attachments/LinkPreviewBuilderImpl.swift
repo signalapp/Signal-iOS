@@ -11,7 +11,7 @@ public struct LinkPreviewDataSource {
     public let isForwarded: Bool
 }
 
-public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
+final public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
 
     private let attachmentManager: AttachmentManager
     private let attachmentValidator: AttachmentContentValidator

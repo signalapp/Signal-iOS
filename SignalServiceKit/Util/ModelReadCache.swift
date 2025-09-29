@@ -7,7 +7,7 @@ import Foundation
 
 // MARK: -
 
-class ModelCacheValueBox<ValueType> {
+final class ModelCacheValueBox<ValueType> {
     let value: ValueType?
 
     init(value: ValueType?) {
@@ -65,7 +65,7 @@ class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType> {
 /// writes.
 ///
 /// * They need to be evacuated after cross-process writes.
-class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
+final class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
     private let appReadiness: AppReadiness
 
     private var cacheName: String {
@@ -341,7 +341,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
 // MARK: -
 
 @objc
-public class ThreadReadCache: NSObject {
+final public class ThreadReadCache: NSObject {
     private class Adapter: ModelCacheAdapter<String, TSThread> {
         override func read(key: String, transaction: DBReadTransaction) -> TSThread? {
             return TSThread.anyFetch(uniqueId: key, transaction: transaction, ignoreCache: true)
@@ -393,7 +393,7 @@ public class ThreadReadCache: NSObject {
 // MARK: -
 
 @objc
-public class InteractionReadCache: NSObject {
+final public class InteractionReadCache: NSObject {
     private class Adapter: ModelCacheAdapter<String, TSInteraction> {
         override func read(key: String, transaction: DBReadTransaction) -> TSInteraction? {
             return TSInteraction.anyFetch(uniqueId: key, transaction: transaction, ignoreCache: true)
@@ -453,7 +453,7 @@ public class InteractionReadCache: NSObject {
 // MARK: -
 
 @objc
-public class InstalledStickerCache: NSObject {
+final public class InstalledStickerCache: NSObject {
     private class Adapter: ModelCacheAdapter<String, InstalledSticker> {
         override func read(key: String, transaction: DBReadTransaction) -> InstalledSticker? {
             return InstalledSticker.anyFetch(uniqueId: key, transaction: transaction, ignoreCache: true)
@@ -514,7 +514,7 @@ public class InstalledStickerCache: NSObject {
 // MARK: -
 
 @objc
-public class ModelReadCaches: NSObject {
+final public class ModelReadCaches: NSObject {
     @objc(initWithModelReadCacheFactory:)
     public init(factory: ModelReadCacheFactory) {
         threadReadCache = ThreadReadCache(factory)
@@ -555,7 +555,7 @@ public class ModelReadCacheFactory: NSObject {
 
 #if TESTABLE_BUILD
 @objc
-class TestableModelReadCacheFactory: ModelReadCacheFactory {
+final class TestableModelReadCacheFactory: ModelReadCacheFactory {
     override func create<KeyType: Hashable & Equatable, ValueType>(
         adapter: ModelCacheAdapter<KeyType, ValueType>
     ) -> ModelReadCache<KeyType, ValueType> {

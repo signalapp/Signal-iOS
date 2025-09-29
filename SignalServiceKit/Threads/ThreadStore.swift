@@ -149,7 +149,7 @@ extension ThreadStore {
     }
 }
 
-public class ThreadStoreImpl: ThreadStore {
+final public class ThreadStoreImpl: ThreadStore {
 
     public init() {}
 
@@ -282,7 +282,7 @@ public class ThreadStoreImpl: ThreadStore {
 
 #if TESTABLE_BUILD
 
-public class MockThreadStore: ThreadStore {
+final public class MockThreadStore: ThreadStore {
     private(set) var threads = [TSThread]()
     public var nextRowId: Int64 = 1
 

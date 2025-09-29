@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class ThreadDetailsInteraction: TSInteraction {
+final public class ThreadDetailsInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {
         true

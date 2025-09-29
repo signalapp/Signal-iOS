@@ -80,7 +80,7 @@ public enum WallpaperViewBuilder {
 
 // MARK: -
 
-public class WallpaperView {
+final public class WallpaperView {
     fileprivate enum Mode {
         case colorView(UIView)
         case imageView(UIImage)
@@ -153,7 +153,7 @@ private struct WallpaperBlurToken: Equatable {
 
 // MARK: -
 
-public class WallpaperBlurState: NSObject {
+final public class WallpaperBlurState: NSObject {
     public let image: UIImage
     public let referenceView: UIView
     fileprivate let token: WallpaperBlurToken
@@ -178,7 +178,7 @@ public protocol WallpaperBlurProvider: AnyObject {
 
 // MARK: -
 
-public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
+final public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
     private let contentView: UIView
 
     private var cachedState: WallpaperBlurState?

@@ -8,7 +8,7 @@ import SignalUI
 
 // MARK: -
 
-class LinkPreviewGroupLink: LinkPreviewState {
+final class LinkPreviewGroupLink: LinkPreviewState {
     private let linkPreview: OWSLinkPreview
     public let linkType: LinkPreviewLinkType
     private let groupInviteLinkViewModel: GroupInviteLinkViewModel
@@ -136,7 +136,7 @@ class LinkPreviewGroupLink: LinkPreviewState {
 
 // MARK: -
 
-class GroupInviteLinkViewModel: Equatable {
+final class GroupInviteLinkViewModel: Equatable {
 
     let url: URL
     let groupInviteLinkPreview: GroupInviteLinkPreview?
@@ -167,7 +167,7 @@ class GroupInviteLinkViewModel: Equatable {
 
 // MARK: -
 
-class GroupInviteLinkCachedAvatar: Equatable {
+final class GroupInviteLinkCachedAvatar: Equatable {
 
     let cacheFileUrl: URL
     let imageSizePixels: CGSize

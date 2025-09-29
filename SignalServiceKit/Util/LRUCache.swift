@@ -6,7 +6,7 @@
 import Foundation
 
 // A simple LRU cache bounded by the number of entries.
-public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
+final public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private let cache = NSCache<AnyObject, AnyObject>()
     private let _resetCount = AtomicUInt(0, lock: .sharedGlobal)
@@ -143,7 +143,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 // Some cached entities should only be deallocated on the main thread.
 // This handle can be used to ensure that cache entries are released
 // on the main thread.
-public class ThreadSafeCacheHandle<T: AnyObject> {
+final public class ThreadSafeCacheHandle<T: AnyObject> {
 
     public let value: T
 
@@ -167,7 +167,7 @@ public class ThreadSafeCacheHandle<T: AnyObject> {
 // thread, we wouldn't want to dispatch to the main thread once for
 // each value. This class buffers the values and releases them in
 // batches.
-private class ThreadSafeCacheReleaser {
+final private class ThreadSafeCacheReleaser {
     private static let unfairLock = UnfairLock()
     private static var valuesToRelease = [AnyObject]()
 

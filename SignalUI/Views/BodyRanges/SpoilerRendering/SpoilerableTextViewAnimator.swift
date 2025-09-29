@@ -10,7 +10,7 @@ import UIKit
 /// Animates spoilers on a UITextView or UITextView subclass.
 /// Users must hold a reference to the animator alongside the UITextView,
 /// and configure it with a SpoilerableTextConfig to begin animation.
-public class SpoilerableTextViewAnimator {
+final public class SpoilerableTextViewAnimator {
 
     private weak var textView: UITextView?
     private var text: CVTextValue?

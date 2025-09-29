@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ThemeSettingsTableViewController: OWSTableViewController2 {
+final class ThemeSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

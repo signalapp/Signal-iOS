@@ -7,7 +7,7 @@ import Foundation
 public import XCTest
 @testable import SignalServiceKit
 
-public class StyleOnlyMessageBodyTests: XCTestCase {
+final public class StyleOnlyMessageBodyTests: XCTestCase {
 
     typealias MergedSingleStyle = MessageBodyRanges.MergedSingleStyle
     typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle

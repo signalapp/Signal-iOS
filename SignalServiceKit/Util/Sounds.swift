@@ -267,7 +267,7 @@ public struct CustomSound {
     }
 }
 
-private class SystemSound: NSObject {
+final private class SystemSound: NSObject {
 
     let id: SystemSoundID
     let soundUrl: URL
@@ -292,7 +292,7 @@ private class SystemSound: NSObject {
     }
 }
 
-public class Sounds {
+final public class Sounds {
 
     // This name is specified in the payload by the Signal Service when requesting fallback push notifications.
     fileprivate static let defaultNotificationSoundFilename = "NewMessage.aifc"

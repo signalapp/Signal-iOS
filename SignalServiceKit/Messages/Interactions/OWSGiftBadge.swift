@@ -20,7 +20,7 @@ public enum OWSGiftBadgeRedemptionState: Int {
 }
 
 @objc
-public class OWSGiftBadge: MTLModel {
+final public class OWSGiftBadge: MTLModel {
     @objc
     public var redemptionCredential: Data?
 

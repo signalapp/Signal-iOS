@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
-public class MessageAction: NSObject {
+final public class MessageAction: NSObject {
 
     let block: (_ sender: Any?) -> Void
     let accessibilityIdentifier: String
@@ -116,7 +116,7 @@ public protocol MessageActionsToolbarDelegate: AnyObject {
     var messageActionsToolbarSelectedInteractionCount: Int { get }
 }
 
-public class MessageActionsToolbar: UIToolbar {
+final public class MessageActionsToolbar: UIToolbar {
 
     weak var actionDelegate: MessageActionsToolbarDelegate?
 
@@ -244,7 +244,7 @@ public class MessageActionsToolbar: UIToolbar {
 
 // MARK: -
 
-class MessageActionsToolbarButton: UIBarButtonItem {
+final class MessageActionsToolbarButton: UIBarButtonItem {
     private weak var actionsToolbar: MessageActionsToolbar?
     fileprivate var messageAction: MessageAction?
 

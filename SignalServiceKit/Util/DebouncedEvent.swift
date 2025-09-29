@@ -83,7 +83,7 @@ public enum DebouncedEvents {
 // MARK: -
 
 /// See comments on DebouncedEventMode.
-private class DebouncedEventLastOnly: DebouncedEvent {
+final private class DebouncedEventLastOnly: DebouncedEvent {
     private var hasEnqueuedNotification = false
     private let maxFrequencySeconds: TimeInterval
     private let notifyBlock: () -> Void
@@ -133,7 +133,7 @@ private class DebouncedEventLastOnly: DebouncedEvent {
 // MARK: -
 
 // See comments on DebouncedEventMode.
-private class DebouncedEventFirstLast: DebouncedEvent {
+final private class DebouncedEventFirstLast: DebouncedEvent {
     private var hasEnqueuedNotification = false
     private var lastNotificationDate: MonotonicDate?
     private let maxFrequencySeconds: TimeInterval

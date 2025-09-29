@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class OutgoingStoryMessage: TSOutgoingMessage {
+final public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var storyMessageId: String!
 

@@ -7,7 +7,7 @@ import GRDB
 import SignalServiceKit
 import SignalUI
 
-class InternalSQLClientViewController: UIViewController {
+final class InternalSQLClientViewController: UIViewController {
 
     let outputTextView: UITextView = {
         let textView = UITextView()

@@ -2169,7 +2169,7 @@ enum BottomSheetState {
 }
 
 /// TODO: It may make sense to pull sheet timeout logic into this class.
-class GroupCallBottomSheetStateManager {
+final class GroupCallBottomSheetStateManager {
     private weak var delegate: GroupCallBottomSheetStateDelegate?
     private(set) var bottomSheetState: BottomSheetState = .callControls {
         didSet {

@@ -43,7 +43,7 @@ protocol CallRecordLoader {
     ) -> CallRecordCursor
 }
 
-class CallRecordLoaderImpl: CallRecordLoader {
+final class CallRecordLoaderImpl: CallRecordLoader {
     struct Configuration {
         /// Whether the loader should only load missed calls.
         let onlyLoadMissedCalls: Bool
@@ -186,7 +186,7 @@ private struct InterleavableCallRecordCursor: InterleavableCursor {
     }
 }
 
-private class InterleavingCallRecordCursor: InterleavingCompositeCursor<InterleavableCallRecordCursor>, CallRecordCursor {
+final private class InterleavingCallRecordCursor: InterleavingCompositeCursor<InterleavableCallRecordCursor>, CallRecordCursor {
     init(
         callRecordCursors: [InterleavableCallRecordCursor],
         nextElementComparator: @escaping ElementSortComparator

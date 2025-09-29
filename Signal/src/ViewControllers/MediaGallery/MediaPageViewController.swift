@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class MediaPageViewController: UIPageViewController {
+final class MediaPageViewController: UIPageViewController {
     private lazy var mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
 
     private let isShowingSingleMessage: Bool

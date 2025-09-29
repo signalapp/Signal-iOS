@@ -12,7 +12,7 @@ public protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidCancel()
 }
 
-class ForwardMessageViewController: InteractiveSheetViewController {
+final class ForwardMessageViewController: InteractiveSheetViewController {
 
     private let pickerVC: ForwardPickerViewController
     private let forwardNavigationViewController = ForwardNavigationViewController()
@@ -834,14 +834,14 @@ private enum ForwardMessageContent {
 
 // MARK: -
 
-private class ForwardNavigationViewController: OWSNavigationController {
+final private class ForwardNavigationViewController: OWSNavigationController {
     weak var forwardMessageViewController: ForwardMessageViewController?
 
 }
 
 // MARK: -
 
-private class ForwardPickerViewController: ConversationPickerViewController {
+final private class ForwardPickerViewController: ConversationPickerViewController {
     weak var forwardMessageViewController: ForwardMessageViewController?
 
     public override func viewDidLoad() {

@@ -34,7 +34,7 @@ private extension LinkPreviewFetchState.State {
     }
 }
 
-class LinkPreviewFetchStateTest: XCTestCase {
+final class LinkPreviewFetchStateTest: XCTestCase {
 
     private var mockLinkPreviewFetcher: MockLinkPreviewFetcher!
     private var mockDB: InMemoryDB!

@@ -164,7 +164,7 @@ struct MessageActionBuilder {
     }
 }
 
-class MessageActions: NSObject {
+final class MessageActions: NSObject {
 
     class func textActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []

@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
+final private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> LocalUserLeaveGroupJobRunner { buildRunner(future: nil) }
 
     func buildRunner(future: Future<Void>?) -> LocalUserLeaveGroupJobRunner {
@@ -14,7 +14,7 @@ private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class LocalUserLeaveGroupJobRunner: JobRunner {
+final private class LocalUserLeaveGroupJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 110
     }
@@ -110,7 +110,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
     }
 }
 
-public class LocalUserLeaveGroupJobQueue {
+final public class LocalUserLeaveGroupJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<LocalUserLeaveGroupJobRecord>,
         LocalUserLeaveGroupJobRunnerFactory

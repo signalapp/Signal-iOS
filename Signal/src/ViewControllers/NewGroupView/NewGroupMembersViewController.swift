@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 // TODO: Rename to NewGroupViewController; remove old view.
-public class NewGroupMembersViewController: BaseGroupMemberViewController {
+final public class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newGroupState = NewGroupState()
 

@@ -51,7 +51,7 @@ struct MockSearchableNameIndexer: SearchableNameIndexer {
 
 #endif
 
-public class SearchableNameIndexerImpl: SearchableNameIndexer {
+final public class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let threadStore: any ThreadStore
     private let signalAccountStore: any SignalAccountStore
     private let userProfileStore: any UserProfileStore

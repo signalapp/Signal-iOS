@@ -90,7 +90,7 @@ public enum ChangePhoneNumberPni {
 
 // MARK: - ChangeNumberPniManagerImpl implementation
 
-class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
+final class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     // MARK: - Init
 

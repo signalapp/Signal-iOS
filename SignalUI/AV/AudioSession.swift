@@ -7,7 +7,7 @@ public import AVFoundation
 import Foundation
 public import SignalServiceKit
 
-public class AudioActivity: NSObject {
+final public class AudioActivity: NSObject {
     let audioDescription: String
 
     let behavior: AudioBehavior
@@ -59,7 +59,7 @@ public class AudioActivity: NSObject {
     }
 }
 
-public class AudioSession: NSObject {
+final public class AudioSession: NSObject {
 
     private let avAudioSession = AVAudioSession.sharedInstance()
 

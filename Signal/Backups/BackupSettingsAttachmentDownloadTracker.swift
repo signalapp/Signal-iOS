@@ -79,7 +79,7 @@ final class BackupSettingsAttachmentDownloadTracker {
 
 // MARK: -
 
-private class Tracker {
+final private class Tracker {
     typealias DownloadUpdate = BackupSettingsAttachmentDownloadTracker.DownloadUpdate
 
     private struct State {

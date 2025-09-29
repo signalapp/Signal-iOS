@@ -13,7 +13,7 @@ public protocol StoryBadgeCountObserver: AnyObject {
 }
 
 @MainActor
-public class StoryBadgeCountManager {
+final public class StoryBadgeCountManager {
 
     private weak var observer: StoryBadgeCountObserver?
 

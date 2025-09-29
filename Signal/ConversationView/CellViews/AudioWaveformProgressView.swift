@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 
 // TODO: Convert to manual layout.
-class AudioWaveformProgressView: UIView {
+final class AudioWaveformProgressView: UIView {
     var playedColor: UIColor = Theme.primaryTextColor {
         didSet {
             playedShapeLayer.fillColor = playedColor.cgColor

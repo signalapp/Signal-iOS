@@ -793,7 +793,7 @@ public extension TSThread {
 // MARK: - TSThreadCursor
 
 @objc
-public class TSThreadCursor: NSObject, SDSCursor {
+final public class TSThreadCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<ThreadRecord>?
 
@@ -1038,7 +1038,7 @@ public extension TSThread {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSThreadSerializer: SDSSerializer {
+final class TSThreadSerializer: SDSSerializer {
 
     private let model: TSThread
     public init(model: TSThread) {

@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibilityComponent {
+final public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibilityComponent {
 
     public var componentKey: CVComponentKey { .reactions }
 

@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-class FakeMessageSender: MessageSender {
+final class FakeMessageSender: MessageSender {
     public var stubbedFailingErrors = [Error?]()
     public var sentMessages = [TSOutgoingMessage]()
     public var sendMessageWasCalledBlock: ((TSOutgoingMessage) -> Void)?

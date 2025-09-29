@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class DateUtil {
+final public class DateUtil {
 
     private init() {}
 

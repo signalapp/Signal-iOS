@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class MediaTileDateFormatter {
+final class MediaTileDateFormatter {
     private static var todayTimeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = .current

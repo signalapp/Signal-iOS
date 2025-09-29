@@ -10,7 +10,7 @@ import UIKit
 // * Accepts any number of touches in any locations.
 // * Isn't blocked by any other GR.
 // * Blocks all other GRs.
-class PermissiveGestureRecognizer: UIGestureRecognizer {
+final class PermissiveGestureRecognizer: UIGestureRecognizer {
 
     override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true

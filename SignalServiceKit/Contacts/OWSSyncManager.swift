@@ -12,7 +12,7 @@ extension Notification.Name {
     public static let syncManagerKeysSyncDidComplete = Notification.Name("OWSSyncManagerKeysSyncDidCompleteNotification")
 }
 
-public class OWSSyncManager {
+final public class OWSSyncManager {
     private static var keyValueStore: KeyValueStore {
         KeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }

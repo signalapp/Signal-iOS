@@ -7,7 +7,7 @@ import Foundation
 public import SignalRingRTC
 
 @objc(OutgoingCallLinkUpdateMessage)
-public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
+final public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
     @objc
     private var rootKey: Data!
 

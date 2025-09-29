@@ -7,7 +7,7 @@ import BonMot
 import SignalServiceKit
 public import SignalUI
 
-public class GroupLinkQRCodeViewController: OWSViewController {
+final public class GroupLinkQRCodeViewController: OWSViewController {
 
     private var groupModelV2: TSGroupModelV2
 

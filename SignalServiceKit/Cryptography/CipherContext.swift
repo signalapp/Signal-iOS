@@ -6,7 +6,7 @@
 import CommonCrypto
 import Foundation
 
-public class CipherContext {
+final public class CipherContext {
     public enum Operation {
         case encrypt
         case decrypt

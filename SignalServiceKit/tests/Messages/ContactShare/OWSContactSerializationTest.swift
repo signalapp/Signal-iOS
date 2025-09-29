@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class OWSContactSerializationTest: XCTestCase {
+final class OWSContactSerializationTest: XCTestCase {
 
     // MARK: - Hardcoded constant data
 

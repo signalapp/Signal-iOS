@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class RecoveryKeyReminderMegaphone: MegaphoneView {
+final class RecoveryKeyReminderMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade,
          fromViewController: UIViewController
     ) {

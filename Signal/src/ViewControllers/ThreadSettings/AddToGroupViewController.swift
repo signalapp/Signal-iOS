@@ -7,7 +7,7 @@ import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
-public class AddToGroupViewController: OWSTableViewController2 {
+final public class AddToGroupViewController: OWSTableViewController2 {
 
     private let address: SignalServiceAddress
 

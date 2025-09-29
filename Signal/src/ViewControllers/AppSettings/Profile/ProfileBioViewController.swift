@@ -12,7 +12,7 @@ protocol ProfileBioViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-class ProfileBioViewController: OWSTableViewController2 {
+final class ProfileBioViewController: OWSTableViewController2 {
 
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
 

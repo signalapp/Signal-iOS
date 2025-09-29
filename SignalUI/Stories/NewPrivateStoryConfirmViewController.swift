@@ -7,7 +7,7 @@ import Foundation
 import SafariServices
 import SignalServiceKit
 
-public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
+final public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
     let recipientSet: OrderedSet<PickedRecipient>
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?

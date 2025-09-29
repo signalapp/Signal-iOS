@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class MemberRequestView: UIStackView {
+final class MemberRequestView: UIStackView {
 
     private let thread: TSThread
 

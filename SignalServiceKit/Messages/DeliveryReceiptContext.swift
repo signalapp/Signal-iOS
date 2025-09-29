@@ -34,7 +34,7 @@ fileprivate extension TSOutgoingMessage {
     }
 }
 
-public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
+final public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
     public init() {}
 
     public func addUpdate(
@@ -53,7 +53,7 @@ public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
     }
 }
 
-public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
+final public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
     private var messages = [UInt64: [TSOutgoingMessage]]()
     private var deferredUpdates: [Update] = []
 

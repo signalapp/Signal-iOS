@@ -7,7 +7,7 @@ import BonMot
 import SignalServiceKit
 import SignalUI
 
-class GroupDescriptionPreviewView: ManualLayoutView {
+final class GroupDescriptionPreviewView: ManualLayoutView {
     private let textView = LinkingTextView()
     var descriptionText: String? { didSet { truncateVisibleTextIfNecessary() } }
     var groupName: String?

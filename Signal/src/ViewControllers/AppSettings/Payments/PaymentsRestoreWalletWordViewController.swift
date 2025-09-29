@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class PaymentsRestoreWalletWordViewController: OWSViewController {
+final public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 
@@ -229,7 +229,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
 // MARK: -
 
-public class PartialPaymentsPassphrase {
+final public class PartialPaymentsPassphrase {
 
     private var wordMap = [Int: String]()
 

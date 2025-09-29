@@ -6,7 +6,7 @@
 public import Foundation
 import SignalServiceKit
 
-public class AppEnvironment: NSObject {
+final public class AppEnvironment: NSObject {
 
     private static var _shared: AppEnvironment?
 

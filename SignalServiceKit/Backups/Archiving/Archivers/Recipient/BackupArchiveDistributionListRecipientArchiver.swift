@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 

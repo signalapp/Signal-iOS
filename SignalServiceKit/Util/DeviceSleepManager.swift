@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class DeviceSleepBlockObject {
+final public class DeviceSleepBlockObject {
     public let blockReason: String
     public init(blockReason: String) {
         self.blockReason = blockReason

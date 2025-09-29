@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class ResendMessagePromptBuilder {
+final class ResendMessagePromptBuilder {
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
 

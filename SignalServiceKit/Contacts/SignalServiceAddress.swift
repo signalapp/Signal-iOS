@@ -9,7 +9,7 @@ public import LibSignalClient
 // MARK: -
 
 @objc
-public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable {
+final public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable {
     private let cachedAddress: CachedAddress
 
     @objc
@@ -439,7 +439,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
 // MARK: -
 
-private class CachedAddress {
+final private class CachedAddress {
     struct Identifiers: Equatable {
         var serviceId: ServiceId?
         var phoneNumber: String?
@@ -455,7 +455,7 @@ private class CachedAddress {
     }
 }
 
-public class SignalServiceAddressCache: NSObject {
+final public class SignalServiceAddressCache: NSObject {
     private let state = AtomicValue(CacheState(), lock: .init())
 
     private let _phoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher?

@@ -154,7 +154,7 @@ private extension TSRequest {
 
 #if TESTABLE_BUILD
 
-class MockBackupIdService: BackupIdService {
+final class MockBackupIdService: BackupIdService {
     func registerBackupIDIfNecessary(localAci: Aci, auth: ChatServiceAuth) async throws {
         // Do nothing
     }

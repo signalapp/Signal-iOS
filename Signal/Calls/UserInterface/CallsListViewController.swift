@@ -17,7 +17,7 @@ private protocol CallCellDelegate: AnyObject {
 
 // MARK: - CallsListViewController
 
-class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver, GroupCallObserver {
+final class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver, GroupCallObserver {
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowIdentifier>
 
     private enum Constants {

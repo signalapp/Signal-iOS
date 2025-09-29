@@ -66,7 +66,7 @@ public enum OWSErrorCode: Int {
     case uploadFailed = 777442  // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777428 same as invalidKeySignature)
 }
 
-public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider, CustomStringConvertible {
+final public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider, CustomStringConvertible {
     public let errorCode: Int
     private let customLocalizedDescription: String
     private let customIsRetryable: Bool

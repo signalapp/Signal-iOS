@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
+final class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
     private let groupMemberStore: GroupMemberStore
     private let interactionStore: InteractionStore
     private let threadAssociatedDataStore: ThreadAssociatedDataStore

@@ -40,7 +40,7 @@ public extension ConversationAvatarViewDelegate {
     }
 }
 
-public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
+final public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),

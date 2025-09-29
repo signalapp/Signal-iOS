@@ -8,7 +8,7 @@ import SignalUI
 import UIKit
 
 // The view next to the scroll indicator that shows the currently visible month.
-class MediaTileScrollFlag: UIView {
+final class MediaTileScrollFlag: UIView {
     private let label = UILabel()
     private let inset = CGSize(width: 12.0, height: 6.0)
     var stringValue: String {

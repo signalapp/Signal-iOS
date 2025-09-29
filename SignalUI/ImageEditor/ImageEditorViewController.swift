@@ -8,7 +8,7 @@ import UIKit
 
 // Base class for all tool view controllers.
 
-class ImageEditorViewController: OWSViewController {
+final class ImageEditorViewController: OWSViewController {
 
     let model: ImageEditorModel
     private weak var stickerSheetDelegate: StickerPickerSheetDelegate?

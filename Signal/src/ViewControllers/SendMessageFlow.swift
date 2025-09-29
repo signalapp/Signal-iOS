@@ -40,7 +40,7 @@ struct SendMessageApprovedContent {
 
 // MARK: -
 
-class SendMessageFlow {
+final class SendMessageFlow {
 
     private weak var delegate: SendMessageDelegate?
 
@@ -291,7 +291,7 @@ extension SendMessageFlow: TextApprovalViewControllerDelegate {
 
 // MARK: -
 
-public class SendMessageController: SendMessageDelegate {
+final public class SendMessageController: SendMessageDelegate {
 
     private weak var fromViewController: UIViewController?
 

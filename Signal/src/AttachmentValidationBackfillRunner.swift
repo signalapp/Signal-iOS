@@ -8,7 +8,7 @@ import SignalServiceKit
 
 /// Manages the BGProcessingTask for doing the backfill of attachments that were
 /// validated using an old version of the validator and need revalidation.
-class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
+final class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
 
     private let db: SDSDatabaseStorage
     private let store: AttachmentValidationBackfillStore

@@ -67,7 +67,7 @@ import Foundation
 /// OWSProgress optimizes for single-threaded updates; batching observer updates to do so efficiently.
 /// * NSProgress requires you to know unit counts for all children up-front and they must all share units.
 /// OWSProgress lets you add children lazily and renormalizes disparate units at each level of the tree.
-public class OWSProgress: Equatable, SomeOWSProgress {
+final public class OWSProgress: Equatable, SomeOWSProgress {
     public class ChildProgress: Equatable, SomeOWSProgress {
         /// The completed unit count of this particular source/sink.
         /// The units DO NOT necessarily correspond to the units of the root OWSProgress.
@@ -771,7 +771,7 @@ extension OWSProgressRootNode: OWSProgressParentNode {}
 // MARK: - Node implementations
 
 /// A sink that is itself a child to another sink.
-private class OWSProgressSinkNode: OWSProgressSink, OWSProgressParentNode, OWSProgressChildNode {
+final private class OWSProgressSinkNode: OWSProgressSink, OWSProgressParentNode, OWSProgressChildNode {
 
     var isOrphaned: Bool = false
 
@@ -819,7 +819,7 @@ private class OWSProgressSinkNode: OWSProgressSink, OWSProgressParentNode, OWSPr
     }
 }
 
-private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
+final private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
 
     var isOrphaned: Bool = false
     var label: String

@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-class StoryGroupReplyLoader {
+final class StoryGroupReplyLoader {
     private let messageBatchFetcher: StoryGroupReplyBatchFetcher
     private let messageLoader: MessageLoader
     private let threadUniqueId: String
@@ -326,7 +326,7 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
 
 // MARK: - Batch Fetcher
 
-private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
+final private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
     private let storyAuthor: Aci
     private let storyTimestamp: UInt64
 

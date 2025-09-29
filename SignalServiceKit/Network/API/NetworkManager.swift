@@ -246,7 +246,7 @@ private struct ProxyConfig {
 
 #if TESTABLE_BUILD
 
-public class OWSFakeNetworkManager: NetworkManager {
+final public class OWSFakeNetworkManager: NetworkManager {
 
     public override func asyncRequestImpl(
         _ request: TSRequest,
@@ -258,7 +258,7 @@ public class OWSFakeNetworkManager: NetworkManager {
     }
 }
 
-class MockNetworkManager: NetworkManagerProtocol {
+final class MockNetworkManager: NetworkManagerProtocol {
     var asyncRequestHandlers = [(TSRequest, NetworkManager.RetryPolicy) async throws -> HTTPResponse]()
     func asyncRequestImpl(
         _ request: TSRequest,

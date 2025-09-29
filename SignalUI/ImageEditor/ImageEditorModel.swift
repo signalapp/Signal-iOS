@@ -11,7 +11,7 @@ import SignalServiceKit
 // are immutable, these operations simply take a
 // snapshot of the current contents which can be used
 // (multiple times) to preserve/restore editor state.
-private class ImageEditorOperation: NSObject {
+final private class ImageEditorOperation: NSObject {
 
     let operationId: String
 
@@ -38,7 +38,7 @@ protocol ImageEditorModelObserver: AnyObject {
 
 // MARK: -
 
-class ImageEditorModel: NSObject {
+final class ImageEditorModel: NSObject {
 
     let srcImagePath: String
 

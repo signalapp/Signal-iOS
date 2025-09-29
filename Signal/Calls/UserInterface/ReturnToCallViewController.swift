@@ -22,7 +22,7 @@ protocol CallViewControllerWindowReference: AnyObject {
 
 // MARK: -
 
-public class ReturnToCallViewController: UIViewController {
+final public class ReturnToCallViewController: UIViewController {
 
     public static var inherentPipSize: CGSize {
         let nineBySixteen = CGSize(width: 90, height: 160)

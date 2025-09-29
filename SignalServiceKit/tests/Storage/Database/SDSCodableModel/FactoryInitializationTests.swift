@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
-class FactoryInitializationTests: XCTestCase {
+final class FactoryInitializationTests: XCTestCase {
     func testFactoryInitialization_SuccessFromHardcodedData() throws {
         class BaseClass: NeedsFactoryInitializationFromRecordType {
             enum CodingKeys: CodingKey { case recordType; case base; case foo; case bar }
@@ -122,7 +122,7 @@ class FactoryInitializationTests: XCTestCase {
     }
 }
 
-private class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationFromRecordType {
+final private class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationFromRecordType {
     enum CodingKeys: CodingKey { case recordType }
 
     static var recordTypeCodingKey: CodingKeys { .recordType }
@@ -141,7 +141,7 @@ private class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationF
     }
 }
 
-private class FooClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
+final private class FooClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
     static var recordType: UInt { 1 }
 
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
@@ -150,7 +150,7 @@ private class FooClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializa
     }
 }
 
-private class BarClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
+final private class BarClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
     static var recordType: UInt { 2 }
 
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {

@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class SecureValueRecoveryMock: SecureValueRecovery {
+final public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public init() {}
 

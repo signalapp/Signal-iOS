@@ -405,7 +405,7 @@ extension CallLinkViewController: SendMessageDelegate {
 
 // MARK: - CallLinkCardView
 
-private class CallLinkCardView: UIView {
+final private class CallLinkCardView: UIView {
     private lazy var iconView: UIImageView = {
         let image = CommonCallLinksUI.callLinkIcon(rootKey: callLink.rootKey)
         let imageView = UIImageView(image: image)

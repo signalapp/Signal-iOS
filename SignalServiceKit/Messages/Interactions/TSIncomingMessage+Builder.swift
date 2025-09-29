@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 @objcMembers
-public class TSIncomingMessageBuilder: TSMessageBuilder {
+final public class TSIncomingMessageBuilder: TSMessageBuilder {
     @nonobjc
     public var authorAci: Aci?
     public var authorAciObjC: AciObjC? { authorAci.map { AciObjC($0) } }

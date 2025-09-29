@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies {
+final public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?

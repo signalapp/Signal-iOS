@@ -31,7 +31,7 @@ public protocol GroupUpdateInfoMessageInserter {
     )
 }
 
-class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
+final class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     private let dateProvider: DateProvider
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let notificationPresenter: any NotificationPresenter

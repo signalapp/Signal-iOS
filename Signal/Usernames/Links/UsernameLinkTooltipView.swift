@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class UsernameLinkTooltipView: TooltipView {
+final class UsernameLinkTooltipView: TooltipView {
 
     private let hInsetFromReferenceView: CGFloat
     private let onDismiss: () -> Void

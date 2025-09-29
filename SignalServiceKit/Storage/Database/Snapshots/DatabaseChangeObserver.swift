@@ -71,7 +71,7 @@ public protocol SDSDatabaseChangeObserver: DatabaseChangeObserver {
     func didTouch(storyMessage: StoryMessage, transaction: DBWriteTransaction)
 }
 
-public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
+final public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([

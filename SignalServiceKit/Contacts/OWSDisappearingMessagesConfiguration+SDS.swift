@@ -296,7 +296,7 @@ public extension OWSDisappearingMessagesConfiguration {
 // MARK: - OWSDisappearingMessagesConfigurationCursor
 
 @objc
-public class OWSDisappearingMessagesConfigurationCursor: NSObject, SDSCursor {
+final public class OWSDisappearingMessagesConfigurationCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
 
@@ -523,7 +523,7 @@ public extension OWSDisappearingMessagesConfiguration {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
+final class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
     private let model: OWSDisappearingMessagesConfiguration
     public init(model: OWSDisappearingMessagesConfiguration) {

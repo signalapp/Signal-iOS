@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class OWSTableContents {
+final public class OWSTableContents {
 
     public private(set) var title: String?
 

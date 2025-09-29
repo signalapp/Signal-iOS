@@ -8,7 +8,7 @@
 import Foundation
 import LibSignalClient
 
-internal class MockSignalProtocolStore: SignalProtocolStore {
+final internal class MockSignalProtocolStore: SignalProtocolStore {
     public var sessionStore: SignalSessionStore { mockSessionStore }
     public var preKeyStore: PreKeyStoreImpl { mockPreKeyStore }
     public var signedPreKeyStore: SignedPreKeyStoreImpl { mockSignedPreKeyStore }
@@ -26,7 +26,7 @@ internal class MockSignalProtocolStore: SignalProtocolStore {
     internal var mockKyberPreKeyStore: KyberPreKeyStoreImpl
 }
 
-class MockSessionStore: SignalSessionStore {
+final class MockSessionStore: SignalSessionStore {
     func mightContainSession(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool { false }
     func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) { }
     func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) { }

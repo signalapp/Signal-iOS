@@ -15,7 +15,7 @@ extension Notification.Name {
     static let outgoingDeviceTransferDidEnd = Notification.Name("OutgoingDeviceTransferDidEndNotification")
 }
 
-class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
+final class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
     private let internalNavigationController = OWSNavigationController()
     private let deviceTransferService: DeviceTransferService

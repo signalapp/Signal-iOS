@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class CommonCallState {
+final class CommonCallState {
     let audioActivity: AudioActivity
 
     init(audioActivity: AudioActivity) {

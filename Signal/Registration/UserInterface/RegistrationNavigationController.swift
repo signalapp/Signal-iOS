@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class RegistrationNavigationController: OWSNavigationController {
+final public class RegistrationNavigationController: OWSNavigationController {
 
     private let appReadiness: AppReadinessSetter
     private let coordinator: RegistrationCoordinator

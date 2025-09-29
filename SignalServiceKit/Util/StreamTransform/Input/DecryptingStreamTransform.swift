@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
+final public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
     public enum Error: Swift.Error {
         case initialBufferTooSmall
         case notInitialized

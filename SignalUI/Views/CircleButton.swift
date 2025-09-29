@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class CircleButton: OWSButton {
+final public class CircleButton: OWSButton {
 
     // MARK: - Init
 

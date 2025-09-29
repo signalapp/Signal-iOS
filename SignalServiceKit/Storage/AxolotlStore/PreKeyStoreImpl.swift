@@ -9,7 +9,7 @@ public import LibSignalClient
 private let batchSize: Int = 100
 private let tsNextPrekeyIdKey = "TSStorageInternalSettingsNextPreKeyId"
 
-public class PreKeyStoreImpl {
+final public class PreKeyStoreImpl {
 
     private let keyStore: KeyValueStore
     private let metadataStore: KeyValueStore

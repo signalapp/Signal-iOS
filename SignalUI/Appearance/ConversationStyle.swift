@@ -7,7 +7,7 @@ public import SignalServiceKit
 
 // An immutable snapshot of the core styling
 // state used by CVC for a given load/render cycle.
-public class ConversationStyle: NSObject {
+final public class ConversationStyle: NSObject {
 
     public enum `Type`: UInt {
         // The style used from initialization until presentation begins.

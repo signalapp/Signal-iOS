@@ -7,7 +7,7 @@ import SafariServices
 import SignalServiceKit
 public import SignalUI
 
-public class PinSetupViewController: OWSViewController, OWSNavigationChildController {
+final public class PinSetupViewController: OWSViewController, OWSNavigationChildController {
 
     lazy private var titleLabel: UILabel = {
         let label = UILabel()

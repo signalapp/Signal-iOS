@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class EditCallLinkNameViewController: NameEditorViewController {
+final class EditCallLinkNameViewController: NameEditorViewController {
     /// Values taken from the spec.
     override class var nameByteLimit: Int { 119 }
     override class var nameGlyphLimit: Int { 32 }

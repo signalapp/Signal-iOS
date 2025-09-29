@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class QuotedReplyManagerImpl: QuotedReplyManager {
+final public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore

@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ArraySSKTests: XCTestCase {
+final class ArraySSKTests: XCTestCase {
 
     func testForEachChunk_empty() async {
         // Empty should do nothing

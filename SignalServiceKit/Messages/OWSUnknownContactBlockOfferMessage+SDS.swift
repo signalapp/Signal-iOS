@@ -47,7 +47,7 @@ public extension OWSUnknownContactBlockOfferMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
+final class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSUnknownContactBlockOfferMessage
     public init(model: OWSUnknownContactBlockOfferMessage) {

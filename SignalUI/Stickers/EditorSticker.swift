@@ -6,7 +6,7 @@
 import UIKit
 public import SignalServiceKit
 
-private class LayerContainerView: UIView {
+final private class LayerContainerView: UIView {
     let contentLayer: CALayer
     init(contentLayer: CALayer) {
         self.contentLayer = contentLayer
@@ -290,7 +290,7 @@ extension EditorSticker.StorySticker {
 
 // MARK: - AnalogClockLayer
 
-private class AnalogClockLayer: CALayer {
+final private class AnalogClockLayer: CALayer {
     typealias Style = EditorSticker.StorySticker.AnalogClockStyle
 
     private let clockStyle: Style

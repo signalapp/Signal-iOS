@@ -14,7 +14,7 @@ public protocol ConversationCollectionViewDelegate: AnyObject {
     func collectionViewShouldRecognizeSimultaneously(with otherGestureRecognizer: UIGestureRecognizer) -> Bool
 }
 
-public class ConversationCollectionView: UICollectionView {
+final public class ConversationCollectionView: UICollectionView {
 
     weak var layoutDelegate: ConversationCollectionViewDelegate?
 

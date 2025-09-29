@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class AttachmentManagerImpl: AttachmentManager {
+final public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore

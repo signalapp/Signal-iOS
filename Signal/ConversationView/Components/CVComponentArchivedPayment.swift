@@ -8,7 +8,7 @@ import SignalServiceKit
 public import SignalUI
 
 @objc
-public class CVComponentArchivedPayment: CVComponentBase, CVComponent {
+final public class CVComponentArchivedPayment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .archivedPaymentAttachment }
 
@@ -398,7 +398,7 @@ fileprivate extension UIView {
     }
 }
 
-private class CustomView: UIView {
+final private class CustomView: UIView {
     var dimension: CGFloat = .spinnerSquareDimension
 
     override var intrinsicContentSize: CGSize {

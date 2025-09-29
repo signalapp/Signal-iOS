@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class LinkPreviewSettingStore {
+final public class LinkPreviewSettingStore {
     private enum Constants {
         static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
     }

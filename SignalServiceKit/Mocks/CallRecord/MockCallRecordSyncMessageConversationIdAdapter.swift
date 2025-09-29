@@ -5,7 +5,7 @@
 
 #if TESTABLE_BUILD
 
-class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
+final class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
     var mockHydratedCallRecord: CallRecord?
     func hydrate(
         conversationId: Data,

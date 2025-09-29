@@ -5,7 +5,7 @@
 
 import Foundation
 
-class ZkParamsMigrator {
+final class ZkParamsMigrator {
     private let appReadiness: AppReadiness
     private let authCredentialStore: AuthCredentialStore
     private let db: any DB

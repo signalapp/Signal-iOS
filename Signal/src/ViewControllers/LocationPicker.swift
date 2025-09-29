@@ -353,7 +353,7 @@ extension LocationPicker: MKMapViewDelegate {
 
 // MARK: UISearchBarDelegate
 
-class LocationSearchResults: UITableViewController {
+final class LocationSearchResults: UITableViewController {
     var locations: [Location] = []
     var onSelectLocation: ((Location) -> Void)?
 
@@ -386,7 +386,7 @@ class LocationSearchResults: UITableViewController {
     }
 }
 
-public class Location: NSObject {
+final public class Location: NSObject {
     public let name: String?
 
     // difference from placemark location is that if location was reverse geocoded,

@@ -101,7 +101,7 @@ public struct SpoilerMetalConfiguration {
     }
 }
 
-internal class SpoilerParticleView: MTKView {
+final internal class SpoilerParticleView: MTKView {
 
     private let metalConfig: SpoilerMetalConfiguration
     private let renderer: SpoilerRenderer

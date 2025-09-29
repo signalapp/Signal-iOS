@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class StoryRecipientManager {
+final public class StoryRecipientManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyRecipientStore: StoryRecipientStore
     private let storageServiceManager: any StorageServiceManager

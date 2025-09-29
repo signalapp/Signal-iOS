@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentLinkPreview: CVComponentBase, CVComponent {
+final public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .linkPreview }
 

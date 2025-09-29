@@ -18,7 +18,7 @@ public protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
 
 // MARK: - StickerPacksToolbar
 
-class StickerPacksToolbar: UIStackView {
+final class StickerPacksToolbar: UIStackView {
     private static let packCoverSize: CGFloat = 32
     private static let packCoverInset: CGFloat = 4
     private static let packCoverSpacing: CGFloat = 4
@@ -88,7 +88,7 @@ class StickerPacksToolbar: UIStackView {
 
 // MARK: - StickerPickerPageView
 
-public class StickerPickerPageView: UIView {
+final public class StickerPickerPageView: UIView {
 
     public private(set) weak var delegate: StickerPickerPageViewDelegate?
 
@@ -501,7 +501,7 @@ extension StickerPickerPageView: StickerPackCollectionViewDelegate {
 
 // MARK: - StickerViewCache
 
-public class StickerViewCache {
+final public class StickerViewCache {
 
     private typealias CacheType = LRUCache<StickerInfo, ThreadSafeCacheHandle<StickerReusableView>>
     private let backingCache: CacheType

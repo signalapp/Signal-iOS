@@ -6,7 +6,7 @@
 public import PureLayout
 import SignalServiceKit
 
-public class ToastController: NSObject, ToastViewDelegate {
+final public class ToastController: NSObject, ToastViewDelegate {
 
     static var currentToastController: ToastController?
 
@@ -183,7 +183,7 @@ protocol ToastViewDelegate: AnyObject {
     func didSwipeToastView(_ toastView: ToastView)
 }
 
-class ToastView: UIView {
+final class ToastView: UIView {
 
     var text: String? {
         get {

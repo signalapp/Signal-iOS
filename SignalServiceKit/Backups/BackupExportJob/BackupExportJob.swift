@@ -78,7 +78,7 @@ extension NSNotification.Name {
 
 // MARK: -
 
-class BackupExportJobImpl: BackupExportJob {
+final class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
     private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager

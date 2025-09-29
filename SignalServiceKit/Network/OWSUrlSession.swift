@@ -15,7 +15,7 @@ public enum OWSURLSessionError: Error, IsRetryableProvider {
     }
 }
 
-public class OWSURLSession: OWSURLSessionProtocol {
+final public class OWSURLSession: OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
 
@@ -818,7 +818,7 @@ private protocol TaskState {
 
 // MARK: - DownloadTaskState
 
-private class DownloadTaskState: TaskState {
+final private class DownloadTaskState: TaskState {
     typealias CompletionContinuation = CheckedContinuation<(URLResponse?, URL), any Error>
     let progressSource: OWSProgressSource?
     let completion: CompletionContinuation
@@ -836,7 +836,7 @@ private class DownloadTaskState: TaskState {
 // MARK: - DataTaskState (& UploadTaskState)
 
 /// Also used for upload tasks, which are a subclass data tasks.
-private class DataTaskState: TaskState {
+final private class DataTaskState: TaskState {
     typealias CompletionContinuation = CheckedContinuation<(URLResponse?, Data), any Error>
 
     let pendingData = AtomicValue<Data>(Data(), lock: .init())
@@ -855,7 +855,7 @@ private class DataTaskState: TaskState {
 
 // MARK: - WebSocketTaskState
 
-private class WebSocketTaskState: TaskState {
+final private class WebSocketTaskState: TaskState {
     typealias OpenBlock = (String?) -> Void
     typealias CloseBlock = (Error) -> Void
 
@@ -899,7 +899,7 @@ private class WebSocketTaskState: TaskState {
 //   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
 //                                                x-----(weakDelegate)-----|
 //
-private class URLSessionDelegateBox: NSObject {
+final private class URLSessionDelegateBox: NSObject {
 
     private weak var weakDelegate: OWSURLSession?
     private var strongReference: OWSURLSession?

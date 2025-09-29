@@ -17,7 +17,7 @@ public enum MessageReceiptStatus: Int {
     case pending
 }
 
-public class MessageRecipientStatusUtils {
+final public class MessageRecipientStatusUtils {
 
     private init() {}
 

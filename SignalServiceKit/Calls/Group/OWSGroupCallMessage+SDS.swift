@@ -47,7 +47,7 @@ public extension OWSGroupCallMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSGroupCallMessageSerializer: SDSSerializer {
+final class OWSGroupCallMessageSerializer: SDSSerializer {
 
     private let model: OWSGroupCallMessage
     public init(model: OWSGroupCallMessage) {

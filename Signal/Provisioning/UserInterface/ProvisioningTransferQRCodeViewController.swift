@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
+final class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
     private let provisioningTransferQRCodeViewModel: ProvisioningTransferQRCodeView.Model
 
     override init(provisioningController: ProvisioningController) {

@@ -6,7 +6,7 @@
 public import LibSignalClient
 public import SignalServiceKit
 
-public class CVTextLabel: NSObject {
+final public class CVTextLabel: NSObject {
 
     // MARK: -
 

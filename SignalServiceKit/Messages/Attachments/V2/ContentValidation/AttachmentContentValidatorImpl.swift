@@ -7,7 +7,7 @@ import AVFoundation
 import CryptoKit
 import Foundation
 
-public class AttachmentContentValidatorImpl: AttachmentContentValidator {
+final public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private let attachmentStore: AttachmentStore
     private let audioWaveformManager: AudioWaveformManager

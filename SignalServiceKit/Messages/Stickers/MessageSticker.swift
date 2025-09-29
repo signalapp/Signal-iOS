@@ -7,7 +7,7 @@ import Foundation
 
 // MARK: - MessageStickerDraft
 
-public class MessageStickerDraft {
+final public class MessageStickerDraft {
     public let info: StickerInfo
 
     public var packId: Data {
@@ -39,7 +39,7 @@ public class MessageStickerDraft {
 // MARK: - MessageSticker
 
 @objc
-public class MessageSticker: MTLModel {
+final public class MessageSticker: MTLModel {
     // MTLModel requires default values.
     @objc
     public var info = StickerInfo.defaultValue

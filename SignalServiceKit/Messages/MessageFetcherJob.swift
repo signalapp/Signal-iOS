@@ -7,7 +7,7 @@ import Foundation
 
 // MARK: -
 
-public class MessageFetcherJob {
+final public class MessageFetcherJob {
     public init() {
         SwiftSingletons.register(self)
     }

@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSDeviceNamesTest: XCTestCase {
+final class OWSDeviceNamesTest: XCTestCase {
     func testNotEncrypted() {
         let identityKeyPair = IdentityKeyPair.generate()
 

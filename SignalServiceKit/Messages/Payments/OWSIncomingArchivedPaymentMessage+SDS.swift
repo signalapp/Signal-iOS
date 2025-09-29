@@ -47,7 +47,7 @@ public extension OWSIncomingArchivedPaymentMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSIncomingArchivedPaymentMessageSerializer: SDSSerializer {
+final class OWSIncomingArchivedPaymentMessageSerializer: SDSSerializer {
 
     private let model: OWSIncomingArchivedPaymentMessage
     public init(model: OWSIncomingArchivedPaymentMessage) {

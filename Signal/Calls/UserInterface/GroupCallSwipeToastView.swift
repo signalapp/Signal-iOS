@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import UIKit
 
-class GroupCallSwipeToastView: UIView {
+final class GroupCallSwipeToastView: UIView {
 
     private let imageView: UIImageView = {
         let view = UIImageView()

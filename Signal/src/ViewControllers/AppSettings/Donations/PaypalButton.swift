@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class PaypalButton: UIButton {
+final class PaypalButton: UIButton {
     private let actionBlock: () -> Void
 
     init(actionBlock: @escaping () -> Void) {

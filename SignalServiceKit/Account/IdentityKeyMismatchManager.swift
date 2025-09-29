@@ -42,7 +42,7 @@ public protocol IdentityKeyMismatchManager {
     func validateIdentityKey(for identity: OWSIdentity) async
 }
 
-class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
+final class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     private enum Constants {
         static let collection = "LinkedDevicePniKeyManagerImpl"
         static let hasRecordedSuspectedIssueKey = "hasSuspectedIssue"

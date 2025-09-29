@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import SDWebImage
 
-class ViewOnceMessageViewController: OWSViewController {
+final class ViewOnceMessageViewController: OWSViewController {
 
     typealias Content = ViewOnceContent
 

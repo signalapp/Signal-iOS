@@ -10,7 +10,7 @@ public protocol FindByPhoneNumberDelegate: AnyObject {
                            didSelectAddress address: SignalServiceAddress)
 }
 
-public class FindByPhoneNumberViewController: OWSTableViewController2 {
+final public class FindByPhoneNumberViewController: OWSTableViewController2 {
     weak var findByPhoneNumberDelegate: FindByPhoneNumberDelegate?
     let buttonText: String?
     let requiresRegisteredNumber: Bool

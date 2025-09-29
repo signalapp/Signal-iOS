@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class EmojiSkinTonePicker: UIView {
+final class EmojiSkinTonePicker: UIView {
     let emoji: Emoji
     let preferredSkinTonePermutation: [Emoji.SkinTone]?
     let completion: (EmojiWithSkinTones?) -> Void

@@ -7,7 +7,7 @@ import Foundation
 public import XCTest
 @testable import SignalServiceKit
 
-public class ChainedPromiseTest: XCTestCase {
+final public class ChainedPromiseTest: XCTestCase {
     func testChainSingleVoidPromise() throws {
         let chainedPromise = ChainedPromise<Void>()
 

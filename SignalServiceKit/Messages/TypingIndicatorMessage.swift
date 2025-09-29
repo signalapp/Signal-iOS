@@ -12,7 +12,7 @@ public enum TypingIndicatorAction: Int {
 }
 
 @objc(OWSTypingIndicatorMessage)
-public class TypingIndicatorMessage: TSOutgoingMessage {
+final public class TypingIndicatorMessage: TSOutgoingMessage {
     // Marked @objc so that Mantle can encode/decode it.
     @objc
     private var action: TypingIndicatorAction = .started

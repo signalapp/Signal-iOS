@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
+final class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
     private lazy var interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
     let avatarImage: UIImage
 

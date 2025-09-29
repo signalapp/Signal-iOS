@@ -5,7 +5,7 @@
 
 #if TESTABLE_BUILD
 
-class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager {
+final class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager {
     var expectedCallEvent: CallEvent?
     var syncMessageSendCount: UInt = 0
 

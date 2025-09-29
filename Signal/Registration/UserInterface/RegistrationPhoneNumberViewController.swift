@@ -18,7 +18,7 @@ protocol RegistrationPhoneNumberPresenter: RegistrationMethodPresenter {
 
 // MARK: - RegistrationPhoneNumberViewController
 
-class RegistrationPhoneNumberViewController: OWSViewController {
+final class RegistrationPhoneNumberViewController: OWSViewController {
     public init(
         state: RegistrationPhoneNumberViewState.RegistrationMode,
         presenter: RegistrationPhoneNumberPresenter

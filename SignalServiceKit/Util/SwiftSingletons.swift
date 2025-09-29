@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SwiftSingletons {
+final public class SwiftSingletons {
     private static let shared = SwiftSingletons()
 
     private var registeredTypes = Set<ObjectIdentifier>()

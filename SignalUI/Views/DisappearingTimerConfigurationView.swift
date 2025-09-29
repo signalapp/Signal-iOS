@@ -14,7 +14,7 @@ public protocol DisappearingTimerConfigurationViewDelegate: AnyObject {
 // of disappearing messages for a thread.
 //
 // If you assign a delegate, it behaves like a button.
-public class DisappearingTimerConfigurationView: UIView {
+final public class DisappearingTimerConfigurationView: UIView {
 
     public weak var delegate: DisappearingTimerConfigurationViewDelegate? {
         didSet {

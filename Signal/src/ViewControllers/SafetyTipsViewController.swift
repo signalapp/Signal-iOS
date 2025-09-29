@@ -12,7 +12,7 @@ public enum SafetyTipsType {
     case group
 }
 
-public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
+final public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }

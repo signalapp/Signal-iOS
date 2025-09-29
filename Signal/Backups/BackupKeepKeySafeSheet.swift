@@ -6,7 +6,7 @@
 import SignalUI
 import SignalServiceKit
 
-class BackupKeepKeySafeSheet: HeroSheetViewController {
+final class BackupKeepKeySafeSheet: HeroSheetViewController {
     static var seeKeyAgainButtonTitle: String {
         return OWSLocalizedString(
             "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE",

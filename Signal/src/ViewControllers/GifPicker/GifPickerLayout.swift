@@ -10,7 +10,7 @@ protocol GifPickerLayoutDelegate: AnyObject {
 }
 
 // A Pinterest-style waterfall layout.
-class GifPickerLayout: UICollectionViewLayout {
+final class GifPickerLayout: UICollectionViewLayout {
 
     public weak var delegate: GifPickerLayoutDelegate?
 

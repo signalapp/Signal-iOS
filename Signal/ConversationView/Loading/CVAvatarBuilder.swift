@@ -15,7 +15,7 @@ import SignalUI
 //       db transactions and updates.
 //       It might help ensure that CVComponentState equality
 //       works correctly.
-public class CVAvatarBuilder {
+final public class CVAvatarBuilder {
 
     private let transaction: DBReadTransaction
 

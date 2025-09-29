@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class DisplayableText: NSObject {
+final public class DisplayableText: NSObject {
 
     private struct Content {
         let textValue: CVTextValue

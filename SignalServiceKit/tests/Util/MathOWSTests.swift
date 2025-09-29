@@ -5,7 +5,7 @@
 
 import XCTest
 
-class MathOWSTests: XCTestCase {
+final class MathOWSTests: XCTestCase {
     func testCGFloatRandom() throws {
         let expectedTwoChoicesValues = Set([CGFloat(0), CGFloat(50)])
         var actualTwoChoicesValues = Set<CGFloat>()

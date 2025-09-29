@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 
-class SetWallpaperViewController: OWSTableViewController2 {
+final class SetWallpaperViewController: OWSTableViewController2 {
     private lazy var collectionView = WallpaperCollectionView(container: self, shouldDimInDarkMode: shouldDimInDarkMode) { [weak self] wallpaper in
         guard let self = self else { return }
         let vc = PreviewWallpaperViewController(
@@ -151,7 +151,7 @@ extension SetWallpaperViewController: PreviewWallpaperDelegate {
     }
 }
 
-private class WallpaperCollectionView: UICollectionView {
+final private class WallpaperCollectionView: UICollectionView {
     private let shouldDimInDarkMode: Bool
     private let flowLayout = UICollectionViewFlowLayout()
     private let selectionHandler: (Wallpaper) -> Void
@@ -239,7 +239,7 @@ extension WallpaperCollectionView: UICollectionViewDataSource, UICollectionViewD
     }
 }
 
-private class WallpaperCell: UICollectionViewCell {
+final private class WallpaperCell: UICollectionViewCell {
     static let reuseIdentifier = "WallpaperCell"
 
     var wallpaperView: UIView?

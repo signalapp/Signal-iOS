@@ -15,7 +15,7 @@ public protocol CVViewStateDelegate: AnyObject {
 // This can be a simple place to hang CVC's mutable view state.
 //
 // These properties should only be accessed on the main thread.
-public class CVViewState: NSObject {
+final public class CVViewState: NSObject {
     public weak var delegate: CVViewStateDelegate?
 
     public let threadUniqueId: String
@@ -372,7 +372,7 @@ struct CVCoreState {
 
 // MARK: -
 
-public class CVTextExpansion {
+final public class CVTextExpansion {
     private var expandedTextInteractionsIds = Set<String>()
 
     init(expandedTextInteractionsIds: Set<String>? = nil) {
@@ -399,7 +399,7 @@ public class CVTextExpansion {
 
 // MARK: -
 
-public class CVMessageSwipeActionState {
+final public class CVMessageSwipeActionState {
     public struct Progress {
         let xOffset: CGFloat
     }

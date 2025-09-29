@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class SUIEnvironment: NSObject {
+final public class SUIEnvironment: NSObject {
 
     private static var _shared: SUIEnvironment = SUIEnvironment()
 

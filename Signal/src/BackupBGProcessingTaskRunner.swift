@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
+final class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     private enum StoreKeys {
         static let lastCompletionDate: String = "lastCompletionDate"
     }

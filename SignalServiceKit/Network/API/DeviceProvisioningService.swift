@@ -29,7 +29,7 @@ public protocol DeviceProvisioningService {
     func provisionDevice(messageBody: Data, ephemeralDeviceId: String) async throws
 }
 
-public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
+final public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
     private let networkManager: NetworkManager
 
     public init(networkManager: NetworkManager) {

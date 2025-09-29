@@ -56,7 +56,7 @@ public protocol BackupAuthCredentialManager {
 
 // MARK: -
 
-class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
+final class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     private let authCredentialStore: AuthCredentialStore
     private let backupIdService: BackupIdService

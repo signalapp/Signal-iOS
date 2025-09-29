@@ -9,7 +9,7 @@ import Foundation
 import SignalUI
 public import UIKit
 
-public class LineWrappingStackViewTestController: UIViewController {
+final public class LineWrappingStackViewTestController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()

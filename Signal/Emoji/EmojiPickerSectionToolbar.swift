@@ -11,7 +11,7 @@ protocol EmojiPickerSectionToolbarDelegate: AnyObject {
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool
 }
 
-class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
+final class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
     private var buttons = [UIButton]()
 
     private let forceDarkTheme: Bool

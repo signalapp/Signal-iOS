@@ -10,7 +10,7 @@ import SignalUI
 //
 // It is intended to be an immutable, comprehensive snapshot of all
 // loaded state needed to render CVC at a given state of time.
-class CVRenderState {
+final class CVRenderState {
 
     public static let renderStateId_unknown: UInt = 0
 

@@ -42,7 +42,7 @@ public protocol OrphanedBackupAttachmentStore {
     func removeAll(tx: DBWriteTransaction) throws
 }
 
-public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
+final public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
 
     public init() {}
 

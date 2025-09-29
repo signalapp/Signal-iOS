@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ReactionsDetailSheet: InteractiveSheetViewController {
+final class ReactionsDetailSheet: InteractiveSheetViewController {
     let messageId: String
 
     private var reactionState: InteractionReactionState

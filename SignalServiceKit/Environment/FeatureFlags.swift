@@ -186,7 +186,7 @@ public enum DebugFlags {
 
 // MARK: -
 
-public class TestableFlag {
+final public class TestableFlag {
     private let defaultValue: Bool
     private let flag: AtomicBool
     public let title: String

@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import UIKit
 
-public class ActionSheetContentBuilder {
+final public class ActionSheetContentBuilder {
 
     var subviews = [UIView]()
 

@@ -24,7 +24,7 @@ public protocol ConversationSettingsViewDelegate: AnyObject {
 // MARK: -
 
 // TODO: We should describe which state updates & when it is committed.
-class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
+final class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
 
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 

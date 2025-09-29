@@ -19,7 +19,7 @@ private enum OpenableUrl {
     case quickRestore(URL)
 }
 
-class UrlOpener {
+final class UrlOpener {
     private let appReadiness: AppReadinessSetter
     private let databaseStorage: SDSDatabaseStorage
     private let tsAccountManager: TSAccountManager

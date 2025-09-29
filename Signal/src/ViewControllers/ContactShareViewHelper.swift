@@ -14,7 +14,7 @@ protocol ContactShareViewHelperDelegate: AnyObject {
 
 // MARK: -
 
-class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
+final class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     weak var delegate: ContactShareViewHelperDelegate?
 
@@ -165,7 +165,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 }
 
-private class AddContactShareToContactsFlow {
+final private class AddContactShareToContactsFlow {
     enum Operation {
         case createNew
         case addToExisting
@@ -270,7 +270,7 @@ private class AddContactShareToContactsFlow {
     }
 }
 
-private class AddContactShareToContactsFlowNavigationController: UINavigationController, CNContactViewControllerDelegate, ContactPickerDelegate {
+final private class AddContactShareToContactsFlowNavigationController: UINavigationController, CNContactViewControllerDelegate, ContactPickerDelegate {
 
     let flow: AddContactShareToContactsFlow
     let completion: (() -> Void)?

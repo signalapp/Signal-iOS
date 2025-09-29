@@ -8,7 +8,7 @@ import MessageUI
 import SignalServiceKit
 import SignalUI
 
-class ContactViewController: OWSTableViewController2 {
+final class ContactViewController: OWSTableViewController2 {
 
     private enum ContactViewMode {
         case systemContactWithSignal

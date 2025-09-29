@@ -12,7 +12,7 @@ import SignalServiceKit
 public import SignalUI
 
 @objc
-public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
+final public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .paymentAttachment }
 
@@ -412,7 +412,7 @@ fileprivate extension UIView {
     }
 }
 
-private class CustomView: UIView {
+final private class CustomView: UIView {
     var dimension: CGFloat = .spinnerSquareDimension
 
     override var intrinsicContentSize: CGSize {

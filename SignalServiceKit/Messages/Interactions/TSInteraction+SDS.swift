@@ -5385,7 +5385,7 @@ public extension TSInteraction {
 // MARK: - TSInteractionCursor
 
 @objc
-public class TSInteractionCursor: NSObject, SDSCursor {
+final public class TSInteractionCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<InteractionRecord>?
 
@@ -5630,7 +5630,7 @@ public extension TSInteraction {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSInteractionSerializer: SDSSerializer {
+final class TSInteractionSerializer: SDSSerializer {
 
     private let model: TSInteraction
     public init(model: TSInteraction) {

@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class RecoveryKeyReminderMegaphoneTests: XCTestCase {
+final class RecoveryKeyReminderMegaphoneTests: XCTestCase {
     private let backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
     private let db: DB = InMemoryDB()
     private let tsAccountManager: TSAccountManager = MockTSAccountManager()

@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class BadgeThanksSheetPresenter {
+final class BadgeThanksSheetPresenter {
     private struct Deps {
         static var donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore {
             DependenciesBridge.shared.donationReceiptCredentialResultStore

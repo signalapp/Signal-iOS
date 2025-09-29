@@ -14,7 +14,7 @@ public protocol StickerPickerSheetDelegate: AnyObject {
 
 // MARK: - StickerPickerSheet
 
-public class StickerPickerSheet: InteractiveSheetViewController {
+final public class StickerPickerSheet: InteractiveSheetViewController {
     public override var interactiveScrollViews: [UIScrollView] { stickerPicker.stickerPackCollectionViews }
     public override var sheetBackgroundColor: UIColor { .clear }
 

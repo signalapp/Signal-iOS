@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class DeviceBatteryLevelMonitorImpl: DeviceBatteryLevelMonitor {
+final public class DeviceBatteryLevelMonitorImpl: DeviceBatteryLevelMonitor {
 
     fileprivate let reason: String
     fileprivate var wasReleased: Bool = false
@@ -32,7 +32,7 @@ public class DeviceBatteryLevelMonitorImpl: DeviceBatteryLevelMonitor {
     public var notification: Notification.Name { UIDevice.batteryLevelDidChangeNotification }
 }
 
-public class DeviceBatteryLevelManagerImpl: DeviceBatteryLevelManager {
+final public class DeviceBatteryLevelManagerImpl: DeviceBatteryLevelManager {
 
     private var reasons = Set<String>()
 

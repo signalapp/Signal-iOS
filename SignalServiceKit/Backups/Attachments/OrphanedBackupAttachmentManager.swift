@@ -40,7 +40,7 @@ public protocol OrphanedBackupAttachmentManager {
     func runIfNeeded() async throws
 }
 
-public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
+final public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
 
     private let accountKeyStore: AccountKeyStore
     private let appReadiness: AppReadiness

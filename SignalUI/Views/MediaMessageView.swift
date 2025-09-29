@@ -7,7 +7,7 @@ import SignalServiceKit
 import UIKit
 import SDWebImage
 
-class MediaMessageView: UIView, AudioPlayerDelegate {
+final class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private let attachment: SignalAttachment
 

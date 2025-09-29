@@ -8,7 +8,7 @@ public import SignalServiceKit
 public import SignalUI
 import UIKit
 
-public class CVComponentMessage: CVComponentBase, CVRootComponent {
+final public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     public var componentKey: CVComponentKey { .messageRoot }
 
@@ -2812,7 +2812,7 @@ fileprivate extension CVComponentMessage {
 
 // MARK: -
 
-class SwipeToReplyWrapper: ManualLayoutView {
+final class SwipeToReplyWrapper: ManualLayoutView {
 
     var offset: CGPoint = .zero {
         didSet {

@@ -44,7 +44,7 @@ struct ProfileSheetSheetCoordinator {
     }
 }
 
-class MemberActionSheet: OWSTableSheetViewController {
+final class MemberActionSheet: OWSTableSheetViewController {
     private var groupViewHelper: GroupViewHelper?
 
     var avatarView: ConversationAvatarView?

@@ -9,7 +9,7 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-class CallKitIdStore {
+final class CallKitIdStore {
     private static let phoneNumberStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
     private static let serviceIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
     private static let groupIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")

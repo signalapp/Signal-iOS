@@ -8,7 +8,7 @@ import GRDB
 import XCTest
 @testable import SignalServiceKit
 
-class MediaGalleryAttachmentFinderTest: XCTestCase {
+final class MediaGalleryAttachmentFinderTest: XCTestCase {
 
     private var db: InMemoryDB!
 

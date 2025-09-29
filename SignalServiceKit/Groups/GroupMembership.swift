@@ -130,7 +130,7 @@ private enum GroupMemberState: Equatable, Codable, CustomStringConvertible {
 // MARK: -
 
 @objc
-public class GroupMembership: MTLModel {
+final public class GroupMembership: MTLModel {
 
     // MARK: Types
 
@@ -874,7 +874,7 @@ public class GroupMembership: MTLModel {
 // MARK: - InvalidInviteModel
 
 @objc(GroupMembershipInvalidInviteModel)
-private class InvalidInviteModel: MTLModel {
+final private class InvalidInviteModel: MTLModel {
     @objc
     var userId: Data?
 
@@ -906,7 +906,7 @@ private class InvalidInviteModel: MTLModel {
 // MARK: - LegacyMemberState
 
 @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-private class LegacyMemberState: MTLModel {
+final private class LegacyMemberState: MTLModel {
     @objc
     var role: TSGroupMemberRole = .normal
 

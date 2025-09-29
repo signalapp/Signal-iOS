@@ -10,7 +10,7 @@ import SignalServiceKit
 //
 // Instances of ImageEditorContents should be treated
 // as immutable, once configured.
-class ImageEditorContents {
+final class ImageEditorContents {
 
     typealias ItemMapType = OrderedDictionary<String, ImageEditorItem>
 

@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public class SSKProtos: NSObject {
+final public class SSKProtos: NSObject {
 
     private override init() {}
 

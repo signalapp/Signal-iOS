@@ -20,7 +20,7 @@ public protocol RegistrationSplashPresenter: AnyObject {
 
 // MARK: - RegistrationSplashViewController
 
-public class RegistrationSplashViewController: OWSViewController {
+final public class RegistrationSplashViewController: OWSViewController {
 
     private weak var presenter: RegistrationSplashPresenter?
 
@@ -268,7 +268,7 @@ private class RestoreOrTransferPickerController: StackSheetViewController {
 }
 
 #if DEBUG
-private class PreviewRegistrationSplashPresenter: RegistrationSplashPresenter {
+final private class PreviewRegistrationSplashPresenter: RegistrationSplashPresenter {
     func continueFromSplash() {
         print("continueFromSplash")
     }

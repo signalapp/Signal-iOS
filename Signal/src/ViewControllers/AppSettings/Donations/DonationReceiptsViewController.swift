@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class DonationReceiptsViewController: OWSTableViewController2 {
+final class DonationReceiptsViewController: OWSTableViewController2 {
 
     private var donationReceipts = [DonationReceipt]()
     private let profileBadgeLookup: ProfileBadgeLookup

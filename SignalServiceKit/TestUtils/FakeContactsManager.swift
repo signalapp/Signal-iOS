@@ -7,7 +7,7 @@
 
 public import Contacts
 
-public class FakeContactsManager: ContactManager {
+final public class FakeContactsManager: ContactManager {
     public var mockSignalAccounts = [String: SignalAccount]()
 
     public func fetchSignalAccounts(for phoneNumbers: [String], transaction: DBReadTransaction) -> [SignalAccount?] {

@@ -7,7 +7,7 @@ public extension Notification.Name {
     static let incomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
 
-public class IncomingContactSyncJobQueue {
+final public class IncomingContactSyncJobQueue {
     public enum Constants {
         public static let insertedThreads = "insertedThreads"
     }
@@ -56,7 +56,7 @@ public class IncomingContactSyncJobQueue {
     }
 }
 
-private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
+final private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
 
     private let appReadiness: AppReadiness
 
@@ -69,7 +69,7 @@ private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class IncomingContactSyncJobRunner: JobRunner {
+final private class IncomingContactSyncJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 4
     }

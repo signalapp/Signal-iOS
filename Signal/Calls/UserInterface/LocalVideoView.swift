@@ -8,7 +8,7 @@ import SignalRingRTC
 import SignalServiceKit
 public import WebRTC
 
-class LocalVideoView: UIView {
+final class LocalVideoView: UIView {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
     var captureSession: AVCaptureSession? {

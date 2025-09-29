@@ -47,7 +47,7 @@ public extension OWSUnknownProtocolVersionMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
+final class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
 
     private let model: OWSUnknownProtocolVersionMessage
     public init(model: OWSUnknownProtocolVersionMessage) {

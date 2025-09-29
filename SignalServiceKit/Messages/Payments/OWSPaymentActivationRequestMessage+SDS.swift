@@ -47,7 +47,7 @@ public extension OWSPaymentActivationRequestMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSPaymentActivationRequestMessageSerializer: SDSSerializer {
+final class OWSPaymentActivationRequestMessageSerializer: SDSSerializer {
 
     private let model: OWSPaymentActivationRequestMessage
     public init(model: OWSPaymentActivationRequestMessage) {

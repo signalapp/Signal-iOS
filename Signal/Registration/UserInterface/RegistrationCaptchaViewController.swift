@@ -14,7 +14,7 @@ protocol RegistrationCaptchaPresenter: AnyObject {
 
 // MARK: - RegistrationCaptchaViewController
 
-class RegistrationCaptchaViewController: OWSViewController {
+final class RegistrationCaptchaViewController: OWSViewController {
     private weak var presenter: RegistrationCaptchaPresenter?
 
     public init(presenter: RegistrationCaptchaPresenter) {

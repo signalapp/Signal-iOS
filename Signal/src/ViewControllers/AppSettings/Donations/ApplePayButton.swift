@@ -7,7 +7,7 @@ import PassKit
 import SignalUI
 import SignalServiceKit
 
-class ApplePayButton: UIButton {
+final class ApplePayButton: UIButton {
     private let actionBlock: () -> Void
     private let applePayButton: PKPaymentButton
 

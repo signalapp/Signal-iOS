@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
+final class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
 
     private let isOutgoingTransfer: Bool
 

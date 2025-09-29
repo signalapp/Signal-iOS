@@ -112,7 +112,7 @@ private func formatForLogging(_ versionNumber: String?) -> String {
     }
 }
 
-public class AppVersionImpl: AppVersion {
+final public class AppVersionImpl: AppVersion {
     private let firstVersionKey = "kNSUserDefaults_FirstAppVersion"
     private let backupAppVersionKey = "kNSUserDefaults_BackupAppVersion"
     private let firstBackupAppVersionKey = "kNSUserDefaults_FirstBackupAppVersion"
@@ -351,7 +351,7 @@ fileprivate extension UserDefaults {
 
 #if TESTABLE_BUILD
 
-public class MockAppVerion: AppVersion {
+final public class MockAppVerion: AppVersion {
 
     public init() {}
 

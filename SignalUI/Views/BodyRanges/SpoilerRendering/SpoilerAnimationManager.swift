@@ -68,7 +68,7 @@ extension SpoilerableViewAnimator {
 ///
 /// Sharing an animation manager as much as possible is recommended. This reduces resources by
 /// reusing the same state across all views on the same animation manager.
-public class SpoilerAnimationManager {
+final public class SpoilerAnimationManager {
 
     /// We want to limit how many ranges we render, to put a bound on computational
     /// complexity. A single spoiler range might render across multiple lines and therefore

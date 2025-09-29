@@ -6,7 +6,7 @@
 import Foundation
 
 @objc(OWSMessagePipelineSupervisor)
-public class MessagePipelineSupervisor: NSObject {
+final public class MessagePipelineSupervisor: NSObject {
 
     // MARK: - Stored Properties
 
@@ -153,7 +153,7 @@ public class MessagePipelineSupervisor: NSObject {
 }
 
 @objc(OWSMessagePipelineSuspensionHandle)
-public class MessagePipelineSuspensionHandle: NSObject {
+final public class MessagePipelineSuspensionHandle: NSObject {
     private let lock = UnfairLock()
     private var invalidationClosure: (() -> Void)?
 

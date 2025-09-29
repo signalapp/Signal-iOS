@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class ThreadViewModel: NSObject {
+final public class ThreadViewModel: NSObject {
     public let hasUnreadMessages: Bool
     public let isGroupThread: Bool
     public let threadRecord: TSThread
@@ -116,7 +116,7 @@ public class ThreadViewModel: NSObject {
 
 // MARK: -
 
-public class ChatListInfo {
+final public class ChatListInfo {
 
     public let lastMessageDate: Date?
     public let lastMessageOutgoingStatus: MessageReceiptStatus?

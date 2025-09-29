@@ -55,7 +55,7 @@ public extension InactiveLinkedDeviceFinder {
     }
 }
 
-class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
+final class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     private enum Constants {
         /// How long we should wait between device state refreshes.
         static let intervalForDeviceRefresh: TimeInterval = .day

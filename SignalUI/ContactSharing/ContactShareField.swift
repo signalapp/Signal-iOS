@@ -35,7 +35,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
     }
 }
 
-class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
+final class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
     override func applyToContact(contact: ContactShareDraft) {
         owsPrecondition(isIncluded)
@@ -47,7 +47,7 @@ class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
     }
 }
 
-class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
+final class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
     override func applyToContact(contact: ContactShareDraft) {
         owsPrecondition(isIncluded)
@@ -59,7 +59,7 @@ class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
     }
 }
 
-class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
+final class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
     override func applyToContact(contact: ContactShareDraft) {
         owsPrecondition(isIncluded)
@@ -72,7 +72,7 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 }
 
 // Stub class so that avatars conform to OWSContactField.
-class OWSContactAvatar: NSObject, OWSContactField {
+final class OWSContactAvatar: NSObject, OWSContactField {
 
     let avatarImage: UIImage
     let avatarData: Data
@@ -91,7 +91,7 @@ class OWSContactAvatar: NSObject, OWSContactField {
     var localizedLabel: String { "" }
 }
 
-class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
+final class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
 
     override func applyToContact(contact: ContactShareDraft) {
         owsPrecondition(isIncluded)

@@ -6,7 +6,7 @@
 public import SignalUI
 import UIKit
 
-public class AppSettingsViewsUtil {
+final public class AppSettingsViewsUtil {
     public class func newCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none

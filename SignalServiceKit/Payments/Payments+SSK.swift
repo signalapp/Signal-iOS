@@ -49,7 +49,7 @@ public enum PaymentsError: Error {
 
 // MARK: -
 
-public class PaymentsConstants {
+final public class PaymentsConstants {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}

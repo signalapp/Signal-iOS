@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 public import SignalServiceKit
 
-public class LinkPreviewFetchState {
+final public class LinkPreviewFetchState {
 
     private let db: any DB
     private let linkPreviewFetcher: any LinkPreviewFetcher

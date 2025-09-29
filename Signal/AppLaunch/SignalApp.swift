@@ -13,7 +13,7 @@ enum LaunchInterface {
 }
 
 @objc
-public class SignalApp: NSObject {
+final public class SignalApp: NSObject {
 
     @objc
     public static let shared = SignalApp()

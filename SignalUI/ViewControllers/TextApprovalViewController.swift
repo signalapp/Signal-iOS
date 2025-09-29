@@ -20,7 +20,7 @@ public protocol TextApprovalViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDelegate {
+final public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDelegate {
 
     public weak var delegate: TextApprovalViewControllerDelegate?
 

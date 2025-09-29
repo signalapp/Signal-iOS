@@ -17,7 +17,7 @@ public import SignalUI
 //
 // Although we could combine these two views, these two scenarios are
 // just different enough that its convenient to have two separate views.
-public class CVColorOrGradientView: ManualLayoutViewWithLayer {
+final public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     private weak var referenceView: UIView?
     private var value: ColorOrGradientValue?

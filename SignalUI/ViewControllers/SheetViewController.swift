@@ -140,7 +140,7 @@ extension SheetViewController: UIViewControllerTransitioningDelegate {
     }
 }
 
-private class SheetViewPresentationController: NSObject, UIViewControllerAnimatedTransitioning {
+final private class SheetViewPresentationController: NSObject, UIViewControllerAnimatedTransitioning {
 
     let sheetViewController: SheetViewController
     init(sheetViewController: SheetViewController) {
@@ -166,7 +166,7 @@ private class SheetViewPresentationController: NSObject, UIViewControllerAnimate
     }
 }
 
-private class SheetViewDismissalController: NSObject, UIViewControllerAnimatedTransitioning {
+final private class SheetViewDismissalController: NSObject, UIViewControllerAnimatedTransitioning {
 
     let sheetViewController: SheetViewController
     init(sheetViewController: SheetViewController) {
@@ -190,7 +190,7 @@ private class SheetViewDismissalController: NSObject, UIViewControllerAnimatedTr
     }
 }
 
-private class SheetView: UIView {
+final private class SheetView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)

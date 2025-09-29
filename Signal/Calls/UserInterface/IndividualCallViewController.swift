@@ -10,7 +10,7 @@ import WebRTC
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class IndividualCallViewController: OWSViewController, IndividualCallObserver {
+final class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Properties
 
@@ -1319,7 +1319,7 @@ extension IndividualCallViewController: CallServiceStateObserver {
     }
 }
 
-private class PermissionErrorView: UIView {
+final private class PermissionErrorView: UIView {
     private lazy var okayButton: OWSFlatButton = {
         let okayButton = OWSFlatButton()
         okayButton.useDefaultCornerRadius()

@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class DonationReadMoreSheetViewController: InteractiveSheetViewController {
+final public class DonationReadMoreSheetViewController: InteractiveSheetViewController {
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }

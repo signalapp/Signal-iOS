@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class UnknownThreadWarningInteraction: TSInteraction {
+final public class UnknownThreadWarningInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {
         true

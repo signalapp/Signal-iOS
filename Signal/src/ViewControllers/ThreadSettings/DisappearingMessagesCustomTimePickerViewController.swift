@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class DisappearingMessagesCustomTimePickerViewController: HostingController<DisappearingMessagesCustomTimePickerView> {
+final class DisappearingMessagesCustomTimePickerViewController: HostingController<DisappearingMessagesCustomTimePickerView> {
     private let initialDurationSeconds: UInt32?
     private let completion: (_ selectedDurationSeconds: UInt32) -> Void
 
@@ -80,7 +80,7 @@ extension DisappearingMessagesCustomTimePickerViewController: DisappearingMessag
 
 // MARK: -
 
-private class DisappearingMessagesCustomTimePickerViewModel: ObservableObject {
+final private class DisappearingMessagesCustomTimePickerViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func updateForSelection(selectedDurationSeconds: UInt32)
     }

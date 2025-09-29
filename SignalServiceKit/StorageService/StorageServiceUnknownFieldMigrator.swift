@@ -95,7 +95,7 @@ import Foundation
  * record as needing an update via normal mechanisms, e.g. for the local account record you would call
  * `storageServiceManager.recordPendingLocalAccountUpdates()`
  */
-public class StorageServiceUnknownFieldMigrator {
+final public class StorageServiceUnknownFieldMigrator {
 
     fileprivate enum MigrationId: UInt, CaseIterable {
         case noOpExample = 0

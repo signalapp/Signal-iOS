@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-public class OWSTableSection {
+final public class OWSTableSection {
 
     public private(set) var items: [OWSTableItem]
 

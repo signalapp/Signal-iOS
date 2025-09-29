@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class ProvisioningPrepViewController: ProvisioningBaseViewController {
+final class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
     lazy var animationView = LottieAnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool

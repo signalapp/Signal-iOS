@@ -20,7 +20,7 @@ public protocol OrphanedAttachmentStore {
     ) throws
 }
 
-public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
+final public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
 
     public init() {}
 

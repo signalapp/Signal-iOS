@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class BackupsReminderCoordinator {
+final class BackupsReminderCoordinator {
     private weak var backupKeyReminderNavController: UINavigationController?
     private let accountKeyStore: AccountKeyStore
     private let db: DB

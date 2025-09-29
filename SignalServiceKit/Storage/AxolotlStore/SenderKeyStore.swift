@@ -11,7 +11,7 @@ struct SentSenderKey {
     var messages: [SentDeviceMessage]
 }
 
-public class SenderKeyStore {
+final public class SenderKeyStore {
     public typealias DistributionId = UUID
     fileprivate typealias KeyId = String
     fileprivate static func buildKeyId(authorAci: Aci, distributionId: DistributionId) -> KeyId {

@@ -79,7 +79,7 @@ public struct SpoilerableTextConfig {
 /// characters within its bounds. This is done via an approximation; see `UILabel.boundingRects`,
 /// but this may break if unusual configuration is applied to the label, or if a subclass overrides
 /// rendering in an unanticipated way.
-public class SpoilerableLabelAnimator {
+final public class SpoilerableLabelAnimator {
 
     private weak var label: UILabel?
     private var text: CVTextValue?

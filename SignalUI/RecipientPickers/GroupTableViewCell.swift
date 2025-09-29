@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class GroupTableViewCell: UITableViewCell {
+final public class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()

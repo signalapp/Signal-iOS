@@ -10,7 +10,7 @@ protocol OneTimeDonationCustomAmountTextFieldDelegate: AnyObject {
     func oneTimeDonationCustomAmountTextFieldStateDidChange(_ textField: OneTimeDonationCustomAmountTextField)
 }
 
-class OneTimeDonationCustomAmountTextField: UIView {
+final class OneTimeDonationCustomAmountTextField: UIView {
     private let placeholderLabel = UILabel()
     private let symbolLabel = UILabel()
     private let textField = UITextField()

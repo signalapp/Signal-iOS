@@ -9,7 +9,7 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-class CallMemberCameraOffView: UIView, CallMemberComposableView {
+final class CallMemberCameraOffView: UIView, CallMemberComposableView {
     private let blurredAvatarBackgroundView = BlurredAvatarBackgroundView()
 
     // One of these three is shown depending on the circumstances.
@@ -256,7 +256,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     }
 }
 
-class BlurredAvatarBackgroundView: UIView {
+final class BlurredAvatarBackgroundView: UIView {
     private let backgroundAvatarView = UIImageView()
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
 

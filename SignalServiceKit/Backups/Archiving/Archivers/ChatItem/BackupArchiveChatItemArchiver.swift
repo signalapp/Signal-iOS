@@ -29,7 +29,7 @@ public extension BackupArchive {
 
 // MARK: -
 
-public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     typealias ChatItemId = BackupArchive.ChatItemId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<BackupArchive.InteractionUniqueId>
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<ChatItemId>

@@ -23,7 +23,7 @@ protocol StoryReplyInputToolbarDelegate: MessageReactionPickerDelegate {
 
 // MARK: -
 
-class StoryReplyInputToolbar: UIView {
+final class StoryReplyInputToolbar: UIView {
 
     weak var delegate: StoryReplyInputToolbarDelegate? {
         didSet {

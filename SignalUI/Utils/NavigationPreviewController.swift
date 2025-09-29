@@ -6,7 +6,7 @@
 import UIKit
 
 #if DEBUG
-public class NavigationPreviewController: OWSNavigationController {
+final public class NavigationPreviewController: OWSNavigationController {
     private let animateFirstAppearance: Bool
     private let viewController: UIViewController
 

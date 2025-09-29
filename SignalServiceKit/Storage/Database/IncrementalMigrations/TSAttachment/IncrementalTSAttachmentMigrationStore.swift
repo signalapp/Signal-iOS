@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class IncrementalTSAttachmentMigrationStore {
+final public class IncrementalTSAttachmentMigrationStore {
 
     public enum State: Int, Codable {
         case unstarted

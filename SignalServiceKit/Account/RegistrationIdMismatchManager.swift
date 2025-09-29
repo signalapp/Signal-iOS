@@ -9,7 +9,7 @@ public protocol RegistrationIdMismatchManager {
     func validateRegistrationIds() async
 }
 
-public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
+final public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
 
     private enum Constants {
         static let collection = "RegistrationIdMismatchManagerImpl"

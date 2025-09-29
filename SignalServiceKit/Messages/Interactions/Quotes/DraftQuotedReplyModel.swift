@@ -5,7 +5,7 @@
 
 // View model for a draft which has already fetched any attachments
 // from the original message.
-public class DraftQuotedReplyModel {
+final public class DraftQuotedReplyModel {
 
     public let originalMessageTimestamp: UInt64?
     public let originalMessageAuthorAddress: SignalServiceAddress

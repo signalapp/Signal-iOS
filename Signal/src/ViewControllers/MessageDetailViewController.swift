@@ -12,7 +12,7 @@ protocol MessageDetailViewDelegate: MessageEditHistoryViewDelegate {
     func detailViewMessageWasDeleted(_ messageDetailViewController: MessageDetailViewController)
 }
 
-class MessageDetailViewController: OWSTableViewController2 {
+final class MessageDetailViewController: OWSTableViewController2 {
 
     weak var detailDelegate: MessageDetailViewDelegate?
 
@@ -1296,7 +1296,7 @@ extension MessageDetailViewController: UINavigationControllerDelegate {
     }
 }
 
-private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+final private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     weak var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
     let operation: UINavigationController.Operation

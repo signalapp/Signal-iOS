@@ -17,7 +17,7 @@ enum FindByUsername {
     }
 }
 
-public class FindByUsernameViewController: OWSTableViewController2 {
+final public class FindByUsernameViewController: OWSTableViewController2 {
 
     weak var findByUsernameDelegate: FindByUsernameDelegate?
 

@@ -22,7 +22,7 @@ protocol ImageEditorViewDelegate: AnyObject {
 
 // A view for editing outgoing image attachments.
 // It can also be used to render the final output.
-class ImageEditorView: UIView {
+final class ImageEditorView: UIView {
 
     weak var delegate: ImageEditorViewDelegate?
 

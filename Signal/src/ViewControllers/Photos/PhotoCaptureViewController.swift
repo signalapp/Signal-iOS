@@ -32,7 +32,7 @@ protocol PhotoCaptureViewControllerDataSource: AnyObject {
     func addMedia(attachment: SignalAttachment)
 }
 
-class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController {
+final class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
     weak var dataSource: PhotoCaptureViewControllerDataSource?
@@ -1530,7 +1530,7 @@ private protocol TextStoryComposerViewDelegate: AnyObject {
     func textStoryComposerDidChange(_ textStoryComposer: TextStoryComposerView)
 }
 
-private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
+final private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     weak var delegate: TextStoryComposerViewDelegate?
 

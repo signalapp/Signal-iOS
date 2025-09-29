@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 import LibSignalClient
 
-public class AttachmentMultisend {
+final public class AttachmentMultisend {
 
     public struct Result {
         /// Resolved when the messages are prepared but before uploading/sending.

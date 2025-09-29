@@ -13,7 +13,7 @@ import SignalServiceKit
 /// audio player will add/remove a "block object" when it starts/stops. If
 /// there are any active "block objects", the device won't sleep. After they
 /// are all removed, the device will be able to sleep.
-class DeviceSleepManagerImpl: DeviceSleepManager {
+final class DeviceSleepManagerImpl: DeviceSleepManager {
     @MainActor
     private var blockObjects = [Weak<DeviceSleepBlockObject>]()
 

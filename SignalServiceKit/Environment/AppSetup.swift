@@ -8,7 +8,7 @@ public import LibSignalClient
 import SDWebImage
 import SDWebImageWebPCoder
 
-public class AppSetup {
+final public class AppSetup {
     public init() {}
 
     /// Injectable mocks for global singletons accessed by tests for components

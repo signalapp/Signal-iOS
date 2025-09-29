@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class EditManagerImpl: EditManager {
+final public class EditManagerImpl: EditManager {
 
     internal enum Constants {
         // RECEIVE

@@ -122,7 +122,7 @@ public extension TSInfoMessage {
 /// All members must be exposed to ObjC, nullable, and mutable, such that Mantle
 /// can populate them using reflection from its `init(coder:)` implementation.
 @objcMembers
-public class ProfileChanges: MTLModel {
+final public class ProfileChanges: MTLModel {
     var address: SignalServiceAddress?
 
     /// If this is populated, `oldNameComponents` will be nil.

@@ -161,7 +161,7 @@ enum ContactSyncAttachmentBuilder {
     }
 }
 
-private class OWSStreamDelegate: NSObject, StreamDelegate {
+final private class OWSStreamDelegate: NSObject, StreamDelegate {
     private let _hadError = AtomicBool(false, lock: .sharedGlobal)
     public var hadError: Bool { _hadError.get() }
 

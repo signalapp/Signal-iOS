@@ -42,7 +42,7 @@ public class ContextMenuAction {
 }
 
 /// UIMenu analog, supports single depth menus only
-public class ContextMenu {
+final public class ContextMenu {
     public let children: [ContextMenuAction]
 
     public init(
@@ -147,7 +147,7 @@ public class ContextMenuTargetedPreviewAccessory {
 // UITargetedPreview analog
 // Supports snapshotting from target view only, and animating to/from the same target position
 // View must be in a window when ContextMenuTargetedPreview is initialized
-public class ContextMenuTargetedPreview {
+final public class ContextMenuTargetedPreview {
 
     public enum Alignment {
         case left
@@ -232,7 +232,7 @@ public class ContextMenuTargetedPreview {
 public typealias ContextMenuActionProvider = ([ContextMenuAction]) -> ContextMenu?
 
 // UIContextMenuConfiguration analog
-public class ContextMenuConfiguration {
+final public class ContextMenuConfiguration {
     public let identifier: NSCopying
     public let actionProvider: ContextMenuActionProvider?
     public let forceDarkTheme: Bool

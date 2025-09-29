@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BackupSettingsStoreTests: XCTestCase {
+final class BackupSettingsStoreTests: XCTestCase {
     private var db: InMemoryDB!
     private var backupSettingsStore = BackupSettingsStore()
 

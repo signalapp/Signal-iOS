@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUITableViewController: OWSTableViewController2 {
+final class DebugUITableViewController: OWSTableViewController2 {
 
     // MARK: Public
 

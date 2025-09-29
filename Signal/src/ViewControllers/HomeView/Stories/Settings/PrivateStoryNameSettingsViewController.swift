@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
+final public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 
     let thread: TSPrivateStoryThread
     let completionHandler: () -> Void

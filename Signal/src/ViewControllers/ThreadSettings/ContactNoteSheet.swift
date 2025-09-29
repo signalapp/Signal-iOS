@@ -6,7 +6,7 @@
 import SignalUI
 import SignalServiceKit
 
-class ContactNoteSheet: OWSTableSheetViewController {
+final class ContactNoteSheet: OWSTableSheetViewController {
     struct Context {
         let db: any DB
         let recipientDatabaseTable: RecipientDatabaseTable
@@ -64,7 +64,7 @@ class ContactNoteSheet: OWSTableSheetViewController {
     }
 }
 
-private class ContactNoteTableViewController: OWSTableViewController2, TextViewWithPlaceholderDelegate {
+final private class ContactNoteTableViewController: OWSTableViewController2, TextViewWithPlaceholderDelegate {
     typealias Context = ContactNoteSheet.Context
 
     private let thread: TSContactThread

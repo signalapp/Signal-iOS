@@ -80,7 +80,7 @@ public extension Factory {
     }
 }
 
-public class ContactThreadFactory: Factory {
+final public class ContactThreadFactory: Factory {
 
     public var messageCount: UInt = 0
 
@@ -114,7 +114,7 @@ public class ContactThreadFactory: Factory {
     }
 }
 
-public class OutgoingMessageFactory: Factory {
+final public class OutgoingMessageFactory: Factory {
 
     // MARK: Factory
 
@@ -282,7 +282,7 @@ public class OutgoingMessageFactory: Factory {
     }
 }
 
-public class IncomingMessageFactory: Factory {
+final public class IncomingMessageFactory: Factory {
 
     // MARK: Factory
 
@@ -449,7 +449,7 @@ public class IncomingMessageFactory: Factory {
     }
 }
 
-public class ConversationFactory {
+final public class ConversationFactory {
 
     public init() {}
 
@@ -509,7 +509,7 @@ public class ConversationFactory {
     }
 }
 
-public class CommonGenerator {
+final public class CommonGenerator {
 
     static public func e164() -> String {
         // note 4 zeros in the last group to mimic the spacing of a phone number
@@ -1686,7 +1686,7 @@ public class CommonGenerator {
     }
 }
 
-public class ImageFactory {
+final public class ImageFactory {
 
     public init() {}
 

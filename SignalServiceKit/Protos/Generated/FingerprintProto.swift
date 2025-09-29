@@ -15,7 +15,7 @@ public enum FingerprintProtoError: Error {
 // MARK: - FingerprintProtoLogicalFingerprint
 
 @objc
-public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCoding {
+final public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprint
 
@@ -111,7 +111,7 @@ extension FingerprintProtoLogicalFingerprint {
 }
 
 @objc
-public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
+final public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
 
     private var proto = FingerprintProtos_LogicalFingerprint()
 
@@ -172,7 +172,7 @@ extension FingerprintProtoLogicalFingerprintBuilder {
 // MARK: - FingerprintProtoLogicalFingerprints
 
 @objc
-public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCoding {
+final public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprints
 
@@ -290,7 +290,7 @@ extension FingerprintProtoLogicalFingerprints {
 }
 
 @objc
-public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
+final public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
 
     private var proto = FingerprintProtos_LogicalFingerprints()
 

@@ -7,7 +7,7 @@ import Foundation
 public import GRDB
 
 @objc
-public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, PersistableRecord {
+final public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "thread_associated_data"
 
     public private(set) var id: Int64?

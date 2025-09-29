@@ -8,7 +8,7 @@ import LibSignalClient
 import SignalUI
 import SwiftUI
 
-class PollDetailsViewController: HostingController<PollDetailsView>, ObservableObject {
+final class PollDetailsViewController: HostingController<PollDetailsView>, ObservableObject {
     private let viewModel: PollDetailsViewModel
 
     init(poll: OWSPoll) {
@@ -28,7 +28,7 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
     }
 }
 
-private class PollDetailsViewModel {
+final private class PollDetailsViewModel {
     protocol ActionsDelegate: AnyObject {
         func onDismiss()
         func pollTerminate()

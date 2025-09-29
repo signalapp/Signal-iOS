@@ -13,7 +13,7 @@ protocol ApprovalRailCellViewDelegate: AnyObject {
 
 // MARK: -
 
-class ApprovalRailCellView: GalleryRailCellView {
+final class ApprovalRailCellView: GalleryRailCellView {
 
     weak var approvalRailCellDelegate: ApprovalRailCellViewDelegate?
 
@@ -69,7 +69,7 @@ class ApprovalRailCellView: GalleryRailCellView {
     }
 }
 
-class AddMediaRailCellView: GalleryRailCellView {
+final class AddMediaRailCellView: GalleryRailCellView {
 
     init() {
         super.init(configuration: .empty)

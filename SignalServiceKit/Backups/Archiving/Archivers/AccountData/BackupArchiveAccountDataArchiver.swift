@@ -49,7 +49,7 @@ extension BackupArchive {
 }
 
 /// Archives the ``BackupProto_AccountData`` frame.
-public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager

@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentGiftBadge: CVComponentBase, CVComponent {
+final public class CVComponentGiftBadge: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .giftBadge }
 

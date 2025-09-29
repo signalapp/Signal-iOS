@@ -18,7 +18,7 @@ protocol RegistrationChangePhoneNumberConfirmationPresenter: AnyObject {
 
 // MARK: - RegistrationChangePhoneNumberConfirmationViewController
 
-class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController, OWSNavigationChildController {
+final class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController, OWSNavigationChildController {
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
         return .solid

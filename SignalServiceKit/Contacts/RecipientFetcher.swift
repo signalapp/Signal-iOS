@@ -17,7 +17,7 @@ extension RecipientFetcher {
     }
 }
 
-public class RecipientFetcherImpl: RecipientFetcher {
+final public class RecipientFetcherImpl: RecipientFetcher {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let searchableNameIndexer: any SearchableNameIndexer
 

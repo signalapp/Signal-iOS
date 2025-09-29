@@ -752,7 +752,7 @@ open class TextAttachmentView: UIView {
     }
 }
 
-private class LinkPreviewTooltipView: TooltipView {
+final private class LinkPreviewTooltipView: TooltipView {
     let url: URL
     init(fromView: UIView, tailReferenceView: UIView, url: URL) {
         self.url = url
@@ -799,7 +799,7 @@ private class LinkPreviewTooltipView: TooltipView {
     public override var dismissOnTap: Bool { false }
 }
 
-public class TextAttachmentThumbnailView: UIView {
+final public class TextAttachmentThumbnailView: UIView {
     // By default, we render the textView at a large 3:2 size (matching the aspect
     //  of the thumbnail container), so the fonts and gradients all render properly
     // for the preview. We then scale it down to render a "thumbnail" view.

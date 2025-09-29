@@ -66,7 +66,7 @@ public protocol OrphanedAttachmentCleaner {
     )
 }
 
-public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
+final public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
     private let db: DB
     private let taskScheduler: Shims.TaskScheduler

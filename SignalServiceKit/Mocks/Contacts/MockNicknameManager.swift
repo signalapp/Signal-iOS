@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockNicknameManager: NicknameManager {
+final public class MockNicknameManager: NicknameManager {
     private var mockNicknames: [Int64: NicknameRecord] = [:]
 
     public func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord? {

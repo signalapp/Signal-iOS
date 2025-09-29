@@ -245,7 +245,7 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
     }
 }
 
-class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
+final class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
     let currentCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
     let preferredCurrencyInfos = SSKEnvironment.shared.paymentsCurrenciesRef.preferredCurrencyInfos
     @MainActor

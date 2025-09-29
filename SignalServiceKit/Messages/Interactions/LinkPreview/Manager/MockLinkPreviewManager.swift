@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockLinkPreviewManager: LinkPreviewManager {
+final public class MockLinkPreviewManager: LinkPreviewManager {
 
     public init() {}
 

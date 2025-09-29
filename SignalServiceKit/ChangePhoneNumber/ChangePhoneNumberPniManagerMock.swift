@@ -7,7 +7,7 @@
 
 public import LibSignalClient
 
-public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
+final public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
 
     private let mockKyberStore: KyberPreKeyStoreImpl
 

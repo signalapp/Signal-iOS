@@ -67,7 +67,7 @@ protocol RegistrationVerificationPresenter: AnyObject {
 
 // MARK: - RegistrationVerificationViewController
 
-class RegistrationVerificationViewController: OWSViewController {
+final class RegistrationVerificationViewController: OWSViewController {
     public init(
         state: RegistrationVerificationState,
         presenter: RegistrationVerificationPresenter
@@ -605,7 +605,7 @@ extension RegistrationVerificationViewController: RegistrationVerificationCodeVi
 
 // MARK: - RegistrationVerificationHelpSheetViewController
 
-private class RegistrationVerificationHelpSheetViewController: InteractiveSheetViewController {
+final private class RegistrationVerificationHelpSheetViewController: InteractiveSheetViewController {
 
     private var intrinsicSizeObservation: NSKeyValueObservation?
 

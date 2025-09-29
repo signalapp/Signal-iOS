@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SVRAuthCredentialStorageTests: XCTestCase {
+final class SVRAuthCredentialStorageTests: XCTestCase {
 
     typealias AuthCredential = SVRAuthCredentialStorageImpl.AuthCredential
 

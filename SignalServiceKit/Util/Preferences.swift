@@ -20,7 +20,7 @@ public enum NotificationType: UInt {
     }
 }
 
-public class Preferences {
+final public class Preferences {
 
     private enum Key: String {
         case screenSecurity = "Screen Security Key"

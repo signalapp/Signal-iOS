@@ -8,7 +8,7 @@ import SignalUI
 
 // The initial presentation is intended to be indistinguishable from the Launch Screen.
 // After a delay we present some "loading" UI so the user doesn't think the app is frozen.
-class LoadingViewController: UIViewController {
+final class LoadingViewController: UIViewController {
 
     private var logoView: UIImageView!
     private var topLabel: UILabel!

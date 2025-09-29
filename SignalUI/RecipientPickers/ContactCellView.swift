@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class ContactCellAccessoryView: NSObject {
+final public class ContactCellAccessoryView: NSObject {
     let accessoryView: UIView
     let size: CGSize
 
@@ -18,7 +18,7 @@ public class ContactCellAccessoryView: NSObject {
 
 // MARK: -
 
-public class ContactCellConfiguration: NSObject {
+final public class ContactCellConfiguration: NSObject {
     fileprivate enum CellDataSource {
         case address(SignalServiceAddress)
         case groupThread(TSGroupThread)
@@ -82,7 +82,7 @@ public class ContactCellConfiguration: NSObject {
 
 // MARK: -
 
-public class ContactCellView: ManualStackView {
+final public class ContactCellView: ManualStackView {
 
     private var configuration: ContactCellConfiguration? {
         didSet {

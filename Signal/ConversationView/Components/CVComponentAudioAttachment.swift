@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
+final public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .audioAttachment }
 

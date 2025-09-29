@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-class MockClient {
+final class MockClient {
     var protocolAddress: ProtocolAddress { ProtocolAddress(aci, deviceId: deviceId) }
 
     var sealedSenderAddress: SealedSenderAddress {

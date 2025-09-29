@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
+final class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
     let threadViewModel: ThreadViewModel
     init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ProxySettingsViewController: OWSTableViewController2 {
+final class ProxySettingsViewController: OWSTableViewController2 {
     private var useProxy = SignalProxy.useProxy
 
     override func viewDidLoad() {

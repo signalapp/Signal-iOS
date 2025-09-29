@@ -164,7 +164,7 @@ struct StorageServiceContact {
     }
 }
 
-class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = RecipientUniqueId
     typealias RecordType = StorageServiceProtoContactRecord
 
@@ -891,7 +891,7 @@ extension StorageServiceProtoContactRecordIdentityState {
 ///
 /// Eventually, if we no longer care about removing existing unused records, we
 /// can remove the GroupV1 record from our protos entirely.
-class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoGroupV1Record
 
@@ -927,7 +927,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
 
 // MARK: - Group V2 Record
 
-class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoGroupV2Record
 
@@ -1166,7 +1166,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
 // MARK: - Account Record
 
-class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Void
     typealias RecordType = StorageServiceProtoAccountRecord
 
@@ -1926,7 +1926,7 @@ extension StorageServiceAccountRecordUpdater {
 
 // MARK: - Story Distribution List Record
 
-class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
@@ -2100,7 +2100,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
 // MARK: - Call Link Record
 
-class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
+final class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoCallLinkRecord
 

@@ -69,7 +69,7 @@ public enum VersionedProfileAvatarMutation {
 
 // MARK: -
 
-public class MockVersionedProfiles: VersionedProfiles {
+final public class MockVersionedProfiles: VersionedProfiles {
     public func clearProfileKeyCredential(for aci: Aci, transaction: DBWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: DBWriteTransaction) {}

@@ -9,7 +9,7 @@ protocol IdentityKeyChecker {
     func serverHasSameKeyAsLocal(for identity: OWSIdentity, localIdentifier: ServiceId) async throws -> Bool
 }
 
-class IdentityKeyCheckerImpl: IdentityKeyChecker {
+final class IdentityKeyCheckerImpl: IdentityKeyChecker {
     private let db: any DB
     private let identityManager: Shims.IdentityManager
     private let profileFetcher: Shims.ProfileFetcher

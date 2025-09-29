@@ -27,7 +27,7 @@ import SignalUI
 //   given a dst view or output context that will yield the 
 //   appropriate cropping.
 
-class CropScaleImageViewController: OWSViewController {
+final class CropScaleImageViewController: OWSViewController {
 
     // MARK: Properties
 

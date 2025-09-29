@@ -22,7 +22,7 @@ public protocol IncrementalMessageTSAttachmentMigrator {
     func runNextBatch(logger: TSAttachmentMigrationLogger) async -> Bool
 }
 
-public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAttachmentMigrator {
+final public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAttachmentMigrator {
 
     private let appContext: AppContext
     private let databaseStorage: SDSDatabaseStorage
@@ -286,7 +286,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
     }
 }
 
-public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator {
+final public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator {
     public init() {}
 
     public func runInMainAppUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async -> Bool {
@@ -301,7 +301,7 @@ public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAtt
 
 #if TESTABLE_BUILD
 
-public class IncrementalMessageTSAttachmentMigratorMock: IncrementalMessageTSAttachmentMigrator {
+final public class IncrementalMessageTSAttachmentMigratorMock: IncrementalMessageTSAttachmentMigrator {
 
     public init() {}
 

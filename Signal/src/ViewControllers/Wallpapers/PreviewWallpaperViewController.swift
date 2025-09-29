@@ -11,7 +11,7 @@ protocol PreviewWallpaperDelegate: AnyObject {
     func previewWallpaperDidComplete(_ vc: PreviewWallpaperViewController)
 }
 
-class PreviewWallpaperViewController: UIViewController {
+final class PreviewWallpaperViewController: UIViewController {
     enum Mode {
         case preset(selectedWallpaper: Wallpaper)
         case photo(selectedPhoto: UIImage)
@@ -292,7 +292,7 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
     }
 }
 
-private class WallpaperPage: UIViewController {
+final private class WallpaperPage: UIViewController {
     let wallpaper: Wallpaper
     let thread: TSThread?
     let photo: UIImage?
@@ -505,7 +505,7 @@ extension WallpaperPage: UIScrollViewDelegate {
     }
 }
 
-class BlurButton: UIButton {
+final class BlurButton: UIButton {
     let checkImageView = UIImageView()
     let label = UILabel()
     let action: (Bool) -> Void

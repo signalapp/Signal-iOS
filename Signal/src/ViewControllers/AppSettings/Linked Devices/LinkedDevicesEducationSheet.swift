@@ -6,7 +6,7 @@
 import SignalUI
 import SignalServiceKit
 
-class LinkedDevicesEducationSheet: StackSheetViewController {
+final class LinkedDevicesEducationSheet: StackSheetViewController {
 
     override var stackViewInsets: UIEdgeInsets {
         .init(top: 8, leading: 40, bottom: 24, trailing: 40)

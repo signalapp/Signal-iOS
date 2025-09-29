@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class NoopPendingReceiptRecorder: PendingReceiptRecorder {
+final public class NoopPendingReceiptRecorder: PendingReceiptRecorder {
     public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) {
         Logger.info("")
     }

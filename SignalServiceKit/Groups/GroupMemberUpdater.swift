@@ -20,7 +20,7 @@ protocol GroupMemberUpdaterTemporaryShims {
     func didUpdateRecords(groupThreadId: String, transaction: DBWriteTransaction)
 }
 
-class GroupMemberUpdaterImpl: GroupMemberUpdater {
+final class GroupMemberUpdaterImpl: GroupMemberUpdater {
     private let temporaryShims: GroupMemberUpdaterTemporaryShims
     private let groupMemberStore: GroupMemberStore
     private let signalServiceAddressCache: SignalServiceAddressCache
@@ -129,7 +129,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
     }
 }
 
-class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
+final class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
     func fetchLatestInteractionTimestamp(
         groupThreadId: String,
         groupMemberAddress: SignalServiceAddress,

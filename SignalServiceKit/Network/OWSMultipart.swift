@@ -174,7 +174,7 @@ enum OWSMultipartBody {
     private static let urlErrorUnreachable = URLError(.badURL, userInfo: [NSLocalizedFailureReasonErrorKey: NSLocalizedString("File URL not reachable.", tableName: "AFNetworking", comment: "")])
 }
 
-private class OWSMultipartStreamDelegate: NSObject, StreamDelegate {
+final private class OWSMultipartStreamDelegate: NSObject, StreamDelegate {
     @Atomic var hadError = false
 
     func stream(_ aStream: Stream, handle eventCode: Stream.Event) {

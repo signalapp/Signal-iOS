@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 public import XCTest
 
-public class RegistrationSessionManagerTest: XCTestCase {
+final public class RegistrationSessionManagerTest: XCTestCase {
 
     private var registrationSessionManager: RegistrationSessionManagerImpl!
 

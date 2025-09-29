@@ -6,7 +6,7 @@
 public import AVFAudio
 import SignalServiceKit
 
-public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
+final public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
     nonisolated(unsafe) private let speechSynthesizer = AVSpeechSynthesizer()
 
     override init() {

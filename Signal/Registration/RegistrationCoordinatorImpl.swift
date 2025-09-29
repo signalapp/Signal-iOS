@@ -18,7 +18,7 @@ public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
     ) throws -> RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
 }
 
-public class RegistrationCoordinatorImpl: RegistrationCoordinator {
+final public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     /// Only `RegistrationCoordinatorLoaderImpl` can create a nested `Mode` instance,
     /// so only it can create this class. If you want an instance, use `RegistrationCoordinatorLoaderImpl`.

@@ -5,7 +5,7 @@
 
 import Foundation
 
-class PreKeyId {
+final class PreKeyId {
     private enum Constants {
         static let upperBound: UInt32 = 0x1000000
     }

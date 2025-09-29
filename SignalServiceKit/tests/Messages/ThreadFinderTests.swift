@@ -8,7 +8,7 @@ import LibSignalClient
 
 @testable import SignalServiceKit
 
-class ThreadFinderTests: XCTestCase {
+final class ThreadFinderTests: XCTestCase {
     private var db = InMemoryDB()
     private let threadFinder = ThreadFinder()
     private var contactThread1: TSContactThread!

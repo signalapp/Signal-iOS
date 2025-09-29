@@ -8,7 +8,7 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-public class BadgeAssets {
+final public class BadgeAssets {
     private let scale: Int
     private let remoteSourceUrl: URL
     private let localAssetDirectory: URL
@@ -193,7 +193,7 @@ extension BadgeAssets {
 
 // MARK: - Sprite parsing
 
-private class DefaultSpriteSheetParser {
+final private class DefaultSpriteSheetParser {
     let scale: Int
     let spritesheet: CGImage
 

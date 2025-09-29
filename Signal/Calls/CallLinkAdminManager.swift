@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 
 @MainActor
-class CallLinkAdminManager {
+final class CallLinkAdminManager {
     typealias CallLinkState = SignalServiceKit.CallLinkState
 
     private let rootKey: CallLinkRootKey

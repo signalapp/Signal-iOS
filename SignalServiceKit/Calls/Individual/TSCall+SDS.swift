@@ -47,7 +47,7 @@ public extension TSCall {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSCallSerializer: SDSSerializer {
+final class TSCallSerializer: SDSSerializer {
 
     private let model: TSCall
     public init(model: TSCall) {

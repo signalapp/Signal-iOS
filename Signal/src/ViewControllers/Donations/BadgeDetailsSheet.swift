@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class BadgeDetailsSheet: OWSTableSheetViewController {
+final class BadgeDetailsSheet: OWSTableSheetViewController {
     public enum Owner: Equatable {
         // TODO: Eventually we won't need a short name for self, the server will provide copy for us.
         case local(shortName: String)

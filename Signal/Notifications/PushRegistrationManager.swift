@@ -16,7 +16,7 @@ public enum PushRegistrationError: Error {
 /**
  * Singleton used to integrate with push notification services - registration and routing received remote notifications.
  */
-public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
+final public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     private let appReadiness: AppReadiness
 

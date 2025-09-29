@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class FailedMessagesJob {
+final public class FailedMessagesJob {
     public init() {}
 
     public func run(databaseStorage: SDSDatabaseStorage) async {

@@ -17,7 +17,7 @@ import Foundation
 ///
 /// This type pre-dates structured concurrency/Swift Concurrency, and there
 /// may be better approaches in a Swift Concurrency-exclusive world.
-public class PendingTasks {
+final public class PendingTasks {
     private let pendingTasks = AtomicValue<[Int: PendingTask]>([:], lock: .init())
 
     public init() {
@@ -48,7 +48,7 @@ public class PendingTasks {
 
 // MARK: -
 
-public class PendingTask {
+final public class PendingTask {
     private static let idCounter = AtomicValue<Int>(0, lock: .init())
     fileprivate let id = PendingTask.idCounter.update { $0 += 1; return $0 }
 

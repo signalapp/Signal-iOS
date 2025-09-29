@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SystemStoryManagerMock: SystemStoryManagerProtocol {
+final public class SystemStoryManagerMock: SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
     public lazy var downloadOnboardingStoryHandler: () -> Task<Void, any Error> = {
@@ -82,7 +82,7 @@ public class SystemStoryManagerMock: SystemStoryManagerProtocol {
     }
 }
 
-public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesystem {
+final public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesystem {
 
     public override class func fileOrFolderExists(url: URL) -> Bool {
         return true
@@ -105,7 +105,7 @@ public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesys
     }
 }
 
-public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManagerStoryMessageFactory {
+final public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManagerStoryMessageFactory {
 
     public override class func createFromSystemAuthor(
         attachmentSource: AttachmentDataSource,

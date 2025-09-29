@@ -12,7 +12,7 @@ protocol ProfileNameViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-class ProfileNameViewController: OWSTableViewController2 {
+final class ProfileNameViewController: OWSTableViewController2 {
     private lazy var givenNameTextField = OWSTextField(
         placeholder: OWSLocalizedString(
             "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",

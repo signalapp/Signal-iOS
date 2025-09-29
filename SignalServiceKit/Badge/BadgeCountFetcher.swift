@@ -16,7 +16,7 @@ public protocol BadgeCountFetcher {
     func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount
 }
 
-class BadgeCountFetcherImpl: BadgeCountFetcher {
+final class BadgeCountFetcherImpl: BadgeCountFetcher {
     public func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 

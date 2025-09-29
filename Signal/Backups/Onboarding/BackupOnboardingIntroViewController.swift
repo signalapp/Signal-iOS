@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class BackupOnboardingIntroViewController: HostingController<BackupOnboardingIntroView> {
+final class BackupOnboardingIntroViewController: HostingController<BackupOnboardingIntroView> {
     init(
         onContinue: @escaping () -> Void,
         onNotNow: @escaping () -> Void,

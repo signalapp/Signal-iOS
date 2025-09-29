@@ -130,7 +130,7 @@ public protocol WebSocketFactory {
 #if TESTABLE_BUILD
 
 @objc
-public class WebSocketFactoryMock: NSObject, WebSocketFactory {
+final public class WebSocketFactoryMock: NSObject, WebSocketFactory {
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         owsFailDebug("Cannot build websocket.")
         return nil
@@ -142,7 +142,7 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 // MARK: -
 
 @objc
-public class WebSocketFactoryNative: NSObject, WebSocketFactory {
+final public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         return SSKWebSocketNative(request: request, signalService: SSKEnvironment.shared.signalServiceRef, callbackScheduler: callbackScheduler)
     }
@@ -150,7 +150,7 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
 
 // MARK: -
 
-public class SSKWebSocketNative: SSKWebSocket {
+final public class SSKWebSocketNative: SSKWebSocket {
 
     private static let idCounter = AtomicUInt(lock: .sharedGlobal)
     public let id = SSKWebSocketNative.idCounter.increment()

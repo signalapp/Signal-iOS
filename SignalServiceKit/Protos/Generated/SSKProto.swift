@@ -49,7 +49,7 @@ private func SSKProtoEnvelopeTypeUnwrap(_ value: SSKProtoEnvelopeType) -> Signal
 // MARK: - SSKProtoEnvelope
 
 @objc
-public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Envelope
 
@@ -306,7 +306,7 @@ extension SSKProtoEnvelope {
 }
 
 @objc
-public class SSKProtoEnvelopeBuilder: NSObject {
+final public class SSKProtoEnvelopeBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Envelope()
 
@@ -474,7 +474,7 @@ private func SSKProtoTypingMessageActionUnwrap(_ value: SSKProtoTypingMessageAct
 // MARK: - SSKProtoTypingMessage
 
 @objc
-public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_TypingMessage
 
@@ -608,7 +608,7 @@ extension SSKProtoTypingMessage {
 }
 
 @objc
-public class SSKProtoTypingMessageBuilder: NSObject {
+final public class SSKProtoTypingMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_TypingMessage()
 
@@ -679,7 +679,7 @@ extension SSKProtoTypingMessageBuilder {
 // MARK: - SSKProtoStoryMessage
 
 @objc
-public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_StoryMessage
 
@@ -843,7 +843,7 @@ extension SSKProtoStoryMessage {
 }
 
 @objc
-public class SSKProtoStoryMessageBuilder: NSObject {
+final public class SSKProtoStoryMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_StoryMessage()
 
@@ -945,7 +945,7 @@ extension SSKProtoStoryMessageBuilder {
 // MARK: - SSKProtoPreview
 
 @objc
-public class SSKProtoPreview: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPreview: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Preview
 
@@ -1097,7 +1097,7 @@ extension SSKProtoPreview {
 }
 
 @objc
-public class SSKProtoPreviewBuilder: NSObject {
+final public class SSKProtoPreviewBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Preview()
 
@@ -1196,7 +1196,7 @@ extension SSKProtoPreviewBuilder {
 // MARK: - SSKProtoTextAttachmentGradient
 
 @objc
-public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_TextAttachment.Gradient
 
@@ -1329,7 +1329,7 @@ extension SSKProtoTextAttachmentGradient {
 }
 
 @objc
-public class SSKProtoTextAttachmentGradientBuilder: NSObject {
+final public class SSKProtoTextAttachmentGradientBuilder: NSObject {
 
     private var proto = SignalServiceProtos_TextAttachment.Gradient()
 
@@ -1441,7 +1441,7 @@ private func SSKProtoTextAttachmentStyleUnwrap(_ value: SSKProtoTextAttachmentSt
 // MARK: - SSKProtoTextAttachment
 
 @objc
-public class SSKProtoTextAttachment: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoTextAttachment: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_TextAttachment
 
@@ -1628,7 +1628,7 @@ extension SSKProtoTextAttachment {
 }
 
 @objc
-public class SSKProtoTextAttachmentBuilder: NSObject {
+final public class SSKProtoTextAttachmentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_TextAttachment()
 
@@ -1724,7 +1724,7 @@ extension SSKProtoTextAttachmentBuilder {
 // MARK: - SSKProtoContent
 
 @objc
-public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Content
 
@@ -1965,7 +1965,7 @@ extension SSKProtoContent {
 }
 
 @objc
-public class SSKProtoContentBuilder: NSObject {
+final public class SSKProtoContentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Content()
 
@@ -2151,7 +2151,7 @@ private func SSKProtoCallMessageOfferTypeUnwrap(_ value: SSKProtoCallMessageOffe
 // MARK: - SSKProtoCallMessageOffer
 
 @objc
-public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.Offer
 
@@ -2285,7 +2285,7 @@ extension SSKProtoCallMessageOffer {
 }
 
 @objc
-public class SSKProtoCallMessageOfferBuilder: NSObject {
+final public class SSKProtoCallMessageOfferBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.Offer()
 
@@ -2356,7 +2356,7 @@ extension SSKProtoCallMessageOfferBuilder {
 // MARK: - SSKProtoCallMessageAnswer
 
 @objc
-public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.Answer
 
@@ -2467,7 +2467,7 @@ extension SSKProtoCallMessageAnswer {
 }
 
 @objc
-public class SSKProtoCallMessageAnswerBuilder: NSObject {
+final public class SSKProtoCallMessageAnswerBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.Answer()
 
@@ -2533,7 +2533,7 @@ extension SSKProtoCallMessageAnswerBuilder {
 // MARK: - SSKProtoCallMessageIceUpdate
 
 @objc
-public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.IceUpdate
 
@@ -2644,7 +2644,7 @@ extension SSKProtoCallMessageIceUpdate {
 }
 
 @objc
-public class SSKProtoCallMessageIceUpdateBuilder: NSObject {
+final public class SSKProtoCallMessageIceUpdateBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.IceUpdate()
 
@@ -2710,7 +2710,7 @@ extension SSKProtoCallMessageIceUpdateBuilder {
 // MARK: - SSKProtoCallMessageBusy
 
 @objc
-public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.Busy
 
@@ -2806,7 +2806,7 @@ extension SSKProtoCallMessageBusy {
 }
 
 @objc
-public class SSKProtoCallMessageBusyBuilder: NSObject {
+final public class SSKProtoCallMessageBusyBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.Busy()
 
@@ -2892,7 +2892,7 @@ private func SSKProtoCallMessageHangupTypeUnwrap(_ value: SSKProtoCallMessageHan
 // MARK: - SSKProtoCallMessageHangup
 
 @objc
-public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.Hangup
 
@@ -3023,7 +3023,7 @@ extension SSKProtoCallMessageHangup {
 }
 
 @objc
-public class SSKProtoCallMessageHangupBuilder: NSObject {
+final public class SSKProtoCallMessageHangupBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.Hangup()
 
@@ -3110,7 +3110,7 @@ private func SSKProtoCallMessageOpaqueUrgencyUnwrap(_ value: SSKProtoCallMessage
 // MARK: - SSKProtoCallMessageOpaque
 
 @objc
-public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage.Opaque
 
@@ -3233,7 +3233,7 @@ extension SSKProtoCallMessageOpaque {
 }
 
 @objc
-public class SSKProtoCallMessageOpaqueBuilder: NSObject {
+final public class SSKProtoCallMessageOpaqueBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage.Opaque()
 
@@ -3292,7 +3292,7 @@ extension SSKProtoCallMessageOpaqueBuilder {
 // MARK: - SSKProtoCallMessage
 
 @objc
-public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_CallMessage
 
@@ -3484,7 +3484,7 @@ extension SSKProtoCallMessage {
 }
 
 @objc
-public class SSKProtoCallMessageBuilder: NSObject {
+final public class SSKProtoCallMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_CallMessage()
 
@@ -3608,7 +3608,7 @@ extension SSKProtoCallMessageBuilder {
 // MARK: - SSKProtoDataMessageQuoteQuotedAttachment
 
 @objc
-public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment
 
@@ -3737,7 +3737,7 @@ extension SSKProtoDataMessageQuoteQuotedAttachment {
 }
 
 @objc
-public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
+final public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Quote.QuotedAttachment()
 
@@ -3835,7 +3835,7 @@ private func SSKProtoDataMessageQuoteTypeUnwrap(_ value: SSKProtoDataMessageQuot
 // MARK: - SSKProtoDataMessageQuote
 
 @objc
-public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote
 
@@ -4004,7 +4004,7 @@ extension SSKProtoDataMessageQuote {
 }
 
 @objc
-public class SSKProtoDataMessageQuoteBuilder: NSObject {
+final public class SSKProtoDataMessageQuoteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Quote()
 
@@ -4106,7 +4106,7 @@ extension SSKProtoDataMessageQuoteBuilder {
 // MARK: - SSKProtoDataMessageContactName
 
 @objc
-public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Name
 
@@ -4266,7 +4266,7 @@ extension SSKProtoDataMessageContactName {
 }
 
 @objc
-public class SSKProtoDataMessageContactNameBuilder: NSObject {
+final public class SSKProtoDataMessageContactNameBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact.Name()
 
@@ -4392,7 +4392,7 @@ private func SSKProtoDataMessageContactPhoneTypeUnwrap(_ value: SSKProtoDataMess
 // MARK: - SSKProtoDataMessageContactPhone
 
 @objc
-public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Phone
 
@@ -4530,7 +4530,7 @@ extension SSKProtoDataMessageContactPhone {
 }
 
 @objc
-public class SSKProtoDataMessageContactPhoneBuilder: NSObject {
+final public class SSKProtoDataMessageContactPhoneBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact.Phone()
 
@@ -4628,7 +4628,7 @@ private func SSKProtoDataMessageContactEmailTypeUnwrap(_ value: SSKProtoDataMess
 // MARK: - SSKProtoDataMessageContactEmail
 
 @objc
-public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Email
 
@@ -4766,7 +4766,7 @@ extension SSKProtoDataMessageContactEmail {
 }
 
 @objc
-public class SSKProtoDataMessageContactEmailBuilder: NSObject {
+final public class SSKProtoDataMessageContactEmailBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact.Email()
 
@@ -4861,7 +4861,7 @@ private func SSKProtoDataMessageContactPostalAddressTypeUnwrap(_ value: SSKProto
 // MARK: - SSKProtoDataMessageContactPostalAddress
 
 @objc
-public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.PostalAddress
 
@@ -5089,7 +5089,7 @@ extension SSKProtoDataMessageContactPostalAddress {
 }
 
 @objc
-public class SSKProtoDataMessageContactPostalAddressBuilder: NSObject {
+final public class SSKProtoDataMessageContactPostalAddressBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact.PostalAddress()
 
@@ -5225,7 +5225,7 @@ extension SSKProtoDataMessageContactPostalAddressBuilder {
 // MARK: - SSKProtoDataMessageContactAvatar
 
 @objc
-public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Avatar
 
@@ -5336,7 +5336,7 @@ extension SSKProtoDataMessageContactAvatar {
 }
 
 @objc
-public class SSKProtoDataMessageContactAvatarBuilder: NSObject {
+final public class SSKProtoDataMessageContactAvatarBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact.Avatar()
 
@@ -5395,7 +5395,7 @@ extension SSKProtoDataMessageContactAvatarBuilder {
 // MARK: - SSKProtoDataMessageContact
 
 @objc
-public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact
 
@@ -5553,7 +5553,7 @@ extension SSKProtoDataMessageContact {
 }
 
 @objc
-public class SSKProtoDataMessageContactBuilder: NSObject {
+final public class SSKProtoDataMessageContactBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Contact()
 
@@ -5659,7 +5659,7 @@ extension SSKProtoDataMessageContactBuilder {
 // MARK: - SSKProtoDataMessageSticker
 
 @objc
-public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Sticker
 
@@ -5803,7 +5803,7 @@ extension SSKProtoDataMessageSticker {
 }
 
 @objc
-public class SSKProtoDataMessageStickerBuilder: NSObject {
+final public class SSKProtoDataMessageStickerBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Sticker()
 
@@ -5905,7 +5905,7 @@ extension SSKProtoDataMessageStickerBuilder {
 // MARK: - SSKProtoDataMessageReaction
 
 @objc
-public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Reaction
 
@@ -6039,7 +6039,7 @@ extension SSKProtoDataMessageReaction {
 }
 
 @objc
-public class SSKProtoDataMessageReactionBuilder: NSObject {
+final public class SSKProtoDataMessageReactionBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Reaction()
 
@@ -6122,7 +6122,7 @@ extension SSKProtoDataMessageReactionBuilder {
 // MARK: - SSKProtoDataMessageDelete
 
 @objc
-public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Delete
 
@@ -6218,7 +6218,7 @@ extension SSKProtoDataMessageDelete {
 }
 
 @objc
-public class SSKProtoDataMessageDeleteBuilder: NSObject {
+final public class SSKProtoDataMessageDeleteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Delete()
 
@@ -6273,7 +6273,7 @@ extension SSKProtoDataMessageDeleteBuilder {
 // MARK: - SSKProtoDataMessageGroupCallUpdate
 
 @objc
-public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.GroupCallUpdate
 
@@ -6373,7 +6373,7 @@ extension SSKProtoDataMessageGroupCallUpdate {
 }
 
 @objc
-public class SSKProtoDataMessageGroupCallUpdateBuilder: NSObject {
+final public class SSKProtoDataMessageGroupCallUpdateBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.GroupCallUpdate()
 
@@ -6427,7 +6427,7 @@ extension SSKProtoDataMessageGroupCallUpdateBuilder {
 // MARK: - SSKProtoDataMessagePaymentAmountMobileCoin
 
 @objc
-public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin
 
@@ -6523,7 +6523,7 @@ extension SSKProtoDataMessagePaymentAmountMobileCoin {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentAmountMobileCoinBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentAmountMobileCoinBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin()
 
@@ -6578,7 +6578,7 @@ extension SSKProtoDataMessagePaymentAmountMobileCoinBuilder {
 // MARK: - SSKProtoDataMessagePaymentAmount
 
 @objc
-public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Amount
 
@@ -6677,7 +6677,7 @@ extension SSKProtoDataMessagePaymentAmount {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentAmountBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentAmountBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment.Amount()
 
@@ -6731,7 +6731,7 @@ extension SSKProtoDataMessagePaymentAmountBuilder {
 // MARK: - SSKProtoDataMessagePaymentNotificationMobileCoin
 
 @objc
-public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin
 
@@ -6827,7 +6827,7 @@ extension SSKProtoDataMessagePaymentNotificationMobileCoin {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentNotificationMobileCoinBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentNotificationMobileCoinBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin()
 
@@ -6888,7 +6888,7 @@ extension SSKProtoDataMessagePaymentNotificationMobileCoinBuilder {
 // MARK: - SSKProtoDataMessagePaymentNotification
 
 @objc
-public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Notification
 
@@ -7002,7 +7002,7 @@ extension SSKProtoDataMessagePaymentNotification {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentNotificationBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentNotificationBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment.Notification()
 
@@ -7089,7 +7089,7 @@ private func SSKProtoDataMessagePaymentActivationTypeUnwrap(_ value: SSKProtoDat
 // MARK: - SSKProtoDataMessagePaymentActivation
 
 @objc
-public class SSKProtoDataMessagePaymentActivation: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePaymentActivation: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Activation
 
@@ -7197,7 +7197,7 @@ extension SSKProtoDataMessagePaymentActivation {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentActivationBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentActivationBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment.Activation()
 
@@ -7245,7 +7245,7 @@ extension SSKProtoDataMessagePaymentActivationBuilder {
 // MARK: - SSKProtoDataMessagePayment
 
 @objc
-public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Payment
 
@@ -7358,7 +7358,7 @@ extension SSKProtoDataMessagePayment {
 }
 
 @objc
-public class SSKProtoDataMessagePaymentBuilder: NSObject {
+final public class SSKProtoDataMessagePaymentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.Payment()
 
@@ -7423,7 +7423,7 @@ extension SSKProtoDataMessagePaymentBuilder {
 // MARK: - SSKProtoDataMessageStoryContext
 
 @objc
-public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.StoryContext
 
@@ -7535,7 +7535,7 @@ extension SSKProtoDataMessageStoryContext {
 }
 
 @objc
-public class SSKProtoDataMessageStoryContextBuilder: NSObject {
+final public class SSKProtoDataMessageStoryContextBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.StoryContext()
 
@@ -7594,7 +7594,7 @@ extension SSKProtoDataMessageStoryContextBuilder {
 // MARK: - SSKProtoDataMessageGiftBadge
 
 @objc
-public class SSKProtoDataMessageGiftBadge: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessageGiftBadge: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.GiftBadge
 
@@ -7694,7 +7694,7 @@ extension SSKProtoDataMessageGiftBadge {
 }
 
 @objc
-public class SSKProtoDataMessageGiftBadgeBuilder: NSObject {
+final public class SSKProtoDataMessageGiftBadgeBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.GiftBadge()
 
@@ -7748,7 +7748,7 @@ extension SSKProtoDataMessageGiftBadgeBuilder {
 // MARK: - SSKProtoDataMessagePollCreate
 
 @objc
-public class SSKProtoDataMessagePollCreate: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePollCreate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.PollCreate
 
@@ -7866,7 +7866,7 @@ extension SSKProtoDataMessagePollCreate {
 }
 
 @objc
-public class SSKProtoDataMessagePollCreateBuilder: NSObject {
+final public class SSKProtoDataMessagePollCreateBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.PollCreate()
 
@@ -7935,7 +7935,7 @@ extension SSKProtoDataMessagePollCreateBuilder {
 // MARK: - SSKProtoDataMessagePollTerminate
 
 @objc
-public class SSKProtoDataMessagePollTerminate: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePollTerminate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.PollTerminate
 
@@ -8032,7 +8032,7 @@ extension SSKProtoDataMessagePollTerminate {
 }
 
 @objc
-public class SSKProtoDataMessagePollTerminateBuilder: NSObject {
+final public class SSKProtoDataMessagePollTerminateBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.PollTerminate()
 
@@ -8080,7 +8080,7 @@ extension SSKProtoDataMessagePollTerminateBuilder {
 // MARK: - SSKProtoDataMessagePollVote
 
 @objc
-public class SSKProtoDataMessagePollVote: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessagePollVote: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.PollVote
 
@@ -8210,7 +8210,7 @@ extension SSKProtoDataMessagePollVote {
 }
 
 @objc
-public class SSKProtoDataMessagePollVoteBuilder: NSObject {
+final public class SSKProtoDataMessagePollVoteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage.PollVote()
 
@@ -8352,7 +8352,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
 // MARK: - SSKProtoDataMessage
 
 @objc
-public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DataMessage
 
@@ -8747,7 +8747,7 @@ extension SSKProtoDataMessage {
 }
 
 @objc
-public class SSKProtoDataMessageBuilder: NSObject {
+final public class SSKProtoDataMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DataMessage()
 
@@ -9014,7 +9014,7 @@ extension SSKProtoDataMessageBuilder {
 // MARK: - SSKProtoNullMessage
 
 @objc
-public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_NullMessage
 
@@ -9114,7 +9114,7 @@ extension SSKProtoNullMessage {
 }
 
 @objc
-public class SSKProtoNullMessageBuilder: NSObject {
+final public class SSKProtoNullMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_NullMessage()
 
@@ -9193,7 +9193,7 @@ private func SSKProtoReceiptMessageTypeUnwrap(_ value: SSKProtoReceiptMessageTyp
 // MARK: - SSKProtoReceiptMessage
 
 @objc
-public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_ReceiptMessage
 
@@ -9307,7 +9307,7 @@ extension SSKProtoReceiptMessage {
 }
 
 @objc
-public class SSKProtoReceiptMessageBuilder: NSObject {
+final public class SSKProtoReceiptMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_ReceiptMessage()
 
@@ -9390,7 +9390,7 @@ private func SSKProtoVerifiedStateUnwrap(_ value: SSKProtoVerifiedState) -> Sign
 // MARK: - SSKProtoVerified
 
 @objc
-public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Verified
 
@@ -9543,7 +9543,7 @@ extension SSKProtoVerified {
 }
 
 @objc
-public class SSKProtoVerifiedBuilder: NSObject {
+final public class SSKProtoVerifiedBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Verified()
 
@@ -9624,7 +9624,7 @@ extension SSKProtoVerifiedBuilder {
 // MARK: - SSKProtoSyncMessageSentUnidentifiedDeliveryStatus
 
 @objc
-public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus
 
@@ -9736,7 +9736,7 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
 }
 
 @objc
-public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject {
+final public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus()
 
@@ -9795,7 +9795,7 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
 // MARK: - SSKProtoSyncMessageSentStoryMessageRecipient
 
 @objc
-public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient
 
@@ -9913,7 +9913,7 @@ extension SSKProtoSyncMessageSentStoryMessageRecipient {
 }
 
 @objc
-public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
+final public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient()
 
@@ -9982,7 +9982,7 @@ extension SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
 // MARK: - SSKProtoSyncMessageSent
 
 @objc
-public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent
 
@@ -10195,7 +10195,7 @@ extension SSKProtoSyncMessageSent {
 }
 
 @objc
-public class SSKProtoSyncMessageSentBuilder: NSObject {
+final public class SSKProtoSyncMessageSentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Sent()
 
@@ -10328,7 +10328,7 @@ extension SSKProtoSyncMessageSentBuilder {
 // MARK: - SSKProtoSyncMessageContacts
 
 @objc
-public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Contacts
 
@@ -10436,7 +10436,7 @@ extension SSKProtoSyncMessageContacts {
 }
 
 @objc
-public class SSKProtoSyncMessageContactsBuilder: NSObject {
+final public class SSKProtoSyncMessageContactsBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Contacts()
 
@@ -10502,7 +10502,7 @@ extension SSKProtoSyncMessageContactsBuilder {
 // MARK: - SSKProtoSyncMessageBlocked
 
 @objc
-public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Blocked
 
@@ -10605,7 +10605,7 @@ extension SSKProtoSyncMessageBlocked {
 }
 
 @objc
-public class SSKProtoSyncMessageBlockedBuilder: NSObject {
+final public class SSKProtoSyncMessageBlockedBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Blocked()
 
@@ -10709,7 +10709,7 @@ private func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRe
 // MARK: - SSKProtoSyncMessageRequest
 
 @objc
-public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Request
 
@@ -10817,7 +10817,7 @@ extension SSKProtoSyncMessageRequest {
 }
 
 @objc
-public class SSKProtoSyncMessageRequestBuilder: NSObject {
+final public class SSKProtoSyncMessageRequestBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Request()
 
@@ -10865,7 +10865,7 @@ extension SSKProtoSyncMessageRequestBuilder {
 // MARK: - SSKProtoSyncMessageRead
 
 @objc
-public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Read
 
@@ -10976,7 +10976,7 @@ extension SSKProtoSyncMessageRead {
 }
 
 @objc
-public class SSKProtoSyncMessageReadBuilder: NSObject {
+final public class SSKProtoSyncMessageReadBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Read()
 
@@ -11042,7 +11042,7 @@ extension SSKProtoSyncMessageReadBuilder {
 // MARK: - SSKProtoSyncMessageViewed
 
 @objc
-public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Viewed
 
@@ -11153,7 +11153,7 @@ extension SSKProtoSyncMessageViewed {
 }
 
 @objc
-public class SSKProtoSyncMessageViewedBuilder: NSObject {
+final public class SSKProtoSyncMessageViewedBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Viewed()
 
@@ -11219,7 +11219,7 @@ extension SSKProtoSyncMessageViewedBuilder {
 // MARK: - SSKProtoSyncMessageConfiguration
 
 @objc
-public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Configuration
 
@@ -11364,7 +11364,7 @@ extension SSKProtoSyncMessageConfiguration {
 }
 
 @objc
-public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
+final public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Configuration()
 
@@ -11454,7 +11454,7 @@ private func SSKProtoSyncMessageStickerPackOperationTypeUnwrap(_ value: SSKProto
 // MARK: - SSKProtoSyncMessageStickerPackOperation
 
 @objc
-public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.StickerPackOperation
 
@@ -11584,7 +11584,7 @@ extension SSKProtoSyncMessageStickerPackOperation {
 }
 
 @objc
-public class SSKProtoSyncMessageStickerPackOperationBuilder: NSObject {
+final public class SSKProtoSyncMessageStickerPackOperationBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.StickerPackOperation()
 
@@ -11662,7 +11662,7 @@ extension SSKProtoSyncMessageStickerPackOperationBuilder {
 // MARK: - SSKProtoSyncMessageViewOnceOpen
 
 @objc
-public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.ViewOnceOpen
 
@@ -11773,7 +11773,7 @@ extension SSKProtoSyncMessageViewOnceOpen {
 }
 
 @objc
-public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
+final public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.ViewOnceOpen()
 
@@ -11867,7 +11867,7 @@ private func SSKProtoSyncMessageFetchLatestTypeUnwrap(_ value: SSKProtoSyncMessa
 // MARK: - SSKProtoSyncMessageFetchLatest
 
 @objc
-public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.FetchLatest
 
@@ -11975,7 +11975,7 @@ extension SSKProtoSyncMessageFetchLatest {
 }
 
 @objc
-public class SSKProtoSyncMessageFetchLatestBuilder: NSObject {
+final public class SSKProtoSyncMessageFetchLatestBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.FetchLatest()
 
@@ -12023,7 +12023,7 @@ extension SSKProtoSyncMessageFetchLatestBuilder {
 // MARK: - SSKProtoSyncMessageKeys
 
 @objc
-public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Keys
 
@@ -12153,7 +12153,7 @@ extension SSKProtoSyncMessageKeys {
 }
 
 @objc
-public class SSKProtoSyncMessageKeysBuilder: NSObject {
+final public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.Keys()
 
@@ -12266,7 +12266,7 @@ private func SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(_ value: SSKPro
 // MARK: - SSKProtoSyncMessageMessageRequestResponse
 
 @objc
-public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.MessageRequestResponse
 
@@ -12404,7 +12404,7 @@ extension SSKProtoSyncMessageMessageRequestResponse {
 }
 
 @objc
-public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
+final public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.MessageRequestResponse()
 
@@ -12474,7 +12474,7 @@ extension SSKProtoSyncMessageMessageRequestResponseBuilder {
 // MARK: - SSKProtoSyncMessageOutgoingPaymentMobileCoin
 
 @objc
-public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin
 
@@ -12646,7 +12646,7 @@ extension SSKProtoSyncMessageOutgoingPaymentMobileCoin {
 }
 
 @objc
-public class SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder: NSObject {
+final public class SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin()
 
@@ -12760,7 +12760,7 @@ extension SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
 // MARK: - SSKProtoSyncMessageOutgoingPayment
 
 @objc
-public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.OutgoingPayment
 
@@ -12889,7 +12889,7 @@ extension SSKProtoSyncMessageOutgoingPayment {
 }
 
 @objc
-public class SSKProtoSyncMessageOutgoingPaymentBuilder: NSObject {
+final public class SSKProtoSyncMessageOutgoingPaymentBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.OutgoingPayment()
 
@@ -12965,7 +12965,7 @@ extension SSKProtoSyncMessageOutgoingPaymentBuilder {
 // MARK: - SSKProtoSyncMessagePniChangeNumber
 
 @objc
-public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.PniChangeNumber
 
@@ -13122,7 +13122,7 @@ extension SSKProtoSyncMessagePniChangeNumber {
 }
 
 @objc
-public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
+final public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.PniChangeNumber()
 
@@ -13301,7 +13301,7 @@ private func SSKProtoSyncMessageCallEventEventUnwrap(_ value: SSKProtoSyncMessag
 // MARK: - SSKProtoSyncMessageCallEvent
 
 @objc
-public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.CallEvent
 
@@ -13494,7 +13494,7 @@ extension SSKProtoSyncMessageCallEvent {
 }
 
 @objc
-public class SSKProtoSyncMessageCallEventBuilder: NSObject {
+final public class SSKProtoSyncMessageCallEventBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.CallEvent()
 
@@ -13592,7 +13592,7 @@ private func SSKProtoSyncMessageCallLinkUpdateTypeUnwrap(_ value: SSKProtoSyncMe
 // MARK: - SSKProtoSyncMessageCallLinkUpdate
 
 @objc
-public class SSKProtoSyncMessageCallLinkUpdate: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageCallLinkUpdate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.CallLinkUpdate
 
@@ -13730,7 +13730,7 @@ extension SSKProtoSyncMessageCallLinkUpdate {
 }
 
 @objc
-public class SSKProtoSyncMessageCallLinkUpdateBuilder: NSObject {
+final public class SSKProtoSyncMessageCallLinkUpdateBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.CallLinkUpdate()
 
@@ -13825,7 +13825,7 @@ private func SSKProtoSyncMessageCallLogEventTypeUnwrap(_ value: SSKProtoSyncMess
 // MARK: - SSKProtoSyncMessageCallLogEvent
 
 @objc
-public class SSKProtoSyncMessageCallLogEvent: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageCallLogEvent: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.CallLogEvent
 
@@ -13972,7 +13972,7 @@ extension SSKProtoSyncMessageCallLogEvent {
 }
 
 @objc
-public class SSKProtoSyncMessageCallLogEventBuilder: NSObject {
+final public class SSKProtoSyncMessageCallLogEventBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.CallLogEvent()
 
@@ -14041,7 +14041,7 @@ extension SSKProtoSyncMessageCallLogEventBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeConversationIdentifier
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier
 
@@ -14171,7 +14171,7 @@ extension SSKProtoSyncMessageDeleteForMeConversationIdentifier {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()
 
@@ -14247,7 +14247,7 @@ extension SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeAddressableMessage
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage
 
@@ -14374,7 +14374,7 @@ extension SSKProtoSyncMessageDeleteForMeAddressableMessage {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage()
 
@@ -14444,7 +14444,7 @@ extension SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeMessageDeletes
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes
 
@@ -14553,7 +14553,7 @@ extension SSKProtoSyncMessageDeleteForMeMessageDeletes {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeMessageDeletesBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeMessageDeletesBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes()
 
@@ -14617,7 +14617,7 @@ extension SSKProtoSyncMessageDeleteForMeMessageDeletesBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeAttachmentDelete
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete
 
@@ -14775,7 +14775,7 @@ extension SSKProtoSyncMessageDeleteForMeAttachmentDelete {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete()
 
@@ -14873,7 +14873,7 @@ extension SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeConversationDelete
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete
 
@@ -15004,7 +15004,7 @@ extension SSKProtoSyncMessageDeleteForMeConversationDelete {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeConversationDeleteBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeConversationDeleteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete()
 
@@ -15083,7 +15083,7 @@ extension SSKProtoSyncMessageDeleteForMeConversationDeleteBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete
 
@@ -15182,7 +15182,7 @@ extension SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDeleteBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDeleteBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete()
 
@@ -15236,7 +15236,7 @@ extension SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDeleteBuilder {
 // MARK: - SSKProtoSyncMessageDeleteForMe
 
 @objc
-public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe
 
@@ -15361,7 +15361,7 @@ extension SSKProtoSyncMessageDeleteForMe {
 }
 
 @objc
-public class SSKProtoSyncMessageDeleteForMeBuilder: NSObject {
+final public class SSKProtoSyncMessageDeleteForMeBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeleteForMe()
 
@@ -15444,7 +15444,7 @@ extension SSKProtoSyncMessageDeleteForMeBuilder {
 // MARK: - SSKProtoSyncMessageDeviceNameChange
 
 @objc
-public class SSKProtoSyncMessageDeviceNameChange: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessageDeviceNameChange: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeviceNameChange
 
@@ -15541,7 +15541,7 @@ extension SSKProtoSyncMessageDeviceNameChange {
 }
 
 @objc
-public class SSKProtoSyncMessageDeviceNameChangeBuilder: NSObject {
+final public class SSKProtoSyncMessageDeviceNameChangeBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage.DeviceNameChange()
 
@@ -15589,7 +15589,7 @@ extension SSKProtoSyncMessageDeviceNameChangeBuilder {
 // MARK: - SSKProtoSyncMessage
 
 @objc
-public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage
 
@@ -15957,7 +15957,7 @@ extension SSKProtoSyncMessage {
 }
 
 @objc
-public class SSKProtoSyncMessageBuilder: NSObject {
+final public class SSKProtoSyncMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_SyncMessage()
 
@@ -16253,7 +16253,7 @@ private func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPoi
 // MARK: - SSKProtoAttachmentPointer
 
 @objc
-public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_AttachmentPointer
 
@@ -16557,7 +16557,7 @@ extension SSKProtoAttachmentPointer {
 }
 
 @objc
-public class SSKProtoAttachmentPointerBuilder: NSObject {
+final public class SSKProtoAttachmentPointerBuilder: NSObject {
 
     private var proto = SignalServiceProtos_AttachmentPointer()
 
@@ -16734,7 +16734,7 @@ extension SSKProtoAttachmentPointerBuilder {
 // MARK: - SSKProtoGroupContextV2
 
 @objc
-public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_GroupContextV2
 
@@ -16861,7 +16861,7 @@ extension SSKProtoGroupContextV2 {
 }
 
 @objc
-public class SSKProtoGroupContextV2Builder: NSObject {
+final public class SSKProtoGroupContextV2Builder: NSObject {
 
     private var proto = SignalServiceProtos_GroupContextV2()
 
@@ -16931,7 +16931,7 @@ extension SSKProtoGroupContextV2Builder {
 // MARK: - SSKProtoContactDetailsAvatar
 
 @objc
-public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_ContactDetails.Avatar
 
@@ -17043,7 +17043,7 @@ extension SSKProtoContactDetailsAvatar {
 }
 
 @objc
-public class SSKProtoContactDetailsAvatarBuilder: NSObject {
+final public class SSKProtoContactDetailsAvatarBuilder: NSObject {
 
     private var proto = SignalServiceProtos_ContactDetails.Avatar()
 
@@ -17102,7 +17102,7 @@ extension SSKProtoContactDetailsAvatarBuilder {
 // MARK: - SSKProtoContactDetails
 
 @objc
-public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_ContactDetails
 
@@ -17282,7 +17282,7 @@ extension SSKProtoContactDetails {
 }
 
 @objc
-public class SSKProtoContactDetailsBuilder: NSObject {
+final public class SSKProtoContactDetailsBuilder: NSObject {
 
     private var proto = SignalServiceProtos_ContactDetails()
 
@@ -17384,7 +17384,7 @@ extension SSKProtoContactDetailsBuilder {
 // MARK: - SSKProtoPackSticker
 
 @objc
-public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Pack.Sticker
 
@@ -17510,7 +17510,7 @@ extension SSKProtoPackSticker {
 }
 
 @objc
-public class SSKProtoPackStickerBuilder: NSObject {
+final public class SSKProtoPackStickerBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Pack.Sticker()
 
@@ -17587,7 +17587,7 @@ extension SSKProtoPackStickerBuilder {
 // MARK: - SSKProtoPack
 
 @objc
-public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_Pack
 
@@ -17726,7 +17726,7 @@ extension SSKProtoPack {
 }
 
 @objc
-public class SSKProtoPackBuilder: NSObject {
+final public class SSKProtoPackBuilder: NSObject {
 
     private var proto = SignalServiceProtos_Pack()
 
@@ -17812,7 +17812,7 @@ extension SSKProtoPackBuilder {
 // MARK: - SSKProtoPaymentAddressMobileCoin
 
 @objc
-public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_PaymentAddress.MobileCoin
 
@@ -17919,7 +17919,7 @@ extension SSKProtoPaymentAddressMobileCoin {
 }
 
 @objc
-public class SSKProtoPaymentAddressMobileCoinBuilder: NSObject {
+final public class SSKProtoPaymentAddressMobileCoinBuilder: NSObject {
 
     private var proto = SignalServiceProtos_PaymentAddress.MobileCoin()
 
@@ -17992,7 +17992,7 @@ extension SSKProtoPaymentAddressMobileCoinBuilder {
 // MARK: - SSKProtoPaymentAddress
 
 @objc
-public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_PaymentAddress
 
@@ -18091,7 +18091,7 @@ extension SSKProtoPaymentAddress {
 }
 
 @objc
-public class SSKProtoPaymentAddressBuilder: NSObject {
+final public class SSKProtoPaymentAddressBuilder: NSObject {
 
     private var proto = SignalServiceProtos_PaymentAddress()
 
@@ -18145,7 +18145,7 @@ extension SSKProtoPaymentAddressBuilder {
 // MARK: - SSKProtoDecryptionErrorMessage
 
 @objc
-public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_DecryptionErrorMessage
 
@@ -18269,7 +18269,7 @@ extension SSKProtoDecryptionErrorMessage {
 }
 
 @objc
-public class SSKProtoDecryptionErrorMessageBuilder: NSObject {
+final public class SSKProtoDecryptionErrorMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_DecryptionErrorMessage()
 
@@ -18333,7 +18333,7 @@ extension SSKProtoDecryptionErrorMessageBuilder {
 // MARK: - SSKProtoPniSignatureMessage
 
 @objc
-public class SSKProtoPniSignatureMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoPniSignatureMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_PniSignatureMessage
 
@@ -18448,7 +18448,7 @@ extension SSKProtoPniSignatureMessage {
 }
 
 @objc
-public class SSKProtoPniSignatureMessageBuilder: NSObject {
+final public class SSKProtoPniSignatureMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_PniSignatureMessage()
 
@@ -18547,7 +18547,7 @@ private func SSKProtoBodyRangeStyleUnwrap(_ value: SSKProtoBodyRangeStyle) -> Si
 // MARK: - SSKProtoBodyRange
 
 @objc
-public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_BodyRange
 
@@ -18694,7 +18694,7 @@ extension SSKProtoBodyRange {
 }
 
 @objc
-public class SSKProtoBodyRangeBuilder: NSObject {
+final public class SSKProtoBodyRangeBuilder: NSObject {
 
     private var proto = SignalServiceProtos_BodyRange()
 
@@ -18763,7 +18763,7 @@ extension SSKProtoBodyRangeBuilder {
 // MARK: - SSKProtoEditMessage
 
 @objc
-public class SSKProtoEditMessage: NSObject, Codable, NSSecureCoding {
+final public class SSKProtoEditMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_EditMessage
 
@@ -18874,7 +18874,7 @@ extension SSKProtoEditMessage {
 }
 
 @objc
-public class SSKProtoEditMessageBuilder: NSObject {
+final public class SSKProtoEditMessageBuilder: NSObject {
 
     private var proto = SignalServiceProtos_EditMessage()
 

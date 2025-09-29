@@ -26,7 +26,7 @@ import Foundation
 //         handleInvalidResponse(error: error)
 //     }
 //
-public class ParamParser {
+final public class ParamParser {
     public typealias Key = String
 
     let dictionary: [Key: Any]

@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class ProvisioningQRCodeViewController: ProvisioningBaseViewController, ProvisioningSocketManagerUIDelegate {
+final class ProvisioningQRCodeViewController: ProvisioningBaseViewController, ProvisioningSocketManagerUIDelegate {
     private let provisioningQRCodeViewModel: RotatingQRCodeView.Model
     private let provisioningSocketManager: ProvisioningSocketManager
 

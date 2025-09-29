@@ -78,7 +78,7 @@ internal protocol SVR2ClientWrapper {
     ) throws -> SVR2PinHash
 }
 
-internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
+final internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
 
     init() {}
 
@@ -148,7 +148,7 @@ internal class _SVR2_AppContextMock: _SVR2_AppContextShim {
     var isNSE: Bool { false }
 }
 
-internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
+final internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
 
     init() {}
 

@@ -5,7 +5,7 @@
 
 public import LibSignalClient
 
-public class OWSFingerprintBuilder {
+final public class OWSFingerprintBuilder {
     public struct FingerprintResult {
         public let theirAci: Aci
         public let theirRecipientIdentity: OWSRecipientIdentity

@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-public class NewStorySheet: OWSTableSheetViewController {
+final public class NewStorySheet: OWSTableSheetViewController {
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?
     public init(selectItemsInParent: (([StoryConversationItem]) -> Void)?) {
         self.selectItemsInParent = selectItemsInParent

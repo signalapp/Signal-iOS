@@ -8,7 +8,7 @@ import LibSignalClient
 
 // TODO: Convert to enum once no objc depends on this.
 @objc
-internal class ProtoUtils: NSObject {
+final internal class ProtoUtils: NSObject {
 
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: DBReadTransaction) {

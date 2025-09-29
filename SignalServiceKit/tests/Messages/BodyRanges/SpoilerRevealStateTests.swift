@@ -9,7 +9,7 @@ public import XCTest
 
 @testable import SignalServiceKit
 
-public class SpoilerRevealStateTests: XCTestCase {
+final public class SpoilerRevealStateTests: XCTestCase {
 
     // Test that exists to _try_ and prevent a change being made to spoiler state
     // such that snapshots are no longer copy operations on structs but end up

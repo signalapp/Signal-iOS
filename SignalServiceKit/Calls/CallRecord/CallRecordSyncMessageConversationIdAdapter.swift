@@ -22,7 +22,7 @@ public protocol CallRecordSyncMessageConversationIdAdapter {
     ) throws -> Data
 }
 
-class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConversationIdAdapter {
+final class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConversationIdAdapter {
 
     private let callLinkStore: any CallLinkRecordStore
     private let callRecordStore: CallRecordStore

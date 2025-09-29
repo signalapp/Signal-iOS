@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class BackupArchiveRecipientStore {
+final public class BackupArchiveRecipientStore {
 
     private let recipientTable: RecipientDatabaseTable
     private let searchableNameIndexer: SearchableNameIndexer

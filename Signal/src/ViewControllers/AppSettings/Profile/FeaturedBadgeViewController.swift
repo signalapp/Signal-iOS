@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataSource {
+final class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataSource {
     private weak var badgeDataSource: BadgeCollectionDataSource?
 
     private var avatarImage: UIImage?

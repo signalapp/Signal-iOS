@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class LogPickerViewController: OWSTableViewController2 {
+final public class LogPickerViewController: OWSTableViewController2 {
     let logDirUrl: URL
 
     public init(logDirUrl: URL) {
@@ -106,7 +106,7 @@ public class LogPickerViewController: OWSTableViewController2 {
     }
 }
 
-public class LogViewController: UIViewController {
+final public class LogViewController: UIViewController {
 
     let logUrl: URL
 

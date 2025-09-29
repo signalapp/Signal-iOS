@@ -168,7 +168,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
 // MARK: - AttachmentStore
 
-class AttachmentStoreMock: AttachmentStoreImpl {
+final class AttachmentStoreMock: AttachmentStoreImpl {
 
     var mockFetcher: ((Attachment.IDType) -> Attachment)?
 
@@ -177,7 +177,7 @@ class AttachmentStoreMock: AttachmentStoreImpl {
     }
 }
 
-class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
+final class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
 
     var uploadedAttachments = [AttachmentStream]()
 

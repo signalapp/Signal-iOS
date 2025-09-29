@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class GiphyDownloader: ProxiedContentDownloader {
+final public class GiphyDownloader: ProxiedContentDownloader {
 
     // MARK: - Properties
 

@@ -79,7 +79,7 @@ extension CancellationError: IsRetryableProvider {
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
-public class OWSRetryableError: CustomNSError, IsRetryableProvider {
+final public class OWSRetryableError: CustomNSError, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSRetryableError() as Error as NSError
     }
@@ -92,7 +92,7 @@ public class OWSRetryableError: CustomNSError, IsRetryableProvider {
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
-public class OWSUnretryableError: CustomNSError, IsRetryableProvider {
+final public class OWSUnretryableError: CustomNSError, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSUnretryableError() as Error as NSError
     }

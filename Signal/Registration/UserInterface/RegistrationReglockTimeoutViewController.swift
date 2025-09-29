@@ -31,7 +31,7 @@ protocol RegistrationReglockTimeoutPresenter: AnyObject {
 
 // MARK: - RegistrationReglockTimeoutViewController
 
-class RegistrationReglockTimeoutViewController: OWSViewController {
+final class RegistrationReglockTimeoutViewController: OWSViewController {
     private let oneMinute: TimeInterval = 60
 
     public init(

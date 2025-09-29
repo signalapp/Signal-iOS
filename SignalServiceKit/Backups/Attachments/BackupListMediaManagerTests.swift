@@ -9,7 +9,7 @@ import Testing
 
 @testable import SignalServiceKit
 
-public class BackupListMediaManagerTests {
+final public class BackupListMediaManagerTests {
 
     let accountKeyStore: AccountKeyStore
     let attachmentStore = AttachmentStoreImpl()

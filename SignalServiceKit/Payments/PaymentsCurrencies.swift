@@ -87,7 +87,7 @@ public struct CurrencyConversionInfo {
 
 // MARK: -
 
-public class MockPaymentsCurrencies: PaymentsCurrenciesSwift, PaymentsCurrencies {
+final public class MockPaymentsCurrencies: PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     public let currentCurrencyCode: Currency.Code = PaymentsConstants.currencyCodeGBP
 

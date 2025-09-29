@@ -6,7 +6,7 @@
 import Foundation
 import LocalAuthentication
 
-public class ScreenLock: NSObject {
+final public class ScreenLock: NSObject {
 
     public enum Outcome {
         case success

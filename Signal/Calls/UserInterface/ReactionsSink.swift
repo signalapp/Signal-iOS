@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-class ReactionsSink {
+final class ReactionsSink {
     private let reactionReceivers: [ReactionReceiver]
 
     init(reactionReceivers: [ReactionReceiver]) {

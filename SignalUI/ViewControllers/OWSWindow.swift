@@ -5,7 +5,7 @@
 
 import UIKit
 
-public class OWSWindow: UIWindow {
+final public class OWSWindow: UIWindow {
     public override init(frame: CGRect) {
         super.init(frame: frame)
 

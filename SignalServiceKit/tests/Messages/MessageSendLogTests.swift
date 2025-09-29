@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class MessageSendLogTests: SSKBaseTest {
+final class MessageSendLogTests: SSKBaseTest {
     private var messageSendLog: MessageSendLog { SSKEnvironment.shared.messageSendLogRef }
 
     func testStoreAndRetrieveValidPayload() throws {

@@ -8,7 +8,7 @@ import MobileCoin
 public import SignalServiceKit
 public import SignalUI
 
-public class PaymentsTransferOutViewController: OWSTableViewController2 {
+final public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
     private let transferAmount: TSPaymentAmount?
 

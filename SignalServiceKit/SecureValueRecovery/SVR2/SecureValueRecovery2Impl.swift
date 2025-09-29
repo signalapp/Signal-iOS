@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
-public class SecureValueRecovery2Impl: SecureValueRecovery {
+final public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private let appContext: SVR2.Shims.AppContext
     private let appReadiness: AppReadiness

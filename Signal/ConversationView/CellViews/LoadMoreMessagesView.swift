@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class LoadMoreMessagesView: UICollectionReusableView {
+final public class LoadMoreMessagesView: UICollectionReusableView {
 
     public static let reuseIdentifier = "LoadMoreMessagesView"
 

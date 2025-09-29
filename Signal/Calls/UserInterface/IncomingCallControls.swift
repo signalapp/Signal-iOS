@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class IncomingCallControls: UIView {
+final class IncomingCallControls: UIView {
     private func createDeclineButton() -> CallButton {
         let accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",

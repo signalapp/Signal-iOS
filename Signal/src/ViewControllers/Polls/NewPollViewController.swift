@@ -12,7 +12,7 @@ public protocol PollSendDelegate: AnyObject {
     func sendPoll(question: String, options: [String], allowMultipleVotes: Bool)
 }
 
-class NewPollViewController: HostingController<NewPollView>, ObservableObject {
+final class NewPollViewController: HostingController<NewPollView>, ObservableObject {
     public weak var sendDelegate: PollSendDelegate?
     private let viewModel: NewPollViewModel
 
@@ -43,7 +43,7 @@ extension NewPollViewController: NewPollViewModel.ActionsDelegate {
     }
 }
 
-private class NewPollViewModel {
+final private class NewPollViewModel {
     protocol ActionsDelegate: AnyObject {
         func onDismiss()
         func onSend(

@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class UsernameLinkTests: XCTestCase {
+final class UsernameLinkTests: XCTestCase {
     func testParseFromUrl() {
         let entropyData = Data(repeating: 12, count: 32)
         let uuidData = UUID().data

@@ -6,7 +6,7 @@
 import Foundation
 import LocalAuthentication
 
-public class OWSPaymentsLock {
+final public class OWSPaymentsLock {
 
     public enum LocalAuthOutcome: Equatable {
         case success

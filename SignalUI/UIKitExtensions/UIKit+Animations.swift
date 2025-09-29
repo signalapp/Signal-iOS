@@ -326,7 +326,7 @@ public extension UIBezierPath {
 
 // MARK: CoreAnimation
 
-private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
+final private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
     /* If defined, called by the default implementation of the
      * -actionForKey: method. Should return an object implementing the
      * CAAction protocol. May return 'nil' if the delegate doesn't specify

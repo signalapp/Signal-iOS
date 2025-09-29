@@ -47,7 +47,7 @@ public enum ReusableMediaError: Error {
 
 // MARK: -
 
-public class ReusableMediaView {
+final public class ReusableMediaView {
 
     private let mediaViewAdapter: MediaViewAdapter
     private let mediaCache: CVMediaCache
@@ -205,7 +205,7 @@ public class ReusableMediaView {
 
 // MARK: -
 
-class MediaViewAdapterBlurHash: MediaViewAdapter {
+final class MediaViewAdapterBlurHash: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let blurHash: String
@@ -255,7 +255,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapter {
 
 // MARK: - MediaViewAdapterLoopingVideo
 
-class MediaViewAdapterLoopingVideo: MediaViewAdapter {
+final class MediaViewAdapterLoopingVideo: MediaViewAdapter {
     let attachmentStream: AttachmentStream
     let videoView = LoopingVideoView()
 
@@ -294,7 +294,7 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapter {
 
 // MARK: -
 
-class MediaViewAdapterAnimated: MediaViewAdapter {
+final class MediaViewAdapterAnimated: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = true
     let attachmentStream: AttachmentStream
@@ -345,7 +345,7 @@ class MediaViewAdapterAnimated: MediaViewAdapter {
 
 // MARK: -
 
-class MediaViewAdapterStill: MediaViewAdapter {
+final class MediaViewAdapterStill: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
@@ -400,7 +400,7 @@ class MediaViewAdapterStill: MediaViewAdapter {
     }
 }
 
-class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
+final class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentBackupThumbnail: AttachmentBackupThumbnail
@@ -448,7 +448,7 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
 // MARK: -
 
-class MediaViewAdapterVideo: MediaViewAdapter {
+final class MediaViewAdapterVideo: MediaViewAdapter {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
@@ -505,7 +505,7 @@ class MediaViewAdapterVideo: MediaViewAdapter {
 
 // MARK: -
 
-public class MediaViewAdapterSticker: MediaViewAdapter {
+final public class MediaViewAdapterSticker: MediaViewAdapter {
 
     public let shouldBeRenderedByYY: Bool
     let attachmentStream: AttachmentStream

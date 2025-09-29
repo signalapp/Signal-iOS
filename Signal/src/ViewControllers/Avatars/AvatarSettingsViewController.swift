@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 
-class AvatarSettingsViewController: OWSTableViewController2 {
+final class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarHistoryManager.Context
 
     static let headerAvatarSize: CGFloat = UIDevice.current.isIPhone5OrShorter ? 120 : 160
@@ -540,7 +540,7 @@ private protocol OptionViewDelegate: AnyObject {
     func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel)
 }
 
-private class OptionView: UIView {
+final private class OptionView: UIView {
     private let imageView = AvatarImageView()
     private var imageViewInsetConstraints: [NSLayoutConstraint]?
     private let editOverlayView = AvatarImageView()

@@ -6,7 +6,7 @@
 import Foundation
 import zlib
 
-public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
+final public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     public enum Operation {
         case compress

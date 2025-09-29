@@ -116,7 +116,7 @@ final class TransformingOutputStreamTests: XCTestCase {
     }
 }
 
-class TextBackedInputStream: InputStreamable {
+final class TextBackedInputStream: InputStreamable {
     var hasBytesAvailable: Bool { data.count > 0 }
 
     private var data: Data
@@ -138,7 +138,7 @@ class TextBackedInputStream: InputStreamable {
     func schedule(in: RunLoop, forMode: RunLoop.Mode) { }
 }
 
-class TextBackedOutputStream: OutputStreamable {
+final class TextBackedOutputStream: OutputStreamable {
 
     var accumulation = Data()
 

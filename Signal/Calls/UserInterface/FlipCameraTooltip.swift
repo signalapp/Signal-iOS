@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class FlipCameraTooltipManager {
+final class FlipCameraTooltipManager {
     private let db: any DB
 
     init(db: any DB) {
@@ -71,7 +71,7 @@ class FlipCameraTooltipManager {
 #endif
 }
 
-class FlipCameraTooltipView: TooltipView {
+final class FlipCameraTooltipView: TooltipView {
     private var _tailDir: TailDirection
 
     public class func present(

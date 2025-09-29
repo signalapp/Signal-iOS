@@ -50,7 +50,7 @@ public enum ProxiedContentAssetSegmentState: UInt {
 
 // MARK: -
 
-public class ProxiedContentAssetSegment: NSObject {
+final public class ProxiedContentAssetSegment: NSObject {
 
     public let index: UInt
     public let segmentStart: UInt
@@ -143,7 +143,7 @@ public enum ProxiedContentAssetRequestState: UInt {
 //
 // Should be cancelled if no longer necessary.
 @objc
-public class ProxiedContentAssetRequest: NSObject {
+final public class ProxiedContentAssetRequest: NSObject {
 
     let assetDescription: ProxiedContentAssetDescription
     let priority: ProxiedContentRequestPriority
@@ -386,7 +386,7 @@ public class ProxiedContentAssetRequest: NSObject {
 // so consumers of this resource should retain a strong reference to
 // this instance as long as they are using the asset.
 @objc
-public class ProxiedContentAsset: NSObject {
+final public class ProxiedContentAsset: NSObject {
     public let assetDescription: ProxiedContentAssetDescription
     public let filePath: String
 

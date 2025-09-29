@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class DefaultDisappearingMessageTimerInteraction: TSInteraction {
+final public class DefaultDisappearingMessageTimerInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {
         true

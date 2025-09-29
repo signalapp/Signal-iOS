@@ -19,7 +19,7 @@ public enum LinkPreviewError: Error {
 // MARK: - OWSLinkPreviewDraft
 
 // This contains the info for a link preview "draft".
-public class OWSLinkPreviewDraft: Equatable {
+final public class OWSLinkPreviewDraft: Equatable {
 
     public let url: URL
     public var urlString: String {
@@ -66,7 +66,7 @@ public class OWSLinkPreviewDraft: Equatable {
 // MARK: - OWSLinkPreview
 
 @objc
-public class OWSLinkPreview: MTLModel, Codable {
+final public class OWSLinkPreview: MTLModel, Codable {
 
     public struct Metadata {
         public let urlString: String

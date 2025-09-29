@@ -17,7 +17,7 @@ protocol VideoEditorViewControllerProviding: AnyObject {
 }
 
 // A view for editing outgoing video attachments.
-class VideoEditorView: UIView {
+final class VideoEditorView: UIView {
 
     weak var delegate: VideoEditorViewDelegate?
     weak var dataSource: VideoEditorDataSource?

@@ -15,7 +15,7 @@ public enum WebSocketProtoError: Error {
 // MARK: - WebSocketProtoWebSocketRequestMessage
 
 @objc
-public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureCoding {
+final public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: WebSocketProtos_WebSocketRequestMessage
 
@@ -154,7 +154,7 @@ extension WebSocketProtoWebSocketRequestMessage {
 }
 
 @objc
-public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
+final public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
 
     private var proto = WebSocketProtos_WebSocketRequestMessage()
 
@@ -254,7 +254,7 @@ extension WebSocketProtoWebSocketRequestMessageBuilder {
 // MARK: - WebSocketProtoWebSocketResponseMessage
 
 @objc
-public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecureCoding {
+final public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: WebSocketProtos_WebSocketResponseMessage
 
@@ -397,7 +397,7 @@ extension WebSocketProtoWebSocketResponseMessage {
 }
 
 @objc
-public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
+final public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
 
     private var proto = WebSocketProtos_WebSocketResponseMessage()
 
@@ -515,7 +515,7 @@ private func WebSocketProtoWebSocketMessageTypeUnwrap(_ value: WebSocketProtoWeb
 // MARK: - WebSocketProtoWebSocketMessage
 
 @objc
-public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
+final public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
@@ -651,7 +651,7 @@ extension WebSocketProtoWebSocketMessage {
 }
 
 @objc
-public class WebSocketProtoWebSocketMessageBuilder: NSObject {
+final public class WebSocketProtoWebSocketMessageBuilder: NSObject {
 
     private var proto = WebSocketProtos_WebSocketMessage()
 

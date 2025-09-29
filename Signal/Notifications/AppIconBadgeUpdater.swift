@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class AppIconBadgeUpdater {
+final class AppIconBadgeUpdater {
     private let badgeManager: BadgeManager
 
     init(badgeManager: BadgeManager) {

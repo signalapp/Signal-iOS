@@ -15,7 +15,7 @@ public enum EditMessageQueryMode {
 // MARK: -
 
 @objc
-public class InteractionFinder: NSObject {
+final public class InteractionFinder: NSObject {
     let threadUniqueId: String
 
     @objc

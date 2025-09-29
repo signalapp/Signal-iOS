@@ -11,7 +11,7 @@ protocol LinkPreviewAttachmentViewControllerDelegate: AnyObject {
                                              didFinishWith linkPreview: OWSLinkPreviewDraft)
 }
 
-class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
+final class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     weak var delegate: LinkPreviewAttachmentViewControllerDelegate?
 

@@ -12,7 +12,7 @@ protocol BadgeCollectionDataSource: AnyObject {
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
 }
 
-class BadgeCollectionView: UICollectionView {
+final class BadgeCollectionView: UICollectionView {
     weak private var badgeDataSource: BadgeCollectionDataSource?
 
     enum SelectionMode: Equatable {
@@ -178,7 +178,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     }
 }
 
-class BadgeCollectionViewCell: UICollectionViewCell {
+final class BadgeCollectionViewCell: UICollectionViewCell {
     let badgeImageViewSize = CGSize(square: 64)
     let badgeImageOffset: CGFloat = 8
 

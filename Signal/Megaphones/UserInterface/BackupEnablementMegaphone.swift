@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class BackupEnablementMegaphone: MegaphoneView {
+final class BackupEnablementMegaphone: MegaphoneView {
     init(
         experienceUpgrade: ExperienceUpgrade,
         fromViewController: UIViewController

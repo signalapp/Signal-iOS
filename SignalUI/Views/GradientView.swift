@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class GradientView: UIView {
+final public class GradientView: UIView {
 
     public override class var layerClass: AnyClass { CAGradientLayer.self }
 

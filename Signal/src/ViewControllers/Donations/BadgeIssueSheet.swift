@@ -17,7 +17,7 @@ public enum BadgeIssueSheetAction {
     case openDonationView
 }
 
-public class BadgeIssueSheetState {
+final public class BadgeIssueSheetState {
     public enum Mode {
         case subscriptionExpiredBecauseOfChargeFailure(
             chargeFailureCode: String?,
@@ -264,7 +264,7 @@ public class BadgeIssueSheetState {
     }
 }
 
-class BadgeIssueSheet: OWSTableSheetViewController {
+final class BadgeIssueSheet: OWSTableSheetViewController {
     private let state: BadgeIssueSheetState
 
     public weak var delegate: BadgeIssueSheetDelegate?

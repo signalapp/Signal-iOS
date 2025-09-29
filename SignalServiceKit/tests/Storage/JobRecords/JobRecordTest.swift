@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class JobRecordTest: XCTestCase {
+final class JobRecordTest: XCTestCase {
     private let inMemoryDB = InMemoryDB()
 
     private func jobRecordClass(

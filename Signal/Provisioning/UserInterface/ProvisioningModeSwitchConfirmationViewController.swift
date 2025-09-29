@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewController {
+final class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewController {
     var warningText: String?
 
     override func loadView() {

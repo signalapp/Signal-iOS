@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class OWSProgressTest: XCTestCase {
+final class OWSProgressTest: XCTestCase {
 
     func testSimpleSourceSink() async {
         let (sink, stream) = OWSProgress.createSink()

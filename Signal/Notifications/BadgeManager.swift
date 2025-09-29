@@ -12,7 +12,7 @@ public protocol BadgeObserver {
     )
 }
 
-public class BadgeManager {
+final public class BadgeManager {
     public typealias FetchBadgeCountBlock = () -> BadgeCount
 
     let serialQueue = DispatchQueue(label: "badge-manager")

@@ -6,7 +6,7 @@
 import LibSignalClient
 
 /// Responsible for redeeming receipt credentials for Backups subscriptions.
-class BackupSubscriptionRedeemer {
+final class BackupSubscriptionRedeemer {
     private enum Constants {
         /// A "receipt level" baked by the server into the receipt credentials
         /// used for Backups, representing the free (messages) tier.

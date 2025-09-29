@@ -104,7 +104,7 @@ struct MediaGalleryCellItemOtherFile {
     }
 }
 
-class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
+final class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
     let galleryItem: MediaGalleryItem
 
     init(galleryItem: MediaGalleryItem) {

@@ -11,7 +11,7 @@ protocol NewCallViewControllerDelegate: AnyObject {
     func goToChat(for thread: TSThread)
 }
 
-class NewCallViewController: RecipientPickerContainerViewController {
+final class NewCallViewController: RecipientPickerContainerViewController {
     weak var delegate: (any NewCallViewControllerDelegate)?
 
     override func viewDidLoad() {

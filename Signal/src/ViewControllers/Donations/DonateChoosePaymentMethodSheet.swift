@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import SignalServiceKit
 
-class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
+final class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
     enum DonationMode {
         case oneTime
         case monthly

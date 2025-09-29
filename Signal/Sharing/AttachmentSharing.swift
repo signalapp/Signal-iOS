@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class AttachmentSharing {
+final public class AttachmentSharing {
 
     private init() {}
 
@@ -172,7 +172,7 @@ extension Array where Element == ReferencedAttachmentStream {
     }
 }
 
-public class ShareableAttachment: NSObject, UIActivityItemSource {
+final public class ShareableAttachment: NSObject, UIActivityItemSource {
 
     fileprivate static func shareType(_ attachmentStream: AttachmentStream) -> ShareType {
         if attachmentStream.mimeType == MimeType.imageWebp.rawValue {

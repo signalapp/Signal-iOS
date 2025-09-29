@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class SignalProxyTest: XCTestCase {
+final class SignalProxyTest: XCTestCase {
     func testIsValidProxyLink() throws {
         let validHrefs: [String] = [
             "https://signal.tube/#example.com",

@@ -8,7 +8,7 @@ import GRDB
 import XCTest
 @testable import SignalServiceKit
 
-class OrphanedAttachmentCleanerTest: XCTestCase {
+final class OrphanedAttachmentCleanerTest: XCTestCase {
 
     private var db: InMemoryDB!
 

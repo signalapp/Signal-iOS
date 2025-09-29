@@ -71,7 +71,7 @@ final class IdentityKeyCheckerTest: XCTestCase {
 
 // MARK: IdentityManager
 
-private class IdentityManagerMock: IdentityKeyCheckerImpl.Shims.IdentityManager {
+final private class IdentityManagerMock: IdentityKeyCheckerImpl.Shims.IdentityManager {
     var aciKeyPair: ECKeyPair?
     var pniKeyPair: ECKeyPair?
 
@@ -85,7 +85,7 @@ private class IdentityManagerMock: IdentityKeyCheckerImpl.Shims.IdentityManager 
 
 // MARK: ProfileFetcher
 
-private class ProfileFetcherMock: IdentityKeyCheckerImpl.Shims.ProfileFetcher {
+final private class ProfileFetcherMock: IdentityKeyCheckerImpl.Shims.ProfileFetcher {
     var profileFetchResult: ConsumableMockPromise<IdentityKey> = .unset
 
     func fetchIdentityPublicKey(serviceId: ServiceId) async throws -> IdentityKey {

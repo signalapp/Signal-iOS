@@ -10,7 +10,7 @@ public extension Notification.Name {
     static let signalProxyConfigDidChange = Notification.Name("signalProxyConfigDidChange")
 }
 
-public class SignalProxy: NSObject {
+final public class SignalProxy: NSObject {
     public static var isEnabled: Bool { useProxy && host != nil }
 
     public static var isEnabledAndReady: Bool { isEnabled && relayServer.isReady }

@@ -15,7 +15,7 @@ public protocol IncomingPniChangeNumberProcessor {
     )
 }
 
-public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProcessor {
+final public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProcessor {
 
     private let identityManager: OWSIdentityManager
     private let pniProtocolStore: SignalProtocolStore

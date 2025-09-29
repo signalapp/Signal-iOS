@@ -88,7 +88,7 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
 //
 // TODO: Perhaps do conversion off the main thread?
 
-public class SignalAttachment: NSObject {
+final public class SignalAttachment: NSObject {
 
     // MARK: Properties
 

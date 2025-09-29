@@ -20,7 +20,7 @@ protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
 }
 
-class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
+final class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?

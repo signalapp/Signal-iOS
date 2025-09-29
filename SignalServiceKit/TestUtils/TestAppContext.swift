@@ -8,7 +8,7 @@ import Foundation
 #if TESTABLE_BUILD
 
 @objc
-public class TestAppContext: NSObject, AppContext {
+final public class TestAppContext: NSObject, AppContext {
     public static var testDebugLogsDirPath: String {
         let dirPath = OWSTemporaryDirectory().appendingPathComponent("TestLogs")
         OWSFileSystem.ensureDirectoryExists(dirPath)

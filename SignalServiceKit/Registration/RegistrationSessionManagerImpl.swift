@@ -6,7 +6,7 @@
 import Foundation
 import CoreTelephony
 
-public class RegistrationSessionManagerImpl: RegistrationSessionManager {
+final public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private let dateProvider: DateProvider
     private let db: any DB

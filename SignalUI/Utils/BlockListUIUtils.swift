@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class BlockListUIUtils {
+final public class BlockListUIUtils {
 
     public typealias Completion = (Bool) -> Void
 

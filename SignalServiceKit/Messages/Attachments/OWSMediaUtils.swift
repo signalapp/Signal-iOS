@@ -243,7 +243,7 @@ public enum OWSMediaUtils {
 }
 
 @objc
-class OWSMediaUtilsObjc: NSObject {
+final class OWSMediaUtilsObjc: NSObject {
     @objc
     public static let kOversizeTextMessageSizeThresholdBytes = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 }

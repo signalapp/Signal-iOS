@@ -14,7 +14,7 @@ public protocol UserProfileStore {
     func removeUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction)
 }
 
-public class UserProfileStoreImpl: UserProfileStore {
+final public class UserProfileStoreImpl: UserProfileStore {
     public init() {}
 
     public func fetchUserProfile(for rowId: OWSUserProfile.RowId, tx: DBReadTransaction) -> OWSUserProfile? {
@@ -40,7 +40,7 @@ public class UserProfileStoreImpl: UserProfileStore {
 
 #if TESTABLE_BUILD
 
-class MockUserProfileStore: UserProfileStore {
+final class MockUserProfileStore: UserProfileStore {
     var userProfiles = [OWSUserProfile]()
 
     func fetchUserProfile(for rowId: OWSUserProfile.RowId, tx: DBReadTransaction) -> OWSUserProfile? {

@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class AttachmentApprovalToolbar: UIView {
+final class AttachmentApprovalToolbar: UIView {
 
     struct Configuration: Equatable {
         var isAddMoreVisible = true
@@ -375,7 +375,7 @@ extension AttachmentApprovalToolbar {
     }
 }
 
-private class MediaToolbar: UIView {
+final private class MediaToolbar: UIView {
 
     struct AvailableButtons: OptionSet {
         let rawValue: Int

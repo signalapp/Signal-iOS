@@ -24,7 +24,7 @@ protocol VideoTimelineViewDelegate: AnyObject {
     func videoTimelineViewDidEndScrubbing(_ view: VideoTimelineView)
 }
 
-class VideoTimelineView: UIView {
+final class VideoTimelineView: UIView {
 
     weak var dataSource: VideoTimelineViewDataSource?
     weak var delegate: VideoTimelineViewDelegate?
@@ -594,7 +594,7 @@ extension VideoTimelineView {
     }
 }
 
-private class TrimHandleView: UIImageView {
+final private class TrimHandleView: UIImageView {
 
     enum Position {
         case left
@@ -629,7 +629,7 @@ private class TrimHandleView: UIImageView {
     }
 }
 
-private class TimelineCursorView: UIView {
+final private class TimelineCursorView: UIView {
 
     override static var layerClass: AnyClass {
         CAShapeLayer.self

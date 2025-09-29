@@ -12,7 +12,7 @@ import SignalServiceKit
 /// avatars, such as "contact initials over a colored background".
 ///
 /// - SeeAlso ``AvatarDefaultColorManager``
-class AvatarHistoryManager {
+final class AvatarHistoryManager {
     enum Context {
         case groupId(Data)
         case profile

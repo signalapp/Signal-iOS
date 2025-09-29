@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class TransferProgressView: UIStackView {
+final class TransferProgressView: UIStackView {
     let progress: Progress
 
     let progressBar: UIProgressView = {

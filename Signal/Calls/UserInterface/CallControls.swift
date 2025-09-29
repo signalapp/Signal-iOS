@@ -15,7 +15,7 @@ protocol CallControlsDelegate: AnyObject {
     func didPressMore()
 }
 
-class CallControls: UIView {
+final class CallControls: UIView {
     private lazy var topStackView = createTopStackView()
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
@@ -310,7 +310,7 @@ protocol CallControlsHeightObserver {
 // MARK: - View Model
 
 @MainActor
-private class CallControlsViewModel {
+final private class CallControlsViewModel {
     private let call: SignalCall
     private let callService: CallService
     private weak var delegate: CallControlsDelegate?

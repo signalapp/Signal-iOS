@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ReceiptSenderTest: XCTestCase {
+final class ReceiptSenderTest: XCTestCase {
     private var mockDb: InMemoryDB!
     private var receiptSender: ReceiptSender!
     private var recipientDatabaseTable: RecipientDatabaseTable!

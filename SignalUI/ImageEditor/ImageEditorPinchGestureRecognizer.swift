@@ -28,7 +28,7 @@ struct ImageEditorPinchState {
 // * Tries to fail quickly to avoid conflicts with other GRs, especially pans/swipes.
 // * Captures a bunch of useful "pinch state" that makes using this GR much easier
 //   than UIPinchGestureRecognizer.
-class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
+final class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
     weak var referenceView: UIView?
 

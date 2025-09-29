@@ -7,7 +7,7 @@ import LibSignalClient
 
 #if TESTABLE_BUILD
 
-class MockCallRecordStore: CallRecordStore {
+final class MockCallRecordStore: CallRecordStore {
     var callRecords = [CallRecord]()
 
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) {

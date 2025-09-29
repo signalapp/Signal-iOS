@@ -7,7 +7,7 @@ import SignalUI
 import SignalServiceKit
 
 @MainActor
-class BankTransferMandateViewController: OWSTableViewController2 {
+final class BankTransferMandateViewController: OWSTableViewController2 {
     override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     override var navbarBackgroundColorOverride: UIColor? { self.tableBackgroundColor }
 

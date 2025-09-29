@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-class AddMoreRailItem: Equatable {
+final class AddMoreRailItem: Equatable {
 
     static func == (lhs: AddMoreRailItem, rhs: AddMoreRailItem) -> Bool {
         return true
@@ -111,7 +111,7 @@ public struct AttachmentApprovalItem: Hashable {
 
 // MARK: -
 
-class AttachmentApprovalItemCollection {
+final class AttachmentApprovalItemCollection {
     private(set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: () -> Bool
 

@@ -7,7 +7,7 @@ import Foundation
 import MultipeerConnectivity
 import SignalServiceKit
 
-public class RegistrationTransferStatusState: DeviceTransferServiceObserver, Equatable {
+final public class RegistrationTransferStatusState: DeviceTransferServiceObserver, Equatable {
     let transferStatusViewModel = TransferStatusViewModel()
 
     private let deviceTransferService: RegistrationCoordinatorImpl.Shims.DeviceTransferService

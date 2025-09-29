@@ -8,7 +8,7 @@ import PureLayout
 import SignalServiceKit
 import SignalUI
 
-class SAELoadViewController: UIViewController {
+final class SAELoadViewController: UIViewController {
 
     weak var delegate: ShareViewDelegate?
 

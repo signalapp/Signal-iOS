@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class TextFieldFormatting {
+final public class TextFieldFormatting {
 
     private init() {}
 

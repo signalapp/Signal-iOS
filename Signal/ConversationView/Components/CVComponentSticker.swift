@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentSticker: CVComponentBase, CVComponent {
+final public class CVComponentSticker: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .sticker }
 

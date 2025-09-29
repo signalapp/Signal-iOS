@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-class RotationControl: UIControl {
+final class RotationControl: UIControl {
 
     private var previousAngle: CGFloat = 0
     private var _angle: CGFloat = 0

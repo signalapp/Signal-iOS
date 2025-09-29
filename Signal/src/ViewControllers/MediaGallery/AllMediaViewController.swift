@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AllMediaViewController: OWSViewController {
+final class AllMediaViewController: OWSViewController {
     private let tileViewController: MediaTileViewController
     private let accessoriesHelper = MediaGalleryAccessoriesHelper()
 

@@ -13,7 +13,7 @@ protocol IncomingCallLogEventSyncMessageManager {
     )
 }
 
-class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessageManager {
+final class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessageManager {
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue
     private let missedCallManager: CallRecordMissedCallManager

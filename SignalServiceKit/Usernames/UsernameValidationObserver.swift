@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class UsernameValidationObserver {
+final public class UsernameValidationObserver {
     private let appReadiness: AppReadiness
     private let manager: UsernameValidationManager
     private let database: any DB

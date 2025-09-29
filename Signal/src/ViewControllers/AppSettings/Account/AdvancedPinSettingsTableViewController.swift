@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
+final class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext
 

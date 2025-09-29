@@ -4,7 +4,7 @@
 //
 
 /// A logger for username-related events.
-public class UsernameLogger: PrefixedLogger {
+final public class UsernameLogger: PrefixedLogger {
     public static let shared: UsernameLogger = .init()
 
     private init() {

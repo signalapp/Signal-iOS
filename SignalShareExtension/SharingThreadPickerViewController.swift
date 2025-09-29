@@ -8,7 +8,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class SharingThreadPickerViewController: ConversationPickerViewController {
+final class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
 

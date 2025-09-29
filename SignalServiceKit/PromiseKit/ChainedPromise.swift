@@ -33,7 +33,7 @@ import Foundation
 /// Anything enqueued afterwards will wait on the resolution of the promise returned by
 /// `validateFileOnDisk`.
 ///
-public class ChainedPromise<Value> {
+final public class ChainedPromise<Value> {
 
     private let scheduler: Scheduler
     private var currentPromise: Promise<Value>

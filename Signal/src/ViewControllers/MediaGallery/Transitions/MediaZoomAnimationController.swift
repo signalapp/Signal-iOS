@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-class MediaZoomAnimationController: NSObject {
+final class MediaZoomAnimationController: NSObject {
     private let item: Media
 
     init(image: UIImage) {

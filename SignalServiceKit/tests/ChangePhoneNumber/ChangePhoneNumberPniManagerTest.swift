@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ChangePhoneNumberPniManagerTest: XCTestCase {
+final class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var identityManagerMock: IdentityManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
     private var preKeyManagerMock: PreKeyManagerMock!
@@ -155,7 +155,7 @@ private extension ChangePhoneNumberPni.GeneratePniIdentityResult {
 
 // MARK: IdentityManager
 
-private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.IdentityManager {
+final private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.IdentityManager {
     var generatedKeyPairs: [ECKeyPair] = []
     var storedKeyPairs: [OWSIdentity: ECKeyPair] = [:]
 
@@ -176,7 +176,7 @@ private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.Identit
 
 // MARK: PreKeyManager
 
-private class PreKeyManagerMock: ChangePhoneNumberPniManagerImpl.Shims.PreKeyManager {
+final private class PreKeyManagerMock: ChangePhoneNumberPniManagerImpl.Shims.PreKeyManager {
     var attemptedRefreshes: [(OWSIdentity, Bool)] = []
 
     func refreshOneTimePreKeys(
@@ -189,7 +189,7 @@ private class PreKeyManagerMock: ChangePhoneNumberPniManagerImpl.Shims.PreKeyMan
 
 // MARK: PniDistributionParameterBuilder
 
-private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuilder {
+final private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuilder {
     enum BuildOutcome {
         case success
         case failure

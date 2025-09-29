@@ -6,7 +6,7 @@
 import Testing
 @testable import SignalServiceKit
 
-class BackupFailureStateManagerTests {
+final class BackupFailureStateManagerTests {
     private let backupSettingStore = BackupSettingsStore()
     private let db: DB!
     private var date: Date!

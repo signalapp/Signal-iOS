@@ -8,7 +8,7 @@ import Foundation
 /// Represents an attachment that exists (or existed) on the transit tier,
 /// and therefore can be sent.
 /// May be downloaded as well, independent of its presence on the transit tier.
-public class AttachmentTransitPointer {
+final public class AttachmentTransitPointer {
 
     public let attachment: Attachment
 

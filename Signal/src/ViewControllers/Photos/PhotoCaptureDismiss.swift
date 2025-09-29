@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
+final class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?

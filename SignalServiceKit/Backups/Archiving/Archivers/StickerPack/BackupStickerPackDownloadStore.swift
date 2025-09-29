@@ -39,7 +39,7 @@ public protocol BackupStickerPackDownloadStore {
     ) throws
 }
 
-public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore {
+final public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore {
 
     public typealias Record = QueuedBackupStickerPackDownload
 

@@ -11,7 +11,7 @@ enum GalleryDirection {
     case before, after, around
 }
 
-class MediaGalleryAlbum {
+final class MediaGalleryAlbum {
     private var originalItems: [MediaGalleryItem]
     var items: [MediaGalleryItem] {
         guard let mediaGallery = self.mediaGallery else {
@@ -30,7 +30,7 @@ class MediaGalleryAlbum {
     }
 }
 
-class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
+final class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     struct Sender {
         let name: String
         let abbreviatedName: String
@@ -284,7 +284,7 @@ struct MediaGalleryUpdateUserData {
 /// know their number of items. Items are also loaded on demand, potentially non-contiguously.
 ///
 /// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
-class MediaGallery {
+final class MediaGallery {
     typealias Sections = MediaGallerySections<Loader, MediaGalleryUpdateUserData>
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]

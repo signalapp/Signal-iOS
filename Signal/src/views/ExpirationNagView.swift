@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ExpirationNagView: ReminderView {
+final class ExpirationNagView: ReminderView {
     private let dateProvider: DateProvider
     private let appExpiry: AppExpiry
     private let osExpiry: OsExpiry

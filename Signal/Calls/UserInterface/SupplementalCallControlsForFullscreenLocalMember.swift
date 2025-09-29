@@ -14,7 +14,7 @@ import UIKit
 /// the local member is alone (either because they're in the lobby or
 /// because they're the only one in the call), they're fullscreen, and
 /// those call controls need to be somewhere! This view is the place!
-class SupplementalCallControlsForFullscreenLocalMember: UIView {
+final class SupplementalCallControlsForFullscreenLocalMember: UIView {
     private lazy var flipCameraCircleView: CircleBlurView = {
         let circleView = CircleBlurView(effect: UIBlurEffect(style: .systemThinMaterialDark))
         circleView.backgroundColor = CallButton.unselectedBackgroundColor

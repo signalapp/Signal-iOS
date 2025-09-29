@@ -12,7 +12,7 @@ protocol OutgoingDeviceRestoreInitialPresenter {
     func didTapTransfer() async
 }
 
-class OutgoingDeviceRestoreIntialViewController: HostingController<OutgoingDeviceRestoreInitialView> {
+final class OutgoingDeviceRestoreIntialViewController: HostingController<OutgoingDeviceRestoreInitialView> {
     init(presenter: OutgoingDeviceRestoreInitialPresenter) {
         super.init(wrappedView: OutgoingDeviceRestoreInitialView(presenter: presenter))
         self.modalPresentationStyle = .overFullScreen

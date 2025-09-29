@@ -170,7 +170,7 @@ private struct Event {
 private var runningEvents: [BenchmarkEventId: Event] = [:]
 private let eventQueue = DispatchQueue(label: "org.signal.bench")
 
-public class BenchManager {
+final public class BenchManager {
     public static func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
         Bench(title: title, logIfLongerThan: intervalLimit, logInProduction: logInProduction, block: block)
     }
@@ -178,7 +178,7 @@ public class BenchManager {
 
 // MARK: Memory
 
-private class MemoryBencher: MemorySampler {
+final private class MemoryBencher: MemorySampler {
     @usableFromInline lazy var byteFormatter = ByteCountFormatter()
 
     let title: String

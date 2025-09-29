@@ -45,7 +45,7 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
     }
 }
 
-public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
+final public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
 
     private let webSocket: WebSocketPromise
     private let configurator: Configurator
@@ -177,7 +177,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
 #if TESTABLE_BUILD
 
-public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
+final public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
 
     internal override init() {
         super.init()

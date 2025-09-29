@@ -6,7 +6,7 @@
 import CryptoKit
 import Foundation
 
-public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, BufferedStreamTransform {
+final public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, BufferedStreamTransform {
     public enum Error: Swift.Error {
         case invalidHmac
         case invalidFooter

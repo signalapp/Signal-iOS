@@ -13,7 +13,7 @@ private let kOWS2FAManager_LastSuccessfulReminderDateKey = "kOWS2FAManager_LastS
 private let kOWS2FAManager_PinCode = "kOWS2FAManager_PinCode"
 private let kOWS2FAManager_RepetitionInterval = "kOWS2FAManager_RepetitionInterval"
 
-public class OWS2FAManager {
+final public class OWS2FAManager {
     private var accountAttributesUpdater: AccountAttributesUpdater { DependenciesBridge.shared.accountAttributesUpdater }
     private var accountKeyStore: AccountKeyStore { DependenciesBridge.shared.accountKeyStore }
     private var db: DB { DependenciesBridge.shared.db }

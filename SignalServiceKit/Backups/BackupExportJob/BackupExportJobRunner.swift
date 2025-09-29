@@ -39,7 +39,7 @@ public protocol BackupExportJobRunner {
 
 // MARK: -
 
-class BackupExportJobRunnerImpl: BackupExportJobRunner {
+final class BackupExportJobRunnerImpl: BackupExportJobRunner {
     private struct State {
         struct UpdateObserver {
             let id = UUID()

@@ -8,7 +8,7 @@ import UIKit
 import SignalServiceKit
 import SignalUI
 
-class MyStoryCell: UITableViewCell {
+final class MyStoryCell: UITableViewCell {
     static let reuseIdentifier = "MyStoryCell"
 
     let titleLabel = UILabel()

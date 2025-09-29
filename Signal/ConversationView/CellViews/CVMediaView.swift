@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVMediaView: ManualLayoutViewWithLayer {
+final public class CVMediaView: ManualLayoutViewWithLayer {
 
     // MARK: -
 

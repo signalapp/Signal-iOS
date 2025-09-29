@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class ViewOnceTooltip: TooltipView {
+final public class ViewOnceTooltip: TooltipView {
 
     private override init(fromView: UIView,
                           widthReferenceView: UIView,

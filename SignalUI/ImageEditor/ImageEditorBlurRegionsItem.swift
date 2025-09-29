@@ -5,7 +5,7 @@
 
 import UIKit
 
-class ImageEditorBlurRegionsItem: ImageEditorItem {
+final class ImageEditorBlurRegionsItem: ImageEditorItem {
     // Expressed with "Unit" values. Both origin and size
     // are fractions of min(width, height) of the source
     // image.

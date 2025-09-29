@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
+final class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
     private var phoneNumberDiscoverability: PhoneNumberDiscoverability!
     private var phoneNumberSharingMode: PhoneNumberSharingMode!

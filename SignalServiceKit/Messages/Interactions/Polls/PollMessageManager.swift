@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class PollMessageManager {
+final public class PollMessageManager {
     static let pollEmoji = "📊"
 
     let pollStore: PollStore

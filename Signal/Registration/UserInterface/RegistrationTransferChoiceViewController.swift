@@ -15,7 +15,7 @@ protocol RegistrationTransferChoicePresenter: AnyObject {
 
 // MARK: - RegistrationTransferChoiceViewController
 
-class RegistrationTransferChoiceViewController: OWSViewController {
+final class RegistrationTransferChoiceViewController: OWSViewController {
     private weak var presenter: RegistrationTransferChoicePresenter?
 
     public init(presenter: RegistrationTransferChoicePresenter) {

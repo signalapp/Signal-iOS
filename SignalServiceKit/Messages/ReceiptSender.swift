@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 @objc
-class MessageReceiptSet: NSObject, Codable {
+final class MessageReceiptSet: NSObject, Codable {
     @objc
     public private(set) var timestamps: Set<UInt64>
     @objc
@@ -47,7 +47,7 @@ class MessageReceiptSet: NSObject, Codable {
 // MARK: - ReceiptSender
 
 @objc
-public class ReceiptSender: NSObject {
+final public class ReceiptSender: NSObject {
     private let recipientDatabaseTable: RecipientDatabaseTable
 
     private let deliveryReceiptStore: KeyValueStore

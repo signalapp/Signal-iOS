@@ -10,7 +10,7 @@ import GRDB
 //
 // TODO: Maybe we should rename this to a SDSSerializer protocol and
 //       move these methods to an extension?
-public class SDSDeserialization {
+final public class SDSDeserialization {
 
     private init() {}
 

@@ -5,7 +5,7 @@
 
 import Foundation
 
-class ProfileWhitelistMerger: RecipientMergeObserver {
+final class ProfileWhitelistMerger: RecipientMergeObserver {
     private let profileManager: ProfileManager
 
     init(profileManager: ProfileManager) {

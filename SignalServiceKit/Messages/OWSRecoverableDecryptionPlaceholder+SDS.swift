@@ -47,7 +47,7 @@ public extension OWSRecoverableDecryptionPlaceholder {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSRecoverableDecryptionPlaceholderSerializer: SDSSerializer {
+final class OWSRecoverableDecryptionPlaceholderSerializer: SDSSerializer {
 
     private let model: OWSRecoverableDecryptionPlaceholder
     public init(model: OWSRecoverableDecryptionPlaceholder) {

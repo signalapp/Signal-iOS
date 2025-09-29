@@ -9,7 +9,7 @@ public enum MobileCoinHelperMinimalError: Error {
     case invalidReceipt
 }
 
-public class MobileCoinHelperMinimal: MobileCoinHelper {
+final public class MobileCoinHelperMinimal: MobileCoinHelper {
     public init() { }
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {

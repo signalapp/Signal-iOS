@@ -104,7 +104,7 @@ extension DisappearingMessagesConfigurationStore {
     }
 }
 
-class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurationStore {
+final class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurationStore {
     func fetch(for scope: DisappearingMessagesConfigurationScope, tx: DBReadTransaction) -> OWSDisappearingMessagesConfiguration? {
         guard
             let config = OWSDisappearingMessagesConfiguration.anyFetch(
@@ -166,7 +166,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
 
 #if TESTABLE_BUILD
 
-class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore {
+final class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore {
     var values = [String: OWSDisappearingMessagesConfiguration]()
 
     func fetch(for scope: DisappearingMessagesConfigurationScope, tx: DBReadTransaction) -> OWSDisappearingMessagesConfiguration? {

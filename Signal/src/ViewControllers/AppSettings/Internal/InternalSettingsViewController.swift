@@ -9,7 +9,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-class InternalSettingsViewController: OWSTableViewController2 {
+final class InternalSettingsViewController: OWSTableViewController2 {
 
     enum Mode: Equatable {
         case registration

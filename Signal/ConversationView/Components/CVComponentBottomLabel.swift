@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentBottomLabel: CVComponentBase, CVComponent {
+final public class CVComponentBottomLabel: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .bottomLabel }
     private let bottomLabelState: String
 

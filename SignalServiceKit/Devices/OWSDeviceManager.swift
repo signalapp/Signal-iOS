@@ -23,7 +23,7 @@ extension OWSDeviceManager {
     }
 }
 
-class OWSDeviceManagerImpl: OWSDeviceManager {
+final class OWSDeviceManagerImpl: OWSDeviceManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "kTSStorageManager_OWSDeviceCollection"
         static let lastReceivedSyncMessageKey = "kLastReceivedSyncMessage"

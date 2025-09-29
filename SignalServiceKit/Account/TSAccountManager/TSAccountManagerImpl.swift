@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class TSAccountManagerImpl: TSAccountManager {
+final public class TSAccountManagerImpl: TSAccountManager {
 
     private let appReadiness: AppReadiness
     private let dateProvider: DateProvider

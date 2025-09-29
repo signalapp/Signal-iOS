@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class ImageEditorTopBar: MediaTopBar {
+final class ImageEditorTopBar: MediaTopBar {
 
     let undoButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "undo-28"),
@@ -65,7 +65,7 @@ protocol ImageEditorBottomBarProvider: AnyObject {
     func bottomBar(for viewController: UIViewController) -> ImageEditorBottomBar
 }
 
-class ImageEditorBottomBar: UIView {
+final class ImageEditorBottomBar: UIView {
 
     let cancelButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "x-28"),

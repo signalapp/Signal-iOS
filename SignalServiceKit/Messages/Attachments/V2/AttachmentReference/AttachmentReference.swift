@@ -6,7 +6,7 @@
 import Foundation
 
 /// Represents an edge between some owner (a message, a story, a thread, etc) and an attachment.
-public class AttachmentReference {
+final public class AttachmentReference {
 
     /// We keep the raw type, without any metadata, on the reference table.
     public typealias ContentType = Attachment.ContentTypeRaw

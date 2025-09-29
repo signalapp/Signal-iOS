@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
+final internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
 
     private let reactionStore: BackupArchiveReactionStore

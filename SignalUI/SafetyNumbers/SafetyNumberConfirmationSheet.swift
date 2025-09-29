@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class SafetyNumberConfirmationSheet: UIViewController {
+final public class SafetyNumberConfirmationSheet: UIViewController {
     let stackView = UIStackView()
     let contentView = UIView()
     let backdropView = UIView()
@@ -762,7 +762,7 @@ extension SafetyNumberConfirmationSheet: UIGestureRecognizerDelegate {
 
 // MARK: -
 
-private class SafetyNumberConfirmationAnimationController: UIPresentationController {
+final private class SafetyNumberConfirmationAnimationController: UIPresentationController {
 
     var backdropView: UIView? {
         guard let vc = presentedViewController as? SafetyNumberConfirmationSheet else { return nil }

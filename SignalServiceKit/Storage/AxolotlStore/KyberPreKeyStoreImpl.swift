@@ -61,7 +61,7 @@ public struct KyberPreKeyRecord: Codable {
     }
 }
 
-public class KyberPreKeyStoreImpl: LibSignalClient.KyberPreKeyStore {
+final public class KyberPreKeyStoreImpl: LibSignalClient.KyberPreKeyStore {
 
     internal enum Constants {
         internal enum ACI {

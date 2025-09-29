@@ -709,7 +709,7 @@ extension ConversationSettingsViewController: GroupDescriptionViewControllerDele
 
 // MARK: -
 
-public class OWSLabel: UILabel {
+final public class OWSLabel: UILabel {
 
     // MARK: - Tap
 

@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 @objc
-public class SSKPreferences: NSObject {
+final public class SSKPreferences: NSObject {
 
     public static let store = KeyValueStore(collection: "SSKPreferences")
 

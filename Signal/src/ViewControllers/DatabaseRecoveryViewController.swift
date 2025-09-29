@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
+final class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let appReadiness: AppReadiness
     private let corruptDatabaseStorage: SDSDatabaseStorage
     private let deviceSleepManager: DeviceSleepManagerImpl

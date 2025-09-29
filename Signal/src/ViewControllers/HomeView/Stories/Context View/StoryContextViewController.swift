@@ -27,7 +27,7 @@ protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerShouldBeMuted(_ storyContextViewController: StoryContextViewController) -> Bool
 }
 
-class StoryContextViewController: OWSViewController {
+final class StoryContextViewController: OWSViewController {
     let context: StoryContext
 
     weak var delegate: StoryContextViewControllerDelegate?

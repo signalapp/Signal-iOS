@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-public class NotificationActionHandler {
+final public class NotificationActionHandler {
 
     private static var callService: CallService { AppEnvironment.shared.callService }
 

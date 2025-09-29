@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class SplashViewController: OWSViewController, ExperienceUpgradeView {
+final public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
     // MARK: -
 

@@ -7,7 +7,7 @@ import SignalServiceKit
 public import SignalUI
 import StoreKit
 
-public class ChatListViewController: OWSViewController, HomeTabViewController {
+final public class ChatListViewController: OWSViewController, HomeTabViewController {
     let appReadiness: AppReadinessSetter
 
     init(

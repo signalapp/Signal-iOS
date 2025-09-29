@@ -76,7 +76,7 @@ public protocol ConversationViewLayoutDelegate: AnyObject {
 
 // MARK: -
 
-public class ConversationViewLayout: UICollectionViewLayout {
+final public class ConversationViewLayout: UICollectionViewLayout {
 
     public weak var delegate: ConversationViewLayoutDelegate?
 
@@ -1001,7 +1001,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 // MARK: -
 
 // TODO: This might not have to be @objc after the CVC port.
-public class CVScrollContinuityToken: NSObject {
+final public class CVScrollContinuityToken: NSObject {
     fileprivate let layoutInfo: ConversationViewLayout.LayoutInfo
     fileprivate let contentOffset: CGPoint
     fileprivate let visibleUniqueIds: [String]
@@ -1017,7 +1017,7 @@ public class CVScrollContinuityToken: NSObject {
 
 // MARK: -
 
-public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
+final public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
     public var isStickyHeader: Bool = false
 
     public override func copy(with zone: NSZone? = nil) -> Any {

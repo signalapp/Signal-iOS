@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class MediaCaptionView: UIView {
+final class MediaCaptionView: UIView {
 
     private let spoilerState: SpoilerRenderState
 

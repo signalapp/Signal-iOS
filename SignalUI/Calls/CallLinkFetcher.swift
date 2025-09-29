@@ -10,7 +10,7 @@ public import SignalServiceKit
 
 public struct CallLinkNotFoundError: Error {}
 
-public class CallLinkFetcherImpl {
+final public class CallLinkFetcherImpl {
     private let sfuClient: SFUClient
     // Even though we never use this, we need to retain it to ensure
     // `sfuClient` continues to work properly.

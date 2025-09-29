@@ -16,7 +16,7 @@ public extension NSNotification.Name {
 }
 
 @objcMembers
-public class RegistrationStateChangeNotifications: NSObject {
+final public class RegistrationStateChangeNotifications: NSObject {
 
     private override init() { super.init() }
 

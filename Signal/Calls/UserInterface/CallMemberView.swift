@@ -24,7 +24,7 @@ protocol CallMemberComposableView: UIView {
     func clearConfiguration()
 }
 
-class CallMemberView: UIView {
+final class CallMemberView: UIView {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberWaitingAndErrorView: CallMemberWaitingAndErrorView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView

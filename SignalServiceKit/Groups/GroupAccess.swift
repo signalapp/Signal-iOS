@@ -65,7 +65,7 @@ public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
 
 // This class is immutable.
 @objc
-public class GroupAccess: MTLModel {
+final public class GroupAccess: MTLModel {
     @objc
     public var members: GroupV2Access = .unknown
     @objc

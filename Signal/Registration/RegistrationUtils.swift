@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-public class RegistrationUtils {
+final public class RegistrationUtils {
 
     private init() {}
 

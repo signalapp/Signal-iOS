@@ -7,7 +7,7 @@ import XCTest
 import Foundation
 @testable import SignalServiceKit
 
-class StickerManagerTest: XCTestCase {
+final class StickerManagerTest: XCTestCase {
 
     func testFirstEmoji() {
         XCTAssertEqual(nil, StickerManager.firstEmoji(in: ""))
@@ -86,7 +86,7 @@ class StickerManagerTest: XCTestCase {
     }
 }
 
-class StickerManagerTest2: SSKBaseTest {
+final class StickerManagerTest2: SSKBaseTest {
 
     func testSuggestedStickers() {
         // The "StickerManager.suggestedStickers" instance method does caching;

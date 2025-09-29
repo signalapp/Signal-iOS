@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-public class GroupInviteLinksUI: UIView {
+final public class GroupInviteLinksUI: UIView {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     required init(coder: NSCoder) {
@@ -61,7 +61,7 @@ public class GroupInviteLinksUI: UIView {
 
 // MARK: -
 
-private class GroupInviteLinksActionSheet: ActionSheetController {
+final private class GroupInviteLinksActionSheet: ActionSheetController {
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo
 

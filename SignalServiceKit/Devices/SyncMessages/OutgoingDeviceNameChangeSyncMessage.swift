@@ -6,7 +6,7 @@
 /// Informs other platforms that a linked device's name has changed, and they
 /// should refresh their list of linked devices.
 @objc(OutgoingDeviceNameChangeSyncMessage)
-public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
+final public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
 
     /// Exposed and nullable for compatibility with Mantle.
     @objc(deviceId)

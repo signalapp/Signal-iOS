@@ -297,7 +297,7 @@ public extension InstalledSticker {
 // MARK: - InstalledStickerCursor
 
 @objc
-public class InstalledStickerCursor: NSObject, SDSCursor {
+final public class InstalledStickerCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<InstalledStickerRecord>?
 
@@ -542,7 +542,7 @@ public extension InstalledSticker {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class InstalledStickerSerializer: SDSSerializer {
+final class InstalledStickerSerializer: SDSSerializer {
 
     private let model: InstalledSticker
     public init(model: InstalledSticker) {

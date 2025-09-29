@@ -257,7 +257,7 @@ private extension TSRequest {
 
 #if TESTABLE_BUILD
 
-class MockBackupKeyService: BackupKeyService {
+final class MockBackupKeyService: BackupKeyService {
     func registerBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> RegisteredBackupKeyToken {
         return RegisteredBackupKeyToken()
     }

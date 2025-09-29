@@ -7,7 +7,7 @@ import GRDB
 import LibSignalClient
 
 @objc
-public class ContactThreadFinder: NSObject {
+final public class ContactThreadFinder: NSObject {
     @objc(contactThreadForAddress:transaction:)
     public func contactThread(for address: SignalServiceAddress, tx: DBReadTransaction) -> TSContactThread? {
         if let serviceId = address.serviceId, let thread = contactThreads(for: serviceId, tx: tx).first {

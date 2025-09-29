@@ -7,7 +7,7 @@ import SafariServices
 import SignalServiceKit
 import SignalUI
 
-class IntroducingPinsMegaphone: MegaphoneView {
+final class IntroducingPinsMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 

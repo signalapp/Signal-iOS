@@ -7,7 +7,7 @@ import Foundation
 
 // A thread-safe timer that runs on a specific queue and which
 // can be safely created, invalidated or deallocated on any thread.
-public class OffMainThreadTimer {
+final public class OffMainThreadTimer {
 
     private let timeInterval: TimeInterval
     private let repeats: Bool

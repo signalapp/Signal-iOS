@@ -15,7 +15,7 @@ protocol PassiveVolumeButtonObserver: AnyObject {
     func didTapSomeVolumeButton()
 }
 
-class PassiveVolumeButtonObservation {
+final class PassiveVolumeButtonObservation {
 
     private weak var observer: PassiveVolumeButtonObserver?
 
@@ -102,7 +102,7 @@ protocol AVVolumeButtonObserver: AnyObject {
     func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier)
 }
 
-class AVVolumeButtonObservation {
+final class AVVolumeButtonObservation {
 
     private weak var observer: AVVolumeButtonObserver?
     private weak var capturePreviewView: CapturePreviewView?
@@ -288,7 +288,7 @@ extension PassiveVolumeButtonObservation: LegacyVolumeButtonObserver {
 
 // MARK: - Legacy Global observer
 
-private class LegacyGlobalVolumeButtonObserver {
+final private class LegacyGlobalVolumeButtonObserver {
     static let shared = LegacyGlobalVolumeButtonObserver()
 
     fileprivate init?() {

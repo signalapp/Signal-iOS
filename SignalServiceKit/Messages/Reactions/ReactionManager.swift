@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 @objc(OWSReactionManager)
-public class ReactionManager: NSObject {
+final public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
     public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 

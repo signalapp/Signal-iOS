@@ -107,7 +107,7 @@ public protocol BackupAttachmentDownloadStore {
     func resetDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
 }
 
-public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
+final public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     private let kvStore: KeyValueStore
 

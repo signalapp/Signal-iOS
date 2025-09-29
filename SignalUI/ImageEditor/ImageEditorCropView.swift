@@ -12,7 +12,7 @@ enum CropRegion {
     case topLeft, topRight, bottomLeft, bottomRight
 }
 
-private class CropCornerView: UIView {
+final private class CropCornerView: UIView {
 
     let cropRegion: CropRegion
 
@@ -109,7 +109,7 @@ private class CropCornerView: UIView {
     }
 }
 
-private class CropBackgroundView: UIView {
+final private class CropBackgroundView: UIView {
 
     enum Style {
         case blur
@@ -200,7 +200,7 @@ private class CropBackgroundView: UIView {
     }
 }
 
-class CropView: UIView {
+final class CropView: UIView {
 
     static let desiredCornerSize: CGFloat = 22 // adjusted for stroke width, visible size is 24
     private(set) var cornerSize = CGSize(square: CropView.desiredCornerSize)

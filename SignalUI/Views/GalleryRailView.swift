@@ -151,7 +151,7 @@ public protocol GalleryRailViewDelegate: AnyObject {
     func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem)
 }
 
-public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
+final public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     public weak var delegate: GalleryRailViewDelegate?
 

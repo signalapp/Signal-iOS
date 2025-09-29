@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
+final public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     public var componentKey: CVComponentKey { .dateHeader }
 
@@ -329,7 +329,7 @@ private protocol VisualEffectContentView {
 
 // MARK: -
 
-private class ContentViewWithBlurEffect: VisualEffectContentView {
+final private class ContentViewWithBlurEffect: VisualEffectContentView {
     private let titleLabel = CVLabel()
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
     private let blurOverlay = UIView()
@@ -370,7 +370,7 @@ private class ContentViewWithBlurEffect: VisualEffectContentView {
 
 #if compiler(>=6.2)
 @available(iOS 26.0, *)
-private class ContentViewWithGlassEffect: VisualEffectContentView {
+final private class ContentViewWithGlassEffect: VisualEffectContentView {
     private let titleLabel = CVLabel()
     private let glassView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
     private let wrapper: UIView
@@ -407,7 +407,7 @@ private class ContentViewWithGlassEffect: VisualEffectContentView {
 
 // MARK: -
 
-private class ContentViewNoVisualEffect {
+final private class ContentViewNoVisualEffect {
     private let titleLabel = CVLabel()
     private let innerStack = ManualStackView(name: "dateHeader.innerStackView")
 

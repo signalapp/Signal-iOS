@@ -70,7 +70,7 @@ extension BackupArchive {
     }
 }
 
-class BackupArchiveInlinedOversizeTextArchiver {
+final class BackupArchiveInlinedOversizeTextArchiver {
 
     private let attachmentsArchiver: BackupArchiveMessageAttachmentArchiver
     private let attachmentContentValidator: AttachmentContentValidator

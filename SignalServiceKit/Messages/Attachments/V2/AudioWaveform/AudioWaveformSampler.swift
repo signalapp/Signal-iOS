@@ -6,7 +6,7 @@
 import Accelerate
 import Foundation
 
-class AudioWaveformSampler {
+final class AudioWaveformSampler {
     private let inputCount: Int
     private let outputCount: Int
 

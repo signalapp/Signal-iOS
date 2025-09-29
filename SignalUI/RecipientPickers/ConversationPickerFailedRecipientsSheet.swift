@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewController {
+final public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewController {
 
     let failedAttachments: [SignalAttachment]
     let failedStoryConversationItems: [StoryConversationItem]

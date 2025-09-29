@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalAccountTest: XCTestCase {
+final class SignalAccountTest: XCTestCase {
 
     // MARK: - (De)Serialization Tests
 

@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
-public class QuickRestoreManager {
+final public class QuickRestoreManager {
     public typealias RestoreMethodToken = String
 
     public enum Error: Swift.Error {

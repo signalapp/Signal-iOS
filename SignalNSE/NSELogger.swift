@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class NSELogger: PrefixedLogger {
+final class NSELogger: PrefixedLogger {
     static let uncorrelated = NSELogger(prefix: "uncorrelated")
 
     convenience init() {

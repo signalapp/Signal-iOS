@@ -28,7 +28,7 @@ public protocol StoryStickerPickerDelegate: AnyObject {
 
 // MARK: - StickerPackCollectionView
 
-public class StickerPackCollectionView: UICollectionView {
+final public class StickerPackCollectionView: UICollectionView {
 
     private typealias StorySticker = EditorSticker.StorySticker
 
@@ -400,7 +400,7 @@ extension StickerPackCollectionView: UICollectionViewDelegateFlowLayout {
     }
 }
 
-private class StickerPickerHeaderView: UICollectionReusableView {
+final private class StickerPickerHeaderView: UICollectionReusableView {
     static let reuseIdentifier = "StickerPickerHeaderView"
 
     let label = UILabel()

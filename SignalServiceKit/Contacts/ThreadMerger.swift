@@ -494,7 +494,7 @@ extension ThreadMerger {
     }
 }
 
-class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Shims.DisappearingMessagesConfigurationManager {
+final class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Shims.DisappearingMessagesConfigurationManager {
     private let store: MockDisappearingMessagesConfigurationStore
     init(_ disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore) {
         self.store = disappearingMessagesConfigurationStore
@@ -504,7 +504,7 @@ class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Sh
     }
 }
 
-class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAssociatedDataManager {
+final class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAssociatedDataManager {
     private let store: MockThreadAssociatedDataStore
     init(_ threadAssociatedDataStore: MockThreadAssociatedDataStore) {
         self.store = threadAssociatedDataStore
@@ -528,7 +528,7 @@ class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAss
     }
 }
 
-class ThreadMerger_MockSDSThreadMerger: ThreadMerger.Shims.SDSThreadMerger {
+final class ThreadMerger_MockSDSThreadMerger: ThreadMerger.Shims.SDSThreadMerger {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {}
 }
 

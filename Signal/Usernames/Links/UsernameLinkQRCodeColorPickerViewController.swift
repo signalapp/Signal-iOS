@@ -10,7 +10,7 @@ protocol UsernameLinkQRCodeColorPickerDelegate: SheetDismissalDelegate {
     func didFinalizeSelectedColor(color: QRCodeColor)
 }
 
-class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
+final class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     private let startingColor: QRCodeColor
     private var currentColor: QRCodeColor
 

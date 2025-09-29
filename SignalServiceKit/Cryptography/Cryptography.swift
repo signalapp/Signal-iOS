@@ -1109,7 +1109,7 @@ public extension Cryptography {
 // MARK: - Direct file access
 
 /// A convenience wrapper around a read-only file.
-private class LocalFileHandle {
+final private class LocalFileHandle {
     private let fileDescriptor: FileDescriptor
     /// Determined at open time and assumed to be fixed.
     let fileLength: Int

@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class AnimatedProgressView: UIView {
+final class AnimatedProgressView: UIView {
     var hidesWhenStopped = true
     private(set) var isAnimating = false
 

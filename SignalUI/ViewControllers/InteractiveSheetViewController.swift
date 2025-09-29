@@ -731,7 +731,7 @@ extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
 
 // MARK: -
 
-private class InteractiveSheetAnimationController: UIPresentationController {
+final private class InteractiveSheetAnimationController: UIPresentationController {
 
     var backdropView: UIView? {
         guard let vc = presentedViewController as? InteractiveSheetViewController else { return nil }

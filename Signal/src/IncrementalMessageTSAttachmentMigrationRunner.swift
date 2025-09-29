@@ -8,7 +8,7 @@ import SignalServiceKit
 
 /// Manages the BGProcessingTask for doing the migration as well as the runner for
 /// doing so while the main app is running.
-class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
+final class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
     private let appContext: AppContext
     private let db: SDSDatabaseStorage
     private let store: IncrementalTSAttachmentMigrationStore

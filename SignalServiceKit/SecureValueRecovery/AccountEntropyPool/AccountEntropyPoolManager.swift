@@ -15,7 +15,7 @@ public protocol AccountEntropyPoolManager {
 
 // MARK: -
 
-class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
+final class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
     private let accountAttributesUpdater: AccountAttributesUpdater
     private let accountKeyStore: AccountKeyStore
     private let appContext: AppContext
@@ -166,7 +166,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 
 #if TESTABLE_BUILD
 
-class MockAccountEntropyPoolManager: AccountEntropyPoolManager {
+final class MockAccountEntropyPoolManager: AccountEntropyPoolManager {
     func generateIfMissing() async {}
 
     var setAccountEntropyPoolMock: (() -> Void)?

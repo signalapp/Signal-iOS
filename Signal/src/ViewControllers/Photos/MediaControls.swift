@@ -24,7 +24,7 @@ protocol CameraCaptureControlDelegate: AnyObject {
     func cameraCaptureControl(_ control: CameraCaptureControl, didUpdateZoomLevel zoomLevel: CGFloat)
 }
 
-class CameraCaptureControl: UIView {
+final class CameraCaptureControl: UIView {
 
     var axis: NSLayoutConstraint.Axis = .horizontal {
         didSet {
@@ -572,7 +572,7 @@ protocol CameraZoomSelectionControlDelegate: AnyObject {
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat)
 }
 
-class CameraZoomSelectionControl: UIView {
+final class CameraZoomSelectionControl: UIView {
 
     weak var delegate: CameraZoomSelectionControlDelegate?
 
@@ -810,7 +810,7 @@ class CameraZoomSelectionControl: UIView {
     }
 }
 
-private class LockView: UIView {
+final private class LockView: UIView {
 
     private let imageViewLock = UIImageView(image: UIImage(named: "lock-28"))
     private let blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
@@ -905,7 +905,7 @@ private class LockView: UIView {
     }
 }
 
-class RecordingDurationView: PillView {
+final class RecordingDurationView: PillView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -1000,7 +1000,7 @@ class RecordingDurationView: PillView {
 
 // MARK: - Buttons
 
-class MediaDoneButton: UIButton {
+final class MediaDoneButton: UIButton {
 
     var badgeNumber: Int = 0 {
         didSet {
@@ -1125,7 +1125,7 @@ class MediaDoneButton: UIButton {
     }
 }
 
-class FlashModeButton: RoundMediaButton {
+final class FlashModeButton: RoundMediaButton {
 
     private static let flashOn = UIImage(named: "flash-on")
     private static let flashOff = UIImage(named: "flash-off")
@@ -1158,7 +1158,7 @@ class FlashModeButton: RoundMediaButton {
     }
 }
 
-class CameraChooserButton: RoundMediaButton {
+final class CameraChooserButton: RoundMediaButton {
 
     var isFrontCameraActive = false
 
@@ -1174,7 +1174,7 @@ class CameraChooserButton: RoundMediaButton {
     }
 }
 
-class CaptureModeButton: RoundMediaButton {
+final class CaptureModeButton: RoundMediaButton {
 
     private static let batchModeOn = UIImage(named: "multicapture-on")
     private static let batchModeOff = UIImage(named: "multicapture-off")
@@ -1201,7 +1201,7 @@ class CaptureModeButton: RoundMediaButton {
     }
 }
 
-class MediaPickerButton: RoundMediaButton {
+final class MediaPickerButton: RoundMediaButton {
     init() {
         super.init(
             image: UIImage(named: "album-tilt-28"),
@@ -1213,7 +1213,7 @@ class MediaPickerButton: RoundMediaButton {
 
 // MARK: - Toolbars
 
-class CameraTopBar: MediaTopBar {
+final class CameraTopBar: MediaTopBar {
 
     let closeButton = RoundMediaButton(image: UIImage(named: "x-28"), backgroundStyle: .blur)
 
@@ -1297,7 +1297,7 @@ class CameraTopBar: MediaTopBar {
     }
 }
 
-class CameraBottomBar: UIView {
+final class CameraBottomBar: UIView {
 
     private var compactHeightLayoutConstraints = [NSLayoutConstraint]()
     private var regularHeightLayoutConstraints = [NSLayoutConstraint]()
@@ -1548,7 +1548,7 @@ class CameraBottomBar: UIView {
     }
 }
 
-class CameraSideBar: UIView {
+final class CameraSideBar: UIView {
 
     var isRecordingVideo = false {
         didSet {

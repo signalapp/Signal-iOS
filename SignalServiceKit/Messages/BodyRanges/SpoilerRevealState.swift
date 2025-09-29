@@ -40,7 +40,7 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
 // MARK: -
 
 @objc
-public class SpoilerRevealState: NSObject {
+final public class SpoilerRevealState: NSObject {
     private var revealedSpoilerIdsByMessage = [InteractionSnapshotIdentifier: Set<StyleIdType>]()
 
     /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that

@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BackupAttachmentDownloadStoreTests: XCTestCase {
+final class BackupAttachmentDownloadStoreTests: XCTestCase {
 
     private var db: InMemoryDB!
 

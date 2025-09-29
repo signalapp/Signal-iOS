@@ -8,7 +8,7 @@ import UIKit
 import SignalServiceKit
 import BonMot
 
-public class MyStorySettingsViewController: OWSTableViewController2, MyStorySettingsDataSourceDelegate {
+final public class MyStorySettingsViewController: OWSTableViewController2, MyStorySettingsDataSourceDelegate {
 
     private lazy var dataSource = MyStorySettingsDataSource(delegate: self)
 
@@ -25,7 +25,7 @@ public class MyStorySettingsViewController: OWSTableViewController2, MyStorySett
     }
 }
 
-public class MyStorySettingsSheetViewController: OWSTableSheetViewController, MyStorySettingsDataSourceDelegate {
+final public class MyStorySettingsSheetViewController: OWSTableSheetViewController, MyStorySettingsDataSourceDelegate {
 
     private lazy var dataSource = MyStorySettingsDataSource(delegate: self)
 
@@ -55,7 +55,7 @@ private protocol MyStorySettingsDataSourceDelegate: AnyObject, UIViewController 
     func reloadTableContents()
 }
 
-private class MyStorySettingsDataSource: NSObject {
+final private class MyStorySettingsDataSource: NSObject {
 
     private weak var delegate: MyStorySettingsDataSourceDelegate?
 

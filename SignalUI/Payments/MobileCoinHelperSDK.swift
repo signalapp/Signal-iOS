@@ -6,7 +6,7 @@
 public import SignalServiceKit
 import MobileCoin
 
-public class MobileCoinHelperSDK: MobileCoinHelper {
+final public class MobileCoinHelperSDK: MobileCoinHelper {
 
     public init() { }
 

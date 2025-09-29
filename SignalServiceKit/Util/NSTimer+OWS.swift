@@ -5,7 +5,7 @@
 
 import Foundation
 
-private class TimerProxy {
+final private class TimerProxy {
     weak var target: AnyObject?
     let selector: Selector
 

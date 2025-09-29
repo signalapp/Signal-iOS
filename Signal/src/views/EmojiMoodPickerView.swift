@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import UIKit
 
-class EmojiMoodPickerView: UIView {
+final class EmojiMoodPickerView: UIView {
 
     // MARK: - Properties
 

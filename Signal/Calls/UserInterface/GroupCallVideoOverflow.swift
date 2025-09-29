@@ -11,7 +11,7 @@ protocol GroupCallVideoOverflowDelegate: AnyObject {
     func updateVideoOverflowTrailingConstraint()
 }
 
-class GroupCallVideoOverflow: UICollectionView {
+final class GroupCallVideoOverflow: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
 
@@ -234,7 +234,7 @@ extension GroupCallVideoOverflow: GroupCallObserver {
     }
 }
 
-class GroupCallVideoOverflowCell: UICollectionViewCell {
+final class GroupCallVideoOverflowCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoOverflowCell"
     private let memberView: CallMemberView
 

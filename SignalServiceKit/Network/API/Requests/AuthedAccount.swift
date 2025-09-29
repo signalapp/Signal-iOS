@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class AuthedAccount: Hashable, Equatable {
+final public class AuthedAccount: Hashable, Equatable {
 
     public struct Explicit: Equatable {
         public let aci: Aci

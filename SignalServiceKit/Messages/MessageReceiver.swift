@@ -2198,7 +2198,7 @@ enum MessageReceiverMessageType {
     case handledElsewhere
 }
 
-class MessageReceiverRequest {
+final class MessageReceiverRequest {
     let decryptedEnvelope: DecryptedIncomingEnvelope
     let envelope: SSKProtoEnvelope
     let plaintextData: Data

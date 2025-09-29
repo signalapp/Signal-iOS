@@ -19,7 +19,7 @@ public protocol ContactShareViewControllerDelegate: AnyObject {
     func approvalModeForContactShareViewController(_ viewController: ContactShareViewController) -> ApprovalMode
 }
 
-public class ContactShareViewController: OWSTableViewController2 {
+final public class ContactShareViewController: OWSTableViewController2 {
 
     public weak var shareDelegate: ContactShareViewControllerDelegate?
 

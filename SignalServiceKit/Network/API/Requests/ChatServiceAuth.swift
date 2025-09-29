@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 /// Credentials to use on a TSRequest to the chat server.
-public class ChatServiceAuth: Equatable, Hashable {
+final public class ChatServiceAuth: Equatable, Hashable {
 
     public enum Credentials: Equatable {
         case implicit

@@ -29,7 +29,7 @@ import Foundation
 /// "the server is down", "the user isn't connected to the network").
 ///
 /// Both respect `IsRetryableProvider` and only retry retryable errors.
-public class MessageSenderJobQueue {
+final public class MessageSenderJobQueue {
     private var jobSerializer = CompletionSerializer()
 
     public init(appReadiness: AppReadiness) {

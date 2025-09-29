@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SignalMessagingJobQueues: NSObject {
+final public class SignalMessagingJobQueues: NSObject {
 
     public init(appReadiness: AppReadiness, db: any DB, reachabilityManager: SSKReachabilityManager) {
         incomingContactSyncJobQueue = IncomingContactSyncJobQueue(appReadiness: appReadiness, db: db, reachabilityManager: reachabilityManager)

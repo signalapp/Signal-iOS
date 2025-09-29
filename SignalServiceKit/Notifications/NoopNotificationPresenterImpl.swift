@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class NoopNotificationPresenterImpl: NotificationPresenter {
+final public class NoopNotificationPresenterImpl: NotificationPresenter {
     public func registerNotificationSettings() async {
         Logger.warn("")
     }

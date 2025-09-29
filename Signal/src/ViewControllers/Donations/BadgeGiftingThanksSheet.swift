@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BadgeGiftingThanksSheet: OWSTableViewController2 {
+final class BadgeGiftingThanksSheet: OWSTableViewController2 {
     private let thread: TSContactThread
     private let badge: ProfileBadge
 

@@ -297,7 +297,7 @@ private func notImplemented() -> Never { return owsFail("Not implemented!") }
 
 // MARK: MockGroupCallRecordManager
 
-private class MockGroupCallRecordManager: GroupCallRecordManager {
+final private class MockGroupCallRecordManager: GroupCallRecordManager {
     var createStub: ((
         _ groupCallStatus: GroupCallStatus,
         _ groupCallRingerAci: Aci?

@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class SyncPushTokensJob: NSObject {
+final class SyncPushTokensJob: NSObject {
     enum Mode {
         case normal
         case forceRotation

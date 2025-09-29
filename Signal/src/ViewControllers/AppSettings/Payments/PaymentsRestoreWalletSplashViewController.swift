@@ -12,7 +12,7 @@ public protocol PaymentsRestoreWalletDelegate: AnyObject {
 
 // MARK: -
 
-public class PaymentsRestoreWalletSplashViewController: OWSViewController {
+final public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 

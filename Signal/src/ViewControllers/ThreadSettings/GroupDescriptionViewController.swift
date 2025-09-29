@@ -10,7 +10,7 @@ protocol GroupDescriptionViewControllerDelegate: AnyObject {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?)
 }
 
-class GroupDescriptionViewController: OWSTableViewController2 {
+final class GroupDescriptionViewController: OWSTableViewController2 {
     private let helper: GroupAttributesEditorHelper
     private let providedCurrentDescription: Bool
 

@@ -6,7 +6,7 @@
 import CryptoKit
 public import LibSignalClient
 
-public class OWSFingerprint {
+final public class OWSFingerprint {
     public let myAci: Aci
     public let theirAci: Aci
 

@@ -27,7 +27,7 @@ protocol RegistrationProfilePresenter: AnyObject {
 
 // MARK: - RegistrationProfileViewController
 
-class RegistrationProfileViewController: OWSViewController {
+final class RegistrationProfileViewController: OWSViewController {
     var state: RegistrationProfileState
     public init(
         state: RegistrationProfileState,

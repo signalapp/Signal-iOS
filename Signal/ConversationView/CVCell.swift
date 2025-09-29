@@ -24,7 +24,7 @@ public enum CVCellReuseIdentifier: String, CaseIterable {
 
 // MARK: -
 
-public class CVCell: UICollectionViewCell, CVRootComponentHost {
+final public class CVCell: UICollectionViewCell, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
         didSet {
@@ -177,7 +177,7 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
 // This view hosts the cell contents.
 // This allows us to display message cells outside of
 // UICollectionView, e.g. in the message details view.
-public class CVCellView: UIView, CVRootComponentHost {
+final public class CVCellView: UIView, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
         didSet {

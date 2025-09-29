@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class UsernameSelectionCoordinator {
+final class UsernameSelectionCoordinator {
     struct Context {
         let databaseStorage: SDSDatabaseStorage
         let networkManager: NetworkManager

@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 import GRDB
 
-public class GRDBSchemaMigrator {
+final public class GRDBSchemaMigrator {
 
     private static let _areMigrationsComplete = AtomicBool(false, lock: .sharedGlobal)
     public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }

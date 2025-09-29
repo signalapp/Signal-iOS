@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class DispatchQueueOWSTests: XCTestCase {
+final class DispatchQueueOWSTests: XCTestCase {
 
     func testQoSFlooring() {
         // Setup: Construct a map, (QoSClass) -> (UInt32 that should floor to its key)

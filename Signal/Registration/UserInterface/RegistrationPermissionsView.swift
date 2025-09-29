@@ -261,7 +261,7 @@ final class RegistrationPermissionsViewController: OWSViewController, OWSNavigat
 }
 
 #if DEBUG
-private class PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
+final private class PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
     func requestPermissions() async {
         try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
     }

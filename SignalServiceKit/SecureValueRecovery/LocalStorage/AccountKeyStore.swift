@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class AccountKeyStore {
+final public class AccountKeyStore {
     private enum Keys {
         static let masterKey = "masterKey"
         static let aepKeyName = "aep"

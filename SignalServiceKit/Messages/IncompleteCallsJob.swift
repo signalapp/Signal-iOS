@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class IncompleteCallsJob {
+final public class IncompleteCallsJob {
     private let cutoffTimestamp: UInt64
 
     public convenience init() {

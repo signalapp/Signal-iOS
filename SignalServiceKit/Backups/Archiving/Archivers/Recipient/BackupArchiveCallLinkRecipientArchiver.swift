@@ -29,7 +29,7 @@ extension BackupArchive {
     }
 }
 
-public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias CallLinkRecordId = BackupArchive.CallLinkRecordId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<RecipientAppId>

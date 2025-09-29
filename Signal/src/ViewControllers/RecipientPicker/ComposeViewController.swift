@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 @objc
-class ComposeViewController: RecipientPickerContainerViewController {
+final class ComposeViewController: RecipientPickerContainerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -5,7 +5,7 @@
 
 #if TESTABLE_BUILD
 
-public class MockUsernameLinkManager: UsernameLinkManager {
+final public class MockUsernameLinkManager: UsernameLinkManager {
     var entropyToGenerate: Result<Data, Error>?
     public func generateEncryptedUsername(username: String, existingEntropy: Data?) throws -> (entropy: Data, encryptedUsername: Data) {
         if let existingEntropy {

@@ -18,7 +18,7 @@ public enum MentionHydrationOption {
 
 public typealias MentionHydrator = (Aci) -> MentionHydrationOption
 
-public class ContactsMentionHydrator {
+final public class ContactsMentionHydrator {
 
     public static func mentionHydrator(
         excludedAcis: Set<Aci>? = nil,

@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class GifPickerNavigationViewController: OWSNavigationController {
+final class GifPickerNavigationViewController: OWSNavigationController {
 
     weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -100,7 +100,7 @@ protocol GifPickerViewControllerDelegate: AnyObject {
     @MainActor func gifPickerDidCancel()
 }
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
+final class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
 
     // MARK: Properties
 

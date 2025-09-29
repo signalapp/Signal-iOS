@@ -10,7 +10,7 @@ import LibSignalClient
 ///
 /// - SeeAlso ``DeleteForMeOutgoingSyncMessageManager``
 @objc(DeleteForMeOutgoingSyncMessage)
-class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
+final class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
     typealias Outgoing = DeleteForMeSyncMessage.Outgoing
 
     struct Contents: Codable {

@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class AudioAllMediaPresenter: AudioPresenter {
+final class AudioAllMediaPresenter: AudioPresenter {
     private enum Constants {
         static var filenameFont: UIFont { .dynamicTypeSubheadlineClamped }
         static var bottomLineFont: UIFont { .dynamicTypeFootnoteClamped }
@@ -339,7 +339,7 @@ class AudioAllMediaPresenter: AudioPresenter {
     }
 }
 
-class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {
+final class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {
     override func makeBackgroundColor() -> UIColor {
         return (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
     }

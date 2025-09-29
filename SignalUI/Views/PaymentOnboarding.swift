@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-public class PaymentOnboarding {
+final public class PaymentOnboarding {
     private class func ftPaymentsLockActionSheetMessage() -> String {
         switch DeviceOwnerAuthenticationType.current {
         case .unknown:

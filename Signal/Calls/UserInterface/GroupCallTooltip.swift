@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class GroupCallTooltip: TooltipView {
+final public class GroupCallTooltip: TooltipView {
 
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,

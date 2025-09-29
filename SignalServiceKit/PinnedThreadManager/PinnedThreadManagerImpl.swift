@@ -11,7 +11,7 @@ public enum PinnedThreadError: Error {
 
 // MARK: -
 
-public class PinnedThreadManagerImpl: PinnedThreadManager {
+final public class PinnedThreadManagerImpl: PinnedThreadManager {
 
     private let db: any DB
     private let pinnedThreadStore: PinnedThreadStoreWrite

@@ -6,7 +6,7 @@
 import SignalUI
 import UIKit
 
-class CVReactionCountsView: ManualStackView {
+final class CVReactionCountsView: ManualStackView {
 
     enum PillState: Equatable {
         case emoji(emoji: String, count: Int, fromLocalUser: Bool)

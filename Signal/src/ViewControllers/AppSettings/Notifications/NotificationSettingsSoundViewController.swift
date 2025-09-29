@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 import SignalServiceKit
 import SignalUI
 
-class NotificationSettingsSoundViewController: OWSTableViewController2 {
+final class NotificationSettingsSoundViewController: OWSTableViewController2 {
     private let thread: TSThread?
     private let completion: (() -> Void)?
 

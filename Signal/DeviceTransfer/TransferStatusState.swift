@@ -16,7 +16,7 @@ enum TransferState {
     case error(DeviceTransferService.Error)
 }
 
-class TransferStatusViewModel: ObservableObject {
+final class TransferStatusViewModel: ObservableObject {
     enum ViewState {
         enum Indefinite {
             case starting

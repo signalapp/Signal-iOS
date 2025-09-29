@@ -10,7 +10,7 @@ import SignalServiceKit
 
 // MARK: - CallLinkApprovalRequestDetailsSheet
 
-class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
+final class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
     private struct Deps {
         let contactsManager: any ContactManager

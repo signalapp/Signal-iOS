@@ -10,7 +10,7 @@ protocol AddToBlockListDelegate: AnyObject {
     func addToBlockListComplete()
 }
 
-class AddToBlockListViewController: RecipientPickerContainerViewController {
+final class AddToBlockListViewController: RecipientPickerContainerViewController {
 
     weak var delegate: AddToBlockListDelegate?
 

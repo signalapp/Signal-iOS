@@ -6,7 +6,7 @@
 public import XCTest
 @testable import SignalServiceKit
 
-public class TaskQueueLoaderTest: XCTestCase {
+final public class TaskQueueLoaderTest: XCTestCase {
 
     func testRunAll() async throws {
         let runner = MockRunner(numRecords: 100)

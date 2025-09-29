@@ -10,7 +10,7 @@ import UIKit
 
 // TODO: We could theoretically replace this with QuotedMessageView, but that's very
 // deeply tied into the CV rendering system and not easy to use outside of that context.
-class StoryReplyPreviewView: UIView {
+final class StoryReplyPreviewView: UIView {
     init(quotedReplyModel: QuotedReplyModel, spoilerState: SpoilerRenderState) {
         super.init(frame: .zero)
 

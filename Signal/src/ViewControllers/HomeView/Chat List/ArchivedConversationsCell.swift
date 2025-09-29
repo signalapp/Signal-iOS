@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
+final class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
     static let reuseIdentifier = "ArchivedConversationsCell"
 
     private let label = UILabel()

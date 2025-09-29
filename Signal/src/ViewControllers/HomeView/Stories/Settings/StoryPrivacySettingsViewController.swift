@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class StoryPrivacySettingsViewController: OWSTableViewController2 {
+final class StoryPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

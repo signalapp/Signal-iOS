@@ -12,7 +12,7 @@ public protocol ConversationHeaderViewDelegate: AnyObject {
     func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
-public class ConversationHeaderView: UIView {
+final public class ConversationHeaderView: UIView {
 
     public weak var delegate: ConversationHeaderViewDelegate?
 

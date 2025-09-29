@@ -5,7 +5,7 @@
 
 import UIKit
 
-class ImageEditorSlider: UISlider {
+final class ImageEditorSlider: UISlider {
 
     private let backgroundView = BackgroundView()
 

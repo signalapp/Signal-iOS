@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class EmojiPickerSheet: InteractiveSheetViewController {
+final class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
 
     let completionHandler: (EmojiWithSkinTones?) -> Void

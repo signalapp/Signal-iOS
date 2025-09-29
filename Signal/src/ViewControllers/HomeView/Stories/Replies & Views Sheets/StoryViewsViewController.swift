@@ -14,7 +14,7 @@ private struct Viewer {
     let viewedTimestamp: UInt64
 }
 
-class StoryViewsViewController: OWSViewController {
+final class StoryViewsViewController: OWSViewController {
     private(set) var storyMessage: StoryMessage
     let context: StoryContext
 
@@ -215,7 +215,7 @@ extension StoryViewsViewController: DatabaseChangeDelegate {
     }
 }
 
-private class StoryViewCell: UITableViewCell {
+final private class StoryViewCell: UITableViewCell {
     static let reuseIdentifier = "StoryViewCell"
 
     let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser, badged: true)

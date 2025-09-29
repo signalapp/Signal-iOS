@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class LinkPreviewManagerImpl: LinkPreviewManager {
+final public class LinkPreviewManagerImpl: LinkPreviewManager {
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator

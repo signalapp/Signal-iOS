@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ExperienceUpgradeManager {
+final class ExperienceUpgradeManager {
 
     private static weak var lastPresented: ExperienceUpgradeView?
 

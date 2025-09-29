@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public class Platform: NSObject {
+final public class Platform: NSObject {
 
     @objc
     public static let isSimulator: Bool = {

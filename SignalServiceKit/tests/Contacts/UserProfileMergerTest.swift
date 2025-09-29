@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class UserProfileMergerTest: XCTestCase {
+final class UserProfileMergerTest: XCTestCase {
     private var userProfileStore: MockUserProfileStore!
     private var userProfileMerger: UserProfileMerger!
 

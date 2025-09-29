@@ -7,7 +7,7 @@ import Foundation
 
 // This needs to reflect the edit as represented (and sourced) from the db.
 @objc
-public class OutgoingEditMessage: TSOutgoingMessage {
+final public class OutgoingEditMessage: TSOutgoingMessage {
 
     // MARK: - Edit target data
 

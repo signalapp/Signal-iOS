@@ -8,7 +8,7 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
+final class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     private var call: SignalCall?
     private var type: CallMemberView.MemberType
     private var callService: CallService { AppEnvironment.shared.callService }

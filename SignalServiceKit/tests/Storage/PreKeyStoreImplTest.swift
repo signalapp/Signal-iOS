@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class PreKeyStoreImplTest: XCTestCase {
+final class PreKeyStoreImplTest: XCTestCase {
     private var mockDB: InMemoryDB!
     private var aciPreKeyStore: PreKeyStoreImpl!
     private var pniPreKeyStore: PreKeyStoreImpl!

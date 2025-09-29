@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class LocalUsernameManagerTests: XCTestCase {
+final class LocalUsernameManagerTests: XCTestCase {
     private var mockDB: InMemoryDB!
 
     private var mockReachabilityManager: MockReachabilityManager!
@@ -624,12 +624,12 @@ private extension Data {
     static let mockEntropy = Data(repeating: 12, count: 32)
 }
 
-private class MockReachabilityManager: SSKReachabilityManager {
+final private class MockReachabilityManager: SSKReachabilityManager {
     var isReachable: Bool = true
     func isReachable(via reachabilityType: ReachabilityType) -> Bool { owsFail("Not implemented!") }
 }
 
-private class MockStorageServiceManager: StorageServiceManager {
+final private class MockStorageServiceManager: StorageServiceManager {
     var didRecordPendingLocalAccountUpdates: Bool = false
 
     func recordPendingLocalAccountUpdates() {

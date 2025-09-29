@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-public class AllSignalConnectionsViewController: OWSTableViewController2 {
+final public class AllSignalConnectionsViewController: OWSTableViewController2 {
     let collation = UILocalizedIndexedCollation.current()
 
     public override func viewDidLoad() {

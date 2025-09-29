@@ -19,7 +19,7 @@ public enum RegistrationRestoreMethod {
     case declined
 }
 
-class RegistrationChooseRestoreMethodViewController: OWSViewController {
+final class RegistrationChooseRestoreMethodViewController: OWSViewController {
 
     private weak var presenter: RegistrationChooseRestoreMethodPresenter?
     private let restorePath: RegistrationStep.RestorePath
@@ -326,7 +326,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
 }
 
 #if DEBUG
-private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChooseRestoreMethodPresenter {
+final private class PreviewRegistrationChooseRestoreMethodPresenter: RegistrationChooseRestoreMethodPresenter {
     func didChooseRestoreMethod(method: RegistrationRestoreMethod) {
         print("restore method: \(method)")
     }

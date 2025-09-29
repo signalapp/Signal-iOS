@@ -9,7 +9,7 @@ import SignalUI
 import UIKit
 
 /// For internal (nightly) use only. Produces BackupArchiveErrorPresenterInternal.
-class BackupArchiveErrorPresenterFactoryInternal: BackupArchiveErrorPresenterFactory {
+final class BackupArchiveErrorPresenterFactoryInternal: BackupArchiveErrorPresenterFactory {
     func build(
         db: any DB,
         tsAccountManager: TSAccountManager
@@ -22,7 +22,7 @@ class BackupArchiveErrorPresenterFactoryInternal: BackupArchiveErrorPresenterFac
 }
 
 /// For internal (nightly) use only. Presents BackupArchiveInternalErrorViewController when backups emits errors.
-class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
+final class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
 
     private let db: any DB
     private let tsAccountManager: TSAccountManager
@@ -133,7 +133,7 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
     }
 }
 
-private class BackupArchiveInternalErrorViewController: OWSViewController {
+final private class BackupArchiveInternalErrorViewController: OWSViewController {
 
     // MARK: - Properties
 

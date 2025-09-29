@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ContactPermissionReminderMegaphone: MegaphoneView {
+final class ContactPermissionReminderMegaphone: MegaphoneView {
     weak var actionSheetController: ActionSheetController?
 
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {

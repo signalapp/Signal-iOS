@@ -229,7 +229,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
 
 // MARK: -
 
-private class AccountEntropyPoolTextView: UIView {
+final private class AccountEntropyPoolTextView: UIView {
     private enum Constants {
         static let chunkSize = 4
         static let chunksPerRow = 4

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
+final class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
     override func loadView() {
         view = UIView()
         view.backgroundColor = Theme.backgroundColor

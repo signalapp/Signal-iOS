@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BlockingAnnouncementOnlyView: UIStackView {
+final class BlockingAnnouncementOnlyView: UIStackView {
 
     private let thread: TSThread
     private let forceDarkMode: Bool
@@ -124,7 +124,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
 
 // MARK: -
 
-class MessageUserSubsetSheet: OWSTableSheetViewController {
+final class MessageUserSubsetSheet: OWSTableSheetViewController {
     private let addresses: [SignalServiceAddress]
     private let forceDarkMode: Bool
 

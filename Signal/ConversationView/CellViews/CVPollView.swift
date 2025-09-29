@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-public class CVPollView: ManualStackView {
+final public class CVPollView: ManualStackView {
     struct State: Equatable {
         let poll: OWSPoll
         let isIncoming: Bool

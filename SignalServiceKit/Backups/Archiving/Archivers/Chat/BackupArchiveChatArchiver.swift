@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     typealias ChatId = BackupArchive.ChatId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<BackupArchive.ThreadUniqueId>
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<ChatId>

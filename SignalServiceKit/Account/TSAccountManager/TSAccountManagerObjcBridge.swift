@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public class TSAccountManagerObjcBridge: NSObject {
+final public class TSAccountManagerObjcBridge: NSObject {
 
     public static var isRegisteredWithMaybeTransaction: Bool {
         return DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered

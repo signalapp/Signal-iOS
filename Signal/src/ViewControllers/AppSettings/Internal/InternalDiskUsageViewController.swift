@@ -8,7 +8,7 @@ import GRDB
 import SignalServiceKit
 import SignalUI
 
-class InternalDiskUsageViewController: OWSTableViewController2 {
+final class InternalDiskUsageViewController: OWSTableViewController2 {
 
     struct DiskUsage {
         let dbSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseFileSize)

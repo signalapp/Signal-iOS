@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class DonationReceiptFinder {
+final public class DonationReceiptFinder {
     public static func hasAny(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS (

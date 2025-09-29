@@ -17,7 +17,7 @@ protocol AttachmentFormatPickerDelegate: AnyObject {
     func didTapPoll()
 }
 
-class AttachmentFormatPickerView: UIView {
+final class AttachmentFormatPickerView: UIView {
 
     weak var attachmentFormatPickerDelegate: AttachmentFormatPickerDelegate?
 

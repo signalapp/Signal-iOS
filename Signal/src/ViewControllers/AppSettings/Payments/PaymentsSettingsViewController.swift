@@ -25,7 +25,7 @@ public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
 
 // MARK: -
 
-public class PaymentsSettingsViewController: OWSTableViewController2 {
+final public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private let appReadiness: AppReadinessSetter
     private let mode: PaymentsSettingsMode

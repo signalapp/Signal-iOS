@@ -7,7 +7,7 @@ import BonMot
 import SignalServiceKit
 import SignalUI
 
-class StoryGroupReplyCell: UITableViewCell {
+final class StoryGroupReplyCell: UITableViewCell {
     lazy var avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser, useAutolayout: true)
     lazy var messageLabel: UILabel = {
         let label = UILabel()
@@ -601,7 +601,7 @@ class StoryGroupReplyCell: UITableViewCell {
     }()
 }
 
-private class SendingSpinner: UIImageView {
+final private class SendingSpinner: UIImageView {
     init() {
         super.init(image: #imageLiteral(resourceName: "message_status_sending").withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(.init(hMargin: 0, vMargin: -2)))
 

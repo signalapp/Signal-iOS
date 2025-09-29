@@ -43,7 +43,7 @@ extension BackupArchive {
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``BackupArchiveEncryptedProtoStreamProvider``
-public class BackupArchivePlaintextProtoStreamProvider {
+final public class BackupArchivePlaintextProtoStreamProvider {
     typealias ProtoStream = BackupArchive.ProtoStream
 
     private let genericStreamProvider: GenericStreamProvider
@@ -96,7 +96,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``BackupArchivePlaintextProtoStreamProvider``
-public class BackupArchiveEncryptedProtoStreamProvider {
+final public class BackupArchiveEncryptedProtoStreamProvider {
     typealias ProtoStream = BackupArchive.ProtoStream
 
     private let genericStreamProvider: GenericStreamProvider
@@ -230,7 +230,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
 
 // MARK: -
 
-private class GenericStreamProvider {
+final private class GenericStreamProvider {
     typealias ProtoStream = BackupArchive.ProtoStream
 
     init() {}
@@ -323,7 +323,7 @@ private class GenericStreamProvider {
 /// This transform tracks the size of data it receives; consequently, if it is
 /// applied after transforms that affect the size of read data, such as
 /// decompression or decryption, it may report an unexpected size.
-private class InputProgressStreamTransform: StreamTransform {
+final private class InputProgressStreamTransform: StreamTransform {
     private let frameRestoreProgress: BackupArchiveImportFramesProgress
 
     init(frameRestoreProgress: BackupArchiveImportFramesProgress) {

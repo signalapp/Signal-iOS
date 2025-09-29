@@ -11,7 +11,7 @@ public protocol ThreadAssociatedDataStore {
     func remove(for threadUniqueId: String, tx: DBWriteTransaction)
 }
 
-class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
+final class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData? {
         let db = tx.database
         do {
@@ -56,7 +56,7 @@ extension ThreadAssociatedDataStore {
 
 #if TESTABLE_BUILD
 
-class MockThreadAssociatedDataStore: ThreadAssociatedDataStore {
+final class MockThreadAssociatedDataStore: ThreadAssociatedDataStore {
     var values = [String: ThreadAssociatedData]()
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData? { values[threadUniqueId] }
     func remove(for threadUniqueId: String, tx: DBWriteTransaction) { values[threadUniqueId] = nil }

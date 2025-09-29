@@ -20,7 +20,7 @@ protocol AttachmentTextToolbarDelegate: AnyObject {
 
 // MARK: -
 
-class AttachmentTextToolbar: UIView {
+final class AttachmentTextToolbar: UIView {
 
     // Forward text editing-related events to AttachmentApprovalToolbar.
     weak var delegate: AttachmentTextToolbarDelegate?

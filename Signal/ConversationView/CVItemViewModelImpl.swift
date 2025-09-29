@@ -51,7 +51,7 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
 }
 
 // This class should only be accessed on the main thread.
-public class CVItemViewModelImpl: CVComponentStateWrapper {
+final public class CVItemViewModelImpl: CVComponentStateWrapper {
     public let renderItem: CVRenderItem
 
     public init(renderItem: CVRenderItem) {

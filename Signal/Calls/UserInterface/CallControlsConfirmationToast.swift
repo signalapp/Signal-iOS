@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class CallControlsConfirmationToastView: UIView {
+final class CallControlsConfirmationToastView: UIView {
     enum ControlType {
         case mute(isOn: Bool)
         case speakerphone(isOn: Bool)
@@ -140,7 +140,7 @@ class CallControlsConfirmationToastView: UIView {
     }
 }
 
-class CallControlsConfirmationToastManager {
+final class CallControlsConfirmationToastManager {
     typealias ControlType = CallControlsConfirmationToastView.ControlType
 
     private let presentingContainerView: UIView

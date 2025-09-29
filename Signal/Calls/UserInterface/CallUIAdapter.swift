@@ -60,7 +60,7 @@ protocol CallUIAdaptee: AnyObject {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-public class CallUIAdapter: NSObject {
+final public class CallUIAdapter: NSObject {
 
     private var callService: CallService { AppEnvironment.shared.callService }
 

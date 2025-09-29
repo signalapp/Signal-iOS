@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class SignalAccountMergeObserver: RecipientMergeObserver {
+final class SignalAccountMergeObserver: RecipientMergeObserver {
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {

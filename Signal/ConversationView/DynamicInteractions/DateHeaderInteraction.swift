@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class DateHeaderInteraction: TSInteraction {
+final public class DateHeaderInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {
         true

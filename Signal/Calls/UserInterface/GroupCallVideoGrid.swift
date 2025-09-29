@@ -6,7 +6,7 @@
 import SignalRingRTC
 import SignalServiceKit
 
-class GroupCallVideoGrid: UICollectionView {
+final class GroupCallVideoGrid: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
@@ -121,7 +121,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     var maxItems: Int { maxColumns * maxRows }
 }
 
-private class GroupCallVideoGridCell: UICollectionViewCell {
+final private class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
     private let memberView: CallMemberView
 

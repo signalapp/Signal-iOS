@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class RegistrationLoadingViewController: OWSViewController {
+final class RegistrationLoadingViewController: OWSViewController {
     enum RegistrationLoadingMode {
         case generic
         case submittingPhoneNumber(e164: String)

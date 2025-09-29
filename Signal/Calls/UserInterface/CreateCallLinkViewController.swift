@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class CreateCallLinkViewController: InteractiveSheetViewController {
+final class CreateCallLinkViewController: InteractiveSheetViewController {
     private lazy var _navigationController = OWSNavigationController()
     private let _callLinkViewController: CallLinkViewController
 

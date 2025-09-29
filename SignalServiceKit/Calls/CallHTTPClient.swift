@@ -6,7 +6,7 @@
 import Foundation
 public import SignalRingRTC
 
-public class CallHTTPClient {
+final public class CallHTTPClient {
     public let ringRtcHttpClient: SignalRingRTC.HTTPClient
 
     public init() {

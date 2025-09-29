@@ -16,7 +16,7 @@ protocol RaisedHandsToastDelegate: AnyObject {
 
 // MARK: - RaisedHandsToast
 
-class RaisedHandsToast: UIView {
+final class RaisedHandsToast: UIView {
 
     // MARK: Properties
 

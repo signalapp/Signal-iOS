@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsHistoryViewController: OWSTableViewController2 {
+final class PaymentsHistoryViewController: OWSTableViewController2 {
 
     private let modeControl = UISegmentedControl()
 

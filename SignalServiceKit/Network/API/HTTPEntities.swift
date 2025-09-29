@@ -215,7 +215,7 @@ extension OWSHTTPError {
 
 // MARK: -
 
-public class HTTPResponseImpl {
+final public class HTTPResponseImpl {
 
     public let requestUrl: URL
 

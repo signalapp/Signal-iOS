@@ -18,7 +18,7 @@ protocol MediaControlPanelDelegate: GalleryRailViewDelegate {
 // • Share and Forward buttons when in portrait orientation.
 // • interactive video player playback bar (hidden for photos).
 // • video playback controls (play/pause, rewind, fast forward) (hidden for photos).
-class MediaControlPanelView: UIView {
+final class MediaControlPanelView: UIView {
 
     private let mediaGallery: MediaGallery
     private let spoilerState: SpoilerRenderState

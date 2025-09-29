@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class GroupStorySettingsViewController: OWSTableViewController2 {
+final class GroupStorySettingsViewController: OWSTableViewController2 {
     let thread: TSGroupThread
     let contextButton = ContextMenuButton(empty: ())
 

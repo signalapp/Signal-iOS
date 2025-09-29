@@ -16,7 +16,7 @@ struct StoryTransitionContext {
     weak var coordinator: StoryInteractiveTransitionCoordinator!
 }
 
-class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+final class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private let context: StoryTransitionContext
     private let backgroundView = UIView()
     private let storyViewContainer = UIView()

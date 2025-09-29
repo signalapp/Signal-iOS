@@ -18,7 +18,7 @@ public struct RegistrationEnterAccountEntropyPoolState: Equatable {
     let canShowBackButton: Bool
 }
 
-class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
+final class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
     private let state: RegistrationEnterAccountEntropyPoolState
 
@@ -136,7 +136,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
 
 #if DEBUG
 
-private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationEnterAccountEntropyPoolPresenter {
+final private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationEnterAccountEntropyPoolPresenter {
     func next(accountEntropyPool: AccountEntropyPool) {
         print("next")
     }

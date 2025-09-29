@@ -9,7 +9,7 @@ import XCTest
 
 // MARK: -
 
-class SDSDatabaseStorageRollbackTest: SSKBaseTest {
+final class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
     // MARK: - Test Life Cycle
 
@@ -111,7 +111,7 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
     }
 }
 
-class InMemoryDBRollbackTest: XCTestCase {
+final class InMemoryDBRollbackTest: XCTestCase {
 
     // MARK: - Test Life Cycle
 

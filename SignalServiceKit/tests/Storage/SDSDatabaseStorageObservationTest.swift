@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class MockObserver: DatabaseChangeDelegate {
+final class MockObserver: DatabaseChangeDelegate {
     var updateCount: UInt = 0
     var externalUpdateCount: UInt = 0
     var resetCount: UInt = 0
@@ -37,7 +37,7 @@ class MockObserver: DatabaseChangeDelegate {
 
 // MARK: -
 
-class SDSDatabaseStorageObservationTest: SSKBaseTest {
+final class SDSDatabaseStorageObservationTest: SSKBaseTest {
     @MainActor
     func testGRDBSyncWrite() {
         // Make sure there's already at least one thread.

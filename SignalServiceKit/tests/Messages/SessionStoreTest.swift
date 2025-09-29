@@ -8,7 +8,7 @@ import LibSignalClient
 
 @testable import SignalServiceKit
 
-class SessionStoreTest: SSKBaseTest {
+final class SessionStoreTest: SSKBaseTest {
     func testLegacySessionIsDropped() {
         @objc(FakeLegacySession) class FakeLegacySession: NSObject, NSCoding {
             override init() {
@@ -60,7 +60,7 @@ class SessionStoreTest: SSKBaseTest {
     }
 }
 
-class SessionStoreTest2: XCTestCase {
+final class SessionStoreTest2: XCTestCase {
     func testMaxUnacknowledgedSessionAge() throws {
         let bob_address = try ProtocolAddress(name: "+14155550100", deviceId: 1)
 

@@ -6,7 +6,7 @@
 import SignalUI
 import SignalServiceKit
 
-class LinkOrSyncPickerSheet: StackSheetViewController {
+final class LinkOrSyncPickerSheet: StackSheetViewController {
 
     override var handleBackgroundColor: UIColor { .clear }
 

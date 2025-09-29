@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-public class PaymentActionSheets {
+final public class PaymentActionSheets {
     public static func showBiometryAuthFailedActionSheet(_ handler: ActionSheetAction.Handler? = nil) {
         let title = OWSLocalizedString(
             "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE",

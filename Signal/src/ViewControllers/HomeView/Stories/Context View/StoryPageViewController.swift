@@ -14,7 +14,7 @@ protocol StoryPageViewControllerDataSource: AnyObject {
     ) -> [StoryContext]
 }
 
-class StoryPageViewController: UIPageViewController {
+final class StoryPageViewController: UIPageViewController {
 
     // MARK: - State
 

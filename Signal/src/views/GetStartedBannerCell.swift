@@ -20,7 +20,7 @@ protocol GetStartedBannerCellDelegate: AnyObject {
     func didTapAction(_ cell: GetStartedBannerCell)
 }
 
-class GetStartedBannerCell: UICollectionViewCell {
+final class GetStartedBannerCell: UICollectionViewCell {
     static let reuseIdentifier = "GetStartedBannerCell"
 
     // MARK: - Views

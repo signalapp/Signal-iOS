@@ -21,7 +21,7 @@ public struct PanDirection: OptionSet {
     public static let any: PanDirection = [.left, .right, .up, .down]
 }
 
-public class DirectionalPanGestureRecognizer: UIPanGestureRecognizer {
+final public class DirectionalPanGestureRecognizer: UIPanGestureRecognizer {
 
     let direction: PanDirection
 

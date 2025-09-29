@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class ImageAttachmentPrepViewController: AttachmentPrepViewController {
+final class ImageAttachmentPrepViewController: AttachmentPrepViewController {
 
     private let model: ImageEditorModel
     weak var stickerSheetDelegate: StickerPickerSheetDelegate?

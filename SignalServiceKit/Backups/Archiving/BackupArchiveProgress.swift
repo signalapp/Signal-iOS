@@ -99,7 +99,7 @@ public struct BackupArchiveImportFramesProgress {
 
 // MARK: -
 
-public class BackupArchiveImportRecreateIndexesProgress {
+final public class BackupArchiveImportRecreateIndexesProgress {
     private enum Constants {
         static let progressSourceUnitCount: UInt64 = .max
     }

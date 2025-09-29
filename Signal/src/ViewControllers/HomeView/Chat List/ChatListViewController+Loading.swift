@@ -250,7 +250,7 @@ private enum CLVLoadType {
 
 // MARK: -
 
-public class CLVLoadCoordinator {
+final public class CLVLoadCoordinator {
     private let filterStore: ChatListFilterStore
     private var loadInfoBuilder: CLVLoadInfoBuilder
 

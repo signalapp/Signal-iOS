@@ -8,7 +8,7 @@ import GRDB
 
 @testable import SignalServiceKit
 
-class DBTimeBatchingTest: XCTestCase {
+final class DBTimeBatchingTest: XCTestCase {
     func testEnumerateAllElements() async {
         let elements = [1, 2, 3, 4]
         var seenElements = [Int]()

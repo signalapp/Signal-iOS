@@ -5,7 +5,7 @@
 
 public import Contacts
 
-public class ContactShareDraft {
+final public class ContactShareDraft {
 
     public var name: OWSContactName
 

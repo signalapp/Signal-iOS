@@ -78,7 +78,7 @@ extension BatchUpdateType {
 
 // MARK: -
 
-public class BatchUpdate<T: BatchUpdateValue> {
+final public class BatchUpdate<T: BatchUpdateValue> {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}

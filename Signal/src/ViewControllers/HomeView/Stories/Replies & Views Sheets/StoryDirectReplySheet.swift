@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
+final public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     var dismissHandler: (() -> Void)?
 

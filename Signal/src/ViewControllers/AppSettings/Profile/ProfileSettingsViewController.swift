@@ -57,7 +57,7 @@ private struct ChangeableOptionalName: Changeable {
     }
 }
 
-class ProfileSettingsViewController: OWSTableViewController2 {
+final class ProfileSettingsViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext = .shared
 

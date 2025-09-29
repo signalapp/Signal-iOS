@@ -12,7 +12,7 @@ protocol RegistrationPhoneNumberInputViewDelegate: AnyObject {
     func didPressReturn()
 }
 
-class RegistrationPhoneNumberInputView: UIStackView {
+final class RegistrationPhoneNumberInputView: UIStackView {
     public weak var delegate: RegistrationPhoneNumberInputViewDelegate?
 
     // We impose a limit on the number of digits. This is much higher than what a valid E164 allows

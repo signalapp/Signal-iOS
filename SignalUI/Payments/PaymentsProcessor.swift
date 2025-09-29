@@ -6,7 +6,7 @@
 import MobileCoin
 public import SignalServiceKit
 
-public class PaymentsProcessor: NSObject {
+final public class PaymentsProcessor: NSObject {
 
     private let appReadiness: AppReadiness
 
@@ -338,7 +338,7 @@ private protocol PaymentProcessingOperationDelegate: AnyObject {
 // MARK: -
 
 // See comments on PaymentsProcessor.process().
-private class PaymentProcessingOperation {
+final private class PaymentProcessingOperation {
     private weak var delegate: PaymentProcessingOperationDelegate?
     private let paymentId: String
     private let retryDelayInteral: TimeInterval

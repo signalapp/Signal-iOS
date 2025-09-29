@@ -11,7 +11,7 @@ protocol LongTextViewDelegate: AnyObject {
 }
 
 // MARK: -
-public class LongTextViewController: OWSViewController {
+final public class LongTextViewController: OWSViewController {
 
     // MARK: - Properties
 

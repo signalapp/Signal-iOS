@@ -56,7 +56,7 @@ extension TimeInterval {
 
 @objcMembers
 @available(swift, obsoleted: 1)
-public class NSTimeIntervalConstants: NSObject {
+final public class NSTimeIntervalConstants: NSObject {
     public static let second: TimeInterval = .second
     public static let minute: TimeInterval = .minute
     public static let hour: TimeInterval = .hour

@@ -21,7 +21,7 @@ public protocol QRCodeSampleBufferScannerDelegate: AnyObject {
     func scanFailed(error: any Error)
 }
 
-public class QRCodeSampleBufferScanner: NSObject {
+final public class QRCodeSampleBufferScanner: NSObject {
     private weak var delegate: QRCodeSampleBufferScannerDelegate?
 
     public init(delegate: QRCodeSampleBufferScannerDelegate?) {
@@ -162,7 +162,7 @@ public extension QRCodeScanDelegate {
 
 // MARK: -
 
-public class QRCodeScanViewController: OWSViewController {
+final public class QRCodeScanViewController: OWSViewController {
 
     public enum Appearance {
         case framed
@@ -505,7 +505,7 @@ private enum QRCodeError: Error {
 // correctness matters and perf doesn't, since QR code payloads
 // are inherently small. Therefore, this approach favors simplicity
 // over efficiency.
-public class QRCodePayload {
+final public class QRCodePayload {
     public let version: Int
     public let mode: Mode
     public let bytes: [UInt8]
@@ -625,7 +625,7 @@ public class QRCodePayload {
 // This isn't an efficient way to parse the codewords, but
 // correctness matters and perf doesn't, since QR code payloads
 // are inherently small.
-private class QRCodeBitStream {
+final private class QRCodeBitStream {
     private var bits: [UInt8]
 
     init(codewords: Data) {
@@ -720,7 +720,7 @@ enum QRCodeScanError: Error {
 
 // MARK: -
 
-private class QRCodeScanner {
+final private class QRCodeScanner {
 
     lazy private(set) var previewView = QRCodeScanPreviewView(session: session)
 
@@ -940,7 +940,7 @@ private class QRCodeScanner {
 
 // MARK: -
 
-private class QRCodeScanPreviewView: UIView {
+final private class QRCodeScanPreviewView: UIView {
 
     let previewLayer: AVCaptureVideoPreviewLayer
 
@@ -997,7 +997,7 @@ private class QRCodeScanPreviewView: UIView {
 
 // MARK: -
 
-private class QRCodeScanOutput {
+final private class QRCodeScanOutput {
 
     let videoDataOutput = AVCaptureVideoDataOutput()
 

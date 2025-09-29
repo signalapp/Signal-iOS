@@ -17,7 +17,7 @@ public import SignalServiceKit
 //
 // Although we could combine these two views, these two scenarios are
 // just different enough that its convenient to have two separate views.
-public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
+final public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
     public var setting: ColorOrGradientSetting {
         didSet {
             if setting != oldValue {

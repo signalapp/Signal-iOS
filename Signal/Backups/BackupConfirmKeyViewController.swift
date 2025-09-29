@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
+final class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
     private let aep: AccountEntropyPool
 
     init(

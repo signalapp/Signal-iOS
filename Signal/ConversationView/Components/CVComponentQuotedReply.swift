@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentQuotedReply: CVComponentBase, CVComponent {
+final public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .quotedReply }
 
@@ -128,7 +128,7 @@ extension CVComponentQuotedReply: CVAccessibilityComponent {
 
 // MARK: -
 
-private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {
+final private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {
 
     private let interactionUniqueId: String
 

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
+final class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
     var componentKey: CVComponentKey { .undownloadableAttachment }
 
     private var icon: UIImage {

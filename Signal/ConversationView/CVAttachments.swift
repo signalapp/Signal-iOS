@@ -8,7 +8,7 @@ import Foundation
 public import SignalServiceKit
 
 // Represents a _playable_ audio attachment.
-public class AudioAttachment {
+final public class AudioAttachment {
     public enum State: Equatable {
         case attachmentStream(
             attachmentStream: ReferencedAttachmentStream,

@@ -12,7 +12,7 @@ protocol SAEFailedViewDelegate: AnyObject {
     func shareViewWasCancelled()
 }
 
-class SAEFailedViewController: UIViewController {
+final class SAEFailedViewController: UIViewController {
 
     weak var delegate: SAEFailedViewDelegate?
 

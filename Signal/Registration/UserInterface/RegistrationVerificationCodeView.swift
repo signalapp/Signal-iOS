@@ -15,7 +15,7 @@ private protocol RegistrationVerificationCodeTextFieldDelegate: AnyObject {
 // Editing a code should feel seamless, as even though the UITextField only lets you edit a single
 // digit at a time.  For deletes to work properly, we need to detect delete events that would affect
 // the _previous_ digit.
-private class RegistrationVerificationCodeTextField: UITextField {
+final private class RegistrationVerificationCodeTextField: UITextField {
     fileprivate weak var codeDelegate: RegistrationVerificationCodeTextFieldDelegate?
 
     init() {
@@ -58,7 +58,7 @@ protocol RegistrationVerificationCodeViewDelegate: AnyObject {
 ///
 /// We use a separate ``UILabel`` for each digit, and move around a single ``UITextfield`` to let
 /// the user edit the last/next digit.
-class RegistrationVerificationCodeView: UIView {
+final class RegistrationVerificationCodeView: UIView {
     weak var delegate: RegistrationVerificationCodeViewDelegate?
 
     public init() {

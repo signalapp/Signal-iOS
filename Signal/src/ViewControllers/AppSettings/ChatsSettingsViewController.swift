@@ -7,7 +7,7 @@ import IntentsUI
 import SignalServiceKit
 import SignalUI
 
-class ChatsSettingsViewController: OWSTableViewController2 {
+final class ChatsSettingsViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()

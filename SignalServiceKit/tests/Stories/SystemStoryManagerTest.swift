@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class SystemStoryManagerTest: SSKBaseTest {
+final class SystemStoryManagerTest: SSKBaseTest {
 
     var mockSignalService: OWSSignalServiceMock {
         return SSKEnvironment.shared.signalServiceRef as! OWSSignalServiceMock
@@ -425,7 +425,7 @@ class SystemStoryManagerTest: SSKBaseTest {
     }
 }
 
-private class MockDownloadSession: BaseOWSURLSessionMock {
+final private class MockDownloadSession: BaseOWSURLSessionMock {
 
     var performRequestSource: ((URL) async throws -> any HTTPResponse)?
 

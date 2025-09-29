@@ -27,7 +27,7 @@ public extension BackupArchive {
 
 // MARK: -
 
-public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     typealias StickerPackId = BackupArchive.StickerPackId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<StickerPackId>
     typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<StickerPackId>

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTransform {
+final public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTransform {
 
     private var buffer = Data()
     private var headerLength: Int?

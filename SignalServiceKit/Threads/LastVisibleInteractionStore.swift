@@ -16,7 +16,7 @@ extension TSThread {
 }
 
 /// Tracks the last visible interaction per thread (the interaction we last scrolled to).
-public class LastVisibleInteractionStore {
+final public class LastVisibleInteractionStore {
 
     public typealias LastVisibleInteraction = TSThread.LastVisibleInteraction
 

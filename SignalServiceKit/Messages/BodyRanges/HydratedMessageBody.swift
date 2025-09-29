@@ -11,7 +11,7 @@ public import LibSignalClient
 /// This object can be held durably in memory as a way to cache mention hydrations
 /// and other expensive string operations, and can subsequently be transformed
 /// into string and attributed string values for display.
-public class HydratedMessageBody: Equatable, Hashable {
+final public class HydratedMessageBody: Equatable, Hashable {
 
     public typealias Style = MessageBodyRanges.Style
     public typealias SingleStyle = MessageBodyRanges.SingleStyle

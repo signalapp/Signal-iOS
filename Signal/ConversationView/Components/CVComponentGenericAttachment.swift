@@ -8,7 +8,7 @@ public import QuickLook
 public import SignalServiceKit
 public import SignalUI
 
-public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
+final public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .genericAttachment }
 

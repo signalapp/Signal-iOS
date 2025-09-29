@@ -12,7 +12,7 @@ public enum ReachabilityType {
 
 // MARK: -
 
-public class SSKReachability {
+final public class SSKReachability {
     // Unlike reachabilityChanged, this notification is only fired:
     //
     // * If the app is ready.
@@ -39,7 +39,7 @@ public extension SSKReachabilityManager {
 
 // MARK: -
 
-public class SSKReachabilityManagerImpl: SSKReachabilityManager {
+final public class SSKReachabilityManagerImpl: SSKReachabilityManager {
 
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
@@ -181,7 +181,7 @@ private extension NetworkInterface {
 
 #if TESTABLE_BUILD
 
-public class MockSSKReachabilityManager: SSKReachabilityManager {
+final public class MockSSKReachabilityManager: SSKReachabilityManager {
     public var isReachableViaWifi: Bool = false
     public var isReachableViaCellular: Bool = false
 

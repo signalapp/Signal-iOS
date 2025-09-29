@@ -37,7 +37,7 @@ extension Notification.Name {
 
 // MARK: -
 
-class BackupPlanManagerImpl: BackupPlanManager {
+final class BackupPlanManagerImpl: BackupPlanManager {
 
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
@@ -314,7 +314,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
 #if TESTABLE_BUILD
 
-class MockBackupPlanManager: BackupPlanManager {
+final class MockBackupPlanManager: BackupPlanManager {
     var backupPlanMock: BackupPlan?
     func backupPlan(tx: DBReadTransaction) -> BackupPlan {
         backupPlanMock ?? .disabled

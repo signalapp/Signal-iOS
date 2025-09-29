@@ -6,7 +6,7 @@
 import Contacts
 public import SignalServiceKit
 
-public class ContactShareViewModel: NSObject {
+final public class ContactShareViewModel: NSObject {
 
     public let dbRecord: OWSContact
 

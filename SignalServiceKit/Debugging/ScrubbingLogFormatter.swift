@@ -6,7 +6,7 @@
 import CocoaLumberjack
 import Foundation
 
-public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
+final public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {
         let regex: NSRegularExpression
         let replacementTemplate: String

@@ -22,7 +22,7 @@ private struct IncomingGroupsV2MessageJobInfo {
 /// * It retries immediately if reachability, etc., change.
 ///
 /// It returns when all jobs are processed.
-internal class SpecificGroupMessageProcessor {
+final internal class SpecificGroupMessageProcessor {
     fileprivate let groupId: Data
     private let finder = GroupMessageProcessorJobStore()
 
@@ -537,7 +537,7 @@ internal class SpecificGroupMessageProcessor {
 
 // MARK: -
 
-public class GroupMessageProcessorManager {
+final public class GroupMessageProcessorManager {
 
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
 

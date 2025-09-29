@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class ProvisioningTransferProgressViewController: ProvisioningBaseViewController {
+final class ProvisioningTransferProgressViewController: ProvisioningBaseViewController {
 
     let progressView: TransferProgressView
 

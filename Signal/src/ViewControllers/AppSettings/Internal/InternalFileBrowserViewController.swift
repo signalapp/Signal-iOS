@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class InternalFileBrowserViewController: OWSTableViewController2 {
+final class InternalFileBrowserViewController: OWSTableViewController2 {
     private let fileManager: FileManager
     private let fileURL: URL
 

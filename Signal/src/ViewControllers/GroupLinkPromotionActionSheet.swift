@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class GroupLinkPromotionActionSheet: UIView {
+final public class GroupLinkPromotionActionSheet: UIView {
 
     private weak var conversationViewController: ConversationViewController?
 

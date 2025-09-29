@@ -10,7 +10,7 @@ import SignalServiceKit
 
 // MARK: View Model
 
-class BackupProgressViewModel: ObservableObject {
+final class BackupProgressViewModel: ObservableObject {
 
     @Published var didTapCancel: Bool = false
     @Published var taskProgress: Float = 0
@@ -128,7 +128,7 @@ class BackupProgressViewModel: ObservableObject {
 
 // MARK: Hosting Controller
 
-class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncProgressUI {
+final class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncProgressUI {
 
     public var shouldSuppressNotifications: Bool { true }
 

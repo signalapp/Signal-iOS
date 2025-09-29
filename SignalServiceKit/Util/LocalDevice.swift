@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class LocalDevice {
+final public class LocalDevice {
     public struct MemoryStatus {
         public let fetchDate: Date
         public let footprint: UInt64

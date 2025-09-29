@@ -12,7 +12,7 @@ protocol RegistrationConfimModeSwitchPresenter: AnyObject {
     func confirmSwitchToDeviceLinkingMode()
 }
 
-class RegistrationConfirmModeSwitchViewController: OWSViewController {
+final class RegistrationConfirmModeSwitchViewController: OWSViewController {
     var warningText: String?
 
     weak var presenter: RegistrationConfimModeSwitchPresenter?

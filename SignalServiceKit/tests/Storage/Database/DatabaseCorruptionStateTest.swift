@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class DatabaseCorruptionStateTest: XCTestCase {
+final class DatabaseCorruptionStateTest: XCTestCase {
     func testCorruptionChanges() throws {
         let defaults = TestUtils.userDefaults()
         func fetch() -> DatabaseCorruptionState {

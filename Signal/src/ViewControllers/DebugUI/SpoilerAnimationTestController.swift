@@ -9,7 +9,7 @@ import Foundation
 import SignalUI
 public import UIKit
 
-public class SpoilerAnimationTestController: UIViewController {
+final public class SpoilerAnimationTestController: UIViewController {
 
     private let spoilerAnimationManager = SpoilerAnimationManager()
 

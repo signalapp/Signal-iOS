@@ -5,7 +5,7 @@
 
 import UIKit
 
-public class BezierPathView: UIView {
+final public class BezierPathView: UIView {
 
     public typealias ShapeLayerConfigurationBlock = (CAShapeLayer, CGRect) -> Void
 

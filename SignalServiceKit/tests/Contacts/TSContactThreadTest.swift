@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class TSContactThreadTest: SSKBaseTest {
+final class TSContactThreadTest: SSKBaseTest {
     private func contactThread() -> TSContactThread {
         TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress.randomForTesting())
     }

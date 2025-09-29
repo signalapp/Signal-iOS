@@ -14,7 +14,7 @@ public protocol TextFieldWithPlaceholderDelegate: AnyObject {
 
 // MARK: -
 
-public class TextFieldWithPlaceholder: UIView {
+final public class TextFieldWithPlaceholder: UIView {
 
     // MARK: - Public Properties
 

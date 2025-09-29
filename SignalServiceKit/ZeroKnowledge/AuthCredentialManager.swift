@@ -13,7 +13,7 @@ public protocol AuthCredentialManager {
 
 #if TESTABLE_BUILD
 
-class MockAuthCrededentialManager: AuthCredentialManager {
+final class MockAuthCrededentialManager: AuthCredentialManager {
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni {
         throw OWSGenericError("Not implemented.")
     }
@@ -24,7 +24,7 @@ class MockAuthCrededentialManager: AuthCredentialManager {
 
 #endif
 
-class AuthCredentialManagerImpl: AuthCredentialManager {
+final class AuthCredentialManagerImpl: AuthCredentialManager {
     private let authCredentialStore: AuthCredentialStore
     private let callLinkPublicParams: GenericServerPublicParams
     private let dateProvider: DateProvider

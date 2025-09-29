@@ -8,7 +8,7 @@ import Foundation
 // This is intended to be a drop-in replacement for DispatchQueue
 // that processes its queue in reverse order.
 @objc
-public class ReverseDispatchQueue: NSObject {
+final public class ReverseDispatchQueue: NSObject {
 
     private let label: String
     private let serialQueue: DispatchQueue

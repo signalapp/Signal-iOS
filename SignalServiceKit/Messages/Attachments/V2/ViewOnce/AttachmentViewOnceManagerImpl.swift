@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
+final public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
 
     private let attachmentStore: AttachmentStore
     private let db: any DB

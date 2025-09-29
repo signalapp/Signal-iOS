@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BackupArchiveIntegrationTests: XCTestCase {
+final class BackupArchiveIntegrationTests: XCTestCase {
     override func setUp() {
         /// By default, we cap test runs to 60s in CI. This test might run
         /// longer, since we have very many integration test cases, so this

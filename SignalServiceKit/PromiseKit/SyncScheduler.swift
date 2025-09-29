@@ -10,7 +10,7 @@ import Foundation
 /// the least overhead. Should NOT be used for scheduled methods, e.g.:
 /// `promise.after(seconds: 10, on: SyncScheduler()` would be a bad form and
 /// fall back to scheduling in the future on the main thread.
-public class SyncScheduler: Scheduler {
+final public class SyncScheduler: Scheduler {
 
     public init() {}
 

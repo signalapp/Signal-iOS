@@ -6,7 +6,7 @@
 import Foundation
 import UniformTypeIdentifiers
 
-public class GiphyAsset: ProxiedContentAssetDescription {
+final public class GiphyAsset: ProxiedContentAssetDescription {
     let rendition: Rendition
     let dimensions: CGSize
     let size: Int

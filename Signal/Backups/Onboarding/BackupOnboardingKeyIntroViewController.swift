@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboardingKeyIntroView> {
+final class BackupOnboardingKeyIntroViewController: HostingController<BackupOnboardingKeyIntroView> {
     private let onDeviceAuthSucceeded: (LocalDeviceAuthentication.AuthSuccess) -> Void
     private let viewModel: BackupsOnboardingKeyIntroViewModel
 
@@ -35,7 +35,7 @@ extension BackupOnboardingKeyIntroViewController: BackupsOnboardingKeyIntroViewM
 
 // MARK: -
 
-private class BackupsOnboardingKeyIntroViewModel {
+final private class BackupsOnboardingKeyIntroViewModel {
     protocol ActionsDelegate: AnyObject {
         func onContinue()
     }

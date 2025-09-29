@@ -9,7 +9,7 @@ protocol RingerSwitchObserver: AnyObject {
     func didToggleRingerSwitch(_ isSilenced: Bool)
 }
 
-class RingerSwitch {
+final class RingerSwitch {
     static let shared = RingerSwitch()
 
     private init() {}

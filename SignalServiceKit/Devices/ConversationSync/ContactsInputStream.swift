@@ -14,7 +14,7 @@ struct ContactDetails {
     public let inboxSortOrder: UInt32?
 }
 
-class ContactsInputStream {
+final class ContactsInputStream {
     var inputStream: ChunkedInputStream
 
     init(inputStream: ChunkedInputStream) {

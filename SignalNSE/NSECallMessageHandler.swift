@@ -9,7 +9,7 @@ import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 
-class NSECallMessageHandler: CallMessageHandler {
+final class NSECallMessageHandler: CallMessageHandler {
 
     // MARK: Initializers
 

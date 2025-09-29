@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class TypingIndicatorMessageTest: SSKBaseTest {
+final class TypingIndicatorMessageTest: SSKBaseTest {
     private func makeThread(transaction: DBWriteTransaction) -> TSThread {
         TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(phoneNumber: "+12223334444"),

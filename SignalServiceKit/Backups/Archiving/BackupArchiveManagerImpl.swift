@@ -17,7 +17,7 @@ public enum BackupImportError: Error {
     case unsupportedVersion
 }
 
-public class BackupArchiveManagerImpl: BackupArchiveManager {
+final public class BackupArchiveManagerImpl: BackupArchiveManager {
     public enum Constants {
         fileprivate static let keyValueStoreCollectionName = "MessageBackupManager"
         fileprivate static let keyValueStoreRestoreStateKey = "keyValueStoreRestoreStateKey"

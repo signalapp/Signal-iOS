@@ -7,7 +7,7 @@ import SignalUI
 import SignalServiceKit
 public import UIKit
 
-public class ConversationScrollButton: UIButton {
+final public class ConversationScrollButton: UIButton {
 
     let iconName: String
 

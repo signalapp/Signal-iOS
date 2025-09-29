@@ -10,7 +10,7 @@ protocol GroupPermissionsSettingsDelegate: AnyObject {
     func groupPermissionSettingsDidUpdate()
 }
 
-class GroupPermissionsSettingsViewController: OWSTableViewController2 {
+final class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     private var threadViewModel: ThreadViewModel
     private var thread: TSThread { threadViewModel.threadRecord }
     private var groupViewHelper: GroupViewHelper

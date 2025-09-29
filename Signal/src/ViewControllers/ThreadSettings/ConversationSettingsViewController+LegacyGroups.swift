@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class LegacyGroupView: UIView {
+final class LegacyGroupView: UIView {
 
     private weak var viewController: UIViewController?
 

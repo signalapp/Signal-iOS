@@ -5,7 +5,7 @@
 
 import UIKit
 
-public class CircleView: UIView {
+final public class CircleView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
@@ -39,7 +39,7 @@ public class CircleView: UIView {
     }
 }
 
-public class CircleBlurView: UIVisualEffectView {
+final public class CircleBlurView: UIVisualEffectView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {

@@ -28,7 +28,7 @@ protocol MessageLoaderInteractionFetcher {
 
 // MARK: -
 
-class MessageLoader {
+final class MessageLoader {
     private let batchFetcher: MessageLoaderBatchFetcher
     private let interactionFetchers: [MessageLoaderInteractionFetcher]
 
@@ -372,7 +372,7 @@ extension InteractionReadCache: MessageLoaderInteractionFetcher {
 
 // MARK: -
 
-class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
+final class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
     func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
         let fetchedInteractions = InteractionFinder.interactions(
             withInteractionIds: Set(uniqueIds),
@@ -384,7 +384,7 @@ class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
 
 // MARK: - Batch Fetcher
 
-class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
+final class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
     private let interactionFinder: InteractionFinder
 
     init(interactionFinder: InteractionFinder) {

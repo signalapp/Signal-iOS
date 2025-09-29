@@ -82,7 +82,7 @@ public extension RecipientPickerDelegate {
     func recipientPickerCustomHeaderViews() -> [UIView] { [] }
 }
 
-public class PickedRecipient: Hashable {
+final public class PickedRecipient: Hashable {
 
     public let identifier: Identifier
     public enum Identifier: Hashable {

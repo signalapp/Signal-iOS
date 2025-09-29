@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-class BackupArchiveTSIncomingMessageArchiver {
+final class BackupArchiveTSIncomingMessageArchiver {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
     private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
 

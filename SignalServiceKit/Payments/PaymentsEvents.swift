@@ -20,7 +20,7 @@ public protocol PaymentsEvents: AnyObject {
 // MARK: -
 
 @objc
-public class PaymentsEventsNoop: NSObject, PaymentsEvents {
+final public class PaymentsEventsNoop: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {}
     public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {}
 
@@ -34,7 +34,7 @@ public class PaymentsEventsNoop: NSObject, PaymentsEvents {
 // MARK: -
 
 @objc
-public class PaymentsEventsAppExtension: NSObject, PaymentsEvents {
+final public class PaymentsEventsAppExtension: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {}
     public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {}
 

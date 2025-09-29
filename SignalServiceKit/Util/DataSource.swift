@@ -42,7 +42,7 @@ public protocol DataSource: AnyObject {
 
 // MARK: -
 
-public class DataSourceValue: DataSource {
+final public class DataSourceValue: DataSource {
     public init(_ data: Data, fileExtension: String) {
         self.data = data
         self.fileExtension = fileExtension
@@ -224,7 +224,7 @@ public class DataSourceValue: DataSource {
 
 // MARK: -
 
-public class DataSourcePath: DataSource {
+final public class DataSourcePath: DataSource {
     public init(fileUrl: URL, shouldDeleteOnDeallocation: Bool) throws {
         guard fileUrl.isFileURL else {
             throw OWSAssertionError("unexpected fileUrl: \(fileUrl)")

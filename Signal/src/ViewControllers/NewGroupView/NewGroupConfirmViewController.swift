@@ -7,7 +7,7 @@ import SafariServices
 import SignalServiceKit
 public import SignalUI
 
-public class NewGroupConfirmViewController: OWSTableViewController2 {
+final public class NewGroupConfirmViewController: OWSTableViewController2 {
 
     private let newGroupState: NewGroupState
 

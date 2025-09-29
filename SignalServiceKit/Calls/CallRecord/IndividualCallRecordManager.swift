@@ -51,7 +51,7 @@ public protocol IndividualCallRecordManager {
     )
 }
 
-public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
+final public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
     private let outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
@@ -316,7 +316,7 @@ extension CallRecord.CallStatus.IndividualCallStatus {
 
 // MARK: -
 
-public class IndividualCallRecordStatusTransitionManager {
+final public class IndividualCallRecordStatusTransitionManager {
     public init() {}
 
     public func isStatusTransitionAllowed(

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class TypingIndicatorView: ManualStackView {
+final class TypingIndicatorView: ManualStackView {
     // This represents the spacing between the dots
     // _at their max size_.
     private static let kDotMaxHSpacing: CGFloat = 3

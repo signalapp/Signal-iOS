@@ -17,7 +17,7 @@ protocol CallServiceStateDelegate: AnyObject {
     func callServiceState(_ callServiceState: CallServiceState, didTerminateCall call: SignalCall)
 }
 
-class CallServiceState {
+final class CallServiceState {
     weak var delegate: CallServiceStateDelegate?
 
     init(currentCall: AtomicValue<SignalCall?>) {

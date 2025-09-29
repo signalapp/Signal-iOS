@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
+final class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
     private var selectedOption: NetworkInterfaceSet?
     private let availableOptions: [NetworkInterfaceSet]
     private let updateHandler: (NetworkInterfaceSet) -> Void

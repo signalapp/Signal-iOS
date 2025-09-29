@@ -14,7 +14,7 @@ import Mantle
 /// with an attached version that, at time of writing, used by 1:1 conversations (TSContactThread)
 /// which are subject to races in setting their DM timer config.
 @objc
-public class DisappearingMessageToken: MTLModel {
+final public class DisappearingMessageToken: MTLModel {
     @objc
     public var isEnabled: Bool {
         return durationSeconds > 0

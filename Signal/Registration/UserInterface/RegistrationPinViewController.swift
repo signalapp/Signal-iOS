@@ -92,7 +92,7 @@ protocol RegistrationPinPresenter: AnyObject {
 
 // MARK: - RegistrationPinViewController
 
-class RegistrationPinViewController: OWSViewController {
+final class RegistrationPinViewController: OWSViewController {
     public init(
         state: RegistrationPinState,
         presenter: RegistrationPinPresenter

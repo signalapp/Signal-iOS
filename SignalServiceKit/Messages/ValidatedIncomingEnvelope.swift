@@ -18,7 +18,7 @@ import LibSignalClient
 /// an arbitrary `ServiceId`. Similarly, the envelope's type is converted to
 /// a `Kind` enum; this enum eliminates the need to repeatedly consider all
 /// possible envelope types in downstream code.
-class ValidatedIncomingEnvelope {
+final class ValidatedIncomingEnvelope {
     let timestamp: UInt64
     let serverTimestamp: UInt64
     let envelope: SSKProtoEnvelope

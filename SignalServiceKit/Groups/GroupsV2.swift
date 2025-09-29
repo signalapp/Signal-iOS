@@ -463,7 +463,7 @@ public struct InvalidInvite: Equatable {
 
 // MARK: -
 
-public class MockGroupsV2: GroupsV2 {
+final public class MockGroupsV2: GroupsV2 {
 
     public func createNewGroupOnService(
         _ newGroup: GroupsV2Protos.NewGroupParams,
@@ -611,7 +611,7 @@ public class MockGroupsV2: GroupsV2 {
 
 // MARK: -
 
-public class MockGroupV2Updates: GroupV2Updates {
+final public class MockGroupV2Updates: GroupV2Updates {
     public func refreshGroupImpl(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,

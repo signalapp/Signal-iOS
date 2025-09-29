@@ -8,7 +8,7 @@ public import SignalServiceKit
 public import SignalUI
 
 // A view for presenting attachment upload/download/failure/pending state.
-public class CVAttachmentProgressView: ManualLayoutView {
+final public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
         case upload(attachmentStream: AttachmentStream)

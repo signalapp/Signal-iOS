@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 public import SignalUI
 
-public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewController {
+final public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread
     var recipientSet: OrderedSet<PickedRecipient> = []
 

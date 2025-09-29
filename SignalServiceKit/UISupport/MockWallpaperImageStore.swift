@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockWallpaperImageStore: WallpaperImageStore {
+final public class MockWallpaperImageStore: WallpaperImageStore {
 
     public func setWallpaperImage(
         _ photo: UIImage?,

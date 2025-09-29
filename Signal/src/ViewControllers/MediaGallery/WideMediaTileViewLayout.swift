@@ -12,7 +12,7 @@ protocol ScrollPositionPreserving: AnyObject {
     func recordContentSizeBeforeInsertingToTop()
 }
 
-class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
+final class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
 
     private var contentSizeBeforeInsertingToTop: CGSize?
 

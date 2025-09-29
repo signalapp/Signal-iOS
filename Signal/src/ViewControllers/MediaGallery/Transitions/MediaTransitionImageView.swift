@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-class MediaTransitionImageView: UIImageView {
+final class MediaTransitionImageView: UIImageView {
 
     var shape: MediaViewShape = .rectangle(0) {
         willSet {

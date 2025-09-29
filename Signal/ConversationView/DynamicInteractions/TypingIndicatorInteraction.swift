@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class TypingIndicatorInteraction: TSInteraction {
+final public class TypingIndicatorInteraction: TSInteraction {
     public static let TypingIndicatorId = "TypingIndicator"
 
     public override var isDynamicInteraction: Bool {

@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIPrompts: DebugUIPage {
+final class DebugUIPrompts: DebugUIPage {
     let name = "Prompts"
 
     func section(thread: TSThread?) -> OWSTableSection? {

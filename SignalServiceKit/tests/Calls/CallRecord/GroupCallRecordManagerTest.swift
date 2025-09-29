@@ -370,7 +370,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 /// correctly. Those methods' real implementations are tested separately.
 ///
 /// This class snoops on those methods so we can verify they're being called.
-private class SnoopingGroupCallRecordManagerImpl: GroupCallRecordManagerImpl {
+final private class SnoopingGroupCallRecordManagerImpl: GroupCallRecordManagerImpl {
     var didAskToCreate = false
     override func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         didAskToCreate = true

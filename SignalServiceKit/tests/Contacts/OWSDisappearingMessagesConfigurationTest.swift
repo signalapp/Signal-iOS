@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSDisappearingMessagesConfigurationTest: XCTestCase {
+final class OWSDisappearingMessagesConfigurationTest: XCTestCase {
     private var mockDB: InMemoryDB!
     private var store: MockDisappearingMessagesConfigurationStore!
 

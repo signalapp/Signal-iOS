@@ -67,7 +67,7 @@ protocol CameraCaptureSessionDelegate: AnyObject {
 
 // MARK: -
 
-class CameraCaptureSession: NSObject {
+final class CameraCaptureSession: NSObject {
 
     private weak var delegate: CameraCaptureSessionDelegate?
 
@@ -1029,7 +1029,7 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
 
 // MARK: -
 
-class CapturePreviewView: UIView {
+final class CapturePreviewView: UIView {
 
     override class var layerClass: AnyClass {
         return AVCaptureVideoPreviewLayer.self
@@ -1162,7 +1162,7 @@ private protocol VideoCaptureDelegate: AnyObject {
     func videoCapture(_ videoCapture: VideoCapture, didFinishWith result: Result<URL, Error>)
 }
 
-private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
+final private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
 
     private var qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
 
@@ -1481,7 +1481,7 @@ private protocol PhotoCaptureDelegate: AnyObject {
     func photoCaptureDidProduce(result: Result<Data, Error>)
 }
 
-private class PhotoCapture {
+final private class PhotoCapture {
 
     let avCaptureOutput = AVCapturePhotoOutput()
 

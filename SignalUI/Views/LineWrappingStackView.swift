@@ -17,7 +17,7 @@ import UIKit
 ///
 /// One thing this class can't do is detect size changes in subviews. If you change the size,
 /// call `setNeedsLayout()` on this view.
-public class LineWrappingStackView: UIView {
+final public class LineWrappingStackView: UIView {
 
     // MARK: - Configuration
 

@@ -8,7 +8,7 @@ import LibSignalClient
 
 /// In charge of fetching avatars for groups as well as avatars and updated profiles
 /// for contacts we restore from a backup.
-public class BackupArchiveAvatarFetcher {
+final public class BackupArchiveAvatarFetcher {
 
     private let appReadiness: AppReadiness
     private let db: any DB

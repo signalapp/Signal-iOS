@@ -17,7 +17,7 @@ protocol RegistrationChangePhoneNumberPresenter: AnyObject {
 
 // MARK: - RegistrationChangePhoneNumberViewController
 
-class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
+final class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
     private var state: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry
     private weak var presenter: RegistrationChangePhoneNumberPresenter?
@@ -287,7 +287,7 @@ private protocol ChangePhoneNumberValueViewsDelegate: AnyObject {
 
 // MARK: -
 
-private class ChangePhoneNumberValueViews: NSObject {
+final private class ChangePhoneNumberValueViews: NSObject {
 
     weak var delegate: ChangePhoneNumberValueViewsDelegate?
 

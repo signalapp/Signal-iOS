@@ -18,7 +18,7 @@ public protocol MasterKeySyncManager {
     func runStartupJobs(tx: DBWriteTransaction)
 }
 
-class MasterKeySyncManagerImpl: MasterKeySyncManager {
+final class MasterKeySyncManagerImpl: MasterKeySyncManager {
     private enum StoreConstants {
         static let collectionName = "MasterKeyOneTimeSyncManager"
         static let hasDistributedAEP = "hasSyncedAEP"

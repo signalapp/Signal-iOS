@@ -8,7 +8,7 @@ import SignalUI
 import UIKit
 
 /// This is the collection view cell for "list mode" in All Media.
-class WidePhotoCell: MediaTileListModeCell {
+final class WidePhotoCell: MediaTileListModeCell {
 
     static let reuseIdentifier = "WidePhotoCell"
 

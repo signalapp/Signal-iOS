@@ -24,7 +24,7 @@ extension BackupArchive {
  * The output stream abstracts over this, and allows callers to just think in terms of "frames",
  * the individual proto objects that we write one at a time.
  */
-class BackupArchiveProtoOutputStream {
+final class BackupArchiveProtoOutputStream {
     private let outputStream: OutputStreamable
     private let exportProgress: BackupArchiveExportProgress?
 

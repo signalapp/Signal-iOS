@@ -398,7 +398,7 @@ open class ActionSheetController: OWSViewController {
 
 // MARK: -
 
-public class ActionSheetAction: NSObject {
+final public class ActionSheetAction: NSObject {
 
     private let title: String
 
@@ -500,7 +500,7 @@ extension ActionSheetAction {
 
 // MARK: -
 
-private class ActionSheetPresentationController: UIPresentationController {
+final private class ActionSheetPresentationController: UIPresentationController {
     let backdropView = UIView()
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {

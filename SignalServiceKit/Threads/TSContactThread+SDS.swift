@@ -47,7 +47,7 @@ public extension TSContactThread {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSContactThreadSerializer: SDSSerializer {
+final class TSContactThreadSerializer: SDSSerializer {
 
     private let model: TSContactThread
     public init(model: TSContactThread) {

@@ -14,7 +14,7 @@ public import SignalServiceKit
 /// 3) Everything herein **should** adhere to modern design principles: NOT accessing
 ///   global state or `Dependencies`, being protocolized, and taking all dependencies
 ///   explicitly on initialization, encapsulated for easy testing.
-public class ViewControllerContext {
+final public class ViewControllerContext {
 
     public let db: any DB
 

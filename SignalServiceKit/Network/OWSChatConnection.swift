@@ -830,7 +830,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
      }
 }
 
-internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
+final internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
     init(libsignalNet: Net, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB) {
         super.init(libsignalNet: libsignalNet, type: .unidentified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
@@ -848,7 +848,7 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
     }
 }
 
-internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatConnection>, ChatConnectionListener {
+final internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatConnection>, ChatConnectionListener {
     private var _hasEmptiedInitialQueue = false
     override var hasEmptiedInitialQueue: Bool {
         get async {

@@ -379,7 +379,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
 }
 
 #if DEBUG
-public class RegistrationCoordinatorBackupErrorPresenterMock: RegistrationCoordinatorBackupErrorPresenter {
+final public class RegistrationCoordinatorBackupErrorPresenterMock: RegistrationCoordinatorBackupErrorPresenter {
     public func mapToRegistrationError(error: any Error) -> RegistrationBackupRestoreError {
         return .generic
     }

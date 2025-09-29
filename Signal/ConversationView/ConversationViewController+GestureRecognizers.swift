@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
+final public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
     public var messageAction: MessageAction?
 }
 
@@ -396,7 +396,7 @@ public struct CVLongPressHandler {
 
 // MARK: -
 
-public class CVPanHandler {
+final public class CVPanHandler {
     public enum PanType {
         case messageSwipeAction
         case scrubAudio

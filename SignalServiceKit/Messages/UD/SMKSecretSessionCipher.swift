@@ -76,7 +76,7 @@ fileprivate extension SMKMessageType {
 }
 
 @objc
-public class SMKSecretSessionCipher: NSObject {
+final public class SMKSecretSessionCipher: NSObject {
     private let currentSessionStore: SessionStore
     private let currentPreKeyStore: PreKeyStore
     private let currentSignedPreKeyStore: SignedPreKeyStore

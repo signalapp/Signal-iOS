@@ -20,7 +20,7 @@ protocol VideoPlaybackControlViewDelegate: AnyObject {
     func videoPlaybackControlViewDidStopRewindOrFastForward(_ videoPlaybackControlView: VideoPlaybackControlView)
 }
 
-class VideoPlaybackControlView: UIView {
+final class VideoPlaybackControlView: UIView {
 
     // MARK: Subviews
 
@@ -415,7 +415,7 @@ protocol PlayerProgressViewDelegate: AnyObject {
     func playerProgressView(_ playerProgressView: PlayerProgressView, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool)
 }
 
-class PlayerProgressView: UIView {
+final class PlayerProgressView: UIView {
 
     weak var delegate: PlayerProgressViewDelegate?
 

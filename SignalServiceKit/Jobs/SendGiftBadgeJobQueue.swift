@@ -8,7 +8,7 @@ public import LibSignalClient
 
 // MARK: - Job Queue
 
-public class SendGiftBadgeJobQueue {
+final public class SendGiftBadgeJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<SendGiftBadgeJobRecord>,
         SendGiftBadgeJobRunnerFactory
@@ -126,7 +126,7 @@ private func jobExists(threadId: String, transaction: DBReadTransaction) -> Bool
 
 // MARK: - Runner
 
-private class SendGiftBadgeJobRunnerFactory: JobRunnerFactory {
+final private class SendGiftBadgeJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> SendGiftBadgeJobRunner { buildRunner(chargeFuture: nil, completionFuture: nil) }
 
     func buildRunner(chargeFuture: Future<Void>?, completionFuture: Future<Void>?) -> SendGiftBadgeJobRunner {
@@ -134,7 +134,7 @@ private class SendGiftBadgeJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class SendGiftBadgeJobRunner: JobRunner {
+final private class SendGiftBadgeJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 110
     }

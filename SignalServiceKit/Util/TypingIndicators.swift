@@ -38,7 +38,7 @@ public protocol TypingIndicators: AnyObject {
 
 // MARK: -
 
-public class TypingIndicatorsImpl: NSObject, TypingIndicators {
+final public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 

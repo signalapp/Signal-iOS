@@ -41,7 +41,7 @@ public protocol CallRecordMissedCallManager {
     )
 }
 
-class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
+final class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
     private let callRecordQuerier: CallRecordQuerier
     private let callRecordStore: CallRecordStore

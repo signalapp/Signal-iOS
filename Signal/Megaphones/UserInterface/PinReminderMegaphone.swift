@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class PinReminderMegaphone: MegaphoneView {
+final class PinReminderMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 

@@ -7,7 +7,7 @@ import LibSignalClient
 import SignalServiceKit
 import UIKit
 
-class FingerprintScanViewController: OWSViewController, OWSNavigationChildController {
+final class FingerprintScanViewController: OWSViewController, OWSNavigationChildController {
 
     private let recipientAci: Aci
     private let recipientIdentity: OWSRecipientIdentity

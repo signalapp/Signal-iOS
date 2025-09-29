@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class StoryThumbnailView: UIView {
+final class StoryThumbnailView: UIView {
     enum Attachment: Equatable {
         case file(ReferencedAttachment)
         case text(PreloadedTextAttachment)

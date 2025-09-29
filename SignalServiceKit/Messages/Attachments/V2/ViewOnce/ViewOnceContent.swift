@@ -13,7 +13,7 @@ public import SDWebImage
 /// 3. display the copied contents
 ///
 /// This object represents the result of (1); the copied contents.
-public class ViewOnceContent {
+final public class ViewOnceContent {
 
     public enum ContentType {
         case stillImage, animatedImage, video, loopingVideo

@@ -6,7 +6,7 @@
 import UIKit
 
 #if DEBUG
-public class SheetPreviewViewController: UIViewController {
+final public class SheetPreviewViewController: UIViewController {
     private let animateFirstAppearance: Bool
     private let presentAction: PresentAction
 

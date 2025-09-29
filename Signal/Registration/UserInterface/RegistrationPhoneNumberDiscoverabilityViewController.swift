@@ -16,7 +16,7 @@ public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
     let phoneNumberDiscoverability: PhoneNumberDiscoverability
 }
 
-class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
+final class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     private enum Constants {
         static let continueButtonInsets: UIEdgeInsets = .init(
@@ -201,7 +201,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
 // MARK: - ButtonRow
 
-private class ButtonRow: UIButton {
+final private class ButtonRow: UIButton {
     var handler: ((ButtonRow) -> Void)?
 
     private let selectedImageView = UIImageView()

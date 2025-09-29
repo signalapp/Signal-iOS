@@ -31,7 +31,7 @@ private let globalEnvironment = NSEEnvironment()
 
 @MainActor private var hasShownFirstUnlockError = false
 
-class NotificationService: UNNotificationServiceExtension {
+final class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .init())
     private let fetchQueue = SerialTaskQueue()

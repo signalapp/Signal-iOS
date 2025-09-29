@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ViewOnceMessagesTest: SSKBaseTest {
+final class ViewOnceMessagesTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
 

@@ -102,7 +102,7 @@ extension OWSIdentity: CustomStringConvertible {
     }
 }
 
-public class IdentityStore: IdentityKeyStore {
+final public class IdentityStore: IdentityKeyStore {
     private let identityManager: OWSIdentityManagerImpl
     private let identityKeyPair: IdentityKeyPair
     private let fetchLocalRegistrationId: (DBWriteTransaction) -> UInt32
@@ -193,7 +193,7 @@ extension OWSIdentityManager {
     }
 }
 
-public class OWSIdentityManagerImpl: OWSIdentityManager {
+final public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let aciProtocolStore: SignalProtocolStore
     private let appReadiness: AppReadiness
     private let db: any DB
@@ -1064,7 +1064,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
 // MARK: - ObjC Bridge
 
-class OWSIdentityManagerObjCBridge: NSObject {
+final class OWSIdentityManagerObjCBridge: NSObject {
     @objc
     static let identityKeyLength = UInt(OWSIdentityManagerImpl.Constants.identityKeyLength)
 

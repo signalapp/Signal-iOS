@@ -530,7 +530,7 @@ public struct BackupReadCredential {
 
 #if TESTABLE_BUILD
 
-public class BackupRequestManagerMock: BackupRequestManager {
+final public class BackupRequestManagerMock: BackupRequestManager {
 
     init() {}
 

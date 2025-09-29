@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class PinReminderViewController: OWSViewController {
+final public class PinReminderViewController: OWSViewController {
 
     enum PinReminderResult {
         case canceled(didGuessWrong: Bool)
@@ -332,7 +332,7 @@ public class PinReminderViewController: OWSViewController {
 
 // MARK: -
 
-private class PinReminderPresentationController: UIPresentationController {
+final private class PinReminderPresentationController: UIPresentationController {
     let backdropView = UIView()
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {

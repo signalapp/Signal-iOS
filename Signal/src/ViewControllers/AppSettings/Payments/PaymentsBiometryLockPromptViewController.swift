@@ -34,7 +34,7 @@ private enum KnownDeviceOwnerAuthenticationType {
 
 // MARK: -
 
-public class PaymentsBiometryLockPromptViewController: OWSViewController {
+final public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private var hasBeenDoubleReminded: Bool = false
 

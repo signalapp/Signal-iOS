@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class FlagsViewController: OWSTableViewController2 {
+final class FlagsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

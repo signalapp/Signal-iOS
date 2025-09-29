@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class OutgoingEditMessageSyncTranscript: OWSOutgoingSentMessageTranscript {
+final public class OutgoingEditMessageSyncTranscript: OWSOutgoingSentMessageTranscript {
 
     public override func prepareDataSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,

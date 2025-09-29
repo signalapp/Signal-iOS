@@ -40,7 +40,7 @@ extension GroupSendEndorsementStore {
     }
 }
 
-class GroupSendEndorsementStoreImpl: GroupSendEndorsementStore {
+final class GroupSendEndorsementStoreImpl: GroupSendEndorsementStore {
     func fetchCombinedEndorsement(groupThreadId: Int64, tx: DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord? {
         do {
             return try CombinedGroupSendEndorsementRecord.fetchOne(tx.database, key: groupThreadId)

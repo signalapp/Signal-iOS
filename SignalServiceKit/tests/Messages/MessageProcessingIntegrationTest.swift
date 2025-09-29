@@ -8,7 +8,7 @@ import XCTest
 import GRDB
 import LibSignalClient
 
-class MessageProcessingIntegrationTest: SSKBaseTest {
+final class MessageProcessingIntegrationTest: SSKBaseTest {
 
     let localE164Identifier = "+13235551234"
     let localAci = Aci.randomForTesting()
@@ -346,7 +346,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
 
 // MARK: - Helpers
 
-class DatabaseWriteBlockDelegate {
+final class DatabaseWriteBlockDelegate {
     let block: (Database) -> Void
     init(block: @escaping (Database) -> Void) {
         self.block = block

@@ -8,7 +8,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIMisc: DebugUIPage {
+final class DebugUIMisc: DebugUIPage {
 
     let name = "Misc."
 

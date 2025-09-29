@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-class AttachmentTextView: BodyRangesTextView {
+final class AttachmentTextView: BodyRangesTextView {
 
     private var textIsChanging = false
 

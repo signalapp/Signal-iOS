@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class ConversationSplitViewController: UISplitViewController, ConversationSplit {
+final class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
     fileprivate var deviceTransferNavController: OutgoingDeviceTransferNavigationController?
 
@@ -692,7 +692,7 @@ extension ConversationViewController {
     }
 }
 
-private class NoSelectedConversationViewController: OWSViewController {
+final private class NoSelectedConversationViewController: OWSViewController {
     let logoImageView = UIImageView()
 
     override func loadView() {

@@ -18,7 +18,7 @@ public class DBReadTransaction: NSObject {
 }
 
 @objc
-public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext {
+final public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext {
     private enum TransactionState {
         case open
         case finalizing

@@ -8,7 +8,7 @@ import MetalKit
 public import SignalServiceKit
 
 /// Produces the actual particle effects used to tile spoilered regions.
-public class SpoilerRenderer {
+final public class SpoilerRenderer {
 
     /// Configuration that applies to every particle within a given spoiler frame.
     public struct Config: Hashable, Equatable {

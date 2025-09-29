@@ -6,7 +6,7 @@
 import LibSignalClient
 import GRDB
 
-class MessageSendLogObjC: NSObject {
+final class MessageSendLogObjC: NSObject {
     @objc
     @available(swift, obsoleted: 1.0)
     static func deleteAllPayloads(forInteraction interaction: TSInteraction, tx: DBWriteTransaction) {
@@ -15,7 +15,7 @@ class MessageSendLogObjC: NSObject {
     }
 }
 
-public class MessageSendLog {
+final public class MessageSendLog {
     private let db: any DB
     private let dateProvider: DateProvider
 

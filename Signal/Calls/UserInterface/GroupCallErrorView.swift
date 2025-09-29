@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class GroupCallErrorView: UIView {
+final class GroupCallErrorView: UIView {
 
     var forceCompactAppearance: Bool = false {
         didSet { configure() }

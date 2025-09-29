@@ -105,7 +105,7 @@ private class BannerHiding {
 }
 
 /// Manages state for the "pending member requests" banner.
-private class PendingMemberRequestsBannerHiding: BannerHiding {
+final private class PendingMemberRequestsBannerHiding: BannerHiding {
     private struct RequestingMembersState: Codable {
         let requestingMemberAcis: Set<AciUuid>
 

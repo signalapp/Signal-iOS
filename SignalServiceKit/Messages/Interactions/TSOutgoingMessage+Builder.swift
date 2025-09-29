@@ -6,7 +6,7 @@
 public import LibSignalClient
 
 @objcMembers
-public class TSOutgoingMessageBuilder: TSMessageBuilder {
+final public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var isVoiceMessage: Bool
     public var groupMetaMessage: TSGroupMetaMessage
     public var groupChangeProtoData: Data?

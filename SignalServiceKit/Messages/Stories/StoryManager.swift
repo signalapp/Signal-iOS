@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class StoryManager {
+final public class StoryManager {
     public static let storyLifetimeMillis = UInt64.dayInMs
 
     public class func setup(appReadiness: AppReadiness) {

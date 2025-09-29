@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
+final public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
 
     private let dateProvider: DateProvider
 

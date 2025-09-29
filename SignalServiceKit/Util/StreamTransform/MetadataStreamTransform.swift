@@ -6,7 +6,7 @@
 import CryptoKit
 import Foundation
 
-public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransform {
+final public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransform {
     public var hasFinalized: Bool = false
 
     private var sha256Result: SHA256.Digest?

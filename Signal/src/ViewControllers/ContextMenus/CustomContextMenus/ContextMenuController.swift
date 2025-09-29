@@ -23,7 +23,7 @@ private enum ContextMenuAnimationState {
     case animateOut
 }
 
-private class ContextMenuHostView: UIView {
+final private class ContextMenuHostView: UIView {
 
     weak var delegate: ContextMenuViewDelegate?
     var previewViewAlignment: ContextMenuTargetedPreview.Alignment = .center
@@ -317,7 +317,7 @@ private class ContextMenuHostView: UIView {
     }
 }
 
-class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestureRecognizerDelegate {
+final class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestureRecognizerDelegate {
     weak var delegate: ContextMenuControllerDelegate?
 
     let contextMenuPreview: ContextMenuTargetedPreview

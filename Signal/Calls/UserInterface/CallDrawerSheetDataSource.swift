@@ -224,7 +224,7 @@ extension CallLinkSheetDataSource {
 
 // MARK: - Individual call data source
 
-class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
+final class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
 
     private var call: SignalCall
     private var individualCall: IndividualCall

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ConversationViewModel {
+final class ConversationViewModel {
     let groupCallInProgress: Bool
     let isSystemContact: Bool
     let shouldShowVerifiedBadge: Bool

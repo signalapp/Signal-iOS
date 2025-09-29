@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockSgxWebsocketConnectionFactory: SgxWebsocketConnectionFactory {
+final public class MockSgxWebsocketConnectionFactory: SgxWebsocketConnectionFactory {
 
     private var onConnectAndPerformHandshakeHandlers = [String: ((Any) -> Promise<Any>)]()
 

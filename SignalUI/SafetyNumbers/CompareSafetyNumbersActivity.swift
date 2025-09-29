@@ -27,7 +27,7 @@ protocol CompareSafetyNumbersActivityDelegate: AnyObject {
     func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: CompareSafetyNumberError)
 }
 
-public class CompareSafetyNumbersActivity: UIActivity {
+final public class CompareSafetyNumbersActivity: UIActivity {
 
     var mySafetyNumbers: String?
     weak var delegate: CompareSafetyNumbersActivityDelegate?

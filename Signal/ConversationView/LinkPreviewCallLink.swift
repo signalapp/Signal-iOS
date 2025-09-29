@@ -8,7 +8,7 @@ public import SignalServiceKit
 
 // MARK: -
 
-public class LinkPreviewCallLink: LinkPreviewState {
+final public class LinkPreviewCallLink: LinkPreviewState {
     public let conversationStyle: ConversationStyle?
 
     public enum PreviewType {
@@ -116,7 +116,7 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 }
 
-public class CommonCallLinksUI {
+final public class CommonCallLinksUI {
     public static func callLinkIcon(rootKey: CallLinkRootKey) -> UIImage? {
         guard let image = UIImage(named: "video-compact") else { return nil }
         let newSize = CGSize(square: Constants.circleViewDimension)

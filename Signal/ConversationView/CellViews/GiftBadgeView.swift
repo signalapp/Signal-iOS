@@ -10,7 +10,7 @@ import QuartzCore
 import SignalServiceKit
 import SignalUI
 
-class GiftBadgeView: ManualStackView {
+final class GiftBadgeView: ManualStackView {
 
     struct State {
         enum Badge {
@@ -465,7 +465,7 @@ private extension GiftBadgeView.State {
     }
 }
 
-class GiftWrap {
+final class GiftWrap {
 
     /// The rootView for use in the conversation view.
     let rootView: ManualLayoutView
@@ -528,7 +528,7 @@ class GiftWrap {
     }
 }
 
-private class GiftWrapView: UIView {
+final private class GiftWrapView: UIView {
     let wrappingContainer = UIView()
     let wrappingView = OWSBubbleShapeView(mode: .clip)
     let bowView = UIImageView(image: UIImage(named: "gift-bow"))
@@ -656,7 +656,7 @@ private class GiftWrapView: UIView {
 /// conversation when the animation starts.
 ///
 /// When the animation is done, this view removes itself from its superview.
-private class UnwrapAnimationView: UIView, CAAnimationDelegate {
+final private class UnwrapAnimationView: UIView, CAAnimationDelegate {
 
     private let bowView: UIView
 

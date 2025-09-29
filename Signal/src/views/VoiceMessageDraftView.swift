@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class VoiceMessageDraftView: UIStackView {
+final class VoiceMessageDraftView: UIStackView {
     private let playbackTimeLabel = UILabel()
     private let waveformView: AudioWaveformProgressView
     private let voiceMessageInterruptedDraft: VoiceMessageInterruptedDraft

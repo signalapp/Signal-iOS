@@ -9,7 +9,7 @@ import Foundation
 // value obtained from the network.
 
 @MainActor
-public class RefreshEvent {
+final public class RefreshEvent {
     private let block: @MainActor () -> Void
 
     private let refreshInterval: TimeInterval

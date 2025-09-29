@@ -8,7 +8,7 @@ import UIKit
 import SafariServices
 import SignalServiceKit
 
-public class GroupViewUtils {
+final public class GroupViewUtils {
 
     public static func formatGroupMembersLabel(memberCount: Int) -> String {
         let format = OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_%d", tableName: "PluralAware",

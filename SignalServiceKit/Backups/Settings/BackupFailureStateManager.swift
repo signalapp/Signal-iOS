@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class BackupFailureStateManager {
+final public class BackupFailureStateManager {
 
     let backupSettingsStore = BackupSettingsStore()
     let dateProvider: DateProvider

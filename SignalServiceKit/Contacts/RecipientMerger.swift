@@ -92,7 +92,7 @@ struct MergedRecipient {
     let newRecipient: SignalRecipient
 }
 
-class RecipientMergerImpl: RecipientMerger {
+final class RecipientMergerImpl: RecipientMerger {
     private let aciSessionStore: SignalSessionStore
     private let blockedRecipientStore: BlockedRecipientStore
     private let identityManager: OWSIdentityManager
@@ -963,7 +963,7 @@ extension Notification.Name {
     public static let didLearnRecipientAssociation = Notification.Name("didLearnRecipientAssociation")
 }
 
-public class RecipientMergeNotifier: RecipientMergeObserver {
+final public class RecipientMergeNotifier: RecipientMergeObserver {
     public init() {}
 
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}

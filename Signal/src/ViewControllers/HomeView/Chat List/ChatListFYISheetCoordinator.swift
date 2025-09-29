@@ -6,7 +6,7 @@
 import SignalServiceKit
 
 @MainActor
-class ChatListFYISheetCoordinator {
+final class ChatListFYISheetCoordinator {
     private enum FYISheet {
         struct BadgeThanks {
             let redemptionSuccess: DonationReceiptCredentialRedemptionSuccess

@@ -19,7 +19,7 @@ protocol EmojiPickerCollectionViewDelegate: AnyObject {
 
 }
 
-class EmojiPickerCollectionView: UICollectionView {
+final class EmojiPickerCollectionView: UICollectionView {
     let layout: UICollectionViewFlowLayout
 
     private static let keyValueStore = KeyValueStore(collection: "EmojiPickerCollectionView")
@@ -518,7 +518,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
     }
 }
 
-private class EmojiCell: UICollectionViewCell {
+final private class EmojiCell: UICollectionViewCell {
     static let reuseIdentifier = "EmojiCell"
 
     let emojiLabel = UILabel()
@@ -548,7 +548,7 @@ private class EmojiCell: UICollectionViewCell {
     }
 }
 
-private class EmojiSectionHeader: UICollectionReusableView {
+final private class EmojiSectionHeader: UICollectionReusableView {
     static let reuseIdentifier = "EmojiSectionHeader"
 
     let label = UILabel()
@@ -587,7 +587,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
 }
 
 // URL handling
-private class EmojiSearchIndex: NSObject {
+final private class EmojiSearchIndex: NSObject {
 
     public static let EmojiSearchManifestFetchedNotification = Notification.Name("EmojiSearchManifestFetchedNotification")
     public static let EmojiSearchIndexFetchedNotification = Notification.Name("EmojiSearchIndexFetchedNotification")

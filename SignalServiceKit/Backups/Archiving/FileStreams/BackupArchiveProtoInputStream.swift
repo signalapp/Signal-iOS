@@ -22,7 +22,7 @@ extension BackupArchive {
  * The input stream abstracts over this, and allows callers to just think in terms of "frames",
  * the individual proto objects that we read one at a time.
  */
-class BackupArchiveProtoInputStream {
+final class BackupArchiveProtoInputStream {
     private let inputStream: InputStreamable
     private let inputStreamDelegate: StreamDelegate
 

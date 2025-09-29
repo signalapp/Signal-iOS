@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsDetailViewController: OWSTableViewController2 {
+final class PaymentsDetailViewController: OWSTableViewController2 {
 
     private var paymentItem: PaymentsHistoryItem
 

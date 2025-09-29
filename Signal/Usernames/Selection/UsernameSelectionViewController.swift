@@ -18,7 +18,7 @@ protocol UsernameSelectionDelegate: AnyObject {
 ///
 /// Usernames consist of a user-chosen "nickname" and a programmatically-
 /// generated numeric "discriminator", which are then concatenated.
-class UsernameSelectionViewController: OWSViewController, OWSNavigationChildController {
+final class UsernameSelectionViewController: OWSViewController, OWSNavigationChildController {
 
     /// A wrapper for injected dependencies.
     struct Context {

@@ -7,7 +7,7 @@ import SignalUI
 import UIKit
 import SignalServiceKit
 
-class JoinGroupCallPill: UIControl {
+final class JoinGroupCallPill: UIControl {
 
     public var buttonText: String? {
         get { return callLabel.text }

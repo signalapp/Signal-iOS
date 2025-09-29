@@ -42,7 +42,7 @@ struct WhoAmIManagerImpl: WhoAmIManager {
 
 #if TESTABLE_BUILD
 
-class MockWhoAmIManager: WhoAmIManager {
+final class MockWhoAmIManager: WhoAmIManager {
     var whoAmIResponse: ConsumableMockPromise<WhoAmIResponse> = .unset
 
     func makeWhoAmIRequest() async throws -> WhoAmIResponse {

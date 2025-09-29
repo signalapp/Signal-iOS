@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 /// An outgoing group v2 update.
-class OutgoingGroupUpdateMessage: TSOutgoingMessage {
+final class OutgoingGroupUpdateMessage: TSOutgoingMessage {
     @objc
     private var isUpdateUrgent: Bool = false
 

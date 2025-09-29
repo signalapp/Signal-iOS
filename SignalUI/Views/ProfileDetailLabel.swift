@@ -8,7 +8,7 @@ public import SignalServiceKit
 
 // MARK: - ProfileDetailLabel
 
-public class ProfileDetailLabel: UIStackView {
+final public class ProfileDetailLabel: UIStackView {
     private let tapAction: (() -> Void)?
     private let longPressAction: (() -> Void)?
 

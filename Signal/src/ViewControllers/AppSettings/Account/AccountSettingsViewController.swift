@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AccountSettingsViewController: OWSTableViewController2 {
+final class AccountSettingsViewController: OWSTableViewController2 {
 
     private let appReadiness: AppReadinessSetter
     private let context: ViewControllerContext

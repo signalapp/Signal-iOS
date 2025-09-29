@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class MessageSenderJobQueueTest: SSKBaseTest {
+final class MessageSenderJobQueueTest: SSKBaseTest {
     private var fakeMessageSender: FakeMessageSender {
         SSKEnvironment.shared.messageSenderRef as! FakeMessageSender
     }

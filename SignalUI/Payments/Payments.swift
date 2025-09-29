@@ -118,7 +118,7 @@ public struct PaymentBalance {
 
 // MARK: -
 
-public class MockPayments: NSObject {
+final public class MockPayments: NSObject {
 }
 
 // MARK: -

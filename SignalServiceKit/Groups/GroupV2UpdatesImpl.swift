@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class GroupV2UpdatesImpl {
+final public class GroupV2UpdatesImpl {
 
     // This tracks the last time that groups were updated to the current
     // revision.

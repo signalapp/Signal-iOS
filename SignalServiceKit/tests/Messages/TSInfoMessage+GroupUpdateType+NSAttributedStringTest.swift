@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
-class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
+final class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
     private func assertEqual(_ one: NSAttributedString, _ two: NSAttributedString) {
         XCTAssertEqual(one, two)
     }

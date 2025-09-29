@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class AudioWaveformManagerMock: AudioWaveformManager {
+final public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public init() {}
 

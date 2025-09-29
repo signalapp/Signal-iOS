@@ -57,7 +57,7 @@ public protocol ExternalPendingIDEALDonationStore {
     func clearPendingSubscription(tx: DBWriteTransaction)
 }
 
-public class ExternalPendingIDEALDonationStoreImpl: ExternalPendingIDEALDonationStore {
+final public class ExternalPendingIDEALDonationStoreImpl: ExternalPendingIDEALDonationStore {
 
     private enum Constants {
         static let pendingOneTimeDonationKey = "PendingOneTimeDonationKey"

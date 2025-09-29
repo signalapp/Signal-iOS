@@ -6,7 +6,7 @@
 import Testing
 @testable import SignalServiceKit
 
-class AttachmentUploadManagerTests {
+final class AttachmentUploadManagerTests {
     var uploadManager: AttachmentUploadManager!
     var helper: AttachmentUploadManagerMockHelper!
 

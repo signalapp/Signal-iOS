@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
-public class AvatarTableViewCell: UITableViewCell {
+final public class AvatarTableViewCell: UITableViewCell {
 
     private let columns: UIStackView
     private let textRows: UIStackView

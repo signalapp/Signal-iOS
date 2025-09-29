@@ -7,7 +7,7 @@ import LibSignalClient
 
 #if TESTABLE_BUILD
 
-class MockUsernameApiClient: UsernameApiClient {
+final class MockUsernameApiClient: UsernameApiClient {
 
     // MARK: Confirm
 

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class CallButton: UIButton {
+final class CallButton: UIButton {
     var iconName: String { didSet { updateAppearance() } }
     var selectedIconName: String? { didSet { updateAppearance() } }
 

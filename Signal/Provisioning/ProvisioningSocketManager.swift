@@ -58,7 +58,7 @@ public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
     )
 }
 
-public class ProvisioningSocketManager: ProvisioningSocketDelegate {
+final public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     private struct ProvisioningUrlParams {
         let uuid: String
         let cipher: ProvisioningCipher

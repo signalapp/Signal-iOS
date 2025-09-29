@@ -246,7 +246,7 @@ private extension CallRecord {
     }
 }
 
-private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
+final private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
     func hydrate(conversationId: Data, callId: UInt64, tx: DBReadTransaction) throws -> CallRecord? {
         owsFail("Not implemented!")
     }
@@ -256,7 +256,7 @@ private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdap
     }
 }
 
-private class MockSyncMessageSender: CallRecordMissedCallManagerImpl.Shims.SyncMessageSender {
+final private class MockSyncMessageSender: CallRecordMissedCallManagerImpl.Shims.SyncMessageSender {
     var sendSyncMessageMock: ((
         _ eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         _ callId: UInt64

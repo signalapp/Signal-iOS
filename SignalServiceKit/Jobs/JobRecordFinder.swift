@@ -37,7 +37,7 @@ private enum Constants {
     static let batchSize = 400
 }
 
-public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecordType: JobRecord {
+final public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecordType: JobRecord {
     private let db: any DB
 
     public init(db: any DB) {

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class AttachmentBackupThumbnail {
+final public class AttachmentBackupThumbnail {
     public let attachment: Attachment
 
     /// Filepath to the encrypted thumbnail file on local disk.

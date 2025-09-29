@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVMediaAlbumView: ManualStackViewWithLayer {
+final public class CVMediaAlbumView: ManualStackViewWithLayer {
     private var items = [CVMediaAlbumItem]()
     private var isBorderless = false
 

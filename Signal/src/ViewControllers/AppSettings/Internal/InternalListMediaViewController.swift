@@ -8,7 +8,7 @@ import GRDB
 import SignalServiceKit
 import SignalUI
 
-class InternalListMediaViewController: OWSTableViewController2 {
+final class InternalListMediaViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()

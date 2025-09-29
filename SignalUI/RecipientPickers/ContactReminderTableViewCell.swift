@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class ContactReminderTableViewCell: UITableViewCell {
+final class ContactReminderTableViewCell: UITableViewCell {
 
     private let learnMoreAction: () -> Void
     private let dismissAction: () -> Void

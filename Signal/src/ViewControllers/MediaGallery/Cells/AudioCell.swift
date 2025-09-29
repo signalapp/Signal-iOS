@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AudioCell: MediaTileListModeCell {
+final class AudioCell: MediaTileListModeCell {
 
     static let reuseIdentifier = "AudioCell"
 

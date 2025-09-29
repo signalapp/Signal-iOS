@@ -39,7 +39,7 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
 /// what type is our pin, etc.
-internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
+final internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     private let svrKvStore: KeyValueStore
 
     public init() {
@@ -133,7 +133,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 }
 
 #if TESTABLE_BUILD
-public class SVRLocalStorageMock: SVRLocalStorage {
+final public class SVRLocalStorageMock: SVRLocalStorage {
 
     var isMasterKeyBackedUp: Bool = false
 

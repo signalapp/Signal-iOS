@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
+final public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
 
     public init() {}
 

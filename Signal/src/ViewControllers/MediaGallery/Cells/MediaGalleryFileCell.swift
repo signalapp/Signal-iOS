@@ -8,7 +8,7 @@ import PassKit
 import SignalServiceKit
 import SignalUI
 
-class MediaGalleryFileCell: MediaTileListModeCell {
+final class MediaGalleryFileCell: MediaTileListModeCell {
 
     static let reuseIdentifier = "MediaGalleryFileCell"
 

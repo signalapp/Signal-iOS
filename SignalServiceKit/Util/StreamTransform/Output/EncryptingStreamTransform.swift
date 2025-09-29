@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
+final public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     private let cipherContext: CipherContext
     private let iv: Data

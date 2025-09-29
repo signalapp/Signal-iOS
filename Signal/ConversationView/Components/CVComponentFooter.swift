@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVComponentFooter: CVComponentBase, CVComponent {
+final public class CVComponentFooter: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .footer }
 

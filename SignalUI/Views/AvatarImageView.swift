@@ -65,7 +65,7 @@ open class AvatarImageView: UIImageView, CVView {
 
 // MARK: -
 
-public class AvatarImageButton: UIButton {
+final public class AvatarImageButton: UIButton {
 
     // MARK: - Button Overrides
 

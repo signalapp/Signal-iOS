@@ -14,7 +14,7 @@ public protocol UsernameLookupRecordStore {
     func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction)
 }
 
-public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
+final public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
     public init() {}
 
     public func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {

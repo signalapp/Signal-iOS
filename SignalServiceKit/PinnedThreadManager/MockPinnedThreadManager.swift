@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockPinnedThreadStore: PinnedThreadStore {
+final public class MockPinnedThreadStore: PinnedThreadStore {
 
     public init() {}
 
@@ -22,7 +22,7 @@ public class MockPinnedThreadStore: PinnedThreadStore {
     }
 }
 
-public class MockPinnedThreadManager: PinnedThreadManager {
+final public class MockPinnedThreadManager: PinnedThreadManager {
 
     public init() {}
 

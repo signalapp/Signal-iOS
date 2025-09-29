@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class SessionResetJobQueue {
+final public class SessionResetJobQueue {
     private let jobQueueRunner: JobQueueRunner<JobRecordFinderImpl<SessionResetJobRecord>, SessionResetJobRunnerFactory>
 
     public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
@@ -28,11 +28,11 @@ public class SessionResetJobQueue {
     }
 }
 
-private class SessionResetJobRunnerFactory: JobRunnerFactory {
+final private class SessionResetJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> SessionResetJobRunner { SessionResetJobRunner() }
 }
 
-private class SessionResetJobRunner: JobRunner {
+final private class SessionResetJobRunner: JobRunner {
     private enum Constants {
         static let maxRetries: UInt = 10
     }

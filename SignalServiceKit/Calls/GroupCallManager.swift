@@ -11,14 +11,14 @@ public protocol CurrentCallProvider {
     var currentGroupThreadCallGroupId: GroupIdentifier? { get }
 }
 
-public class CurrentCallNoOpProvider: CurrentCallProvider {
+final public class CurrentCallNoOpProvider: CurrentCallProvider {
     public init() {}
     public var hasCurrentCall: Bool { false }
     public var currentGroupThreadCallGroupId: GroupIdentifier? { nil }
 }
 
 /// Fetches & updates group call state.
-public class GroupCallManager {
+final public class GroupCallManager {
     /// The triggers that may kick off a group call peek.
     public enum PeekTrigger: CustomStringConvertible {
         /// We received a group update message, and are peeking in response.

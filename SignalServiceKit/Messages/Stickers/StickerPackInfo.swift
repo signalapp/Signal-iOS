@@ -6,7 +6,7 @@
 import Foundation
 
 @objc(StickerPackInfo)
-public class StickerPackInfo: MTLModel {
+final public class StickerPackInfo: MTLModel {
     // Exposed to Objective-C and made optional for MTLModel serialization.
     @objc
     public var packId: Data!

@@ -8,7 +8,7 @@ import PassKit
 import SignalServiceKit
 import SignalUI
 
-class DonateViewController: OWSViewController, OWSNavigationChildController {
+final class DonateViewController: OWSViewController, OWSNavigationChildController {
     private static func canMakeNewDonations(
         forDonateMode donateMode: DonateMode
     ) -> Bool {

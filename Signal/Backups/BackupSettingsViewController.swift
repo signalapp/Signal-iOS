@@ -1020,7 +1020,7 @@ class BackupSettingsViewController:
 
 // MARK: -
 
-private class BackupSettingsViewModel: ObservableObject {
+final private class BackupSettingsViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?)
 

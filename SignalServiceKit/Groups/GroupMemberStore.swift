@@ -17,7 +17,7 @@ public protocol GroupMemberStore {
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember]
 }
 
-class GroupMemberStoreImpl: GroupMemberStore {
+final class GroupMemberStoreImpl: GroupMemberStore {
     func insert(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {
         groupMember.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -72,7 +72,7 @@ class GroupMemberStoreImpl: GroupMemberStore {
 
 #if TESTABLE_BUILD
 
-class MockGroupMemberStore: GroupMemberStore {
+final class MockGroupMemberStore: GroupMemberStore {
     private let db = InMemoryDB()
 
     func insert(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {

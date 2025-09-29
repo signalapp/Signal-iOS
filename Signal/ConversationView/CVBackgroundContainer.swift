@@ -12,7 +12,7 @@ public protocol CVBackgroundContainerDelegate: AnyObject {
 
 // MARK: -
 
-public class CVBackgroundContainer: ManualLayoutViewWithLayer {
+final public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     private enum ZPositioning: CGFloat {
         case wallpaperContent = 0

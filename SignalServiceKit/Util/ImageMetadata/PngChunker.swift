@@ -24,7 +24,7 @@ import Foundation
 /// For more, see the ["Chunk layout" section][0] of the PNG spec.
 ///
 /// [0]: https://www.w3.org/TR/2003/REC-PNG-20031110/#5Chunk-layout
-public class PngChunker {
+final public class PngChunker {
     /// The PNG signature, lifted from [the spec][1].
     /// [1]: https://www.w3.org/TR/2003/REC-PNG-20031110/#5PNG-file-signature
     public static let pngSignature = Data([137, 80, 78, 71, 13, 10, 26, 10])

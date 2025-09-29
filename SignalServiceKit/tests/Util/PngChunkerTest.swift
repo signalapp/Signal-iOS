@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class PngChunkerTest: XCTestCase {
+final class PngChunkerTest: XCTestCase {
     func testPngSignature() {
         let expected = Data([137, 80, 78, 71, 13, 10, 26, 10])
         XCTAssertEqual(PngChunker.pngSignature, expected)

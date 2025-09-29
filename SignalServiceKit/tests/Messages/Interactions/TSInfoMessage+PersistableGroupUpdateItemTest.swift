@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class TSInfoMessagePersistableGroupUpdateItemTest: XCTestCase {
+final class TSInfoMessagePersistableGroupUpdateItemTest: XCTestCase {
     private typealias UpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     // MARK: - Hardcoded constant data

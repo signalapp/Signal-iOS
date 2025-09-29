@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
+final class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView] }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 

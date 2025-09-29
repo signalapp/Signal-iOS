@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-public class PollStore {
+final public class PollStore {
     public func createPoll(
         interactionId: Int64,
         allowsMultiSelect: Bool,

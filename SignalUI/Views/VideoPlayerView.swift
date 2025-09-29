@@ -13,7 +13,7 @@ public protocol VideoPlayerViewDelegate: AnyObject {
 
 // MARK: -
 
-public class VideoPlayerView: UIView {
+final public class VideoPlayerView: UIView {
 
     // MARK: - Properties
 

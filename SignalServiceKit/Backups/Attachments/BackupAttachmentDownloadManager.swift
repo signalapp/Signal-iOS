@@ -39,7 +39,7 @@ public protocol BackupAttachmentDownloadManager {
     func restoreAttachmentsIfNeeded() async throws
 }
 
-public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
+final public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
 
     private let appContext: AppContext
     private let appReadiness: AppReadiness

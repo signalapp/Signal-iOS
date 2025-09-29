@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class StringSanitizerTests: XCTestCase {
+final class StringSanitizerTests: XCTestCase {
     func testEmpty() {
         let string = ""
         let sanitized = StringSanitizer.sanitize(string)
@@ -53,7 +53,7 @@ class StringSanitizerTests: XCTestCase {
     }
 }
 
-class StringReplacementTests: XCTestCase {
+final class StringReplacementTests: XCTestCase {
 
     func testEquivalent() {
 

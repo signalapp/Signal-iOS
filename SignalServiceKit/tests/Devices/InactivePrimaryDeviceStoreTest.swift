@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class InactivePrimaryDeviceStoreTest: XCTestCase {
+final class InactivePrimaryDeviceStoreTest: XCTestCase {
     private let db: any DB = InMemoryDB()
     private var inactivePrimaryDeviceStore: InactivePrimaryDeviceStore!
 

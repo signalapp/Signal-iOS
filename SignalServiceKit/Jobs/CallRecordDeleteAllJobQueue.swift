@@ -13,7 +13,7 @@ import LibSignalClient
 /// in bulk".
 ///
 /// - SeeAlso ``CallRecordDeleteManager``
-public class CallRecordDeleteAllJobQueue {
+final public class CallRecordDeleteAllJobQueue {
     public enum DeleteAllBeforeOptions {
         case callRecord(CallRecord)
         case timestamp(UInt64)
@@ -109,7 +109,7 @@ public class CallRecordDeleteAllJobQueue {
 
 // MARK: -
 
-private class CallRecordDeleteAllJobRunner: JobRunner {
+final private class CallRecordDeleteAllJobRunner: JobRunner {
     typealias JobRecordType = CallRecordDeleteAllJobRecord
 
     private enum Constants {
@@ -342,7 +342,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
 // MARK: -
 
-private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
+final private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = CallRecordDeleteAllJobRunner
 
     private let callLinkStore: any CallLinkRecordStore

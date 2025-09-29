@@ -10,7 +10,7 @@ public import SignalUI
 // Could be a date header or a unread indicator.
 //
 // All of the state in this class should be immutable.
-public class CVItemModel: NSObject {
+final public class CVItemModel: NSObject {
     public let interaction: TSInteraction
     public let thread: TSThread
     public let threadAssociatedData: ThreadAssociatedData

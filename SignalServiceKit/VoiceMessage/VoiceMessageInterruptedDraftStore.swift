@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class VoiceMessageInterruptedDraftStore {
+final public class VoiceMessageInterruptedDraftStore {
 
     private init() { }
 

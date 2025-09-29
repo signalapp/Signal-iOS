@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class OWSDeviceManagerTest: XCTestCase {
+final class OWSDeviceManagerTest: XCTestCase {
     private let db: any DB = InMemoryDB()
     private var deviceManager: OWSDeviceManager!
 

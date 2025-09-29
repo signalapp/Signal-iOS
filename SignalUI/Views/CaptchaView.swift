@@ -25,7 +25,7 @@ public enum CaptchaContext {
     }
 }
 
-public class CaptchaView: UIView {
+final public class CaptchaView: UIView {
 
     private let context: CaptchaContext
 

@@ -200,7 +200,7 @@ extension TSPaymentNotification: TSPaymentBaseModel {
 // MARK: -
 
 @objc
-public class TSPaymentModels: NSObject {
+final public class TSPaymentModels: NSObject {
     @objc
     public var notification: TSPaymentNotification
 
@@ -759,7 +759,7 @@ extension TSPaymentFailure {
 
 @objc
 @available(swift, obsoleted: 1.0)
-public class PaymentUtils: NSObject {
+final public class PaymentUtils: NSObject {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}

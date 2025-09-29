@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class OWSSearchBar: UISearchBar {
+final public class OWSSearchBar: UISearchBar {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)

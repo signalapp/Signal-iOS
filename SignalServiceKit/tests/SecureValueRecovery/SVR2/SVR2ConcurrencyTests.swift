@@ -9,7 +9,7 @@ import LibSignalClient
 
 @testable import SignalServiceKit
 
-class SVR2ConcurrencyTests: XCTestCase {
+final class SVR2ConcurrencyTests: XCTestCase {
 
     private var db: InMemoryDB!
     private var svr: SecureValueRecovery2Impl!

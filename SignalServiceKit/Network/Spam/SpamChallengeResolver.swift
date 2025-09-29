@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
+final public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
     // All work should be done on this queue
     var workQueue: DispatchQueue { Self.workQueue }

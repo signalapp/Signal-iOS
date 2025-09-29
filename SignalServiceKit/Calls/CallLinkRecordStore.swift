@@ -31,7 +31,7 @@ public protocol CallLinkRecordStore {
     func fetchAnyPendingRecord(tx: DBReadTransaction) throws -> CallLinkRecord?
 }
 
-public class CallLinkRecordStoreImpl: CallLinkRecordStore {
+final public class CallLinkRecordStoreImpl: CallLinkRecordStore {
     public init() {}
 
     public func fetch(rowId: Int64, tx: DBReadTransaction) throws -> CallLinkRecord? {

@@ -7,7 +7,7 @@ import Foundation
 public import MobileCoin
 public import SignalServiceKit
 
-public class PaymentsReconciliation {
+final public class PaymentsReconciliation {
 
     private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?
@@ -891,7 +891,7 @@ extension Array where Element == MCTransactionHistoryItem {
 
 // MARK: -
 
-private class BlockActivity {
+final private class BlockActivity {
     let blockIndex: UInt64
     var receivedItems = [MCTransactionHistoryItem]()
     var spentItems = [MCTransactionHistoryItem]()
@@ -951,7 +951,7 @@ extension Array where Element == BlockActivity {
 
 // MARK: -
 
-internal class PaymentsDatabaseState {
+final internal class PaymentsDatabaseState {
     enum PaymentState {
         case model(TSPaymentModel)
         case archivedPayment(ArchivedPayment)
@@ -1080,7 +1080,7 @@ internal class PaymentsDatabaseState {
 
 // MARK: -
 
-public class MultiMap<KeyType: Hashable, ValueType>: Sequence {
+final public class MultiMap<KeyType: Hashable, ValueType>: Sequence {
     public typealias MapType = [KeyType: [ValueType]]
     private var map = MapType()
 

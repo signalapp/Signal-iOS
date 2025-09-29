@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import WebRTC
 
-class RemoteVideoView: UIView {
+final class RemoteVideoView: UIView {
     private lazy var rtcMetalView = RTCMTLVideoView(frame: bounds)
 
     override init(frame: CGRect) {

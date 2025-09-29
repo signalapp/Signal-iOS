@@ -8,7 +8,7 @@ import SignalUI
 import UIKit
 
 @MainActor
-class BackupOnboardingCoordinator {
+final class BackupOnboardingCoordinator {
     private static let onboardingRootViewControllerType = BackupOnboardingIntroViewController.self
 
     private let accountKeyStore: AccountKeyStore

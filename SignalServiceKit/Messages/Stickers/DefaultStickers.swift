@@ -5,7 +5,7 @@
 
 import Foundation
 
-class DefaultStickerPack {
+final class DefaultStickerPack {
     public let info: StickerPackInfo
     public let shouldAutoInstall: Bool
 

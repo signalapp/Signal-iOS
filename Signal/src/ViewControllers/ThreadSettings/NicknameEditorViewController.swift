@@ -6,7 +6,7 @@
 import SignalUI
 import SignalServiceKit
 
-class NicknameEditorViewController: OWSTableViewController2 {
+final class NicknameEditorViewController: OWSTableViewController2 {
 
     // MARK: Properties
 

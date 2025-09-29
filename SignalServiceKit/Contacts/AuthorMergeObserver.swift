@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-class AuthorMergeObserver: RecipientMergeObserver {
+final class AuthorMergeObserver: RecipientMergeObserver {
     private let authorMergeHelper: AuthorMergeHelper
 
     init(authorMergeHelper: AuthorMergeHelper) {

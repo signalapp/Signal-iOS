@@ -6,7 +6,7 @@
 /// Some attachment whose full-sized contents can be downloaded from a remote CDN.
 ///
 /// In other words, either an ``AttachmentTransitPointer`` or an ``AttachmentBackupPointer`` (or both).
-public class AttachmentPointer {
+final public class AttachmentPointer {
 
     // Required to have at least one but both download sources could be present.
     public enum Source {

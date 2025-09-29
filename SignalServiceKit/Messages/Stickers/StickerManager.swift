@@ -28,7 +28,7 @@ import LibSignalClient
 //   Once we've download the manifest the pack is "saved" but not "installed".
 // * We discard sticker and pack info once it is no longer in use.
 @objc
-public class StickerManager: NSObject {
+final public class StickerManager: NSObject {
 
     // MARK: - Constants
 

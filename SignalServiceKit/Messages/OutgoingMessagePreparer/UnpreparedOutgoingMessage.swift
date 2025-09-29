@@ -10,7 +10,7 @@ import Foundation
 ///
 /// Just a wrapper for the message object and metadata needed
 /// to prepare for sending.
-public class UnpreparedOutgoingMessage {
+final public class UnpreparedOutgoingMessage {
 
     // MARK: - Constructors
 

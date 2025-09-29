@@ -43,7 +43,7 @@ public protocol BackupAttachmentUploadStore {
     ) throws -> QueuedBackupAttachmentUpload?
 }
 
-public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
+final public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
 
     public init() {}
 

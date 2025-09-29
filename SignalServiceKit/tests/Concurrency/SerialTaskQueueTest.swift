@@ -8,7 +8,7 @@ public import XCTest
 
 @testable import SignalServiceKit
 
-public class SerialTaskQueueTest: XCTestCase {
+final public class SerialTaskQueueTest: XCTestCase {
 
     func testSerialExecution() async {
         actor TestActor {

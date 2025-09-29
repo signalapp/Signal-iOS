@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 import SignalServiceKit
 
-class PromiseTests: XCTestCase {
+final class PromiseTests: XCTestCase {
     func test_simpleQueueChaining() {
         let guaranteeExpectation = expectation(description: "Expect guarantee on global queue")
         let mapExpectation = expectation(description: "Expect map on global queue")

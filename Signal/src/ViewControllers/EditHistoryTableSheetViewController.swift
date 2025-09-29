@@ -11,7 +11,7 @@ protocol MessageEditHistoryViewDelegate: AnyObject {
     func editHistoryMessageWasDeleted()
 }
 
-class EditHistoryTableSheetViewController: OWSTableSheetViewController {
+final class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     internal enum Constants {
         static let cellSpacing: CGFloat = 12.0

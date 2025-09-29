@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class DisappearingMessagesTimerSettingsViewController: HostingController<DisappearingMessagesTimerSettingsView> {
+final class DisappearingMessagesTimerSettingsViewController: HostingController<DisappearingMessagesTimerSettingsView> {
     enum SettingsMode {
         case chat(thread: TSThread)
         case newGroup
@@ -193,7 +193,7 @@ extension DisappearingMessagesTimerSettingsViewController: DisappearingMessagesT
 
 // MARK: -
 
-private class DisappearingMessagesTimerSettingsViewModel: ObservableObject {
+final private class DisappearingMessagesTimerSettingsViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func updateForSelection(_ durationSeconds: UInt32)
         func showCustomTimePicker()

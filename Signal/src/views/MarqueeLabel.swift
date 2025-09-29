@@ -1702,7 +1702,7 @@ public struct EdgeFade: OptionSet {
 private typealias MLAnimationCompletionBlock = (_ finished: Bool) -> Void
 private typealias MLAnimation = (anim: CAKeyframeAnimation, duration: CGFloat)
 
-private class GradientSetupAnimation: CABasicAnimation {
+final private class GradientSetupAnimation: CABasicAnimation {
 }
 
 fileprivate extension UIResponder {

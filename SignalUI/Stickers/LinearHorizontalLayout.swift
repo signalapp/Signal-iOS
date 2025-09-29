@@ -7,7 +7,7 @@ import SignalServiceKit
 
 // A trivial layout that places each item in a horizontal line.
 // Each item has uniform size.
-class LinearHorizontalLayout: UICollectionViewLayout {
+final class LinearHorizontalLayout: UICollectionViewLayout {
 
     private let itemSize: CGSize
     private let spacing: CGFloat

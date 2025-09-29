@@ -23,7 +23,7 @@ public protocol BackupArchiveFullTextSearchIndexer {
     func scheduleMessagesJob(tx: DBWriteTransaction) throws
 }
 
-public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer {
+final public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer {
 
     private let appReadiness: AppReadiness
     private let dateProvider: DateProviderMonotonic

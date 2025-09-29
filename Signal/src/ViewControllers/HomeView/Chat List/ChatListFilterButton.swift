@@ -6,7 +6,7 @@
 import SignalUI
 import UIKit
 
-class ChatListFilterButton: UIButton {
+final class ChatListFilterButton: UIButton {
     private var haptic: UIImpactFeedbackGenerator?
 
     var showsClearIcon = false {

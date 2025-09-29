@@ -20,7 +20,7 @@ public protocol NameResolver {
     func displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName
 }
 
-public class NameResolverImpl: NameResolver {
+final public class NameResolverImpl: NameResolver {
     private let contactsManager: any ContactManager
 
     private var displayNameCache = [SignalServiceAddress: DisplayName]()

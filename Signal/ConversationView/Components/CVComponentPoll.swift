@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentPoll: CVComponentBase, CVComponent {
+final public class CVComponentPoll: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .poll }
     private let poll: CVComponentState.Poll
 

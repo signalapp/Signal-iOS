@@ -8,7 +8,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 public import SignalUI
 
-public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNavigationChildController {
+final public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNavigationChildController {
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     public var navbarBackgroundColorOverride: UIColor? { .clear }

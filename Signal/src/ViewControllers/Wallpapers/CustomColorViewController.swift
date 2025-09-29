@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class CustomColorViewController: OWSTableViewController2 {
+final class CustomColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
     private var wallpaperViewBuilder: WallpaperViewBuilder?
@@ -526,7 +526,7 @@ private protocol SpectrumSliderDelegate: AnyObject {
 
 // MARK: -
 
-private class SpectrumSlider: ManualLayoutView {
+final private class SpectrumSlider: ManualLayoutView {
     fileprivate weak var delegate: SpectrumSliderDelegate?
 
     var spectrum: HSLSpectrum {
@@ -917,7 +917,7 @@ private protocol CustomColorPreviewDelegate: AnyObject {
 
 // MARK: -
 
-private class CustomColorPreviewView: UIView {
+final private class CustomColorPreviewView: UIView {
     private let mockConversationView: MockConversationView
 
     private weak var delegate: CustomColorPreviewDelegate?
@@ -1402,7 +1402,7 @@ private class CustomColorPreviewView: UIView {
 
 // MARK: -
 
-class CustomColorGestureRecognizer: UIGestureRecognizer {
+final class CustomColorGestureRecognizer: UIGestureRecognizer {
     private var isActive = false
 
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
@@ -1470,7 +1470,7 @@ extension CustomColorPreviewView: MockConversationDelegate {
 
 // MARK: -
 
-private class CustomColorTooltip: TooltipView {
+final private class CustomColorTooltip: TooltipView {
 
     private override init(fromView: UIView,
                           widthReferenceView: UIView,

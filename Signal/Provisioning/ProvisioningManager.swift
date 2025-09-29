@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 import LibSignalClient
 
-public class ProvisioningManager {
+final public class ProvisioningManager {
 
     private let accountKeyStore: AccountKeyStore
     private let db: any DB

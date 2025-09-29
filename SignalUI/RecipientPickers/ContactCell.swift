@@ -7,7 +7,7 @@ import UIKit
 public import Contacts
 public import SignalServiceKit
 
-public class ContactCell: UITableViewCell, ReusableTableViewCell {
+final public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public static let reuseIdentifier = "ContactCell"
 
     static private let avatarDiameter: CGFloat = 36

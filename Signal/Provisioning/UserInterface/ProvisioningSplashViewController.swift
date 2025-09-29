@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class ProvisioningSplashViewController: ProvisioningBaseViewController {
+final class ProvisioningSplashViewController: ProvisioningBaseViewController {
 
     override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins

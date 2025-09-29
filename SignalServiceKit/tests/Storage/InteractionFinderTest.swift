@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class InteractionFinderTest: SSKBaseTest {
+final class InteractionFinderTest: SSKBaseTest {
     func testInteractions() {
         let address1 = SignalServiceAddress(phoneNumber: "+fake-id")
         // Threads

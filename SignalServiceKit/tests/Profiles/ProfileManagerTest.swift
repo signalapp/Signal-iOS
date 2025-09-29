@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class ProfileManagerTest: XCTestCase {
+final class ProfileManagerTest: XCTestCase {
     func testNormalizeRecipientInProfileWhitelist() {
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000aaa")
         let phoneNumber = E164("+16505550100")!

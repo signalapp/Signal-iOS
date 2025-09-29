@@ -4,7 +4,7 @@
 //
 
 /// Like `NumberFormatter`, but designed for currency formatting.
-public class CurrencyFormatter {
+final public class CurrencyFormatter {
     public static func format(
         money: FiatMoney,
         locale: Locale = .current

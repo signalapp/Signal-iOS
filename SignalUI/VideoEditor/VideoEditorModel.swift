@@ -12,7 +12,7 @@ protocol VideoEditorModelObserver: AnyObject {
 
 // MARK: -
 
-class VideoEditorModel: NSObject {
+final class VideoEditorModel: NSObject {
 
     private let lock = UnfairLock()
 

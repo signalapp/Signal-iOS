@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
+final internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
 
     internal typealias Request = SVR2Proto_Request
     internal typealias Response = SVR2Proto_Response

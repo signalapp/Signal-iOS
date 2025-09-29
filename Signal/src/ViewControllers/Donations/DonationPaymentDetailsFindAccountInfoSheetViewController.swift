@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableSheetViewController {
+final public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableSheetViewController {
     override public func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }

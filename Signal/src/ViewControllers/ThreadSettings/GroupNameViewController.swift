@@ -10,7 +10,7 @@ protocol GroupNameViewControllerDelegate: AnyObject {
     func groupNameViewControllerDidComplete(groupName: String?)
 }
 
-class GroupNameViewController: OWSTableViewController2 {
+final class GroupNameViewController: OWSTableViewController2 {
     private let helper: GroupAttributesEditorHelper
 
     weak var nameDelegate: GroupNameViewControllerDelegate?

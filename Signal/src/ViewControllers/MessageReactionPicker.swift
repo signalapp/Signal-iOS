@@ -12,7 +12,7 @@ protocol MessageReactionPickerDelegate: AnyObject {
     func didSelectAnyEmoji()
 }
 
-class MessageReactionPicker: UIStackView {
+final class MessageReactionPicker: UIStackView {
     /// A style for a message reaction picker.
     enum Style {
         /// An overlay context menu for selecting a saved or default reaction

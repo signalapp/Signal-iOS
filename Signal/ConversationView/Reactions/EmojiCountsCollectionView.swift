@@ -16,7 +16,7 @@ public struct EmojiItem {
     let didSelect: () -> Void
 }
 
-public class EmojiCountsCollectionView: UICollectionView {
+final public class EmojiCountsCollectionView: UICollectionView {
 
     let itemHeight: CGFloat = 36
 
@@ -101,7 +101,7 @@ extension EmojiCountsCollectionView: UICollectionViewDataSource {
     }
 }
 
-class EmojiCountCell: UICollectionViewCell {
+final class EmojiCountCell: UICollectionViewCell {
     let emoji = UILabel()
     let count = UILabel()
 

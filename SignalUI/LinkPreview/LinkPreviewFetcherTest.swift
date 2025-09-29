@@ -13,7 +13,7 @@ func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticStr
     XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
 }
 
-class LinkPreviewFetcherTest: XCTestCase {
+final class LinkPreviewFetcherTest: XCTestCase {
     let shouldRunNetworkTests = false
 
     private var linkPreviewFetcher: LinkPreviewFetcherImpl!

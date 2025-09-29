@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class DeleteAccountConfirmationViewController: OWSTableViewController2 {
+final class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var country: PhoneNumberCountry!
     private let nationalNumberTextField = UITextField()
     private let nameLabel = UILabel()

@@ -12,7 +12,7 @@ protocol GroupCallVideoGridLayoutDelegate: AnyObject {
     var maxItems: Int { get }
 }
 
-class GroupCallVideoGridLayout: UICollectionViewLayout {
+final class GroupCallVideoGridLayout: UICollectionViewLayout {
 
     public weak var delegate: GroupCallVideoGridLayoutDelegate?
 

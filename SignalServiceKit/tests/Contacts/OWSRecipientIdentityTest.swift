@@ -11,7 +11,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSRecipientIdentityTest: SSKBaseTest {
+final class OWSRecipientIdentityTest: SSKBaseTest {
     private lazy var localAci = Aci.randomForTesting()
     private lazy var aliceAci = Aci.randomForTesting()
     private lazy var bobAci = Aci.randomForTesting()

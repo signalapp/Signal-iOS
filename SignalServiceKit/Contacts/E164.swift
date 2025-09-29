@@ -59,7 +59,7 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
 }
 
 @objc
-public class E164ObjC: NSObject, NSCopying {
+final public class E164ObjC: NSObject, NSCopying {
     public let wrappedValue: E164
 
     public init(_ wrappedValue: E164) {

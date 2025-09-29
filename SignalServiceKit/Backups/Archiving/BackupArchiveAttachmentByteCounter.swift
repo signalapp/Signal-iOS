@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class BackupArchiveAttachmentByteCounter {
+final public class BackupArchiveAttachmentByteCounter {
     private var bytesCounter: UInt64 = 0
     private var includedAttachmentsInByteCount: Set<Attachment.IDType> = Set()
 

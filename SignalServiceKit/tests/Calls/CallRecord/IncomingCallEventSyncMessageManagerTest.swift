@@ -773,7 +773,7 @@ private extension UInt64 {
 // MARK: - Mocks
 
 /// Reference-semantic box around a potentially copy-semantic value.
-private class Box<T> {
+final private class Box<T> {
     var wrapped: T
     init(_ wrapped: T) { self.wrapped = wrapped }
 }
@@ -784,7 +784,7 @@ private func notImplemented() -> Never {
 
 // MARK: MockGroupCallRecordManager
 
-private class MockGroupCallRecordManager: GroupCallRecordManager {
+final private class MockGroupCallRecordManager: GroupCallRecordManager {
     var createGroupCallStub: ((
         _ direction: CallRecord.CallDirection,
         _ groupCallStatus: CallRecord.CallStatus.GroupCallStatus
@@ -816,7 +816,7 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
 
 // MARK: MockIndividualCallRecordManager
 
-private class MockIndividualCallRecordManager: IndividualCallRecordManager {
+final private class MockIndividualCallRecordManager: IndividualCallRecordManager {
     var createdRecords = [UInt64]()
     var updatedRecords = [CallRecord.CallStatus]()
 
@@ -859,7 +859,7 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
 
 // MARK: MarkAsReadShims
 
-private class MockMarkAsReadShims: IncomingCallEventSyncMessageManagerImpl.Shims.MarkAsRead {
+final private class MockMarkAsReadShims: IncomingCallEventSyncMessageManagerImpl.Shims.MarkAsRead {
     var markedAsReadCount = 0
     func markThingsAsReadForIncomingSyncMessage(
         callInteraction: TSInteraction & OWSReadTracking,

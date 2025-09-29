@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class MockStorageServiceManager: StorageServiceManager {
+final private class MockStorageServiceManager: StorageServiceManager {
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
@@ -26,7 +26,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func waitForPendingRestores() async throws { throw OWSGenericError("Not implemented.") }
 }
 
-private class TestDependencies {
+final private class TestDependencies {
     let aciSessionStore: SignalSessionStore
     var aciSessionStoreKeyValueStore: KeyValueStore {
         KeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
@@ -77,7 +77,7 @@ private class TestDependencies {
     }
 }
 
-class RecipientMergerTest: XCTestCase {
+final class RecipientMergerTest: XCTestCase {
     func testTwoWayMergeCases() {
         let aci_A = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let aci_B = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")

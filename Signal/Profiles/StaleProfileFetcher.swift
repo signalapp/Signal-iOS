@@ -8,7 +8,7 @@ import GRDB
 import LibSignalClient
 import SignalServiceKit
 
-class StaleProfileFetcher {
+final class StaleProfileFetcher {
     private let db: any DB
     private let profileFetcher: any ProfileFetcher
     private let tsAccountManager: any TSAccountManager

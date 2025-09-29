@@ -78,7 +78,7 @@ final class BackupSettingsAttachmentUploadTracker {
 
 // MARK: -
 
-private class Tracker {
+final private class Tracker {
     typealias UploadUpdate = BackupSettingsAttachmentUploadTracker.UploadUpdate
 
     private struct State {

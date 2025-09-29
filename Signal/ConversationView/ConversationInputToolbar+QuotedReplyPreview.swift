@@ -10,7 +10,7 @@ protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 
-class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
+final class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
@@ -107,7 +107,7 @@ private protocol QuotedMessageSnippetViewDelegate: AnyObject {
     func didTapCancelInQuotedMessageSnippet(view: QuotedMessageSnippetView)
 }
 
-private class QuotedMessageSnippetView: UIView {
+final private class QuotedMessageSnippetView: UIView {
 
     weak var delegate: QuotedMessageSnippetViewDelegate?
 

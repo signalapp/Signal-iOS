@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
+final class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
     struct Option: OptionSet {
         let rawValue: Int
 
@@ -86,7 +86,7 @@ extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegat
 
 // MARK: -
 
-private class BackupRecordKeyViewModel: ObservableObject {
+final private class BackupRecordKeyViewModel: ObservableObject {
     protocol ActionsDelegate: AnyObject {
         func copyToClipboard(_ aep: AccountEntropyPool)
         func onContinuePressed()

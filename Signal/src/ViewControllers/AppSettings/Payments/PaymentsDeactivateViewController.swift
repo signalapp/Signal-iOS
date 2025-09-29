@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class PaymentsDeactivateViewController: OWSViewController {
+final public class PaymentsDeactivateViewController: OWSViewController {
 
     var paymentBalance: PaymentBalance
 

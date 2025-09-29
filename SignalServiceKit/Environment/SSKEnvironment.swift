@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SSKEnvironment: NSObject {
+final public class SSKEnvironment: NSObject {
 
     private static var _shared: SSKEnvironment?
 

@@ -13,7 +13,7 @@ protocol ReplaceAdminViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-class ReplaceAdminViewController: OWSTableViewController2 {
+final class ReplaceAdminViewController: OWSTableViewController2 {
 
     weak var replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate?
 

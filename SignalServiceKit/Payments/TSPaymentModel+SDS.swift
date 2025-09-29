@@ -413,7 +413,7 @@ public extension TSPaymentModel {
 // MARK: - TSPaymentModelCursor
 
 @objc
-public class TSPaymentModelCursor: NSObject, SDSCursor {
+final public class TSPaymentModelCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
     private let cursor: RecordCursor<PaymentModelRecord>?
 
@@ -640,7 +640,7 @@ public extension TSPaymentModel {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSPaymentModelSerializer: SDSSerializer {
+final class TSPaymentModelSerializer: SDSSerializer {
 
     private let model: TSPaymentModel
     public init(model: TSPaymentModel) {

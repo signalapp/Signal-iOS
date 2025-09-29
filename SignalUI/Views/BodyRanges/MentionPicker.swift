@@ -12,7 +12,7 @@ public enum MentionPickerStyle {
     case groupReply
 }
 
-class MentionPicker: UIView {
+final class MentionPicker: UIView {
     private let tableView = UITableView()
     private let hairlineView = UIView()
     private let resizingScrollView = ResizingScrollView<UITableView>()
@@ -308,7 +308,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-private class MentionableUserCell: UITableViewCell {
+final private class MentionableUserCell: UITableViewCell {
     static let reuseIdentifier = "MentionPickerCell"
 
     static let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass = .thirtySix

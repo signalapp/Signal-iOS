@@ -27,7 +27,7 @@ public struct VersionedProfileRequest {
 
 // MARK: -
 
-public class VersionedProfilesImpl: VersionedProfiles {
+final public class VersionedProfilesImpl: VersionedProfiles {
 
     private enum CredentialStore {
         private static let deprecatedCredentialStore = KeyValueStore(collection: "VersionedProfiles.credentialStore")

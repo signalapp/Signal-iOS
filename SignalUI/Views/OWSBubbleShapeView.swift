@@ -34,7 +34,7 @@ public protocol OWSBubbleViewPartner: AnyObject {
 // into a subregion of the bubble that reflects the intersection
 // of some subview (e.g. a media view) and the bubble shape
 // (including its rounding).
-public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
+final public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // This view support multiple kinds of rendering.
     public enum Mode: Equatable {

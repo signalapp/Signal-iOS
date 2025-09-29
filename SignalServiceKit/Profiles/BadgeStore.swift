@@ -7,7 +7,7 @@ import Foundation
 public import GRDB
 
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
-public class ProfileBadge: Codable, Equatable {
+final public class ProfileBadge: Codable, Equatable {
     public let id: String
     public let category: Category
     public let localizedName: String
@@ -183,7 +183,7 @@ extension ProfileBadge: FetchableRecord, PersistableRecord {
 
 // MARK: - BadgeStore
 
-public class BadgeStore {
+final public class BadgeStore {
     let lock = UnfairLock()
     var badgeCache = LRUCache<String, ProfileBadge>(maxSize: 5)
     // BadgeAssets have two roles: fetching assets we don't currently have and vending retrieved assets as UIImages

@@ -37,7 +37,7 @@ public struct MessageRequestType: Equatable {
 
 // MARK: -
 
-class MessageRequestView: UIStackView {
+final class MessageRequestView: UIStackView {
 
     enum LocalizedStrings {
         static let block = OWSLocalizedString(

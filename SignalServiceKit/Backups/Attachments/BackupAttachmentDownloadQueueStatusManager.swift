@@ -124,7 +124,7 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
 // MARK: -
 
 @MainActor
-public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDownloadQueueStatusManager {
+final public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDownloadQueueStatusManager {
 
     // MARK: - BackupAttachmentDownloadQueueStatusReporter
 
@@ -712,7 +712,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
 #if TESTABLE_BUILD
 
-class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager {
+final class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager {
     struct BackupAttachmentDownloadQueueStatusTokenMock: BackupAttachmentDownloadQueueStatusToken {}
 
     var currentStatusMock: BackupAttachmentDownloadQueueStatus?

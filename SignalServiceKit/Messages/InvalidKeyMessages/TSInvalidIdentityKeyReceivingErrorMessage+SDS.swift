@@ -47,7 +47,7 @@ public extension TSInvalidIdentityKeyReceivingErrorMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
+final class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
 
     private let model: TSInvalidIdentityKeyReceivingErrorMessage
     public init(model: TSInvalidIdentityKeyReceivingErrorMessage) {

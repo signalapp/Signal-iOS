@@ -6,7 +6,7 @@
 import SignalRingRTC
 import SignalServiceKit
 
-class CallControlsOverflowView: UIView {
+final class CallControlsOverflowView: UIView {
     private lazy var reactionPicker: MessageReactionPicker = {
         let picker = MessageReactionPicker(
             selectedEmoji: nil,

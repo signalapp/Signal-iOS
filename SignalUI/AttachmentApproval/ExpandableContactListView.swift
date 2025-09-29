@@ -5,7 +5,7 @@
 
 import UIKit
 
-class ExpandableContactListView: UIView {
+final class ExpandableContactListView: UIView {
 
     private class var listFormatter: ListFormatter {
         let formatter = ListFormatter()

@@ -25,7 +25,7 @@ public enum BackgroundTaskState {
 /// * Retain a strong reference to the OWSBackgroundTask during the "work".
 /// * Clear all references to the OWSBackgroundTask when the work is done,
 ///   if possible.
-public class OWSBackgroundTask {
+final public class OWSBackgroundTask {
     private let label: String
 
     // TODO: Replace all of the below ivars with Mutex in Swift 6.
@@ -124,7 +124,7 @@ public class OWSBackgroundTask {
     }
 }
 
-public class OWSBackgroundTaskManager {
+final public class OWSBackgroundTaskManager {
     public static let shared = {
         if Thread.isMainThread {
             return OWSBackgroundTaskManager()

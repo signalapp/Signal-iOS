@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class DonationSettingsViewController: OWSTableViewController2 {
+final class DonationSettingsViewController: OWSTableViewController2 {
     enum State {
         enum SubscriptionStatus {
             case loadFailed

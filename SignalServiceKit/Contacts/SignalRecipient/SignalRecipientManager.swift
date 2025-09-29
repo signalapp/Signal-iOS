@@ -50,7 +50,7 @@ extension SignalRecipientManager {
 
 }
 
-public class SignalRecipientManagerImpl: SignalRecipientManager {
+final public class SignalRecipientManagerImpl: SignalRecipientManager {
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
     private let recipientDatabaseTable: RecipientDatabaseTable
     let storageServiceManager: any StorageServiceManager

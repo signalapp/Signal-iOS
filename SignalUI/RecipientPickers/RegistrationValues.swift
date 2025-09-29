@@ -16,7 +16,7 @@ public struct RegistrationPhoneNumber {
     }
 }
 
-public class RegistrationPhoneNumberParser {
+final public class RegistrationPhoneNumberParser {
     private let phoneNumberUtil: PhoneNumberUtil
 
     public init(phoneNumberUtil: PhoneNumberUtil) {

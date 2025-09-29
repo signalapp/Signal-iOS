@@ -6,7 +6,7 @@
 /// Represents a call event that occurred on this device that we want to
 /// communicate to our linked devices.
 @objc(OutgoingCallEvent)
-class OutgoingCallEvent: NSObject, NSCoding {
+final class OutgoingCallEvent: NSObject, NSCoding {
     enum CallType: UInt {
         case audio
         case video
@@ -101,7 +101,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
 ///
 /// - SeeAlso ``IncomingCallEventSyncMessageManager``
 @objc(OutgoingCallEventSyncMessage)
-public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
+final public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
 
     /// The call event.
     ///

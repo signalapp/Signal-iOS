@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import LibSignalClient
 
-public class DeviceProvisioningURL {
+final public class DeviceProvisioningURL {
 
     /// Capabilities communicated in a provisioning QR code.
     /// NOT to be confused with Account Capabilities; this is a distinct set

@@ -8,7 +8,7 @@ import SignalServiceKit
 
 /// A content controller supporting toggling between presenting and scanning a
 /// username link QR code.
-class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChildController {
+final class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChildController {
     private enum Mode: Int {
         case present = 0
         case scan

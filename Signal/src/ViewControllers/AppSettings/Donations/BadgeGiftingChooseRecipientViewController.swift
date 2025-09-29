@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
+final class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
     typealias PaymentMethodsConfiguration = DonationSubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
 
     private let badge: ProfileBadge

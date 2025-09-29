@@ -10,7 +10,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BackupEnablementReminderMegaphoneTests: XCTestCase {
+final class BackupEnablementReminderMegaphoneTests: XCTestCase {
     private let db: DB = InMemoryDB()
     private let backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
     private let tsAccountManager: TSAccountManager = MockTSAccountManager()

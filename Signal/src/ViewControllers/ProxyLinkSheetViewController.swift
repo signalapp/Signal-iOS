@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ProxyLinkSheetViewController: OWSTableSheetViewController {
+final class ProxyLinkSheetViewController: OWSTableSheetViewController {
     let url: URL
 
     init?(url: URL) {

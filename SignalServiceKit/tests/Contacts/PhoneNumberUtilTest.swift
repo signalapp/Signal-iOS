@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class PhoneNumberUtilTestSwift: XCTestCase {
+final class PhoneNumberUtilTestSwift: XCTestCase {
     private var phoneNumberUtilRef: PhoneNumberUtil!
 
     override func setUp() {

@@ -6,7 +6,7 @@
 import blurhash
 import Foundation
 
-public class BlurHash {
+final public class BlurHash {
 
     // This should be generous.
     private static let maxLength = 100

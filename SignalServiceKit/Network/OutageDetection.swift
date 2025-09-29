@@ -6,7 +6,7 @@
 import Foundation
 import os
 
-public class OutageDetection {
+final public class OutageDetection {
     public static let shared = OutageDetection()
 
     public static let outageStateDidChange = Notification.Name("OutageStateDidChange")

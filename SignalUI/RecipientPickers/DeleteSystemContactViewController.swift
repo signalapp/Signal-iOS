@@ -12,7 +12,7 @@ import SignalServiceKit
 /// to delete the system contact (which, if successful, then triggers a hide).
 ///
 /// SHOULD ONLY BE DISPLAYED ON THE PRIMARY DEVICE
-class DeleteSystemContactViewController: OWSTableViewController2 {
+final class DeleteSystemContactViewController: OWSTableViewController2 {
     /// Dependencies needed by this view controller.
     /// Note that these dependencies can be accessed
     /// as global properties on `OWSTableViewController2`,
@@ -404,7 +404,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     }
 }
 
-private class ContactDeletionAvatarImageView: UIImageView {
+final private class ContactDeletionAvatarImageView: UIImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         self.clipsToBounds = true

@@ -11,7 +11,7 @@ import Foundation
 /// and is therefore prepared for sending.
 ///
 /// Just a wrapper for the message object and metadata needed for sending.
-public class PreparedOutgoingMessage {
+final public class PreparedOutgoingMessage {
 
     // MARK: - Pre-prepared constructors
 

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
+final public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
     public init() {}
 

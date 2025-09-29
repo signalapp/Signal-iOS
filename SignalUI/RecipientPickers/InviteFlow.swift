@@ -8,7 +8,7 @@ import Foundation
 public import MessageUI
 public import SignalServiceKit
 
-public class InviteFlow: NSObject {
+final public class InviteFlow: NSObject {
     private enum Channel {
         case message, mail
 

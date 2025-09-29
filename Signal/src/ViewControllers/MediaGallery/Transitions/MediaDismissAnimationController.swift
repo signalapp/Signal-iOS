@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class MediaDismissAnimationController: NSObject {
+final class MediaDismissAnimationController: NSObject {
     private let item: Media
     let interactionController: MediaInteractiveDismiss
 

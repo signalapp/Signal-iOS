@@ -79,7 +79,7 @@ protocol BackupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueSt
 // MARK: -
 
 @MainActor
-public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploadQueueStatusManager {
+final public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploadQueueStatusManager {
 
     // MARK: - BackupAttachmentUploadQueueStatusReporter
 

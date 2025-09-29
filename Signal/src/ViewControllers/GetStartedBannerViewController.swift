@@ -14,7 +14,7 @@ protocol GetStartedBannerViewControllerDelegate: AnyObject {
     func getStartedBannerDidTapAvatarBuilder(_ banner: GetStartedBannerViewController)
 }
 
-class GetStartedBannerViewController: UIViewController, UICollectionViewDelegateFlowLayout {
+final class GetStartedBannerViewController: UIViewController, UICollectionViewDelegateFlowLayout {
 
     // MARK: - Views
 
@@ -384,7 +384,7 @@ extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
 // Wrapper view for a collection of interactable subviews
 // Will not return a positive hit test result for itself
-class PassthroughView: UIView {
+final class PassthroughView: UIView {
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let result = super.hitTest(point, with: event)
         return result != self ? result : nil

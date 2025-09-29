@@ -5,7 +5,7 @@
 
 public import LibSignalClient
 
-public class UsernameApiClientImpl: UsernameApiClient {
+final public class UsernameApiClientImpl: UsernameApiClient {
     private let networkManager: Shims.NetworkManager
 
     init(networkManager: Shims.NetworkManager) {

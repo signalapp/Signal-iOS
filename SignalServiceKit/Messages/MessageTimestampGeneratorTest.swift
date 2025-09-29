@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class MessageTimestampGeneratorTest: XCTestCase {
+final class MessageTimestampGeneratorTest: XCTestCase {
     func testGenerateTimestamp() {
         var nowMs: UInt64 = 0
         let generator = MessageTimestampGenerator(nowMs: { return nowMs })

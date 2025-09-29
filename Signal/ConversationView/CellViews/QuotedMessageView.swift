@@ -15,7 +15,7 @@ public protocol QuotedMessageViewDelegate: AnyObject {
 
 // MARK: -
 
-public class QuotedMessageView: ManualStackViewWithLayer {
+final public class QuotedMessageView: ManualStackViewWithLayer {
 
     public struct State: Equatable {
         let quotedReplyModel: QuotedReplyModel

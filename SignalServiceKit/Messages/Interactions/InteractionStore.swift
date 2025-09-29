@@ -113,7 +113,7 @@ public protocol InteractionStore {
 
 // MARK: -
 
-public class InteractionStoreImpl: InteractionStore {
+final public class InteractionStoreImpl: InteractionStore {
 
     public init() {}
 

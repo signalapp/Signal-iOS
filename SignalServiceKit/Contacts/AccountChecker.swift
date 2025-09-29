@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class AccountChecker {
+final public class AccountChecker {
     private let db: any DB
     private let networkManager: NetworkManager
     private let recipientFetcher: any RecipientFetcher

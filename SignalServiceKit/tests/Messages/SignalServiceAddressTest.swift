@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalServiceAddressTest: XCTestCase {
+final class SignalServiceAddressTest: XCTestCase {
 
     private lazy var cache = SignalServiceAddressCache()
     private lazy var mockDb = InMemoryDB()
@@ -891,7 +891,7 @@ class SignalServiceAddressTest: XCTestCase {
     }
 }
 
-class SignalServiceAddress2Test: SSKBaseTest {
+final class SignalServiceAddress2Test: SSKBaseTest {
     func testPersistence() throws {
         struct TestCase {
             var originalAddress: SignalServiceAddress

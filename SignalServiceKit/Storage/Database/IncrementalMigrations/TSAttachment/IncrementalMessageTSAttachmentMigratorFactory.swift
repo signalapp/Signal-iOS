@@ -14,7 +14,7 @@ public protocol IncrementalMessageTSAttachmentMigratorFactory {
     ) -> IncrementalMessageTSAttachmentMigrator
 }
 
-public class IncrementalMessageTSAttachmentMigratorFactoryImpl: IncrementalMessageTSAttachmentMigratorFactory {
+final public class IncrementalMessageTSAttachmentMigratorFactoryImpl: IncrementalMessageTSAttachmentMigratorFactory {
 
     private let store: IncrementalTSAttachmentMigrationStore
 
@@ -40,7 +40,7 @@ public class IncrementalMessageTSAttachmentMigratorFactoryImpl: IncrementalMessa
     }
 }
 
-public class NoOpIncrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory {
+final public class NoOpIncrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory {
 
     public init() {}
 
@@ -57,7 +57,7 @@ public class NoOpIncrementalMessageTSAttachmentMigratorFactory: IncrementalMessa
 
 #if TESTABLE_BUILD
 
-public class IncrementalMessageTSAttachmentMigratorFactoryMock: IncrementalMessageTSAttachmentMigratorFactory {
+final public class IncrementalMessageTSAttachmentMigratorFactoryMock: IncrementalMessageTSAttachmentMigratorFactory {
 
     public init() {}
 

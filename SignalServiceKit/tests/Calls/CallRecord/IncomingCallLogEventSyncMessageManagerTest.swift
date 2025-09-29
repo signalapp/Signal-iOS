@@ -159,7 +159,7 @@ private extension CallRecord {
     }
 }
 
-private class MockMissedCallManager: CallRecordMissedCallManager {
+final private class MockMissedCallManager: CallRecordMissedCallManager {
     func countUnreadMissedCalls(tx: DBReadTransaction) -> UInt {
         owsFail("Not implemented!")
     }
@@ -176,7 +176,7 @@ private class MockMissedCallManager: CallRecordMissedCallManager {
     }
 }
 
-private class MockDeleteAllCallsJobQueue: IncomingCallLogEventSyncMessageManagerImpl.Shims.DeleteAllCallsJobQueue {
+final private class MockDeleteAllCallsJobQueue: IncomingCallLogEventSyncMessageManagerImpl.Shims.DeleteAllCallsJobQueue {
     var deleteAllCallsMock: ((_ beforeTimestamp: UInt64) -> Void)!
     func deleteAllCalls(before: CallRecordDeleteAllJobQueue.DeleteAllBeforeOptions, tx: DBWriteTransaction) {
         switch before {

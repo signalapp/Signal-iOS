@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class ImageEditorStrokeItem: ImageEditorItem {
+final class ImageEditorStrokeItem: ImageEditorItem {
 
     enum StrokeType: Equatable {
         case pen

@@ -122,7 +122,7 @@ extension BackupArchive {
     }
 }
 
-class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
+final class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     typealias ChatItemType = BackupArchive.InteractionArchiveDetails.ChatItemType
 

@@ -9,7 +9,7 @@ public protocol NewStoryHeaderDelegate: AnyObject, OWSTableViewController2 {
     func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem])
 }
 
-public class NewStoryHeaderView: UIStackView {
+final public class NewStoryHeaderView: UIStackView {
     weak var delegate: NewStoryHeaderDelegate!
 
     public init(

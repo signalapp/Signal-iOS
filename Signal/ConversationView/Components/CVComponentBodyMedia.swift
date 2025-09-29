@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVComponentBodyMedia: CVComponentBase, CVComponent {
+final public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .bodyMedia }
 

@@ -7,7 +7,7 @@ import Foundation
 import Intents
 import UserNotifications
 
-public class UserNotificationConfig {
+final public class UserNotificationConfig {
 
     class var allNotificationCategories: Set<UNNotificationCategory> {
         let categories = AppNotificationCategory.allCases.map { notificationCategory($0) }
@@ -68,7 +68,7 @@ public class UserNotificationConfig {
 
 // MARK: -
 
-public class UserNotificationPresenter {
+final public class UserNotificationPresenter {
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
     // Delay notification of incoming messages when it's likely to be read by a linked device to

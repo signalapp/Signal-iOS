@@ -8,7 +8,7 @@ import SignalRingRTC
 import SignalServiceKit
 
 /// Only used for group calls currently; adjust if individual calls come to need it.
-class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
+final class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
     weak var errorPresenter: CallMemberErrorPresenter?
 
     private let blurredAvatarBackgroundView = BlurredAvatarBackgroundView()

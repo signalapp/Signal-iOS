@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BlockListViewController: OWSTableViewController2 {
+final class BlockListViewController: OWSTableViewController2 {
 
     override init() {
         super.init()

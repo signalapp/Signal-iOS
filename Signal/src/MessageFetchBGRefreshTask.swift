@@ -14,7 +14,7 @@ public import SignalServiceKit
  * even if the app or NSE don't launch, so that the server keeps the account active
  * and reglock alive.
  */
-public class MessageFetchBGRefreshTask {
+final public class MessageFetchBGRefreshTask {
 
     private static var _shared: MessageFetchBGRefreshTask?
 

@@ -12,7 +12,7 @@ public protocol PaymentsQRScanDelegate: AnyObject {
 
 // MARK: -
 
-public class PaymentsQRScanViewController: OWSViewController {
+final public class PaymentsQRScanViewController: OWSViewController {
 
     private weak var delegate: PaymentsQRScanDelegate?
 

@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
+final class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
 
     override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins

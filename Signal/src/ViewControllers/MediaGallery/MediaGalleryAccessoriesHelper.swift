@@ -22,7 +22,7 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func set(mediaCategory: AllMediaCategory, isGridLayout: Bool)
 }
 
-public class MediaGalleryAccessoriesHelper {
+final public class MediaGalleryAccessoriesHelper {
     private var footerBarBottomConstraint: NSLayoutConstraint?
     weak var viewController: MediaGalleryPrimaryViewController?
 

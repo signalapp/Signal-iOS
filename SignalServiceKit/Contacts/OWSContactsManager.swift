@@ -50,7 +50,7 @@ public enum ContactAuthorizationForSharing {
     case authorized
 }
 
-public class OWSContactsManager: NSObject, ContactsManagerProtocol {
+final public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     private let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
     private let systemContactsCache = SystemContactsCache()
 
@@ -250,7 +250,7 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
 
 // MARK: -
 
-private class SystemContactsCache {
+final private class SystemContactsCache {
     let fetchedSystemContacts = AtomicOptional<FetchedSystemContacts>(nil, lock: .init())
 }
 

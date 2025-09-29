@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentSenderName: CVComponentBase, CVComponent {
+final public class CVComponentSenderName: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .senderName }
 

@@ -11,7 +11,7 @@ import SafariServices
 
 // MARK: View Model
 
-class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
+final class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
     @Published private(set) var taskProgress: Float = 0
     @Published private(set) var canBeCancelled: Bool = false
     @Published var isIndeterminate = true
@@ -107,7 +107,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
 
 // MARK: Hosting Controller
 
-class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView>, LinkAndSyncProgressUI {
+final class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView>, LinkAndSyncProgressUI {
 
     public var shouldSuppressNotifications: Bool { true }
 

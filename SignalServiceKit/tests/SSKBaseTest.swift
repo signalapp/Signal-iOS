@@ -7,7 +7,7 @@ public import XCTest
 @testable public import SignalServiceKit
 import CocoaLumberjack
 
-public class SSKBaseTest: XCTestCase {
+final public class SSKBaseTest: XCTestCase {
     private var oldContext: (any AppContext)!
 
     @MainActor

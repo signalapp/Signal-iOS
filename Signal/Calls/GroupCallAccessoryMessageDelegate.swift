@@ -72,7 +72,7 @@ protocol GroupCallAccessoryMessageDelegate: AnyObject, CallServiceStateObserver 
     )
 }
 
-class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
+final class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
     private let databaseStorage: SDSDatabaseStorage
     private let groupCallRecordManager: GroupCallRecordManager
     private let messageSenderJobQueue: MessageSenderJobQueue

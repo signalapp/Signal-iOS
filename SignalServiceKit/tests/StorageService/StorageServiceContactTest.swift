@@ -7,7 +7,7 @@ import LibSignalClient
 import XCTest
 @testable import SignalServiceKit
 
-class StorageServiceContactTest: XCTestCase {
+final class StorageServiceContactTest: XCTestCase {
     func testRegistrationStatus() throws {
         let now = Date()
         let nowMs = now.ows_millisecondsSince1970

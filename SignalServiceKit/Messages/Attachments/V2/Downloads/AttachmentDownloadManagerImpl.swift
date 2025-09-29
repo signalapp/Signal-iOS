@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
+final public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private enum DownloadResult {
         case stream(AttachmentStream)

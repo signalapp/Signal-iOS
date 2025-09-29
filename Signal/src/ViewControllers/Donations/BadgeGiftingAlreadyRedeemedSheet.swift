@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
+final class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
     private let profileBadge: ProfileBadge
     private let shortName: String
 

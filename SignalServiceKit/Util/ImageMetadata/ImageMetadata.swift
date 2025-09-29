@@ -113,7 +113,7 @@ public enum ImageFormat: CustomStringConvertible {
 
 // TODO: Convert to struct once all users of this type are swift.
 @objc
-public class ImageMetadata: NSObject {
+final public class ImageMetadata: NSObject {
     @objc
     public let isValid: Bool
     public let imageFormat: ImageFormat

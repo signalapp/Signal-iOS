@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class RegistrationSessionManagerMock: RegistrationSessionManager {
+final public class RegistrationSessionManagerMock: RegistrationSessionManager {
 
     public init() {}
 

@@ -245,7 +245,7 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
 // MARK: -
 
-public class NotificationPresenterImpl: NotificationPresenter {
+final public class NotificationPresenterImpl: NotificationPresenter {
     private let presenter = UserNotificationPresenter()
 
     private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }

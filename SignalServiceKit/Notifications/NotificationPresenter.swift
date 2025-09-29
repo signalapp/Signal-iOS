@@ -78,7 +78,7 @@ public protocol NotificationPresenter {
 }
 
 @objc
-class NotificationPresenterObjC: NSObject {
+final class NotificationPresenterObjC: NSObject {
     @objc(cancelNotificationsForMessageId:)
     static func cancelNotifications(for messageId: String) {
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [messageId])

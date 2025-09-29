@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class PinConfirmationViewController: OWSViewController {
+final public class PinConfirmationViewController: OWSViewController {
 
     private let completionHandler: ((Bool) -> Void)
     private let titleText: String
@@ -281,7 +281,7 @@ public class PinConfirmationViewController: OWSViewController {
 
 // MARK: -
 
-private class PinConfirmationPresentationController: UIPresentationController {
+final private class PinConfirmationPresentationController: UIPresentationController {
     let backdropView = UIView()
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {

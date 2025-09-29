@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
+final class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
 
     private let usernameLink: Usernames.UsernameLink
     private let didCopyUsername: (() -> Void)?

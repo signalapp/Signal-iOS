@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 @objc
-public class ViewOnceMessages: NSObject {
+final public class ViewOnceMessages: NSObject {
 
     private override init() {
         super.init()
@@ -242,7 +242,7 @@ public class ViewOnceMessages: NSObject {
 
 // MARK: -
 
-private class ViewOnceMessageFinder {
+final private class ViewOnceMessageFinder {
     func fetchSomeIncompleteViewOnceMessages(after rowId: Int64?, limit: Int, tx: DBReadTransaction) -> ([TSMessage], mightHaveMoreAfter: Int64?) {
         var results: [TSMessage] = []
 

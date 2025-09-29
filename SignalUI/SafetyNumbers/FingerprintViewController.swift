@@ -11,7 +11,7 @@ import SafariServices
 public import SignalServiceKit
 import UIKit
 
-public class FingerprintViewController: OWSViewController, OWSNavigationChildController {
+final public class FingerprintViewController: OWSViewController, OWSNavigationChildController {
 
     public class func present(
         for theirAci: Aci?,

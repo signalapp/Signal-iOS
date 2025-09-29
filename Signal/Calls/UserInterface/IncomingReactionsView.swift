@@ -8,7 +8,7 @@ import SignalRingRTC
 import SignalServiceKit
 import UIKit
 
-class IncomingReactionsView: UIView, ReactionReceiver {
+final class IncomingReactionsView: UIView, ReactionReceiver {
     enum Constants {
         static let viewWidth: CGFloat = 217
         fileprivate static let maxReactionsToDisplay = ReactionsModel.Constants.maxReactionsToDisplay
@@ -310,7 +310,7 @@ extension IncomingReactionsView: ReactionBurstAligner {
 
 // MARK: - Model classes/structs
 
-class ReactionsModel {
+final class ReactionsModel {
     fileprivate enum Constants {
         static let maxReactionsToDisplay = 5
     }

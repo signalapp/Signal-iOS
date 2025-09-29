@@ -11,7 +11,7 @@ protocol DonationHeroViewDelegate: AnyObject {
     func present(readMoreSheet: DonationReadMoreSheetViewController)
 }
 
-class DonationHeroView: UIStackView {
+final class DonationHeroView: UIStackView {
     weak var delegate: DonationHeroViewDelegate?
 
     init(avatarView: UIView) {

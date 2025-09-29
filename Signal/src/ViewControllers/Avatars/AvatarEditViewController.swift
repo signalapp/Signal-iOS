@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AvatarEditViewController: OWSViewController {
+final class AvatarEditViewController: OWSViewController {
     private let originalModel: AvatarModel
     private var model: AvatarModel {
         didSet {
@@ -416,7 +416,7 @@ private protocol OptionViewDelegate: AnyObject {
     func didSelectOptionView(_ optionView: OptionView, theme: AvatarTheme)
 }
 
-private class OptionView: UIView {
+final private class OptionView: UIView {
     private weak var delegate: OptionViewDelegate?
     private let colorView = UIView()
 

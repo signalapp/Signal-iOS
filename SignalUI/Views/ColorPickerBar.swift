@@ -13,7 +13,7 @@ public protocol ColorPickerBarViewDelegate: AnyObject {
 
 // We represent picker colors using this (color, phase)
 // tuple so that we can consistently restore palette view state.
-public class ColorPickerBarColor {
+final public class ColorPickerBarColor {
     public let color: UIColor
 
     // Colors are chosen from a spectrum of colors.
@@ -67,7 +67,7 @@ public class ColorPickerBarColor {
 
 // MARK: -
 
-private class ColorPreviewView: OWSLayerView {
+final private class ColorPreviewView: OWSLayerView {
 
     private static let innerRadius: CGFloat = 32
     // The distance from the "inner circle" to the "teardrop".
@@ -173,7 +173,7 @@ private class ColorPreviewView: OWSLayerView {
 
 // MARK: -
 
-public class ColorPickerBarView: UIView {
+final public class ColorPickerBarView: UIView {
 
     public weak var delegate: ColorPickerBarViewDelegate?
 

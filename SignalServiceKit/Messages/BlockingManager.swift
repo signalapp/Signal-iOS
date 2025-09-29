@@ -24,7 +24,7 @@ public enum BlockMode {
 
 // MARK: -
 
-public class BlockingManager {
+final public class BlockingManager {
     private let blockedGroupStore: BlockedGroupStore
     private let blockedRecipientStore: BlockedRecipientStore
 

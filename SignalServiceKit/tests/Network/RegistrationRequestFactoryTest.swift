@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 public import XCTest
 
-public class RegistrationRequestFactoryTest: XCTestCase {
+final public class RegistrationRequestFactoryTest: XCTestCase {
 
     func test_requestVerificationCodeLocale() {
         // (languageCode, countryCode, expected header)

@@ -8,7 +8,7 @@ import Security
 /// Exists solely to be a class loaded from SignalServiceKit where the certificates are located.
 ///
 /// Do not move out of SignalServiceKit unless moving the certificate resource files as well.
-private class SignalServiceKitBundleAnchor {}
+final private class SignalServiceKitBundleAnchor {}
 
 public enum Certificates {
     public static func load(_ name: String, extension: String) -> SecCertificate {

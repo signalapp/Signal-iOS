@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class RemoteMegaphone: MegaphoneView {
+final class RemoteMegaphone: MegaphoneView {
     private let megaphoneModel: RemoteMegaphoneModel
 
     init(

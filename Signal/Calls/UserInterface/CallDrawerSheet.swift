@@ -797,7 +797,7 @@ extension CallDrawerSheet {
 
 // MARK: - CallLinkURLCell
 
-private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
+final private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
     static var reuseIdentifier = "CallLinkURLCell"
 
     static let iconBackgroundSize: CGFloat = 36
@@ -846,7 +846,7 @@ protocol GroupCallMemberCellDelegate: AnyObject {
     func removeMember(demuxId: DemuxId)
 }
 
-private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
+final private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: ViewModel
 
@@ -1051,7 +1051,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
 // MARK: - UnknownMembersCell
 
-private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
+final private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
     static let reuseIdentifier: String = "UnknownMembersCell"
 
     typealias UnknownMembers = CallDrawerSheet.UnknownMembers

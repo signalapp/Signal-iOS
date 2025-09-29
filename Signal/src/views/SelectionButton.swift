@@ -8,7 +8,7 @@ import UIKit
 
 /// A checkmark in a circle to indicate an item (typically in a table view or collection view) is
 /// selected.
-class SelectionButton: UIView {
+final class SelectionButton: UIView {
     private let outlineBadgeView: UIView = {
         let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "circle"))
         imageView.contentMode = .center

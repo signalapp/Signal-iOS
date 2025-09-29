@@ -12,7 +12,7 @@ public import LibSignalClient
 /// This class can be safely accessed and used from any thread.
 ///
 /// Access to most state should happen while locked. Writes should happen off the main thread, wherever possible.
-public class OWSProfileManager: ProfileManagerProtocol {
+final public class OWSProfileManager: ProfileManagerProtocol {
     public static let maxAvatarDiameterPixels: UInt = 1024
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
@@ -1663,7 +1663,7 @@ extension OWSProfileManager: ProfileManager {
 
 // MARK: -
 
-public class PendingProfileUpdate: NSObject, NSSecureCoding {
+final public class PendingProfileUpdate: NSObject, NSSecureCoding {
     let id: UUID
 
     let profileGivenName: OptionalChange<OWSUserProfile.NameComponent>

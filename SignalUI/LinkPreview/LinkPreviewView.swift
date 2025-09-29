@@ -11,7 +11,7 @@ public protocol LinkPreviewViewDraftDelegate: AnyObject {
 
 // MARK: -
 
-public class LinkPreviewView: ManualStackViewWithLayer {
+final public class LinkPreviewView: ManualStackViewWithLayer {
     private weak var draftDelegate: LinkPreviewViewDraftDelegate?
 
     static let dateFormatter: DateFormatter = {
@@ -454,7 +454,7 @@ extension LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
 
     static let draftHeight: CGFloat = 72
     static let draftMarginTop: CGFloat = 6
@@ -725,7 +725,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
 
     let activityIndicatorSize = CGSize.square(25)
 
@@ -788,7 +788,7 @@ private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
 
@@ -909,7 +909,7 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
 
@@ -1035,7 +1035,7 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
 
@@ -1140,7 +1140,7 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
 // MARK: -
 
-private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter {
+final private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
 
@@ -1286,7 +1286,7 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
 
 // MARK: -
 
-private class LinkPreviewImageView: ManualLayoutViewWithLayer {
+final private class LinkPreviewImageView: ManualLayoutViewWithLayer {
     fileprivate enum Rounding: UInt {
         case standard
         case asymmetrical

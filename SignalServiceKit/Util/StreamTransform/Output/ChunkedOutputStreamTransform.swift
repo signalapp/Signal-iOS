@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class ChunkedOutputStreamTransform: StreamTransform {
+final public class ChunkedOutputStreamTransform: StreamTransform {
 
     public func transform(data: Data) throws -> Data {
         let byteLength = UInt32(data.count)

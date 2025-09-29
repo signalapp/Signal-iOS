@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewController {
+final class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewController {
 
     override var requiresDismissConfirmation: Bool {
         switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {

@@ -8,7 +8,7 @@ public import UIKit
 import SignalServiceKit
 import SignalUI
 
-class HomeTabBarController: UITabBarController {
+final class HomeTabBarController: UITabBarController {
 
     private let appReadiness: AppReadinessSetter
 
@@ -374,7 +374,7 @@ extension HomeTabBarController: UITabBarControllerDelegate {
     }
 }
 
-public class OWSTabBar: UITabBar {
+final public class OWSTabBar: UITabBar {
 
     public var fullWidth: CGFloat {
         return superview?.frame.width ?? .zero

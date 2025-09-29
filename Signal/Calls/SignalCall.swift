@@ -173,7 +173,7 @@ enum CallError: Error {
 }
 
 /// Represents a call happening on this device.
-class SignalCall: CallManagerCallReference {
+final class SignalCall: CallManagerCallReference {
     let mode: CallMode
 
     var commonState: CommonCallState { mode.commonState }

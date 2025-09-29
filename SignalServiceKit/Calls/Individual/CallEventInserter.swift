@@ -8,7 +8,7 @@ import Foundation
 /// Inserts & updates `TSCall` and `CallRecord` objects for a single call.
 ///
 /// The mutable properties can only be accessed within a write transaction.
-public class CallEventInserter {
+final public class CallEventInserter {
     private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
     private var interactionStore: any InteractionStore { DependenciesBridge.shared.interactionStore }

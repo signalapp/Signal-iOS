@@ -56,7 +56,7 @@ enum CLVLoadResult {
 
 // MARK: -
 
-public class CLVLoader {
+final public class CLVLoader {
 
     static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: DBReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()

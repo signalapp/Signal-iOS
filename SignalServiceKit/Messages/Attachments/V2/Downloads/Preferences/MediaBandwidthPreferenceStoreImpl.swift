@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
+final public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
 
     private let kvStore: KeyValueStore
     private let reachabilityManager: SSKReachabilityManager

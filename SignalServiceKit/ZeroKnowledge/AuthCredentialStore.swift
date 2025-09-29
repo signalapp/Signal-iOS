@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class AuthCredentialStore {
+final class AuthCredentialStore {
     private let dateProvider: DateProvider
 
     private let callLinkAuthCredentialStore: KeyValueStore

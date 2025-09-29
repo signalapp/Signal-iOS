@@ -16,7 +16,7 @@ protocol RegistrationTransferStatusPresenter: AnyObject {
 
 // MARK: - RegistrationTransferStatusViewController
 
-class RegistrationTransferStatusViewController: HostingController<TransferStatusView> {
+final class RegistrationTransferStatusViewController: HostingController<TransferStatusView> {
     override var prefersNavigationBarHidden: Bool { true }
 
     private let state: RegistrationTransferStatusState

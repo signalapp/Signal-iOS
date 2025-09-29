@@ -11,7 +11,7 @@ public enum ProvisioningError: Error {
     case invalidProvisionMessage(_ description: String)
 }
 
-public class ProvisioningCipher {
+final public class ProvisioningCipher {
 
     private enum Constants {
         static let version: UInt8 = 1

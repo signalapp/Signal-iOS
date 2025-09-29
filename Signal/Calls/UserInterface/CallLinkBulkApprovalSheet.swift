@@ -9,7 +9,7 @@ import SignalUI
 import LibSignalClient
 import SignalServiceKit
 
-class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
+final class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     fileprivate enum Constants {
         static let backgroundColor = UIColor.Signal.secondaryBackground
         static let sheetHeaderBottomPadding: CGFloat = 8
@@ -405,7 +405,7 @@ extension CallLinkBulkApprovalSheet: UITableViewDelegate {
 
 // MARK: - RequestCell
 
-private class RequestCell: UITableViewCell, ReusableTableViewCell {
+final private class RequestCell: UITableViewCell, ReusableTableViewCell {
     static var reuseIdentifier: String = "RequestCell"
 
     private typealias Constants = CallLinkBulkApprovalSheet.Constants

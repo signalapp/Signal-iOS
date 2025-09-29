@@ -12,7 +12,7 @@ protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)
 }
 
-class PhotoPickerAssetItem {
+final class PhotoPickerAssetItem {
     private let asset: PHAsset
     private let photoCollectionContents: PhotoAlbumContents
     private let thumbnailSize: CGSize
@@ -54,7 +54,7 @@ class PhotoPickerAssetItem {
     }
 }
 
-class PhotoAlbumContents {
+final class PhotoAlbumContents {
 
     private let fetchResult: PHFetchResult<PHAsset>
     private let limit: Int
@@ -183,7 +183,7 @@ class PhotoAlbumContents {
     }
 }
 
-class PhotoAlbum {
+final class PhotoAlbum {
     private let collection: PHAssetCollection
 
     /// The user never sees this collection, but we use it for a
@@ -200,7 +200,7 @@ class PhotoAlbum {
     }
 }
 
-class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
+final class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     weak var delegate: PhotoLibraryDelegate?
 
     func photoLibraryDidChange(_ changeInstance: PHChange) {

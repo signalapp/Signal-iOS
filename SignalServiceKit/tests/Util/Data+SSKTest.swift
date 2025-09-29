@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class DataSSKTests: XCTestCase {
+final class DataSSKTests: XCTestCase {
     func testUUID() {
         let dataValue = Data(0...16)
         let testCases: [(String, Data)] = [

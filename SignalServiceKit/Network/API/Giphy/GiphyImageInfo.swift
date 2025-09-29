@@ -26,7 +26,7 @@ extension GiphyError: LocalizedError, UserErrorDescriptionProvider {
 }
 
 // Represents a single Giphy image.
-public class GiphyImageInfo {
+final public class GiphyImageInfo {
     public let giphyId: String
     private let assets: [GiphyAsset]
 

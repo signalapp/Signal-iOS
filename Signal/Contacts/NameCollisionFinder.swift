@@ -48,7 +48,7 @@ public protocol NameCollisionFinder {
 
 /// Finds all name collisions for a given contact thread. Compares the contact
 /// thread recipient with all known Signal accounts.
-public class ContactThreadNameCollisionFinder: NameCollisionFinder {
+final public class ContactThreadNameCollisionFinder: NameCollisionFinder {
     private var contactThread: TSContactThread
     private let onlySearchIfMessageRequest: Bool
 
@@ -135,7 +135,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
     }
 }
 
-public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
+final public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
     private var groupThread: TSGroupThread
     public var thread: TSThread { groupThread }
 

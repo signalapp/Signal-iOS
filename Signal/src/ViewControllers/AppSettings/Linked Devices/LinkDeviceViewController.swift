@@ -13,7 +13,7 @@ protocol LinkDeviceViewControllerDelegate: AnyObject {
     func didFinishLinking(_ linkNSyncData: LinkNSyncData?, from linkDeviceViewController: LinkDeviceViewController)
 }
 
-class LinkDeviceViewController: OWSViewController {
+final class LinkDeviceViewController: OWSViewController {
 
     weak var delegate: LinkDeviceViewControllerDelegate?
     private var context = ViewControllerContext.shared

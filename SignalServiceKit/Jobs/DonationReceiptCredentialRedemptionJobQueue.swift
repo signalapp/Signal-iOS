@@ -39,7 +39,7 @@ import LibSignalClient
 /// but others (such as SEPA debit transfers) can take days/weeks to
 /// process. During that time, receipt credential request redemption will
 /// fail with a "still processing" error.
-public class DonationReceiptCredentialRedemptionJobQueue {
+final public class DonationReceiptCredentialRedemptionJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<DonationReceiptCredentialRedemptionJobRecord>,
         DonationReceiptCredentialRedemptionJobRunnerFactory
@@ -224,7 +224,7 @@ struct DonationReceiptCredentialRedemptionJobFinder {
 
 // MARK: -
 
-private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
+final private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
     private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
@@ -268,7 +268,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
 
 // MARK: -
 
-private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
+final private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let continuation: CheckedContinuation<Void, Error>?
 
     private let dateProvider: DateProvider

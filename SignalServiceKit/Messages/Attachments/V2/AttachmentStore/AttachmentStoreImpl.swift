@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class AttachmentStoreImpl: AttachmentStore {
+final public class AttachmentStoreImpl: AttachmentStore {
 
     public init() {}
 

@@ -8,7 +8,7 @@ import SignalUI
 import StoreKit
 import SwiftUI
 
-class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
+final class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     typealias OnConfirmPlanSelectionBlock = (ChooseBackupPlanViewController, PlanSelection) -> Void
 
     enum StoreKitAvailability {
@@ -100,7 +100,7 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
 
 // MARK: -
 
-private class ChooseBackupPlanViewModel: ObservableObject {
+final private class ChooseBackupPlanViewModel: ObservableObject {
     typealias StoreKitAvailability = ChooseBackupPlanViewController.StoreKitAvailability
     typealias PlanSelection = ChooseBackupPlanViewController.PlanSelection
 

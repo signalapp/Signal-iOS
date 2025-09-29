@@ -14,7 +14,7 @@ protocol RegistrationRestoreFromBackupConfirmationPresenter: AnyObject {
     func cancelRestoreFromBackup()
 }
 
-public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, Equatable {
+final public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, Equatable {
     enum Mode {
         case manual
         case quickRestore
@@ -42,7 +42,7 @@ public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, E
     }
 }
 
-class RegistrationRestoreFromBackupConfirmationViewController: HostingController<RegistrationRestoreFromBackupConfirmationView> {
+final class RegistrationRestoreFromBackupConfirmationViewController: HostingController<RegistrationRestoreFromBackupConfirmationView> {
     init(
         state: RegistrationRestoreFromBackupConfirmationState,
         presenter: RegistrationRestoreFromBackupConfirmationPresenter
@@ -239,7 +239,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 }
 
 #if DEBUG
-private class PreviewRegistrationRestoreFromBackupConfirmationPresenter: RegistrationRestoreFromBackupConfirmationPresenter {
+final private class PreviewRegistrationRestoreFromBackupConfirmationPresenter: RegistrationRestoreFromBackupConfirmationPresenter {
     func restoreFromBackupConfirmed() {
         print("Confirmed")
     }

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AppUpdateNag {
+final class AppUpdateNag {
 
     // MARK: Public
 

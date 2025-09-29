@@ -8,7 +8,7 @@ public import GRDB
 // MARK: -
 
 @objc
-public class SDSDatabaseStorage: NSObject, DB {
+final public class SDSDatabaseStorage: NSObject, DB {
     private let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
     private let awaitableWriteQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 

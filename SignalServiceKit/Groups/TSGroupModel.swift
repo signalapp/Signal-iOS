@@ -8,7 +8,7 @@ import Foundation
 public import LibSignalClient
 
 @objc
-public class TSGroupModelV2: TSGroupModel {
+final public class TSGroupModelV2: TSGroupModel {
     @objc
     var membership: GroupMembership
     @objc

@@ -22,7 +22,7 @@ public protocol SingleOrDoubleTapGestureDelegate: AnyObject {
     func didEndGesture(_ sender: SingleOrDoubleTapGestureRecognizer, wasHandled: Bool) -> Void
 }
 
-public class SingleOrDoubleTapGestureRecognizer: UIGestureRecognizer {
+final public class SingleOrDoubleTapGestureRecognizer: UIGestureRecognizer {
 
     // MARK: - API
 

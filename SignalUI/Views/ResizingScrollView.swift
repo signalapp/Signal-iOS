@@ -17,7 +17,7 @@ public protocol ResizingScrollViewDelegate: AnyObject {
     var resizingViewMaximumHeight: CGFloat { get }
 }
 
-public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrollViewDelegate {
+final public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrollViewDelegate {
     public weak var resizingView: ResizingViewType? {
         didSet {
             oldValue?.removeGestureRecognizer(gestureScrollView.panGestureRecognizer)

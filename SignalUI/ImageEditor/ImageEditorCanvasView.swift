@@ -41,7 +41,7 @@ struct ImageEditorItemBackground {
 
 // MARK: - EditorTextLayer
 
-class EditorTextLayer: CATextLayer {
+final class EditorTextLayer: CATextLayer {
 
     let itemId: String
 
@@ -93,7 +93,7 @@ class EditorTextLayer: CATextLayer {
 
 // MARK: - TextFrameLayer
 
-private class TextFrameLayer: CAShapeLayer {
+final private class TextFrameLayer: CAShapeLayer {
 
     override init() {
         super.init()
@@ -163,7 +163,7 @@ private class TextFrameLayer: CAShapeLayer {
 // MARK: - ImageEditorCanvasView
 
 // A view for previewing an image editor model.
-class ImageEditorCanvasView: UIView {
+final class ImageEditorCanvasView: UIView {
 
     private let model: ImageEditorModel
 

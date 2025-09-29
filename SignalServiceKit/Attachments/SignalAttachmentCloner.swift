@@ -12,7 +12,7 @@ public protocol SignalAttachmentCloner {
     ) throws -> SignalAttachment
 }
 
-public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
+final public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
 
     public init() {}
 
@@ -54,7 +54,7 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
 
 #if TESTABLE_BUILD
 
-public class SignalAttachmentClonerMock: SignalAttachmentCloner {
+final public class SignalAttachmentClonerMock: SignalAttachmentCloner {
 
     public func cloneAsSignalAttachment(
         attachment: ReferencedAttachmentStream

@@ -8,7 +8,7 @@ import SignalServiceKit
 import WebRTC
 
 @MainActor
-class GroupCallRemoteVideoManager {
+final class GroupCallRemoteVideoManager {
     private let callServiceState: CallServiceState
 
     init(callServiceState: CallServiceState) {
@@ -148,7 +148,7 @@ private protocol GroupCallRemoteVideoViewSizeDelegate: AnyObject {
     func groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: GroupCallRemoteVideoView)
 }
 
-class GroupCallRemoteVideoView: UIView {
+final class GroupCallRemoteVideoView: UIView {
     fileprivate weak var sizeDelegate: GroupCallRemoteVideoViewSizeDelegate?
 
     fileprivate private(set) var currentSize: CGSize = .zero {

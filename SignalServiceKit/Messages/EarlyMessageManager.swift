@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class EarlyMessageManager {
+final public class EarlyMessageManager {
     private struct MessageIdentifier: Hashable {
         let timestamp: UInt64
         let author: Aci

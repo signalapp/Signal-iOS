@@ -9,7 +9,7 @@ private protocol ContactNameFieldViewDelegate: AnyObject {
     func nameFieldDidChange()
 }
 
-private class ContactNameFieldView: UIView {
+final private class ContactNameFieldView: UIView {
     weak var delegate: ContactNameFieldViewDelegate?
 
     let name: String
@@ -60,7 +60,7 @@ public protocol EditContactShareNameViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-public class EditContactShareNameViewController: OWSTableViewController2, ContactNameFieldViewDelegate {
+final public class EditContactShareNameViewController: OWSTableViewController2, ContactNameFieldViewDelegate {
 
     private weak var editingDelegate: EditContactShareNameViewControllerDelegate?
 

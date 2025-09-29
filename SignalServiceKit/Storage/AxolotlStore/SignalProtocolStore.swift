@@ -12,7 +12,7 @@ public protocol SignalProtocolStore {
     var kyberPreKeyStore: KyberPreKeyStoreImpl { get }
 }
 
-public class SignalProtocolStoreImpl: SignalProtocolStore {
+final public class SignalProtocolStoreImpl: SignalProtocolStore {
     public let sessionStore: SignalSessionStore
     public let preKeyStore: PreKeyStoreImpl
     public let signedPreKeyStore: SignedPreKeyStoreImpl

@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
+final public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
     public var componentKey: CVComponentKey { .unreadIndicator }
 

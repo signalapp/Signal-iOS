@@ -22,7 +22,7 @@ protocol VideoEditorDataSource: AnyObject {
 /**
  * Coordinate data transfer between VideoEditorView and VideoTimelineView
  */
-class VideoAttachmentPrepViewController: AttachmentPrepViewController {
+final class VideoAttachmentPrepViewController: AttachmentPrepViewController {
 
     private let model: VideoEditorModel
 

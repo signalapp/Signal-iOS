@@ -17,7 +17,7 @@ public extension RecipientContextMenuHelperDelegate {
     func additionalActions(for groupThread: TSGroupThread) -> [UIAction] { [] }
 }
 
-class RecipientContextMenuHelper {
+final class RecipientContextMenuHelper {
 
     private let databaseStorage: SDSDatabaseStorage
     private let recipientHidingManager: RecipientHidingManager

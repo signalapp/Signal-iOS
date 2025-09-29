@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class HiddenStoryHeaderCell: UITableViewCell {
+final class HiddenStoryHeaderCell: UITableViewCell {
 
     static let reuseIdentifier = "HiddenStoryHeaderCell"
 

@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentBottomButtons: CVComponentBase, CVComponent {
+final public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .bottomButtons }
 

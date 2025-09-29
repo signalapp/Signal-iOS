@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-class CLVTableDataSource: NSObject {
+final class CLVTableDataSource: NSObject {
     private var viewState: CLVViewState!
 
     let tableView = CLVTableView()
@@ -867,7 +867,7 @@ extension CLVTableDataSource {
 
 // MARK: -
 
-public class CLVTableView: UITableView {
+final public class CLVTableView: UITableView {
     fileprivate var lastReloadDate: Date?
 
     // A `tableFooterView` that always expands to fill available contentSize

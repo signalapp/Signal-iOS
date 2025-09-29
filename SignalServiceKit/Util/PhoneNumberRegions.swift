@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class PhoneNumberRegions: Equatable, ExpressibleByArrayLiteral, CustomDebugStringConvertible {
+final public class PhoneNumberRegions: Equatable, ExpressibleByArrayLiteral, CustomDebugStringConvertible {
     private let regions: Set<String>
     private var previousCachedResult: (e164: String, result: Bool)?
 

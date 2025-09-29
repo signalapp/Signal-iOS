@@ -6,7 +6,7 @@
 import Accelerate
 import Foundation
 
-public class AudioWaveform: Equatable {
+final public class AudioWaveform: Equatable {
 
     /// The recorded samples for this waveform.
     private let decibelSamples: [Float]

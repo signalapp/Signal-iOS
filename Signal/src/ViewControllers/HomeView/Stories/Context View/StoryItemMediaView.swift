@@ -21,7 +21,7 @@ protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     var context: StoryContext { get }
 }
 
-class StoryItemMediaView: UIView {
+final class StoryItemMediaView: UIView {
     weak var delegate: StoryItemMediaViewDelegate?
     public private(set) var item: StoryItem
 
@@ -1050,7 +1050,7 @@ class StoryItemMediaView: UIView {
     }
 }
 
-class StoryItem: NSObject {
+final class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt64
     enum Attachment: Equatable {

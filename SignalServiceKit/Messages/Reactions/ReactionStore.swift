@@ -42,7 +42,7 @@ public protocol ReactionStore {
     )
 }
 
-public class ReactionStoreImpl: ReactionStore {
+final public class ReactionStoreImpl: ReactionStore {
     public func reaction(
         for aci: Aci,
         messageId: MessageId,

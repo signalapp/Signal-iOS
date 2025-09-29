@@ -106,7 +106,7 @@ public enum CVAttachment: Equatable {
     }
 }
 
-public class CVComponentState: Equatable {
+final public class CVComponentState: Equatable {
     let messageCellType: CVMessageCellType
 
     struct SenderName: Equatable {

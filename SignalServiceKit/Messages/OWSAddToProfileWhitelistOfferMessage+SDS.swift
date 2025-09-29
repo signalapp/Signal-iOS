@@ -47,7 +47,7 @@ public extension OWSAddToProfileWhitelistOfferMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSAddToProfileWhitelistOfferMessageSerializer: SDSSerializer {
+final class OWSAddToProfileWhitelistOfferMessageSerializer: SDSSerializer {
 
     private let model: OWSAddToProfileWhitelistOfferMessage
     public init(model: OWSAddToProfileWhitelistOfferMessage) {

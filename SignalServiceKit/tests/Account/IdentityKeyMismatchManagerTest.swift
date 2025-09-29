@@ -233,7 +233,7 @@ private extension LocalIdentifiers {
     static let mock: LocalIdentifiers = .forUnitTests
 }
 
-private class MessageProcessorMock: IdentityKeyMismatchManagerImpl.Shims.MessageProcessor {
+final private class MessageProcessorMock: IdentityKeyMismatchManagerImpl.Shims.MessageProcessor {
     var waitForFetchingAndProcessingMock: (() async throws(CancellationError) -> Void)!
 
     func waitForFetchingAndProcessing() async throws(CancellationError) {
@@ -241,7 +241,7 @@ private class MessageProcessorMock: IdentityKeyMismatchManagerImpl.Shims.Message
     }
 }
 
-private class IdentityKeyCheckerMock: IdentityKeyChecker {
+final private class IdentityKeyCheckerMock: IdentityKeyChecker {
     var serverHasSameKeyAsLocalMock: ((_ identity: OWSIdentity, _ localIdentifier: ServiceId) async throws -> Bool)!
 
     func serverHasSameKeyAsLocal(for identity: OWSIdentity, localIdentifier: ServiceId) async throws -> Bool {

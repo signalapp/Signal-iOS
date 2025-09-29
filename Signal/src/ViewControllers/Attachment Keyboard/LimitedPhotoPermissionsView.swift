@@ -7,7 +7,7 @@ import SignalUI
 import SignalServiceKit
 import Photos
 
-class LimitedPhotoPermissionsView: UIView {
+final class LimitedPhotoPermissionsView: UIView {
     private let button: UIButton = {
         let selectMoreAction = UIAction(
             title: OWSLocalizedString(

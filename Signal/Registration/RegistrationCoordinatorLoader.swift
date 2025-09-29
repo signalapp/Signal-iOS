@@ -25,7 +25,7 @@ public protocol RegistrationCoordinatorLoader {
     func hasPendingChangeNumber(transaction: DBReadTransaction) -> Bool
 }
 
-public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
+final public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
     public enum Mode: Codable {
         case registering(RegisteringState)

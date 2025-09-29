@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 
 /// Handles fetching and parsing remote megaphones.
-public class RemoteMegaphoneFetcher {
+final public class RemoteMegaphoneFetcher {
     private let databaseStorage: SDSDatabaseStorage
     private let signalService: any OWSSignalServiceProtocol
 

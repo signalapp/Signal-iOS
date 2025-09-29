@@ -8,7 +8,7 @@ import GRDB
 
 #if TESTABLE_BUILD
 
-public class MockSSKEnvironment {
+final public class MockSSKEnvironment {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
     @MainActor
     public static func activate(

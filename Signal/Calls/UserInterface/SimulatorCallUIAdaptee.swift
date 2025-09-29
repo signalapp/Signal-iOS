@@ -9,7 +9,7 @@ import SignalUI
 
 #if targetEnvironment(simulator)
 
-class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
+final class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     var callService: CallService { AppEnvironment.shared.callService }
 
     required init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {

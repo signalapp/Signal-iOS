@@ -14,7 +14,7 @@ protocol CallAudioServiceDelegate: AnyObject {
     @MainActor func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-class CallAudioService: IndividualCallObserver, GroupCallObserver {
+final class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     weak var delegate: CallAudioServiceDelegate? {
         willSet {

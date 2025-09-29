@@ -11,7 +11,7 @@ public protocol CountryCodeViewControllerDelegate: AnyObject {
     func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry: PhoneNumberCountry)
 }
 
-private class ViewModel: NSObject, ObservableObject {
+final private class ViewModel: NSObject, ObservableObject {
     let didSelectCountry = PassthroughSubject<PhoneNumberCountry, Never>()
     @Published var countries: [PhoneNumberCountry] = []
 
@@ -30,7 +30,7 @@ extension ViewModel: UISearchBarDelegate {
     }
 }
 
-public class CountryCodeViewController: HostingController<CountryCodePicker> {
+final public class CountryCodeViewController: HostingController<CountryCodePicker> {
     private var didSelectCountrySink: AnyCancellable?
 
     public var interfaceOrientationMask: UIInterfaceOrientationMask = UIDevice.current.defaultSupportedOrientations

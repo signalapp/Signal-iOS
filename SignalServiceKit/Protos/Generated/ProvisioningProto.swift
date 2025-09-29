@@ -15,7 +15,7 @@ public enum ProvisioningProtoError: Error {
 // MARK: - ProvisioningProtoProvisioningUuid
 
 @objc
-public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCoding {
+final public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: ProvisioningProtos_ProvisioningUuid
 
@@ -111,7 +111,7 @@ extension ProvisioningProtoProvisioningUuid {
 }
 
 @objc
-public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
+final public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
 
     private var proto = ProvisioningProtos_ProvisioningUuid()
 
@@ -172,7 +172,7 @@ extension ProvisioningProtoProvisioningUuidBuilder {
 // MARK: - ProvisioningProtoProvisionEnvelope
 
 @objc
-public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCoding {
+final public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: ProvisioningProtos_ProvisionEnvelope
 
@@ -279,7 +279,7 @@ extension ProvisioningProtoProvisionEnvelope {
 }
 
 @objc
-public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
+final public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
 
     private var proto = ProvisioningProtos_ProvisionEnvelope()
 
@@ -352,7 +352,7 @@ extension ProvisioningProtoProvisionEnvelopeBuilder {
 // MARK: - ProvisioningProtoProvisionMessage
 
 @objc
-public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCoding {
+final public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: ProvisioningProtos_ProvisionMessage
 
@@ -647,7 +647,7 @@ extension ProvisioningProtoProvisionMessage {
 }
 
 @objc
-public class ProvisioningProtoProvisionMessageBuilder: NSObject {
+final public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
     private var proto = ProvisioningProtos_ProvisionMessage()
 

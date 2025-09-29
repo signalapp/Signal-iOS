@@ -7,7 +7,7 @@ import CryptoKit
 import Foundation
 import LibSignalClient
 
-public class RemoteConfig {
+final public class RemoteConfig {
 
     public static var current: RemoteConfig {
         return SSKEnvironment.shared.remoteConfigManagerRef.currentConfig()
@@ -629,7 +629,7 @@ public protocol RemoteConfigProvider {
 
 #if TESTABLE_BUILD
 
-public class MockRemoteConfigProvider: RemoteConfigProvider {
+final public class MockRemoteConfigProvider: RemoteConfigProvider {
     var _currentConfig: RemoteConfig = .emptyConfig
     public func currentConfig() -> RemoteConfig { _currentConfig }
 }
@@ -650,7 +650,7 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
 
 #if TESTABLE_BUILD
 
-public class StubbableRemoteConfigManager: RemoteConfigManager {
+final public class StubbableRemoteConfigManager: RemoteConfigManager {
     public var cachedConfig: RemoteConfig?
 
     public func warmCaches() -> RemoteConfig {
@@ -669,7 +669,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
 // MARK: -
 
-public class RemoteConfigManagerImpl: RemoteConfigManager {
+final public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let appExpiry: AppExpiry
     private let appReadiness: AppReadiness
     private let dateProvider: DateProvider

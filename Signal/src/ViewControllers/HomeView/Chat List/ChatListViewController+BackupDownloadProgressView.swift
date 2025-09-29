@@ -7,7 +7,7 @@ import UIKit
 public import SignalServiceKit
 import SignalUI
 
-public class CLVBackupDownloadProgressView {
+final public class CLVBackupDownloadProgressView {
 
     public class State {
         var downloadQueueStatus: BackupAttachmentDownloadQueueStatus?
@@ -217,7 +217,7 @@ public class CLVBackupDownloadProgressView {
     }
 }
 
-private class BackupAttachmentDownloadProgressView: UIView {
+final private class BackupAttachmentDownloadProgressView: UIView {
 
     enum State {
         case restoring(progress: OWSProgress?)
@@ -1020,7 +1020,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
 #if DEBUG
 
-private class BackupDownloadProgressPreviewViewController: UIViewController {
+final private class BackupDownloadProgressPreviewViewController: UIViewController {
     private let state: BackupAttachmentDownloadProgressView.State
 
     init(state: BackupAttachmentDownloadProgressView.State) {

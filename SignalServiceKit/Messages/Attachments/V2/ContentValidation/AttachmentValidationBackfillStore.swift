@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class AttachmentValidationBackfillStore {
+final public class AttachmentValidationBackfillStore {
 
     private let kvStore = KeyValueStore(collection: "AttachmentValidationBackfillStore")
 

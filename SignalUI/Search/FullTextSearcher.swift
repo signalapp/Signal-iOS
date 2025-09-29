@@ -35,7 +35,7 @@ public struct ConversationSortKey: Comparable {
 
 // MARK: -
 
-public class ConversationSearchResult<SortKey>: Comparable where SortKey: Comparable {
+final public class ConversationSearchResult<SortKey>: Comparable where SortKey: Comparable {
     public let threadViewModel: ThreadViewModel
 
     public let messageId: String?
@@ -71,7 +71,7 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
 // MARK: -
 
-public class ContactSearchResult: Comparable {
+final public class ContactSearchResult: Comparable {
 
     public let recipientAddress: SignalServiceAddress
     private let comparableName: ComparableDisplayName
@@ -114,7 +114,7 @@ public class ContactSearchResult: Comparable {
 // MARK: -
 
 /// Can represent either a group thread with stories, or a private story thread.
-public class StorySearchResult: Comparable {
+final public class StorySearchResult: Comparable {
 
     public let thread: TSThread
 
@@ -140,7 +140,7 @@ public class StorySearchResult: Comparable {
 
 // MARK: -
 
-public class HomeScreenSearchResultSet: NSObject {
+final public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
     public let contactThreadResults: [ConversationSearchResult<ConversationSortKey>]
     public let groupThreadResults: [GroupSearchResult]
@@ -172,7 +172,7 @@ public class HomeScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-public class GroupSearchResult: Comparable {
+final public class GroupSearchResult: Comparable {
 
     public let threadViewModel: ThreadViewModel
     public let matchedMembersSnippet: String?
@@ -234,7 +234,7 @@ public struct RecipientSearchResultSet {
 
 // MARK: -
 
-public class MessageSearchResult: NSObject, Comparable {
+final public class MessageSearchResult: NSObject, Comparable {
 
     public let messageId: String
     public let sortId: UInt64
@@ -253,7 +253,7 @@ public class MessageSearchResult: NSObject, Comparable {
 
 // MARK: -
 
-public class ConversationScreenSearchResultSet: NSObject {
+final public class ConversationScreenSearchResultSet: NSObject {
 
     public let searchText: String
 
@@ -283,7 +283,7 @@ public class ConversationScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-public class FullTextSearcher: NSObject {
+final public class FullTextSearcher: NSObject {
 
     public static let kDefaultMaxResults: Int = 500
 

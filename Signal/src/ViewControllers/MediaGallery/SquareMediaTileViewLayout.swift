@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class SquareMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
+final class SquareMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
     private var contentSizeBeforeInsertingToTop: CGSize?
 
     override init() {

@@ -34,7 +34,7 @@ protocol SendMediaNavDataSource: AnyObject {
     func sendMediaNavMentionCacheInvalidationKey() -> String
 }
 
-class CameraFirstCaptureNavigationController: SendMediaNavigationController {
+final class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     override var requiresContactPickerToProceed: Bool {
         true

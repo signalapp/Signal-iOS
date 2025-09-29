@@ -385,7 +385,7 @@ public struct TypedItemProvider {
 // MARK: - ProgressPoller
 
 /// Exposes a Progress object, whose progress is updated by polling the return of a given block
-private class ProgressPoller: NSObject {
+final private class ProgressPoller: NSObject {
     private let progress: Progress
     private let pollInterval: TimeInterval
     private let fractionCompleted: () -> Float

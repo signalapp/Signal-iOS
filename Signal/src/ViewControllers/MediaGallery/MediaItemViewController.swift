@@ -22,7 +22,7 @@ protocol VideoPlaybackStatusObserver: AnyObject {
     func videoPlayerStatusChanged(_ videoPlayer: VideoPlayer)
 }
 
-class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
+final class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     weak var delegate: MediaItemViewControllerDelegate?
 

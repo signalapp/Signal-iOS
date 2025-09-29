@@ -5,7 +5,7 @@
 
 #if TESTABLE_BUILD
 
-public class MockCallRecordQuerier: CallRecordQuerier {
+final public class MockCallRecordQuerier: CallRecordQuerier {
     private class Cursor: CallRecordCursor {
         private var callRecords: [CallRecord] = []
         init(_ callRecords: [CallRecord]) { self.callRecords = callRecords }

@@ -62,7 +62,7 @@ public extension StoryStore {
     }
 }
 
-public class StoryStoreImpl: StoryStore {
+final public class StoryStoreImpl: StoryStore {
 
     public init() {}
 

@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class MainAppContext: NSObject, AppContext {
+final class MainAppContext: NSObject, AppContext {
     let type: SignalServiceKit.AppContextType = .main
 
     let appLaunchTime: Date

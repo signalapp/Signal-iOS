@@ -8,7 +8,7 @@ import GRDB
 import LibSignalClient
 
 /// Archives ``SignalRecipient``s as ``BackupProto_Contact`` recipients.
-public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 

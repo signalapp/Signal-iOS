@@ -8,7 +8,7 @@
 import Foundation
 public import LibSignalClient
 
-public class MockUsernameLookupManager: UsernameLookupManager {
+final public class MockUsernameLookupManager: UsernameLookupManager {
     public typealias Username = String
 
     private var mockUsernames: [Aci: Username] = [:]

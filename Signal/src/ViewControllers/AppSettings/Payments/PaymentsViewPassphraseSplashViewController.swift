@@ -13,7 +13,7 @@ public protocol PaymentsViewPassphraseDelegate: AnyObject {
 
 // MARK: -
 
-public class PaymentsViewPassphraseSplashViewController: OWSViewController {
+final public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
     public enum Style: Int, CaseIterable {
         /// From settings menu when user has not completed recovery phrase

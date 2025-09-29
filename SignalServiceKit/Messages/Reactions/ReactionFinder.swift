@@ -9,7 +9,7 @@ public import LibSignalClient
 
 // MARK: -
 
-public class ReactionFinder {
+final public class ReactionFinder {
 
     public let uniqueMessageId: String
 

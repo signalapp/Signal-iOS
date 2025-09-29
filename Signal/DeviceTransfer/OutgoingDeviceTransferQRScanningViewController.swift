@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class OutgoingDeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
+final class OutgoingDeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
     private let qrCodeScanViewController = QRCodeScanViewController(appearance: .unadorned)
 

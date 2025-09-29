@@ -6,7 +6,7 @@
 import SignalUI
 import UIKit
 
-class ChatListFilterFooterCell: UITableViewCell, ReusableTableViewCell {
+final class ChatListFilterFooterCell: UITableViewCell, ReusableTableViewCell {
     static let reuseIdentifier = "ChatListFilterFooterCell"
 
     private let button: ChatListFilterButton

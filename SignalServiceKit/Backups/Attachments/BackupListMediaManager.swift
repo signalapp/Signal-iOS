@@ -84,7 +84,7 @@ public protocol BackupListMediaManager {
     func setManualNeedsListMedia(tx: DBWriteTransaction)
 }
 
-public class BackupListMediaManagerImpl: BackupListMediaManager {
+final public class BackupListMediaManagerImpl: BackupListMediaManager {
 
     private let accountKeyStore: AccountKeyStore
     private let attachmentStore: AttachmentStore
@@ -1248,7 +1248,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
 #if TESTABLE_BUILD
 
-class MockBackupListMediaManager: BackupListMediaManager {
+final class MockBackupListMediaManager: BackupListMediaManager {
     func queryListMediaIfNeeded() async throws {
         // Nothing
     }

@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 import SignalRingRTC
 
-public class CallOfferHandlerImpl {
+final public class CallOfferHandlerImpl {
     private let identityManager: any OWSIdentityManager
     private let notificationPresenter: NotificationPresenter
     private let profileManager: any ProfileManager

@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVRenderItem: NSObject {
+final public class CVRenderItem: NSObject {
     public let itemModel: CVItemModel
 
     public var componentState: CVComponentState { itemModel.componentState }

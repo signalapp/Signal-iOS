@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class MyStoriesViewController: OWSViewController, FailedStorySendDisplayController {
+final class MyStoriesViewController: OWSViewController, FailedStorySendDisplayController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var items = OrderedDictionary<String, [OutgoingStoryItem]>() {
         didSet { emptyStateLabel.isHidden = items.orderedKeys.count > 0 }
@@ -329,7 +329,7 @@ private struct OutgoingStoryItem {
     }
 }
 
-class SentStoryCell: UITableViewCell {
+final class SentStoryCell: UITableViewCell {
     static let reuseIdentifier = "SentStoryCell"
 
     private class ContextButtonContainer: UIView {

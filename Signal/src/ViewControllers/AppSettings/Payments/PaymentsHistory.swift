@@ -19,7 +19,7 @@ protocol PaymentsHistoryDataSourceDelegate: AnyObject {
 // MARK: -
 
 @MainActor
-class PaymentsHistoryDataSource {
+final class PaymentsHistoryDataSource {
 
     public enum RecordType: Int, CustomStringConvertible {
         case all = 0

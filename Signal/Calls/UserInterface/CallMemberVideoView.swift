@@ -8,7 +8,7 @@ import Foundation
 import SignalRingRTC
 import SignalServiceKit
 
-class CallMemberVideoView: UIView, CallMemberComposableView {
+final class CallMemberVideoView: UIView, CallMemberComposableView {
     private let type: CallMemberView.MemberType
 
     private lazy var blurredAvatarBackgroundView = BlurredAvatarBackgroundView()

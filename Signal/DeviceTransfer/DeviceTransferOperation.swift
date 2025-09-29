@@ -9,7 +9,7 @@ import SignalServiceKit
 // Use the main thread for all MCSession related operations.
 // There shouldn't be anything else going on in the app, anyway.
 @MainActor
-class DeviceTransferOperation: NSObject {
+final class DeviceTransferOperation: NSObject {
     let file: DeviceTransferProtoFile
 
     init(file: DeviceTransferProtoFile) {

@@ -92,7 +92,7 @@ public protocol AttachmentOffloadingManager {
     func offloadAttachmentsIfNeeded() async throws
 }
 
-public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
+final public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
     private let attachmentStore: AttachmentStore
     private let attachmentThumbnailService: AttachmentThumbnailService

@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class OWSMockSyncManager: SyncManagerProtocol {
+final public class OWSMockSyncManager: SyncManagerProtocol {
     public func sendConfigurationSyncMessage() {
         Logger.info("")
     }

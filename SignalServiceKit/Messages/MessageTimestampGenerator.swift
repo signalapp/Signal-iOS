@@ -6,7 +6,7 @@
 import Foundation
 
 /// Generates timestamps for messages/envelopes.
-public class MessageTimestampGenerator {
+final public class MessageTimestampGenerator {
     private let rangeToAvoid = AtomicValue<ClosedRange<UInt64>?>(nil, lock: .init())
     private let nowMs: () -> UInt64
 

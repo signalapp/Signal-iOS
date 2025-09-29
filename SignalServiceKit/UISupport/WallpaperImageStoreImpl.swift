@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class WallpaperImageStoreImpl: WallpaperImageStore {
+final public class WallpaperImageStoreImpl: WallpaperImageStore {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore

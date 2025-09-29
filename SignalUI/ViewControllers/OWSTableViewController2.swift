@@ -1112,7 +1112,7 @@ private protocol OWSTableViewDelegate: AnyObject {
 
 // MARK: -
 
-public class OWSTableView: UITableView {
+final public class OWSTableView: UITableView {
     fileprivate weak var tableViewDelegate: OWSTableViewDelegate?
 
     public override var frame: CGRect {

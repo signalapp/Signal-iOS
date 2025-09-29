@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class OWSURLSessionEndpoint {
+final public class OWSURLSessionEndpoint {
     /// This is generally the "scheme" & "host" portions of the URL, but it may
     /// also contain a path prefix in some cases.
     let baseUrl: URL?

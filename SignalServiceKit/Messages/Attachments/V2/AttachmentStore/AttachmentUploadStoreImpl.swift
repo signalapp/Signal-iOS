@@ -5,7 +5,7 @@
 
 import GRDB
 
-public class AttachmentUploadStoreImpl: AttachmentUploadStore {
+final public class AttachmentUploadStoreImpl: AttachmentUploadStore {
 
     private let attachmentStore: AttachmentStore
 

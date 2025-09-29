@@ -5,7 +5,7 @@
 
 import UIKit
 
-class OWSImagePickerController: UIImagePickerController {
+final class OWSImagePickerController: UIImagePickerController {
 
     // MARK: Orientation
 

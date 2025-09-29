@@ -108,7 +108,7 @@ final class JobQueueRunnerTest: XCTestCase {
     }
 }
 
-private class MockJobFinder: JobRecordFinder {
+final private class MockJobFinder: JobRecordFinder {
     let jobRecords = AtomicValue<[SessionResetJobRecord?]>([], lock: .init())
 
     func addJob(_ jobRecord: SessionResetJobRecord) {
@@ -136,7 +136,7 @@ private class MockJobFinder: JobRecordFinder {
     func enumerateJobRecords(status: JobRecord.Status, transaction: DBReadTransaction, block: (SessionResetJobRecord, inout Bool) -> Void) throws { fatalError() }
 }
 
-private class MockJobRunnerFactory: JobRunnerFactory {
+final private class MockJobRunnerFactory: JobRunnerFactory {
     private let jobFinder: MockJobFinder
     private let mockDb: InMemoryDB
 
@@ -165,7 +165,7 @@ private class MockJobRunnerFactory: JobRunnerFactory {
     }
 }
 
-private class MockJobRunner: JobRunner {
+final private class MockJobRunner: JobRunner {
     let completionContinuation: CheckedContinuation<JobResult, Never>?
     let executedJobs: AtomicArray<String>
     let jobFinder: MockJobFinder

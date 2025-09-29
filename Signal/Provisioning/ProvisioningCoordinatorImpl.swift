@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
-class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
+final class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private let chatConnectionManager: ChatConnectionManager
     private let db: any DB

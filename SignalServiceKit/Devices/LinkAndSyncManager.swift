@@ -114,7 +114,7 @@ public protocol LinkAndSyncManager {
     ) async throws(SecondaryLinkNSyncError)
 }
 
-public class LinkAndSyncManagerImpl: LinkAndSyncManager {
+final public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     private let appContext: AppContext
     private let attachmentDownloadManager: AttachmentDownloadManager

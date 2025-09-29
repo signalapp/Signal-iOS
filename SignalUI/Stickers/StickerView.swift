@@ -7,7 +7,7 @@ import Lottie
 public import SignalServiceKit
 import SDWebImage
 
-public class StickerView {
+final public class StickerView {
 
     // Never instantiate this class.
     private init() {}
@@ -84,7 +84,7 @@ public class StickerView {
     }
 }
 
-public class StickerPlaceholderView: UIView {
+final public class StickerPlaceholderView: UIView {
     let placeholderView = UIView()
     public init(color: UIColor) {
         super.init(frame: .zero)
@@ -108,7 +108,7 @@ public class StickerPlaceholderView: UIView {
     }
 }
 
-public class StickerReusableView: UIView {
+final public class StickerReusableView: UIView {
     public var hasStickerView: Bool { stickerView != nil }
 
     private weak var stickerView: UIView?

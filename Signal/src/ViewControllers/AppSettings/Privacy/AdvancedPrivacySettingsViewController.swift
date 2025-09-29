@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
+final class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

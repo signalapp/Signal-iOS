@@ -7,7 +7,7 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
-class CryptographyTestsSwift: XCTestCase {
+final class CryptographyTestsSwift: XCTestCase {
 
     private func Assert(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)

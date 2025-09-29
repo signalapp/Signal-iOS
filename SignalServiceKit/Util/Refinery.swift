@@ -21,7 +21,7 @@ import Foundation
 // }.values
 //
 // The `values` array is parallel to the `keys` the Refinery was initialized with.
-public class Refinery<Key, Value> {
+final public class Refinery<Key, Value> {
     // Keys whose values the client wants to compute.
     public let keys: [Key]
 

@@ -52,7 +52,7 @@ public class ReferencedAttachment {
     }
 }
 
-public class ReferencedAttachmentStream: ReferencedAttachment {
+final public class ReferencedAttachmentStream: ReferencedAttachment {
     public let attachmentStream: AttachmentStream
 
     public init(reference: AttachmentReference, attachmentStream: AttachmentStream) {
@@ -61,7 +61,7 @@ public class ReferencedAttachmentStream: ReferencedAttachment {
     }
 }
 
-public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
+final public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
     public let attachmentPointer: AttachmentTransitPointer
 
     public init(reference: AttachmentReference, attachmentPointer: AttachmentTransitPointer) {
@@ -70,7 +70,7 @@ public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
     }
 }
 
-public class ReferencedAttachmentBackupPointer: ReferencedAttachment {
+final public class ReferencedAttachmentBackupPointer: ReferencedAttachment {
     public let attachmentPointer: AttachmentBackupPointer
 
     public init(reference: AttachmentReference, attachmentPointer: AttachmentBackupPointer) {
@@ -79,7 +79,7 @@ public class ReferencedAttachmentBackupPointer: ReferencedAttachment {
     }
 }
 
-public class ReferencedAttachmentPointer: ReferencedAttachment {
+final public class ReferencedAttachmentPointer: ReferencedAttachment {
     public let attachmentPointer: AttachmentPointer
 
     public init(reference: AttachmentReference, attachmentPointer: AttachmentPointer) {
@@ -88,7 +88,7 @@ public class ReferencedAttachmentPointer: ReferencedAttachment {
     }
 }
 
-public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
+final public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
     public let attachmentBackupThumbnail: AttachmentBackupThumbnail
 
     public init(reference: AttachmentReference, attachmentBackupThumbnail: AttachmentBackupThumbnail) {

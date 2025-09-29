@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class CLVViewState {
+final class CLVViewState {
     let tableDataSource: CLVTableDataSource
     let multiSelectState: MultiSelectState
     let loadCoordinator: CLVLoadCoordinator

@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ChatColorViewController: OWSTableViewController2 {
+final class ChatColorViewController: OWSTableViewController2 {
 
     fileprivate let thread: TSThread?
     fileprivate var currentSetting: ChatColorSetting
@@ -349,7 +349,7 @@ extension ChatColorViewController: MockConversationDelegate {
 
 // MARK: -
 
-private class ChatColorPicker: UIView {
+final private class ChatColorPicker: UIView {
 
     typealias Option = ChatColorViewController.Option
 
@@ -626,7 +626,7 @@ private class ChatColorPicker: UIView {
 
 // MARK: -
 
-private class ChatColorTooltip: TooltipView {
+final private class ChatColorTooltip: TooltipView {
 
     private override init(fromView: UIView,
                           widthReferenceView: UIView,

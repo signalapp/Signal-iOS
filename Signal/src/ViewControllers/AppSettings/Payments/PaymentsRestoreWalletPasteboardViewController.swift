@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
+final public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 

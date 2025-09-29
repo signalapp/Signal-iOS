@@ -9,7 +9,7 @@ import SwiftUI
 import SignalUI
 import SignalServiceKit
 
-class OutgoingDeviceRestoreProgressViewController: HostingController<TransferStatusView> {
+final class OutgoingDeviceRestoreProgressViewController: HostingController<TransferStatusView> {
     init(viewModel: TransferStatusViewModel) {
         super.init(wrappedView: TransferStatusView(viewModel: viewModel, isNewDevice: false))
         view.backgroundColor = UIColor.Signal.background

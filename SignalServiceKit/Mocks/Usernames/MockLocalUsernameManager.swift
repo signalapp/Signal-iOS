@@ -5,7 +5,7 @@
 
 #if TESTABLE_BUILD
 
-public class MockLocalUsernameManager: LocalUsernameManager {
+final public class MockLocalUsernameManager: LocalUsernameManager {
     var startingUsernameState: Usernames.LocalUsernameState!
 
     var didSetCorruptedUsername: Bool = false

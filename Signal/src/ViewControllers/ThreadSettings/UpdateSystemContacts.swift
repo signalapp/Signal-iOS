@@ -14,7 +14,7 @@ protocol SystemContactsFlow {
     var contact: CNContact? { get }
 }
 
-class CreateOrEditContactFlow: SystemContactsFlow {
+final class CreateOrEditContactFlow: SystemContactsFlow {
     let address: SignalServiceAddress
     let editImmediately: Bool
     let nameComponents: PersonNameComponents?
@@ -33,7 +33,7 @@ class CreateOrEditContactFlow: SystemContactsFlow {
     }
 }
 
-class AddToExistingContactFlow: SystemContactsFlow {
+final class AddToExistingContactFlow: SystemContactsFlow {
     let address: SignalServiceAddress
     var editImmediately: Bool { true }
     let nameComponents: PersonNameComponents?
@@ -45,7 +45,7 @@ class AddToExistingContactFlow: SystemContactsFlow {
     }
 }
 
-private class AddToContactsFlowNavigationController: UINavigationController, CNContactViewControllerDelegate, ContactPickerDelegate {
+final private class AddToContactsFlowNavigationController: UINavigationController, CNContactViewControllerDelegate, ContactPickerDelegate {
 
     let flow: SystemContactsFlow
     var completion: (() -> Void)?

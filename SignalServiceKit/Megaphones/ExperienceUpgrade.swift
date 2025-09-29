@@ -6,7 +6,7 @@
 import Foundation
 public import GRDB
 
-public class ExperienceUpgrade: SDSCodableModel, Decodable {
+final public class ExperienceUpgrade: SDSCodableModel, Decodable {
     public static let databaseTableName = "model_ExperienceUpgrade"
     public static var recordType: UInt { SDSRecordType.experienceUpgrade.rawValue }
 

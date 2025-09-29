@@ -39,7 +39,7 @@ public protocol PinnedThreadManager {
 }
 
 @objc
-public class PinnedThreadManagerObjcBridge: NSObject {
+final public class PinnedThreadManagerObjcBridge: NSObject {
 
     @objc
     static func handleUpdatedThread(_ thread: TSThread, transaction: DBWriteTransaction) {

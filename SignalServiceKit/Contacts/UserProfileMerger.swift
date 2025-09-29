@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class UserProfileMerger: RecipientMergeObserver {
+final class UserProfileMerger: RecipientMergeObserver {
     private let userProfileStore: UserProfileStore
     private let setProfileKeyShim: (OWSUserProfile, Aes256Key, DBWriteTransaction) -> Void
 

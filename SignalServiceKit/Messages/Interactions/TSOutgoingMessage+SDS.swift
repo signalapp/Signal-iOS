@@ -47,7 +47,7 @@ public extension TSOutgoingMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSOutgoingMessageSerializer: SDSSerializer {
+final class TSOutgoingMessageSerializer: SDSSerializer {
 
     private let model: TSOutgoingMessage
     public init(model: TSOutgoingMessage) {

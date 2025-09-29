@@ -8,7 +8,7 @@ import SignalServiceKit
 public import SignalUI
 import Lottie
 
-public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
+final public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     public var componentKey: CVComponentKey { .threadDetails }
 

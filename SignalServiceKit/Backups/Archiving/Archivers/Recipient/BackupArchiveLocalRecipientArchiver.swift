@@ -15,7 +15,7 @@ extension BackupArchive {
 
 /// Archiver for the ``BackupProto_Self`` recipient, a.k.a. the local
 /// user author/recipient.  Used as the recipient for the Note To Self chat.
-public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
     private static let localRecipientId = BackupArchive.RecipientId(value: 1)
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager

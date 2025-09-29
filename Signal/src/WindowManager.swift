@@ -23,7 +23,7 @@ extension UIWindow.Level {
     fileprivate static let _screenBlocking: UIWindow.Level = .init(rawValue: UIWindow.Level.statusBar.rawValue + 2)
 }
 
-class WindowManager {
+final class WindowManager {
 
     init() {
         AssertIsOnMainThread()
@@ -352,14 +352,14 @@ class WindowManager {
 
 // This VC can become first responder
 // when presented to ensure that the input accessory is updated.
-private class WindowRootViewController: UIViewController {
+final private class WindowRootViewController: UIViewController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         UIDevice.current.defaultSupportedOrientations
     }
 }
 
-private class WindowRootNavigationViewController: UINavigationController {
+final private class WindowRootNavigationViewController: UINavigationController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         UIDevice.current.defaultSupportedOrientations

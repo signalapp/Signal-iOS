@@ -13,7 +13,7 @@ public protocol AudioWaveformSamplingObserver: AnyObject {
 
 // MARK: -
 
-public class AudioWaveformManagerImpl: AudioWaveformManager {
+final public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     private typealias AttachmentId = Attachment.IDType
 

@@ -8,7 +8,7 @@ import libPhoneNumber_iOS
 
 // MARK: -
 
-public class PhoneNumberUtil: NSObject {
+final public class PhoneNumberUtil: NSObject {
     let nbMetadataHelper: NBMetadataHelper
     private let nbPhoneNumberUtil: NBPhoneNumberUtil
     private let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(

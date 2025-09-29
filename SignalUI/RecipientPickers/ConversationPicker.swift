@@ -1104,7 +1104,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 }
 
-private class VideoSegmentingTooltipView: TooltipView {
+final private class VideoSegmentingTooltipView: TooltipView {
 
     let text: String
 
@@ -1456,7 +1456,7 @@ protocol ConversationPickerSelectionDelegate: AnyObject {
 
 // MARK: -
 
-public class ConversationPickerSelection {
+final public class ConversationPickerSelection {
     fileprivate weak var delegate: ConversationPickerSelectionDelegate?
 
     public private(set) var conversations: [ConversationItem] = []

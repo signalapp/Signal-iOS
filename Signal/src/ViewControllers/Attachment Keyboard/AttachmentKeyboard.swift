@@ -19,7 +19,7 @@ protocol AttachmentKeyboardDelegate: AnyObject {
     var isGroup: Bool { get }
 }
 
-class AttachmentKeyboard: CustomKeyboard {
+final class AttachmentKeyboard: CustomKeyboard {
 
     weak var delegate: AttachmentKeyboardDelegate?
 

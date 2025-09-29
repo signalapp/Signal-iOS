@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class NotificationSettingsContentViewController: OWSTableViewController2 {
+final class NotificationSettingsContentViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 

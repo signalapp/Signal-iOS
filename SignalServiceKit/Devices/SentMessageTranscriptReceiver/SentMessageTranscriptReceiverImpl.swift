@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
+final public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
     private let attachmentDownloads: AttachmentDownloadManager
     private let attachmentManager: AttachmentManager

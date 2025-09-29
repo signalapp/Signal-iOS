@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class SupportKeyValueStore {
+final public class SupportKeyValueStore {
     private enum StoreKeys {
         static let lastChallengeDateKey: String = "lastChallengeDateKey"
     }

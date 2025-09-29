@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class NewGroupState {
+final class NewGroupState {
 
     var groupSeed = NewGroupSeed()
 

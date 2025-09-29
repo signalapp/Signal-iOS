@@ -8,7 +8,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-class StoryInfoSheet: OWSTableSheetViewController {
+final class StoryInfoSheet: OWSTableSheetViewController {
     private(set) var storyMessage: StoryMessage
     let context: StoryContext
     var dismissHandler: (() -> Void)?

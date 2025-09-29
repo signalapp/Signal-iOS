@@ -899,7 +899,7 @@ extension DonationSubscriptionManager {
 
 // MARK: -
 
-public class OWSRetryableSubscriptionError: CustomNSError, IsRetryableProvider {
+final public class OWSRetryableSubscriptionError: CustomNSError, IsRetryableProvider {
     public var isRetryableProvider: Bool { true }
 }
 

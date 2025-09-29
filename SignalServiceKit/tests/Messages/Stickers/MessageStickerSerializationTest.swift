@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class MessageStickerSerializationTest: XCTestCase {
+final class MessageStickerSerializationTest: XCTestCase {
 
     // MARK: - Hardcoded constant data
 

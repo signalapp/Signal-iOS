@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import LibSignalClient
 
-class ProvisioningNavigationController: OWSNavigationController {
+final class ProvisioningNavigationController: OWSNavigationController {
     private(set) var provisioningController: ProvisioningController
 
     init(provisioningController: ProvisioningController) {
@@ -23,7 +23,7 @@ class ProvisioningNavigationController: OWSNavigationController {
     }
 }
 
-class ProvisioningController: NSObject {
+final class ProvisioningController: NSObject {
 
     private let appReadiness: AppReadinessSetter
 

@@ -16,7 +16,7 @@ protocol CallHeaderDelegate: AnyObject {
     func didTapMembersButton()
 }
 
-class CallHeader: UIView {
+final class CallHeader: UIView {
     // MARK: - Views
 
     private lazy var gradientView: UIView = {

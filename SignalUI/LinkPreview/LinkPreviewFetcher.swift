@@ -12,7 +12,7 @@ public protocol LinkPreviewFetcher {
 
 #if TESTABLE_BUILD
 
-class MockLinkPreviewFetcher: LinkPreviewFetcher {
+final class MockLinkPreviewFetcher: LinkPreviewFetcher {
     var fetchedURLs: [URL] { _fetchedURLs.get() }
     let _fetchedURLs = AtomicValue<[URL]>([], lock: .init())
 
@@ -26,7 +26,7 @@ class MockLinkPreviewFetcher: LinkPreviewFetcher {
 
 #endif
 
-public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
+final public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     private let authCredentialManager: any AuthCredentialManager
     private let db: any DB
     private let groupsV2: any GroupsV2

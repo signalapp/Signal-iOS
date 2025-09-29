@@ -9,7 +9,7 @@ public import LibSignalClient
 /// View model for an existing quoted reply which has already fetched any attachments.
 /// NOT used for draft quoted replies; this is for TSMessages with quoted replies (or story replies)
 /// that have already been created, for use rendering in a conversation.
-public class QuotedReplyModel {
+final public class QuotedReplyModel {
 
     /// Timestamp of the original message, be it StoryMessage or TSMessage.
     public let originalMessageTimestamp: UInt64?

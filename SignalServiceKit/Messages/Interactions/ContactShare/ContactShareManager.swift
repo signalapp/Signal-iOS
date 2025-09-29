@@ -27,7 +27,7 @@ public protocol ContactShareManager {
     ) throws -> SSKProtoDataMessageContact
 }
 
-public class ContactShareManagerImpl: ContactShareManager {
+final public class ContactShareManagerImpl: ContactShareManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
@@ -238,7 +238,7 @@ public class ContactShareManagerImpl: ContactShareManager {
 
 #if TESTABLE_BUILD
 
-public class MockContactShareManager: ContactShareManager {
+final public class MockContactShareManager: ContactShareManager {
     public func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
         tx: DBWriteTransaction

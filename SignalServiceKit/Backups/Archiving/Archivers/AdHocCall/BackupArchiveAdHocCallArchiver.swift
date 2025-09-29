@@ -33,7 +33,7 @@ public extension BackupArchive {
 
 // MARK: -
 
-public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
     typealias AdHocCallAppId = BackupArchive.AdHocCallAppId
     typealias AdHocCallId = BackupArchive.AdHocCallId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<AdHocCallAppId>

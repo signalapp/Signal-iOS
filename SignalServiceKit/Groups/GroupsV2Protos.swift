@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class GroupsV2Protos {
+final public class GroupsV2Protos {
 
     private init() {}
 

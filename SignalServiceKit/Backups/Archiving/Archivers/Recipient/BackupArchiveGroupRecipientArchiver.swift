@@ -12,7 +12,7 @@ import LibSignalClient
 /// ``BackupProto_Chat``, and there will in fact _also_ be a chat for the group
 /// thread. Its just that our group thread contains all the metadata
 /// corresponding to both the Chat and Recipient parts of the Backup proto.
-public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter {
+final public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias GroupId = BackupArchive.GroupId
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address

@@ -37,7 +37,7 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
-public class GroupsV2IncomingChanges {
+final public class GroupsV2IncomingChanges {
 
     // GroupsV2IncomingChanges has one responsibility: applying incremental
     // changes to group models. It should exactly mimic the behavior

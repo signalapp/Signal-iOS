@@ -10,7 +10,7 @@ protocol StoryGroupReplyDelegate: AnyObject {
     func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController)
 }
 
-class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
+final class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     weak var delegate: StoryGroupReplyDelegate?
 
     private(set) lazy var tableView = UITableView()

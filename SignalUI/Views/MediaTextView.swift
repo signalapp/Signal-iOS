@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class MediaTextView: UITextView {
+final public class MediaTextView: UITextView {
 
     public enum DecorationStyle: String, CaseIterable {
         case none                   // colored text, no background
@@ -130,7 +130,7 @@ public class MediaTextView: UITextView {
     }
 }
 
-public class TextStylingToolbar: UIControl {
+final public class TextStylingToolbar: UIControl {
 
     private let colorPickerView: ColorPickerBarView
 

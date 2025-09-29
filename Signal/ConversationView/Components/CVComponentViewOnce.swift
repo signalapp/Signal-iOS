@@ -57,7 +57,7 @@ enum ViewOnceState: Equatable {
 
 // MARK: -
 
-public class CVComponentViewOnce: CVComponentBase, CVComponent {
+final public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .viewOnce }
 

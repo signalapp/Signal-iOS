@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
+final class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     private let databaseStorage: SDSDatabaseStorage
 
     init(

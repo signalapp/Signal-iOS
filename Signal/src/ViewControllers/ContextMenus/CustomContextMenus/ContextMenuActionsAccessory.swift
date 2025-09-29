@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, ContextMenuActionsViewDelegate {
+final public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, ContextMenuActionsViewDelegate {
 
     public let menu: ContextMenu
 
@@ -146,7 +146,7 @@ protocol ContextMenuActionsViewDelegate: AnyObject {
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction)
 }
 
-private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
+final private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
     private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes

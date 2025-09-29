@@ -29,7 +29,7 @@ struct CallLinkApprovalRequest: Hashable, Identifiable {
 // MARK: - CallLinkApprovalViewModel
 
 @MainActor
-class CallLinkApprovalViewModel: ObservableObject {
+final class CallLinkApprovalViewModel: ObservableObject {
     typealias ApprovalRequest = CallLinkApprovalRequest
 
     private struct Deps {

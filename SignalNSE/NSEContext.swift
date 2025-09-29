@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class NSEContext: NSObject, AppContext {
+final class NSEContext: NSObject, AppContext {
     let type: SignalServiceKit.AppContextType = .nse
     let isMainAppAndActive = false
     let isMainAppAndActiveIsolated = false

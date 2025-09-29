@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import SignalServiceKit
 
-class RequestAccountDataReportViewController: OWSTableViewController2 {
+final class RequestAccountDataReportViewController: OWSTableViewController2 {
     private enum FileType {
         case json
         case text

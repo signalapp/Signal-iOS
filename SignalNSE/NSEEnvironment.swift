@@ -6,7 +6,7 @@
 import Foundation
 import SignalServiceKit
 
-class NSEEnvironment {
+final class NSEEnvironment {
     let appReadiness: AppReadinessSetter
     let appContext: NSEContext
 

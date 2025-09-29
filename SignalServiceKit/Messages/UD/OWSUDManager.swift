@@ -128,7 +128,7 @@ public protocol OWSUDManager {
 
 // MARK: -
 
-public class OWSUDManagerImpl: OWSUDManager {
+final public class OWSUDManagerImpl: OWSUDManager {
 
     private let keyValueStore = KeyValueStore(collection: "kUDCollection")
     private let aciAccessStore = KeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")

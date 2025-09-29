@@ -133,7 +133,7 @@ open class CustomKeyboard: UIInputView {
     }
 }
 
-private class CustomKeyboardResponder: UITextView {
+final private class CustomKeyboardResponder: UITextView {
 
     public weak var customKeyboard: CustomKeyboard?
 

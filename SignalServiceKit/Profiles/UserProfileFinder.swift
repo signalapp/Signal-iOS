@@ -7,7 +7,7 @@ import GRDB
 import LibSignalClient
 
 @objc
-public class UserProfileFinder: NSObject {
+final public class UserProfileFinder: NSObject {
     public func userProfile(for address: OWSUserProfile.Address, transaction: DBReadTransaction) -> OWSUserProfile? {
         return userProfiles(for: [address], tx: transaction)[0]
     }

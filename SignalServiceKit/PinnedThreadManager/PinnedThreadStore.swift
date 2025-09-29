@@ -18,7 +18,7 @@ public protocol PinnedThreadStoreWrite: PinnedThreadStore {
     func updatePinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction)
 }
 
-public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
+final public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
 
     private static let pinnedThreadIdsKey = "pinnedThreadIds"
 

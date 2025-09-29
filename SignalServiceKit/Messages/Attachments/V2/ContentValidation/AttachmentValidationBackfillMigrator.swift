@@ -92,7 +92,7 @@ internal enum ValidationBackfill: Int, CaseIterable {
     }
 }
 
-public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackfillMigrator {
+final public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackfillMigrator {
 
     private let attachmentStore: AttachmentStore
     private let databaseStorage: SDSDatabaseStorage

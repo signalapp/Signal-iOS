@@ -10,7 +10,7 @@ public import LibSignalClient
 ///
 /// All non-capability fields are encrypted, and if present should be decrypted
 /// using this user's profile key.
-public class SignalServiceProfile {
+final public class SignalServiceProfile {
     private struct ValidationError: Error, CustomStringConvertible {
         let description: String
     }

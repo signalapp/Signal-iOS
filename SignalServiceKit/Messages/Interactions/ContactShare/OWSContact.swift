@@ -16,7 +16,7 @@ public protocol OWSContactField: AnyObject {
 // MARK: - OWSContact
 
 @objc(OWSContact)
-public class OWSContact: MTLModel {
+final public class OWSContact: MTLModel {
 
     @objc
     public var name: OWSContactName

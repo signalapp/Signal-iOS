@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-public class OWSTableItem {
+final public class OWSTableItem {
 
     public weak var tableViewController: UIViewController?
 

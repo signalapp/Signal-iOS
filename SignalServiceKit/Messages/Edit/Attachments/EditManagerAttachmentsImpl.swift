@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class EditManagerAttachmentsImpl: EditManagerAttachments {
+final public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore

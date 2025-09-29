@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 public import SignalServiceKit
 
-public class SearchableNameFinder {
+final public class SearchableNameFinder {
     private let contactManager: any ContactManager
     private let searchableNameIndexer: any SearchableNameIndexer
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher

@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class UnreadIndicatorInteraction: TSInteraction {
+final public class UnreadIndicatorInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {
         true

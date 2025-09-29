@@ -36,7 +36,7 @@ public protocol UsernameLookupManager {
 
 /// A ``UsernameLookupManager`` implementation that uses on-disk persistence
 /// paired with an in-memory cache.
-public class UsernameLookupManagerImpl: UsernameLookupManager {
+final public class UsernameLookupManagerImpl: UsernameLookupManager {
     public typealias Username = String
 
     private enum CachedLookupResult {

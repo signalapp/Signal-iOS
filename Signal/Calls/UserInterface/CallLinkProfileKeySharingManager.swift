@@ -6,7 +6,7 @@
 import LibSignalClient
 import SignalServiceKit
 
-public class CallLinkProfileKeySharingManager {
+final public class CallLinkProfileKeySharingManager {
     private var consideredAcis = Set<Aci>()
 
     private let db: any DB

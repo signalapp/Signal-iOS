@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsTransferInViewController: OWSTableViewController2 {
+final class PaymentsTransferInViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()

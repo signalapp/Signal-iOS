@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-class UsernameLinkScanQRCodeSheet: UsernameLinkScanQRCodeViewController {
+final class UsernameLinkScanQRCodeSheet: UsernameLinkScanQRCodeViewController {
     override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
     override func viewDidLoad() {

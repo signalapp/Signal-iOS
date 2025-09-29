@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class PhoneNumberChangedMessageInserterTest: XCTestCase {
+final class PhoneNumberChangedMessageInserterTest: XCTestCase {
     func testDidLearnAssociation() {
         let ssaCache = SignalServiceAddressCache()
 

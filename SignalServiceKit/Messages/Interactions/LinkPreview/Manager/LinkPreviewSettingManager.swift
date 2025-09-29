@@ -13,7 +13,7 @@ public protocol LinkPreviewSettingManager {
     )
 }
 
-class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
+final class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let storageServiceManager: any StorageServiceManager
     private let syncManager: any SyncManagerProtocol

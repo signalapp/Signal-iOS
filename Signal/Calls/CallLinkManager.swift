@@ -39,7 +39,7 @@ protocol CallLinkManager {
     ) async throws -> SignalServiceKit.CallLinkState
 }
 
-class CallLinkManagerImpl: CallLinkManager {
+final class CallLinkManagerImpl: CallLinkManager {
     private let networkManager: NetworkManager
     private let serverParams: GenericServerPublicParams
     private let sfuClient: SignalRingRTC.SFUClient

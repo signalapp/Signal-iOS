@@ -7,7 +7,7 @@ import GRDB
 @testable import SignalServiceKit
 public import XCTest
 
-public class AttachmentV2MigrationTest: XCTestCase {
+final public class AttachmentV2MigrationTest: XCTestCase {
 
     private var dbFileURL: URL!
     private var db: SDSDatabaseStorage!

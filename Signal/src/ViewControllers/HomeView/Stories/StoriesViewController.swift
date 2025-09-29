@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, HomeTabViewController {
+final class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, HomeTabViewController {
     let tableView = UITableView()
 
     private lazy var searchController = UISearchController()

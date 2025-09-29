@@ -5,7 +5,7 @@
 
 public import GRDB
 
-public class BackupAttachmentUploadProgressObserver {
+final public class BackupAttachmentUploadProgressObserver {
     fileprivate let queueSnapshot: BackupAttachmentUploadProgressImpl.UploadQueueSnapshot
     fileprivate let sink: OWSProgressSink
     fileprivate let source: OWSProgressSource

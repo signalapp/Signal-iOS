@@ -22,7 +22,7 @@ import LibSignalClient
 /// For unidentified envelopes, we first decrypt the envelope payload which
 /// gives us the `sourceAci` and a nested payload. We then decrypt that
 /// nested payload to populate `plaintextData`.
-class DecryptedIncomingEnvelope {
+final class DecryptedIncomingEnvelope {
     let envelope: SSKProtoEnvelope
     let timestamp: UInt64
     let serverTimestamp: UInt64

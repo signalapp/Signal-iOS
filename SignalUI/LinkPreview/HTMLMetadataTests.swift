@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalUI
 
-class HTMLMetadataTests: XCTestCase {
+final class HTMLMetadataTests: XCTestCase {
 
     func testEmptyBody() {
         let empty = HTMLMetadata.construct(parsing: "")

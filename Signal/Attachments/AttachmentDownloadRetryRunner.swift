@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 public import SignalServiceKit
 
-public class AttachmentDownloadRetryRunner {
+final public class AttachmentDownloadRetryRunner {
 
     private let db: SDSDatabaseStorage
     private let runner: Runner

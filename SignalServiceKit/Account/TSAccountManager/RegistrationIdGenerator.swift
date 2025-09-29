@@ -27,7 +27,7 @@ public class RegistrationIdGenerator {
 
 #if TESTABLE_BUILD
 
-public class MockRegistrationIdGenerator: RegistrationIdGenerator {
+final public class MockRegistrationIdGenerator: RegistrationIdGenerator {
 
     public var generatedRegistrationIds: [UInt32] = []
 

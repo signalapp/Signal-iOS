@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVContactShareView: ManualStackView {
+final public class CVContactShareView: ManualStackView {
 
     struct State: Equatable {
         let contactShare: ContactShareViewModel

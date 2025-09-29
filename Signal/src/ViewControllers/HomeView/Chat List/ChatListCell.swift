@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ChatListCell: UITableViewCell, ReusableTableViewCell {
+final class ChatListCell: UITableViewCell, ReusableTableViewCell {
     static let reuseIdentifier = "ChatListCell"
 
     private var avatarView: ConversationAvatarView?
@@ -1064,7 +1064,7 @@ private struct CLVCellContentMeasurements {
 // * CLVCellContentToken captures (only) the exact content that will
 //   be rendered in the cell, its measurement/layout, etc.
 //   CLVCellContentToken is expensive to build.
-class CLVCellContentToken {
+final class CLVCellContentToken {
     fileprivate let configuration: CLVCellContentConfiguration
     fileprivate let measurements: CLVCellContentMeasurements
 
@@ -1087,7 +1087,7 @@ class CLVCellContentToken {
 
 // MARK: -
 
-class NeverClearView: ManualLayoutViewWithLayer {
+final class NeverClearView: ManualLayoutViewWithLayer {
     override var backgroundColor: UIColor? {
         didSet {
             if backgroundColor?.cgColor.alpha == 0 {

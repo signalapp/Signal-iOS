@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class OutgoingGroupUpdateMessageTest: SSKBaseTest {
+final class OutgoingGroupUpdateMessageTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
         SSKEnvironment.shared.databaseStorageRef.write { tx in

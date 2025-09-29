@@ -5,7 +5,7 @@
 
 import UIKit
 
-public class SelectionHapticFeedback {
+final public class SelectionHapticFeedback {
     private let feedbackGenerator = UISelectionFeedbackGenerator()
 
     public init() {
@@ -21,7 +21,7 @@ public class SelectionHapticFeedback {
     }
 }
 
-public class NotificationHapticFeedback {
+final public class NotificationHapticFeedback {
     private let feedbackGenerator = UINotificationFeedbackGenerator()
 
     public init() {
@@ -37,7 +37,7 @@ public class NotificationHapticFeedback {
     }
 }
 
-public class ImpactHapticFeedback {
+final public class ImpactHapticFeedback {
 
     public class func impactOccurred(style: UIImpactFeedbackGenerator.FeedbackStyle) {
         DispatchQueue.main.async {

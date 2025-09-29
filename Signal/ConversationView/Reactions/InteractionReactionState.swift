@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-public class InteractionReactionState: NSObject {
+final public class InteractionReactionState: NSObject {
     var hasReactions: Bool { return !emojiCounts.isEmpty }
 
     struct EmojiCount {

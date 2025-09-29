@@ -6,7 +6,7 @@
 import Lottie
 import SignalServiceKit
 
-class LottieToggleButton: UIButton {
+final class LottieToggleButton: UIButton {
 
     var animationName: String? {
         didSet {

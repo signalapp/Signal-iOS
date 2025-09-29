@@ -30,7 +30,7 @@ public protocol UsernameValidationManager {
 
 // MARK: -
 
-public class UsernameValidationManagerImpl: UsernameValidationManager {
+final public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     private enum Constants {
         static let collectionName: String = "UsernameValidation"

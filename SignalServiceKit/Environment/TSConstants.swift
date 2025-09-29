@@ -8,7 +8,7 @@
 import Foundation
 public import LibSignalClient
 
-public class TSConstants {
+final public class TSConstants {
 
     private enum Environment {
         case production, staging
@@ -151,7 +151,7 @@ public struct MrEnclave: Equatable {
 
 // MARK: - Production
 
-public class TSConstantsProduction: TSConstantsProtocol {
+final public class TSConstantsProduction: TSConstantsProtocol {
 
     public init() {}
 
@@ -205,7 +205,7 @@ public class TSConstantsProduction: TSConstantsProtocol {
 
 // MARK: - Staging
 
-public class TSConstantsStaging: TSConstantsProtocol {
+final public class TSConstantsStaging: TSConstantsProtocol {
 
     public init() {}
 
@@ -262,7 +262,7 @@ public class TSConstantsStaging: TSConstantsProtocol {
 
 #if TESTABLE_BUILD
 
-public class TSConstantsMock: TSConstantsProtocol {
+final public class TSConstantsMock: TSConstantsProtocol {
 
     public init() {}
 

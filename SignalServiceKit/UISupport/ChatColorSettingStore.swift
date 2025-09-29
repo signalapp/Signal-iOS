@@ -10,7 +10,7 @@ import Foundation
 ///
 /// The keys in this store are thread unique ids _OR_ "defaultKey". The
 /// values are either `PaletteChatColor.rawValue` or `CustomChatColor.Key`.
-public class ChatColorSettingStore {
+final public class ChatColorSettingStore {
     private let settingStore: KeyValueStore
     /// The keys in this store are `CustomChatColor.Key`. The values are
     /// `CustomChatColor`s.

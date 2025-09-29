@@ -6,7 +6,7 @@
 public import Lottie
 public import SignalServiceKit
 
-public class CVMediaCache: NSObject {
+final public class CVMediaCache: NSObject {
 
     public enum CacheKey: Hashable, Equatable {
         case blurHash(String)

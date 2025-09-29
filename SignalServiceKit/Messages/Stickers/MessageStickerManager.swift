@@ -33,7 +33,7 @@ public protocol MessageStickerManager {
     ) throws -> SSKProtoDataMessageSticker
 }
 
-public class MessageStickerManagerImpl: MessageStickerManager {
+final public class MessageStickerManagerImpl: MessageStickerManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
@@ -177,7 +177,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
 
 #if TESTABLE_BUILD
 
-public class MockMessageStickerManager: MessageStickerManager {
+final public class MockMessageStickerManager: MessageStickerManager {
 
     public func buildValidatedMessageSticker(
         from proto: SSKProtoDataMessageSticker,

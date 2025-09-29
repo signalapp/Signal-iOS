@@ -16,7 +16,7 @@ protocol NameCollisionResolutionDelegate: AnyObject {
     func nameCollisionControllerDidComplete(_ controller: NameCollisionResolutionViewController, dismissConversationView: Bool)
 }
 
-class NameCollisionResolutionViewController: OWSTableViewController2 {
+final class NameCollisionResolutionViewController: OWSTableViewController2 {
     private let collisionFinder: NameCollisionFinder
     private var thread: TSThread { collisionFinder.thread }
     private var groupViewHelper: GroupViewHelper?

@@ -182,7 +182,7 @@ private extension OWSDevice {
 
 // MARK: - Mocks
 
-private class MockDevicesService: OWSDeviceService {
+final private class MockDevicesService: OWSDeviceService {
     var shouldFail: Bool = false
     var refreshCount: Int = 0
 

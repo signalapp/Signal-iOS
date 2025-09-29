@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
-class WebRTCCallMessageHandler: CallMessageHandler {
+final class WebRTCCallMessageHandler: CallMessageHandler {
 
     // MARK: Initializers
 

@@ -14,7 +14,7 @@ protocol RegistrationChangeNumberSplashPresenter: AnyObject {
     func exitRegistration()
 }
 
-class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNavigationChildController {
+final class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNavigationChildController {
 
     private weak var presenter: RegistrationChangeNumberSplashPresenter?
 

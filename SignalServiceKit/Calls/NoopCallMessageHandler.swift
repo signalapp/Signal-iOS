@@ -5,7 +5,7 @@
 
 public import LibSignalClient
 
-public class NoopCallMessageHandler: CallMessageHandler {
+final public class NoopCallMessageHandler: CallMessageHandler {
     public init() {}
 
     public func receivedEnvelope(

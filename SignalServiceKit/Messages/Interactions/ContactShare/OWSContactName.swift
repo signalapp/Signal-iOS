@@ -6,7 +6,7 @@
 public import Contacts
 
 @objc(OWSContactName)
-public class OWSContactName: MTLModel {
+final public class OWSContactName: MTLModel {
 
     @objc
     public fileprivate(set) var givenName: String?

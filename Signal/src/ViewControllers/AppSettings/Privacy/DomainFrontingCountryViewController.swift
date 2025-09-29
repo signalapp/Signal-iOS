@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class DomainFrontingCountryViewController: OWSTableViewController2 {
+final class DomainFrontingCountryViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()

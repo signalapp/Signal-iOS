@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class ExperienceUpgradeFinder {
+final public class ExperienceUpgradeFinder {
 
     // MARK: -
 

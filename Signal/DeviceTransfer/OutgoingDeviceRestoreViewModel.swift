@@ -13,7 +13,7 @@ enum DeviceRestoreError: Error {
     case unknownError
 }
 
-class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObserver {
+final class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObserver {
 
     struct RestoreMethodData {
         struct PeerConnectionData {

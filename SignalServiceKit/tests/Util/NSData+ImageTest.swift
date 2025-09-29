@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class NSDataImageTests: XCTestCase {
+final class NSDataImageTests: XCTestCase {
 
     func testIsAnimatedPngData_png() {
         let image = UIImage.image(color: .red, size: CGSize(width: 1, height: 1))

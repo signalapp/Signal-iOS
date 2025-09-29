@@ -11,7 +11,7 @@ public protocol DeepCopyable {
 
 // MARK: -
 
-public class DeepCopies {
+final public class DeepCopies {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {

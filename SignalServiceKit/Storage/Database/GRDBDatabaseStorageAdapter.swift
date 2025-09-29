@@ -7,7 +7,7 @@ import Foundation
 public import GRDB
 import UIKit
 
-public class GRDBDatabaseStorageAdapter {
+final public class GRDBDatabaseStorageAdapter {
 
     public enum DirectoryMode: Int {
         public static let commonGRDBPrefix = "grdb"

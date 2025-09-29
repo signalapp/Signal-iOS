@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class GRDBSchemaMigratorTest: XCTestCase {
+final class GRDBSchemaMigratorTest: XCTestCase {
     func testMigrateFromScratch() throws {
         let databaseStorage = try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),

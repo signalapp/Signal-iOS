@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager {
+final public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager {
 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 

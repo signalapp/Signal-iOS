@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class ConnectionsEducationSheetViewController: StackSheetViewController {
+final public class ConnectionsEducationSheetViewController: StackSheetViewController {
     public override var stackViewInsets: UIEdgeInsets {
         .init(top: 24, left: 24, bottom: 32, right: 24)
     }

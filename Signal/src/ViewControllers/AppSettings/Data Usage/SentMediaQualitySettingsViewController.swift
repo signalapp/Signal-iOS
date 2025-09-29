@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class SentMediaQualitySettingsViewController: OWSTableViewController2 {
+final class SentMediaQualitySettingsViewController: OWSTableViewController2 {
     private let updateHandler: (_ isHighQuality: Bool) -> Void
     init(updateHandler: @escaping (_ isHighQuality: Bool) -> Void) {
         self.updateHandler = updateHandler

@@ -87,7 +87,7 @@ public protocol EditMessageStore {
     ) throws
 }
 
-public class EditMessageStoreImpl: EditMessageStore {
+final public class EditMessageStoreImpl: EditMessageStore {
 
     public init() {}
 

@@ -30,7 +30,7 @@ public protocol ApprovalFooterDelegate: AnyObject {
 
 // MARK: -
 
-public class ApprovalFooterView: UIView {
+final public class ApprovalFooterView: UIView {
     public weak var delegate: ApprovalFooterDelegate? {
         didSet {
             updateContents()

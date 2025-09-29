@@ -6,7 +6,7 @@
 public import SignalUI
 public import SignalServiceKit
 
-public class SharingThreadPickerProgressSheet: ActionSheetController {
+final public class SharingThreadPickerProgressSheet: ActionSheetController {
 
     private var attachmentIds: [Attachment.IDType]
     /// Note: progress for _all_ attachments, not just those in attachmentIds.

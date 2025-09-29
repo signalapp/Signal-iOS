@@ -31,7 +31,7 @@ public protocol AudioPlayerDelegate: AnyObject {
     func audioPlayerDidFinish()
 }
 
-public class AudioPlayer: NSObject {
+final public class AudioPlayer: NSObject {
 
     public weak var delegate: AudioPlayerDelegate?
 

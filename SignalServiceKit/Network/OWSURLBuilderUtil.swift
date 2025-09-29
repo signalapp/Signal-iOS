@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class OWSURLBuilderUtil {
+final public class OWSURLBuilderUtil {
 
     /// Joins a URL path/query/fragment chunk with a base URL.
     ///

@@ -8,7 +8,7 @@ import SignalUI
 
 // MARK: - UI
 
-class ReactionsBurstView: UIView, ReactionBurstDelegate {
+final class ReactionsBurstView: UIView, ReactionBurstDelegate {
     private let burstAligner: ReactionBurstAligner
     private var burstManager: ReactionBurstManager?
 
@@ -177,7 +177,7 @@ protocol ReactionBurstAligner {
 
 // MARK: - RotatingArray data structure
 
-private class RotatingArray<T: Timestamped> {
+final private class RotatingArray<T: Timestamped> {
     private let capacity: Int
     private let timespan: TimeInterval
 
@@ -243,7 +243,7 @@ protocol ReactionBurstDelegate: AnyObject {
 
 // MARK: - ReactionBurstManager
 
-class ReactionBurstManager {
+final class ReactionBurstManager {
     private var incomingEmojiDictionary = [String: RotatingArray<Reaction>]()
     private var cooloffDictionary = [String: TimeInterval]()
     private weak var burstDelegate: ReactionBurstDelegate?

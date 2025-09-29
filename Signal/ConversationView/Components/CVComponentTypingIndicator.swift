@@ -6,7 +6,7 @@
 import SignalServiceKit
 public import SignalUI
 
-public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
+final public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
     public var componentKey: CVComponentKey { .typingIndicator }
 

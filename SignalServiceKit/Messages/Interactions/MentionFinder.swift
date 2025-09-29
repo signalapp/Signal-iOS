@@ -9,7 +9,7 @@ public import LibSignalClient
 
 // MARK: -
 
-public class MentionFinder {
+final public class MentionFinder {
 
     public class func messagesMentioning(
         aci: Aci,

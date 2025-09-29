@@ -12,7 +12,7 @@ protocol RecentPhotosDelegate: AnyObject {
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
 }
 
-class RecentPhotosCollectionView: UICollectionView {
+final class RecentPhotosCollectionView: UICollectionView {
 
     static let maxRecentPhotos = 96
     static let itemSpacing: CGFloat = 12
@@ -339,7 +339,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 }
 
-private class RecentPhotoCell: UICollectionViewCell {
+final private class RecentPhotoCell: UICollectionViewCell {
 
     static let reuseIdentifier = "RecentPhotoCell"
 

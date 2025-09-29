@@ -167,7 +167,7 @@ public extension Usernames {
 
 // MARK: - Impl
 
-class LocalUsernameManagerImpl: LocalUsernameManager {
+final class LocalUsernameManagerImpl: LocalUsernameManager {
     private struct CorruptionStore {
         private enum Constants {
             static let collection = "LocalUsernameCorruption"

@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class SMKUDAccessKeyTest: XCTestCase {
+final class SMKUDAccessKeyTest: XCTestCase {
     func testUDAccessKeyForProfileKey() {
         let profileKey = Aes256Key(data: Data(count: Int(Aes256Key.keyByteLength)))!
         let udAccessKey1 = SMKUDAccessKey(profileKey: profileKey)

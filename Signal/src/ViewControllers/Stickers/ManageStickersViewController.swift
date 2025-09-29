@@ -6,7 +6,7 @@
 public import SignalServiceKit
 public import SignalUI
 
-private class StickerPackActionButton: UIView {
+final private class StickerPackActionButton: UIView {
 
     private let block: () -> Void
 
@@ -50,7 +50,7 @@ private class StickerPackActionButton: UIView {
 
 // MARK: -
 
-public class ManageStickersViewController: OWSTableViewController2 {
+final public class ManageStickersViewController: OWSTableViewController2 {
 
     typealias DatedStickerPackInfo = StickerManager.DatedStickerPackInfo
 

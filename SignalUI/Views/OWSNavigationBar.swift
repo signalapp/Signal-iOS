@@ -20,7 +20,7 @@ public enum OWSNavigationBarStyle: Int {
     }
 }
 
-public class OWSNavigationBar: UINavigationBar {
+final public class OWSNavigationBar: UINavigationBar {
 
     public var fullWidth: CGFloat {
         return superview?.frame.width ?? .zero
