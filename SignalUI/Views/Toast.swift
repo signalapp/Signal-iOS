@@ -66,15 +66,14 @@ public class ToastController: NSObject, ToastViewDelegate {
             self.toastBottomConstraint = toastView.autoPinEdge(edge, to: edge, of: view, withOffset: offset)
         }
 
-        if UIDevice.current.isIPad {
-            // As wide as possible, not exceeding 512 pt, and not exceeding superview width
-            toastView.autoHCenterInSuperview()
-            toastView.autoSetDimension(.width, toSize: 512, relation: .lessThanOrEqual)/*.priority = .defaultLow*/
-            toastView.autoPinWidthToSuperview(withMargin: 8, relation: .lessThanOrEqual)
-            toastView.autoPinWidthToSuperview(withMargin: 8).forEach { $0.priority = .defaultHigh }
-        } else {
-            toastView.autoPinWidthToSuperview(withMargin: 8)
-        }
+        // As wide as possible, not exceeding 512 pt, and not exceeding superview width
+        toastView.autoSetDimension(.width, toSize: 512, relation: .lessThanOrEqual)
+        toastView.centerXAnchor.constraint(equalTo: parentView.safeAreaLayoutGuide.centerXAnchor).isActive = true
+
+        toastView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 8, relation: .greaterThanOrEqual)
+        toastView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 8, relation: .greaterThanOrEqual)
+        toastView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 8).priority = .defaultHigh
+        toastView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 8).priority = .defaultHigh
 
         if let currentToastController = type(of: self).currentToastController {
             currentToastController.dismissToastView()
