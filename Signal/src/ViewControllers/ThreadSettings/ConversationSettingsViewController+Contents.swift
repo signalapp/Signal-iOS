@@ -273,6 +273,8 @@ extension ConversationSettingsViewController {
                     let overlayView = UIView()
                     overlayView.isUserInteractionEnabled = false
                     overlayView.backgroundColor = .ows_blackAlpha05
+                    overlayView.layer.cornerRadius = imageView.layer.cornerRadius
+                    overlayView.clipsToBounds = true
                     button.addSubview(overlayView)
                     overlayView.autoPinEdgesToSuperviewEdges()
                 }

@@ -919,7 +919,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
             let imageView = UIImageView()
             imageView.clipsToBounds = true
-            imageView.layer.cornerRadius = 4
+            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+                imageView.layer.cornerCurve = .continuous
+                imageView.layer.cornerRadius = 11
+            } else {
+                imageView.layer.cornerRadius = 4
+            }
             imageView.contentMode = .scaleAspectFill
 
             Task {
