@@ -377,7 +377,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             owsFailDebug("Error setting AEP")
         }
         let newAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-        keyChanged = (oldAep?.rawData != newAep?.rawData)
+        keyChanged = (oldAep != newAep)
 
         if newAep == nil {
             let oldMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData

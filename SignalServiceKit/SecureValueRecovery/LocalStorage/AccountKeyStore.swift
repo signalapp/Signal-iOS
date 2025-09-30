@@ -135,6 +135,6 @@ public class AccountKeyStore {
         // Setting the AEP means we need to set our Backup-ID again.
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
 
-        aepKvStore.setString(accountEntropyPool.rawData, key: Keys.aepKeyName, transaction: tx)
+        aepKvStore.setString(accountEntropyPool.rawString, key: Keys.aepKeyName, transaction: tx)
     }
 }

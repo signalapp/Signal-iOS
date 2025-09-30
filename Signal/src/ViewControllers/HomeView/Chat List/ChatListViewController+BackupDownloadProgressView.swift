@@ -795,7 +795,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
     }
 
     private static func formatByteSize(_ byteSize: UInt64) -> String {
-        return OWSFormat.formatFileSize(UInt(byteSize), maximumFractionalDigits: 0)
+        return OWSByteCountFormatStyle().format(byteSize)
     }
 
     private func didTapResume() {
@@ -1043,7 +1043,15 @@ private class BackupDownloadProgressPreviewViewController: UIViewController {
 }
 
 @available(iOS 17, *)
-#Preview {
+#Preview("Restoring") {
+    return BackupDownloadProgressPreviewViewController(state: .restoring(progress: OWSProgress(
+        completedUnitCount: 1_600_800,
+        totalUnitCount: 2_400_300_000,
+    )))
+}
+
+@available(iOS 17, *)
+#Preview("Low Power") {
     return BackupDownloadProgressPreviewViewController(state: .paused(reason: .lowPowerMode))
 }
 

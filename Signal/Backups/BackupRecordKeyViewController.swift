@@ -58,13 +58,14 @@ class BackupRecordKeyViewController: HostingController<BackupRecordKeyView> {
         super.init(wrappedView: BackupRecordKeyView(viewModel: viewModel))
 
         viewModel.actionsDelegate = self
+        OWSTableViewController2.removeBackButtonText(viewController: self)
     }
 }
 
 extension BackupRecordKeyViewController: BackupRecordKeyViewModel.ActionsDelegate {
     fileprivate func copyToClipboard(_ aep: AccountEntropyPool) {
         UIPasteboard.general.setItems(
-            [[UIPasteboard.typeAutomatic: aep.rawData]],
+            [[UIPasteboard.typeAutomatic: aep.displayString]],
             options: [.expirationDate: Date().addingTimeInterval(60)]
         )
 
@@ -168,8 +169,9 @@ struct BackupRecordKeyView: View {
                     comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
                 ))
                 .fontWeight(.medium)
+                .font(.footnote)
             }
-            .foregroundStyle(Color.Signal.secondaryLabel)
+            .foregroundStyle(Color.Signal.label)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background {
@@ -187,6 +189,7 @@ struct BackupRecordKeyView: View {
                         comment: "Title for a button allowing users to create a new 'Recovery Key'."
                     ))
                     .foregroundStyle(Color.Signal.ultramarine)
+                    .font(.headline)
                 }
             }
 
@@ -247,7 +250,7 @@ private struct DisplayAccountEntropyPoolView: View {
     /// of an AEP changes. `Constants.formattingPrecondition` should alert in
     /// that case.
     private var stylizedAEPText: String {
-        let aep = aep.rawData
+        let aep = aep.displayString
 
         let charGroups: [String] = stride(from: 0, to: aep.count, by: Constants.charsPerGroup).map {
             let startIndex = aep.index(aep.startIndex, offsetBy: $0)
@@ -280,7 +283,7 @@ private extension BackupRecordKeyViewModel {
         options: [BackupRecordKeyViewController.Option],
     ) -> BackupRecordKeyViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
-            func copyToClipboard(_ aep: AccountEntropyPool) { print("Copying \(aep.rawData) to clipboard...!") }
+            func copyToClipboard(_ aep: AccountEntropyPool) { print("Copying \(aep.displayString) to clipboard...!") }
             func onContinuePressed() { print("Completing...!") }
             func onCreateNewKeyPressed() { print("Creating new key...!") }
         }

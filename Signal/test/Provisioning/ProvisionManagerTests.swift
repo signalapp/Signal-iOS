@@ -120,7 +120,7 @@ public class ProvisioningManagerTests {
         // values populated by the old device
         switch provisionMessage.rootKey {
         case .accountEntropyPool(let aep):
-            #expect(aep.rawData == accountEntropyPool.rawData)
+            #expect(aep == accountEntropyPool)
         case .masterKey:
             Issue.record("Expected AEP, but found MasterKey")
         }

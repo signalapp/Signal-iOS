@@ -96,7 +96,7 @@ public final class BackupDisablingManager {
                 case .rotate(let newAEP):
                     // Persist the new AEP in this class' KVStore temporarily.
                     // Once we're done disabling, we'll save it officially.
-                    kvStore.setString(newAEP.rawData, key: StoreKeys.aepBeingRotated, transaction: tx)
+                    kvStore.setString(newAEP.rawString, key: StoreKeys.aepBeingRotated, transaction: tx)
                 }
             }
 

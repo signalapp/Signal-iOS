@@ -15,7 +15,7 @@ public struct MessageRootBackupKey: BackupKeyMaterial {
 
     public init(accountEntropyPool: AccountEntropyPool, aci: Aci) throws(BackupKeyMaterialError) {
         do {
-            let backupKey = try LibSignalClient.AccountEntropyPool.deriveBackupKey(accountEntropyPool.rawData)
+            let backupKey = try LibSignalClient.AccountEntropyPool.deriveBackupKey(accountEntropyPool.rawString)
             self.init(backupKey: backupKey, aci: aci)
         } catch {
             throw BackupKeyMaterialError.derivationError(error)

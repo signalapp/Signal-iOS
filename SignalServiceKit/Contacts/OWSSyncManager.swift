@@ -225,7 +225,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let syncKeysMessage = OWSSyncKeysMessage(
             localThread: thread,
-            accountEntropyPool: accountEntropyPool?.rawData,
+            accountEntropyPool: accountEntropyPool?.rawString,
             masterKey: masterKey?.rawData,
             mediaRootBackupKey: mrbk.serialize(),
             transaction: tx

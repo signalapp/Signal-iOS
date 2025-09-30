@@ -18,7 +18,7 @@ public struct RegistrationEnterAccountEntropyPoolState: Equatable {
     let canShowBackButton: Bool
 }
 
-class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController {
+class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController, OWSNavigationChildController {
     private weak var presenter: RegistrationEnterAccountEntropyPoolPresenter?
     private let state: RegistrationEnterAccountEntropyPoolState
 

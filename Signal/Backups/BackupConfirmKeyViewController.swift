@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
+class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWSNavigationChildController {
     private let aep: AccountEntropyPool
 
     init(
@@ -17,6 +17,8 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
         self.aep = aep
 
         super.init()
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
 
         configure(
             aepValidationPolicy: .acceptOnly(aep),
@@ -52,6 +54,12 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController {
                 )
             }
         )
+    }
+
+    // MARK: OWSNavigationChildController
+
+    var navbarBackgroundColorOverride: UIColor? {
+        .Signal.groupedBackground
     }
 }
 

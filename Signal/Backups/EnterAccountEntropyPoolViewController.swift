@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChildController {
+class EnterAccountEntropyPoolViewController: OWSViewController {
     enum AEPValidationPolicy {
         case acceptAnyWellFormed
         case acceptOnly(AccountEntropyPool)
@@ -75,7 +75,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
 
         stackView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 20)
         stackView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -20)
-        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 24)
         stackView.autoPinEdge(toSuperviewEdge: .bottom)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -177,7 +177,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
         case .acceptAnyWellFormed:
             return .success(enteredAep)
         case .acceptOnly(let expectedAep):
-            if enteredAep.rawData == expectedAep.rawData {
+            if enteredAep == expectedAep {
                 return .success(enteredAep)
             } else {
                 return .wellFormedButMismatched
@@ -362,7 +362,7 @@ extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
             allowedCharacters: .alphanumeric,
             maxCharacters: AccountEntropyPool.Constants.byteLength,
             format: { unformatted in
-                return unformatted.lowercased()
+                return unformatted.uppercased()
                     .enumerated()
                     .map { index, char -> String in
                         if index > 0, index % Constants.chunkSize == 0 {
@@ -404,7 +404,7 @@ private extension EnterAccountEntropyPoolViewController {
                 title: "Footer Button",
                 action: { print("Footer button!") }
             ),
-            onEntryConfirmed: { print("Confirmed: \($0.rawData)") }
+            onEntryConfirmed: { print("Confirmed: \($0.displayString)") }
         )
         return viewController
     }

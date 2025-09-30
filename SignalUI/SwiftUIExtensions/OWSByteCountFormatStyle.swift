@@ -10,7 +10,7 @@ public struct OWSByteCountFormatStyle: FormatStyle {
         self.style = .decimal
     }
 
-    public func format(_ byteCount: Int64) -> String {
+    public func format(_ byteCount: UInt64) -> String {
         let byteFormatter = ByteCountFormatter()
         // Use KB, MB, GB, etc as appropriate.
         byteFormatter.allowedUnits = .useAll
@@ -23,7 +23,7 @@ public struct OWSByteCountFormatStyle: FormatStyle {
         // 400 MB to 400.1 MB).
         byteFormatter.zeroPadsFractionDigits = true
 
-        return byteFormatter.string(fromByteCount: byteCount)
+        return byteFormatter.string(fromByteCount: Int64(clamping: byteCount))
     }
 }
 

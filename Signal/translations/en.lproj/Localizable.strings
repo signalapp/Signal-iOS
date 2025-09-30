@@ -598,11 +598,20 @@
 /* Title for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Secure Backups";
 
-/* Subtitle for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_SUBTITLE" = "Your recovery key is a 64-character code that lets you restore your backup when you re-install Signal.\n\nIf you forget your key, you will not be able to restore your backup. Signal cannot help you recover your backup.";
+/* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+
+/* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+
+/* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+
+/* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Your Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copy to Clipboard";

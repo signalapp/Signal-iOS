@@ -155,7 +155,7 @@ public struct LinkingProvisioningMessage {
 
         switch rootKey {
         case .accountEntropyPool(let accountEntropyPool):
-            messageBuilder.setAccountEntropyPool(accountEntropyPool.rawData)
+            messageBuilder.setAccountEntropyPool(accountEntropyPool.rawString)
             messageBuilder.setMasterKey(accountEntropyPool.getMasterKey().rawData)
         case .masterKey(let masterKey):
             messageBuilder.setMasterKey(masterKey.rawData)

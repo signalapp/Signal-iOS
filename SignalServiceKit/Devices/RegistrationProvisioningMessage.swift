@@ -130,7 +130,7 @@ public struct RegistrationProvisioningMessage {
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {
         var messageBuilder = RegistrationProtos_RegistrationProvisionMessage()
 
-        messageBuilder.accountEntropyPool = accountEntropyPool.rawData
+        messageBuilder.accountEntropyPool = accountEntropyPool.rawString
         messageBuilder.aci = aci.serviceIdBinary
         messageBuilder.e164 = phoneNumber.stringValue
         if let pin {
