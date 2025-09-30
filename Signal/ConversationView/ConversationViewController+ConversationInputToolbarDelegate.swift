@@ -19,6 +19,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         isGroupConversation
     }
 
+    public func viewForKeyboardLayoutGuide() -> UIView {
+        return view
+    }
+
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 

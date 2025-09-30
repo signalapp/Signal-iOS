@@ -21,6 +21,10 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func isGroup() -> Bool
 
+    // Older iOS versions (<16.0) only have proper `keyboardLayoutGuide` on UIVC's root view,
+    // but might as well request root view for all iOS versions.
+    func viewForKeyboardLayoutGuide() -> UIView
+
     // MARK: Voice Memo
 
     func voiceMemoGestureDidStart()
@@ -1866,16 +1870,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         set { setDesiredKeyboardType(newValue, animated: false) }
     }
 
-    private var stickerKeyboard: StickerKeyboard?
+    private var _stickerKeyboard: StickerKeyboard?
 
-    private func getOrCreateStickerKeyboard() -> StickerKeyboard {
-        if let stickerKeyboard {
+    private var stickerKeyboard: StickerKeyboard {
+        if let stickerKeyboard = _stickerKeyboard {
             return stickerKeyboard
         }
-        let stickerKeyboard = StickerKeyboard()
-        stickerKeyboard.delegate = self
-        stickerKeyboard.registerWithView(self)
-        self.stickerKeyboard = stickerKeyboard
+        let stickerKeyboard = StickerKeyboard(delegate: self)
+        _stickerKeyboard = stickerKeyboard
         return stickerKeyboard
     }
 
@@ -1892,12 +1894,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return attachmentKeyboard
         }
         let keyboard = AttachmentKeyboard(delegate: self)
-        keyboard.registerWithView(self)
         _attachmentKeyboard = keyboard
         return keyboard
     }
-
-    private var attachmentKeyboardIfLoaded: AttachmentKeyboard? { _attachmentKeyboard }
 
     func showAttachmentKeyboard() {
         AssertIsOnMainThread()
@@ -1906,7 +1905,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     private func toggleKeyboardType(_ keyboardType: KeyboardType, animated: Bool) {
-        guard let inputToolbarDelegate = inputToolbarDelegate else {
+        guard let inputToolbarDelegate else {
             owsFailDebug("inputToolbarDelegate is nil")
             return
         }
@@ -1933,17 +1932,41 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func setDesiredKeyboardType(_ keyboardType: KeyboardType, animated: Bool) {
         guard _desiredKeyboardType != keyboardType else { return }
 
+        // Measure system keyboard size when switching away from it,
+        // but only if we don't know the height for this orientation yet.
+        if  desiredKeyboardType == .system,
+            inputTextView.isFirstResponder,
+            !CustomKeyboard.hasCachedHeight(forTraitCollection: traitCollection)
+        {
+            calculateCustomKeyboardHeight()
+        }
+
         _desiredKeyboardType = keyboardType
 
         ensureButtonVisibility(withAnimation: animated, doLayout: true)
 
-        if isInputViewFirstResponder {
-            // If any keyboard is presented, make sure the correct
-            // keyboard is presented.
-            beginEditingMessage()
+        inputTextView.inputView = desiredInputView
+        inputTextView.reloadInputViews()
+
+        // Add "Tap to switch to system keyboard" behavior.
+        if desiredKeyboardType == .system {
+            inputTextView.removeGestureRecognizer(textInputViewTapGesture)
+        } else if textInputViewTapGesture.view == nil {
+            inputTextView.addGestureRecognizer(textInputViewTapGesture)
+        }
+    }
+
+    private func calculateCustomKeyboardHeight() {
+        guard desiredKeyboardType == .system, inputTextView.isFirstResponder else { return }
+
+        let viewForKeyboardLayoutGuide = inputToolbarDelegate?.viewForKeyboardLayoutGuide() ?? self
+        let keyboardHeight = viewForKeyboardLayoutGuide.keyboardLayoutGuide.layoutFrame.height
+        if keyboardHeight > 100 {
+            Logger.debug("Keyboard height: \(keyboardHeight). Horizontal: \(traitCollection.horizontalSizeClass) Vertical: \(traitCollection.verticalSizeClass)")
+            stickerKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
+            attachmentKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
         } else {
-            // Make sure neither keyboard is presented.
-            endEditingMessage()
+            Logger.warn("Suspicious keyboard height: \(keyboardHeight)")
         }
     }
 
@@ -1954,48 +1977,67 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private func restoreDesiredKeyboardIfNecessary() {
         AssertIsOnMainThread()
-        if desiredKeyboardType != .system && !desiredFirstResponder.isFirstResponder {
-            desiredFirstResponder.becomeFirstResponder()
+        if desiredKeyboardType != .system && !inputTextView.isFirstResponder {
+            beginEditingMessage()
         }
     }
 
     var isInputViewFirstResponder: Bool {
         return inputTextView.isFirstResponder
-        || stickerKeyboard?.isFirstResponder ?? false
-        || attachmentKeyboardIfLoaded?.isFirstResponder ?? false
     }
 
-    private func ensureFirstResponderState() {
-        restoreDesiredKeyboardIfNecessary()
-    }
-
-    private var desiredFirstResponder: UIResponder {
+    private var desiredInputView: UIInputView? {
         switch desiredKeyboardType {
-        case .system: return inputTextView
-        case .sticker: return getOrCreateStickerKeyboard()
+        case .system: return nil
+        case .sticker: return stickerKeyboard
         case .attachment: return attachmentKeyboard
         }
     }
 
     func beginEditingMessage() {
-        guard !desiredFirstResponder.isFirstResponder else { return }
-        desiredFirstResponder.becomeFirstResponder()
+        _ = inputTextView.becomeFirstResponder()
     }
 
     func endEditingMessage() {
         _ = inputTextView.resignFirstResponder()
-        _ = stickerKeyboard?.resignFirstResponder()
-        _ = attachmentKeyboardIfLoaded?.resignFirstResponder()
     }
 
     func viewDidAppear() {
         ensureButtonVisibility(withAnimation: false, doLayout: false)
     }
 
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        // Starting with iOS 17 UIKit messes up keyboard layout guide on rotation if custom keyboard is up.
+        // That causes the keyboard to overlap text input field and become unaccessible.
+        // The workaround is to hide the keyboard on rotation.
+        guard #available(iOS 17, *) else { return }
+
+        // Require a custom keyboard to be up.
+        guard inputTextView.isFirstResponder, desiredKeyboardType != .system else { return }
+
+        // We only care about changes in size classes, which would be triggered by interface rotation.
+        guard
+            previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass ||
+            previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
+        else { return }
+
+        // Dismiss keyboard.
+        endEditingMessage()
+    }
+
     @objc
     private func applicationDidBecomeActive(notification: Notification) {
         AssertIsOnMainThread()
         restoreDesiredKeyboardIfNecessary()
+    }
+
+    private lazy var textInputViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(textInputViewTapped))
+
+    @objc
+    private func textInputViewTapped() {
+        clearDesiredKeyboard()
     }
 }
 
@@ -2116,6 +2158,17 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         }
     }
 
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        // Probably because of a regression in iOS 26 `keyboardLayoutGuide`,
+        // if first accessed in `calculateCustomKeyboardHeight`, would have an
+        // incorrect height of 34 dp (amount of bottom safe area).
+        // Accessing the layout guide before somehow fixes that issue.
+        if #available(iOS 26, *), superview != nil {
+            _ = keyboardLayoutGuide
+        }
+    }
+
     func textViewDidChange(_ textView: UITextView) {
         owsAssertDebug(inputToolbarDelegate != nil)
 
@@ -2132,10 +2185,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
     }
 
     func textViewDidChangeSelection(_ textView: UITextView) { }
-
-    func textViewDidBecomeFirstResponder(_ textView: UITextView) {
-        setDesiredKeyboardType(.system, animated: true)
-    }
 }
 
 extension ConversationInputToolbar: StickerPickerDelegate {

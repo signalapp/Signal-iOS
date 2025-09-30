@@ -15,14 +15,15 @@ public class StickerKeyboard: CustomKeyboard {
     private let headerView = StickerPacksToolbar()
     private lazy var stickerPickerPageView = StickerPickerPageView(delegate: self)
 
-    public override init() {
+    public init(delegate: StickerKeyboardDelegate?) {
+        self.delegate = delegate
+
         super.init()
 
         var backgroundColor = UIColor.Signal.background
 #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             backgroundColor = .clear
-            headerView.layoutMargins.top = 0
         }
 #endif
         self.backgroundColor = backgroundColor
