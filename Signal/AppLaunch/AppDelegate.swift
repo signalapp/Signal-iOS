@@ -1434,7 +1434,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Logger.info("")
-        AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(deviceToken)
+        self.appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(deviceToken)
+        }
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -1445,11 +1447,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Logger.warn("")
-        #if DEBUG
-        AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(Data(count: 32))
-        #else
-        AppEnvironment.shared.pushRegistrationManagerRef.didFailToReceiveVanillaPushToken(error: error)
-        #endif
+        self.appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            #if DEBUG
+            AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(Data(count: 32))
+            #else
+            AppEnvironment.shared.pushRegistrationManagerRef.didFailToReceiveVanillaPushToken(error: error)
+            #endif
+        }
     }
 
     func application(
