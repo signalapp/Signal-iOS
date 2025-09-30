@@ -4568,38 +4568,13 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_ensureLocalDeviceId) { tx in
-            let localAciSql = """
-                SELECT VALUE FROM keyvalue
-                WHERE collection = 'TSStorageUserAccountCollection'
-                    AND KEY = 'TSStorageRegisteredUUIDKey'
-            """
-            if
-                let localAciArchive = try Data.fetchOne(tx.database, sql: localAciSql),
-                let object = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(localAciArchive),
-                object is String
-            {
-                // If we have an aci, we must be registered.
-                let localDeviceIdSql = """
-                    SELECT * FROM keyvalue
-                        WHERE collection = 'TSStorageUserAccountCollection'
-                            AND KEY = 'TSAccountManager_DeviceId'
-                """
-                let localDeviceId = try Row.fetchOne(tx.database, sql: localDeviceIdSql)
+            let store = NewKeyValueStore(collection: "TSStorageUserAccountCollection")
+            let localAci = try store.fetchValueOrThrow(String.self, forKey: "TSStorageRegisteredUUIDKey", tx: tx)
+            if localAci != nil {
+                let localDeviceId = try store.fetchValueOrThrow(Int64.self, forKey: "TSAccountManager_DeviceId", tx: tx)
                 if localDeviceId == nil {
                     // If we don't have a device id written, put the primary device id.
-                    let deviceIdToInsert: UInt32 = 1
-                    let archiveData = try NSKeyedArchiver.archivedData(
-                        withRootObject: NSNumber(value: deviceIdToInsert),
-                        requiringSecureCoding: false
-                    )
-                    try tx.database.execute(
-                        sql: """
-                            INSERT OR REPLACE INTO keyvalue
-                                (KEY,collection,VALUE)
-                                VALUES ('TSAccountManager_DeviceId','TSStorageUserAccountCollection',?)
-                        """,
-                        arguments: [archiveData]
-                    )
+                    try store.writeValueOrThrow(1, forKey: "TSAccountManager_DeviceId", tx: tx)
                 }
             }
             return .success(())
