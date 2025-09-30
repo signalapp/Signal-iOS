@@ -70,14 +70,6 @@ public class GRDBSchemaMigrator {
         try incrementalMigrator.migrate(grdbStorageAdapter.pool)
 
         if runDataMigrations {
-            // Hack: Load the account state now, so it can be accessed while performing other migrations.
-            // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
-            // which won't work because migrations use a barrier block to prevent observing database state
-            // before migration.
-            try grdbStorageAdapter.read { transaction in
-                _ = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
-            }
-
             // Finally, do data migrations.
             registerDataMigrations(migrator: incrementalMigrator)
             try incrementalMigrator.migrate(grdbStorageAdapter.pool)
