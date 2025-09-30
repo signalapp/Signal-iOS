@@ -42,12 +42,19 @@ open class OWSTableViewController2: OWSViewController {
     // * The top header view appears above the table and _does not_
     //   scroll with its content.
     // * The top header view's edge align with the edges of the cells.
-    open var topHeader: UIView?
+    open var topHeader: UIView? {
+        willSet {
+            if isViewLoaded {
+                owsFailBeta("Cannot assign header if the view is already loaded.")
+            }
+        }
+    }
 
     open var bottomFooter: UIView? {
-        didSet {
-            guard isViewLoaded else { return }
-            updateBottomConstraint()
+        willSet {
+            if isViewLoaded {
+                owsFailBeta("Cannot assign footer if the view is already loaded.")
+            }
         }
     }
 

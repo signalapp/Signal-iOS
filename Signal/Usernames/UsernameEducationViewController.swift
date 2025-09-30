@@ -37,13 +37,18 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
     // MARK: Lifecycle
 
-    public override func viewDidLoad() {
-        view.backgroundColor = Theme.tableView2BackgroundColor
-        rebuildTableContents()
+    override init() {
+        super.init()
+
         topHeader = pillHeader
         bottomFooter = footerView
-        setColorsForCurrentTheme()
+    }
+
+    public override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = Theme.tableView2BackgroundColor
+        rebuildTableContents()
+        setColorsForCurrentTheme()
         tableView.alwaysBounceVertical = false
     }
 
