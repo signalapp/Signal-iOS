@@ -54,6 +54,8 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
     }
 
     override public func viewDidLoad() {
+        super.viewDidLoad()
+
         let textStackView: UIStackView = {
             func buildLabel(
                 font: UIFont,

@@ -49,6 +49,8 @@ class EnterAccountEntropyPoolViewController: OWSViewController, OWSNavigationChi
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = colorConfig.background
         navigationItem.rightBarButtonItem = nextBarButtonItem
 

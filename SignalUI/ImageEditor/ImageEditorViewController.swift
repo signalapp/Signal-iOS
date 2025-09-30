@@ -225,6 +225,8 @@ class ImageEditorViewController: OWSViewController {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = .black
 
         imageEditorView.configureSubviews()

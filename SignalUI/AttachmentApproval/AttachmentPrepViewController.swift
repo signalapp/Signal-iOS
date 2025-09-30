@@ -86,6 +86,8 @@ public class AttachmentPrepViewController: OWSViewController {
     // MARK: UIViewController
 
     override public func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = .ows_black
 
         // Zoomable scroll view.

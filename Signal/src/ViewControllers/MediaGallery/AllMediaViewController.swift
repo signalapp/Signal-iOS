@@ -30,6 +30,7 @@ class AllMediaViewController: OWSViewController {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
         addChild(tileViewController)
         view.addSubview(tileViewController.view)
         tileViewController.view.autoPinEdgesToSuperviewEdges()

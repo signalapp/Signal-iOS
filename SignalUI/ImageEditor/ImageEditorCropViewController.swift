@@ -135,6 +135,8 @@ class ImageEditorCropViewController: OWSViewController {
     // MARK: - UIViewController
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = .black
 
         // MARK: - Clip view & content.

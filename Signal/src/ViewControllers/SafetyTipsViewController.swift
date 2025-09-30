@@ -138,6 +138,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
     }
 
     public override func viewDidLoad() {
+        super.viewDidLoad()
 
         minimizedHeight = min(725, CurrentAppContext().frame.height)
         super.allowsExpansion = false
@@ -159,7 +160,6 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         buildContents()
         updateButtonState()
         setColorsForCurrentTheme()
-        super.viewDidLoad()
     }
 
     public override func themeDidChange() {
