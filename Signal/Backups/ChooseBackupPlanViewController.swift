@@ -26,6 +26,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     private let db: DB
     private let tsAccountManager: TSAccountManager
 
+    private let initialPlanSelection: PlanSelection?
     private let onConfirmPlanSelectionBlock: OnConfirmPlanSelectionBlock
     private let viewModel: ChooseBackupPlanViewModel
 
@@ -43,6 +44,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         self.db = db
         self.tsAccountManager = tsAccountManager
 
+        self.initialPlanSelection = initialPlanSelection
         self.onConfirmPlanSelectionBlock = onConfirmPlanSelectionBlock
         self.viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: initialPlanSelection,
@@ -94,7 +96,30 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
 
 extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDelegate {
     fileprivate func confirmSelection(_ planSelection: PlanSelection) {
-        onConfirmPlanSelectionBlock(self, planSelection)
+        switch (initialPlanSelection, planSelection) {
+        case (.free, .free), (.paid, .paid):
+            owsFail("Unexpectedly confirmed selection of initial plan! This should've been disallowed.")
+        case (nil, _), (.free, .paid):
+            onConfirmPlanSelectionBlock(self, planSelection)
+        case (.paid, .free):
+            OWSActionSheets.showConfirmationAlert(
+                title: OWSLocalizedString(
+                    "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE",
+                    comment: "Title for an action sheet confirming the user wants to downgrade their Backup plan."
+                ),
+                message: OWSLocalizedString(
+                    "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE",
+                    comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan."
+                ),
+                proceedTitle: OWSLocalizedString(
+                    "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON",
+                    comment: "Button for an action sheet confirming the user wants to downgrade their Backup plan."
+                ),
+                proceedAction: { [self] _ in
+                    onConfirmPlanSelectionBlock(self, planSelection)
+                }
+            )
+        }
     }
 }
 
@@ -248,7 +273,15 @@ struct ChooseBackupPlanView: View {
             } label: {
                 let text = switch viewModel.planSelection {
                 case .free:
-                    CommonStrings.continueButton
+                    switch viewModel.initialPlanSelection {
+                    case nil, .free:
+                        CommonStrings.continueButton
+                    case .paid:
+                        OWSLocalizedString(
+                            "CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT",
+                            comment: "Text for a button that will downgrade the user from the paid Backup plan to the free one.",
+                        )
+                    }
                 case .paid:
                     switch viewModel.storeKitAvailability {
                     case .available(let paidPlanDisplayPrice):
