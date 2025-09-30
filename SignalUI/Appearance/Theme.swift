@@ -53,10 +53,16 @@ final public class Theme: NSObject {
     }
 
     public class func setupSignalAppearance() {
-        UINavigationBar.appearance().barTintColor = Theme.navbarBackgroundColor
-        UINavigationBar.appearance().tintColor = Theme.primaryIconColor
-        UIToolbar.appearance().barTintColor = Theme.navbarBackgroundColor
-        UIToolbar.appearance().tintColor = Theme.primaryIconColor
+        let primaryIconColor = UIColor(
+            light: .ows_gray75,
+            lightHighContrast: .ows_gray75,
+            dark: .ows_gray15,
+            darkHighContrast: .ows_gray15
+        )
+        UINavigationBar.appearance().barTintColor = UIColor.Signal.background
+        UINavigationBar.appearance().tintColor = primaryIconColor
+        UIToolbar.appearance().barTintColor = UIColor.Signal.background
+        UIToolbar.appearance().tintColor = primaryIconColor
 
         // We do _not_ specify BarButton.appearance().tintColor because it is sufficient to specify
         // UINavigationBar.appearance().tintColor. Furthermore, specifying the BarButtonItem's
@@ -70,15 +76,20 @@ final public class Theme: NSObject {
         // Using UIText{View,Field}.appearance().keyboardAppearance crashes due to a bug in UIKit,
         // so we don't do it.
 
-        UITableViewCell.appearance().tintColor = Theme.primaryIconColor
+        UITableViewCell.appearance().tintColor = primaryIconColor
         UIToolbar.appearance().tintColor = .ows_accentBlue
 
         // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: Theme.navbarTitleColor
+            .foregroundColor: UIColor.Signal.label
         ]
 
-        let cursorColor = isDarkThemeEnabled ? UIColor.white : UIColor.ows_accentBlue
+        let cursorColor = UIColor(
+            light: .Signal.accent,
+            lightHighContrast: .Signal.accent,
+            dark: .white,
+            darkHighContrast: .white,
+        )
         UITextView.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = cursorColor
         UITextField.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = cursorColor
     }
