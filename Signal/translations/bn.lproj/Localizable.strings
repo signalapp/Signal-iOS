@@ -428,7 +428,7 @@
 "ATTACHMENT_KEYBOARD_PHOTOS" = "ছবি";
 
 /* A button to select a poll from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+"ATTACHMENT_KEYBOARD_POLL" = "জরিপ";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "সংযুক্তি";
@@ -536,16 +536,16 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "এখন নয়";
 
 /* Title for action from backups error prompt to try again now. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "এখনি ব্যাকআপ করুন";
 
 /* Body for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "আপনার ডিভাইসটি 7 দিনের ব্যাকআপ সম্পন্ন করেনি। আপনার ডিভাইসটি Wi-Fi-এর সাথে সংযুক্ত আছে কিনা তা নিশ্চিত করুন এবং \"এখনই ব্যাকআপ নিন\"-এ ট্যাপ করুন।";
 
 /* Title for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "ব্যাকআপ সম্পন্ন করা যায়নি";
 
 /* Title for action from backups error prompt to try again later. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "পরে চেষ্টা করুন";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "পুনর্বহাল 'কি' কপি করা হয়েছে";
@@ -653,7 +653,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "মিডিয়া প্রক্রিয়া করা হচ্ছে...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "আপনার শেষ ব্যাকআপ সম্পন্ন করা যায়নি। আপনার ফোন Wi-Fi-এর সাথে সংযুক্ত আছে কিনা দেখুন এবং আবার চেষ্টা করতে \"এখনই ব্যাকআপ নিন\"-এ ট্যাপ করুন";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "আপগ্রেড করুন";
@@ -4277,7 +4277,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "সংরক্ষাণাগার";
 
 /* Title for the conversation list's failed to backup context menu action. */
-"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "ব্যাকআপ সফল হয়নি";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "চ্যাট নির্বাচন করুন";
@@ -5537,7 +5537,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "পিন লেখা এড়িয়ে যাবেন?";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "আপনার Signal ব্যাকআপ থেকে আপনার অ্যাকাউন্ট ও মেসেজ পুনরুদ্ধার করুন";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal ব্যাকআপ পুনর্বহাল করুন";
@@ -5546,10 +5546,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "আপনার মেসেজের ইতিহাস ও অ্যাকাউন্টের ডেটা কীভাবে রিস্টোর করতে চান তা বেছে নিন";
 
 /* Message body displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "যেহেতু আপনি Android থেকে iOS-এ যাচ্ছেন, তাই আপনার মেসেজ ও মিডিয়া ট্রান্সফার করার একমাত্র উপায় হলো আপনার পুরানো ডিভাইসে Signal ব্যাকআপ সচল করা।";
 
 /* Title displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "পুনর্বহাল করার জন্য কোনো ব্যাকআপ নেই";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "আপনার মেসেজ এবং মিডিয়া স্থানান্তর না করেই চালিয়ে যান";
@@ -6461,7 +6461,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "মিডিয়া চালান";
 
 /* Title for a toggle allowing multiple votes for a poll. */
-"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+"POLL_ALLOW_MULTIPLE_LABEL" = "একাধিক ভোটের অনুমতি দিন";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "ফলাফল দেখুন";
@@ -6470,7 +6470,7 @@
 "POLL_BUTTON_VIEW_VOTES" = "ভোট দেখুন";
 
 /* Title of create poll pane */
-"POLL_CREATE_TITLE" = "New Poll";
+"POLL_CREATE_TITLE" = "নতুন ভোট";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "ভোটগ্রহণ কার্যক্রমটি শেষ করুন";
@@ -6485,22 +6485,22 @@
 "POLL_LABEL" = "জরিপ";
 
 /* String to display when a poll has no votes */
-"POLL_NO_VOTES" = "No Votes";
+"POLL_NO_VOTES" = "কোনো ভোট নেই";
 
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
-"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "অপশন";
 
 /* Header for the poll options text boxes when making a new poll */
-"POLL_OPTIONS_LABEL" = "Options";
+"POLL_OPTIONS_LABEL" = "অপশন";
 
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "ভোট:";
 
 /* Header for the poll question text box when making a new poll */
-"POLL_QUESTION_LABEL" = "Question";
+"POLL_QUESTION_LABEL" = "প্রশ্ন";
 
 /* Placeholder text for poll question */
-"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "একটি প্রশ্ন জিজ্ঞাসা করুন";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "এক বা একাধিক বেছে নিন";
@@ -7037,13 +7037,13 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "SMS প্রোভাইডারের সাথে সৃষ্ট সমস্যার কারণে Signal কোনো SMS কোড পাঠাতে পারেনি। কয়েক ঘন্টা পরে আবার চেষ্টা করুন।";
 
 /* Third step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "ব্যাকআপ সক্রিয় করুন এবং ব্যাকআপ সম্পন্ন না হওয়া পর্যন্ত অপেক্ষা করুন";
 
 /* First step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "আপনার পুরানো ডিভাইসে Signal খুলুন";
 
 /* Second step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "সেটিংস > ব্যাকআপ ট্যাপ করুন";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "একটি বার্তা প্রেরণের আগে আপনাকে নিবন্ধন করতে হবে।";

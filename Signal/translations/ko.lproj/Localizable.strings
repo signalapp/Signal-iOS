@@ -428,7 +428,7 @@
 "ATTACHMENT_KEYBOARD_PHOTOS" = "사진";
 
 /* A button to select a poll from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+"ATTACHMENT_KEYBOARD_POLL" = "투표";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "첨부 파일";
@@ -536,16 +536,16 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "나중에";
 
 /* Title for action from backups error prompt to try again now. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "지금 백업";
 
 /* Body for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "7일 동안 기기에서 백업이 완료되지 않았습니다. 기기가 Wi-Fi에 연결되어 있는지 확인하고 '지금 백업'을 탭하세요.";
 
 /* Title for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "백업을 완료할 수 없음";
 
 /* Title for action from backups error prompt to try again later. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "나중에 시도";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "복구 키 복사됨";
@@ -653,7 +653,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "미디어 처리 중...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "마지막 백업을 완료하지 못했습니다. 휴대폰이 Wi-Fi에 연결되어 있는지 확인하고 '지금 백업'을 탭하여 다시 시도하세요.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "업그레이드";
@@ -4277,7 +4277,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "보관";
 
 /* Title for the conversation list's failed to backup context menu action. */
-"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "백업 실패";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "대화 선택";
@@ -5537,7 +5537,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN 입력을 건너뛰시겠습니까?";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Signal 백업에서 계정과 메시지 복원하기";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal 백업 복원";
@@ -5546,10 +5546,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "메시지 기록과 계정 데이터를 복원할 방법을 선택하세요.";
 
 /* Message body displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Android에서 iOS로 이동하는 경우, 메시지와 미디어를 전송하는 유일한 방법은 이전 기기에서 Signal 백업을 활성화하는 것입니다.";
 
 /* Title displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "복원할 백업이 없음";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "메시지와 미디어를 전송하지 않고 계속";
@@ -6461,7 +6461,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
 
 /* Title for a toggle allowing multiple votes for a poll. */
-"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+"POLL_ALLOW_MULTIPLE_LABEL" = "복수 투표 허용";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "결과 보기";
@@ -6470,7 +6470,7 @@
 "POLL_BUTTON_VIEW_VOTES" = "투표 결과 보기";
 
 /* Title of create poll pane */
-"POLL_CREATE_TITLE" = "New Poll";
+"POLL_CREATE_TITLE" = "새 투표";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "투표 종료";
@@ -6485,22 +6485,22 @@
 "POLL_LABEL" = "투표";
 
 /* String to display when a poll has no votes */
-"POLL_NO_VOTES" = "No Votes";
+"POLL_NO_VOTES" = "투표 없음";
 
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
 "POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
 
 /* Header for the poll options text boxes when making a new poll */
-"POLL_OPTIONS_LABEL" = "Options";
+"POLL_OPTIONS_LABEL" = "옵션";
 
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "투표:";
 
 /* Header for the poll question text box when making a new poll */
-"POLL_QUESTION_LABEL" = "Question";
+"POLL_QUESTION_LABEL" = "질문";
 
 /* Placeholder text for poll question */
-"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "질문하기";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "하나 이상 선택";
@@ -7037,13 +7037,13 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "SMS 통신사 문제로 인해 Signal에서 SMS 코드를 전송하지 못했습니다. 몇 시간 정도 기다렸다가 다시 시도해 주세요.";
 
 /* Third step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "백업을 활성화하고 백업이 완료될까지 기다립니다";
 
 /* First step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "이전 장치에서 Signal을 엽니다";
 
 /* Second step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "설정 > 백업을 탭합니다";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "메시지를 보내기 전에 등록해야 합니다.";

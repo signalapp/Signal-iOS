@@ -428,7 +428,7 @@
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Fotos";
 
 /* A button to select a poll from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+"ATTACHMENT_KEYBOARD_POLL" = "Umfrage";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Anhang";
@@ -536,16 +536,16 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Jetzt nicht";
 
 /* Title for action from backups error prompt to try again now. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Jetzt sichern";
 
 /* Body for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Dein Gerät hat seit 7 Tagen kein Backup mehr durchgeführt. Stelle sicher, dass dein Gerät mit dem WLAN verbunden ist, und tippe auf »Jetzt sichern«.";
 
 /* Title for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Backup konnte nicht abgeschlossen werden";
 
 /* Title for action from backups error prompt to try again later. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Versuche es später.";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Wiederherstellungsschlüssel kopiert";
@@ -653,7 +653,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Medien werden bearbeitet...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Dein letztes Backup konnte nicht abgeschlossen werden. Stelle sicher, dass dein Smartphone mit dem WLAN verbunden ist, und tippe auf »Jetzt sichern«, um es erneut zu versuchen.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
@@ -4277,7 +4277,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Archiv";
 
 /* Title for the conversation list's failed to backup context menu action. */
-"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Backup konnte nicht durchgeführt werden";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Wähle Chats";
@@ -5537,7 +5537,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN-Eingabe überspringen?";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Stelle dein Konto und deine Nachrichten aus deinem Signal Backup wieder her";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal Backup wiederherstellen";
@@ -5546,10 +5546,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Wähle aus, wie du deinen Nachrichtenverlauf und deine Kontodaten wiederherstellen möchtest.";
 
 /* Message body displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Da du von Android auf iOS umsteigst, kannst du deine Nachrichten und Medien nur übertragen, wenn du auf deinem alten Gerät Signal Backups aktivierst.";
 
 /* Title displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "Kein Backup zum Wiederherstellen";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Fortfahren, ohne deine Nachrichten und Medien zu übertragen";
@@ -6461,7 +6461,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medieninhalt wiedergeben";
 
 /* Title for a toggle allowing multiple votes for a poll. */
-"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+"POLL_ALLOW_MULTIPLE_LABEL" = "Mehrere Stimmen zulassen";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Ergebnisse ansehen";
@@ -6470,7 +6470,7 @@
 "POLL_BUTTON_VIEW_VOTES" = "Stimmen ansehen";
 
 /* Title of create poll pane */
-"POLL_CREATE_TITLE" = "New Poll";
+"POLL_CREATE_TITLE" = "Neue Umfrage";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "Umfrage beenden";
@@ -6485,22 +6485,22 @@
 "POLL_LABEL" = "Umfrage";
 
 /* String to display when a poll has no votes */
-"POLL_NO_VOTES" = "No Votes";
+"POLL_NO_VOTES" = "Keine Stimmen";
 
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
 "POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
 
 /* Header for the poll options text boxes when making a new poll */
-"POLL_OPTIONS_LABEL" = "Options";
+"POLL_OPTIONS_LABEL" = "Optionen";
 
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "Umfrage:";
 
 /* Header for the poll question text box when making a new poll */
-"POLL_QUESTION_LABEL" = "Question";
+"POLL_QUESTION_LABEL" = "Frage";
 
 /* Placeholder text for poll question */
-"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Eine Frage stellen";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Wähle eine oder mehrere Optionen aus";
@@ -7037,13 +7037,13 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Aufgrund von Problemen mit dem SMS-Anbieter konnte Signal keinen SMS-Code senden. Versuche es in einigen Stunden erneut.";
 
 /* Third step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Aktiviere Backups und warte, bis die Datensicherung abgeschlossen ist";
 
 /* First step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Öffne Signal auf deinem alten Gerät";
 
 /* Second step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tippe auf Einstellungen > Backups";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du musst dich registrieren, bevor du eine Nachricht senden kannst.";

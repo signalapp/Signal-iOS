@@ -428,7 +428,7 @@
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Фото";
 
 /* A button to select a poll from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+"ATTACHMENT_KEYBOARD_POLL" = "Опитування";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Вкладення";
@@ -536,16 +536,16 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Не зараз";
 
 /* Title for action from backups error prompt to try again now. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Створити копію зараз";
 
 /* Body for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "На вашому пристрої вже 7 днів не створюється резервна копія. Перевірте з'єднання пристрою з Wi-Fi і натисніть «Створити копію зараз».";
 
 /* Title for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Резервне копіювання не здійснено";
 
 /* Title for action from backups error prompt to try again later. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Пізніше";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Ключ відновлення скопійовано";
@@ -653,7 +653,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Опрацювання медіафайлів…";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Останню резервну копію не вдалося створити. Перевірте з'єднання телефона з Wi-Fi і натисніть «Створити копію зараз»";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Змінити план";
@@ -4277,7 +4277,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Архів";
 
 /* Title for the conversation list's failed to backup context menu action. */
-"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Помилка резервного копіювання";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Вибрати чати";
@@ -5537,7 +5537,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Не вводити PIN-код?";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Відновити акаунт і повідомлення з резервної копії від Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Відновити з резервної копії Signal";
@@ -5546,10 +5546,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Виберіть спосіб відновлення історії повідомлень і даних свого акаунту.";
 
 /* Message body displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Оскільки ви переходите з Android на iOS, єдиний спосіб перенести повідомлення і медіафайли — ввімкнути резервне копіювання від Signal на старому пристрої.";
 
 /* Title displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "Резервна копія відсутня";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Продовжити без перенесення повідомлень і медіафайлів";
@@ -6461,7 +6461,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Відтворити медіафайл";
 
 /* Title for a toggle allowing multiple votes for a poll. */
-"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+"POLL_ALLOW_MULTIPLE_LABEL" = "Можна вибирати кілька відповідей";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Переглянути результати";
@@ -6470,7 +6470,7 @@
 "POLL_BUTTON_VIEW_VOTES" = "Переглянути голоси";
 
 /* Title of create poll pane */
-"POLL_CREATE_TITLE" = "New Poll";
+"POLL_CREATE_TITLE" = "Нове опитування";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "Завершити опитування";
@@ -6485,22 +6485,22 @@
 "POLL_LABEL" = "Опитування";
 
 /* String to display when a poll has no votes */
-"POLL_NO_VOTES" = "No Votes";
+"POLL_NO_VOTES" = "Голосів немає";
 
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
-"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "Відповідь";
 
 /* Header for the poll options text boxes when making a new poll */
-"POLL_OPTIONS_LABEL" = "Options";
+"POLL_OPTIONS_LABEL" = "Відповіді";
 
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "Опитування:";
 
 /* Header for the poll question text box when making a new poll */
-"POLL_QUESTION_LABEL" = "Question";
+"POLL_QUESTION_LABEL" = "Запитання";
 
 /* Placeholder text for poll question */
-"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Поставте запитання";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Можна обрати кілька варіантів";
@@ -7037,13 +7037,13 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal не вдалося надіслати SMS-повідомлення з кодом через проблеми з оператором SMS. Спробуйте зареєструватися через кілька годин.";
 
 /* Third step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Увімкніть резервне копіювання і дочекайтеся його завершення";
 
 /* First step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Відкрийте Signal на старому телефоні";
 
 /* Second step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Налаштування > Резервні копії";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Щоб надсилати повідомлення, необхідно зареєструватися.";

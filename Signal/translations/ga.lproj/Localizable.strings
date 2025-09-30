@@ -428,7 +428,7 @@
 "ATTACHMENT_KEYBOARD_PHOTOS" = "G.ghraif";
 
 /* A button to select a poll from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_POLL" = "Poll";
+"ATTACHMENT_KEYBOARD_POLL" = "Suirbhé";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Ceangaltán";
@@ -536,16 +536,16 @@
 "BACKUP_ENABLEMENT_REMINDER_NOT_NOW_ACTION" = "Ní anois";
 
 /* Title for action from backups error prompt to try again now. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Back Up Now";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION" = "Déan Cúltaca Anois";
 
 /* Body for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Your device hasn‘t completed a backup for 7 days. Make sure your device is connected to Wi-Fi and tap “Back Up Now.”";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY" = "Níor cuireadh cúltacú i gcrích ar do ghléas le 7 lá anuas. Cinntigh go bhfuil do ghléas nasctha le Wi-Fi agus tapáil \"Cúltacaigh Anois.\"";
 
 /* Title for error prompt shown when backups haven't succeeded in 7 days */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Couldn‘t Complete Backup";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE" = "Níorbh Fhéidir an Cúltaca a Chur i gCrích";
 
 /* Title for action from backups error prompt to try again later. */
-"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Try Later";
+"BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION" = "Triail níos déanaí";
 
 /* Toast indicating that the user has copied their recovery key. */
 "BACKUP_KEY_COPIED_MESSAGE_TOAST" = "Eochair Athshlánaithe cóipeáilte";
@@ -653,7 +653,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Meáin á bpróiseáil…";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Make sure your phone is connected to Wi-Fi and tap \"Back Up Now\" to try again";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Níorbh fhéidir do chúltaca deiridh a chur i gcrích. Cinntigh go bhfuil do ghuthán nasctha le Wi-Fi agus tapáil \"Cúltacaigh Anois\" lena thriail arís";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Uasghrádaigh";
@@ -4277,7 +4277,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Cartlann";
 
 /* Title for the conversation list's failed to backup context menu action. */
-"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
+"HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Theip ar an gCúltacú";
 
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Roghnaigh Comhráite";
@@ -5537,7 +5537,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ná Bac le UAP?";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restore your account and messages from your Signal Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Aischuir do chuntas agus do theachtaireachtaí ó do Chúltaca Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Aischuir Cúltaca Signal";
@@ -5546,10 +5546,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Roghnaigh conas ba mhaith leat stair do theachtaireachtaí agus sonraí an chuntais a aischur.";
 
 /* Message body displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Because you're moving from Android to iOS, the only way to transfer your messages and media is by enabling Signal Backups on your old device.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY" = "Toisc go bhfuil tú ag athrú ó Android go iOS, is é an t-aon bhealach amháin le do theachtaireachtaí agus do mheáin a aistriú ná Cúltacaí Signal a chumasú ar do sheanghléas.";
 
 /* Title displayed to a user during registration if there are no restore options available. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "No Backup to Restore";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE" = "Níl Cúltaca Ann le hAischur";
 
 /* The body for the skip restore 'choice' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY" = "Lean ort gan do theachtaireachtaí agus do mheáin a aistriú";
@@ -6461,7 +6461,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Seinn an Comhad Meáin";
 
 /* Title for a toggle allowing multiple votes for a poll. */
-"POLL_ALLOW_MULTIPLE_LABEL" = "Allow Multiple Votes";
+"POLL_ALLOW_MULTIPLE_LABEL" = "Ceadaigh Iliomad Vótaí";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Féach ar na torthaí";
@@ -6470,7 +6470,7 @@
 "POLL_BUTTON_VIEW_VOTES" = "Féach ar na vótaí";
 
 /* Title of create poll pane */
-"POLL_CREATE_TITLE" = "New Poll";
+"POLL_CREATE_TITLE" = "Suirbhé Nua";
 
 /* Label for button to end a poll */
 "POLL_DETAILS_END_POLL" = "Cuir deireadh leis an suirbhé";
@@ -6485,22 +6485,22 @@
 "POLL_LABEL" = "Suirbhé";
 
 /* String to display when a poll has no votes */
-"POLL_NO_VOTES" = "No Votes";
+"POLL_NO_VOTES" = "Níl Aon Vótaí Ann";
 
 /* Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2) */
-"POLL_OPTION_PLACEHOLDER_PREFIX" = "Option";
+"POLL_OPTION_PLACEHOLDER_PREFIX" = "Rogha";
 
 /* Header for the poll options text boxes when making a new poll */
-"POLL_OPTIONS_LABEL" = "Options";
+"POLL_OPTIONS_LABEL" = "Roghanna";
 
 /* Prefix for a poll preview */
 "POLL_PREFIX" = "Suirbhé:";
 
 /* Header for the poll question text box when making a new poll */
-"POLL_QUESTION_LABEL" = "Question";
+"POLL_QUESTION_LABEL" = "Ceist";
 
 /* Placeholder text for poll question */
-"POLL_QUESTION_PLACEHOLDER_TEXT" = "Ask a Question";
+"POLL_QUESTION_PLACEHOLDER_TEXT" = "Cuir Ceist";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Roghnaigh ceann amháin nó tuilleadh";
@@ -7037,13 +7037,13 @@
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Níorbh fhéidir le Signal cód SMS a sheoladh mar gheall ar fhadhbanna leis an soláthraí SMS. Triail arís i gceann cúpla uair an chloig.";
 
 /* Third step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Enable backups and wait until your backup is complete";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Cumasaigh cúltacaí agus fan go dtí go bhfuil do chúltacú curtha i gcrích";
 
 /* First step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL" = "Oscail Signal ar do sheanghléas";
 
 /* Second step in directions for how to make a backup */
-"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tap Settings > Backups";
+"REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS" = "Tapáil Socruithe > Cúltacaí";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Caithfidh tú clárú sular féidir leat teachtaireacht a sheoladh.";
