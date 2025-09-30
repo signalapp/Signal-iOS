@@ -96,12 +96,17 @@ public class CVPollView: ManualStackView {
         }
 
         var chooseSubtitleTextLabelConfig: CVLabelConfig {
-            let selectLabel = poll.allowsMultiSelect ? OWSLocalizedString(
-                "POLL_SELECT_LABEL_MULTIPLE", comment: "Label specifying the user can select more than one option"
-            ) : OWSLocalizedString(
-                "POLL_SELECT_LABEL_SINGULAR",
-                comment: "Label specifying the user can select one option"
-            )
+            var selectLabel: String
+            if poll.isEnded {
+                selectLabel = OWSLocalizedString("POLL_FINAL_RESULTS_LABEL", comment: "Label specifying the poll is finished and these are the final results")
+            } else {
+                selectLabel = poll.allowsMultiSelect ? OWSLocalizedString(
+                    "POLL_SELECT_LABEL_MULTIPLE", comment: "Label specifying the user can select more than one option"
+                ) : OWSLocalizedString(
+                    "POLL_SELECT_LABEL_SINGULAR",
+                    comment: "Label specifying the user can select one option"
+                )
+            }
 
             return CVLabelConfig.unstyledText(
                 selectLabel,

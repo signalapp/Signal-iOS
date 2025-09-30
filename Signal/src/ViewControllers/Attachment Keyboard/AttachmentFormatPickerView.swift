@@ -186,12 +186,9 @@ class AttachmentFormatPickerView: UIView {
         case payment
 
         private static var contactCases: [AttachmentType] {
-            var casesToExclude: [AttachmentType] = []
+            var casesToExclude: [AttachmentType] = [.poll]
             if !SUIEnvironment.shared.paymentsRef.shouldShowPaymentsUI {
                 casesToExclude.append(.payment)
-            }
-            if !FeatureFlags.pollSend {
-                casesToExclude.append(.poll)
             }
 
             return cases(except: casesToExclude)

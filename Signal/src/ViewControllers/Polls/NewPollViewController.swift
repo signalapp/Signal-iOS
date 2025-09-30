@@ -41,6 +41,31 @@ extension NewPollViewController: NewPollViewModel.ActionsDelegate {
 
         dismiss(animated: true)
     }
+
+    fileprivate func showToast(
+        hasQuestion: Bool,
+        hasEnoughOptions: Bool,
+    ) {
+        var toast: ToastController
+        if !hasQuestion && !hasEnoughOptions {
+            toast = ToastController(text: OWSLocalizedString(
+                "POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS",
+                comment: "Toast telling user to add options and question to poll."
+            ))
+        } else if !hasQuestion {
+            toast = ToastController(text: OWSLocalizedString(
+                "POLL_CREATE_ERROR_TOAST_NO_QUESTION",
+                comment: "Toast telling user to add a question to poll."
+            ))
+        } else {
+            toast = ToastController(text: OWSLocalizedString(
+                "POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS",
+                comment: "Toast telling user to add more options to poll."
+            ))
+        }
+
+        toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
+    }
 }
 
 private class NewPollViewModel {
@@ -50,6 +75,10 @@ private class NewPollViewModel {
             pollOptions: [String],
             question: String,
             allowMultipleVotes: Bool
+        )
+        func showToast(
+            hasQuestion: Bool,
+            hasEnoughOptions: Bool,
         )
     }
 
@@ -70,6 +99,16 @@ private class NewPollViewModel {
             allowMultipleVotes: allowMultipleVotes
         )
     }
+
+    func showToast(
+        hasQuestion: Bool,
+        hasEnoughOptions: Bool,
+    ) {
+        actionsDelegate?.showToast(
+            hasQuestion: hasQuestion,
+            hasEnoughOptions: hasEnoughOptions
+        )
+    }
 }
 
 struct NewPollView: View {
@@ -82,6 +121,8 @@ struct NewPollView: View {
     @State var pollQuestion: String = ""
     @State var pollOptions: [NewOption] = [NewOption(text: ""), NewOption(text: "")]
     @State var allowMultipleVotes: Bool = false
+
+    let characterLimit: Int = 100
 
     fileprivate init(viewModel: NewPollViewModel) {
         self.viewModel = viewModel
@@ -145,19 +186,22 @@ struct NewPollView: View {
 
                     let sendButtonEnabled = pollOptions.count >= 3 && !pollQuestion.isEmpty ? true : false
                     Button(MessageStrings.sendButton, action: {
-                        viewModel.onSend(
-                            pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
-                            question: pollQuestion,
-                            allowMultipleVotes: allowMultipleVotes
-                        )
+                        if sendButtonEnabled {
+                            viewModel.onSend(
+                                pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
+                                question: pollQuestion,
+                                allowMultipleVotes: allowMultipleVotes
+                            )
+                        } else {
+                            viewModel.showToast(hasQuestion: !pollQuestion.isEmpty, hasEnoughOptions: pollOptions.count >= 3)
+                        }
                     })
                     .foregroundColor(Color.Signal.label)
                     .padding()
                     .opacity(sendButtonEnabled ? 1 : 0.5)
-                    .disabled(!sendButtonEnabled)
                 }
             }
-            .background(Color.Signal.secondaryBackground)
+            .background(Color.Signal.groupedBackground)
             SignalList {
                 SignalSection {
                     TextField(
@@ -167,6 +211,11 @@ struct NewPollView: View {
                         ),
                         text: $pollQuestion
                     )
+                    .onChange(of: pollQuestion) { newText in
+                        if newText.count > characterLimit {
+                            pollQuestion = String(newText.prefix(characterLimit))
+                        }
+                    }
                 } header: {
                     Text(
                         OWSLocalizedString(
@@ -181,6 +230,11 @@ struct NewPollView: View {
                     ForEach($pollOptions) { $option in
                         let index = indexForOption(option: option)
                         OptionRow(option: $option, optionIndex: index, totalCount: pollOptions.count)
+                            .onChange(of: option.text) { newText in
+                                if newText.count > characterLimit {
+                                    option.text = String(newText.prefix(characterLimit))
+                                }
+                            }
                     }
                     .onMove(perform: { from, to in
                         pollOptions.move(fromOffsets: from, toOffset: to)

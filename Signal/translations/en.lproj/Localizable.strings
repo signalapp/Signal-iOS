@@ -6466,6 +6466,15 @@
 /* Button to view poll votes */
 "POLL_BUTTON_VIEW_VOTES" = "View Votes";
 
+/* Toast telling user to add a question to poll. */
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+
+/* Toast telling user to add options and question to poll. */
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+
+/* Toast telling user to add more options to poll. */
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "New Poll";
 
@@ -6477,6 +6486,9 @@
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%@ ended the poll “%@”";
+
+/* Label specifying the poll is finished and these are the final results */
+"POLL_FINAL_RESULTS_LABEL" = "Final Results";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Poll";

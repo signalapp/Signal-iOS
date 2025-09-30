@@ -70,7 +70,7 @@ struct PollDetailsView: View {
                     Spacer()
                 }
             }
-            .background(Color.Signal.secondaryBackground)
+            .background(Color.Signal.groupedBackground)
             SignalList {
                 SignalSection {
                     Text(poll.question)
@@ -89,8 +89,9 @@ struct PollDetailsView: View {
                                     .font(.body)
                                     .foregroundColor(Color.Signal.label)
                             } icon: {
-                                Image(Theme.iconName(.pollStop))
+                                Image(uiImage: Theme.iconImage(.pollStop))
                             }
+                            .foregroundColor(Color.Signal.label)
                         }
                     }
                 }
