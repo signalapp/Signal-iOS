@@ -70,7 +70,12 @@ class BackupOnboardingCoordinator {
                     showRecoveryKeyIntro()
                 },
                 onNotNow: { [self] in
-                    onboardingNavController?.popViewController(animated: true)
+                    onboardingNavController?.popViewController(animated: true) { [self] in
+                        onboardingNavController?.presentToast(text: OWSLocalizedString(
+                            "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST",
+                            comment: "A toast shown when 'Not Now' is tapped from the Backups onboarding intro.",
+                        ))
+                    }
                 }
             )
 
