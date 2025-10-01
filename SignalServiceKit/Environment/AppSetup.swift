@@ -1958,10 +1958,12 @@ extension AppSetup.FinalContinuation {
     @MainActor
     public func runLaunchTasksIfNeededAndReloadCaches() {
 
-        // Coders are consulted in reverse order of adding, so add
-        // the AWebPCoder last, which used the native ImageIO, if supported
-        SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
-        SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+        if !self.didRunLaunchTasks {
+            // Coders are consulted in reverse order of adding, so add
+            // the AWebPCoder last, which used the native ImageIO, if supported
+            SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+            SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+        }
 
         if self.didRunLaunchTasks {
             let remoteConfig = sskEnvironment.databaseStorageRef.read { tx in
