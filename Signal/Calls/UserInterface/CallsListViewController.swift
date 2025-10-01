@@ -1364,6 +1364,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     return CallStrings.callLink
                 }
             }
+
+            var symbol: SignalSymbol {
+                switch self {
+                case .outgoing:
+                        .arrowUpRight
+                case .incoming, .missed:
+                        .arrowDownLeft
+                case .callLink:
+                        .link
+                }
+            }
         }
 
         enum Medium {
@@ -2426,28 +2437,11 @@ private extension CallsListViewController {
                 titleLabel.textColor = .ows_accentRed
             }
 
-            self.subtitleLabel.attributedText = {
-                let icon: ThemeIcon
-                switch viewModel.medium {
-                case .audio:
-                    icon = .phone16
-                case .video:
-                    icon = .video16
-                case .link:
-                    icon = .link16
-                }
-
-                return .composed(of: [
-                    NSAttributedString.with(
-                        image: Theme.iconImage(icon),
-                        font: .dynamicTypeCallout,
-                        centerVerticallyRelativeTo: .dynamicTypeSubheadline,
-                        heightReference: .pointSize
-                    ),
-                    " ",
-                    viewModel.direction.label,
-                ]).styled(with: .font(.dynamicTypeSubheadline))
-            }()
+            self.subtitleLabel.attributedText = .composed(of: [
+                viewModel.direction.symbol.attributedString(for: .subheadline),
+                " ",
+                viewModel.direction.label,
+            ]).styled(with: .font(.dynamicTypeSubheadline))
 
             self.joinPill?.removeFromSuperview()
 
