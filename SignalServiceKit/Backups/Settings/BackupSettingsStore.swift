@@ -53,6 +53,7 @@ public enum BackupPlan: RawRepresentable {
 
 extension NSNotification.Name {
     public static let backupAttachmentDownloadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentDownloadQueueSuspensionStatusDidChange")
+    public static let backupAttachmentUploadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentUploadQueueSuspensionStatusDidChange")
     public static let shouldAllowBackupDownloadsOnCellularChanged = Notification.Name("BackupSettingsStore.shouldAllowBackupDownloadsOnCellularChanged")
     public static let shouldAllowBackupUploadsOnCellularChanged = Notification.Name("BackupSettingsStore.shouldAllowBackupUploadsOnCellularChanged")
 }
@@ -69,6 +70,7 @@ public struct BackupSettingsStore {
         static let lastBackupFileSizeBytes = "lastBackupFileSizeBytes"
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let isBackupAttachmentDownloadQueueSuspended = "isBackupAttachmentDownloadQueueSuspended"
+        static let isBackupAttachmentUploadQueueSuspended = "isBackupAttachmentUploadQueueSuspended"
         static let shouldAllowBackupDownloadsOnCellular = "shouldAllowBackupDownloadsOnCellular"
         static let shouldAllowBackupUploadsOnCellular = "shouldAllowBackupUploadsOnCellular"
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
@@ -313,6 +315,20 @@ public struct BackupSettingsStore {
 
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: .backupAttachmentDownloadQueueSuspensionStatusDidChange, object: nil)
+        }
+    }
+
+    // MARK: -
+
+    public func isBackupAttachmentUploadQueueSuspended(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(Keys.isBackupAttachmentUploadQueueSuspended, defaultValue: false, transaction: tx)
+    }
+
+    public func setIsBackupUploadQueueSuspended(_ isSuspended: Bool, tx: DBWriteTransaction) {
+        kvStore.setBool(isSuspended, key: Keys.isBackupAttachmentUploadQueueSuspended, transaction: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.post(name: .backupAttachmentUploadQueueSuspensionStatusDidChange, object: nil)
         }
     }
 

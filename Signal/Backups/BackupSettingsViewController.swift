@@ -638,6 +638,13 @@ class BackupSettingsViewController:
 
     fileprivate func cancelManualBackup() {
         backupExportJobRunner.cancelIfRunning()
+        suspendUploads()
+    }
+
+    fileprivate func suspendUploads() {
+        db.write {
+            self.backupSettingsStore.setIsBackupUploadQueueSuspended(true, tx: $0)
+        }
     }
 
     private func showSheetForBackupExportJobError(_ error: BackupExportJobError) {
@@ -1038,6 +1045,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
         func performManualBackup()
         func cancelManualBackup()
+        func suspendUploads()
 
         func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool)
 
@@ -1152,6 +1160,10 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func cancelManualBackup() {
         actionsDelegate?.cancelManualBackup()
+    }
+
+    func suspendUploads() {
+        actionsDelegate?.suspendUploads()
     }
 
     // MARK: -
@@ -1293,24 +1305,25 @@ struct BackupSettingsView: View {
                             latestAttachmentUploadUpdate: viewModel.latestBackupAttachmentUploadUpdate,
                             viewModel: viewModel,
                         )
-                    } else {
-                        if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
-                            switch contents {
-                            case .disabling, .disablingDownloadsRunning:
-                                // We'll show a download progress bar below if necessary.
-                                EmptyView()
-                            case .enabled, .disabled, .disabledFailedToDisableRemotely:
-                                BackupAttachmentDownloadProgressView(
-                                    latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
-                                    viewModel: viewModel,
-                                )
-                            }
-                        } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
-                            BackupAttachmentUploadProgressView(
-                                latestUploadUpdate: latestBackupAttachmentUploadUpdate
+                    } else if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
+                        switch contents {
+                        case .disabling, .disablingDownloadsRunning:
+                            // We'll show a download progress bar below if necessary.
+                            EmptyView()
+                        case .enabled, .disabled, .disabledFailedToDisableRemotely:
+                            BackupAttachmentDownloadProgressView(
+                                latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
+                                viewModel: viewModel,
                             )
                         }
-
+                    } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
+                        BackupAttachmentUploadProgressView(
+                            latestUploadUpdate: latestBackupAttachmentUploadUpdate
+                        )
+                        CancelManualBackupButton {
+                            viewModel.suspendUploads()
+                        }
+                    } else {
                         Button {
                             viewModel.performManualBackup()
                         } label: {
@@ -1597,9 +1610,19 @@ private struct BackupExportProgressView: View {
                 .foregroundStyle(Color.Signal.secondaryLabel)
                 .monospacedDigit()
         }
-
-        Button {
+        CancelManualBackupButton {
             viewModel.cancelManualBackup()
+        }
+    }
+}
+
+private struct CancelManualBackupButton: View {
+
+    let completion: () -> Void
+
+    var body: some View {
+        Button {
+            completion()
         } label: {
             Text(OWSLocalizedString(
                 "BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON",
@@ -2301,6 +2324,7 @@ private extension BackupSettingsViewModel {
 
             func performManualBackup() { print("Manually backing up!") }
             func cancelManualBackup() { print("Canceling manual backup!") }
+            func suspendUploads() { print("Manually suspending uploads!") }
 
             func setShouldAllowBackupUploadsOnCellular(_ newShouldAllowBackupUploadsOnCellular: Bool) { print("Uploads on cellular: \(newShouldAllowBackupUploadsOnCellular)") }
 

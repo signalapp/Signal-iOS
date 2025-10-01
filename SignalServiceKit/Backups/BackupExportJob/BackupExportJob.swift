@@ -166,6 +166,10 @@ class BackupExportJobImpl: BackupExportJob {
         }
         logger.info("\(mode)")
 
+        await db.awaitableWrite {
+            self.backupSettingsStore.setIsBackupUploadQueueSuspended(false, tx: $0)
+        }
+
         let (
             localIdentifiers,
             backupKey,
@@ -356,13 +360,13 @@ class BackupExportJobImpl: BackupExportJob {
 
             logger.info("Done!")
         } catch is CancellationError {
-            switch mode {
-            case .bgProcessingTask:
-                await db.awaitableWrite {
+            await db.awaitableWrite {
+                switch mode {
+                case .bgProcessingTask:
                     self.backupSettingsStore.setLastBackupFailed(tx: $0)
+                case .manual:
+                    self.backupSettingsStore.setIsBackupUploadQueueSuspended(true, tx: $0)
                 }
-            case .manual:
-                break
             }
 
             throw .cancellationError

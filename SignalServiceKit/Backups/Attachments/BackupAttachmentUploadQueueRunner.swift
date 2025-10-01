@@ -267,6 +267,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             defer { backgroundTask.end() }
             try await taskQueue.loadAndRunTasks()
             logger.info("Finished \(logString) Backup uploads.")
+        case .suspended:
+            logger.info("Skipping \(logString) Backup uploads: suspende by user.")
+            try await taskQueue.stop()
         case .empty:
             logger.info("Skipping \(logString) Backup uploads: queue is empty.")
             return
@@ -387,6 +390,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 return .cancelled
             }
 
+            struct ExplicitlySuspendedError: Error {}
             struct NeedsBatteryError: Error {}
             struct NeedsInternetError: Error {}
             struct NeedsToBeRegisteredError: Error {}
@@ -398,6 +402,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             case .empty:
                 // The queue will stop on its own, finish this task.
                 break
+            case .suspended:
+                try? await loader.stop()
+                return .retryableError(ExplicitlySuspendedError())
             case .lowBattery, .lowPowerMode:
                 try? await loader.stop()
                 return .retryableError(NeedsBatteryError())
@@ -620,7 +627,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // issue.
                             return .retryableError(NetworkRetryError())
                         case .noWifiReachability, .notRegisteredAndReady,
-                                .lowBattery, .lowPowerMode, .appBackgrounded, .empty:
+                                .lowBattery, .lowPowerMode, .appBackgrounded, .empty, .suspended:
                             // These other states may be overriding reachability;
                             // just allow the queue itself to retry and once the
                             // other states are resolved reachability will kick in,

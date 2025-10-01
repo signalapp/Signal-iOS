@@ -163,7 +163,7 @@ private class Tracker {
             case
                     .running,
                     .noWifiReachability, .lowBattery, .lowPowerMode, .noReachability,
-                    .notRegisteredAndReady, .appBackgrounded:
+                    .notRegisteredAndReady, .appBackgrounded, .suspended:
                 // The queue isn't empty, so attach a new progress observer.
                 //
                 // Progress observers snapshot and filter the queue's state, so
@@ -215,7 +215,7 @@ private class Tracker {
             switch lastReportedUploadQueueStatus {
             case .empty:
                 return nil
-            case .notRegisteredAndReady, .appBackgrounded:
+            case .notRegisteredAndReady, .appBackgrounded, .suspended:
                 return nil
             case .running:
                 return .running
