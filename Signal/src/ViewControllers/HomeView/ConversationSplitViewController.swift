@@ -662,13 +662,6 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 }
 
 extension ConversationSplitViewController: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        // If we're collapsed and navigating to a list VC (either inbox or archive)
-        // the current conversation is no longer selected.
-        guard isCollapsed, viewController is ChatListViewController else { return }
-        selectedConversationViewController = nil
-    }
-
     func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return navigationTransitionDelegate?.navigationController?(
             navigationController,
