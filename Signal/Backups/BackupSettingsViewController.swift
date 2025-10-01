@@ -1336,10 +1336,8 @@ struct BackupSettingsView: View {
                         shouldAllowBackupUploadsOnCellular: viewModel.shouldAllowBackupUploadsOnCellular,
                         viewModel: viewModel,
                     )
-                }
 
-                if FeatureFlags.Backups.showOptimizeMedia {
-                    SignalSection {
+                    if FeatureFlags.Backups.showOptimizeMedia {
                         Toggle(
                             OWSLocalizedString(
                                 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
@@ -1350,7 +1348,9 @@ struct BackupSettingsView: View {
                                 set: { viewModel.setOptimizeLocalStorage($0) }
                             )
                         ).disabled(!viewModel.optimizeLocalStorageAvailable)
-                    } footer: {
+                    }
+                } footer: {
+                    if FeatureFlags.Backups.showOptimizeMedia {
                         let footerText: String = if
                             viewModel.optimizeLocalStorageAvailable,
                             viewModel.isPaidPlanTester
@@ -1373,6 +1373,7 @@ struct BackupSettingsView: View {
 
                         Text(footerText)
                             .foregroundStyle(Color.Signal.secondaryLabel)
+                            .font(.caption)
                     }
                 }
 
@@ -2154,6 +2155,7 @@ private struct BackupSubscriptionView: View {
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
                 .foregroundStyle(Color.Signal.label)
+                .font(.subheadline)
                 .padding(.top, 8)
             }
 
@@ -2232,6 +2234,8 @@ private struct BackupDetailsView: View {
             }
         }
 
+        BackupViewKeyView(viewModel: viewModel)
+
         Toggle(
             OWSLocalizedString(
                 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL",
@@ -2242,8 +2246,6 @@ private struct BackupDetailsView: View {
                 set: { viewModel.setShouldAllowBackupUploadsOnCellular($0) }
             )
         )
-
-        BackupViewKeyView(viewModel: viewModel)
     }
 }
 
