@@ -77,6 +77,8 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                 return .unretryableSVR🐝Error
             case .incorrectRecoveryKey:
                 return .incorrectRecoveryKey
+            case .cancellationError:
+                return .timeout
             }
         default:
             return .generic

@@ -98,6 +98,8 @@ public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
     /// Couldn't recover SVR🐝 data because the backup key is incorrect;
     /// may be recoverable by entering a different AEP.
     case incorrectRecoveryKey
+    /// A caught-and-rethrown `CancellationError`.
+    case cancellationError
 
     public var isRetryableProvider: Bool {
         switch self {
@@ -108,7 +110,7 @@ public enum SVR🐝Error: Error, Equatable, IsRetryableProvider {
             // these errors can be retried by
             // the user.
             return false
-        case .unrecoverable, .incorrectRecoveryKey:
+        case .unrecoverable, .incorrectRecoveryKey, .cancellationError:
             return false
         }
     }
@@ -138,7 +140,7 @@ extension BackupImportSource {
                 forwardSecrecyToken = try await Retry.performWithBackoff(
                     maxAttempts: 2,
                     block: {
-                        do {
+                        do throws(SVR🐝Error) {
                             return try await self.fetchForwardSecrecyTokenFromSvr(
                                 key: key,
                                 metadataHeader: metadataHeader,
@@ -149,6 +151,8 @@ extension BackupImportSource {
                                 libsignalNet: libsignalNet,
                                 nonceStore: nonceStore
                             )
+                        } catch .cancellationError {
+                            throw CancellationError()
                         } catch let error {
                             isRetry = true
                             throw error
@@ -191,6 +195,8 @@ extension BackupImportSource {
                 // it wasn't stale credentials that caused the problem.
                 forceRefresh: isRetry
             )
+        } catch is CancellationError {
+            throw .cancellationError
         } catch let error {
             if error.isNetworkFailureOrTimeout {
                 throw .retryableAutomatically
@@ -210,6 +216,8 @@ extension BackupImportSource {
                 backupKey: key.backupKey,
                 metadata: metadataHeader.data
             )
+        } catch is CancellationError {
+            throw .cancellationError
         } catch let error {
             switch error as? LibSignalClient.SignalError {
             case .invalidArgument:
@@ -304,7 +312,7 @@ extension BackupExportPurpose {
             return try await Retry.performWithBackoff(
                 maxAttempts: 2,
                 block: {
-                    do {
+                    do throws(SVR🐝Error) {
                         return try await storeEncryptionMetadataToSvr🐝(
                             key: key,
                             chatAuth: chatAuth,
@@ -314,6 +322,8 @@ extension BackupExportPurpose {
                             libsignalNet: libsignalNet,
                             nonceStore: nonceStore
                         )
+                    } catch .cancellationError {
+                        throw CancellationError()
                     } catch let error {
                         isRetry = true
                         throw error
@@ -355,7 +365,9 @@ extension BackupExportPurpose {
                 forceRefresh: isRetry
             )
         } catch let error {
-            if error.isNetworkFailureOrTimeout {
+            if error is CancellationError {
+                throw .cancellationError
+            } else if error.isNetworkFailureOrTimeout {
                 throw .retryableAutomatically
             } else if error.isRetryable {
                 throw .retryableAutomatically
@@ -389,6 +401,8 @@ extension BackupExportPurpose {
         let response: Svr🐝.StoreBackupResponse
         do {
             response = try await svr🐝.store(backupKey: key.backupKey, previousSecretData: mostRecentSecretData.data)
+        } catch is CancellationError {
+            throw .cancellationError
         } catch let error {
             switch error as? LibSignalClient.SignalError {
             case .invalidArgument:
