@@ -20,10 +20,6 @@ final class HelpViewController: OWSTableViewController2 {
                                                    comment: "Help item that takes the user to the Signal support website")
         let contactLabel = OWSLocalizedString("HELP_CONTACT_US",
                                              comment: "Help item allowing the user to file a support request")
-        let localizedSheetTitle = OWSLocalizedString("EMAIL_SIGNAL_TITLE",
-                                                    comment: "Title for the fallback support sheet if user cannot send email")
-        let localizedSheetMessage = OWSLocalizedString("EMAIL_SIGNAL_MESSAGE",
-                                                      comment: "Description for the fallback support sheet if user cannot send email")
 
         let contents = OWSTableContents(title: helpTitle)
 
@@ -39,6 +35,14 @@ final class HelpViewController: OWSTableViewController2 {
             withText: contactLabel,
             actionBlock: {
                 guard ComposeSupportEmailOperation.canSendEmails else {
+                    let localizedSheetTitle = OWSLocalizedString(
+                        "EMAIL_SIGNAL_TITLE",
+                        comment: "Title for the fallback support sheet if user cannot send email"
+                    )
+                    let localizedSheetMessage = OWSLocalizedString(
+                        "EMAIL_SIGNAL_MESSAGE",
+                        comment: "Description for the fallback support sheet if user cannot send email"
+                    )
                     let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                               message: localizedSheetMessage)
                     let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")

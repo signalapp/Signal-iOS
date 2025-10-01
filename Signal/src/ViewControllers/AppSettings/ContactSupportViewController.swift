@@ -117,6 +117,10 @@ final class ContactSupportViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationItem.rightBarButtonItem?.tintColor = .Signal.accent
+
+        shouldAvoidKeyboard = true
+
         tableView.keyboardDismissMode = .interactive
         tableView.separatorInsetReference = .fromCellEdges
         tableView.separatorInset = .zero
@@ -124,15 +128,6 @@ final class ContactSupportViewController: OWSTableViewController2 {
         rebuildTableContents()
         setupNavigationBar()
         setupDataProviderViews()
-        applyTheme()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardFrameChange),
-                                               name: UIResponder.keyboardWillChangeFrameNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardFrameChange),
-                                               name: UIResponder.keyboardDidChangeFrameNotification,
-                                               object: nil)
     }
 
     // MARK: - Data providers
@@ -143,14 +138,14 @@ final class ContactSupportViewController: OWSTableViewController2 {
     private let debugSwitch = UISwitch()
     private let emojiPicker = EmojiMoodPickerView()
 
-    func setupDataProviderViews() {
+    private func setupDataProviderViews() {
         descriptionField.delegate = self
         descriptionField.placeholderText = OWSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
         debugSwitch.isOn = true
     }
 
-    func setupNavigationBar() {
+    private func setupNavigationBar() {
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.didTapCancel()
         }
@@ -164,41 +159,15 @@ final class ContactSupportViewController: OWSTableViewController2 {
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
 
-    func updateRightBarButton() {
+    private func updateRightBarButton() {
         navigationItem.rightBarButtonItem?.isEnabled = ((descriptionField.text?.count ?? 0) > 10) && selectedFilter != nil
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        applyTheme()
-    }
-
-    private func applyTheme() {
-        navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
-
-        // Rebuild the contents to force them to update their theme
-        rebuildTableContents()
-    }
-
-    func rebuildTableContents() {
+    private func rebuildTableContents() {
         contents = constructContents()
     }
 
     // MARK: - View transitions
-
-    @objc
-    private func keyboardFrameChange(_ notification: NSNotification) {
-        guard let keyboardEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            owsFailDebug("Missing keyboard frame info")
-            return
-        }
-        let tableViewSafeArea = tableView.bounds.inset(by: tableView.safeAreaInsets)
-        let keyboardFrameInTableView = tableView.convert(keyboardEndFrame, from: nil)
-        let intersectionHeight = keyboardFrameInTableView.intersection(tableViewSafeArea).height
-
-        tableView.contentInset.bottom = intersectionHeight
-        tableView.verticalScrollIndicatorInsets.bottom = intersectionHeight
-    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -208,7 +177,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
         }, completion: nil)
     }
 
-    var showSpinnerOnNextButton = false {
+    private var showSpinnerOnNextButton = false {
         didSet {
             guard showSpinnerOnNextButton else {
                 navigationItem.rightBarButtonItem?.customView = nil
@@ -223,7 +192,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             let label = UILabel()
             label.text = OWSLocalizedString("SUPPORT_LOG_UPLOAD_IN_PROGRESS",
                                            comment: "A string in the navigation bar indicating that the support request is uploading logs")
-            label.textColor = Theme.secondaryTextAndIconColor
+            label.textColor = .Signal.secondaryLabel
 
             let stackView = UIStackView(arrangedSubviews: [label, spinner])
             stackView.spacing = 4
@@ -291,6 +260,7 @@ extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
 // MARK: - Table view content builders
 
 extension ContactSupportViewController {
+
     fileprivate func constructContents() -> OWSTableContents {
 
         let titleText = OWSLocalizedString("HELP_CONTACT_US",
@@ -341,7 +311,7 @@ extension ContactSupportViewController {
                     cell.textLabel?.adjustsFontForContentSizeCategory = true
                     cell.textLabel?.numberOfLines = 0
                     cell.textLabel?.text = faqPromptText
-                    cell.textLabel?.textColor = Theme.accentBlueColor
+                    cell.textLabel?.textColor = .Signal.accent
                     return cell
                 },
                    actionBlock: { [weak self] in
@@ -361,7 +331,7 @@ extension ContactSupportViewController {
         ])
     }
 
-    func createDebugLogCell() -> UITableViewCell {
+    private func createDebugLogCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
         let label = UILabel()
@@ -370,9 +340,9 @@ extension ContactSupportViewController {
         label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .label
 
-        let infoButton = OWSButton(imageName: "help", tintColor: Theme.secondaryTextAndIconColor) { [weak self] in
+        let infoButton = OWSButton(imageName: "help", tintColor: .Signal.secondaryLabel) { [weak self] in
             let vc = SFSafariViewController(url: URL.Support.debugLogs)
             self?.present(vc, animated: true)
         }
@@ -393,7 +363,7 @@ extension ContactSupportViewController {
         return cell
     }
 
-    func createEmojiFooterView() -> UIView {
+    private func createEmojiFooterView() -> UIView {
         let containerView = UIView()
 
         // These constants were pulled from OWSTableViewController to get things to line up right
@@ -406,7 +376,7 @@ extension ContactSupportViewController {
         return containerView
     }
 
-    func showFilterPicker() {
+    private func showFilterPicker() {
         let actionSheet = ActionSheetController(title: OWSLocalizedString(
             "CONTACT_SUPPORT_FILTER_PROMPT",
             comment: "Prompt telling the user to select a filter for their support request."
