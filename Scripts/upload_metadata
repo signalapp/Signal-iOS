@@ -7,4 +7,12 @@ BASE_DIR="$(git rev-parse --show-toplevel)"
 
 cd "$BASE_DIR"
 
-bundle exec fastlane deliver --skip-screenshots --skip-binary-upload --username "$FASTLANE_USERNAME" --app_identifier 'org.whispersystems.signal'
+bundle exec fastlane deliver \
+  --skip-screenshots \
+  --skip-binary-upload \
+  --username "$FASTLANE_USERNAME" \
+  --phased_release true \
+  --reset_ratings false \
+  --automatic_release false \
+  --run_precheck_before_submit false \
+  --app_identifier 'org.whispersystems.signal'
