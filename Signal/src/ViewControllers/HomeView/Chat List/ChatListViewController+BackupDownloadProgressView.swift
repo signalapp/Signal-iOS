@@ -805,7 +805,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         case .wifiNotReachable:
             Task {
                 await db.awaitableWrite { tx in
-                    backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(tx: tx)
+                    backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(true, tx: tx)
                 }
             }
         }

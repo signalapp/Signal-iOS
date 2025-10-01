@@ -210,6 +210,14 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             state.isThumbnailQueueEmpty = true
         case .fullsize:
             state.isFullsizeQueueEmpty = true
+
+            // We were temporarily doing downloads over cellular, but we're done
+            // and shouldn't keep allowing cellular.
+            Task {
+                await db.awaitableWrite { tx in
+                    backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(false, tx: tx)
+                }
+            }
         }
 
         if state.isThumbnailQueueEmpty == true && state.isFullsizeQueueEmpty == true {
@@ -566,8 +574,21 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     @objc
     private func reachabilityDidChange() {
-        state.isWifiReachable = reachabilityManager.isReachable(via: .wifi)
-        state.isReachable = reachabilityManager.isReachable(via: .any)
+        let isWifiReachable = reachabilityManager.isReachable(via: .wifi)
+        let isReachable = reachabilityManager.isReachable(via: .any)
+
+        state.isWifiReachable = isWifiReachable
+        state.isReachable = isReachable
+
+        if isWifiReachable, state.shouldAllowBackupDownloadsOnCellular == true {
+            // We were temporarily doing downloads over cellular, but now we
+            // have WiFi and shouldn't keep allowing cellular.
+            Task {
+                await db.awaitableWrite { tx in
+                    backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(false, tx: tx)
+                }
+            }
+        }
     }
 
     @objc

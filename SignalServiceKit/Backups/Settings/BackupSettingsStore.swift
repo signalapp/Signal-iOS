@@ -307,13 +307,9 @@ public struct BackupSettingsStore {
     public func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(isSuspended, key: Keys.isBackupAttachmentDownloadQueueSuspended, transaction: tx)
 
-        // The "allow cellular downloads" setting isn't exposed as a toggle, and
-        // instead lasts for the duration of the "current download" once set.
-        //
-        // If the user has taken action on the download queue, treat that as the
-        // "current download" rotating, and consequently forget any past
-        // cellular-download state.
-        _setShouldAllowBackupDownloadsOnCellular(nil, tx: tx)
+        // Since the user has taken action to suspend the download queue, reset
+        // "temporary" cellular downloads state (in case we had set it).
+        setShouldAllowBackupDownloadsOnCellular(false, tx: tx)
 
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: .backupAttachmentDownloadQueueSuspensionStatusDidChange, object: nil)
@@ -322,20 +318,18 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
+    /// Whether downloads of Backup media are allowed to use cellular, rather
+    /// than being restricted to WiFi. Defaults to `false`.
+    ///
+    /// - Note
+    /// This setting is not exposed as a toggle, and is instead a "temporary
+    /// override" that's reset automatically on various triggers.
     public func shouldAllowBackupDownloadsOnCellular(tx: DBReadTransaction) -> Bool {
-        return kvStore.getBool(Keys.shouldAllowBackupDownloadsOnCellular, defaultValue: false, transaction: tx)
+        return kvStore.getBool(Keys.shouldAllowBackupDownloadsOnCellular, transaction: tx) ?? false
     }
 
-    public func setShouldAllowBackupDownloadsOnCellular(tx: DBWriteTransaction) {
-        _setShouldAllowBackupDownloadsOnCellular(true, tx: tx)
-    }
-
-    private func _setShouldAllowBackupDownloadsOnCellular(_ shouldAllowBackupDownloadsOnCellular: Bool?, tx: DBWriteTransaction) {
-        if let shouldAllowBackupDownloadsOnCellular {
-            kvStore.setBool(shouldAllowBackupDownloadsOnCellular, key: Keys.shouldAllowBackupDownloadsOnCellular, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Keys.shouldAllowBackupDownloadsOnCellular, transaction: tx)
-        }
+    public func setShouldAllowBackupDownloadsOnCellular(_ shouldAllowBackupDownloadsOnCellular: Bool, tx: DBWriteTransaction) {
+        kvStore.setBool(shouldAllowBackupDownloadsOnCellular, key: Keys.shouldAllowBackupDownloadsOnCellular, transaction: tx)
 
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: .shouldAllowBackupDownloadsOnCellularChanged, object: nil)

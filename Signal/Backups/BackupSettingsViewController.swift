@@ -864,7 +864,7 @@ class BackupSettingsViewController:
 
     fileprivate func setShouldAllowBackupDownloadsOnCellular() {
         db.write { tx in
-            backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(tx: tx)
+            backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(true, tx: tx)
         }
     }
 
