@@ -55,7 +55,7 @@ struct ProvisioningProtos_ProvisioningUuid: Sendable {
   fileprivate var _uuid: String? = nil
 }
 
-struct ProvisioningProtos_ProvisionEnvelope: @unchecked Sendable {
+struct ProvisioningProtos_ProvisionEnvelope: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -88,7 +88,7 @@ struct ProvisioningProtos_ProvisionEnvelope: @unchecked Sendable {
   fileprivate var _body: Data? = nil
 }
 
-struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
+struct ProvisioningProtos_ProvisionMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -273,9 +273,7 @@ fileprivate let _protobuf_package = "ProvisioningProtos"
 
 extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisioningUuid"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}uuid\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -309,10 +307,7 @@ extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProto
 
 extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionEnvelope"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "body"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}body\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -351,24 +346,7 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
 
 extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "aciIdentityKeyPublic"),
-    2: .same(proto: "aciIdentityKeyPrivate"),
-    11: .same(proto: "pniIdentityKeyPublic"),
-    12: .same(proto: "pniIdentityKeyPrivate"),
-    8: .same(proto: "aci"),
-    10: .same(proto: "pni"),
-    3: .same(proto: "number"),
-    4: .same(proto: "provisioningCode"),
-    5: .same(proto: "userAgent"),
-    6: .same(proto: "profileKey"),
-    7: .same(proto: "readReceipts"),
-    9: .same(proto: "provisioningVersion"),
-    13: .same(proto: "masterKey"),
-    14: .same(proto: "ephemeralBackupKey"),
-    15: .same(proto: "accountEntropyPool"),
-    16: .same(proto: "mediaRootBackupKey"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{1}aci\0\u{1}provisioningVersion\0\u{1}pni\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{1}masterKey\0\u{1}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

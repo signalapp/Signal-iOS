@@ -49,7 +49,7 @@ struct DeviceTransferProtos_File: Sendable {
   init() {}
 }
 
-struct DeviceTransferProtos_Default: @unchecked Sendable {
+struct DeviceTransferProtos_Default: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -65,7 +65,7 @@ struct DeviceTransferProtos_Default: @unchecked Sendable {
   init() {}
 }
 
-struct DeviceTransferProtos_Database: @unchecked Sendable {
+struct DeviceTransferProtos_Database: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -139,11 +139,7 @@ fileprivate let _protobuf_package = "DeviceTransferProtos"
 
 extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".File"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "identifier"),
-    2: .same(proto: "relativePath"),
-    3: .same(proto: "estimatedSize"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identifier\0\u{1}relativePath\0\u{1}estimatedSize\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -183,10 +179,7 @@ extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Default"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "key"),
-    2: .same(proto: "encodedValue"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}encodedValue\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -221,11 +214,7 @@ extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Database"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "key"),
-    2: .same(proto: "database"),
-    3: .same(proto: "wal"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}database\0\u{1}wal\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -269,14 +258,7 @@ extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension DeviceTransferProtos_Manifest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Manifest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "grdbSchemaVersion"),
-    2: .same(proto: "database"),
-    3: .same(proto: "appDefaults"),
-    4: .same(proto: "standardDefaults"),
-    5: .same(proto: "files"),
-    6: .same(proto: "estimatedTotalSize"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}grdbSchemaVersion\0\u{1}database\0\u{1}appDefaults\0\u{1}standardDefaults\0\u{1}files\0\u{1}estimatedTotalSize\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

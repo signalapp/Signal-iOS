@@ -142,7 +142,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Chain: @unchecked Sendable {
+  struct Chain: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -178,7 +178,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct ChainKey: @unchecked Sendable {
+    struct ChainKey: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -209,7 +209,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
       fileprivate var _key: Data? = nil
     }
 
-    struct MessageKey: @unchecked Sendable {
+    struct MessageKey: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -267,7 +267,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
     fileprivate var _chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey? = nil
   }
 
-  struct PendingPreKey: @unchecked Sendable {
+  struct PendingPreKey: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -343,20 +343,7 @@ fileprivate let _protobuf_package = "SessionRecordProtos"
 
 extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionStructure"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sessionVersion"),
-    2: .same(proto: "localIdentityPublic"),
-    3: .same(proto: "remoteIdentityPublic"),
-    4: .same(proto: "rootKey"),
-    5: .same(proto: "previousCounter"),
-    6: .same(proto: "senderChain"),
-    7: .same(proto: "receiverChains"),
-    9: .same(proto: "pendingPreKey"),
-    10: .same(proto: "remoteRegistrationId"),
-    11: .same(proto: "localRegistrationId"),
-    12: .same(proto: "needsRefresh"),
-    13: .same(proto: "aliceBaseKey"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sessionVersion\0\u{1}localIdentityPublic\0\u{1}remoteIdentityPublic\0\u{1}rootKey\0\u{1}previousCounter\0\u{1}senderChain\0\u{1}receiverChains\0\u{2}\u{2}pendingPreKey\0\u{1}remoteRegistrationId\0\u{1}localRegistrationId\0\u{1}needsRefresh\0\u{1}aliceBaseKey\0")
 
   fileprivate class _StorageClass {
     var _sessionVersion: UInt32? = nil
@@ -503,12 +490,7 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
 
 extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".Chain"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "senderRatchetKey"),
-    2: .same(proto: "senderRatchetKeyPrivate"),
-    3: .same(proto: "chainKey"),
-    4: .same(proto: "messageKeys"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}senderRatchetKey\0\u{1}senderRatchetKeyPrivate\0\u{1}chainKey\0\u{1}messageKeys\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -557,10 +539,7 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
 
 extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".ChainKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "key"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}key\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -599,12 +578,7 @@ extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Mes
 
 extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".MessageKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "cipherKey"),
-    3: .same(proto: "macKey"),
-    4: .same(proto: "iv"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}cipherKey\0\u{1}macKey\0\u{1}iv\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -653,11 +627,7 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
 
 extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".PendingPreKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "preKeyId"),
-    3: .same(proto: "signedPreKeyId"),
-    2: .same(proto: "baseKey"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}preKeyId\0\u{1}baseKey\0\u{1}signedPreKeyId\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -701,10 +671,7 @@ extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Mess
 
 extension SessionRecordProtos_RecordStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RecordStructure"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "currentSession"),
-    2: .same(proto: "previousSessions"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}currentSession\0\u{1}previousSessions\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

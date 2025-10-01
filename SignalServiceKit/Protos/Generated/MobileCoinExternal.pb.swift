@@ -28,7 +28,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 //// A 32-byte compressed Ristretto curve point (public key)
-struct External_CompressedRistretto: @unchecked Sendable {
+struct External_CompressedRistretto: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -41,7 +41,7 @@ struct External_CompressedRistretto: @unchecked Sendable {
 }
 
 //// A public address, used to identify recipients.
-struct External_PublicAddress: @unchecked Sendable {
+struct External_PublicAddress: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -94,7 +94,7 @@ struct External_PublicAddress: @unchecked Sendable {
 /// Can be used by the recipient of a transaction output to verify that the
 /// bearer of this number knew the shared secret of the transaction output,
 /// thereby providing evidence that they are the sender.
-struct External_TxOutConfirmationNumber: @unchecked Sendable {
+struct External_TxOutConfirmationNumber: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -107,7 +107,7 @@ struct External_TxOutConfirmationNumber: @unchecked Sendable {
 }
 
 /// MaskedAmount.
-struct External_MaskedAmount: @unchecked Sendable {
+struct External_MaskedAmount: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -213,9 +213,7 @@ fileprivate let _protobuf_package = "external"
 
 extension External_CompressedRistretto: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CompressedRistretto"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "data"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -245,13 +243,7 @@ extension External_CompressedRistretto: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension External_PublicAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PublicAddress"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "view_public_key"),
-    2: .standard(proto: "spend_public_key"),
-    3: .standard(proto: "fog_report_url"),
-    4: .standard(proto: "fog_report_id"),
-    5: .standard(proto: "fog_authority_sig"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}view_public_key\0\u{3}spend_public_key\0\u{3}fog_report_url\0\u{3}fog_report_id\0\u{3}fog_authority_sig\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -305,9 +297,7 @@ extension External_PublicAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension External_TxOutConfirmationNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TxOutConfirmationNumber"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hash"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hash\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -337,11 +327,7 @@ extension External_TxOutConfirmationNumber: SwiftProtobuf.Message, SwiftProtobuf
 
 extension External_MaskedAmount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MaskedAmount"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "commitment"),
-    2: .standard(proto: "masked_value"),
-    3: .standard(proto: "masked_token_id"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}commitment\0\u{3}masked_value\0\u{3}masked_token_id\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -385,13 +371,7 @@ extension External_MaskedAmount: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension External_Receipt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Receipt"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "public_key"),
-    2: .same(proto: "confirmation"),
-    3: .standard(proto: "tombstone_block"),
-    4: .standard(proto: "masked_amount_v1"),
-    5: .standard(proto: "masked_amount_v2"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}public_key\0\u{1}confirmation\0\u{3}tombstone_block\0\u{3}masked_amount_v1\0\u{3}masked_amount_v2\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

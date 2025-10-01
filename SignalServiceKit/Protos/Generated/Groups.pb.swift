@@ -55,7 +55,7 @@ struct GroupsProtos_AvatarUploadAttributes: Sendable {
 }
 
 /// Represents a member of the group.
-struct GroupsProtos_Member: @unchecked Sendable {
+struct GroupsProtos_Member: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -127,7 +127,7 @@ struct GroupsProtos_Member: @unchecked Sendable {
 /// Here, "pending" refers to "pending profile key", as invited members'
 /// profile keys will be missing; to become a full member, they must add their
 /// profile key to the group.
-struct GroupsProtos_PendingMember: @unchecked Sendable {
+struct GroupsProtos_PendingMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -156,7 +156,7 @@ struct GroupsProtos_PendingMember: @unchecked Sendable {
 }
 
 /// A user who has requested to join the group, and is pending admin approval.
-struct GroupsProtos_RequestingMember: @unchecked Sendable {
+struct GroupsProtos_RequestingMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -180,7 +180,7 @@ struct GroupsProtos_RequestingMember: @unchecked Sendable {
 }
 
 /// A user who has been banned from the group.
-struct GroupsProtos_BannedMember: @unchecked Sendable {
+struct GroupsProtos_BannedMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -264,7 +264,7 @@ struct GroupsProtos_AccessControl: Sendable {
   init() {}
 }
 
-struct GroupsProtos_Group: @unchecked Sendable {
+struct GroupsProtos_Group: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -321,7 +321,7 @@ struct GroupsProtos_Group: @unchecked Sendable {
   fileprivate var _accessControl: GroupsProtos_AccessControl? = nil
 }
 
-struct GroupsProtos_GroupAttributeBlob: @unchecked Sendable {
+struct GroupsProtos_GroupAttributeBlob: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -362,7 +362,7 @@ struct GroupsProtos_GroupAttributeBlob: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Content: Equatable, @unchecked Sendable {
+  enum OneOf_Content: Equatable, Sendable {
     case title(String)
     case avatar(Data)
     case disappearingMessagesDuration(UInt32)
@@ -395,7 +395,7 @@ struct GroupsProtos_GroupInviteLink: Sendable {
 
   }
 
-  struct GroupInviteLinkContentsV1: @unchecked Sendable {
+  struct GroupInviteLinkContentsV1: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -412,7 +412,7 @@ struct GroupsProtos_GroupInviteLink: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupJoinInfo: @unchecked Sendable {
+struct GroupsProtos_GroupJoinInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -438,7 +438,7 @@ struct GroupsProtos_GroupJoinInfo: @unchecked Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupChange: @unchecked Sendable {
+struct GroupsProtos_GroupChange: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -670,7 +670,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       fileprivate var _added: GroupsProtos_Member? = nil
     }
 
-    struct DeleteMemberAction: @unchecked Sendable {
+    struct DeleteMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -682,7 +682,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyMemberRoleAction: @unchecked Sendable {
+    struct ModifyMemberRoleAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -696,7 +696,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyMemberProfileKeyAction: @unchecked Sendable {
+    struct ModifyMemberProfileKeyAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -733,7 +733,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       fileprivate var _added: GroupsProtos_PendingMember? = nil
     }
 
-    struct DeletePendingMemberAction: @unchecked Sendable {
+    struct DeletePendingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -745,7 +745,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct PromotePendingMemberAction: @unchecked Sendable {
+    struct PromotePendingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -761,7 +761,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct PromoteMemberPendingPniAciProfileKeyAction: @unchecked Sendable {
+    struct PromoteMemberPendingPniAciProfileKeyAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -805,7 +805,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       fileprivate var _added: GroupsProtos_RequestingMember? = nil
     }
 
-    struct DeleteRequestingMemberAction: @unchecked Sendable {
+    struct DeleteRequestingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -817,7 +817,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct PromoteRequestingMemberAction: @unchecked Sendable {
+    struct PromoteRequestingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -852,7 +852,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       fileprivate var _added: GroupsProtos_BannedMember? = nil
     }
 
-    struct DeleteBannedMemberAction: @unchecked Sendable {
+    struct DeleteBannedMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -864,7 +864,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyTitleAction: @unchecked Sendable {
+    struct ModifyTitleAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -890,7 +890,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyDisappearingMessagesTimerAction: @unchecked Sendable {
+    struct ModifyDisappearingMessagesTimerAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -952,7 +952,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyInviteLinkPasswordAction: @unchecked Sendable {
+    struct ModifyInviteLinkPasswordAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -964,7 +964,7 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       init() {}
     }
 
-    struct ModifyDescriptionAction: @unchecked Sendable {
+    struct ModifyDescriptionAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1009,7 +1009,7 @@ struct GroupsProtos_GroupExternalCredential: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupResponse: @unchecked Sendable {
+struct GroupsProtos_GroupResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1032,7 +1032,7 @@ struct GroupsProtos_GroupResponse: @unchecked Sendable {
   fileprivate var _group: GroupsProtos_Group? = nil
 }
 
-struct GroupsProtos_GroupChanges: @unchecked Sendable {
+struct GroupsProtos_GroupChanges: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1076,7 +1076,7 @@ struct GroupsProtos_GroupChanges: @unchecked Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupChangeResponse: @unchecked Sendable {
+struct GroupsProtos_GroupChangeResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1105,15 +1105,7 @@ fileprivate let _protobuf_package = "GroupsProtos"
 
 extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AvatarUploadAttributes"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "key"),
-    2: .same(proto: "credential"),
-    3: .same(proto: "acl"),
-    4: .same(proto: "algorithm"),
-    5: .same(proto: "date"),
-    6: .same(proto: "policy"),
-    7: .same(proto: "signature"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}credential\0\u{1}acl\0\u{1}algorithm\0\u{1}date\0\u{1}policy\0\u{1}signature\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1173,13 +1165,7 @@ extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProto
 
 extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Member"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "userId"),
-    2: .same(proto: "role"),
-    3: .same(proto: "profileKey"),
-    5: .same(proto: "joinedAtRevision"),
-    4: .same(proto: "presentation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0\u{1}profileKey\0\u{1}presentation\0\u{1}joinedAtRevision\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1228,20 +1214,12 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 }
 
 extension GroupsProtos_Member.Role: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "DEFAULT"),
-    2: .same(proto: "ADMINISTRATOR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}DEFAULT\0\u{1}ADMINISTRATOR\0")
 }
 
 extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PendingMember"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "member"),
-    2: .same(proto: "addedByUserId"),
-    3: .same(proto: "timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}member\0\u{1}addedByUserId\0\u{1}timestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1285,12 +1263,7 @@ extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RequestingMember"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "userId"),
-    2: .same(proto: "profileKey"),
-    4: .same(proto: "timestamp"),
-    3: .same(proto: "presentation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}profileKey\0\u{1}presentation\0\u{1}timestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1335,10 +1308,7 @@ extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BannedMember"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "userId"),
-    2: .same(proto: "bannedAtTimestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}bannedAtTimestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1373,11 +1343,7 @@ extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccessControl"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "attributes"),
-    2: .same(proto: "members"),
-    3: .same(proto: "addFromInviteLink"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributes\0\u{1}members\0\u{1}addFromInviteLink\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1416,32 +1382,12 @@ extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "ANY"),
-    2: .same(proto: "MEMBER"),
-    3: .same(proto: "ADMINISTRATOR"),
-    4: .same(proto: "UNSATISFIABLE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ANY\0\u{1}MEMBER\0\u{1}ADMINISTRATOR\0\u{1}UNSATISFIABLE\0")
 }
 
 extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Group"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "title"),
-    3: .same(proto: "avatar"),
-    4: .same(proto: "disappearingMessagesTimer"),
-    11: .same(proto: "descriptionBytes"),
-    5: .same(proto: "accessControl"),
-    6: .same(proto: "revision"),
-    7: .same(proto: "members"),
-    8: .same(proto: "pendingMembers"),
-    9: .same(proto: "requestingMembers"),
-    10: .same(proto: "inviteLinkPassword"),
-    12: .same(proto: "announcementsOnly"),
-    13: .same(proto: "bannedMembers"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}title\0\u{1}avatar\0\u{1}disappearingMessagesTimer\0\u{1}accessControl\0\u{1}revision\0\u{1}members\0\u{1}pendingMembers\0\u{1}requestingMembers\0\u{1}inviteLinkPassword\0\u{1}descriptionBytes\0\u{1}announcementsOnly\0\u{1}bannedMembers\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1535,12 +1481,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
 extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupAttributeBlob"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "title"),
-    2: .same(proto: "avatar"),
-    3: .same(proto: "disappearingMessagesDuration"),
-    4: .same(proto: "descriptionText"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0\u{1}avatar\0\u{1}disappearingMessagesDuration\0\u{1}descriptionText\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1621,9 +1562,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupInviteLink"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "contentsV1"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contentsV1\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1669,10 +1608,7 @@ extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupInviteLink.protoMessageName + ".GroupInviteLinkContentsV1"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "groupMasterKey"),
-    2: .same(proto: "inviteLinkPassword"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupMasterKey\0\u{1}inviteLinkPassword\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1707,16 +1643,7 @@ extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.
 
 extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupJoinInfo"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "title"),
-    3: .same(proto: "avatar"),
-    4: .same(proto: "memberCount"),
-    5: .same(proto: "addFromInviteLink"),
-    6: .same(proto: "revision"),
-    7: .same(proto: "pendingAdminApproval"),
-    8: .same(proto: "descriptionBytes"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}title\0\u{1}avatar\0\u{1}memberCount\0\u{1}addFromInviteLink\0\u{1}revision\0\u{1}pendingAdminApproval\0\u{1}descriptionBytes\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1781,11 +1708,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChange"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "actions"),
-    2: .same(proto: "serverSignature"),
-    3: .same(proto: "changeEpoch"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}actions\0\u{1}serverSignature\0\u{1}changeEpoch\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1825,33 +1748,7 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.protoMessageName + ".Actions"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sourceUserId"),
-    25: .standard(proto: "group_id"),
-    2: .same(proto: "revision"),
-    3: .same(proto: "addMembers"),
-    4: .same(proto: "deleteMembers"),
-    5: .same(proto: "modifyMemberRoles"),
-    6: .same(proto: "modifyMemberProfileKeys"),
-    7: .same(proto: "addPendingMembers"),
-    8: .same(proto: "deletePendingMembers"),
-    9: .same(proto: "promotePendingMembers"),
-    10: .same(proto: "modifyTitle"),
-    11: .same(proto: "modifyAvatar"),
-    12: .same(proto: "modifyDisappearingMessagesTimer"),
-    13: .same(proto: "modifyAttributesAccess"),
-    14: .same(proto: "modifyMemberAccess"),
-    15: .same(proto: "modifyAddFromInviteLinkAccess"),
-    16: .same(proto: "addRequestingMembers"),
-    17: .same(proto: "deleteRequestingMembers"),
-    18: .same(proto: "promoteRequestingMembers"),
-    19: .same(proto: "modifyInviteLinkPassword"),
-    20: .same(proto: "modifyDescription"),
-    21: .same(proto: "modifyAnnouncementsOnly"),
-    22: .same(proto: "addBannedMembers"),
-    23: .same(proto: "deleteBannedMembers"),
-    24: .same(proto: "promotePniPendingMembers"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sourceUserId\0\u{1}revision\0\u{1}addMembers\0\u{1}deleteMembers\0\u{1}modifyMemberRoles\0\u{1}modifyMemberProfileKeys\0\u{1}addPendingMembers\0\u{1}deletePendingMembers\0\u{1}promotePendingMembers\0\u{1}modifyTitle\0\u{1}modifyAvatar\0\u{1}modifyDisappearingMessagesTimer\0\u{1}modifyAttributesAccess\0\u{1}modifyMemberAccess\0\u{1}modifyAddFromInviteLinkAccess\0\u{1}addRequestingMembers\0\u{1}deleteRequestingMembers\0\u{1}promoteRequestingMembers\0\u{1}modifyInviteLinkPassword\0\u{1}modifyDescription\0\u{1}modifyAnnouncementsOnly\0\u{1}addBannedMembers\0\u{1}deleteBannedMembers\0\u{1}promotePniPendingMembers\0\u{3}group_id\0")
 
   fileprivate class _StorageClass {
     var _sourceUserID: Data = Data()
@@ -2089,10 +1986,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
 
 extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added"),
-    2: .same(proto: "joinFromInviteLink"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0\u{1}joinFromInviteLink\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2131,9 +2025,7 @@ extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Messag
 
 extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2163,10 +2055,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Mes
 
 extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberRoleAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "userId"),
-    2: .same(proto: "role"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2201,11 +2090,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf
 
 extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberProfileKeyAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "presentation"),
-    2: .standard(proto: "user_id"),
-    3: .standard(proto: "profile_key"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{3}profile_key\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2245,9 +2130,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
 
 extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddPendingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2281,9 +2164,7 @@ extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf
 
 extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeletePendingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2313,11 +2194,7 @@ extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProto
 
 extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromotePendingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "presentation"),
-    2: .standard(proto: "user_id"),
-    3: .standard(proto: "profile_key"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{3}profile_key\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2357,12 +2234,7 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
 
 extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteMemberPendingPniAciProfileKeyAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .standard(proto: "user_id"),
-    3: .same(proto: "pni"),
-    4: .standard(proto: "profile_key"),
-    1: .same(proto: "presentation"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{1}pni\0\u{3}profile_key\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2407,9 +2279,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyA
 
 extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddRequestingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2443,9 +2313,7 @@ extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProto
 
 extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteRequestingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2475,10 +2343,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftPr
 
 extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteRequestingMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "userId"),
-    2: .same(proto: "role"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2513,9 +2378,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftP
 
 extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddBannedMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2549,9 +2412,7 @@ extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.
 
 extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteBannedMemberAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2581,9 +2442,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtob
 
 extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyTitleAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "title"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2613,9 +2472,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Mess
 
 extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "avatar"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatar\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2645,9 +2502,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Mes
 
 extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDisappearingMessagesTimerAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timer"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timer\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2677,9 +2532,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction
 
 extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAttributesAccessControlAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "attributesAccess"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributesAccess\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2709,9 +2562,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: 
 
 extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAccessControlAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "avatarAccess"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatarAccess\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2741,9 +2592,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: Swif
 
 extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMembersAccessControlAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "membersAccess"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}membersAccess\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2773,9 +2622,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: Swi
 
 extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAddFromInviteLinkAccessControlAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "addFromInviteLinkAccess"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}addFromInviteLinkAccess\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2805,9 +2652,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlA
 
 extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyInviteLinkPasswordAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "inviteLinkPassword"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviteLinkPassword\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2837,9 +2682,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: Swift
 
 extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDescriptionAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "descriptionBytes"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}descriptionBytes\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2869,9 +2712,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobu
 
 extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAnnouncementsOnlyAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "announcementsOnly"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}announcementsOnly\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2901,9 +2742,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftP
 
 extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupExternalCredential"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "token"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2933,10 +2772,7 @@ extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProt
 
 extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "group"),
-    2: .standard(proto: "group_send_endorsements_response"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}group\0\u{3}group_send_endorsements_response\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2975,10 +2811,7 @@ extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "groupChanges"),
-    2: .standard(proto: "group_send_endorsements_response"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupChanges\0\u{3}group_send_endorsements_response\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3013,10 +2846,7 @@ extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChanges.protoMessageName + ".GroupChangeState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "groupChange"),
-    2: .same(proto: "groupState"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupChange\0\u{1}groupState\0")
 
   fileprivate class _StorageClass {
     var _groupChange: GroupsProtos_GroupChange? = nil
@@ -3093,10 +2923,7 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
 
 extension GroupsProtos_GroupChangeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChangeResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "group_change"),
-    2: .standard(proto: "group_send_endorsements_response"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}group_change\0\u{3}group_send_endorsements_response\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

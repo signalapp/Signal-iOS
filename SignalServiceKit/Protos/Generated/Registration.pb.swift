@@ -30,7 +30,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct RegistrationProtos_RegistrationProvisionEnvelope: @unchecked Sendable {
+struct RegistrationProtos_RegistrationProvisionEnvelope: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -45,7 +45,7 @@ struct RegistrationProtos_RegistrationProvisionEnvelope: @unchecked Sendable {
   init() {}
 }
 
-struct RegistrationProtos_RegistrationProvisionMessage: @unchecked Sendable {
+struct RegistrationProtos_RegistrationProvisionMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -170,10 +170,7 @@ fileprivate let _protobuf_package = "RegistrationProtos"
 
 extension RegistrationProtos_RegistrationProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RegistrationProvisionEnvelope"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "body"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}body\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -208,24 +205,7 @@ extension RegistrationProtos_RegistrationProvisionEnvelope: SwiftProtobuf.Messag
 
 extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RegistrationProvisionMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "e164"),
-    2: .same(proto: "aci"),
-    3: .same(proto: "accountEntropyPool"),
-    4: .same(proto: "pin"),
-    5: .same(proto: "platform"),
-    6: .same(proto: "backupTimestampMs"),
-    7: .same(proto: "tier"),
-    8: .same(proto: "backupSizeBytes"),
-    9: .same(proto: "restoreMethodToken"),
-    10: .same(proto: "aciIdentityKeyPublic"),
-    11: .same(proto: "aciIdentityKeyPrivate"),
-    12: .same(proto: "pniIdentityKeyPublic"),
-    13: .same(proto: "pniIdentityKeyPrivate"),
-    14: .same(proto: "backupVersion"),
-    15: .same(proto: "lastBackupForwardSecrecyToken"),
-    16: .same(proto: "nextBackupSecretData"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}e164\0\u{1}aci\0\u{1}accountEntropyPool\0\u{1}pin\0\u{1}platform\0\u{1}backupTimestampMs\0\u{1}tier\0\u{1}backupSizeBytes\0\u{1}restoreMethodToken\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{1}backupVersion\0\u{1}lastBackupForwardSecrecyToken\0\u{1}nextBackupSecretData\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -333,15 +313,9 @@ extension RegistrationProtos_RegistrationProvisionMessage: SwiftProtobuf.Message
 }
 
 extension RegistrationProtos_RegistrationProvisionMessage.Platform: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ANDROID"),
-    1: .same(proto: "IOS"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ANDROID\0\u{1}IOS\0")
 }
 
 extension RegistrationProtos_RegistrationProvisionMessage.Tier: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "FREE"),
-    1: .same(proto: "PAID"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FREE\0\u{1}PAID\0")
 }

@@ -47,7 +47,7 @@ PODS:
   - SQLCipher/common (4.6.1)
   - SQLCipher/standard (4.6.1):
     - SQLCipher/common
-  - SwiftProtobuf (1.30.0)
+  - SwiftProtobuf (1.31.1)
 
 DEPENDENCIES:
   - blurhash (from `./ThirdParty/blurhash.podspec`)
@@ -68,7 +68,7 @@ DEPENDENCIES:
   - SDWebImageWebPCoder
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.57.1`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
-  - SwiftProtobuf (= 1.30.0)
+  - SwiftProtobuf (= 1.31.1)
 
 SPEC REPOS:
   trunk:
@@ -156,8 +156,8 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SignalRingRTC: be4ad58e35c0fa7f1a33b115b7a59c60f601a3fa
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
-  SwiftProtobuf: 3697407f0d5b23bedeba9c2eaaf3ec6fdff69349
+  SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
 
-PODFILE CHECKSUM: 2b37be956eac2432d42585f19fba0a8caefe5131
+PODFILE CHECKSUM: 0d319402a9efe76a06a4596263d03836c5f4938a
 
 COCOAPODS: 1.15.2

@@ -136,7 +136,7 @@ struct SVR2Proto_Response: Sendable {
   fileprivate var _delete: SVR2Proto_DeleteResponse? = nil
 }
 
-struct SVR2Proto_BackupRequest: @unchecked Sendable {
+struct SVR2Proto_BackupRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -208,7 +208,7 @@ struct SVR2Proto_BackupResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_RestoreRequest: @unchecked Sendable {
+struct SVR2Proto_RestoreRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -221,7 +221,7 @@ struct SVR2Proto_RestoreRequest: @unchecked Sendable {
   init() {}
 }
 
-struct SVR2Proto_RestoreResponse: @unchecked Sendable {
+struct SVR2Proto_RestoreResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -309,7 +309,7 @@ struct SVR2Proto_DeleteResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_ExposeRequest: @unchecked Sendable {
+struct SVR2Proto_ExposeRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -380,7 +380,7 @@ struct SVR2Proto_ExposeResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_ClientHandshakeStart: @unchecked Sendable {
+struct SVR2Proto_ClientHandshakeStart: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -440,15 +440,7 @@ fileprivate let _protobuf_package = "SVR2Proto"
 
 extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Request"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(
-      reservedNames: [],
-      reservedRanges: [1..<2],
-      numberNameMappings: [
-        2: .same(proto: "backup"),
-        5: .same(proto: "expose"),
-        3: .same(proto: "restore"),
-        4: .same(proto: "delete"),
-  ])
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}backup\0\u{1}restore\0\u{1}delete\0\u{1}expose\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -497,12 +489,7 @@ extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension SVR2Proto_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Response"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "backup"),
-    4: .same(proto: "expose"),
-    2: .same(proto: "restore"),
-    3: .same(proto: "delete"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}backup\0\u{1}restore\0\u{1}delete\0\u{1}expose\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -551,11 +538,7 @@ extension SVR2Proto_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
 extension SVR2Proto_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BackupRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "data"),
-    2: .same(proto: "pin"),
-    3: .standard(proto: "max_tries"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0\u{1}pin\0\u{3}max_tries\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -595,9 +578,7 @@ extension SVR2Proto_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension SVR2Proto_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BackupResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "status"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -626,17 +607,12 @@ extension SVR2Proto_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
 }
 
 extension SVR2Proto_BackupResponse.Status: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNSET"),
-    1: .same(proto: "OK"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0")
 }
 
 extension SVR2Proto_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RestoreRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "pin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pin\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -666,11 +642,7 @@ extension SVR2Proto_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension SVR2Proto_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RestoreResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "status"),
-    2: .same(proto: "data"),
-    3: .same(proto: "tries"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}data\0\u{1}tries\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -709,12 +681,7 @@ extension SVR2Proto_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf._Messa
 }
 
 extension SVR2Proto_RestoreResponse.Status: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNSET"),
-    1: .same(proto: "OK"),
-    2: .same(proto: "MISSING"),
-    3: .same(proto: "PIN_MISMATCH"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0\u{1}MISSING\0\u{1}PIN_MISMATCH\0")
 }
 
 extension SVR2Proto_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -757,9 +724,7 @@ extension SVR2Proto_DeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension SVR2Proto_ExposeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ExposeRequest"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "data"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -789,9 +754,7 @@ extension SVR2Proto_ExposeRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension SVR2Proto_ExposeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ExposeResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "status"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -820,20 +783,12 @@ extension SVR2Proto_ExposeResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
 }
 
 extension SVR2Proto_ExposeResponse.Status: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNSET"),
-    1: .same(proto: "OK"),
-    2: .same(proto: "ERROR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0\u{1}ERROR\0")
 }
 
 extension SVR2Proto_ClientHandshakeStart: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClientHandshakeStart"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "test_only_pubkey"),
-    2: .same(proto: "evidence"),
-    3: .same(proto: "endorsement"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}test_only_pubkey\0\u{1}evidence\0\u{1}endorsement\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -873,12 +828,7 @@ extension SVR2Proto_ClientHandshakeStart: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension SVR2Proto_RaftGroupConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RaftGroupConfig"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "group_id"),
-    2: .standard(proto: "min_voting_replicas"),
-    3: .standard(proto: "max_voting_replicas"),
-    4: .standard(proto: "super_majority"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}group_id\0\u{3}min_voting_replicas\0\u{3}max_voting_replicas\0\u{3}super_majority\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

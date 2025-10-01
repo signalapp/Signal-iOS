@@ -33,7 +33,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct WebSocketProtos_WebSocketRequestMessage: @unchecked Sendable {
+struct WebSocketProtos_WebSocketRequestMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -89,7 +89,7 @@ struct WebSocketProtos_WebSocketRequestMessage: @unchecked Sendable {
   fileprivate var _requestID: UInt64? = nil
 }
 
-struct WebSocketProtos_WebSocketResponseMessage: @unchecked Sendable {
+struct WebSocketProtos_WebSocketResponseMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -202,13 +202,7 @@ fileprivate let _protobuf_package = "WebSocketProtos"
 
 extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WebSocketRequestMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "verb"),
-    2: .same(proto: "path"),
-    3: .same(proto: "body"),
-    5: .same(proto: "headers"),
-    4: .same(proto: "requestId"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}verb\0\u{1}path\0\u{1}body\0\u{1}requestId\0\u{1}headers\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -262,13 +256,7 @@ extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftP
 
 extension WebSocketProtos_WebSocketResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WebSocketResponseMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "requestId"),
-    2: .same(proto: "status"),
-    3: .same(proto: "message"),
-    5: .same(proto: "headers"),
-    4: .same(proto: "body"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requestId\0\u{1}status\0\u{1}message\0\u{1}body\0\u{1}headers\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -322,11 +310,7 @@ extension WebSocketProtos_WebSocketResponseMessage: SwiftProtobuf.Message, Swift
 
 extension WebSocketProtos_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WebSocketMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-    2: .same(proto: "request"),
-    3: .same(proto: "response"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}request\0\u{1}response\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -369,9 +353,5 @@ extension WebSocketProtos_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf
 }
 
 extension WebSocketProtos_WebSocketMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "REQUEST"),
-    2: .same(proto: "RESPONSE"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}REQUEST\0\u{1}RESPONSE\0")
 }
