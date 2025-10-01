@@ -1,1 +1,1 @@
-• Am remediat o eroare care făcea ca imaginea camerei să apară goală la încercarea de a conecta un dispozitiv nou. Acum, vizorul va arăta așa doar dacă încerci să conectezi un dispozitiv nou într-o cameră foarte întunecată.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

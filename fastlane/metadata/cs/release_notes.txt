@@ -1,1 +1,1 @@
-• Opravili jsme chybu, kvůli které se při připojování nového zařízení zobrazoval prázdný náhled kamery.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

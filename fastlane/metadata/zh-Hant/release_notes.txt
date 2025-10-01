@@ -1,1 +1,1 @@
-• 我們修正了一個錯誤，以後嘗試連結新裝置時，相機便不會顯示空白。現在，只有當你在極度昏暗的房間中連結新裝置時，取景器才會呈現這種狀態。
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

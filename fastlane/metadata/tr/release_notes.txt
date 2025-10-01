@@ -1,1 +1,1 @@
-• Yeni bir cihaz bağlanmaya çalışıldığında kameranın boş görünmesine neden olan bir hatayı düzelttik. Artık vizör yalnızca gerçekten karanlık bir odada yeni bir cihazı bağlamaya çalışıyorsan böyle görünecektir.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

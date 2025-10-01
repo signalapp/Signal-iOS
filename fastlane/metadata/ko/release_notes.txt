@@ -1,1 +1,1 @@
-• 새 기기 연결을 시도할 때 카메라가 공백으로 표시되던 버그를 수정했습니다. 이제 정말 어두운 방에서 기기를 연결하려고 할 때만 뷰파인더가 그렇게 보입니다.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

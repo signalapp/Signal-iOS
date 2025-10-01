@@ -1,1 +1,1 @@
-• Vi har rettet en fejl, der forårsagede, at kameraet blev vist tomt, når vi forsøgte at forbinde en ny enhed. Nu vil søgeren kun se sådan ud, hvis du prøver at forbinde en ny enhed i et meget mørkt rum.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

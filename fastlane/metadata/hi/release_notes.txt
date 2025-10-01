@@ -1,1 +1,1 @@
-• हमने वह गड़बड़ी ठीक कर दी है जिसकी वजह से नया डिवाइस लिंक करते समय कैमरा ब्लैंक नज़र आता था। अब व्यूफ़ाइंडर तभी ऐसा दिखेगा जब नया डिवाइस बहुत अंधेरी जगह पर लिंक किया जा रहा हो।
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

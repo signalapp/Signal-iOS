@@ -1,1 +1,1 @@
-• Corrigimos um erro que deixava a câmera em branco ao vincular um novo dispositivo. Agora, isso só acontece se você tentar fazer a conexão em um ambiente sem iluminação suficiente. 
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

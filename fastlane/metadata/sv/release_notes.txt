@@ -1,1 +1,1 @@
-• Vi har åtgärdat ett fel som gjorde att kameran visades tom vid försök att länka en ny enhet. Nu kommer sökaren bara att se ut så om du försöker länka en ny enhet i ett riktigt mörkt rum.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

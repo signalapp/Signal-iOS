@@ -1,1 +1,1 @@
-• Ми виправили помилку, через яку зображення з камери не показувалося під час зв'язування нового пристрою. Тепер камера матиме такий вигляд, тільки якщо ви намагаєтеся зв'язати новий пристрій у дуже темній кімнаті.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.

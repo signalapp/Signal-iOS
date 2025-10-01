@@ -1,1 +1,1 @@
-• Hemos corregido un error que, al intentar vincular un nuevo dispositivo, hacía que el visor de la cámara no mostrase nada. Ahora solo se verá así si estás intentando vincular un nuevo dispositivo en una habitación a oscuras.
+• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.
