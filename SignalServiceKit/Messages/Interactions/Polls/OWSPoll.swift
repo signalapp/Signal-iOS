@@ -30,24 +30,27 @@ public struct OWSPoll: Equatable {
         }
     }
 
-    public let pollId: Int64
+    public let interactionId: Int64
     public let question: String
     public var isEnded: Bool
     public let allowsMultiSelect: Bool
+    public let ownerIsLocalUser: Bool
     private let options: [OptionIndex: OWSPollOption]
 
     public init(
-        pollId: Int64,
+        interactionId: Int64,
         question: String,
         options: [String],
         allowsMultiSelect: Bool,
         votes: [OptionIndex: [Aci]],
-        isEnded: Bool
+        isEnded: Bool,
+        ownerIsLocalUser: Bool
     ) {
-        self.pollId = pollId
+        self.interactionId = interactionId
         self.question = question
         self.allowsMultiSelect = allowsMultiSelect
         self.isEnded = isEnded
+        self.ownerIsLocalUser = ownerIsLocalUser
 
         self.options = Dictionary(uniqueKeysWithValues: options.enumerated().map { index, option in
             let optionIndex = OWSPoll.OptionIndex(index)
@@ -57,7 +60,7 @@ public struct OWSPoll: Equatable {
     }
 
     public static func == (lhs: OWSPoll, rhs: OWSPoll) -> Bool {
-        return lhs.pollId == rhs.pollId
+        return lhs.interactionId == rhs.interactionId
             && lhs.isEnded == rhs.isEnded
             && lhs.options == rhs.options
     }

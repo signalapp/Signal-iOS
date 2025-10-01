@@ -9,18 +9,21 @@ public import LibSignalClient
 public class PollMessageManager {
     static let pollEmoji = "📊"
 
-    let pollStore: PollStore
-    let recipientDatabaseTable: RecipientDatabaseTable
-    let interactionStore: InteractionStore
+    private let pollStore: PollStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let interactionStore: InteractionStore
+    private let db: DB
 
     init(
         pollStore: PollStore,
         recipientDatabaseTable: RecipientDatabaseTable,
-        interactionStore: InteractionStore
+        interactionStore: InteractionStore,
+        db: DB
     ) {
         self.pollStore = pollStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.interactionStore = interactionStore
+        self.db = db
     }
 
     public func processIncomingPollCreate(
@@ -120,7 +123,12 @@ public class PollMessageManager {
             return nil
         }
 
-        return try pollStore.owsPoll(question: question, interactionId: interactionId, transaction: transaction)
+        return try pollStore.owsPoll(
+            question: question,
+            interactionId: interactionId,
+            transaction: transaction,
+            ownerIsLocalUser: message.isOutgoing
+        )
     }
 
     public func buildProtoForSending(
@@ -139,5 +147,33 @@ public class PollMessageManager {
         let pollCreateProto = pollBuilder.buildInfallibly()
 
         return pollCreateProto
+    }
+
+    public func sendPollTerminateMessage(poll: OWSPoll, thread: TSGroupThread) throws {
+        try db.write { tx in
+            guard let targetPoll = interactionStore.fetchInteraction(rowId: poll.interactionId, tx: tx) else {
+                return
+            }
+
+            try pollStore.terminatePoll(interactionId: poll.interactionId, transaction: tx)
+
+            // Touch message so it reloads to show poll ended state.
+            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetPoll, shouldReindex: false, tx: tx)
+
+            let pollTerminateMessage = OutgoingPollTerminateMessage(
+                thread: thread,
+                targetPollTimestamp: targetPoll.timestamp,
+                tx: tx
+            )
+
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: pollTerminateMessage
+            )
+
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                message: preparedMessage,
+                transaction: tx
+            )
+        }
     }
 }

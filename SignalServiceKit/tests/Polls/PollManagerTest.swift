@@ -21,7 +21,8 @@ struct PollManagerTest {
         pollMessageManager = PollMessageManager(
             pollStore: PollStore(),
             recipientDatabaseTable: RecipientDatabaseTable(),
-            interactionStore: InteractionStoreImpl()
+            interactionStore: InteractionStoreImpl(),
+            db: db
         )
         let testPhone = E164("+16505550101")!
         authorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")

@@ -278,4 +278,14 @@ extension ConversationViewController: MessageActionsDelegate {
         let paymentsDetailViewController = PaymentsDetailViewController(paymentItem: paymentHistoryItem)
         navigationController?.pushViewController(paymentsDetailViewController, animated: true)
     }
+
+    func messageActionsEndPoll(_ itemViewModel: CVItemViewModelImpl) {
+        if let groupThread = self.thread as? TSGroupThread, let poll = itemViewModel.componentState.poll?.state.poll {
+            do {
+                try DependenciesBridge.shared.pollMessageManager.sendPollTerminateMessage(poll: poll, thread: groupThread)
+            } catch {
+                Logger.error("Failed to end poll: \(error)")
+            }
+        }
+    }
 }

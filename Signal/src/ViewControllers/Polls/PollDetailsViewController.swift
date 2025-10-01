@@ -8,11 +8,18 @@ import LibSignalClient
 import SignalUI
 import SwiftUI
 
-class PollDetailsViewController: HostingController<PollDetailsView>, ObservableObject {
+protocol PollDetailsViewControllerDelegate: AnyObject {
+    func terminatePoll(poll: OWSPoll)
+}
+
+class PollDetailsViewController: HostingController<PollDetailsView> {
     private let viewModel: PollDetailsViewModel
+    weak var delegate: PollDetailsViewControllerDelegate?
+    private let poll: OWSPoll
 
     init(poll: OWSPoll) {
         self.viewModel = PollDetailsViewModel()
+        self.poll = poll
         super.init(wrappedView: PollDetailsView(poll: poll, viewModel: viewModel))
         viewModel.actionsDelegate = self
     }
@@ -24,7 +31,8 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
     }
 
     func pollTerminate() {
-        // TODO: implement
+        delegate?.terminatePoll(poll: self.poll)
+        dismiss(animated: true)
     }
 }
 
@@ -78,8 +86,7 @@ struct PollDetailsView: View {
                         .foregroundColor(Color.Signal.label)
                 }
 
-                // TODO: only show for poll creator
-                if !poll.isEnded {
+                if !poll.isEnded, poll.ownerIsLocalUser {
                     SignalSection {
                         Button {
                             viewModel.pollTerminate()
@@ -156,12 +163,13 @@ struct PollDetailsView: View {
 
 #Preview {
     let poll = OWSPoll(
-        pollId: 1,
+        interactionId: 1,
         question: "What is your favorite color?",
         options: ["Red", "Blue", "Yellow"],
         allowsMultiSelect: false,
         votes: [:],
-        isEnded: false
+        isEnded: false,
+        ownerIsLocalUser: true
     )
 
     PollDetailsView(poll: poll, viewModel: PollDetailsViewModel())

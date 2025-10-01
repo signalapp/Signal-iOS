@@ -15,6 +15,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsEndPoll(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -159,6 +160,22 @@ struct MessageActionBuilder {
             contextMenuAttributes: [],
             block: { [weak delegate] _ in
                 delegate?.messageActionsStopSpeakingItem(itemViewModel)
+            }
+        )
+    }
+
+    static func endPoll(
+        itemViewModel: CVItemViewModelImpl,
+        delegate: MessageActionsDelegate
+    ) -> MessageAction {
+        return MessageAction(
+            .endPoll,
+            accessibilityLabel: OWSLocalizedString("POLL_DETAILS_END_POLL", comment: "Label for button to end a poll"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "end_poll"),
+            contextMenuTitle: OWSLocalizedString("POLL_DETAILS_END_POLL", comment: "Label for button to end a poll"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] (_) in
+                delegate?.messageActionsEndPoll(itemViewModel)
             }
         )
     }
@@ -318,6 +335,47 @@ class MessageActions: NSObject {
             delegate: delegate
         )
         actions.append(selectAction)
+
+        return actions
+    }
+
+    class func pollActions(
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+        delegate: MessageActionsDelegate
+    ) -> [MessageAction] {
+        var actions: [MessageAction] = []
+
+        let showDetailsAction = MessageActionBuilder.showDetails(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(showDetailsAction)
+
+        let deleteAction = MessageActionBuilder.deleteMessage(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(deleteAction)
+
+        if shouldAllowReply {
+            let replyAction = MessageActionBuilder.reply(itemViewModel: itemViewModel, delegate: delegate)
+            actions.append(replyAction)
+        }
+
+        let selectAction = MessageActionBuilder.selectMessage(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(selectAction)
+
+        if let poll = itemViewModel.componentState.poll?.state.poll, poll.ownerIsLocalUser, !poll.isEnded {
+            let endPollAction = MessageActionBuilder.endPoll(
+                itemViewModel: itemViewModel,
+                delegate: delegate
+            )
+            actions.append(endPollAction)
+        }
 
         return actions
     }

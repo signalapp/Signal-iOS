@@ -138,7 +138,12 @@ public class PollStore {
             .updateAll(transaction.database, [PollRecord.Columns.isEnded.set(to: true)])
     }
 
-    public func owsPoll(question: String, interactionId: Int64, transaction: DBReadTransaction) throws -> OWSPoll? {
+    public func owsPoll(
+        question: String,
+        interactionId: Int64,
+        transaction: DBReadTransaction,
+        ownerIsLocalUser: Bool
+    ) throws -> OWSPoll? {
         guard let poll = try PollRecord
             .filter(PollRecord.Columns.interactionId == interactionId)
             .fetchOne(transaction.database),
@@ -180,12 +185,13 @@ public class PollStore {
         }
 
         return OWSPoll(
-            pollId: pollId,
+            interactionId: interactionId,
             question: question,
             options: optionStrings,
             allowsMultiSelect: poll.allowsMultiSelect,
             votes: votes,
-            isEnded: poll.isEnded
+            isEnded: poll.isEnded,
+            ownerIsLocalUser: ownerIsLocalUser
         )
     }
 }

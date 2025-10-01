@@ -16,6 +16,7 @@
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
+		04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */; };
 		04A573662E4CEE5D0019651F /* CVComponentPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573652E4CEE560019651F /* CVComponentPoll.swift */; };
 		04A5736B2E4CF1BF0019651F /* CVPollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736A2E4CF1BD0019651F /* CVPollView.swift */; };
 		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
@@ -3848,6 +3849,7 @@
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
+		04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollTerminate.swift; sourceTree = "<group>"; };
 		04A573652E4CEE560019651F /* CVComponentPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentPoll.swift; sourceTree = "<group>"; };
 		04A5736A2E4CF1BD0019651F /* CVPollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPollView.swift; sourceTree = "<group>"; };
 		04A5736F2E4D4BD30019651F /* OWSPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPoll.swift; sourceTree = "<group>"; };
@@ -7845,6 +7847,7 @@
 			isa = PBXGroup;
 			children = (
 				044D77792E5E6F3A0048C21A /* Records */,
+				04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */,
 				04A5736F2E4D4BD30019651F /* OWSPoll.swift */,
 				04A357CA2E5E283500499B27 /* PollMessageManager.swift */,
 				04A357CC2E5E283C00499B27 /* PollStore.swift */,
@@ -18158,6 +18161,7 @@
 				F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */,
 				F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */,
 				F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */,
+				04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */,
 				50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */,
 				F9C5CC5A289453B300548EEE /* OutgoingStoryMessage.swift in Sources */,
 				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,

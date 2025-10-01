@@ -336,6 +336,12 @@ extension MediaGalleryFileCell: CVComponentDelegate {
         shouldAllowReply: Bool
     ) {}
 
+    func didLongPressPoll(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {}
+
     func didTapPayment(_ payment: PaymentsHistoryItem) {}
 
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}

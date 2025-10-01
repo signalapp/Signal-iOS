@@ -105,6 +105,23 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
+    public func didLongPressPoll(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {
+        guard FeatureFlags.pollSend else {
+            return
+        }
+
+        let messageActions = MessageActions.pollActions(
+            itemViewModel: itemViewModel,
+            shouldAllowReply: shouldAllowReply,
+            delegate: self
+        )
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
     public func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -1263,6 +1280,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapViewVotes(poll: OWSPoll) {
         let pollDetails = PollDetailsViewController(poll: poll)
+        pollDetails.delegate = self
         self.present(pollDetails, animated: true)
     }
 }
@@ -1274,5 +1292,18 @@ extension ConversationViewController: OWSNavigationChildController {
         // If presentedViewController is not nil, it means we haven't finished dismissing
         // and should not allow the back navigation gesture.
         return presentedViewController != nil
+    }
+}
+
+// MARK: - PollDetailsViewControllerDelegate
+extension ConversationViewController: PollDetailsViewControllerDelegate {
+    public func terminatePoll(poll: OWSPoll) {
+        if let groupThread = self.thread as? TSGroupThread {
+            do {
+                try DependenciesBridge.shared.pollMessageManager.sendPollTerminateMessage(poll: poll, thread: groupThread)
+            } catch {
+                Logger.error("Failed to end poll: \(error)")
+            }
+        }
     }
 }

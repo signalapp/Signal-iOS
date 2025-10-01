@@ -1021,15 +1021,16 @@ extension ConversationViewController: PollSendDelegate {
         ThreadUtil.enqueueMessage(
             withPoll:
                 OWSPoll(
-                    // We don't know the pollID yet since it hasn't been inserted in the DB.
-                    // That is OK since this OWSPoll instance will not be used to re-render
-                    // the conversation view (when pollID is needed to determine equatability).
-                    pollId: 0,
+                    // We don't know the interactionId yet since it hasn't been inserted in the DB.
+                    // That is OK since this OWSPoll instance will not be persisted or used to re-render
+                    // the conversation view (when interactionId is needed to determine equatability).
+                    interactionId: 0,
                     question: question,
                     options: options,
                     allowsMultiSelect: allowMultipleVotes,
                     votes: [:],
-                    isEnded: false
+                    isEnded: false,
+                    ownerIsLocalUser: true
                 ),
             thread: self.thread
         )

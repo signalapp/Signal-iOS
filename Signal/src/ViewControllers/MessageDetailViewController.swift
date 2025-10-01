@@ -1029,6 +1029,12 @@ extension MessageDetailViewController: CVComponentDelegate {
         shouldAllowReply: Bool
     ) { }
 
+    func didLongPressPoll(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {}
+
     // TODO:
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 

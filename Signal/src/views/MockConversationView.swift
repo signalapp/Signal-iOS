@@ -322,6 +322,12 @@ extension MockConversationView: CVComponentDelegate {
                              itemViewModel: CVItemViewModelImpl,
                              shouldAllowReply: Bool) {}
 
+    func didLongPressPoll(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {}
+
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
     func didEndLongPress(_ itemViewModel: CVItemViewModelImpl) {}

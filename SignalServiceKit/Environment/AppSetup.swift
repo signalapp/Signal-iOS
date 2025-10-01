@@ -1557,7 +1557,8 @@ extension AppSetup.GlobalsContinuation {
         let pollMessageManager = PollMessageManager(
             pollStore: PollStore(),
             recipientDatabaseTable: recipientDatabaseTable,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
+            db: db
         )
 
         let backupFailureStateManager = BackupFailureStateManager(dateProvider: dateProvider)
