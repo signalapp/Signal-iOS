@@ -34,6 +34,13 @@ public protocol BackupAttachmentUploadStore {
     ) throws -> [QueuedBackupAttachmentUpload]
 
     /// Remove the upload from the queue. Should be called once uploaded (or permanently failed).
+    ///
+    /// - Important
+    /// Once all `QueuedBackupAttachmentUpload` records are marked done, a SQL
+    /// trigger (`__BackupAttachmentUploadQueue_au`) will wipe them all. This
+    /// mitigates potential issues around long-completed upload records being
+    /// counted towards future progress.
+    ///
     /// - returns the removed record, if any.
     @discardableResult
     func markUploadDone(

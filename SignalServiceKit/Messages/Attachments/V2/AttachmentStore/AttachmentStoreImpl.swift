@@ -100,6 +100,15 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    public func fetchMaxRowId(tx: DBReadTransaction) throws -> Attachment.IDType? {
+        return try Attachment.Record
+            .select(
+                max(Column(Attachment.Record.CodingKeys.sqliteId)),
+                as: Int64.self,
+            )
+            .fetchOne(tx.database)
+    }
+
     public func fetch(
         ids: [Attachment.IDType],
         tx: DBReadTransaction

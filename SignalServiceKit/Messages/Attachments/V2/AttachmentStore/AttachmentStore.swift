@@ -32,6 +32,10 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) -> [AttachmentReference]
 
+    func fetchMaxRowId(
+        tx: DBReadTransaction
+    ) throws -> Attachment.IDType?
+
     /// Fetch attachments by id.
     func fetch(
         ids: [Attachment.IDType],

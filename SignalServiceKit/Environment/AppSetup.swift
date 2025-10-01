@@ -432,6 +432,10 @@ extension AppSetup.GlobalsContinuation {
 
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
+        let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(
+            attachmentStore: attachmentStore,
+            db: db,
+        )
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
@@ -445,6 +449,7 @@ extension AppSetup.GlobalsContinuation {
 
         let backupPlanManager = BackupPlanManagerImpl(
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             tsAccountManager: tsAccountManager
@@ -559,7 +564,6 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager
         )
 
-        let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(db: db)
         let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgressImpl(
             appContext: appContext,
             appReadiness: appReadiness,

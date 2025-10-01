@@ -40,17 +40,20 @@ extension Notification.Name {
 class BackupPlanManagerImpl: BackupPlanManager {
 
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let tsAccountManager: TSAccountManager
 
     init(
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         tsAccountManager: TSAccountManager,
     ) {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.tsAccountManager = tsAccountManager
@@ -86,7 +89,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
     func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
         let oldBackupPlan = backupPlan(tx: tx)
-        let isBackupPlanChanging = oldBackupPlan != newBackupPlan
 
         // Bail early on unexpected state transitions, before we persist state
         // we later regret.
@@ -97,13 +99,19 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
         backupSettingsStore.setBackupPlan(newBackupPlan, tx: tx)
 
-        if isBackupPlanChanging {
-            try configureDownloadsForBackupPlanChange(
-                oldPlan: oldBackupPlan,
-                newPlan: newBackupPlan,
-                tx: tx
-            )
+        backupAttachmentUploadProgress.backupPlanDidChange(
+            oldBackupPlan: oldBackupPlan,
+            newBackupPlan: newBackupPlan,
+            tx: tx,
+        )
 
+        try configureDownloadsForBackupPlanChange(
+            oldPlan: oldBackupPlan,
+            newPlan: newBackupPlan,
+            tx: tx
+        )
+
+        if oldBackupPlan != newBackupPlan {
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
             }

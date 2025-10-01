@@ -330,6 +330,7 @@ public class GRDBSchemaMigrator {
         case migrateRecipientDeviceIds
         case fixUniqueConstraintOnPollVotes
         case migrateTSAccountManagerKeyValueStore
+        case populateBackupAttachmentUploadProgressKVStore
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -393,7 +394,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 129
+    public static let grdbSchemaVersionLatest: UInt = 130
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4168,6 +4169,23 @@ public class GRDBSchemaMigrator {
             try migrator.migrateBool("TSAccountManager_ReregisteringWasPrimaryDeviceKey", tx: tx)
             try migrator.migrateBool("TSAccountManager_IsTransferInProgressKey", tx: tx)
             try migrator.migrateBool("TSAccountManager_WasTransferredKey", tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.populateBackupAttachmentUploadProgressKVStore) { tx in
+            let maxAttachmentRowId = try Int64.fetchOne(
+                tx.database,
+                sql: "SELECT MAX(id) FROM Attachment"
+            ) ?? 0
+
+            try tx.database.execute(
+                sql: """
+                    INSERT INTO keyvalue (collection, key, value)
+                    VALUES (?, ?, ?)
+                """,
+                arguments: ["BackupAttachmentUploadProgress", "maxAttachmentRowId", maxAttachmentRowId],
+            )
+
             return .success(())
         }
 

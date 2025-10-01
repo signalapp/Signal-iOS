@@ -50,66 +50,18 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
         await runTest(updateStream: uploadTracker.updates(), expectedUpdates: expectedUpdates)
     }
 
-    /// Simulates "enabling paid-tier Backups" by starting with an empty queue
-    /// that begins running.
-    @Test
-    func testQueueStartsEmptyThenStartsRunning() async {
-        let uploadProgress = MockAttachmentUploadProgress(total: 4)
-        let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.empty)
-        let uploadTracker = BackupSettingsAttachmentUploadTracker(
-            backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
-            backupAttachmentUploadProgress: uploadProgress
-        )
-
-        let expectedUpdates: [ExpectedUpdate] = [
-            ExpectedUpdate(
-                update: nil,
-                nextSteps: {
-                    uploadQueueStatusReporter.currentStatusMock = .running
-                }
-            ),
-            ExpectedUpdate(
-                update: UploadUpdate(.running, uploaded: 0, total: 4),
-                nextSteps: {
-                    uploadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
-                }
-            ),
-            ExpectedUpdate(
-                update: UploadUpdate(.running, uploaded: 1, total: 4),
-                nextSteps: {
-                    uploadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
-                }
-            ),
-            ExpectedUpdate(
-                update: UploadUpdate(.running, uploaded: 4, total: 4),
-                nextSteps: {
-                    uploadQueueStatusReporter.currentStatusMock = .empty
-                }
-            ),
-            ExpectedUpdate(update: nil, nextSteps: {}),
-        ]
-
-        await runTest(updateStream: uploadTracker.updates(), expectedUpdates: expectedUpdates)
-    }
-
     /// Simulates uploads running, and a caller tracking (e.g., BackupSettings
     /// being presented), then stopping (e.g., dismissing), then starting again.
     @Test
     func testTrackingStoppingAndReTracking() async {
         let uploadProgress = MockAttachmentUploadProgress(total: 4)
-        let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.empty)
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.running)
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
         let firstExpectedUpdates: [ExpectedUpdate] = [
-            ExpectedUpdate(
-                update: nil,
-                nextSteps: {
-                    uploadQueueStatusReporter.currentStatusMock = .running
-                }
-            ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 0, total: 4),
                 nextSteps: {}
@@ -141,19 +93,13 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
     @Test
     func testTrackingMultipleStreamInstances() async {
         let uploadProgress = MockAttachmentUploadProgress(total: 1)
-        let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.empty)
+        let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.running)
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
             backupAttachmentUploadProgress: uploadProgress
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
-            ExpectedUpdate(
-                update: nil,
-                nextSteps: {
-                    uploadQueueStatusReporter.currentStatusMock = .running
-                }
-            ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 0, total: 1),
                 nextSteps: {
