@@ -479,6 +479,11 @@ class BackupSettingsViewController:
 
     @MainActor
     private func _disableBackups(aepSideEffect: BackupDisablingManager.AEPSideEffect?) async {
+        // If we were running a manual Backup, cancel it. Most of the manual
+        // Backup steps will respond to BackupPlan changing, but for example the
+        // message-export stage (ensconced in its own DB transaction) will not.
+        cancelManualBackup()
+
         // Start disabling Backups, which may result in us starting
         // downloads. When disabling completes, we'll be notified via
         // `BackupPlan` going from `.disabling` to `.disabled`.
