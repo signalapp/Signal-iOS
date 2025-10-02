@@ -984,12 +984,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     ) async throws -> MetadataResult {
 
         switch type {
-        case .mediaTier(_, let isThumbnail) where !isThumbnail:
+        case .mediaTier(_, isThumbnail: false):
             // We never allow uploads of data we don't have locally.
             guard let stream = attachment.asStream() else {
                 logger.warn("Attachment is not uploadable.")
                 throw OWSUnretryableError()
             }
+
+            let now: Date = dateProvider()
+            let messageQueueTime: TimeInterval = remoteConfigProvider.currentConfig().messageQueueTime
 
             if
                 !Upload.disableTransitTierUploadReuse,
@@ -998,7 +1001,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 // It uses the same primary key (it isn't a reupload with a rotated key)
                 transitTierInfo.encryptionKey == attachment.encryptionKey,
                 // We expect it isn't expired
-                dateProvider().ows_millisecondsSince1970 - transitTierInfo.uploadTimestamp < remoteConfigProvider.currentConfig().messageQueueTimeMs
+                now - Date(millisecondsSince1970: transitTierInfo.uploadTimestamp) < messageQueueTime
             {
                 // Reuse the existing transit tier upload without reuploading.
                 return .alreadyUploaded(.init(
@@ -1027,7 +1030,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 return .reuse(metadata)
             }
 
-        case .mediaTier(_, _):
+        case .mediaTier(_, isThumbnail: true):
             // We never allow uploads of data we don't have locally.
             guard
                 let stream = attachment.asStream(),
