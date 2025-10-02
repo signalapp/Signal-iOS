@@ -517,6 +517,11 @@ public final class ConversationViewController: OWSViewController {
         if viewState.inProgressVoiceMessage?.isRecording == true {
             return false
         }
+        
+        // Don't allow orientation changes during voice memo interactions
+        if inputToolbar?.isVoiceInteractionActive == true {
+            return false
+        }
 
         return super.shouldAutorotate
     }
