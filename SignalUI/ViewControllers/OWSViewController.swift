@@ -114,6 +114,21 @@ open class OWSViewController: UIViewController {
 
         self.lifecycle = .notAppeared
 
+        if #unavailable(iOS 16) {
+            let layoutGuide = UILayoutGuide()
+            layoutGuide.identifier = "iOS15KeyboardLayoutGuide"
+            view.addLayoutGuide(layoutGuide)
+            let heightConstraint = layoutGuide.heightAnchor.constraint(equalToConstant: view.safeAreaInsets.bottom)
+            NSLayoutConstraint.activate([
+                layoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                layoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                layoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                heightConstraint,
+            ])
+            iOS15KeyboardLayoutGuide = layoutGuide
+            iOS15KeyboardLayoutGuideHeightConstraint = heightConstraint
+        }
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),
@@ -126,6 +141,8 @@ open class OWSViewController: UIViewController {
         super.viewWillAppear(animated)
 
         self.lifecycle = .willAppear
+
+        observeKeyboardNotificationsIfNeeded()
     }
 
     open override func viewDidAppear(_ animated: Bool) {
@@ -148,6 +165,20 @@ open class OWSViewController: UIViewController {
         super.viewDidDisappear(animated)
 
         self.lifecycle = .notAppeared
+    }
+
+    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // Whatever keyboard frame we knew about is now invalidated.
+        // They keyboard will update us if its on screen, setting this again.
+        lastKnownKeyboardFrame = nil
+    }
+
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        updateiOS15KeyboardLayoutGuide()
     }
 
     #if DEBUG
@@ -220,6 +251,92 @@ open class OWSViewController: UIViewController {
 
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.defaultSupportedOrientations
+    }
+
+    // MARK: - Keyboard Layout Guide
+
+    // On iOS 15 provides access to last known keyboard frame.
+    // On newer iOS versions this is a proxy for `view.keyboardLayoutGuide`.
+    @available(iOS, deprecated: 16.0)
+    final public var keyboardLayoutGuide: UILayoutGuide {
+        return iOS15KeyboardLayoutGuide ?? view.keyboardLayoutGuide
+    }
+
+    @available(iOS, deprecated: 16.0)
+    private var iOS15KeyboardLayoutGuide: UILayoutGuide?
+
+    @available(iOS, deprecated: 16.0)
+    private var iOS15KeyboardLayoutGuideHeightConstraint: NSLayoutConstraint?
+
+    @available(iOS, deprecated: 16.0)
+    private var isObservingKeyboardNotifications = false
+
+    @available(iOS, deprecated: 16.0)
+    private var lastKnownKeyboardFrame: CGRect?
+
+    @available(iOS, deprecated: 16.0)
+    private static var keyboardNotificationNames: [Notification.Name] = [
+        UIResponder.keyboardWillShowNotification,
+        UIResponder.keyboardDidShowNotification,
+        UIResponder.keyboardWillHideNotification,
+        UIResponder.keyboardDidHideNotification,
+        UIResponder.keyboardWillChangeFrameNotification,
+        UIResponder.keyboardDidChangeFrameNotification
+    ]
+
+    @available(iOS, deprecated: 16.0)
+    private func observeKeyboardNotificationsIfNeeded() {
+        guard #unavailable(iOS 16.0) else { return }
+
+        if isObservingKeyboardNotifications { return }
+        isObservingKeyboardNotifications = true
+
+        Self.keyboardNotificationNames.forEach {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(handleKeyboardNotificationBase(_:)),
+                name: $0,
+                object: nil
+            )
+        }
+    }
+
+    @available(iOS, deprecated: 16.0)
+    private func stopObservingKeyboardNotifications() {
+        Self.keyboardNotificationNames.forEach {
+            NotificationCenter.default.removeObserver(self, name: $0, object: nil)
+        }
+        isObservingKeyboardNotifications = false
+    }
+
+    @objc
+    @available(iOS, deprecated: 16.0)
+    private func handleKeyboardNotificationBase(_ notification: NSNotification) {
+        let userInfo = notification.userInfo
+        guard let keyboardEndFrame = (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            owsFailDebug("Missing keyboard end frame")
+            return
+        }
+
+        let keyboardEndFrameConverted = view.convert(keyboardEndFrame, from: nil)
+        guard keyboardEndFrameConverted != lastKnownKeyboardFrame else {
+            // No change.
+            return
+        }
+        lastKnownKeyboardFrame = keyboardEndFrameConverted
+        updateiOS15KeyboardLayoutGuide()
+    }
+
+    @available(iOS, deprecated: 16.0)
+    private func updateiOS15KeyboardLayoutGuide() {
+        guard let iOS15KeyboardLayoutGuideHeightConstraint else { return }
+
+        var keyboardHeight = view.safeAreaInsets.bottom
+        if let lastKnownKeyboardFrame {
+            keyboardHeight = max(keyboardHeight, view.bounds.maxY - lastKnownKeyboardFrame.minY)
+        }
+        guard iOS15KeyboardLayoutGuideHeightConstraint.constant != keyboardHeight else { return }
+        iOS15KeyboardLayoutGuideHeightConstraint.constant = keyboardHeight
     }
 }
 

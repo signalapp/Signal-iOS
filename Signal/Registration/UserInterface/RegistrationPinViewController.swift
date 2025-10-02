@@ -365,7 +365,7 @@ class RegistrationPinViewController: OWSViewController {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         scrollView.addSubview(stackView)

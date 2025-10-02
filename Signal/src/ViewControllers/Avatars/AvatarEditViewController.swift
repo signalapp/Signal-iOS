@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class AvatarEditViewController: OWSViewController {
+class AvatarEditViewController: OWSViewController, OWSNavigationChildController {
     private let originalModel: AvatarModel
     private var model: AvatarModel {
         didSet {
@@ -32,8 +32,14 @@ class AvatarEditViewController: OWSViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+
+    var navbarBackgroundColorOverride: UIColor? { UIColor.Signal.groupedBackground }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.backgroundColor = UIColor.Signal.groupedBackground
 
         updateNavigation()
         updateHeaderViewState()
@@ -46,7 +52,7 @@ class AvatarEditViewController: OWSViewController {
             scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor),
             scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor),
-            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -8),
+            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -8),
         ])
 
         scrollView.addSubview(topHeader)

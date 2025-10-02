@@ -710,7 +710,7 @@ public class SendPaymentViewController: OWSViewController {
             rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 20),
             rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -20),
-            rootStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24),
+            rootStack.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -24),
         ])
 
         bigAmountLabel.font = UIFont.regularFont(ofSize: 60)

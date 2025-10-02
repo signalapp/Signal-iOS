@@ -91,7 +91,7 @@ public class PinConfirmationViewController: OWSViewController {
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            containerView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         // We want the background to extend to the bottom of the screen

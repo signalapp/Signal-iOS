@@ -265,7 +265,7 @@ public final class ConversationViewController: OWSViewController {
         self.view.addSubview(bottomBar)
         bottomBar.autoPinWidthToSuperview()
         NSLayoutConstraint.activate([
-            bottomBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            bottomBar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
         ])
 
         self.selectionToolbar = self.buildSelectionToolbar()

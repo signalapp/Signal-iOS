@@ -324,7 +324,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         [pinTextField, validationWarningLabel, recommendationLabel].forEach {
