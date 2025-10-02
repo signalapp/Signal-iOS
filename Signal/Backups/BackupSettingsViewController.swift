@@ -1571,7 +1571,8 @@ private struct BackupExportProgressView: View {
                 )
             )
 
-        case .listMedia, .attachmentOrphaning:
+        case .listMedia, .attachmentOrphaning,
+                .attachmentUpload where latestAttachmentUploadUpdate == nil:
             return ProgressBarState(
                 style: .indeterminate,
                 label: OWSLocalizedString(
@@ -1581,8 +1582,11 @@ private struct BackupExportProgressView: View {
             )
 
         case .attachmentUpload:
+            // If this is nil, we'll be in the case above.
+            let latestAttachmentUploadUpdate = latestAttachmentUploadUpdate!
+
             return ProgressBarState(
-                style: .determinate(percentComplete: latestAttachmentUploadUpdate?.percentageUploaded ?? 0),
+                style: .determinate(percentComplete: latestAttachmentUploadUpdate.percentageUploaded),
                 label: BackupAttachmentUploadProgressView.subtitleText(
                     uploadUpdate: latestAttachmentUploadUpdate,
                 )
@@ -1943,13 +1947,13 @@ private struct BackupAttachmentUploadProgressView: View {
     }
 
     static func subtitleText(
-        uploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
+        uploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate
     ) -> String {
-        switch uploadUpdate?.state {
-        case nil, .running:
-            let bytesUploaded = uploadUpdate?.bytesUploaded ?? 0
-            let totalBytesToUpload = uploadUpdate?.totalBytesToUpload ?? 0
-            let percentageUploaded = uploadUpdate?.percentageUploaded ?? 0
+        switch uploadUpdate.state {
+        case .running:
+            let bytesUploaded = uploadUpdate.bytesUploaded
+            let totalBytesToUpload = uploadUpdate.totalBytesToUpload
+            let percentageUploaded = uploadUpdate.percentageUploaded
 
             return String(
                 format: OWSLocalizedString(
