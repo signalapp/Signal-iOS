@@ -161,21 +161,23 @@ struct UploadEndpointCDN2: UploadEndpoint {
         do {
             originalFileData = try fileSystem.readMemoryMappedFileData(url: attempt.fileUrl)
         } catch {
-            Logger.error("Unable to map upload file into memory")
+            attempt.logger.error("Unable to map upload file into memory")
             throw .missingFile
         }
 
-        let uploadData: Data
-        if startPoint == 0 {
-            headers["Content-Length"] = "\(totalDataLength)"
-            uploadData = originalFileData
-        } else {
+        let uploadData = originalFileData.dropFirst(startPoint)
+        guard uploadData.count > 0 else {
+            attempt.logger.error("No data to upload")
+            return
+        }
+
+        headers["Content-Length"] = "\(uploadData.count)"
+        if startPoint > 0 {
             // Example: Resuming after uploading 2359296 of 7351375 bytes.
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
-            headers["Content-Length"] = "\(originalFileData.count - startPoint)"
-            headers["Content-Range"] = "bytes \(startPoint)-\(totalDataLength - 1)/\(totalDataLength)"
-            uploadData = originalFileData[(originalFileData.startIndex + startPoint)...]
+            // Since this is an index into the range, subtract one from the byte count uploaded
+            headers["Content-Range"] = "bytes \(startPoint)-\(startPoint + uploadData.count - 1)/\(totalDataLength)"
         }
 
         do {
