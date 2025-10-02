@@ -144,7 +144,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         // Text View

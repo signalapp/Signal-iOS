@@ -89,7 +89,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
             bottomBar.topAnchor.constraint(equalTo: tableView.bottomAnchor),
             bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomBar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            bottomBar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
         // Its a bit silly but this is the easiest way to capture touches
         // and not let them pass up to any parent scrollviews. pans inside the

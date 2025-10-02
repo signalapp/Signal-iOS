@@ -210,12 +210,12 @@ open class OWSTableViewController2: OWSViewController {
         let bottomFooterConstraint: NSLayoutConstraint
         if !shouldHideBottomFooter, let bottomFooter {
             if shouldAvoidKeyboard {
-                bottomFooterConstraint = bottomFooter.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+                bottomFooterConstraint = bottomFooter.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
             } else {
                 bottomFooterConstraint = bottomFooter.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             }
         } else if shouldAvoidKeyboard {
-            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
         } else {
             bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         }

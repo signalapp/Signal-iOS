@@ -97,7 +97,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             recipientPicker.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             recipientPicker.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             recipientPicker.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            recipientPicker.view.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            recipientPicker.view.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         updateMemberCount()

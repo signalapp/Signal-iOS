@@ -45,7 +45,7 @@ public class SendPaymentMemoViewController: OWSViewController {
             rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            rootStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
+            rootStack.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16),
         ])
 
         updateContents()

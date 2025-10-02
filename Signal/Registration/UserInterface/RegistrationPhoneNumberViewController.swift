@@ -247,7 +247,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24),
+            cancelButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -24),
         ])
 
         render()

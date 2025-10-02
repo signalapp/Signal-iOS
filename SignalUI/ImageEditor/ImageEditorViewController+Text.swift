@@ -78,7 +78,7 @@ extension ImageEditorViewController {
             textViewContainer.topAnchor.constraint(equalTo: view.topAnchor),
             textViewContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             textViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            textViewContainer.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            textViewContainer.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         textViewContainer.addGestureRecognizer(ImageEditorPinchGestureRecognizer(target: self, action: #selector(handleTextPinchGesture(_:))))

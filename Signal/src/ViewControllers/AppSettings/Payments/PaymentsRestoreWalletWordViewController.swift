@@ -65,7 +65,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
             rootView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             rootView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             rootView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            rootView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            rootView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         updateContents()
