@@ -102,21 +102,24 @@ struct UploadEndpointCDN3: UploadEndpoint {
         do {
             originalFileData = try fileSystem.readMemoryMappedFileData(url: attempt.fileUrl)
         } catch {
-            Logger.error("Unable to map upload file into memory")
+            attempt.logger.error("Unable to map upload file into memory")
             throw .missingFile
+        }
+
+        let uploadData = originalFileData.dropFirst(startPoint)
+        guard uploadData.count > 0 else {
+            attempt.logger.error("No data to upload")
+            return
         }
 
         let method: HTTPMethod
         let uploadURL: String
-        let uploadData: Data
+        headers["Content-Length"] = "\(uploadData.count)"
         if startPoint == 0 {
             // Either first attempt or no progress so far, use entire encrypted data.
             // For initial uploads, send a POST to create the file
             method = .post
             uploadURL = attempt.uploadLocation.absoluteString
-            uploadData = originalFileData
-
-            headers["Content-Length"] = "\(totalDataLength)"
             headers["Upload-Length"] = "\(totalDataLength)"
 
             // On creation, provide a checksum for the server to validate
@@ -127,9 +130,6 @@ struct UploadEndpointCDN3: UploadEndpoint {
             // Use PATCH to resume the upload
             method = .patch
             uploadURL = attempt.uploadLocation.absoluteString + "/" + uploadForm.cdnKey
-            uploadData = originalFileData[(originalFileData.startIndex + startPoint)...]
-
-            headers["Content-Length"] = "\(originalFileData.count - startPoint)"
         }
 
         do {
