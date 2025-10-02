@@ -598,6 +598,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 isThumbnail: isThumbnail,
                 localCdnNumber: localCdnNumber,
                 currentBackupPlan: currentBackupPlan,
+                uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
                 remoteConfig: remoteConfig,
                 isPrimaryDevice: isPrimaryDevice,
                 hasEverRunListMedia: hasEverRunListMedia,
@@ -692,6 +693,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         isThumbnail: Bool,
         localCdnNumber: UInt32?,
         currentBackupPlan: BackupPlan,
+        uploadEraAtStartOfListMedia: String,
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
         hasEverRunListMedia: Bool,
@@ -733,15 +735,27 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             }
             return
         }
-        if isThumbnail, attachment.thumbnailMediaTierInfo != nil {
-            Logger.warn("Unexpectedly missing thumbnail we thought was on media tier cdn \(attachment.id)")
+        if isThumbnail, let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
+            if thumbnailMediaTierInfo.uploadEra == uploadEraAtStartOfListMedia {
+                Logger.warn("Unexpectedly missing thumbnail we thought was on media tier cdn \(attachment.id)")
+            } else {
+                // The uploadEra has rotated, so it's reasonable that the
+                // attachment is un-uploaded.
+            }
+
             try self.attachmentUploadStore.markThumbnailMediaTierUploadExpired(
                 attachment: attachment,
                 tx: tx
             )
         }
-        if !isThumbnail, attachment.mediaTierInfo != nil {
-            Logger.warn("Unexpectedly missing fullsize we thought was on media tier cdn \(attachment.id)")
+        if !isThumbnail, let mediaTierInfo = attachment.mediaTierInfo {
+            if mediaTierInfo.uploadEra == uploadEraAtStartOfListMedia {
+                Logger.warn("Unexpectedly missing fullsize we thought was on media tier cdn \(attachment.id)")
+            } else {
+                // The uploadEra has rotated, so it's reasonable that the
+                // attachment is un-uploaded.
+            }
+
             try self.attachmentUploadStore.markMediaTierUploadExpired(
                 attachment: attachment,
                 tx: tx
