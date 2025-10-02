@@ -42,13 +42,18 @@ public class RegistrationUtils {
             return
         }
 
-        let actionSheet = ActionSheetController()
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString(
+                "DEREGISTRATION_REREGISTER_PROMPT_TITLE",
+                comment: "Title for prompt that lets users re-register using the same phone number."
+            )
+        )
         actionSheet.addAction(ActionSheetAction(
             title: NSLocalizedString(
-                "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
-                comment: "Label for button that lets users re-register using the same phone number."
+                "DEREGISTRATION_REREGISTER_BUTTON",
+                comment: "Button that lets users re-register using the same phone number."
             ),
-            style: .destructive,
+            style: .default,
             handler: { _ in
                 Logger.info("Reregistering from banner")
                 RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
