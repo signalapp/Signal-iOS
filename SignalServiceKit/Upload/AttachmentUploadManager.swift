@@ -1001,7 +1001,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 // It uses the same primary key (it isn't a reupload with a rotated key)
                 transitTierInfo.encryptionKey == attachment.encryptionKey,
                 // We expect it isn't expired
-                now - Date(millisecondsSince1970: transitTierInfo.uploadTimestamp) < messageQueueTime
+                now.timeIntervalSince(Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)) < messageQueueTime
             {
                 // Reuse the existing transit tier upload without reuploading.
                 return .alreadyUploaded(.init(
