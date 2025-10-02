@@ -95,7 +95,7 @@ extension ConversationViewController {
         let oldInsets = collectionView.contentInset
         var newInsets = oldInsets
 
-        newInsets.bottom = view.keyboardLayoutGuide.layoutFrame.height - view.safeAreaInsets.bottom + (bottomBar.frame.height - bottomBar.safeAreaInsets.bottom)
+        newInsets.bottom = keyboardLayoutGuide.layoutFrame.height - view.safeAreaInsets.bottom + (bottomBar.frame.height - bottomBar.safeAreaInsets.bottom)
         newInsets.top = (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom

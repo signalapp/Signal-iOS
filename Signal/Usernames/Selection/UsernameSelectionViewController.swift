@@ -317,7 +317,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
             wrapperScrollView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             wrapperScrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             wrapperScrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            wrapperScrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            wrapperScrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         let contentLayoutGuide = wrapperScrollView.contentLayoutGuide

@@ -61,7 +61,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
             inputToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             inputToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             inputToolbarBottomConstraint,
-            inputToolbar.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            inputToolbar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
         self.inputToolbarBottomConstraint = inputToolbarBottomConstraint
     }

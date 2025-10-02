@@ -118,7 +118,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var observerToken: NSObjectProtocol?
 
     private var observingKeyboardNotifications = false
-    private var keyboardHeight: CGFloat = 0
+    private var keyboardHeight: CGFloat = 0 {
+        didSet {
+            guard let iOS15BottomToolviewVerticalPositionConstraint else { return }
+            iOS15BottomToolviewVerticalPositionConstraint.constant = -max(view.safeAreaInsets.bottom, keyboardHeight)
+        }
+    }
 
     public init(options: AttachmentApprovalViewControllerOptions, attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
@@ -197,6 +202,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private let bottomToolView = AttachmentApprovalToolbar()
 
+    // Manually adjust position of the bottom toolbar on iOS 15 because `keyboardLayoutGuide` is buggy.
+    private var iOS15BottomToolviewVerticalPositionConstraint: NSLayoutConstraint?
+
     lazy var contentDimmerView: UIView = {
         let dimmerView = UIView()
         dimmerView.backgroundColor = .ows_blackAlpha40
@@ -267,8 +275,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         NSLayoutConstraint.activate([
             bottomToolView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomToolView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomToolView.contentLayoutGuide.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
         ])
+        if #unavailable(iOS 16) {
+            let constraint = bottomToolView.contentLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -view.safeAreaInsets.bottom)
+            constraint.isActive = true
+            iOS15BottomToolviewVerticalPositionConstraint = constraint
+        } else {
+            NSLayoutConstraint.activate([
+                bottomToolView.contentLayoutGuide.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            ])
+        }
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
     }
@@ -304,6 +320,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     public override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
+        if let iOS15BottomToolviewVerticalPositionConstraint {
+            iOS15BottomToolviewVerticalPositionConstraint.constant = -max(view.safeAreaInsets.bottom, keyboardHeight)
+        }
         if let currentPageViewController {
             updateContentLayoutMargins(for: currentPageViewController)
         }
