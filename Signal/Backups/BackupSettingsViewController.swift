@@ -1303,27 +1303,34 @@ struct BackupSettingsView: View {
                         BackupExportProgressView(
                             latestExportProgressUpdate: latestBackupExportProgressUpdate,
                             latestAttachmentUploadUpdate: viewModel.latestBackupAttachmentUploadUpdate,
-                            viewModel: viewModel,
                         )
-                    } else if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
-                        switch contents {
-                        case .disabling, .disablingDownloadsRunning:
-                            // We'll show a download progress bar below if necessary.
-                            EmptyView()
-                        case .enabled, .disabled, .disabledFailedToDisableRemotely:
-                            BackupAttachmentDownloadProgressView(
-                                latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
-                                viewModel: viewModel,
-                            )
+
+                        CancelManualBackupButton {
+                            viewModel.cancelManualBackup()
                         }
                     } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
                         BackupAttachmentUploadProgressView(
                             latestUploadUpdate: latestBackupAttachmentUploadUpdate
                         )
+
                         CancelManualBackupButton {
                             viewModel.suspendUploads()
                         }
                     } else {
+                        if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
+                            switch contents {
+                            case .disabling, .disablingDownloadsRunning:
+                                // We'll show a download progress bar below if necessary.
+                                EmptyView()
+                            case .enabled, .disabled, .disabledFailedToDisableRemotely:
+                                BackupAttachmentDownloadProgressView(
+                                    backupPlan: viewModel.backupPlan,
+                                    latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
+                                    viewModel: viewModel,
+                                )
+                            }
+                        }
+
                         Button {
                             viewModel.performManualBackup()
                         } label: {
@@ -1416,6 +1423,7 @@ struct BackupSettingsView: View {
             case .disablingDownloadsRunning(let lastDownloadUpdate):
                 SignalSection {
                     BackupAttachmentDownloadProgressView(
+                        backupPlan: viewModel.backupPlan,
                         latestDownloadUpdate: lastDownloadUpdate,
                         viewModel: viewModel
                     )
@@ -1552,7 +1560,6 @@ private struct BackupExportProgressView: View {
 
     let latestExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>
     let latestAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
-    let viewModel: BackupSettingsViewModel
 
     private var progressBarState: ProgressBarState {
         switch latestExportProgressUpdate.currentStep {
@@ -1614,19 +1621,17 @@ private struct BackupExportProgressView: View {
                 .foregroundStyle(Color.Signal.secondaryLabel)
                 .monospacedDigit()
         }
-        CancelManualBackupButton {
-            viewModel.cancelManualBackup()
-        }
     }
 }
 
-private struct CancelManualBackupButton: View {
+// MARK: -
 
-    let completion: () -> Void
+private struct CancelManualBackupButton: View {
+    let onTap: () -> Void
 
     var body: some View {
         Button {
-            completion()
+            onTap()
         } label: {
             Text(OWSLocalizedString(
                 "BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON",
@@ -1787,6 +1792,7 @@ private struct PulsingProgressBar: View {
 // MARK: -
 
 private struct BackupAttachmentDownloadProgressView: View {
+    let backupPlan: BackupPlan
     let latestDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate
     let viewModel: BackupSettingsViewModel
 
@@ -1803,7 +1809,7 @@ private struct BackupAttachmentDownloadProgressView: View {
 
             let subtitleText: String = switch latestDownloadUpdate.state {
             case .suspended:
-                switch viewModel.backupPlan {
+                switch backupPlan {
                 case .disabled, .free, .paid, .paidAsTester:
                     String(
                         format: OWSLocalizedString(
