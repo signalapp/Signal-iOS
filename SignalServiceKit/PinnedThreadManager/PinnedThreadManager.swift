@@ -6,7 +6,7 @@
 import Foundation
 
 public enum PinnedThreads {
-    public static let maxPinnedThreads = 4
+    public static let maxPinnedThreads = 6
 }
 
 public protocol PinnedThreadManager {
