@@ -192,6 +192,11 @@ public struct AttachmentUpload {
             var latestUploadProgressBytes: UInt32 = UInt32(truncatingIfNeeded: internalProgress.completedUnitCount)
             var uploadReportedRemoteProgress = false
             switch error {
+            case .partialUpload(let bytesUploaded):
+                attempt.logger.info("Endpoint successfully uploaded chunk of \(bytesUploaded) bytes.")
+                uploadReportedRemoteProgress = true
+                latestUploadProgressBytes += bytesUploaded
+                failureMode = .resume(.immediately)
             case .uploadFailure(let retryMode):
                 // if a failure mode was passed back
                 failureMode = retryMode

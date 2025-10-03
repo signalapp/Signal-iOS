@@ -88,33 +88,25 @@ struct UploadEndpointCDN3: UploadEndpoint {
     ) async throws(Upload.Error) {
         let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
         let totalDataLength = attempt.encryptedDataLength
-
         var headers = uploadForm.headers
-        headers["Content-Type"] = "application/offset+octet-stream"
-        headers["Tus-Resumable"] = "1.0.0"
-        headers["Upload-Offset"] = "\(startPoint)"
 
-        guard fileSystem.fileOrFolderExists(url: attempt.fileUrl) else {
-            throw .missingFile
-        }
-
-        let originalFileData: Data
-        do {
-            originalFileData = try fileSystem.readMemoryMappedFileData(url: attempt.fileUrl)
-        } catch {
-            attempt.logger.error("Unable to map upload file into memory")
-            throw .missingFile
-        }
-
-        let uploadData = originalFileData.dropFirst(startPoint)
+        let (uploadData, truncated) = try readUploadFileChunk(
+            fileSystem: fileSystem,
+            url: attempt.fileUrl,
+            startIndex: startPoint
+        )
         guard uploadData.count > 0 else {
             attempt.logger.error("No data to upload")
             return
         }
 
+        headers["Content-Length"] = "\(uploadData.count)"
+        headers["Content-Type"] = "application/offset+octet-stream"
+        headers["Tus-Resumable"] = "1.0.0"
+        headers["Upload-Offset"] = "\(startPoint)"
+
         let method: HTTPMethod
         let uploadURL: String
-        headers["Content-Length"] = "\(uploadData.count)"
         if startPoint == 0 {
             // Either first attempt or no progress so far, use entire encrypted data.
             // For initial uploads, send a POST to create the file
@@ -143,6 +135,11 @@ struct UploadEndpointCDN3: UploadEndpoint {
 
             switch response.responseStatusCode {
             case 200...204:
+                if truncated {
+                    // The upload succeeded in uploading a chunk of data. Throw this error
+                    // to the caller, which should trigger an immediate resume with the next chunk
+                    throw Upload.Error.partialUpload(bytesUploaded: UInt32(clamping: uploadData.count))
+                }
                 return
             default:
                 throw Upload.Error.unexpectedResponseStatusCode(response.responseStatusCode)

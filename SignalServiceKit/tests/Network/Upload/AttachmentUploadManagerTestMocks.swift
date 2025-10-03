@@ -46,6 +46,8 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
 
     func deleteFile(url: URL) throws { }
 
+    public func maxFileChunkSizeBytes() -> Int { 32 }
+
     func readMemoryMappedFileData(url: URL) throws -> Data {
         return Data(repeating: 0, count: size)
     }

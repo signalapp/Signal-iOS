@@ -264,7 +264,9 @@ class AttachmentUploadManagerMockHelper {
 
                 switch type {
                 case .progress(let count):
-                    headers["Range"] = "bytes=0-\(count)"
+                    // CDN2 has behavior where the range is returned, not the number of bytes uploaded
+                    // So we need to adjust this so `count` can mean consistent things across tests.
+                    headers["Range"] = "bytes=0-\(count - 1)"
                 case .newUpload:
                     break
                 case .missingRange:

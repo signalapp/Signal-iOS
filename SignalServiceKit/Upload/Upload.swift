@@ -84,6 +84,7 @@ public enum Upload {
         case networkError
         case networkTimeout
         case uploadFailure(recovery: FailureMode)
+        case partialUpload(bytesUploaded: UInt32)
         case unsupportedEndpoint
         case unexpectedResponseStatusCode(Int)
         case missingFile
@@ -91,7 +92,7 @@ public enum Upload {
 
         public var isRetryableProvider: Bool {
             switch self {
-            case .invalidUploadURL, .uploadFailure, .unsupportedEndpoint, .unexpectedResponseStatusCode, .networkTimeout, .networkError, .missingFile, .unknown:
+            case .invalidUploadURL, .uploadFailure, .partialUpload, .unsupportedEndpoint, .unexpectedResponseStatusCode, .networkTimeout, .networkError, .missingFile, .unknown:
                 return false
             }
         }
@@ -269,6 +270,33 @@ extension Upload.LocalUploadMetadata {
             digest: digest,
             encryptedDataLength: length,
             plaintextDataLength: plaintextLength
+        )
+    }
+}
+
+extension UploadEndpoint {
+    func readUploadFileChunk(
+        fileSystem: Upload.Shims.FileSystem,
+        url: URL,
+        startIndex chunkStartIndex: Int
+    ) throws(Upload.Error) -> (data: Data, truncated: Bool) {
+        guard fileSystem.fileOrFolderExists(url: url) else {
+            throw .missingFile
+        }
+
+        let fileData: Data
+        do {
+            fileData = try fileSystem.readMemoryMappedFileData(url: url)
+        } catch {
+            Logger.error("Unable to map upload file into memory")
+            throw .missingFile
+        }
+
+        let remainingData = fileData.dropFirst(chunkStartIndex)
+        let dataChunk = remainingData.prefix(fileSystem.maxFileChunkSizeBytes())
+        return (
+            dataChunk,
+            dataChunk.count != remainingData.count
         )
     }
 }

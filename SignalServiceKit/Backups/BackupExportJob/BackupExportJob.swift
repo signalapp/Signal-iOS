@@ -275,6 +275,7 @@ class BackupExportJobImpl: BackupExportJob {
                     case
                             .networkError,
                             .networkTimeout,
+                            .partialUpload,
                             .uploadFailure(recovery: .restart),
                             .uploadFailure(recovery: .resume):
                         return true

@@ -153,19 +153,12 @@ struct UploadEndpointCDN2: UploadEndpoint {
         let totalDataLength = attempt.encryptedDataLength
         var headers = HttpHeaders()
 
-        guard fileSystem.fileOrFolderExists(url: attempt.fileUrl) else {
-            throw .missingFile
-        }
+        let (uploadData, truncated) = try readUploadFileChunk(
+            fileSystem: fileSystem,
+            url: attempt.fileUrl,
+            startIndex: startPoint
+        )
 
-        let originalFileData: Data
-        do {
-            originalFileData = try fileSystem.readMemoryMappedFileData(url: attempt.fileUrl)
-        } catch {
-            attempt.logger.error("Unable to map upload file into memory")
-            throw .missingFile
-        }
-
-        let uploadData = originalFileData.dropFirst(startPoint)
         guard uploadData.count > 0 else {
             attempt.logger.error("No data to upload")
             return
@@ -191,6 +184,11 @@ struct UploadEndpointCDN2: UploadEndpoint {
             )
             switch response.responseStatusCode {
             case 200, 201:
+                if truncated {
+                    // The upload succeeded in uploading a chunk of data. Throw this error
+                    // to the caller, which should trigger an immediate resume with the next chunk
+                    throw Upload.Error.partialUpload(bytesUploaded: UInt32(clamping: uploadData.count))
+                }
                 return
             default:
                 throw Upload.Error.unknown
@@ -209,6 +207,8 @@ struct UploadEndpointCDN2: UploadEndpoint {
             }()
 
             switch error {
+            case let error as Upload.Error:
+                throw error
             case let error as OWSHTTPError where (500...599).contains(error.responseStatusCode):
                 // On 5XX errors, clients should try to resume the upload
                 attempt.logger.warn("Temporary upload failure, retry.")

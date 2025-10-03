@@ -34,6 +34,8 @@ public protocol _Upload_FileSystemShim {
 
     func deleteFile(url: URL) throws
 
+    func maxFileChunkSizeBytes() -> Int
+
     func readMemoryMappedFileData(url: URL) throws -> Data
 }
 
@@ -64,6 +66,10 @@ public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
 
     public func deleteFile(url: URL) throws {
         try OWSFileSystem.deleteFile(url: url)
+    }
+
+    public func maxFileChunkSizeBytes() -> Int {
+        return 32 * 1024 * 1024
     }
 
     public func readMemoryMappedFileData(url: URL) throws -> Data {

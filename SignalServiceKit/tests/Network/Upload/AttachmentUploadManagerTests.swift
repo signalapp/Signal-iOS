@@ -93,11 +93,10 @@ class AttachmentUploadManagerTests {
             switch cdn {
             case .cdn2:
                 #expect(request.url!.absoluteString == attempt.fetchedUploadLocation)
-                // the '- 1' is because the length reports is inclusive (so 0-10 is 11 bytes)
-                let expectedLength = Int(encryptedSize) - firstUpload - 1
+                let expectedLength = Int(encryptedSize) - firstUpload
                 #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(expectedLength)")
 
-                let nextByte = firstUpload + 1
+                let nextByte = firstUpload
                 let lastByte = encryptedSize - 1
                 #expect(request.allHTTPHeaderFields!["content-range"] == "bytes \(nextByte)-\(lastByte)/\(encryptedSize)")
             case .cdn3:
@@ -108,6 +107,140 @@ class AttachmentUploadManagerTests {
 
                 #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] == nil)
                 #expect(request.allHTTPHeaderFields!["Upload-Length"] == nil)
+            }
+        } else { Issue.record("Unexpected request encountered.") }
+        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+    }
+
+    @Test(arguments: CDNEndpoint.allCases)
+    func testBasicChunkedUpload(cdn: CDNEndpoint) async throws {
+        let chunkSize = helper.mockFileSystem.maxFileChunkSizeBytes()
+        let encryptedSize: Int = chunkSize + 1
+        let unencryptedSize = encryptedSize
+
+        helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
+
+        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, _, location) in
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: Int(chunkSize)))
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+        }
+
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
+            #expect(request.httpMethod == attempt2.uploadHttpMethod)
+            switch cdn {
+            case .cdn2:
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["content-range"] == nil)
+            case .cdn3:
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["Upload-Offset"] == "0")
+
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+
+                #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] != nil)
+                #expect(request.allHTTPHeaderFields!["upload-length"] == "\(encryptedSize)")
+            }
+        } else { Issue.record("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests[1] {
+            #expect(request.httpMethod == attempt2.resumeUploadHttpMethod)
+            switch cdn {
+            case .cdn2:
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+                let expectedLength = encryptedSize - chunkSize
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(expectedLength)")
+                #expect(request.allHTTPHeaderFields!["content-range"] == "bytes \(chunkSize)-\(chunkSize)/\(encryptedSize)")
+            case .cdn3:
+                let expectedLength = encryptedSize - chunkSize
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(expectedLength)")
+                #expect(request.allHTTPHeaderFields!["Upload-Offset"] == "\(chunkSize)")
+
+                #expect(request.url!.absoluteString == attempt2.resumeUploadURL)
+
+                #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] == nil)
+                #expect(request.allHTTPHeaderFields!["upload-length"] == nil)
+            }
+        } else { Issue.record("Unexpected request encountered.") }
+        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+    }
+
+    @Test(arguments: CDNEndpoint.allCases)
+    func testMultipleChunkedUpload(cdn: CDNEndpoint) async throws {
+        let chunkSize = helper.mockFileSystem.maxFileChunkSizeBytes()
+        let encryptedSize: Int = (chunkSize * 2) + 10
+        let unencryptedSize: Int = encryptedSize + 1 // Just to make it different than encrypted size
+
+        helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
+
+        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, _, location) in
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: Int(chunkSize)))
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+            helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: Int(chunkSize * 2)))
+            helper.addUploadRequestMock(auth: auth, location: location, type: .success)
+        }
+
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
+            #expect(request.httpMethod == attempt2.uploadHttpMethod)
+            switch cdn {
+            case .cdn2:
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["content-range"] == nil)
+            case .cdn3:
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["Upload-Offset"] == "0")
+
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+
+                #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] != nil)
+                #expect(request.allHTTPHeaderFields!["upload-length"] == "\(encryptedSize)")
+            }
+        } else { Issue.record("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests[1] {
+            #expect(request.httpMethod == attempt2.resumeUploadHttpMethod)
+            switch cdn {
+            case .cdn2:
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+                let startRange = chunkSize
+                let endRange = (chunkSize * 2) - 1 // This is an inclusive range, so subtract one from the end range
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["content-range"] == "bytes \(startRange)-\(endRange)/\(encryptedSize)")
+            case .cdn3:
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(chunkSize)")
+                #expect(request.allHTTPHeaderFields!["Upload-Offset"] == "\(chunkSize)")
+
+                #expect(request.url!.absoluteString == attempt2.resumeUploadURL)
+
+                #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] == nil)
+                #expect(request.allHTTPHeaderFields!["upload-length"] == nil)
+            }
+        } else { Issue.record("Unexpected request encountered.") }
+
+        if case let .uploadTask(request) = helper.capturedUploadRequests[2] {
+            #expect(request.httpMethod == attempt2.resumeUploadHttpMethod)
+            switch cdn {
+            case .cdn2:
+                #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
+                let startRange = chunkSize * 2
+                let endRange = encryptedSize - 1 // This is an inclusive range, so subtract one from the end range
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "10")
+                #expect(request.allHTTPHeaderFields!["content-range"] == "bytes \(startRange)-\(endRange)/\(encryptedSize)")
+            case .cdn3:
+                #expect(request.allHTTPHeaderFields!["Content-Length"] == "10")
+                #expect(request.allHTTPHeaderFields!["Upload-Offset"] == "\(chunkSize * 2)")
+
+                #expect(request.url!.absoluteString == attempt2.resumeUploadURL)
+
+                #expect(request.allHTTPHeaderFields![UploadEndpointCDN3.Constants.checksumHeaderKey] == nil)
+                #expect(request.allHTTPHeaderFields!["upload-length"] == nil)
             }
         } else { Issue.record("Unexpected request encountered.") }
         #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
