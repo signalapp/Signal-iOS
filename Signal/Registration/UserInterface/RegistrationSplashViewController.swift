@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import PureLayout
 import SafariServices
 import SignalServiceKit
 public import SignalUI
@@ -27,68 +26,79 @@ public class RegistrationSplashViewController: OWSViewController {
     public init(presenter: RegistrationSplashPresenter) {
         self.presenter = presenter
         super.init()
+        navigationItem.hidesBackButton = true
     }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.setHidesBackButton(true, animated: false)
+        view.backgroundColor = .Signal.background
 
-        view.backgroundColor = Theme.backgroundColor
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.directionalLayoutMargins = {
-            let horizontalSizeClass = traitCollection.horizontalSizeClass
-            var result = NSDirectionalEdgeInsets.layoutMarginsForRegistration(horizontalSizeClass)
-            // We want the hero image a bit closer to the top.
-            result.top = 16
-            return result
-        }()
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
+        // Buttons in the top right corner.
         let canSwitchModes = UIDevice.current.isIPad || FeatureFlags.linkedPhones
-        var transferButtonTrailingView: UIView = self.view
-        var transferButtonTrailingEdge: ALEdge = .trailing
+        var transferButtonTrailingAnchor: NSLayoutAnchor<NSLayoutXAxisAnchor> = view.layoutMarginsGuide.trailingAnchor
         if canSwitchModes {
-            let modeSwitchButton = UIButton()
-
-            modeSwitchButton.setTemplateImageName(
-                UIDevice.current.isIPad ? "link" : "link-slash",
-                tintColor: .ows_gray25
+            let modeSwitchButton = UIButton(
+                configuration: .plain(),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapModeSwitch()
+                }
             )
-            modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
+            modeSwitchButton.configuration?.image = .init(named: UIDevice.current.isIPad ? "link" : "link-slash")
+            modeSwitchButton.tintColor = .ows_gray25
             modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
 
             view.addSubview(modeSwitchButton)
-            modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
-            modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
-            modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
+            modeSwitchButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                modeSwitchButton.widthAnchor.constraint(equalToConstant: 40),
+                modeSwitchButton.heightAnchor.constraint(equalToConstant: 40),
+                modeSwitchButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                modeSwitchButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            ])
 
-            transferButtonTrailingEdge = .leading
-            transferButtonTrailingView = modeSwitchButton
+            transferButtonTrailingAnchor = modeSwitchButton.leadingAnchor
         }
 
         if FeatureFlags.preRegDeviceTransfer {
-            let transferButton = UIButton()
-
-            transferButton.setImage(Theme.iconImage(.transfer), animated: false)
-            transferButton.addTarget(self, action: #selector(didTapTransfer), for: .touchUpInside)
+            let transferButton = UIButton(
+                configuration: .plain(),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapTransfer()
+                }
+            )
+            transferButton.configuration?.image = Theme.iconImage(.transfer).resizedImage(to: .square(24))
             transferButton.accessibilityIdentifier = "onboarding.splash.transfer"
 
             view.addSubview(transferButton)
-            transferButton.autoSetDimensions(to: CGSize(square: 40))
-            transferButton.autoPinEdge(
-                .trailing,
-                to: transferButtonTrailingEdge,
-                of: transferButtonTrailingView
-            )
-            transferButton.autoPinEdge(toSuperviewMargin: .top)
+            transferButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                transferButton.widthAnchor.constraint(equalToConstant: 40),
+                transferButton.heightAnchor.constraint(equalToConstant: 40),
+                transferButton.trailingAnchor.constraint(equalTo: transferButtonTrailingAnchor),
+                transferButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            ])
         }
 
+        // Main content view.
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+        view.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            stackView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: UIDevice.current.hasIPhoneXNotch ? 0 : -32
+            ),
+        ])
+
+        // Image at the top.
         let heroImage = UIImage(named: "onboarding_splash_hero")
         let heroImageView = UIImageView(image: heroImage)
         heroImageView.contentMode = .scaleAspectFit
@@ -100,6 +110,7 @@ public class RegistrationSplashViewController: OWSViewController {
         stackView.addArrangedSubview(heroImageView)
         stackView.setCustomSpacing(22, after: heroImageView)
 
+        // Welcome text.
         let titleText = {
             if TSConstants.isUsingProductionService {
                 return OWSLocalizedString(
@@ -115,94 +126,77 @@ public class RegistrationSplashViewController: OWSViewController {
         stackView.addArrangedSubview(titleLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
 
-        let explanationButton = UIButton()
-        explanationButton.setTitle(
-            OWSLocalizedString(
+        // Terms of service and privacy policy.
+        let tosPPButton = UIButton(
+            configuration: .smallBorderless(title: OWSLocalizedString(
                 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                 comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."
-            ),
-            for: .normal
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.showTOSPP()
+            }
         )
-        explanationButton.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
-        explanationButton.titleLabel?.font = UIFont.dynamicTypeSubheadline
-        explanationButton.titleLabel?.numberOfLines = 0
-        explanationButton.titleLabel?.textAlignment = .center
-        explanationButton.titleLabel?.lineBreakMode = .byWordWrapping
-        explanationButton.addTarget(
-            self,
-            action: #selector(explanationButtonTapped),
-            for: .touchUpInside
-        )
-        explanationButton.accessibilityIdentifier = "registration.splash.explanationLabel"
-        stackView.addArrangedSubview(explanationButton)
-        stackView.setCustomSpacing(57, after: explanationButton)
+        tosPPButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
+        tosPPButton.enableMultilineLabel()
+        tosPPButton.accessibilityIdentifier = "registration.splash.explanationLabel"
+        stackView.addArrangedSubview(tosPPButton)
+        stackView.setCustomSpacing(57, after: tosPPButton)
 
-        let continueButton = OWSFlatButton.primaryButtonForRegistration(
-            title: CommonStrings.continueButton,
-            target: self,
-            selector: #selector(continuePressed)
+        // Large buttons enclosed in a container with some extra horizontal padding.
+        let continueButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.continueButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.continuePressed()
+            }
         )
         continueButton.accessibilityIdentifier = "registration.splash.continueButton"
-        stackView.addArrangedSubview(continueButton)
-        continueButton.autoSetDimension(.width, toSize: 280)
-        continueButton.autoHCenterInSuperview()
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            continueButton.autoPinEdge(toSuperviewEdge: .leading)
-            continueButton.autoPinEdge(toSuperviewEdge: .trailing)
-        }
+
+        let largeButtonsContainer = UIStackView(arrangedSubviews: [continueButton])
+        largeButtonsContainer.isLayoutMarginsRelativeArrangement = true
+        largeButtonsContainer.directionalLayoutMargins = .layoutMarginsForLargeRegistrationButtons()
+        largeButtonsContainer.spacing = 16
+        largeButtonsContainer.axis = .vertical
+        largeButtonsContainer.alignment = .fill
+        stackView.addArrangedSubview(largeButtonsContainer)
 
         if FeatureFlags.Backups.supported {
-            stackView.setCustomSpacing(16, after: continueButton)
-
-            let restoreOrTransferButton = OWSFlatButton.secondaryButtonForRegistration(
-                title: OWSLocalizedString(
+            let restoreOrTransferButton = UIButton(
+                configuration: .largeSecondary(title: OWSLocalizedString(
                     "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",
                     comment: "Button for restoring or transferring account in the 'onboarding splash' view."
-                ),
-                target: self,
-                selector: #selector(didTapRestoreOrTransfer)
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapRestoreOrTransfer()
+                }
             )
             restoreOrTransferButton.enableMultilineLabel()
             restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
-            stackView.addArrangedSubview(restoreOrTransferButton)
-            restoreOrTransferButton.autoSetDimension(.width, toSize: 280)
-            restoreOrTransferButton.autoHCenterInSuperview()
-            NSLayoutConstraint.autoSetPriority(.defaultLow) {
-                restoreOrTransferButton.autoPinEdge(toSuperviewEdge: .leading)
-                restoreOrTransferButton.autoPinEdge(toSuperviewEdge: .trailing)
-            }
+            largeButtonsContainer.addArrangedSubview(restoreOrTransferButton)
         }
     }
 
     // MARK: - Events
 
-    @objc
     private func didTapModeSwitch() {
         Logger.info("")
-
         presenter?.switchToDeviceLinkingMode()
     }
 
-    @objc
     private func didTapTransfer() {
         Logger.info("")
-
         presenter?.transferDevice()
     }
 
-    @objc
-    private func explanationButtonTapped(sender: UIGestureRecognizer) {
+    private func showTOSPP() {
         let safariVC = SFSafariViewController(url: TSConstants.legalTermsUrl)
         present(safariVC, animated: true)
     }
 
-    @objc
     private func continuePressed() {
         Logger.info("")
         presenter?.continueFromSplash()
     }
 
-    @objc
     private func didTapRestoreOrTransfer() {
         Logger.info("")
         let sheet = RestoreOrTransferPickerController(
@@ -224,47 +218,43 @@ private class RestoreOrTransferPickerController: StackSheetViewController {
         super.init()
     }
 
-    open override var sheetBackgroundColor: UIColor { Theme.secondaryBackgroundColor }
+    open override var sheetBackgroundColor: UIColor { .Signal.secondaryBackground }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         stackView.spacing = 16
 
-        let hasDeviceButton = RegistrationChoiceButton(
+        let hasDeviceButton = UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE",
                 comment: "Title for the 'have my old device' choice of the 'Restore or Transfer' prompt"
             ),
-            body: OWSLocalizedString(
+            subtitle: OWSLocalizedString(
                 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_BODY",
                 comment: "Explanation of 'have old device' flow for the 'Restore or Transfer' prompt"
             ),
-            iconName: "qr-code-48"
+            iconName: "qr-code-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.setHasOldDeviceBlock(true)
+            }
         )
-        hasDeviceButton.addTarget(target: self, selector: #selector(hasDevice))
         stackView.addArrangedSubview(hasDeviceButton)
 
-        let noDeviceButton = RegistrationChoiceButton(
+        let noDeviceButton = UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_TITLE",
                 comment: "Title for the 'do not have my old device' choice of the 'Restore or Transfer' prompt"
             ),
-            body: OWSLocalizedString(
+            subtitle: OWSLocalizedString(
                 "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY",
                 comment: "Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt"
             ),
-            iconName: "no-phone-48"
+            iconName: "no-phone-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.setHasOldDeviceBlock(false)
+            }
         )
-        noDeviceButton.addTarget(target: self, selector: #selector(noDevice))
         stackView.addArrangedSubview(noDeviceButton)
-    }
-
-    @objc func hasDevice() {
-        setHasOldDeviceBlock(true)
-    }
-
-    @objc func noDevice() {
-        setHasOldDeviceBlock(false)
     }
 }
 

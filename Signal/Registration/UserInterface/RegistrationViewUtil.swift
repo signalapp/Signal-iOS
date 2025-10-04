@@ -35,6 +35,10 @@ extension NSDirectionalEdgeInsets {
     private init(allButTop: CGFloat) {
         self.init(top: 0, leading: allButTop, bottom: allButTop, trailing: allButTop)
     }
+
+    static func layoutMarginsForLargeRegistrationButtons() -> NSDirectionalEdgeInsets {
+        return .init(hMargin: 22, vMargin: 0)
+    }
 }
 
 // MARK: - Colors
