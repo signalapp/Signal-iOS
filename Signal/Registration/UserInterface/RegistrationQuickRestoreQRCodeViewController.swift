@@ -139,11 +139,12 @@ private struct ContentStack: View {
                 TutorialStack()
                 Spacer()
                 Spacer()
-                Button(CommonStrings.cancelButton, action: self.cancelAction)
-                    .font(.body.weight(.bold))
-                    .tint(Color.Signal.ultramarine)
-                    .padding(.vertical, 14)
-                Spacer()
+                Button(CommonStrings.cancelButton) {
+                    self.cancelAction()
+                }
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                .padding(20)
             }
         }
     }

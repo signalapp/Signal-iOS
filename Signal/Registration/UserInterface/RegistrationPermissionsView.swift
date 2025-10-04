@@ -39,6 +39,10 @@ struct RegistrationPermissionsView: View {
         }
     }
 
+    private var horizontalButtonPadding: CGFloat {
+        NSDirectionalEdgeInsets.layoutMarginsForLargeRegistrationButtons().leading
+    }
+
     var body: some View {
         VStack {
             VStack(spacing: headerSpacing) {
@@ -89,6 +93,7 @@ struct RegistrationPermissionsView: View {
                     }
                     // Expand to available width when compact, otherwise horizontally center.
                     .frame(maxWidth: isCompactLayout ? .infinity : nil, alignment: .leading)
+                    .padding([.leading, .trailing], layoutMargins.leading)
 
                     Spacer(minLength: sectionSpacing)
                         .layoutPriority(-1)
@@ -98,11 +103,11 @@ struct RegistrationPermissionsView: View {
                             await permissionTask()
                         })
                     }
-                    .buttonStyle(Registration.UI.FilledButtonStyle())
+                    .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-                    .frame(maxWidth: 400)
+                    .padding([.leading, .trailing], horizontalButtonPadding)
                 }
-                .padding(layoutMargins)
+                .padding()
             }
         }
         .onChange(of: appearanceTransitionState) { newValue in
@@ -179,7 +184,7 @@ private extension RegistrationPermissionsView {
                         Spacer()
                     }
                     description
-                        .font(.callout)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             } else {
@@ -190,7 +195,7 @@ private extension RegistrationPermissionsView {
                             .font(.headline)
                             .lineLimit(1)
                         description
-                            .font(.callout)
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .layoutPriority(1)
                     }

@@ -57,7 +57,7 @@ struct OutgoingDeviceRestoreInitialView: View {
                             await self.presenter.didTapTransfer()
                         }
                     }
-                    .buttonStyle(Registration.UI.FilledButtonStyle())
+                    .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
                 }.padding([.top, .bottom], 12)
             }
             footer: {

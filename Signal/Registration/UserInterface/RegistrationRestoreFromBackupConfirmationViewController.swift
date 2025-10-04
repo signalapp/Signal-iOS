@@ -153,7 +153,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             )) {
                 presenter?.restoreFromBackupConfirmed()
             }
-            .buttonStyle(Registration.UI.FilledButtonStyle())
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .frame(maxWidth: 300)
 
@@ -166,7 +166,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 }
 
             }
-            .buttonStyle(Registration.UI.BorderlessButtonStyle())
+            .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .frame(maxWidth: 300)
             .padding(20)

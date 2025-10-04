@@ -7,13 +7,13 @@ import SignalServiceKit
 
 // MARK: - NSDirectionalEdgeInsets
 
-public extension NSDirectionalEdgeInsets {
+private extension NSDirectionalEdgeInsets {
     static var largeButtonContentInsets: NSDirectionalEdgeInsets {
-        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 14)
+        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 15)
     }
 
     static var mediumButtonContentInsets: NSDirectionalEdgeInsets {
-        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 11)
+        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
     }
 
     static var smallButtonContentInsets: NSDirectionalEdgeInsets {
