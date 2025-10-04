@@ -5,6 +5,23 @@
 
 import SignalServiceKit
 
+// MARK: - NSDirectionalEdgeInsets
+
+public extension NSDirectionalEdgeInsets {
+    static var largeButtonContentInsets: NSDirectionalEdgeInsets {
+        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 14)
+    }
+
+    static var mediumButtonContentInsets: NSDirectionalEdgeInsets {
+        NSDirectionalEdgeInsets(hMargin: 16, vMargin: 11)
+    }
+
+    static var smallButtonContentInsets: NSDirectionalEdgeInsets {
+        NSDirectionalEdgeInsets(hMargin: 12, vMargin: 8)
+    }
+
+}
+
 // MARK: - UIButton
 
 public extension UIButton {
@@ -85,6 +102,22 @@ public extension UIButton {
             self.setImage(image, for: .normal)
         }
     }
+
+    func enableMultilineLabel() {
+        guard let titleLabel else { return }
+
+        configuration?.titleAlignment = .center
+        configuration?.titleLineBreakMode = .byWordWrapping
+
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.textAlignment = .center
+
+        configurationUpdateHandler = { button in
+            button.titleLabel?.numberOfLines = 0
+            button.titleLabel?.lineBreakMode = .byWordWrapping
+        }
+    }
 }
 
 // MARK: - UIButton.Configuration
@@ -103,6 +136,110 @@ extension UIConfigurationTextAttributesTransformer {
             attributes.font = defaultFont
             return attributes
         }
+    }
+}
+
+public extension UIButton.Configuration {
+
+    private mutating func applyCorners() {
+        if #available(iOS 26, *) {
+            cornerStyle = .capsule
+            return
+        }
+        cornerStyle = .fixed
+        background.cornerRadius = 14
+    }
+
+    private static func basePrimary() -> Self {
+        var configuration: UIButton.Configuration
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            configuration = .prominentGlass()
+        } else {
+            configuration = .borderedProminent()
+        }
+#else
+        configuration = .borderedProminent()
+#endif
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        configuration.baseBackgroundColor = .Signal.accent
+        configuration.applyCorners()
+        return configuration
+    }
+
+    private static func baseSecondary() -> Self {
+        var configuration: UIButton.Configuration
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            configuration = .prominentGlass()
+            configuration.baseForegroundColor = .Signal.label
+        } else {
+            configuration = .plain()
+            configuration.baseForegroundColor = .Signal.accent
+        }
+#else
+        configuration = .plain()
+        configuration.baseForegroundColor = .Signal.accent
+#endif
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        configuration.baseBackgroundColor = .clear
+        configuration.applyCorners()
+        return configuration
+    }
+
+    static func largePrimary(title: String) -> Self {
+        var configuration = basePrimary()
+        configuration.title = title
+        configuration.contentInsets = .largeButtonContentInsets
+        return configuration
+    }
+
+    static func largeSecondary(title: String) -> Self {
+        var configuration = baseSecondary()
+        configuration.title = title
+        configuration.contentInsets = .largeButtonContentInsets
+        if #unavailable(iOS 26) {
+            // Smaller height when button doesn't have visible shape looks better.
+            configuration.contentInsets.top = 8
+            configuration.contentInsets.bottom = 8
+        }
+        return configuration
+    }
+
+    static func mediumSecondary(title: String) -> Self {
+        var configuration = baseSecondary()
+        configuration.title = title
+        configuration.contentInsets = .mediumButtonContentInsets
+        if #unavailable(iOS 26) {
+            // Smaller height when button doesn't have visible shape looks better.
+            configuration.contentInsets.top = 8
+            configuration.contentInsets.bottom = 8
+        }
+        return configuration
+    }
+
+    static func mediumBorderless(title: String) -> Self {
+        var configuration = UIButton.Configuration.borderless()
+        configuration.title = title
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        configuration.contentInsets = .mediumButtonContentInsets
+        configuration.baseForegroundColor = .Signal.accent
+        configuration.baseBackgroundColor = .clear
+        return configuration
+    }
+
+    static func smallBorderless(title: String) -> Self {
+        var configuration = UIButton.Configuration.borderless()
+        configuration.title = title
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadlineClamped.semibold())
+        configuration.contentInsets = .smallButtonContentInsets
+        configuration.baseForegroundColor = .Signal.accent
+        configuration.baseBackgroundColor = .clear
+        return configuration
     }
 }
 

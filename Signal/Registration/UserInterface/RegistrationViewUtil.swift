@@ -121,6 +121,160 @@ extension OWSFlatButton {
     }
 }
 
+extension UIButton {
+    class func registrationChoiceButton(
+        title: String,
+        subtitle: String,
+        iconName: String,
+        primaryAction: UIAction? = nil
+    ) -> Self {
+        let button = UIButton(configuration: .gray(), primaryAction: primaryAction)
+
+        // Set up button background.
+        if #available(iOS 26, *) {
+            button.configuration?.background.cornerRadius = 26
+        } else {
+            button.configuration?.background.cornerRadius = 8
+        }
+        button.configuration?.baseBackgroundColor = .Signal.quaternaryFill
+
+        // Add content view.
+        let contentConfiguration = RegistrationChoiceButtonContentConfiguration(
+            title: title,
+            subtitle: subtitle,
+            iconName: iconName
+        )
+        let contentView = contentConfiguration.makeContentView()
+        button.addSubview(contentView)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            contentView.leadingAnchor.constraint(equalTo: button.leadingAnchor),
+            contentView.topAnchor.constraint(equalTo: button.topAnchor),
+            contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor)
+        ])
+
+        return button as! Self
+    }
+}
+
+private struct RegistrationChoiceButtonContentConfiguration: UIContentConfiguration {
+    var title: String
+    var subtitle: String
+    var iconName: String
+    var imageSize: CGFloat?
+
+    func makeContentView() -> UIView & UIContentView {
+        RegistrationChoiceButtonContentView(configuration: self)
+    }
+
+    func updated(for state: UIConfigurationState) -> RegistrationChoiceButtonContentConfiguration {
+        // Looks the same.
+        self
+    }
+}
+
+private class RegistrationChoiceButtonContentView: UIView, UIContentView {
+    private let iconView = UIImageView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let disclosureView = UILabel()
+
+    init(configuration: RegistrationChoiceButtonContentConfiguration) {
+        super.init(frame: .zero)
+        setupViews()
+        self.configuration = configuration
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private var currentConfiguration: RegistrationChoiceButtonContentConfiguration!
+
+    var configuration: UIContentConfiguration {
+        get { currentConfiguration }
+        set {
+            guard let config = newValue as? RegistrationChoiceButtonContentConfiguration else { return }
+            currentConfiguration = config
+            apply(configuration: config)
+        }
+    }
+
+    func apply(configuration: RegistrationChoiceButtonContentConfiguration) {
+        titleLabel.text = configuration.title
+        subtitleLabel.text = configuration.subtitle
+        iconView.image = UIImage(named: configuration.iconName)?.withRenderingMode(.alwaysTemplate)
+        iconView.sizeToFit()
+    }
+
+    private func setupViews() {
+        isUserInteractionEnabled = false
+
+        // Icon
+        let iconContainer = UIView()
+        iconView.contentMode = .scaleAspectFit
+        iconView.tintColor = .Signal.ultramarine
+        iconContainer.addSubview(iconView)
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            iconContainer.widthAnchor.constraint(equalToConstant: 48),
+            iconContainer.heightAnchor.constraint(equalToConstant: 48),
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconView.trailingAnchor.constraint(greaterThanOrEqualTo: iconContainer.trailingAnchor),
+            iconView.topAnchor.constraint(greaterThanOrEqualTo: iconContainer.topAnchor),
+        ])
+
+        // Labels
+        titleLabel.font = .dynamicTypeHeadline
+        titleLabel.textColor = .Signal.label
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+
+        subtitleLabel.font = .dynamicTypeFootnote
+        subtitleLabel.textColor = .Signal.secondaryLabel
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.lineBreakMode = .byWordWrapping
+
+        let vStack = UIStackView(arrangedSubviews: [
+            titleLabel,
+            subtitleLabel,
+        ])
+        vStack.axis = .vertical
+        vStack.spacing = 2
+
+        // Disclosure Indicator
+        let disclosureView = UILabel()
+        disclosureView.attributedText = SignalSymbol.chevronTrailing
+            .attributedString(for: .body)
+            .styled(with: .color(UIColor.Signal.tertiaryLabel))
+        disclosureView.setContentHuggingHigh()
+
+        let hStack = UIStackView(arrangedSubviews: [
+            iconContainer,
+            vStack,
+            disclosureView,
+        ])
+        hStack.setCustomSpacing(20, after: vStack)
+        hStack.alignment = .center
+        hStack.axis = .horizontal
+        hStack.spacing = 12
+        hStack.isLayoutMarginsRelativeArrangement = true
+        hStack.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 21, leading: 12, bottom: 21, trailing: 16)
+        hStack.isUserInteractionEnabled = false
+
+        addSubview(hStack)
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hStack.topAnchor.constraint(equalTo: topAnchor),
+            hStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            hStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
+    }
+}
+
 // MARK: - Action sheets
 
 extension ActionSheetController {
