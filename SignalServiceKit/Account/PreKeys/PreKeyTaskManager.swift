@@ -513,24 +513,9 @@ internal struct PreKeyTaskManager {
                 await self.db.awaitableWrite { tx in self.cullStateAfterMessageProcessing(identity: identity, tx: tx) }
             }
         case let .failure(error) where error.httpStatusCode == 422:
-            let shouldValidate: Bool
-            switch (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice, identity) {
-            case (.some(false), .pni):
-                shouldValidate = true
-            case (.some(false), .aci):
-                shouldValidate = true
-            case (.some(true), .pni):
-                shouldValidate = remoteConfigProvider.currentConfig().shouldValidatePrimaryPniIdentityKey
-            case (.some(true), .aci):
-                shouldValidate = true
-            case (.none, _):
-                shouldValidate = false
-            }
             // We think we might have an incorrect identity key -- check it and
             // deregister if it's wrong.
-            if shouldValidate {
-                await self.identityKeyMismatchManager.validateIdentityKey(for: identity)
-            }
+            await self.identityKeyMismatchManager.validateIdentityKey(for: identity)
             fallthrough
         case let .failure(error):
             PreKey.logger.info("[\(identity)] Failed to upload prekeys")

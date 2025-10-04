@@ -275,10 +275,6 @@ public class RemoteConfig {
         return isEnabled(.usePqRatchet)
     }
 
-    public var shouldValidatePrimaryPniIdentityKey: Bool {
-        return isEnabled(.shouldValidatePrimaryPniIdentityKey)
-    }
-
     public var allowBackupSettings: Bool {
         if FeatureFlags.Backups.showSettings {
             return true
@@ -508,7 +504,6 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case shouldValidatePrimaryPniIdentityKey = "ios.shouldValidatePrimaryPniIdentityKey2"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
     case usePqRatchet = "ios.usePqRatchet"
@@ -537,7 +532,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
-        case .shouldValidatePrimaryPniIdentityKey: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
         case .usePqRatchet: true
