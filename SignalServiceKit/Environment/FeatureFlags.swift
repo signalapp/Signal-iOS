@@ -6,16 +6,14 @@
 import Foundation
 import LibSignalClient
 
-enum FeatureBuild: Int {
+enum FeatureBuild: Int, Comparable {
     case dev
     case `internal`
     case beta
     case production
-}
 
-private extension FeatureBuild {
-    func includes(_ level: FeatureBuild) -> Bool {
-        return self.rawValue <= level.rawValue
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.rawValue < rhs.rawValue
     }
 }
 
@@ -27,34 +25,34 @@ private let build = FeatureBuild.current
 /// it's easier to review which feature flags are in play.
 public enum FeatureFlags {
 
-    public static let choochoo = build.includes(.internal)
+    public static let choochoo = build <= .internal
 
-    public static let failDebug = build.includes(.internal)
+    public static let failDebug = build <= .internal
 
-    public static let linkedPhones = build.includes(.internal)
+    public static let linkedPhones = build <= .internal
 
-    public static let preRegDeviceTransfer = build.includes(.dev)
+    public static let preRegDeviceTransfer = build <= .dev
 
-    public static let isPrerelease = build.includes(.beta)
+    public static let isPrerelease = build <= .beta
 
-    public static let shouldUseTestIntervals = build.includes(.beta)
+    public static let shouldUseTestIntervals = build <= .beta
 
     /// If we ever need to internally detect database corruption again in the
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
     public enum Backups {
-        public static let supported = build.includes(.beta)
-        public static let showSettings = build.includes(.beta)
-        public static let showMegaphones = build.includes(.internal)
-        public static let showOptimizeMedia = build.includes(.dev)
+        public static let supported = build <= .beta
+        public static let showSettings = build <= .beta
+        public static let showMegaphones = build <= .internal
+        public static let showOptimizeMedia = build <= .dev
 
-        public static let restoreFailOnAnyError = build.includes(.beta)
-        public static let detailedBenchLogging = build.includes(.internal)
-        public static let errorDisplay = build.includes(.internal)
+        public static let restoreFailOnAnyError = build <= .beta
+        public static let detailedBenchLogging = build <= .internal
+        public static let errorDisplay = build <= .internal
 
-        public static let avoidAppAttestForDevs = build.includes(.dev)
-        public static let avoidStoreKitForTesters = build.includes(.beta)
+        public static let avoidAppAttestForDevs = build <= .dev
+        public static let avoidStoreKitForTesters = build <= .beta
     }
 
     public static let runTSAttachmentMigrationInMainAppBackground = true
@@ -74,11 +72,11 @@ public enum FeatureFlags {
     public static let iOS26SDKIsAvailable = false
 #endif
 
-    public static let pollSend = build.includes(.dev)
-    public static let pollReceive = build.includes(.dev)
-    public static let pollKeepProtoVersion = build.includes(.dev)
+    public static let pollSend = build <= .dev
+    public static let pollReceive = build <= .dev
+    public static let pollKeepProtoVersion = build <= .dev
 
-    static let netBuildVariant: Net.BuildVariant = build.includes(.beta) ? .beta : .production
+    static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 }
 
 // MARK: -
@@ -129,27 +127,27 @@ extension FeatureFlags {
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
 public enum DebugFlags {
-    public static let internalLogging = build.includes(.internal)
+    public static let internalLogging = build <= .internal
 
-    public static let betaLogging = build.includes(.beta)
+    public static let betaLogging = build <= .beta
 
-    public static let testPopulationErrorAlerts = build.includes(.beta)
+    public static let testPopulationErrorAlerts = build <= .beta
 
-    public static let audibleErrorLogging = build.includes(.internal)
+    public static let audibleErrorLogging = build <= .internal
 
-    public static let internalSettings = build.includes(.internal)
+    public static let internalSettings = build <= .internal
 
-    public static let internalMegaphoneEligible = build.includes(.internal)
+    public static let internalMegaphoneEligible = build <= .internal
 
-    public static let verboseNotificationLogging = build.includes(.internal)
+    public static let verboseNotificationLogging = build <= .internal
 
-    public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
+    public static let deviceTransferVerboseProgressLogging = build <= .internal
 
-    public static let messageDetailsExtraInfo = build.includes(.internal)
+    public static let messageDetailsExtraInfo = build <= .internal
 
-    public static let exposeCensorshipCircumvention = build.includes(.internal)
+    public static let exposeCensorshipCircumvention = build <= .internal
 
-    public static let extraDebugLogs = build.includes(.internal)
+    public static let extraDebugLogs = build <= .internal
 
     public static let messageSendsFail = TestableFlag(
         false,
@@ -217,7 +215,7 @@ public class TestableFlag {
     }
 
     public func get() -> Bool {
-        guard build.includes(.internal) else {
+        guard build <= .internal else {
             return defaultValue
         }
         return flag.get()
