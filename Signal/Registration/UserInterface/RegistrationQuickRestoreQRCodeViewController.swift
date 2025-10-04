@@ -117,36 +117,50 @@ private struct ContentStack: View {
 
     let cancelAction: () -> Void
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var isCompactLayout: Bool {
+        horizontalSizeClass == .compact || verticalSizeClass == .compact
+    }
+
+    private var layoutMargins: EdgeInsets {
+        if isCompactLayout {
+            EdgeInsets(.layoutMarginsForRegistration(UIUserInterfaceSizeClass(horizontalSizeClass)))
+        } else {
+            EdgeInsets()
+        }
+    }
+
     var body: some View {
-        ScrollView {
-            VStack {
-                Spacer()
-                Text(OWSLocalizedString(
-                    "REGISTRATION_SCAN_QR_CODE_TITLE",
-                    comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
-                ))
-                    .font(.title)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 8)
+        VStack {
+            ScrollView {
+                VStack(spacing: 36) {
+                    Text(OWSLocalizedString(
+                        "REGISTRATION_SCAN_QR_CODE_TITLE",
+                        comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
+                    ))
+                    .font(.title.weight(.semibold))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                Spacer()
+                    .padding(.top, 32)
 
-                RotatingQRCodeView(model: model)
-                    .padding(.horizontal, 50)
+                    RotatingQRCodeView(model: model)
+                        .padding(.horizontal, 50)
 
-                Spacer()
-                TutorialStack()
-                Spacer()
-                Spacer()
-                Button(CommonStrings.cancelButton) {
-                    self.cancelAction()
+                    TutorialStack()
                 }
-                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
-                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-                .padding(20)
             }
+
+            Spacer(minLength: 36)
+
+            Button(CommonStrings.cancelButton) {
+                self.cancelAction()
+            }
+            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
+        .padding(layoutMargins)
     }
 }
 
