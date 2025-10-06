@@ -434,6 +434,7 @@ extension AppSetup.GlobalsContinuation {
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(
             attachmentStore: attachmentStore,
+            backupSettingsStore: backupSettingsStore,
             db: db,
         )
         let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
