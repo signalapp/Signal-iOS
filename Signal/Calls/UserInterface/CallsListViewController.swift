@@ -2200,10 +2200,6 @@ extension CallsListViewController: DatabaseChangeDelegate {
 
 private extension CallsListViewController {
     class CallCell: UITableViewCell {
-        private static var verticalMargin: CGFloat = 11
-        private static var horizontalMargin: CGFloat = 20
-        private static var joinButtonMargin: CGFloat = 18
-
         weak var delegate: CallCellDelegate?
 
         var viewModel: CallViewModel? {
@@ -2215,7 +2211,7 @@ private extension CallsListViewController {
         // MARK: Subviews
 
         private lazy var avatarView = ConversationAvatarView(
-            sizeClass: .thirtySix,
+            sizeClass: .fortyFour,
             localUserDisplayMode: .asUser
         )
 
@@ -2233,22 +2229,39 @@ private extension CallsListViewController {
             return label
         }()
 
-        private lazy var detailsButton: OWSButton = {
-            let button = OWSButton { [weak self] in
-                self?.detailsTapped()
+        private func makeStartCallButton(viewModel: CallViewModel) -> UIButton {
+            var config = UIButton.Configuration.gray()
+            config.cornerStyle = .capsule
+            config.background.backgroundInsets = .init(margin: 2)
+            config.baseBackgroundColor = UIColor.Signal.tertiaryFill
+            config.baseForegroundColor = UIColor.Signal.label
+
+            let icon: ThemeIcon = switch viewModel.medium {
+            case .audio:
+                .buttonVoiceCall
+            case .video, .link:
+                .buttonVideoCall
             }
-            // The info icon is the button's own image and should be `horizontalMargin` from the edge
-            button.ows_contentEdgeInsets.trailing = Self.horizontalMargin
-            button.ows_contentEdgeInsets.leading = 8
-            // The join button is a separate subview and should be `joinButtonMargin` from the edge
-            button.layoutMargins.trailing = Self.joinButtonMargin
-            return button
-        }()
 
-        private var joinPill: UIView?
+            config.image = Theme.iconImage(icon)
 
-        private func makeJoinPill() -> UIView? {
-            guard let viewModel else { return nil }
+            return UIButton(
+                configuration: config,
+                primaryAction: UIAction { [weak self] _ in
+                    self?.detailsTapped(viewModel: viewModel)
+                }
+            )
+        }
+
+        private func makeJoinButton(viewModel: CallViewModel) -> UIButton {
+            var config = UIButton.Configuration.borderedProminent()
+            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+    #if compiler(>=6.2)
+                config = UIButton.Configuration.prominentGlass()
+    #endif
+            } else {
+                config.cornerStyle = .capsule
+            }
 
             let icon: UIImage
             switch viewModel.medium {
@@ -2265,35 +2278,31 @@ private extension CallsListViewController {
             case .participating:
                 text = Strings.returnToCallButtonTitle
             case .inactive:
-                return nil
+                text = ""
             }
 
-            let button = OWSRoundedButton()
-            let font = UIFont.dynamicTypeSubheadline.bold()
-            let title = NSAttributedString.composed(of: [
-                NSAttributedString.with(
-                    image: icon,
-                    font: .dynamicTypeCallout,
-                    centerVerticallyRelativeTo: font,
-                    heightReference: .pointSize
-                ),
-                " ",
-                text,
-            ]).styled(
-                with: .font(font),
-                .color(.ows_white)
+            config.title = text
+            config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.bold())
+            config.image = icon
+            config.imagePadding = 4
+
+            let button = UIButton(
+                configuration: config,
+                primaryAction: UIAction { [weak self] _ in
+                    self?.detailsTapped(viewModel: viewModel)
+                }
             )
-            button.setAttributedTitle(title, for: .normal)
-            button.backgroundColor = .ows_accentGreen
-            button.ows_contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
-            button.setCompressionResistanceHigh()
-            button.isUserInteractionEnabled = false
+            button.tintColor = UIColor.Signal.green
             return button
         }
 
         // MARK: Init
 
+        private let trailingHStack: UIStackView
+        private var trailingButton: UIButton?
+
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            self.trailingHStack = UIStackView()
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
             multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
@@ -2312,12 +2321,10 @@ private extension CallsListViewController {
             leadingHStack.axis = .horizontal
             leadingHStack.spacing = 12
 
-            let trailingHStack = UIStackView(arrangedSubviews: [
-                timestampLabel,
-                detailsButton,
-            ])
+            trailingHStack.addArrangedSubview(timestampLabel)
             trailingHStack.axis = .horizontal
-            trailingHStack.spacing = 0
+            trailingHStack.spacing = 12
+            trailingHStack.alignment = .center
 
             let outerHStack = UIStackView(arrangedSubviews: [
                 leadingHStack,
@@ -2327,22 +2334,9 @@ private extension CallsListViewController {
             outerHStack.axis = .horizontal
             outerHStack.spacing = 4
 
-            // The details button should take up the entire trailing space,
-            // top to bottom, so the content should have zero margins.
-            contentView.preservesSuperviewLayoutMargins = false
-            contentView.layoutMargins = .zero
-
-            leadingHStack.preservesSuperviewLayoutMargins = false
-            leadingHStack.isLayoutMarginsRelativeArrangement = true
-            leadingHStack.layoutMargins = .init(
-                top: Self.verticalMargin,
-                leading: Self.horizontalMargin,
-                bottom: Self.verticalMargin,
-                trailing: 0
-            )
-
             contentView.addSubview(outerHStack)
-            outerHStack.autoPinEdgesToSuperviewMargins()
+            outerHStack.autoPinWidthToSuperviewMargins()
+            outerHStack.autoPinHeightToSuperview(withMargin: 14)
 
             tintColor = .ows_accentBlue
         }
@@ -2443,31 +2437,15 @@ private extension CallsListViewController {
                 viewModel.direction.label,
             ]).styled(with: .font(.dynamicTypeSubheadline))
 
-            self.joinPill?.removeFromSuperview()
-
-            switch viewModel.state {
+            let button = switch viewModel.state {
             case .active, .participating:
-                // Join button
-                detailsButton.setImage(imageName: nil)
-                detailsButton.tintColor = .ows_white
-
-                if let joinPill = makeJoinPill() {
-                    self.joinPill = joinPill
-                    detailsButton.addSubview(joinPill)
-                    joinPill.autoVCenterInSuperview()
-                    joinPill.autoPinWidthToSuperviewMargins()
-                }
+                self.makeJoinButton(viewModel: viewModel)
             case .inactive:
-                let icon: ThemeIcon = switch viewModel.medium {
-                case .audio:
-                    .buttonVoiceCall
-                case .video, .link:
-                    .buttonVideoCall
-                }
-
-                detailsButton.setImage(imageName: Theme.iconName(icon))
-                detailsButton.tintColor = Theme.primaryIconColor
+                self.makeStartCallButton(viewModel: viewModel)
             }
+            self.trailingButton?.removeFromSuperview()
+            self.trailingButton = button
+            trailingHStack.addArrangedSubview(button)
 
             updateDisplayedDateAndScheduleRefresh()
         }
@@ -2484,11 +2462,7 @@ private extension CallsListViewController {
 
         // MARK: Actions
 
-        private func detailsTapped() {
-            guard let viewModel else {
-                return owsFailDebug("Missing view model")
-            }
-
+        private func detailsTapped(viewModel: CallViewModel) {
             guard let delegate else {
                 return owsFailDebug("Missing delegate")
             }
