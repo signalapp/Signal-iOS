@@ -236,6 +236,7 @@ extension TSInteraction {
         case .blockedGroup: return true
         case .unblockedOtherUser: return true
         case .unblockedGroup: return true
+        case .typeEndPoll: return true
         }
     }
 }

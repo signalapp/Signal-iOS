@@ -193,6 +193,9 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
                 threadInfo: threadInfo,
                 context: context
             )
+        case .typeEndPoll:
+            // TODO (KC): Update once polls are implemented in backups
+            return .skippableInteraction(.poll)
         }
     }
 

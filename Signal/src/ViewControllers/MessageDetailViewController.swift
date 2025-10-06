@@ -1287,6 +1287,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapJoinCallLinkCall(callLink: CallLink) {}
 
     func didTapViewVotes(poll: OWSPoll) {}
+
+    func didTapViewPoll(pollInteractionUniqueId: String) {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

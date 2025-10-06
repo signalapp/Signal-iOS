@@ -54,6 +54,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     /// Represents that the remote user ended a 1:1 encryption session.
     /// - SeeAlso: ``TSInfoMessageTypeLocalUserEndedSession``
     TSInfoMessageTypeRemoteUserEndedSession,
+    TSInfoMessageTypeEndPoll,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
@@ -76,6 +77,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyThreadMergePhoneNumber
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhoneNumber;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyEndPoll;
 
 @property (nonatomic, readonly) TSInfoMessageType messageType;
 @property (nonatomic, readonly, nullable) NSString *customMessage;

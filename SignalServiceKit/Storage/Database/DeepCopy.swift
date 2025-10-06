@@ -309,6 +309,14 @@ extension TSInfoMessage.PersistableGroupUpdateItemsWrapper: DeepCopyable {
     }
 }
 
+@objc
+extension PersistableEndPollItem: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
 // MARK: -
 
 extension NSObject {

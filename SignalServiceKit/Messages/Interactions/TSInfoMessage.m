@@ -36,6 +36,7 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeL
     = @"InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName
     = @"InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyEndPoll = @"InfoMessageUserInfoKeyEndPoll";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -335,6 +336,9 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return OWSLocalizedString(@"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST",
                 @"An info message inserted into the chat when you accept a message request, in a 1:1 or group "
                 @"chat.");
+        case TSInfoMessageTypeEndPoll: {
+            return [self endPollDescriptionWithTransaction:transaction];
+        }
     }
 
     OWSFailDebug(@"Unknown info message type");

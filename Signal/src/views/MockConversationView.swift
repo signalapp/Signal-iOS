@@ -507,4 +507,6 @@ extension MockConversationView: CVComponentDelegate {
     func didTapJoinCallLinkCall(callLink: CallLink) {}
 
     func didTapViewVotes(poll: OWSPoll) {}
+
+    func didTapViewPoll(pollInteractionUniqueId: String) {}
 }

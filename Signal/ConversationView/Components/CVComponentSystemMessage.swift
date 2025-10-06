@@ -833,6 +833,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.threadCompact)
             case .acceptedMessageRequest:
                 return Theme.iconImage(.threadCompact)
+            case .typeEndPoll:
+                return Theme.iconImage(.poll)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1299,6 +1301,15 @@ extension CVComponentSystemMessage {
             return nil
         case .unblockedGroup:
             return nil
+        case .typeEndPoll:
+            guard let pollInteractionUniqueId = infoMessage.pollInteractionUniqueId(transaction: transaction) else {
+                return nil
+            }
+            return CVMessageAction(
+                title: OWSLocalizedString("POLL_BUTTON_VIEW_POLL", comment: "Button to view a poll after its ended"),
+                accessibilityIdentifier: "view_poll",
+                action: .didTapViewPoll(pollInteractionUniqueId: pollInteractionUniqueId)
+            )
         case .acceptedMessageRequest:
             return CVMessageAction(
                 title: OWSLocalizedString(

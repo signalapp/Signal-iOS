@@ -13,7 +13,7 @@ struct PollManagerTest {
     private let db = InMemoryDB()
     private let recipientDatabaseTable = RecipientDatabaseTable()
     private let pollMessageManager: PollMessageManager
-    private var contactThread: TSContactThread!
+    private var groupThread: TSGroupThread!
     private var recipient: SignalRecipient!
     private let mockTSAccountManager = MockTSAccountManager()
     var pollAuthorAci: Aci!
@@ -29,11 +29,7 @@ struct PollManagerTest {
         let testPhone = E164("+16505550101")!
         pollAuthorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let pni = Pni(fromUUID: UUID())
-        contactThread = TSContactThread(contactAddress: SignalServiceAddress(
-            serviceId: pollAuthorAci,
-            phoneNumber: testPhone.stringValue,
-            cache: SignalServiceAddressCache()
-        ))
+        groupThread = TSGroupThread.randomForTesting()
         recipient = SignalRecipient(aci: pollAuthorAci, pni: pni, phoneNumber: testPhone)
     }
 
@@ -52,11 +48,11 @@ struct PollManagerTest {
     private func insertIncomingPollMessage(question: String, timestamp: UInt64? = nil) -> TSIncomingMessage {
         db.write { tx in
             let db = tx.database
-            if try! contactThread.asRecord().exists(db) == false {
-                try! contactThread!.asRecord().insert(db)
+            if try! groupThread.asRecord().exists(db) == false {
+                try! groupThread!.asRecord().insert(db)
             }
 
-            let incomingMessage = createIncomingMessage(with: contactThread) { builder in
+            let incomingMessage = createIncomingMessage(with: groupThread) { builder in
                 builder.setMessageBody(AttachmentContentValidatorMock.mockValidatedBody(question))
                 builder.authorAci = pollAuthorAci
                 builder.isPoll = true
@@ -72,11 +68,11 @@ struct PollManagerTest {
     private func insertOutgoingPollMessage(question: String) -> TSOutgoingMessage {
         db.write { tx in
             let db = tx.database
-            if try! contactThread.asRecord().exists(db) == false {
-                try! contactThread!.asRecord().insert(db)
+            if try! groupThread.asRecord().exists(db) == false {
+                try! groupThread!.asRecord().insert(db)
             }
 
-            let outgoingMessage = TSOutgoingMessage(in: contactThread, question: question)
+            let outgoingMessage = TSOutgoingMessage(in: groupThread, question: question)
             try! outgoingMessage.asRecord().insert(db)
             return outgoingMessage
         }
@@ -880,5 +876,11 @@ private extension TSOutgoingMessage {
             isPoll: true
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
+    }
+}
+
+private extension TSGroupThread {
+    static func randomForTesting() -> TSGroupThread {
+        return .forUnitTest(groupId: 12)
     }
 }

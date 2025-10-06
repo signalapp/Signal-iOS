@@ -12,6 +12,7 @@
 		0436E4B02E5E2DC20011E125 /* OWSPollTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */; };
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		044D77782E5E6D750048C21A /* PollVoteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D77772E5E6D700048C21A /* PollVoteRecord.swift */; };
+		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
@@ -3845,6 +3846,7 @@
 		0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPollTest.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		044D77772E5E6D700048C21A /* PollVoteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteRecord.swift; sourceTree = "<group>"; };
+		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
@@ -7851,6 +7853,7 @@
 				04A5736F2E4D4BD30019651F /* OWSPoll.swift */,
 				04A357CA2E5E283500499B27 /* PollMessageManager.swift */,
 				04A357CC2E5E283C00499B27 /* PollStore.swift */,
+				046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */,
 			);
 			path = Polls;
 			sourceTree = "<group>";
@@ -18650,6 +18653,7 @@
 				D957877B2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift in Sources */,
 				D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */,
 				D95787812C6D2D010051AC74 /* TSInfoMessage+PhoneNumberChange.swift in Sources */,
+				046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */,
 				F9C5CBEE289453B300548EEE /* TSInfoMessage+ProfileChanges.swift in Sources */,
 				F9C5CBE2289453B300548EEE /* TSInfoMessage+SDS.swift in Sources */,
 				D957877D2C6D2B970051AC74 /* TSInfoMessage+SessionSwitchover.swift in Sources */,

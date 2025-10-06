@@ -186,6 +186,45 @@ public class PollMessageManager {
                 message: preparedMessage,
                 transaction: tx
             )
+
+            guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+                throw OWSAssertionError("User not registered")
+            }
+
+            insertInfoMessageForEndPoll(
+                timestamp: Date().ows_millisecondsSince1970,
+                groupThread: thread,
+                targetPollTimestamp: targetPoll.timestamp,
+                pollQuestion: poll.question,
+                terminateAuthor: localAci,
+                tx: tx
+            )
         }
+    }
+
+    public func insertInfoMessageForEndPoll(
+        timestamp: UInt64,
+        groupThread: TSGroupThread,
+        targetPollTimestamp: UInt64,
+        pollQuestion: String,
+        terminateAuthor: Aci,
+        tx: DBWriteTransaction
+    ) {
+        var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
+        userInfoForNewMessage[.endPoll] = PersistableEndPollItem(
+            question: pollQuestion,
+            authorServiceIdBinary: terminateAuthor.serviceIdBinary,
+            timestamp: Int64(targetPollTimestamp)
+        )
+
+        let infoMessage = TSInfoMessage(
+            thread: groupThread,
+            timestamp: timestamp,
+            serverGuid: nil,
+            messageType: .typeEndPoll,
+            infoMessageUserInfo: userInfoForNewMessage
+        )
+
+        infoMessage.anyInsert(transaction: tx)
     }
 }

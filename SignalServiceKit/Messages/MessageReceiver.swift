@@ -1146,7 +1146,12 @@ public final class MessageReceiver {
             )
         }
 
-        if let pollTerminate = dataMessage.pollTerminate {
+        if let pollTerminate = dataMessage.pollTerminate{
+            guard let groupThread = thread as? TSGroupThread else {
+                Logger.error("Poll terminate sent to thread that is not a group thread")
+                return nil
+            }
+
             do {
                 let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollTerminate(
                     pollTerminateProto: pollTerminate,
@@ -1159,6 +1164,20 @@ public final class MessageReceiver {
 
                     if let incomingMessage = targetMessage as? TSIncomingMessage {
                         SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollEnd(forMessage: incomingMessage, thread: thread, transaction: tx)
+                    }
+
+                    // TODO: early message handler for out of order poll terminate
+                    if let question = targetMessage.body {
+                        DependenciesBridge.shared.pollMessageManager.insertInfoMessageForEndPoll(
+                            timestamp: Date().ows_millisecondsSince1970,
+                            groupThread: groupThread,
+                            targetPollTimestamp: pollTerminate.targetSentTimestamp,
+                            pollQuestion: question,
+                            terminateAuthor: envelope.sourceAci,
+                            tx: tx
+                        )
+                    } else {
+                        Logger.error("Poll question empty when processing poll terminate")
                     }
                 }
             } catch {

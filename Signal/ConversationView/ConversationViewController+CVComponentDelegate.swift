@@ -1283,6 +1283,14 @@ extension ConversationViewController: CVComponentDelegate {
         pollDetails.delegate = self
         self.present(pollDetails, animated: true)
     }
+
+    public func didTapViewPoll(pollInteractionUniqueId: String) {
+        ensureInteractionLoadedThenScrollToInteraction(
+            pollInteractionUniqueId,
+            alignment: .centerIfNotEntirelyOnScreen,
+            isAnimated: true
+        )
+    }
 }
 
 // MARK: - OWSNavigationChildController

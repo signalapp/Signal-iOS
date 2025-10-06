@@ -213,7 +213,8 @@ extension TSThread {
                     .blockedGroup,
                     .unblockedOtherUser,
                     .unblockedGroup,
-                    .acceptedMessageRequest:
+                    .acceptedMessageRequest,
+                    .typeEndPoll:
                 break
             }
         }
