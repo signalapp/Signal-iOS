@@ -24,6 +24,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     private let appAttestManager: AppAttestManager
     private let backupPlanManager: BackupPlanManager
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: DB
     private let logger: PrefixedLogger
@@ -33,6 +34,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     init(
         backupPlanManager: BackupPlanManager,
+        backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: DB,
         networkManager: NetworkManager,
@@ -47,6 +49,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             networkManager: networkManager
         )
         self.backupPlanManager = backupPlanManager
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupTestFlightEntitlementManager")
@@ -116,20 +119,38 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             return
         }
 
+        let optimizeLocalStorage: Bool
         switch currentBackupPlan {
         case .disabled, .disabling, .free, .paid, .paidExpiringSoon:
             // If we're not a paid-tier tester, nothing to do.
             return
-        case .paidAsTester:
-            break
+        case .paidAsTester(let _optimizeLocalStorage):
+            optimizeLocalStorage = _optimizeLocalStorage
         }
 
         guard isCurrentlyTesterBuild else {
-            // Uh oh: we think we're a paid-tier tester, but our current build
-            // isn't a tester build. We likely downgraded to prod builds, so
-            // correspondingly downgrade our BackupPlan to free.
+            // We think we're a paid-tier tester, but our current build isn't a
+            // tester build! We likely went from TestFlight -> App Store builds.
+            //
+            // It's plausible, though, that we are still a paid-tier user by
+            // virtue of having an IAP subscription either from before we were
+            // on TestFlight, or from having moved to iOS from an Android on
+            // which we had an IAP subscription.
+            //
+            // To that end, check if we have an active IAP subscription. If so,
+            // set to `.paid`. If not, set to `.free`.
+            let newBackupPlan: BackupPlan
+            if
+                let subscription = try await backupSubscriptionManager.fetchAndMaybeDowngradeSubscription(),
+                subscription.active
+            {
+                newBackupPlan = .paid(optimizeLocalStorage: optimizeLocalStorage)
+            } else {
+                newBackupPlan = .free
+            }
+
             try await db.awaitableWriteWithRollbackIfThrows { tx in
-                try backupPlanManager.setBackupPlan(.free, tx: tx)
+                try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
             }
             return
         }

@@ -43,6 +43,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
+    private let logger: PrefixedLogger
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -56,6 +57,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.tsAccountManager = tsAccountManager
     }
 
@@ -89,6 +91,8 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
     func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) throws {
         let oldBackupPlan = backupPlan(tx: tx)
+
+        logger.info("Setting BackupPlan! \(oldBackupPlan) -> \(newBackupPlan)")
 
         // Bail early on unexpected state transitions, before we persist state
         // we later regret.

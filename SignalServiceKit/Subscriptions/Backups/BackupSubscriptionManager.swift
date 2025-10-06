@@ -158,6 +158,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private let storageServiceManager: StorageServiceManager
     private let store: Store
     private let tsAccountManager: TSAccountManager
+    private let whoAmIManager: WhoAmIManager
 
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
@@ -167,7 +168,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         db: any DB,
         networkManager: NetworkManager,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        whoAmIManager: WhoAmIManager,
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
@@ -178,6 +180,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         self.storageServiceManager = storageServiceManager
         self.store = Store(backupAttachmentUploadEraStore: backupAttachmentUploadEraStore)
         self.tsAccountManager = tsAccountManager
+        self.whoAmIManager = whoAmIManager
 
         listenForTransactionUpdates()
     }
@@ -313,55 +316,82 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         subscriptionFetcher: SubscriptionFetcher
     ) async throws -> Subscription? {
         let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
-        try await downgradeBackupPlanIfNecessary(fetchedSubscription: subscription)
+        let backupEntitlement = try await whoAmIManager.makeWhoAmIRequest().entitlements.backup
+
+        try await downgradeBackupPlanIfNecessary(
+            fetchedSubscription: subscription,
+            backupEntitlement: backupEntitlement,
+        )
+
         return subscription
     }
 
-    /// Our remote `Subscription` is the source of truth for what state our
-    /// colloquial "backup plan" is in. So, any time we fetch a `Subscription`
-    /// could be the moment we learn our subscription has changed. Specifically,
-    /// our subscription could have changed since we last fetched such that we
-    /// should "downgrade" our local `BackupPlan`; for example, it might have
-    /// expired, or will be expiring soon.
+    /// While we store locally a `BackupPlan`, the ultimate source of truth as
+    /// to the state our our Backup subscription/plan is remote. Any time we
+    /// fetch that remote state could be the moment we learn that something
+    /// has changed, such that we should "downgrade" our local `BackupPlan`.
+    ///
+    /// For example, our subscription may be expiring soon, or our Backup
+    /// entitlement may have expired completely.
     ///
     /// - Note
-    /// Upgrading requires redeeming a subscription that's renewed, which
-    /// necessarily needs the app to run in order to happen. So, the redemption
-    /// code also sets `BackupPlan` as appropriate.
+    /// Upgrading requires redeeming a subscription that has renewed, which can
+    /// only happen while the app is running (rather than externally while the
+    /// app wasn't running). Consequently, the redemption code sets `BackupPlan`
+    /// for the upgrade case.
     private func downgradeBackupPlanIfNecessary(
-        fetchedSubscription subscription: Subscription?
+        fetchedSubscription subscription: Subscription?,
+        backupEntitlement: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements.BackupEntitlement?,
     ) async throws {
+        let isSubscriptionCanceled: Bool
+        if let subscription {
+            isSubscriptionCanceled = subscription.cancelAtEndOfPeriod
+        } else {
+            isSubscriptionCanceled = true
+        }
+
+        let isEntitlementExpired: Bool
+        if let backupEntitlement {
+            let expirationDate = Date(timeIntervalSince1970: backupEntitlement.expirationSeconds)
+            isEntitlementExpired = expirationDate < dateProvider()
+        } else {
+            isEntitlementExpired = true
+        }
+
         try await db.awaitableWriteWithRollbackIfThrows { tx in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
             let downgradedBackupPlan: BackupPlan? = {
-                if let subscription, subscription.active {
-                    switch currentBackupPlan {
-                    case .paid(let optimizeLocalStorage) where subscription.cancelAtEndOfPeriod:
-                        return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
-                    case .paid:
-                        break
-                    case .disabled, .disabling, .free, .paidExpiringSoon, .paidAsTester:
-                        break
-                    }
-                } else {
-                    switch currentBackupPlan {
-                    case .paid, .paidExpiringSoon:
-                        return .free
-                    case .disabled, .disabling, .free, .paidAsTester:
-                        break
-                    }
-                }
+                switch currentBackupPlan {
+                case
+                        .paid where isEntitlementExpired,
+                        .paidExpiringSoon where isEntitlementExpired:
+                    logger.warn("Entitlement expired: downgrading.")
+                    return .free
 
-                return nil
+                case .paid(let optimizeLocalStorage) where isSubscriptionCanceled:
+                    logger.warn("Subscription canceled: downgrading.")
+                    return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+
+                case .paid, .paidExpiringSoon:
+                    // No reason to downgrade.
+                    return nil
+
+                case .disabled, .disabling, .free:
+                    // No downgrading possible!
+                    return nil
+
+                case .paidAsTester:
+                    // Handled by `BackupTestFlightEntitlementManager`.
+                    return nil
+                }
             }()
 
             if let downgradedBackupPlan {
                 do {
                     try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
-                    logger.info("Downgraded BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)")
                 } catch {
-                    owsFailDebug("Failed to downgrade BackupPlan! \(error)")
+                    owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
                     throw error
                 }
             }
@@ -482,8 +512,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 /// iterations of the subscription.
                 ///
                 /// That's an issue because Signal's servers wipe the
-                /// `subscriberID -> originalTransactionId` mapping when the
-                /// StoreKit subscription expires, thereby rendering that
+                /// `subscriberID -> originalTransactionId` eventually for
+                /// expired StoreKit subscriptions, thereby rendering that
                 /// `subscriberID` useless; we'll fail to find a `Subscription`
                 /// for that `subscriberID` even though our subscription is
                 /// active again.

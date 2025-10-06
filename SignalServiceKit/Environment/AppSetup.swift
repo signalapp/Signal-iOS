@@ -469,10 +469,12 @@ extension AppSetup.GlobalsContinuation {
             db: db,
             networkManager: networkManager,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            whoAmIManager: whoAmIManager,
         )
         let backupTestFlightEntitlementManager = BackupTestFlightEntitlementManagerImpl(
             backupPlanManager: backupPlanManager,
+            backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
