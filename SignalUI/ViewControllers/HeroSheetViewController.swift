@@ -58,28 +58,10 @@ open class HeroSheetViewController: StackSheetViewController {
         public var configuration: UIButton.Configuration {
             switch style {
             case .primary:
-                var buttonConfiguration = UIButton.Configuration.filled()
-                var buttonTitleAttributes = AttributeContainer()
-                buttonTitleAttributes.font = .dynamicTypeHeadline
-                buttonTitleAttributes.foregroundColor = .white
-                buttonConfiguration.attributedTitle = AttributedString(
-                    title,
-                    attributes: buttonTitleAttributes
-                )
-                buttonConfiguration.contentInsets = .init(hMargin: 16, vMargin: 14)
-                buttonConfiguration.background.cornerRadius = 10
-                buttonConfiguration.background.backgroundColor = UIColor.Signal.ultramarine
-                return buttonConfiguration
+                return .largePrimary(title: title)
+
             case .secondary:
-                var buttonConfiguration = UIButton.Configuration.plain()
-                var buttonTitleAttributes = AttributeContainer()
-                buttonTitleAttributes.font = .dynamicTypeHeadline
-                buttonTitleAttributes.foregroundColor = UIColor.Signal.ultramarine
-                buttonConfiguration.attributedTitle = AttributedString(
-                    title,
-                    attributes: buttonTitleAttributes
-                )
-                return buttonConfiguration
+                return .largeSecondary(title: title)
             }
         }
     }
