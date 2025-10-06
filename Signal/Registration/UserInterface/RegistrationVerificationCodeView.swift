@@ -123,7 +123,8 @@ class RegistrationVerificationCodeView: UIView {
         textfield.textAlignment = .left
         textfield.delegate = self
         textfield.codeDelegate = self
-
+        textfield.textColor = .Signal.label
+        textfield.tintColor = .Signal.label // caret color
         textfield.font = UIFont.dynamicTypeLargeTitle1Clamped
         textfield.keyboardType = .numberPad
         textfield.textContentType = .oneTimeCode
@@ -155,9 +156,7 @@ class RegistrationVerificationCodeView: UIView {
     }
 
     public func updateColors() {
-        textfield.textColor = Theme.primaryTextColor
-        digitLabels.forEach { $0.textColor = Theme.primaryTextColor }
-        let strokeColor = (hasError ? UIColor.ows_accentRed : Theme.secondaryTextAndIconColor)
+        let strokeColor = (hasError ? UIColor.Signal.red : UIColor.Signal.secondaryLabel)
         for digitStroke in digitStrokes {
             digitStroke.backgroundColor = strokeColor
         }
@@ -169,6 +168,7 @@ class RegistrationVerificationCodeView: UIView {
         let digitLabel = UILabel()
         digitLabel.text = text
         digitLabel.font = cellFont
+        digitLabel.textColor = .Signal.label
         digitLabel.textAlignment = .center
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()

@@ -35,6 +35,7 @@ open class InteractiveSheetViewController: OWSViewController {
         view.layer.cornerRadius = 16
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.layer.masksToBounds = true
+        view.preservesSuperviewLayoutMargins = true
         return view
     }()
 
@@ -45,6 +46,7 @@ open class InteractiveSheetViewController: OWSViewController {
     private let sheetStackView: UIStackView = {
         let view = UIStackView()
         view.axis = .vertical
+        view.preservesSuperviewLayoutMargins = true
         return view
     }()
 
@@ -165,6 +167,7 @@ open class InteractiveSheetViewController: OWSViewController {
         sheetContainerContentView.addSubview(sheetStackView)
         sheetStackView.autoPinEdgesToSuperviewEdges()
 
+        contentView.preservesSuperviewLayoutMargins = true
         sheetStackView.addArrangedSubview(contentView)
         contentView.autoPinWidthToSuperview()
 
