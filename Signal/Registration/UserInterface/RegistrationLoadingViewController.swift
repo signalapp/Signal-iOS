@@ -38,6 +38,8 @@ class RegistrationLoadingViewController: OWSViewController {
         }())
 
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -51,7 +53,16 @@ class RegistrationLoadingViewController: OWSViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        initialRender()
+
+        view.backgroundColor = .Signal.background
+
+        spinnerView.alpha = 1
+        view.addSubview(spinnerView)
+        spinnerView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            spinnerView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            spinnerView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+        ])
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -59,25 +70,5 @@ class RegistrationLoadingViewController: OWSViewController {
         if spinnerView.isAnimating.negated {
             spinnerView.startAnimating()
         }
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
-
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
-
-        spinnerView.alpha = 1
-
-        view.addSubview(spinnerView)
-        spinnerView.autoCenterInSuperviewMargins()
-
-        render()
-    }
-
-    private func render() {
-        view.backgroundColor = Theme.backgroundColor
     }
 }

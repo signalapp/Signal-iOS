@@ -21,6 +21,8 @@ class RegistrationCaptchaViewController: OWSViewController {
         self.presenter = presenter
 
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -29,15 +31,6 @@ class RegistrationCaptchaViewController: OWSViewController {
     }
 
     // MARK: - Rendering
-
-    private lazy var titleLabel: UILabel = {
-        let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
-            "REGISTRATION_CAPTCHA_TITLE",
-            comment: "During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA."
-        ))
-        result.accessibilityIdentifier = "registration.captcha.titleLabel"
-        return result
-    }()
 
     private lazy var captchaView: CaptchaView = {
         let result = CaptchaView(context: .registration)
@@ -48,38 +41,32 @@ class RegistrationCaptchaViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.setHidesBackButton(true, animated: false)
+        view.backgroundColor = .Signal.background
 
-        initialRender()
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_CAPTCHA_TITLE",
+            comment: "During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA."
+        ))
+        titleLabel.setContentHuggingHigh()
+        titleLabel.accessibilityIdentifier = "registration.captcha.titleLabel"
+
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, captchaView])
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.spacing = 12
+        view.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        ])
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         captchaView.loadCaptcha()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
-
-    private func initialRender() {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, captchaView])
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 12
-
-        titleLabel.setContentHuggingHigh()
-
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        render()
-    }
-
-    private func render() {
-        view.backgroundColor = Theme.backgroundColor
-        titleLabel.textColor = .colorForRegistrationTitleLabel
     }
 }
 
