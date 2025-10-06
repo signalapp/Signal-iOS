@@ -55,6 +55,8 @@ public enum SentMessageTranscriptType {
 
         public let storyTimestamp: UInt64?
         public let storyAuthorAci: Aci?
+
+        public let makePollCreateBuilder: ((Int64, DBWriteTransaction) throws -> Void)?
     }
 
     public struct PaymentNotification {

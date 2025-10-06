@@ -397,6 +397,13 @@ public final class MessageReceiver {
                     return
                 }
 
+                if dataMessage.pollCreate != nil || dataMessage.pollTerminate != nil || dataMessage.pollVote != nil {
+                    guard FeatureFlags.pollReceive else {
+                        Logger.warn("Polls not supported on this device")
+                        return
+                    }
+                }
+
                 if dataMessage.hasProfileKey {
                     if let groupId {
                         SSKEnvironment.shared.profileManagerRef.addGroupId(
@@ -486,6 +493,26 @@ public final class MessageReceiver {
                     } else {
                         Logger.warn("Received GroupCallUpdate for invalid groupId")
                     }
+                } else if let pollTerminate = dataMessage.pollTerminate {
+                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+                        owsFailDebug("Missing local identifiers!")
+                        return
+                    }
+                    do {
+                        let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollTerminate(
+                            pollTerminateProto: pollTerminate,
+                            terminateAuthor: localIdentifiers.aci,
+                            transaction: tx
+                        )
+
+                        if let targetMessage {
+                            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                        }
+                    } catch {
+                        Logger.error("Failed to terminate poll \(error)")
+                        return
+                    }
+                    // TODO (KC): Handle syncing poll votes once poll send is implemented
                 } else {
                     guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                         owsFailDebug("Missing local identifiers!")

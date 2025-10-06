@@ -219,7 +219,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             linkPreview: linkPreviewBuilder?.info,
             messageSticker: messageStickerBuilder?.info,
             giftBadge: messageParams.giftBadge,
-            isPoll: false // TODO(KC): fill in once poll sending is implemented
+            isPoll: messageParams.makePollCreateBuilder != nil
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
@@ -231,7 +231,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasSticker: messageStickerBuilder != nil,
             // Payment notifications go through a different path.
             hasPayment: false,
-            hasPoll: false // TODO(KC): fill in once poll sending is implemented
+            hasPoll: messageParams.makePollCreateBuilder != nil
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
@@ -269,6 +269,18 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // Check for any placeholders inserted because of a previously undecryptable message
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
+
+            // Polls can only be inserted after the outgoing message, since they have
+            // a reference to the grdb id of the TSInteraction.
+            if let pollCreateBuilder = messageParams.makePollCreateBuilder, let interactionId = outgoingMessage.grdbId?.int64Value {
+                do {
+                    try pollCreateBuilder(interactionId, tx)
+                } catch {
+                    Logger.error("Failed to insert poll \(error)")
+                    // Roll back the message
+                    interactionDeleteManager.delete(outgoingMessage, sideEffects: .default(), tx: tx)
+                }
+            }
 
             do {
                 try attachmentManager.createAttachmentPointers(

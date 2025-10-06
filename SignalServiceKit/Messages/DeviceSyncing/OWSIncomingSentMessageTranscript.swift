@@ -283,6 +283,17 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             )
         }
 
+        var makePollCreateBuilder: ((Int64, DBWriteTransaction) throws -> Void)?
+        if let pollCreateMessage = dataMessage.pollCreate {
+            makePollCreateBuilder = { [pollCreateMessage] (interactionId: Int64, tx: DBWriteTransaction) in
+                try DependenciesBridge.shared.pollMessageManager.processIncomingPollCreate(
+                    interactionId: interactionId,
+                    pollCreateProto: pollCreateMessage,
+                    transaction: tx
+                )
+            }
+        }
+
         let storyTimestamp: UInt64?
         let storyAuthorAci: Aci?
         if
@@ -311,7 +322,8 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             expirationDurationSeconds: dataMessage.expireTimer,
             expireTimerVersion: dataMessage.expireTimerVersion,
             storyTimestamp: storyTimestamp,
-            storyAuthorAci: storyAuthorAci
+            storyAuthorAci: storyAuthorAci,
+            makePollCreateBuilder: makePollCreateBuilder
         )
     }
 
