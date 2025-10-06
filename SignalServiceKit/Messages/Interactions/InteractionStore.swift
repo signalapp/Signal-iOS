@@ -62,9 +62,11 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) -> Bool
 
+    /// Fetch the message with the given timestamp and incomingMessageAuthor. If
+    /// incomingMessageAuthor is nil, returns any outgoing message with the timestamp.
     func fetchMessage(
         timestamp: UInt64,
-        author: Aci,
+        incomingMessageAuthor: Aci?,
         transaction: DBReadTransaction) throws -> TSMessage?
 
     // MARK: -
@@ -285,24 +287,31 @@ public class InteractionStoreImpl: InteractionStore {
 
     public func fetchMessage(
         timestamp: UInt64,
-        author: Aci,
+        incomingMessageAuthor: Aci?,
         transaction: DBReadTransaction
     ) throws -> TSMessage? {
-        guard let record = try InteractionRecord.fetchOne(
+        let records = try InteractionRecord.fetchAll(
             transaction.database,
             sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .timestamp) = ?
-                AND \(interactionColumn: .authorUUID) IS ?
-                LIMIT 1
                 """,
-            arguments: [timestamp, author.serviceIdUppercaseString]
-        ) else {
-            return nil
-        }
+            arguments: [timestamp]
+        )
 
-        return try TSInteraction.fromRecord(record) as? TSMessage
+        for record in records {
+            if incomingMessageAuthor == nil, let outgoingMessage = try TSInteraction.fromRecord(record) as? TSOutgoingMessage {
+                return outgoingMessage
+            }
+
+            if let incomingMessage = try TSInteraction.fromRecord(record) as? TSIncomingMessage,
+               let authorUUID = incomingMessage.authorUUID,
+               try ServiceId.parseFrom(serviceIdString: authorUUID) == incomingMessageAuthor {
+                return incomingMessage
+            }
+        }
+        return nil
     }
 }
 
@@ -518,7 +527,11 @@ open class MockInteractionStore: InteractionStore {
         // Unimplemented
     }
 
-    public func fetchMessage(timestamp: UInt64, author: LibSignalClient.Aci, transaction: DBReadTransaction) throws -> TSMessage? {
+    public func fetchMessage(
+        timestamp: UInt64,
+        incomingMessageAuthor: Aci?,
+        transaction: DBReadTransaction
+    ) throws -> TSMessage? {
         // Unimplemented
         return nil
     }

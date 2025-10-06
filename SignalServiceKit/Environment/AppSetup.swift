@@ -1564,6 +1564,7 @@ extension AppSetup.GlobalsContinuation {
             pollStore: PollStore(),
             recipientDatabaseTable: recipientDatabaseTable,
             interactionStore: interactionStore,
+            accountManager: tsAccountManager,
             db: db
         )
 

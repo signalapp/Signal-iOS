@@ -15,24 +15,26 @@ struct PollManagerTest {
     private let pollMessageManager: PollMessageManager
     private var contactThread: TSContactThread!
     private var recipient: SignalRecipient!
-    var authorAci: Aci!
+    private let mockTSAccountManager = MockTSAccountManager()
+    var pollAuthorAci: Aci!
 
     init() {
         pollMessageManager = PollMessageManager(
             pollStore: PollStore(),
             recipientDatabaseTable: RecipientDatabaseTable(),
             interactionStore: InteractionStoreImpl(),
+            accountManager: mockTSAccountManager,
             db: db
         )
         let testPhone = E164("+16505550101")!
-        authorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
+        pollAuthorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let pni = Pni(fromUUID: UUID())
         contactThread = TSContactThread(contactAddress: SignalServiceAddress(
-            serviceId: authorAci,
+            serviceId: pollAuthorAci,
             phoneNumber: testPhone.stringValue,
             cache: SignalServiceAddressCache()
         ))
-        recipient = SignalRecipient(aci: authorAci, pni: pni, phoneNumber: testPhone)
+        recipient = SignalRecipient(aci: pollAuthorAci, pni: pni, phoneNumber: testPhone)
     }
 
     private func createIncomingMessage(
@@ -56,7 +58,7 @@ struct PollManagerTest {
 
             let incomingMessage = createIncomingMessage(with: contactThread) { builder in
                 builder.setMessageBody(AttachmentContentValidatorMock.mockValidatedBody(question))
-                builder.authorAci = authorAci
+                builder.authorAci = pollAuthorAci
                 builder.isPoll = true
                 if let timestamp {
                     builder.timestamp = timestamp
@@ -64,6 +66,19 @@ struct PollManagerTest {
             }
             try! incomingMessage.asRecord().insert(db)
             return incomingMessage
+        }
+    }
+
+    private func insertOutgoingPollMessage(question: String) -> TSOutgoingMessage {
+        db.write { tx in
+            let db = tx.database
+            if try! contactThread.asRecord().exists(db) == false {
+                try! contactThread!.asRecord().insert(db)
+            }
+
+            let outgoingMessage = TSOutgoingMessage(in: contactThread, question: question)
+            try! outgoingMessage.asRecord().insert(db)
+            return outgoingMessage
         }
     }
 
@@ -149,7 +164,7 @@ struct PollManagerTest {
     }
 
     @Test
-    func testPollTerminate() throws {
+    func testIncomingPollTerminate() throws {
         let question = "What should we have for breakfast?"
         let incomingMessage = insertIncomingPollMessage(question: question)
         let pollCreateProto = buildPollCreateProto(
@@ -186,7 +201,7 @@ struct PollManagerTest {
         try db.write { tx in
             _ = try pollMessageManager.processIncomingPollTerminate(
                 pollTerminateProto: terminateProto,
-                terminateAuthor: authorAci,
+                terminateAuthor: pollAuthorAci,
                 transaction: tx
             )
         }
@@ -203,7 +218,175 @@ struct PollManagerTest {
     }
 
     @Test
-    func testPollVote_singleSelection() throws {
+    func testOutgoingPollTerminate() throws {
+        mockTSAccountManager.localIdentifiersMock = {
+            return LocalIdentifiers(
+                aci: pollAuthorAci,
+                pni: Pni(fromUUID: UUID()),
+                e164: E164("+16505550101")!
+            )
+        }
+
+        let question = "What should we have for breakfast?"
+        let outgoingMessage = insertOutgoingPollMessage(question: question)
+        try db.write { tx in
+            try pollMessageManager.processOutgoingPollCreate(
+                interactionId: outgoingMessage.grdbId as! Int64,
+                pollOptions: ["pancakes", "waffles"],
+                allowsMultiSelect: false,
+                transaction: tx
+            )
+        }
+
+        // Before voting, insert voter into Signal Recipient Table
+        // which is referenced by id in the vote table.
+        let voterAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000001")
+
+        insertSignalRecipient(
+            aci: voterAci,
+            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
+            phoneNumber: E164("+16505550101")!
+        )
+
+        try db.write { tx in
+            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: 1, voteCount: 1)
+            try vote1.insert(tx.database)
+        }
+
+        let terminateProto = buildPollTerminateProto(targetSentTimestamp: outgoingMessage.timestamp)
+
+        try db.write { tx in
+            _ = try pollMessageManager.processIncomingPollTerminate(
+                pollTerminateProto: terminateProto,
+                terminateAuthor: pollAuthorAci,
+                transaction: tx
+            )
+        }
+
+        try db.read { tx in
+            let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
+            #expect(owsPoll!.question == question)
+            #expect(owsPoll!.sortedOptions()[0].text == "pancakes")
+            #expect(owsPoll!.sortedOptions()[1].text == "waffles")
+            #expect(owsPoll!.allowsMultiSelect == false)
+            #expect(owsPoll!.isEnded == true)
+            #expect(owsPoll!.totalVotes() == 1)
+        }
+    }
+
+    @Test
+    func testIncomingPollVote() throws {
+        mockTSAccountManager.localIdentifiersMock = {
+            return LocalIdentifiers(
+                aci: pollAuthorAci,
+                pni: Pni(fromUUID: UUID()),
+                e164: E164("+16505550101")!
+            )
+        }
+
+        let question = "What should we have for breakfast?"
+        let outgoingMessage = insertOutgoingPollMessage(question: question)
+
+        try db.write { tx in
+            try pollMessageManager.processOutgoingPollCreate(
+                interactionId: outgoingMessage.grdbId as! Int64,
+                pollOptions: ["pancakes", "waffles"],
+                allowsMultiSelect: false,
+                transaction: tx
+            )
+        }
+
+        // Before voting, insert voter into Signal Recipient Table
+        // which is referenced by id in the vote table.
+        let voterAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000002")
+
+        insertSignalRecipient(
+            aci: voterAci,
+            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
+            phoneNumber: E164("+16505550101")!
+        )
+
+        let pollWaffleVoteProto = buildPollVoteProto(
+            pollAuthor: pollAuthorAci,
+            targetSentTimestamp: outgoingMessage.timestamp,
+            optionIndexes: [1],
+            voteCount: 1
+        )
+
+        _ = try db.write { tx in
+            try pollMessageManager.processIncomingPollVote(
+                voteAuthor: voterAci,
+                pollVoteProto: pollWaffleVoteProto,
+                transaction: tx
+            )
+        }
+
+        try db.read { tx in
+            let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
+            #expect(owsPoll!.question == question)
+            #expect(owsPoll!.sortedOptions()[0].text == "pancakes")
+            #expect(owsPoll!.sortedOptions()[1].text == "waffles")
+            #expect(owsPoll!.allowsMultiSelect == false)
+            #expect(owsPoll!.isEnded == false)
+            #expect(owsPoll!.totalVotes() == 1)
+
+            let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
+            #expect(wafflesOption!.acis.contains(voterAci))
+        }
+
+        // Revoke vote for waffle and send it to pancake
+        let pollVoteProtoRevoke = buildPollVoteProto(
+            pollAuthor: pollAuthorAci,
+            targetSentTimestamp: outgoingMessage.timestamp,
+            optionIndexes: [0],
+            voteCount: 2
+        )
+
+        _ = try db.write { tx in
+            try pollMessageManager.processIncomingPollVote(
+                voteAuthor: voterAci,
+                pollVoteProto: pollVoteProtoRevoke,
+                transaction: tx
+            )
+        }
+
+        try db.read { tx in
+            let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
+            let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
+            #expect(wafflesOption!.acis.isEmpty)
+
+            let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
+            #expect(pancakesOption!.acis.contains(voterAci))
+        }
+
+        // Voting with multiple options should fail to update votes
+        let pollVoteProtoMultiple = buildPollVoteProto(
+            pollAuthor: pollAuthorAci,
+            targetSentTimestamp: outgoingMessage.timestamp,
+            optionIndexes: [0, 1],
+            voteCount: 3
+        )
+
+        _ = try db.write { tx in
+            try pollMessageManager.processIncomingPollVote(
+                voteAuthor: voterAci,
+                pollVoteProto: pollVoteProtoMultiple,
+                transaction: tx
+            )
+        }
+
+        try db.read { tx in
+            let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
+            let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
+            #expect(wafflesOption!.acis.isEmpty)
+
+            let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
+            #expect(pancakesOption!.acis.contains(voterAci))
+        }
+    }
+
+    @Test
+    func testOutgoingPollVote() throws {
         let question = "What should we have for breakfast?"
         let incomingMessage = insertIncomingPollMessage(question: question)
 
@@ -238,7 +421,7 @@ struct PollManagerTest {
         )
 
         let pollWaffleVoteProto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [1],
             voteCount: 1
@@ -253,7 +436,7 @@ struct PollManagerTest {
         }
 
         let pollPancakesVoteProto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [0],
             voteCount: 1
@@ -285,7 +468,7 @@ struct PollManagerTest {
 
         // Revoke vote for pancake and send it to waffle
         let pollVoteProtoRevoke = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [1],
             voteCount: 2
@@ -311,10 +494,10 @@ struct PollManagerTest {
 
         // Voting with multiple options should fail to update votes
         let pollVoteProtoMultiple = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [0, 1],
-            voteCount: 2
+            voteCount: 3
         )
 
         _ = try db.write { tx in
@@ -366,7 +549,7 @@ struct PollManagerTest {
         )
 
         let pollVoteProto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [0, 1],
             voteCount: 1
@@ -398,7 +581,7 @@ struct PollManagerTest {
 
         // Revoke vote for waffle
         let pollVoteProtoRevoke = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [0],
             voteCount: 2
@@ -454,7 +637,7 @@ struct PollManagerTest {
         )
 
         let pollVoteProto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [0], // pancakes
             voteCount: 2
@@ -470,7 +653,7 @@ struct PollManagerTest {
 
         // Now send old voteCount with a different vote (waffles)
         let oldPollVoteProto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [1],
             voteCount: 1
@@ -549,14 +732,14 @@ struct PollManagerTest {
 
         // user1 is going to vote for pancakes, and dogs
         let user1VoteProto1 = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage1.timestamp,
             optionIndexes: [0], // pancakes
             voteCount: 1
         )
 
         let user1VoteProto2 = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage2.timestamp,
             optionIndexes: [0], // dog
             voteCount: 1
@@ -578,14 +761,14 @@ struct PollManagerTest {
 
         // user2 is going to vote for waffles, and dogs
         let user2VoteProto1 = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage1.timestamp,
             optionIndexes: [1], // waffles
             voteCount: 1
         )
 
         let user2VoteProto2 = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage2.timestamp,
             optionIndexes: [0], // dog
             voteCount: 1
@@ -666,7 +849,7 @@ struct PollManagerTest {
         )
 
         let proto = buildPollVoteProto(
-            pollAuthor: authorAci,
+            pollAuthor: pollAuthorAci,
             targetSentTimestamp: incomingMessage.timestamp,
             optionIndexes: [1],
             voteCount: 1
@@ -686,5 +869,16 @@ struct PollManagerTest {
             #expect(owsPoll!.isEnded == true)
             #expect(owsPoll!.totalVotes() == 0)
         }
+    }
+}
+
+private extension TSOutgoingMessage {
+    convenience init(in thread: TSThread, question: String) {
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(question),
+            isPoll: true
+        )
+        self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }
 }

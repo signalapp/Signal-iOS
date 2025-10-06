@@ -13,16 +13,19 @@ public class PollMessageManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let interactionStore: InteractionStore
     private let db: DB
+    private let accountManager: TSAccountManager
 
     init(
         pollStore: PollStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         interactionStore: InteractionStore,
+        accountManager: TSAccountManager,
         db: DB
     ) {
         self.pollStore = pollStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.interactionStore = interactionStore
+        self.accountManager = accountManager
         self.db = db
     }
 
@@ -65,11 +68,15 @@ public class PollMessageManager {
             return nil
         }
 
+        guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
+            throw OWSAssertionError("User not registered")
+        }
+
         guard let targetMessage = try interactionStore.fetchMessage(
             timestamp: pollVoteProto.targetSentTimestamp,
-            author: pollAuthorAci,
+            incomingMessageAuthor: localAci == pollAuthorAci ? nil : pollAuthorAci,
             transaction: transaction
-        ) as? TSIncomingMessage,
+        ),
               targetMessage.isPoll,
               let interactionId = targetMessage.grdbId?.int64Value
         else {
@@ -100,11 +107,16 @@ public class PollMessageManager {
         terminateAuthor: Aci,
         transaction: DBWriteTransaction
     ) throws -> TSMessage? {
+
+        guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
+            throw OWSAssertionError("User not registered")
+        }
+
         guard let targetMessage = try interactionStore.fetchMessage(
             timestamp: pollTerminateProto.targetSentTimestamp,
-            author: terminateAuthor,
+            incomingMessageAuthor: terminateAuthor == localAci ? nil : terminateAuthor,
             transaction: transaction
-        ) as? TSIncomingMessage,
+        ),
               targetMessage.isPoll,
               let interactionId = targetMessage.grdbId?.int64Value
         else {
