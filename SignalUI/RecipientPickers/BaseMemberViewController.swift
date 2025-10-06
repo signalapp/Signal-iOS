@@ -212,7 +212,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             return
         }
         if navigationController.viewControllers.count == 1 {
-            navigationItem.leftBarButtonItem = .doneButton { [weak self] in
+            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
                 self?.dismissPressed()
             }
         }

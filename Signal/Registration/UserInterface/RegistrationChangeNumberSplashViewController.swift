@@ -43,7 +43,7 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
     }
 
     private func createContents() {
-        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+        navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
             self?.presenter?.exitRegistration()
         }
 

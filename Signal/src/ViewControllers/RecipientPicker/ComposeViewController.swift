@@ -29,7 +29,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
-        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
     }
 
     /// Presents the conversation for the given address and dismisses this

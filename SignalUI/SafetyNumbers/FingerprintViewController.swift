@@ -97,7 +97,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         super.init()
 
         title = NSLocalizedString("PRIVACY_VERIFICATION_TITLE", comment: "Navbar title")
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
 
         identityStateChangeObserver = NotificationCenter.default.addObserver(
             forName: .identityStateDidChange,

@@ -41,6 +41,17 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
 
         view.backgroundColor = UIColor.Signal.groupedBackground
 
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in
+                self?.model != self?.originalModel
+            }
+        )
+
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDone()
+        }
+
         updateNavigation()
         updateHeaderViewState()
         updateFooterViewState()
@@ -93,22 +104,17 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in
-                self?.model != self?.originalModel
-            }
-        )
+        let hasUnsavedChanges: Bool
 
         if case .text(let text) = model.type, text.nilIfEmpty == nil {
-            navigationItem.rightBarButtonItem = nil
+            hasUnsavedChanges = false
         } else if model != originalModel {
-            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-                self?.didTapDone()
-            }
+            hasUnsavedChanges = true
         } else {
-            navigationItem.rightBarButtonItem = nil
+            hasUnsavedChanges = false
         }
+
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

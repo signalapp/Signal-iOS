@@ -90,7 +90,7 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
         addChild(presentQRCodeViewController)
         addChild(scanQRCodeViewController)
 
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
 
         contentSegmentedControl.selectedSegmentIndex = 0
         navigationItem.titleView = contentSegmentedControl

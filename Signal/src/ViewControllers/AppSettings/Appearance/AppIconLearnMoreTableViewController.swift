@@ -11,7 +11,7 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         super.viewDidLoad()
         updateTableContents()
 
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
     }
 
     override func themeDidChange() {

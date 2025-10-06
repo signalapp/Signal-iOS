@@ -83,6 +83,15 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.state.isNew }
+        )
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapDone()
+        }
+
         updateTableContents()
         updateNavigation()
     }
@@ -203,22 +212,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.state.isNew }
-        )
-
-        if state.isNew {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.didTapDone()
-                }
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = state.isNew
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

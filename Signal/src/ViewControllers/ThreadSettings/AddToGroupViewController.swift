@@ -32,7 +32,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
-        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+        navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
             self?.didPressCloseButton()
         }
 

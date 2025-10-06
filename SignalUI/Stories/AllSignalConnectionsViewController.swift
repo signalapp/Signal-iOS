@@ -13,7 +13,7 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = OWSLocalizedString("ALL_SIGNAL_CONNECTIONS_TITLE", comment: "Title for the view of all your signal connections")
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 

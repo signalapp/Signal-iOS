@@ -68,6 +68,17 @@ class ProfileNameViewController: OWSTableViewController2 {
         givenNameTextField.text = originalGivenName
         familyNameTextField.text = originalFamilyName
 
+        title = OWSLocalizedString("PROFILE_NAME_VIEW_TITLE", comment: "Title for the profile name view.")
+
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+        )
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapDone()
+        }
+
         updateNavigation()
         updateTableContents()
     }
@@ -92,20 +103,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        title = OWSLocalizedString("PROFILE_NAME_VIEW_TITLE", comment: "Title for the profile name view.")
-
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
-        )
-
-        if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-                self?.didTapDone()
-            }
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
     public override func viewWillAppear(_ animated: Bool) {

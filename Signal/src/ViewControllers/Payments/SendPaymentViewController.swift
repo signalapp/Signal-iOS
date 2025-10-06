@@ -436,10 +436,8 @@ public class SendPaymentViewController: OWSViewController {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
         navigationItem.title = nil
         if mode.isModalRootView {
-            navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
-            navigationItem.rightBarButtonItem = nil
+            navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
         } else {
-            navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItem = nil
         }
 

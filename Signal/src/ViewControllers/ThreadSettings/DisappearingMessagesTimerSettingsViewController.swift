@@ -45,6 +45,16 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
+
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+        )
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.completeAndDismiss()
+        }
+
         updateNavigationItem()
     }
 
@@ -59,22 +69,7 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
     }
 
     private func updateNavigationItem() {
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
-        )
-
-        if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.completeAndDismiss()
-                }
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
     private func completeAndDismiss() {

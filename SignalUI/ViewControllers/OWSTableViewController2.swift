@@ -926,7 +926,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     public func present(fromViewController: UIViewController) {
         let navigationController = OWSNavigationController(rootViewController: self)
-        navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
         fromViewController.present(navigationController, animated: true, completion: nil)
     }
 

@@ -33,7 +33,7 @@ class NewCallViewController: RecipientPickerContainerViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
-        navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
     }
 
     private var callStarterContext: CallStarter.Context {

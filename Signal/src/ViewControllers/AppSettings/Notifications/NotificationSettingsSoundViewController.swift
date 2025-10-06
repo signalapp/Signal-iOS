@@ -36,6 +36,14 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
             comment: "Label for settings view that allows user to change the notification sound."
         )
 
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapCancel()
+        }
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapDone()
+        }
+
         updateTableContents()
         updateNavigation()
     }
@@ -50,21 +58,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
-            self?.didTapCancel()
-        }
-
-        if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: CommonStrings.setButton,
-                style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
     func updateTableContents() {
@@ -154,7 +148,6 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         })
     }
 
-    @objc
     private func didTapDone() {
         if let thread {
             Sounds.setNotificationSound(notificationSound, forThread: thread)

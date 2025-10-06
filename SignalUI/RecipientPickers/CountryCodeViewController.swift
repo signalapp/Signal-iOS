@@ -53,7 +53,7 @@ public class CountryCodeViewController: HostingController<CountryCodePicker> {
         self.navigationItem.searchController = searchController
 
         self.title = OWSLocalizedString("COUNTRYCODE_SELECT_TITLE", comment: "")
-        self.navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
+        self.navigationItem.rightBarButtonItem = .systemItem(.stop) { [weak self] in
             self?.dismiss(animated: true)
         }
 

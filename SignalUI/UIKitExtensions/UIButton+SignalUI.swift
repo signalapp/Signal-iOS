@@ -464,6 +464,20 @@ public extension UIBarButtonItem {
         }
     }
 
+    static func setButton(action: @escaping () -> Void) -> UIBarButtonItem {
+        if #available(iOS 26, *) {
+            // iOS 26 done buttons appear as a big blue checkmark
+            return .systemItem(.done, action: action)
+        } else {
+            // For iOS 18 and older, we want to use the text "Set"
+            return .button(
+                title: CommonStrings.setButton,
+                style: .done,
+                action: action
+            )
+        }
+    }
+
     // Feel free to add more system item functions as the need arises
 }
 

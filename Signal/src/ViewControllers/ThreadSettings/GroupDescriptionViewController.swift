@@ -118,28 +118,21 @@ class GroupDescriptionViewController: OWSTableViewController2 {
                 dismissingFrom: self,
                 hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
             )
-        } else {
-            navigationItem.leftBarButtonItem = .doneButton { [weak self] in
-                self?.didTapDone()
-            }
-        }
 
-        if helper.hasUnsavedChanges {
-            owsAssertDebug(isEditable)
-            if options.contains(.updateImmediately) {
-                navigationItem.rightBarButtonItem = .button(
-                    title: CommonStrings.setButton,
-                    style: .done,
-                    action: { [weak self] in
-                        self?.didTapSet()
-                    }
-                )
-            } else {
-                navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-                    self?.didTapDone()
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                guard let self else { return }
+                if self.options.contains(.updateImmediately) {
+                    self.didTapSet()
+                } else {
+                    self.didTapDone()
                 }
             }
+
+            navigationItem.rightBarButtonItem?.isEnabled = helper.hasUnsavedChanges
         } else {
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                self?.didTapDone()
+            }
             navigationItem.rightBarButtonItem = nil
         }
     }

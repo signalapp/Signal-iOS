@@ -47,6 +47,15 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             comment: "Label for 'permissions' action in conversation settings view."
         )
 
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+        )
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapSet()
+        }
+
         updateTableContents()
         updateNavigation()
     }
@@ -68,22 +77,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
-        )
-
-        if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.didTapSet()
-                }
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
     func updateTableContents() {

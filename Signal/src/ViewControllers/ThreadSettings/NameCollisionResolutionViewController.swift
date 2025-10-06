@@ -55,10 +55,10 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationItem.leftBarButtonItem = .doneButton { [weak self] in
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.donePressed()
         }
-        navigationItem.rightBarButtonItem = nil
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

@@ -35,6 +35,20 @@ class GroupNameViewController: OWSTableViewController2 {
         helper.delegate = self
         helper.buildContents()
 
+        title = OWSLocalizedString(
+            "GROUP_NAME_VIEW_TITLE",
+            comment: "Title for the group name view."
+        )
+
+        navigationItem.leftBarButtonItem = .cancelButton(
+            dismissingFrom: self,
+            hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
+        )
+
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapDone()
+        }
+
         updateNavigation()
         updateTableContents()
     }
@@ -54,23 +68,7 @@ class GroupNameViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        title = OWSLocalizedString(
-            "GROUP_NAME_VIEW_TITLE",
-            comment: "Title for the group name view."
-        )
-
-        navigationItem.leftBarButtonItem = .cancelButton(
-            dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
-        )
-
-        if helper.hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-                self?.didTapDone()
-            }
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        navigationItem.rightBarButtonItem?.isEnabled = helper.hasUnsavedChanges
     }
 
     public override func viewWillAppear(_ animated: Bool) {

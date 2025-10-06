@@ -15,7 +15,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         if navigationController?.viewControllers.count == 1 {
             title = OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
-            navigationItem.leftBarButtonItem = .doneButton(dismissingFrom: self)
+            navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
         } else {
             title = OWSLocalizedString(
                 "STORY_SETTINGS_TITLE",
