@@ -160,32 +160,16 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
         newBackupPlan: BackupPlan,
         tx: DBWriteTransaction
     ) {
-        func isPaidPlan(_ plan: BackupPlan) -> Bool {
-            return switch plan {
-            case .disabled, .disabling, .free: false
-            case .paid, .paidExpiringSoon, .paidAsTester: true
-            }
-        }
-
-        if isPaidPlan(oldBackupPlan) == isPaidPlan(newBackupPlan) {
+        if oldBackupPlan.isPaidPlan() == newBackupPlan.isPaidPlan() {
             // If paid-plan status isn't changing then we're not starting new
             // uploads or stopping ongoing ones, so we can bail early.
             return
         }
 
-        let maxAttachmentRowId: Attachment.IDType = {
-            guard isPaidPlan(newBackupPlan) else {
-                // We don't care about upload progress on non-paid plans.
-                return 0
-            }
-
-            do {
-                return try attachmentStore.fetchMaxRowId(tx: tx) ?? 0
-            } catch {
-                owsFailDebug("Failed to get max attachment row ID! \(error)")
-                return 0
-            }
-        }()
+        let maxAttachmentRowId: Attachment.IDType = computeMaxAttachmentRowId(
+            currentBackupPlan: newBackupPlan,
+            tx: tx,
+        )
 
         kvStore.writeValue(
             maxAttachmentRowId,
@@ -201,14 +185,17 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
     }
 
     private nonisolated let attachmentStore: AttachmentStore
+    private nonisolated let backupSettingsStore: BackupSettingsStore
     private nonisolated let db: DB
     private nonisolated let kvStore: NewKeyValueStore
 
     init(
         attachmentStore: AttachmentStore,
+        backupSettingsStore: BackupSettingsStore,
         db: DB,
     ) {
         self.attachmentStore = attachmentStore
+        self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.kvStore = NewKeyValueStore(collection: "BackupAttachmentUploadProgress")
     }
@@ -292,15 +279,41 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
         let maxAttachmentRowId: Attachment.IDType
     }
 
+    private nonisolated func computeMaxAttachmentRowId(
+        currentBackupPlan: BackupPlan,
+        tx: DBReadTransaction,
+    ) -> Attachment.IDType {
+        guard currentBackupPlan.isPaidPlan() else {
+            // We don't care about upload progress on non-paid plans.
+            return 0
+        }
+
+        do {
+            return try attachmentStore.fetchMaxRowId(tx: tx) ?? 0
+        } catch {
+            owsFailDebug("Failed to get max attachment row ID! \(error)")
+            return 0
+        }
+    }
+
     private nonisolated func computeRemainingUnuploadedByteCount() throws -> UploadQueueSnapshot {
         return try db.read { tx in
-            guard let maxAttachmentRowId = kvStore.fetchValue(
-                Attachment.IDType.self,
-                forKey: StoreKeys.maxAttachmentRowId,
-                tx: tx,
-            ) else {
-                owsFail("Unexpectedly missing maxBackupAttachmentUploadRowId! How was this unset?")
-            }
+            let maxAttachmentRowId: Attachment.IDType = {
+                if let persistedValue = kvStore.fetchValue(
+                    Attachment.IDType.self,
+                    forKey: StoreKeys.maxAttachmentRowId,
+                    tx: tx,
+                ) {
+                    return persistedValue
+                }
+
+                // It's possible we've never persisted a value, so fall back to
+                // the "live" value if necessary.
+                return computeMaxAttachmentRowId(
+                    currentBackupPlan: backupSettingsStore.backupPlan(tx: tx),
+                    tx: tx,
+                )
+            }()
 
             func fetchBackupAttachmentUploadCursor(
                 state: QueuedBackupAttachmentUpload.State,
@@ -336,6 +349,19 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
         }
     }
 }
+
+// MARK: -
+
+private extension BackupPlan {
+    func isPaidPlan() -> Bool {
+        switch self {
+        case .disabled, .disabling, .free: false
+        case .paid, .paidExpiringSoon, .paidAsTester: true
+        }
+    }
+}
+
+// MARK: -
 
 #if TESTABLE_BUILD
 
