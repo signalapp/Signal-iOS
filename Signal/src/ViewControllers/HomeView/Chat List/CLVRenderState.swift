@@ -175,7 +175,9 @@ struct CLVRenderState {
     func indexPath(afterThread thread: TSThread?) -> IndexPath? {
         let section: (index: Int, threadUniqueIds: KeyPath<CLVRenderState, [String]>)
 
-        if let thread = thread, pinnedThreadUniqueIds.contains(thread.uniqueId) {
+        let threadIsPinned = thread.map { pinnedThreadUniqueIds.contains($0.uniqueId) } == true
+        let noThreadSelectedAndHasPinnedThreads = thread == nil && !pinnedThreadUniqueIds.isEmpty
+        if threadIsPinned || noThreadSelectedAndHasPinnedThreads {
             let index = sectionIndex(for: .pinned)!
             section = (index, sections[index].threadUniqueIds!)
         } else {
@@ -193,6 +195,12 @@ struct CLVRenderState {
 
         if index < (self[keyPath: section.threadUniqueIds].count - 1) {
             return IndexPath(item: index + 1, section: section.index)
+        } else if
+            let nextSection = sections[safe: section.index + 1],
+            let nextSectionThreads = nextSection.threadUniqueIds,
+            !self[keyPath: nextSectionThreads].isEmpty
+        {
+            return IndexPath(item: 0, section: section.index + 1)
         } else {
             return nil
         }
@@ -201,7 +209,9 @@ struct CLVRenderState {
     func indexPath(beforeThread thread: TSThread?) -> IndexPath? {
         let section: (index: Int, threadUniqueIds: KeyPath<CLVRenderState, [String]>)
 
-        if let thread = thread, pinnedThreadUniqueIds.contains(thread.uniqueId) {
+        let threadIsPinned = thread.map { pinnedThreadUniqueIds.contains($0.uniqueId) } == true
+        let allChatsArePinned = unpinnedThreadUniqueIds.isEmpty
+        if threadIsPinned || allChatsArePinned {
             let index = sectionIndex(for: .pinned)!
             section = (index, sections[index].threadUniqueIds!)
         } else {
@@ -220,6 +230,12 @@ struct CLVRenderState {
 
         if index > 0 {
             return IndexPath(item: index - 1, section: section.index)
+        } else if
+            let previousSection = sections[safe: section.index - 1],
+            let previousSectionThreads = previousSection.threadUniqueIds,
+            !self[keyPath: previousSectionThreads].isEmpty
+        {
+            return IndexPath(item: self[keyPath: previousSectionThreads].count - 1, section: section.index - 1)
         } else {
             return nil
         }

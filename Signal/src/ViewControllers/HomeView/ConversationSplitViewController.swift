@@ -412,7 +412,29 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 comment: "A keyboard command to jump to the next conversation in the list."
             )
         )
-    ]
+    ] + [
+        UIKeyCommand(
+            action: #selector(selectPreviousConversation),
+            input: "\t",
+            modifierFlags: [.control, .shift],
+            discoverabilityTitle: OWSLocalizedString(
+                "KEY_COMMAND_PREVIOUS_CONVERSATION",
+                comment: "A keyboard command to jump to the previous conversation in the list."
+            )
+        ),
+        UIKeyCommand(
+            action: #selector(selectNextConversation),
+            input: "\t",
+            modifierFlags: .control,
+            discoverabilityTitle: OWSLocalizedString(
+                "KEY_COMMAND_NEXT_CONVERSATION",
+                comment: "A keyboard command to jump to the next conversation in the list."
+            )
+        ),
+    ].map {
+        $0.wantsPriorityOverSystemBehavior = true
+        return $0
+    }
 
     var selectedConversationKeyCommands: [UIKeyCommand] {
         return [

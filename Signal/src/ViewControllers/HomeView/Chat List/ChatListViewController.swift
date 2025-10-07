@@ -59,6 +59,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableView.estimatedRowHeight = 60
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
+        tableView.selectionFollowsFocus = false
 
         if let filterControl {
             filterControl.clearAction = .disableChatListFilter(target: self)
