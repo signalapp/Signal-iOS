@@ -350,7 +350,6 @@ public class GRDBSchemaMigrator {
         //
         // Note that account state is loaded *before* running data migrations, because many model objects expect
         // to be able to access that without a transaction.
-        case dataMigration_populateGalleryItems
         case dataMigration_enableV2RegistrationLockIfNecessary
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
@@ -419,6 +418,10 @@ public class GRDBSchemaMigrator {
         case signalAccount_add_contactAvatar
         case signalAccount_add_contactAvatarData
         case signalAccount_add_contactAvatarPngData
+
+        // This used to insert `media_gallery_record` rows for every message
+        // attachment. This table is now obsolete.
+        case dataMigration_populateGalleryItems
 
         // These were rolled back in a complex dance of rewriting migration
         // history. See `recreateTSAttachment`.
@@ -632,10 +635,6 @@ public class GRDBSchemaMigrator {
                           on: "media_gallery_items",
                           columns: ["attachmentId"])
 
-            // Creating gallery records here can crash since it's run in the middle of schema migrations.
-            // It instead has been moved to a separate Data Migration.
-            // see: "dataMigration_populateGalleryItems"
-            // try createInitialGalleryRecords(transaction: DBWriteTransaction(database: db))
             return .success(())
         }
 
@@ -698,14 +697,6 @@ public class GRDBSchemaMigrator {
             )
             return .success(())
         }
-
-        // Creating gallery records here can crash since it's run in the middle of schema migrations.
-        // It instead has been moved to a separate Data Migration.
-        // see: "dataMigration_populateGalleryItems"
-        // migrator.registerMigration(.indexMediaGallery2) { db in
-        //     // re-index the media gallery for those who failed to create during the initial YDB migration
-        //     try createInitialGalleryRecords(transaction: DBWriteTransaction(database: db))
-        // }
 
         migrator.registerMigration(.unreadThreadInteractions) { transaction in
             try transaction.database.create(
@@ -4213,11 +4204,6 @@ public class GRDBSchemaMigrator {
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
 
-        migrator.registerMigration(.dataMigration_populateGalleryItems) { transaction in
-            try createInitialGalleryRecords(transaction: transaction)
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
             if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) {
                 KeyValueStore(collection: "kOWS2FAManager_Collection")
@@ -6272,14 +6258,6 @@ public class GRDBSchemaMigrator {
 }
 
 // MARK: -
-
-public func createInitialGalleryRecords(transaction: DBWriteTransaction) throws {
-    /// This method used to insert `media_gallery_record` rows for every message attachment.
-    /// Since the writing of this method, the table has been obsoleted. In between the original migration and its
-    /// obsoletion, no other migration referenced the table. This migration used to reference live application code
-    /// that no longer exists. Therefore, it is safe (if still not ideal) to no-op this migration, as the rows it inserts
-    /// will just be removed by a later migration before they're ever used.
-}
 
 extension GRDBSchemaMigrator {
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

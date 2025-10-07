@@ -625,13 +625,12 @@ public extension DatabaseRecovery {
     class ManualRecreation {
         private let databaseStorage: SDSDatabaseStorage
 
-        private let unitCountForMediaGallery: Int64 = 1
         private let unitCountForFullTextSearch: Int64 = 2
         public let progress: Progress
 
         public init(databaseStorage: SDSDatabaseStorage) {
             self.databaseStorage = databaseStorage
-            self.progress = Progress(totalUnitCount: unitCountForMediaGallery + unitCountForFullTextSearch)
+            self.progress = Progress(totalUnitCount: unitCountForFullTextSearch)
         }
 
         public func run() {
@@ -640,23 +639,8 @@ public extension DatabaseRecovery {
                 return
             }
 
-            progress.performAsCurrent(withPendingUnitCount: unitCountForMediaGallery) {
-                attemptToRecreateMediaGallery()
-            }
             progress.performAsCurrent(withPendingUnitCount: unitCountForFullTextSearch) {
                 attemptToRecreateFullTextSearch()
-            }
-        }
-
-        private func attemptToRecreateMediaGallery() {
-            Logger.info("Attempting to recreate media gallery records...")
-            databaseStorage.write { transaction in
-                do {
-                    try createInitialGalleryRecords(transaction: transaction)
-                    Logger.info("Recreated media gallery records.")
-                } catch {
-                    Logger.warn("Failed to recreate media gallery records, but moving on: \(error)")
-                }
             }
         }
 
