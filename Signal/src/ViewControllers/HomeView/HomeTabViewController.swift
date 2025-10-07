@@ -21,6 +21,13 @@ extension HomeTabViewController {
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
+        let isInFloatingSidebar = if #available(iOS 26, *) {
+            splitViewController?.isCollapsed == false
+        } else {
+            // Floating sidebar only exists on iOS 26+
+            false
+        }
+
         let settingsAction = UIAction(
             title: CommonStrings.openAppSettingsButton,
             image: Theme.iconImage(.contextMenuSettings),
@@ -33,7 +40,7 @@ extension HomeTabViewController {
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
         if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
-            sizeClass = .forty
+            sizeClass = isInFloatingSidebar ? .thirtyTwo : .forty
         } else {
             sizeClass = .twentyEight
         }
@@ -50,7 +57,13 @@ extension HomeTabViewController {
             }
         }
         contextButton.addSubview(avatarView)
-        avatarView.autoPinEdgesToSuperviewEdges()
+
+        avatarView.autoPinEdgesToSuperviewEdges(with: .init(
+            top: 0,
+            leading: isInFloatingSidebar ? 2 : 0,
+            bottom: 0,
+            trailing: 0
+        ))
 
         let barButtonView: UIView
 

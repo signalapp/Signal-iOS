@@ -681,6 +681,18 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 
         return detailNavController
     }
+
+    func splitViewControllerDidExpand(_ svc: UISplitViewController) {
+        homeVC.chatListViewController.updateBarButtonItems()
+        homeVC.callsListViewController.updateBarButtonItems()
+        homeVC.storiesViewController.updateNavigationBar()
+    }
+
+    func splitViewControllerDidCollapse(_ svc: UISplitViewController) {
+        homeVC.chatListViewController.updateBarButtonItems()
+        homeVC.callsListViewController.updateBarButtonItems()
+        homeVC.storiesViewController.updateNavigationBar()
+    }
 }
 
 extension ConversationSplitViewController: UINavigationControllerDelegate {

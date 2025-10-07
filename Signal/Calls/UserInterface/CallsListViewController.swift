@@ -111,7 +111,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.titleView = filterPicker
         updateBarButtonItems()
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -165,13 +164,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reloadAllRows()
     }
 
-    private func updateBarButtonItems() {
+    func updateBarButtonItems() {
         if tableView.isEditing {
             navigationItem.leftBarButtonItem = cancelMultiselectButton()
             navigationItem.rightBarButtonItem = deleteAllCallsButton()
         } else {
             navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
+        }
+
+        if splitViewController?.isCollapsed == false {
+            navigationItem.titleView = sidebarFilterPickerContainer
+        } else {
+            navigationItem.titleView = filterPicker
         }
     }
 
@@ -455,8 +460,31 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             Strings.filterPickerOptionMissed
         ])
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(filterChanged), for: .valueChanged)
+        segmentedControl.addTarget(self, action: #selector(filterChangedFromPrimary), for: .valueChanged)
         return segmentedControl
+    }()
+
+    // Having a UISegmentedControl as a titleView a split view sidebar on iOS 26
+    // looks too large and is cut off at the top. But putting it in a container
+    // doesn't look as good when not in a sidebar.
+    private lazy var sidebarFilterPicker: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl(items: [
+            Strings.filterPickerOptionAll,
+            Strings.filterPickerOptionMissed
+        ])
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(filterChangedFromSidebar), for: .valueChanged)
+        return segmentedControl
+    }()
+
+    private lazy var sidebarFilterPickerContainer: UIView = {
+        let container = UIView()
+        container.addSubview(sidebarFilterPicker)
+        sidebarFilterPicker.autoPinWidthToSuperview()
+        // idk why but it's gotta baaarely shift to align with the profile pic
+        sidebarFilterPicker.autoAlignAxis(.horizontal, toSameAxisOf: container, withOffset: -2/3)
+        sidebarFilterPicker.autoPinHeightToSuperview(relation: .lessThanOrEqual)
+        return container
     }()
 
     // MARK: Search bar
@@ -472,6 +500,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     @objc
+    private func filterChangedFromPrimary() {
+        sidebarFilterPicker.selectedSegmentIndex = filterPicker.selectedSegmentIndex
+        filterChanged()
+    }
+
+    @objc
+    private func filterChangedFromSidebar() {
+        filterPicker.selectedSegmentIndex = sidebarFilterPicker.selectedSegmentIndex
+        filterChanged()
+    }
+
     private func filterChanged() {
         reinitializeLoadedViewModels(debounceInterval: 0, animated: true)
         updateMultiselectToolbarButtons()

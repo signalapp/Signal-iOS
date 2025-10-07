@@ -191,7 +191,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     @objc
     private func profileDidChange() { updateNavigationBar() }
 
-    private func updateNavigationBar() {
+    func updateNavigationBar() {
         navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             buildActions: { settingsAction -> [UIMenuElement] in
