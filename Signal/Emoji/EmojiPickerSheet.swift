@@ -118,12 +118,12 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         NSLayoutConstraint.activate([
             sectionToolbar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             sectionToolbar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            sectionToolbar.bottomAnchor.constraint(equalTo: contentView.keyboardLayoutGuide.topAnchor),
+            sectionToolbar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
 #if compiler(>=6.2)
         // Obscures content underneath the emoji section toolbar to improve legibility.
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             let scrollInteraction = UIScrollEdgeElementContainerInteraction()
             scrollInteraction.scrollView = collectionView
             scrollInteraction.edge = .bottom

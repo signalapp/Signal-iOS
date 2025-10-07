@@ -146,10 +146,11 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
         collectionView.addConstraint(collectionView.heightAnchor.constraint(equalToConstant: collectionViewHeight))
 
         // Prepare background.
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        var backgroundConfigured = false
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
             // Floating glass panel that encapsulates emoji category strip.
             // Insets are carefully configured for best on-screen appearance.
-#if compiler(>=6.2)
             let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
             glassEffectView.translatesAutoresizingMaskIntoConstraints = false
             glassEffectView.cornerConfiguration = .capsule()
@@ -170,14 +171,24 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
                 collectionView.topAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.topAnchor),
                 collectionView.bottomAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.bottomAnchor),
             ])
+            backgroundConfigured = true
+        }
 #endif
-        } else {
-            // Container extends to the vertical edges and to the bottom of the view.
-            // Collection view is pinned to the top edge and leading, trailing and bottom margins.
-            let collectionViewContainer: UIView
+        if !backgroundConfigured {
+            // Background stretches 500 dp below bottom edge of the screen so that there's no gap where bottom safe area is.
             if UIAccessibility.isReduceTransparencyEnabled {
-                backgroundColor = UIColor.Signal.background
-                collectionViewContainer = self
+                let backgroundView = UIView()
+                backgroundView.backgroundColor = UIColor.Signal.background
+                addSubview(backgroundView)
+                backgroundView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    backgroundView.topAnchor.constraint(equalTo: topAnchor),
+                    backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                    backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 500),
+                    backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                ])
+
+                addSubview(collectionView)
             } else {
                 let blurEffect = forceDarkTheme ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
                 let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -187,18 +198,16 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
                     blurEffectView.leadingAnchor.constraint(equalTo: leadingAnchor),
                     blurEffectView.trailingAnchor.constraint(equalTo: trailingAnchor),
                     blurEffectView.topAnchor.constraint(equalTo: topAnchor),
-                    blurEffectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                    blurEffectView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 500),
                 ])
-
-                collectionViewContainer = blurEffectView.contentView
+                blurEffectView.contentView.addSubview(collectionView)
             }
 
-            collectionViewContainer.addSubview(collectionView)
             NSLayoutConstraint.activate([
-                collectionView.leadingAnchor.constraint(equalTo: collectionViewContainer.layoutMarginsGuide.leadingAnchor),
-                collectionView.trailingAnchor.constraint(equalTo: collectionViewContainer.layoutMarginsGuide.trailingAnchor),
-                collectionView.topAnchor.constraint(equalTo: collectionViewContainer.topAnchor),
-                collectionView.bottomAnchor.constraint(equalTo: collectionViewContainer.safeAreaLayoutGuide.bottomAnchor)
+                collectionView.topAnchor.constraint(equalTo: topAnchor),
+                collectionView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             ])
         }
 
