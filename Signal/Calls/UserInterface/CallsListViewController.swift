@@ -2509,6 +2509,8 @@ private extension CallsListViewController {
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+            self.backgroundColor = .Signal.background
+
             let stackView = UIStackView(arrangedSubviews: [iconView, label])
             stackView.axis = .horizontal
             stackView.spacing = Constants.spacing
