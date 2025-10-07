@@ -1570,7 +1570,10 @@ extension AppSetup.GlobalsContinuation {
             db: db
         )
 
-        let backupFailureStateManager = BackupFailureStateManager(dateProvider: dateProvider)
+        let backupFailureStateManager = BackupFailureStateManager(
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+        )
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,

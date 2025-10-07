@@ -17,7 +17,10 @@ class BackupFailureStateManagerTests {
         self.db = InMemoryDB()
         self.date = Date()
         self.dateProvider = { self.date }
-        self.sut = BackupFailureStateManager(dateProvider: self.dateProvider)
+        self.sut = BackupFailureStateManager(
+            backupSettingsStore: BackupSettingsStore(),
+            dateProvider: self.dateProvider
+        )
         db.write {
             backupSettingStore.setBackupPlan(.paid(optimizeLocalStorage: true), tx: $0)
         }

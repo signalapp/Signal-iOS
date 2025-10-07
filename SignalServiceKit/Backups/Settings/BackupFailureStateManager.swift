@@ -7,10 +7,14 @@ import Foundation
 
 public class BackupFailureStateManager {
 
-    let backupSettingsStore = BackupSettingsStore()
+    let backupSettingsStore: BackupSettingsStore
     let dateProvider: DateProvider
 
-    init(dateProvider: @escaping DateProvider) {
+    init(
+        backupSettingsStore: BackupSettingsStore,
+        dateProvider: @escaping DateProvider,
+    ) {
+        self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
     }
 

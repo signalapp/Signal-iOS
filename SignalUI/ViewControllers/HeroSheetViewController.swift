@@ -80,25 +80,19 @@ open class HeroSheetViewController: StackSheetViewController {
     ///   - primaryButton: The title and action for the CTA button
     ///   - secondaryButton: The title and action for an optional secondary button
     ///   If `nil`, the button will dismiss the sheet.
-    public convenience init(
+    public init(
         hero: Hero,
         title: String,
         body: String,
         primaryButton: Button,
         secondaryButton: Button? = nil
     ) {
-        let secondaryCTA: Element? = {
-            guard let secondaryButton else { return nil }
-            return .button(secondaryButton)
-        }()
-
-        self.init(
-            hero: hero,
-            title: title,
-            body: body,
-            primary: .button(primaryButton),
-            secondary: secondaryCTA
-        )
+        self.hero = hero
+        self.titleText = title
+        self.bodyText = body
+        self.primary = .button(primaryButton)
+        self.secondary = secondaryButton.map { .button($0) }
+        super.init()
     }
 
     public init(

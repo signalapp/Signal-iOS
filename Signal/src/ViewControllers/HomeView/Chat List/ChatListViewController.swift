@@ -234,7 +234,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         showFYISheetIfNecessary()
-        checkForFailedBackups()
         Task { try await self.checkForFailedServiceExtensionLaunches() }
 
         hasEverAppeared = true
@@ -351,6 +350,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     @objc
     func showFYISheetIfNecessary() {
         let fyiSheetCoordinator = ChatListFYISheetCoordinator(
+            backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
+            backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
             donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,
             donationSubscriptionManager: DonationSubscriptionManager.self,
             db: DependenciesBridge.shared.db,
@@ -1112,60 +1113,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 transaction: tx
             )
         }
-    }
-
-    func checkForFailedBackups() {
-
-        guard isChatListTopmostViewController() else {
-            return
-        }
-
-        // Check if it's been more than 7 days since the last backup
-        guard SSKEnvironment.shared.databaseStorageRef.read(block: {
-            DependenciesBridge.shared.backupFailureStateManager.shouldShowBackupFailurePrompt(tx: $0)
-        }) else {
-            return
-        }
-
-        let heroSheet = HeroSheetViewController(
-            hero: .circleIcon(
-                icon: UIImage(named: "backup-error-display-bold")!.withRenderingMode(.alwaysTemplate),
-                iconSize: 40,
-                tintColor: UIColor.Signal.orange,
-                backgroundColor: UIColor.color(rgbHex: 0xF9E4B6)
-            ),
-            title: OWSLocalizedString(
-                "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE",
-                comment: "Title for error prompt shown when backups haven't succeeded in 7 days"
-            ),
-            body: OWSLocalizedString(
-                "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY",
-                comment: "Body for error prompt shown when backups haven't succeeded in 7 days"
-            ),
-            primaryButton: .init(
-                title: OWSLocalizedString(
-                    "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION",
-                    comment: "Title for action from backups error prompt to try again now."
-                ),
-                action: .custom({ [weak self] _ in
-                    self?.dismiss(animated: true) {
-                        SignalApp.shared.showAppSettings(mode: .backups) {
-                            DependenciesBridge.shared.backupExportJobRunner.startIfNecessary()
-                        }
-                    }
-                })),
-            secondaryButton: .init(
-                title: OWSLocalizedString(
-                    "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION",
-                    comment: "Title for action from backups error prompt to try again later."
-                ),
-                style: .secondary,
-                action: .custom({ [weak self] _ in
-                    // Snooze
-                    self?.dismiss(animated: true)
-                }))
-        )
-        present(heroSheet, animated: true)
     }
 }
 
