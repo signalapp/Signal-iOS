@@ -228,6 +228,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.definesPresentationContext = true
+
         view.backgroundColor = .black
 
         // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.

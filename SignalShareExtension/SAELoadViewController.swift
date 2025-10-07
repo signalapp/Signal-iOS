@@ -8,12 +8,13 @@ import PureLayout
 import SignalServiceKit
 import SignalUI
 
-class SAELoadViewController: UIViewController {
+class SAELoadViewController: UIViewController, OWSNavigationChildController {
 
-    weak var delegate: ShareViewDelegate?
+    private weak var delegate: ShareViewDelegate?
+    private let shouldMimicRecipientPicker: Bool
 
-    var activityIndicator: UIActivityIndicatorView!
-    var progressView: UIProgressView!
+    private var activityIndicator: UIActivityIndicatorView!
+    private var progressView: UIProgressView!
 
     var progress: Progress? {
         didSet {
@@ -26,7 +27,7 @@ class SAELoadViewController: UIViewController {
         }
     }
 
-    func updateProgressViewVisibility() {
+    private func updateProgressViewVisibility() {
         guard progressView != nil, activityIndicator != nil else {
             return
         }
@@ -45,8 +46,9 @@ class SAELoadViewController: UIViewController {
 
     // MARK: Initializers and Factory Methods
 
-    init(delegate: ShareViewDelegate) {
+    init(delegate: ShareViewDelegate, shouldMimicRecipientPicker: Bool = false) {
         self.delegate = delegate
+        self.shouldMimicRecipientPicker = shouldMimicRecipientPicker
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -58,7 +60,22 @@ class SAELoadViewController: UIViewController {
     override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = Theme.backgroundColor
+        // It's not (currently) safe to create a SharingThreadPickerViewController
+        // while the Share Extension is launching, so instead mimic the header of
+        // the picker on the loading view controller.
+        //
+        // TODO: Make it safe to do so and remove this hack.
+        if self.shouldMimicRecipientPicker {
+            self.title = ConversationPickerViewController.Strings.title
+            self.navigationItem.leftBarButtonItem = .cancelButton(action: {})
+            self.navigationItem.leftBarButtonItem?.isEnabled = false
+        }
+
+        self.view.backgroundColor = (
+            self.shouldMimicRecipientPicker
+            ? Theme.tableView2PresentedBackgroundColor
+            : Theme.backgroundColor
+        )
 
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.color = Theme.primaryIconColor
@@ -86,9 +103,15 @@ class SAELoadViewController: UIViewController {
         label.autoPinEdge(.top, to: .bottom, of: activityIndicator, withOffset: 12)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        // The false case should be the default, but we can't access the
+        // extension's default implementation here.
+        return self.shouldMimicRecipientPicker ? .solid : .blur
+    }
 
-        self.navigationController?.isNavigationBarHidden = false
+    var navbarBackgroundColorOverride: UIColor? {
+        // The false case should be the default, but we can't access the
+        // extension's default implementation here.
+        return self.shouldMimicRecipientPicker ? Theme.tableView2PresentedBackgroundColor : nil
     }
 }

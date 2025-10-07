@@ -12,5 +12,5 @@ public protocol ShareViewDelegate: AnyObject {
     func shareViewWasCompleted()
     func shareViewWasCancelled()
     func shareViewFailed(error: Error)
-    var shareViewNavigationController: OWSNavigationController? { get }
+    var shareViewNavigationController: OWSNavigationController { get }
 }

@@ -454,7 +454,6 @@
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGallery.swift */; };
 		4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535186A1FC635DD00210559 /* ShareViewController.swift */; };
-		4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4535186C1FC635DD00210559 /* MainInterface.storyboard */; };
 		453518721FC635DD00210559 /* SignalShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* SignalShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
@@ -4352,7 +4351,6 @@
 		452EC6DE205E9E30000E787C /* MediaGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGallery.swift; sourceTree = "<group>"; };
 		453518681FC635DD00210559 /* SignalShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SignalShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4535186A1FC635DD00210559 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
-		4535186D1FC635DD00210559 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		4535186F1FC635DD00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4539B5851F79348F007141FF /* PushRegistrationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushRegistrationManager.swift; sourceTree = "<group>"; };
 		4542DF53208D40AC007B4E76 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
@@ -8842,7 +8840,6 @@
 			isa = PBXGroup;
 			children = (
 				4535186F1FC635DD00210559 /* Info.plist */,
-				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
 				5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
@@ -15085,7 +15082,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
-				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
 				7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */,
 			);
@@ -19140,14 +19136,6 @@
 				1466AB392817F88A003B3D9F /* zh_TW */,
 			);
 			name = PluralAware.stringsdict;
-			sourceTree = "<group>";
-		};
-		4535186C1FC635DD00210559 /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4535186D1FC635DD00210559 /* Base */,
-			);
-			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		A5E7C673248C5442007C949A /* InfoPlist.strings */ = {

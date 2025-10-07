@@ -218,17 +218,20 @@ public class AttachmentPrepViewController: OWSViewController {
         scrollView.transform = .scale(scale).translate(.init(x: 0, y: -offsetY))
     }
 
-    private func presentFullScreen(viewController: UIViewController) {
+    private func _presentMediaTool(viewController: UIViewController) {
         if let presentedViewController = presentedViewController {
             owsAssertDebug(false, "Already has presented view controller. [\(presentedViewController)]")
             presentedViewController.dismiss(animated: false) { [weak self] in
-                self?.presentFullScreen(viewController: viewController)
+                self?._presentMediaTool(viewController: viewController)
             }
             return
         }
 
         zoomOut(animated: true) { [weak self] in
-            self?.presentFullScreen(viewController, animated: false)
+            // Cover the current context. This ensures that we stay within our
+            // containing frame in the share extension.
+            viewController.modalPresentationStyle = .currentContext
+            self?.present(viewController, animated: false)
         }
     }
 
@@ -236,10 +239,10 @@ public class AttachmentPrepViewController: OWSViewController {
         if let prepDelegate = prepDelegate {
             isMediaToolViewControllerPresented = true
             prepDelegate.attachmentPrepViewControllerDidRequestUpdateControlsVisibility(self) { _ in
-                self.presentFullScreen(viewController: viewController)
+                self._presentMediaTool(viewController: viewController)
             }
         } else {
-            self.presentFullScreen(viewController: viewController)
+            self._presentMediaTool(viewController: viewController)
         }
     }
 

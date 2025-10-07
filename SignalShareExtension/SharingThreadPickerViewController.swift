@@ -69,7 +69,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         if let navigationController = shareViewDelegate?.shareViewNavigationController {
             navigationController.presentActionSheet(alert)
         } else {
-            super.presentActionSheet(alert)
+            self.presentActionSheet(alert)
         }
     }
 

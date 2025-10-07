@@ -1281,12 +1281,12 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 // MARK: -
 
 extension ConversationPickerViewController {
-    private struct Strings {
-        static let title = OWSLocalizedString("CONVERSATION_PICKER_TITLE", comment: "navbar header")
-        static let recentsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
-        static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
-        static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
-        static let storiesSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_STORIES", comment: "table section header for section containing stories")
+    public struct Strings {
+        public static let title = OWSLocalizedString("CONVERSATION_PICKER_TITLE", comment: "navbar header")
+        fileprivate static let recentsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
+        fileprivate static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
+        fileprivate static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
+        fileprivate static let storiesSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_STORIES", comment: "table section header for section containing stories")
     }
 }
 

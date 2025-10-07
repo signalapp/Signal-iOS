@@ -5,12 +5,12 @@
 
 import CoreServices
 import Intents
-public import PureLayout
+import PureLayout
 import SignalServiceKit
 public import SignalUI
 import UniformTypeIdentifiers
 
-public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
+public class ShareViewController: OWSNavigationController, ShareViewDelegate, SAEFailedViewDelegate {
 
     enum ShareViewControllerError: Error {
         case obsoleteShare
@@ -23,11 +23,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case noAttachments
     }
 
-    public var shareViewNavigationController: OWSNavigationController?
+    public var shareViewNavigationController: OWSNavigationController { self }
 
     private lazy var appReadiness = AppReadinessImpl()
 
     private var connectionTokens = [OWSChatConnection.ConnectionToken]()
+
+    private var initialLoadViewController: SAELoadViewController?
 
     override open func loadView() {
         super.loadView()
@@ -43,6 +45,29 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
+        let initialLoadViewController = SAELoadViewController(
+            delegate: self,
+            shouldMimicRecipientPicker: self.extensionContext?.intent == nil,
+        )
+        self.setViewControllers([initialLoadViewController], animated: false)
+        self.initialLoadViewController = initialLoadViewController
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if let initialLoadViewController = self.initialLoadViewController.take() {
+            // Wait one run loop to ensure the loading indicator is visible if setUp
+            // blocks the main thread.
+            DispatchQueue.main.async {
+                Task { try await self.setUp(initialLoadViewController: initialLoadViewController) }
+            }
+        }
+    }
+
+    private func setUp(initialLoadViewController: SAELoadViewController) async throws {
+        let appContext = CurrentAppContext()
+
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let databaseStorage: SDSDatabaseStorage
         do {
@@ -57,166 +82,146 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
-        let shareViewNavigationController = OWSNavigationController()
-        shareViewNavigationController.presentationController?.delegate = self
-        shareViewNavigationController.delegate = self
-        self.shareViewNavigationController = shareViewNavigationController
-
-        Task {
-            let initialLoadViewController = SAELoadViewController(delegate: self)
-            var didDisplaceInitialLoadViewController = false
-            async let _ = { @MainActor () async throws -> Void in
-                // Don't display load screen immediately because loading the database and
-                // preparing attachments (if the recipient is pre-selected) will usually be
-                // fast enough that we can avoid it altogether. If you haven't run GRDB
-                // migrations in a while or have selected a long video, though, you'll
-                // likely see the load screen after 800ms.
-                try await Task.sleep(nanoseconds: 0.8.clampedNanoseconds)
-                guard self.presentedViewController == nil else {
-                    return
-                }
-                self.showPrimaryViewController(initialLoadViewController)
-            }()
-
-            let databaseContinuation = await AppSetup()
-                .start(
-                    appContext: appContext,
-                    databaseStorage: databaseStorage,
-                )
-                .migrateDatabaseSchema()
-                .initGlobals(
-                    appReadiness: appReadiness,
-                    backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
-                    deviceBatteryLevelManager: nil,
-                    deviceSleepManager: nil,
-                    paymentsEvents: PaymentsEventsAppExtension(),
-                    mobileCoinHelper: MobileCoinHelperMinimal(),
-                    callMessageHandler: NoopCallMessageHandler(),
-                    currentCallProvider: CurrentCallNoOpProvider(),
-                    notificationPresenter: NoopNotificationPresenterImpl(),
-                    incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
-                )
-
-            // Configure the rest of the globals before preparing the database.
-            SUIEnvironment.shared.setUp(
+        let databaseContinuation = await AppSetup()
+            .start(
+                appContext: appContext,
+                databaseStorage: databaseStorage,
+            )
+            .migrateDatabaseSchema()
+            .initGlobals(
                 appReadiness: appReadiness,
-                authCredentialManager: databaseContinuation.authCredentialManager
+                backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
+                deviceBatteryLevelManager: nil,
+                deviceSleepManager: nil,
+                paymentsEvents: PaymentsEventsAppExtension(),
+                mobileCoinHelper: MobileCoinHelperMinimal(),
+                callMessageHandler: NoopCallMessageHandler(),
+                currentCallProvider: CurrentCallNoOpProvider(),
+                notificationPresenter: NoopNotificationPresenterImpl(),
+                incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
             )
 
-            let finalContinuation = await databaseContinuation.migrateDatabaseData()
-            finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
-            switch finalContinuation.setUpLocalIdentifiers(
-                willResumeInProgressRegistration: false,
-                canInitiateRegistration: false
-            ) {
-            case .corruptRegistrationState:
-                self.showNotRegisteredView()
-                return
-            case nil:
-                self.setAppIsReady()
-            }
+        // Configure the rest of the globals before preparing the database.
+        SUIEnvironment.shared.setUp(
+            appReadiness: appReadiness,
+            authCredentialManager: databaseContinuation.authCredentialManager
+        )
 
-            if ScreenLock.shared.isScreenLockEnabled() {
-                let didUnlock = await withCheckedContinuation { continuation in
-                    let viewController = SAEScreenLockViewController { didUnlock in
-                        continuation.resume(returning: didUnlock)
-                    }
-                    self.showPrimaryViewController(viewController)
+        let finalContinuation = await databaseContinuation.migrateDatabaseData()
+        finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
+        switch finalContinuation.setUpLocalIdentifiers(
+            willResumeInProgressRegistration: false,
+            canInitiateRegistration: false
+        ) {
+        case .corruptRegistrationState:
+            self.showNotRegisteredView()
+            return
+        case nil:
+            self.setAppIsReady()
+        }
+
+        var didDisplaceInitialLoadViewController = false
+
+        if ScreenLock.shared.isScreenLockEnabled() {
+            let didUnlock = await withCheckedContinuation { continuation in
+                let viewController = SAEScreenLockViewController { didUnlock in
+                    continuation.resume(returning: didUnlock)
                 }
-                guard didUnlock else {
-                    self.shareViewWasCancelled()
+                self.setViewControllers([viewController], animated: false)
+            }
+            guard didUnlock else {
+                self.shareViewWasCancelled()
+                return
+            }
+            // If we show the Screen Lock UI, that'll displace the loading view
+            // controller or prevent it from being shown.
+            didDisplaceInitialLoadViewController = true
+        }
+
+        // Prepare the attachments.
+
+        let typedItemProviders: [TypedItemProvider]
+        do {
+            typedItemProviders = try buildTypedItemProviders()
+        } catch {
+            self.presentAttachmentError(error)
+            return
+        }
+
+        // We need the unidentified connection for bulk identity key lookups.
+        let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
+        self.connectionTokens.append(chatConnectionManager.requestUnidentifiedConnection())
+
+        let conversationPicker: SharingThreadPickerViewController
+        conversationPicker = SharingThreadPickerViewController(
+            areAttachmentStoriesCompatPrecheck: typedItemProviders.allSatisfy { $0.isStoriesCompatible },
+            shareViewDelegate: self
+        )
+
+        let preSelectedThread = self.fetchPreSelectedThread()
+
+        let loadViewControllerToDisplay: SAELoadViewController?
+        let loadViewControllerForProgress: SAELoadViewController?
+
+        // If we have a pre-selected thread, we wait to show the approval view
+        // until the attachments have been built. Otherwise, we'll present it
+        // immediately and tell it what attachments we're sharing once we've
+        // finished building them.
+        if preSelectedThread == nil {
+            self.setViewControllers([conversationPicker], animated: false)
+            // We show a progress spinner on the recipient picker.
+            loadViewControllerToDisplay = nil
+            loadViewControllerForProgress = nil
+        } else if didDisplaceInitialLoadViewController {
+            // We hit this branch when isScreenLockEnabled() == true. In this case, we
+            // need a new instance because the initial one has already been
+            // shown/dismissed.
+            loadViewControllerToDisplay = SAELoadViewController(delegate: self)
+            loadViewControllerForProgress = loadViewControllerToDisplay
+        } else {
+            // We don't need to show anything (it'll be shown by the block at the
+            // beginning of this Task), but we do want to hook up progress reporting.
+            loadViewControllerToDisplay = nil
+            loadViewControllerForProgress = initialLoadViewController
+        }
+
+        let attachments: [SignalAttachment]
+        do {
+            // If buildAndValidateAttachments takes longer than 200ms, we want to show
+            // the new load view. If it takes less than 200ms, we'll exit out of this
+            // `do` block, that will cancel the `async let`, and then we'll leave the
+            // primary view controller alone as a result.
+            async let _ = { @MainActor () async throws -> Void in
+                guard let loadViewControllerToDisplay else {
                     return
                 }
-                // If we show the Screen Lock UI, that'll displace the loading view
-                // controller or prevent it from being shown.
-                didDisplaceInitialLoadViewController = true
-            }
-
-            // Prepare the attachments.
-
-            let typedItemProviders: [TypedItemProvider]
-            do {
-                typedItemProviders = try buildTypedItemProviders()
-            } catch {
-                self.presentAttachmentError(error)
-                return
-            }
-
-            // We need the unidentified connection for bulk identity key lookups.
-            let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
-            self.connectionTokens.append(chatConnectionManager.requestUnidentifiedConnection())
-
-            let conversationPicker: SharingThreadPickerViewController
-            conversationPicker = SharingThreadPickerViewController(
-                areAttachmentStoriesCompatPrecheck: typedItemProviders.allSatisfy { $0.isStoriesCompatible },
-                shareViewDelegate: self
+                try await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
+                // Check for cancellation on the main thread to ensure mutual exclusion
+                // with the the code outside of this do block.
+                try Task.checkCancellation()
+                self.setViewControllers([loadViewControllerToDisplay], animated: false)
+            }()
+            attachments = try await buildAndValidateAttachments(
+                for: typedItemProviders,
+                setProgress: { loadViewControllerForProgress?.progress = $0 }
             )
+        } catch {
+            self.presentAttachmentError(error)
+            return
+        }
 
-            let preSelectedThread = self.fetchPreSelectedThread()
+        Logger.info("Setting picker attachments: \(attachments)")
+        conversationPicker.attachments = attachments
 
-            let loadViewControllerToDisplay: SAELoadViewController?
-            let loadViewControllerForProgress: SAELoadViewController?
+        if let preSelectedThread {
+            let approvalViewController = try conversationPicker.buildApprovalViewController(for: preSelectedThread)
+            self.setViewControllers([approvalViewController], animated: false)
 
-            // If we have a pre-selected thread, we wait to show the approval view
-            // until the attachments have been built. Otherwise, we'll present it
-            // immediately and tell it what attachments we're sharing once we've
-            // finished building them.
-            if preSelectedThread == nil {
-                self.showPrimaryViewController(conversationPicker)
-                // We show a progress spinner on the recipient picker.
-                loadViewControllerToDisplay = nil
-                loadViewControllerForProgress = nil
-            } else if didDisplaceInitialLoadViewController {
-                // We hit this branch when isScreenLockEnabled() == true. In this case, we
-                // need a new instance because the initial one has already been
-                // shown/dismissed.
-                loadViewControllerToDisplay = SAELoadViewController(delegate: self)
-                loadViewControllerForProgress = loadViewControllerToDisplay
-            } else {
-                // We don't need to show anything (it'll be shown by the block at the
-                // beginning of this Task), but we do want to hook up progress reporting.
-                loadViewControllerToDisplay = nil
-                loadViewControllerForProgress = initialLoadViewController
-            }
-
-            let attachments: [SignalAttachment]
-            do {
-                // If buildAndValidateAttachments takes longer than 200ms, we want to show
-                // the new load view. If it takes less than 200ms, we'll exit out of this
-                // `do` block, that will cancel the `async let`, and then we'll leave the
-                // primary view controller alone as a result.
-                async let _ = { @MainActor () async throws -> Void in
-                    guard let loadViewControllerToDisplay else {
-                        return
-                    }
-                    try await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
-                    // Check for cancellation on the main thread to ensure mutual exclusion
-                    // with the the code outside of this do block.
-                    try Task.checkCancellation()
-                    self.showPrimaryViewController(loadViewControllerToDisplay)
-                }()
-                attachments = try await buildAndValidateAttachments(
-                    for: typedItemProviders,
-                    setProgress: { loadViewControllerForProgress?.progress = $0 }
-                )
-            } catch {
-                self.presentAttachmentError(error)
-                return
-            }
-
-            Logger.info("Setting picker attachments: \(attachments)")
-            conversationPicker.attachments = attachments
-
-            if let preSelectedThread {
-                let approvalViewController = try conversationPicker.buildApprovalViewController(for: preSelectedThread)
-                self.showPrimaryViewController(approvalViewController)
-
-                // If you're sharing to a specific thread, the picker view controller isn't
-                // added to the view hierarchy, but it's the "brains" of the sending
-                // operation and must not be deallocated. Tie its lifetime to the lifetime
-                // of the view controller that's visible.
-                ObjectRetainer.retainObject(conversationPicker, forLifetimeOf: approvalViewController)
-            }
+            // If you're sharing to a specific thread, the picker view controller isn't
+            // added to the view hierarchy, but it's the "brains" of the sending
+            // operation and must not be deallocated. Tie its lifetime to the lifetime
+            // of the view controller that's visible.
+            ObjectRetainer.retainObject(conversationPicker, forLifetimeOf: approvalViewController)
         }
 
         NotificationCenter.default.addObserver(
@@ -241,7 +246,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         if ScreenLock.shared.isScreenLockEnabled() {
             Logger.info("dismissing.")
-            dismissAndCompleteExtension(animated: false, error: ShareViewControllerError.screenLockEnabled)
+            dismissAndCompleteExtension(error: ShareViewControllerError.screenLockEnabled)
         }
     }
 
@@ -277,15 +282,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
 
-        let navigationController = UINavigationController()
-        navigationController.presentationController?.delegate = self
-        navigationController.setViewControllers([viewController], animated: false)
-        if self.presentedViewController == nil {
-            self.present(navigationController, animated: true)
-        } else {
-            owsFailDebug("modal already presented. swapping modal content for: \(type(of: viewController))")
-            assert(self.presentedViewController == navigationController)
-        }
+        self.setViewControllers([viewController], animated: false)
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
@@ -297,62 +294,38 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     public func shareViewWasCompleted() {
         Logger.info("")
-        dismissAndCompleteExtension(animated: true, error: nil)
+        dismissAndCompleteExtension(error: nil)
     }
 
     public func shareViewWasCancelled() {
         Logger.info("")
-        dismissAndCompleteExtension(animated: true, error: ShareViewControllerError.obsoleteShare)
+        dismissAndCompleteExtension(error: ShareViewControllerError.obsoleteShare)
     }
 
     public func shareViewFailed(error: Error) {
         owsFailDebug("Error: \(error)")
-        dismissAndCompleteExtension(animated: true, error: error)
+        dismissAndCompleteExtension(error: error)
     }
 
-    private func dismissAndCompleteExtension(animated: Bool, error: Error?) {
+    private func dismissAndCompleteExtension(error: Error?) {
+        AssertIsOnMainThread()
+
         let extensionContext = self.extensionContext
-        dismiss(animated: animated) {
-            AssertIsOnMainThread()
-
-            if let error {
-                extensionContext?.cancelRequest(withError: error)
-            } else {
-                extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-            }
-
-            // Share extensions reside in a process that may be reused between usages.
-            // That isn't safe; the codebase is full of statics (e.g. singletons) which
-            // we can't easily clean up.
-            Logger.info("ExitShareExtension")
-            Logger.flush()
-            exit(0)
+        if let error {
+            extensionContext?.cancelRequest(withError: error)
+        } else {
+            extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
         }
+
+        // Share extensions reside in a process that may be reused between usages.
+        // That isn't safe; the codebase is full of statics (e.g. singletons) which
+        // we can't easily clean up.
+        Logger.info("ExitShareExtension")
+        Logger.flush()
+        exit(0)
     }
 
     // MARK: Helpers
-
-    // This view controller is not visible to the user. It exists to intercept touches, set up the
-    // extensions dependencies, and eventually present a visible view to the user.
-    // For speed of presentation, we only present a single modal, and if it's already been presented
-    // we swap out the contents.
-    // e.g. if loading is taking a while, the user will see the load screen presented with a modal
-    // animation. Next, when loading completes, the load view will be switched out for the contact
-    // picker view.
-    private func showPrimaryViewController(_ viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        guard let shareViewNavigationController = shareViewNavigationController else {
-            owsFailDebug("Missing shareViewNavigationController")
-            return
-        }
-        shareViewNavigationController.setViewControllers([viewController], animated: true)
-        if self.presentedViewController == nil {
-            self.present(shareViewNavigationController, animated: true)
-        } else {
-            assert(self.presentedViewController == shareViewNavigationController)
-        }
-    }
 
     private func fetchPreSelectedThread() -> TSThread? {
         let hasIntent = self.extensionContext?.intent != nil
@@ -488,34 +461,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         return result
     }
-}
 
-extension ShareViewController: UIAdaptivePresentationControllerDelegate {
-    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        shareViewWasCancelled()
-    }
-}
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
-// MARK: -
-
-extension ShareViewController: UINavigationControllerDelegate {
-
-    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, in: navigationController, animated: animated)
-    }
-
-    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, in: navigationController, animated: animated)
-    }
-
-    private func updateNavigationBarVisibility(for viewController: UIViewController,
-                                               in navigationController: UINavigationController,
-                                               animated: Bool) {
-        switch viewController {
-        case is AttachmentApprovalViewController:
-            navigationController.setNavigationBarHidden(true, animated: animated)
-        default:
-            navigationController.setNavigationBarHidden(false, animated: animated)
+        // If we're disappearing because we presented something else (e.g., image
+        // editing tools), don't cancel the share extension.
+        guard self.presentedViewController == nil else {
+            return
         }
+
+        shareViewWasCancelled()
     }
 }
