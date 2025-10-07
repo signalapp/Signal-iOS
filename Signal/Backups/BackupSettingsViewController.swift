@@ -526,10 +526,14 @@ class BackupSettingsViewController:
 
     // MARK: -
 
-    private lazy var loadBackupSubscriptionQueue = SerialTaskQueue()
+    private let loadBackupSubscriptionTaskQueue = SerialTaskQueue()
 
     fileprivate func loadBackupSubscription() {
-        loadBackupSubscriptionQueue.enqueue { @MainActor [self] in
+        loadBackupSubscriptionTaskQueue.enqueueCancellingPrevious { @MainActor [self] in
+            if Task.isCancelled {
+                return
+            }
+
             withAnimation {
                 viewModel.backupSubscriptionLoadingState = .loading
             }
@@ -538,6 +542,10 @@ class BackupSettingsViewController:
             do {
                 let backupSubscription = try await _loadBackupSubscription()
                 newLoadingState = .loaded(backupSubscription)
+            } catch is CancellationError {
+                // We were cancelled: leave it loading. Whoever cancelled us
+                // should be trying again.
+                return
             } catch let error where error.isNetworkFailureOrTimeout {
                 newLoadingState = .networkError
             } catch {
