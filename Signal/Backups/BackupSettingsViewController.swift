@@ -930,11 +930,21 @@ class BackupSettingsViewController:
             return
         }
 
-        let primaryButtonTitle: String = switch currentBackupPlan {
+        let primaryButtonTitle: String
+        switch currentBackupPlan {
+        case .disabling:
+            // For simplicity, if we're already disabling don't allow creating a
+            // new key. We may be disabling because of an earlier "create new
+            // key" action, and we don't want ambiguity about which key is the
+            // "latest".
+            //
+            // At the time of writing, you can't get to this flow if BackupPlan
+            // is .disabling, so this dead-ends instead of showing a nice error.
+            owsFail("Trying to show Create New Key sheet, but BackupPlan is .disabling. How did the UI let us get here?")
         case .disabled:
-            CommonStrings.continueButton
-        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            OWSLocalizedString(
+            primaryButtonTitle = CommonStrings.continueButton
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
+            primaryButtonTitle = OWSLocalizedString(
                 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE",
                 comment: "TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key."
             )
