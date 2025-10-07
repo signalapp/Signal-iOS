@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "যেকোনো সময় আপনার ব্যাকআপ মুছে ফেলুন";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "আপনি সেটিংস থেকে ব্যাকআপ সক্রিয় করতে পারবেন।";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal-এর সুরক্ষিত, এন্ড-টু-এন্ড এনক্রিপ্ট করা স্টোরেজ সার্ভিস ব্যবহার করে আপনার মেসেজ ও মিডিয়ার ব্যাকআপ রাখুন। আপনি যখন একটি নতুন ফোন নিবেন বা Signal পুনরায় ইনস্টল করবেন তখন আর কোনো মেসেজ মিস করবেন না।";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal নিরাপদ ব্যাকআপ";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "আপনার পুনরুদ্ধার 'কি' হলো একটি 64-ক্যারেক্টারের কোড যা আপনার ব্যাকআপ পুনরুদ্ধার করতে প্রয়োজন হবে।";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "আপনার পুনরুদ্ধার 'কি'-টি পাসওয়ার্ড ম্যানেজারের মতো নিরাপদ কোথাও সংরক্ষণ করুন এবং এটি কারো সাথে শেয়ার করবেন না।";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "এটি হারিয়ে ফেললে, আপনি আপনার মেসেজ পুনরুদ্ধার করতে পারবেন না।";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "পুনরুদ্ধার 'কি' দেখুন";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "পুনরুদ্ধার 'কি'";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "ক্লিপবোর্ডে কপি করুন";
@@ -1631,16 +1631,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "বর্তমান প্ল্যান";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "পরিকল্পনা পরিবর্তন করুন";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "আপনার পরিকল্পনা পরিবর্তন করলে, আপনার সকল টেক্সট মেসেজ এবং সর্বশেষ 45 দিনের মিডিয়া আপনার ব্যাকআপে অন্তর্ভুক্ত করা হবে।";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "পরিকল্পনা পরিবর্তন করুন";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "ডাউনগ্রেড করে ফ্রি-তে যাবেন?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "টেক্সট + 45 দিনের মিডিয়া";
@@ -6491,13 +6491,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "ভোট দেখুন";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "একটি প্রশ্ন যোগ করুন";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "একটি প্রশ্ন ও অন্তত 2টি বিকল্প যোগ করুন";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "অন্তত 2টি বিকল্প যোগ করুন";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "নতুন ভোট";
@@ -6512,7 +6512,7 @@
 "POLL_ENDED_NOTIFICATION" = "%1$@ “%2$@” ভোটগ্রহণ কার্যক্রমটি শেষ করেছেন";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "চূড়ান্ত ফলাফল";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "জরিপ";

@@ -1,1 +1,1 @@
-• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.
+• Virheenkorjauksia kolmannen osapuolen näppäimistöille iOS 26:ssa.

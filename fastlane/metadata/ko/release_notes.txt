@@ -1,1 +1,1 @@
-• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.
+• iOS 26의 타사 키보드에 대한 버그를 수정했습니다.

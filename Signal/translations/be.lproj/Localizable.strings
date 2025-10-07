@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Выдаліць рэзервовую копію ў любы час";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Вы можаце ўключыць рэзервовае капіраванне ў «Наладах».";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Стварайце рэзервовыя копіі для вашых паведамленняў і медыяфайлаў з дапамогай надзейнага скразнога шыфраванага сэрвісу захоўвання даных Signal. Не губляйце аніводнага паведамлення, калі вы набываеце новы тэлефон або нанова ўсталёўваеце Signal.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Бяспечнае рэзервовае капіраванне Signal";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Ваш код для аднаўлення – гэта 64-значны код, які дазваляе аднавіць рэзервовую копію.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Захоўвайце код для аднаўлення ў бяспечным месцы, накшталт, у менеджары пароляў, і нікому не паказвайце яго.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "Калі вы забудзеце яго, вы больш не зможаце аднавіць свае паведамленні.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "Прагледзець код для аднаўлення";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Код для аднаўлення";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Скапіраваць у буфер абмену";
@@ -1460,7 +1460,7 @@
 "CAMERA_VO_CLOSE_BUTTON" = "Закрыць";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "Рэжым «Складальнік»";
+"CAMERA_VO_COMPOSER_MODE" = "Рэжым «Панэль набору»";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Аўтаматычна";
@@ -1631,16 +1631,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Бягучы план";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Змяніць план";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Калі вы зменіце свой тарыфны план, усе вашы тэкставыя паведамленні і медыяфайлы за апошнія 45 дзён будуць уключаны ў рэзервовую копію.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Змяніць план";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Панізіць да бясплатнага плана?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Тэкст + 45 дзён утрымання медыяфайлаў";
@@ -6491,13 +6491,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "Прагледзець галасы";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Дадаць пытанне";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Дадаць пытанне і не менш за 2 варыянты";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Дадаць не менш за 2 варыянты";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "Новае апытанне";
@@ -6512,7 +6512,7 @@
 "POLL_ENDED_NOTIFICATION" = "%1$@ завяршыў(-ла) апытанне «%2$@»";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "Канчатковыя вынікі";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Апытанне";
@@ -7205,7 +7205,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Прапусціць пампаванне";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Каб завяршыць пампаванне медыяфайлаў, вашай прыладзе патрабуецца %1$@ памяці.\n\nКаб вызваліць месца са сховішча, перайдзіце ў Налады > Агульныя > Сховішча iPhone. Вы можаце выдаліць праграмы і змесціва, што вы не выкарыстоўваеце.";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Каб завяршыць пампаванне медыяфайлаў, вашай прыладзе патрабуецца %1$@ памяці.\n\nКаб вызваліць месца са сховішча, перайдзіце ў Налады > Агульныя > Сховішча iPhone. Вы можаце выгрузіць або выдаліць праграмы і змесціва, што вы не выкарыстоўваеце.";
 
 /* Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Вызваліце %1$@ на гэтай прыладзе";

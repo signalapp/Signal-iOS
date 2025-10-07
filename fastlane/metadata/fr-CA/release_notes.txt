@@ -1,1 +1,1 @@
-• This might be your type of update if you've been experiencing typing bugs with your third-party keyboard on iOS 26.
+• Les ingénieurs Signal ont frappé fort : exit les bugs de frappe sous iOS 26 pour celles et ceux qui utilisent un clavier tiers.
