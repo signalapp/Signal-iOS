@@ -87,6 +87,7 @@ public class RegistrationSplashViewController: OWSViewController {
         stackView.preservesSuperviewLayoutMargins = true
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
+        view.sendSubviewToBack(stackView) // don't obscure buttons in the corner
         stackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
