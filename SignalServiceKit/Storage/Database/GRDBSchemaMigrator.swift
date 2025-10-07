@@ -289,14 +289,10 @@ public class GRDBSchemaMigrator {
         case dropOrphanedGroupStoryReplies
         case addMessageBackupAvatarFetchQueue
         case addMessageBackupAvatarFetchQueueRetries
-        case tsMessageAttachmentMigration1
-        case tsMessageAttachmentMigration2
-        case tsMessageAttachmentMigration3
         case addEditStateToMessageAttachmentReference
         case removeVersionedDMTimerCapabilities
         case removeJobRecordTSAttachmentColumns
         case deprecateAttachmentIdsColumn
-        case dropTSAttachmentTable
         case dropMediaGalleryItemTable
         case addBackupsReceiptCredentialStateToJobRecord
         case recreateTSAttachment
@@ -355,14 +351,9 @@ public class GRDBSchemaMigrator {
         // Note that account state is loaded *before* running data migrations, because many model objects expect
         // to be able to access that without a transaction.
         case dataMigration_populateGalleryItems
-        case dataMigration_markOnboardedUsers_v2
-        case dataMigration_clearLaunchScreenCache
         case dataMigration_enableV2RegistrationLockIfNecessary
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
-        case dataMigration_recordMessageRequestInteractionIdEpoch
-        case dataMigration_indexSignalRecipients
-        case dataMigration_kbsStateCleanup
         case dataMigration_turnScreenSecurityOnForExistingUsers
         case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
@@ -376,21 +367,75 @@ public class GRDBSchemaMigrator {
         case dataMigration_repairAvatar
         case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
-        case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
         case dataMigration_deleteOldGroupCapabilities
         case dataMigration_updateStoriesDisabledInAccountRecord
         case dataMigration_removeGroupStoryRepliesFromSearchIndex
         case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
-        case dataMigration_indexPrivateStoryThreadNames
         case dataMigration_scheduleStorageServiceUpdateForSystemContacts
-        case dataMigration_removeLinkedDeviceSystemContacts
-        case dataMigration_reindexSignalAccounts
         case dataMigration_ensureLocalDeviceId
         case dataMigration_indexSearchableNames
         case dataMigration_removeSystemContacts
         case dataMigration_clearLaunchScreenCache2
         case dataMigration_resetLinkedDeviceAuthorMergeBuilder
+
+        // We must ensure that we never re-use a MigrationId. It's unlikely that
+        // we'll happen to pick the same name twice, but it's possible. We keep old
+        // MigrationIds here (in DEBUG builds) so that the compiler will complain
+        // if we ever re-use an existing identifier.
+#if DEBUG
+        case addColumnsForStoryContext
+        case addExclusiveProcessIdentifierToJobRecord
+        case addGroupCallMessage
+        case addHiddenInteractionColumn
+        case addOrphanedBackupAttachmentTable
+        case addPaymentModels36
+        case addPaymentModels37
+        case addPaymentModels39
+        case dataMigration_clearLaunchScreenCache
+        case dataMigration_disableLinkPreviewForExistingUsers
+        case dataMigration_fixThreeSixteenDowngraders
+        case dataMigration_kbsStateCleanup
+        case dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary
+        case dataMigration_markOnboardedUsers
+        case dataMigration_markOnboardedUsers_v2
+        case dataMigration_migrateGroupAvatarsToDisk
+        case dataMigration_populateLastReceivedStoryTimestamp
+        case dataMigration_recordMessageRequestInteractionIdEpoch
+        case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData
+        case dataMigration_rotateStorageServiceKeyAndResetLocalData
+        case dataMigration_rotateStorageServiceKeyAndResetLocalDataV2
+        case dataMigration_rotateStorageServiceKeyAndResetLocalDataV3
+        case experienceUpgradeSnooze
+        case indexInfoMessageOnType
+        case indexMediaGallery2
+        case indexSignalRecipients
+        case messageDecryptDeduplication
+        case messageDecryptDeduplication2
+        case messageDecryptDeduplication3
+        case messageDecryptDeduplicationV4
+        case messageDecryptDeduplicationV5
+        case removeRedundantPhoneNumbers
+        case signalAccount_add_contactAvatar
+        case signalAccount_add_contactAvatarData
+        case signalAccount_add_contactAvatarPngData
+
+        // These were rolled back in a complex dance of rewriting migration
+        // history. See `recreateTSAttachment`.
+        case tsMessageAttachmentMigration1
+        case tsMessageAttachmentMigration2
+        case tsMessageAttachmentMigration3
+        case dropTSAttachmentTable
+
+        // Obsoleted by dataMigration_indexSearchableNames.
+        case dataMigration_indexSignalRecipients
+        case dataMigration_indexMultipleNameComponentsForReceipients
+        case dataMigration_indexPrivateStoryThreadNames
+        case dataMigration_reindexSignalAccounts
+
+        // Obsoleted by dataMigration_removeSystemContacts.
+        case dataMigration_removeLinkedDeviceSystemContacts
+#endif
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -3466,28 +3511,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.tsMessageAttachmentMigration1) { tx in
-            // This was rolled back in a complex dance of rewriting migration
-            // history. See `recreateTSAttachment`.
-            // TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.tsMessageAttachmentMigration2) { tx in
-            // This was rolled back in a complex dance of rewriting migration
-            // history. See `recreateTSAttachment`.
-            // TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.tsMessageAttachmentMigration3) { tx in
-            // This was rolled back in a complex dance of rewriting migration
-            // history. See `recreateTSAttachment`.
-            // TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
-            // try tx.database.drop(table: "TSAttachmentMigration")
-            return .success(())
-        }
-
         migrator.registerMigration(.addEditStateToMessageAttachmentReference) { tx in
             try tx.database.alter(table: "MessageAttachmentReference") { table in
                 table.add(column: "ownerIsPastEditRevision", .boolean)
@@ -3527,13 +3550,6 @@ public class GRDBSchemaMigrator {
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.rename(column: "attachmentIds", to: "deprecated_attachmentIds")
             }
-            return .success(())
-        }
-
-        migrator.registerMigration(.dropTSAttachmentTable) { tx in
-            // This was rolled back in a complex dance of rewriting migration
-            // history. See `recreateTSAttachment`.
-            // try tx.database.drop(table: "model_TSAttachment")
             return .success(())
         }
 
@@ -4202,15 +4218,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_markOnboardedUsers_v2) { transaction in
-            // No-op; this state is not read anywhere that matters.
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_clearLaunchScreenCache) { _ in
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
             if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) {
                 KeyValueStore(collection: "kOWS2FAManager_Collection")
@@ -4227,22 +4234,6 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_markAllInteractionsAsNotDeleted) { transaction in
             try transaction.database.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_recordMessageRequestInteractionIdEpoch) { transaction in
-            // Obsolete.
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_indexSignalRecipients) { transaction in
-            // Obsoleted by dataMigration_indexSearchableNames.
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_kbsStateCleanup) { transaction in
-            // Tombstone for an old migration that doesn't need to exist anymore.
-            // But no new migration should reuse the identifier.
             return .success(())
         }
 
@@ -4475,11 +4466,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { transaction in
-            // Obsoleted by dataMigration_indexSearchableNames.
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
             for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction) {
                 guard let thread = thread as? TSGroupThread else { continue }
@@ -4533,11 +4519,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_indexPrivateStoryThreadNames) { transaction in
-            // Obsoleted by dataMigration_indexSearchableNames.
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { transaction in
             // We've added fields on the StorageService ContactRecord proto for
             // their "system name", or the name of their associated system
@@ -4564,16 +4545,6 @@ public class GRDBSchemaMigrator {
             }
 
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
-            // Obsoleted by .dataMigration_removeSystemContacts.
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_reindexSignalAccounts) { transaction in
-            // Obsoleted by dataMigration_indexSearchableNames.
             return .success(())
         }
 
