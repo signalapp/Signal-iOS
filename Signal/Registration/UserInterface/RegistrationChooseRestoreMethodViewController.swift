@@ -30,211 +30,227 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     ) {
         self.presenter = presenter
         self.restorePath = restorePath
+
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
-    // MARK: Rendering
+    // MARK: UI
 
-    private lazy var titleLabel: UILabel = {
-        let result = UILabel.titleLabelForRegistration(
+    private func prominentRestoreButton() -> UIButton {
+        return UIButton.registrationChoiceButton(
+            title: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE",
+                comment: "The title for the device transfer 'choice' view 'restore backup' option"
+            ),
+            subtitle: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
+                comment: "The body for the device transfer 'choice' view 'restore backup' option"
+            ),
+            iconName: "signal-backups-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSelectRestoreFromBackup()
+            }
+        )
+    }
+
+    private func prominentTransferButton() -> UIButton {
+        return UIButton.registrationChoiceButton(
+            title: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE",
+                comment: "The title for the device transfer 'choice' view 'transfer' option"
+            ),
+            subtitle: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY",
+                comment: "The body for the device transfer 'choice' view 'transfer' option"
+            ),
+            iconName: "transfer-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSelectDeviceTransfer()
+            }
+        )
+    }
+
+    private func prominentSkipRestoreButton() -> UIButton {
+        return UIButton.registrationChoiceButton(
+            title: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE",
+                comment: "The title for the skip restore 'choice' option"
+            ),
+            subtitle: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY",
+                comment: "The body for the skip restore 'choice' option"
+            ),
+            iconName: "continue-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSkipRestore()
+            }
+        )
+    }
+
+    private func skipRestoreButton(isLargeButton: Bool) -> UIButton {
+        let buttonTitle = OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE",
+            comment: "The title for a less-prominent skip restore 'choice' option"
+        )
+        let buttonConfiguration: UIButton.Configuration
+        if isLargeButton {
+            buttonConfiguration = .largeSecondary(title: buttonTitle)
+        } else {
+            buttonConfiguration = .mediumSecondary(title: buttonTitle)
+        }
+        return UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSkipRestore()
+            }
+        )
+    }
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .Signal.background
+
+        // Content view.
+        let stackView = UIStackView()
+        var bottomView: UIView?
+        switch self.restorePath {
+        case .quickRestore(let tier, let platform) where platform == .android:
+            switch tier {
+            case .free, .paid:
+                addDefaultTitle(to: stackView)
+                stackView.addArrangedSubviews([
+                    prominentRestoreButton(),
+                    prominentSkipRestoreButton(),
+                ])
+            case .none:
+                addNoRestoreOptionViews(to: stackView)
+            }
+        case .quickRestore(let tier, _):
+            addDefaultTitle(to: stackView)
+            switch tier {
+            case .free:
+                stackView.addArrangedSubviews([
+                    prominentTransferButton(),
+                    prominentRestoreButton(),
+                ])
+                bottomView = addCompactButtonToTheBottom(button: skipRestoreButton(isLargeButton: false))
+            case .paid:
+                stackView.addArrangedSubviews([
+                    prominentRestoreButton(),
+                    prominentTransferButton()
+                ])
+                bottomView = addCompactButtonToTheBottom(button: skipRestoreButton(isLargeButton: false))
+            case .none:
+                stackView.addArrangedSubviews([
+                    prominentTransferButton(),
+                    prominentSkipRestoreButton(),
+                ])
+            }
+        case .manualRestore:
+            addDefaultTitle(to: stackView)
+            stackView.addArrangedSubviews([
+                prominentRestoreButton(),
+                prominentSkipRestoreButton(),
+            ])
+            let cancelButton = UIButton(
+                configuration: .mediumSecondary(title: CommonStrings.cancelButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapCancel()
+                }
+            )
+            bottomView = addCompactButtonToTheBottom(button: cancelButton)
+        case .unspecified:
+            addDefaultTitle(to: stackView)
+            stackView.addArrangedSubviews([
+                prominentTransferButton(),
+                prominentRestoreButton(),
+                prominentSkipRestoreButton(),
+            ])
+        }
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.spacing = 12
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        // Constraints.
+        let scrollView = UIScrollView()
+        scrollView.preservesSuperviewLayoutMargins = true
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        if let bottomView {
+            NSLayoutConstraint.activate([
+                scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: bottomView.topAnchor),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            ])
+        }
+
+        scrollView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+        ])
+    }
+
+    private func addDefaultTitle(to stackView: UIStackView) {
+        let titleLabel = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE",
                 comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup."
             )
         )
-        return result
-    }()
-
-    private lazy var explanationLabel: UILabel = {
-        let result = UILabel.explanationLabelForRegistration(
+        let explanationLabel = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION",
                 comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question."
             )
         )
-        return result
-    }()
-
-    private func choiceButton(
-        title: String,
-        body: String,
-        iconName: String,
-        iconSize: CGFloat? = nil,
-        selector: Selector
-    ) -> OWSFlatButton {
-        let button = RegistrationChoiceButton(title: title, body: body, iconName: iconName, iconSize: iconSize)
-        button.addTarget(target: self, selector: selector)
-        return button
-    }
-
-    private lazy var restoreFromBackupButton = choiceButton(
-        title: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE",
-            comment: "The title for the device transfer 'choice' view 'restore backup' option"
-        ),
-        body: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
-            comment: "The body for the device transfer 'choice' view 'restore backup' option"
-        ),
-        iconName: "signal-backups-48",
-        iconSize: 48,
-        selector: #selector(didSelectRestoreFromBackup)
-    )
-
-    private lazy var transferButton = choiceButton(
-        title: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE",
-            comment: "The title for the device transfer 'choice' view 'transfer' option"
-        ),
-        body: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY",
-            comment: "The body for the device transfer 'choice' view 'transfer' option"
-        ),
-        iconName: "transfer-48",
-        selector: #selector(didSelectDeviceTransfer)
-    )
-
-    private lazy var prominentSkipRestoreButton = choiceButton(
-        title: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE",
-            comment: "The title for the skip restore 'choice' option"
-        ),
-        body: OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY",
-            comment: "The body for the skip restore 'choice' option"
-        ),
-        iconName: "continue-48",
-        selector: #selector(didSkipRestore)
-    )
-
-    private lazy var smallSkipRestoreButton: UIButton = {
-        var config = UIButton.Configuration.plain()
-        config.title = OWSLocalizedString(
-            "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE",
-            comment: "The title for a less-prominent skip restore 'choice' option"
-        )
-        config.baseForegroundColor = UIColor.Signal.accent
-        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody.semibold())
-        return UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
-            self?.didSkipRestore()
-        })
-    }()
-
-    private lazy var cancelButton = OWSFlatButton.secondaryButtonForRegistration(
-        title: CommonStrings.cancelButton,
-        target: self,
-        selector: #selector(didTapCancel)
-    )
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        initialRender()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
-
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
-
-        let scrollView = UIScrollView()
-        view.addSubview(scrollView)
-
-        let stackView = UIStackView()
-        var anchorView: UIView?
-        switch self.restorePath {
-        case .quickRestore(let tier, let platform) where platform == .android:
-            switch tier {
-            case .free, .paid:
-                addDefaultTitle(stackView)
-                stackView.addArrangedSubviews([
-                    restoreFromBackupButton,
-                    prominentSkipRestoreButton
-                ])
-            case .none:
-                addNoRestoreOptionViews(stackView)
-            }
-        case .quickRestore(let tier, _):
-            addDefaultTitle(stackView)
-            switch tier {
-            case .free:
-                stackView.addArrangedSubviews([
-                    transferButton,
-                    restoreFromBackupButton
-                ])
-                addSmallSkipRestoreButton()
-                anchorView = smallSkipRestoreButton
-            case .paid:
-                stackView.addArrangedSubviews([
-                    restoreFromBackupButton,
-                    transferButton
-                ])
-                addSmallSkipRestoreButton()
-                anchorView = smallSkipRestoreButton
-            case .none:
-                stackView.addArrangedSubviews([
-                    transferButton,
-                    prominentSkipRestoreButton
-                ])
-            }
-        case .manualRestore:
-            addDefaultTitle(stackView)
-            stackView.addArrangedSubviews([
-                restoreFromBackupButton,
-                prominentSkipRestoreButton,
-            ])
-            view.addSubview(cancelButton)
-            cancelButton.autoHCenterInSuperview()
-            cancelButton.autoPinBottomToSuperviewMargin(withInset: 14)
-            anchorView = cancelButton
-        case .unspecified:
-            addDefaultTitle(stackView)
-            stackView.addArrangedSubviews([
-                transferButton,
-                restoreFromBackupButton,
-                prominentSkipRestoreButton,
-            ])
-        }
-        stackView.addArrangedSubviews([])
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 16
-        stackView.layoutMargins = .init(hMargin: 20, vMargin: 0)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        scrollView.addSubview(stackView)
-
-        scrollView.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
-        if let anchorView {
-            scrollView.autoPinEdge(.bottom, to: .top, of: anchorView)
-        } else {
-            scrollView.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-
-        stackView.autoPinWidth(toWidthOf: scrollView)
-        stackView.autoPinEdge(toSuperviewEdge: .top)
-        stackView.autoPinHeightToSuperviewMargins()
-
-        render()
-    }
-
-    private func addDefaultTitle(_ stackView: UIStackView) {
         stackView.addArrangedSubviews([
             titleLabel,
             explanationLabel
         ])
-        stackView.setCustomSpacing(12, after: titleLabel)
         stackView.setCustomSpacing(24, after: explanationLabel)
     }
 
-    private func addSmallSkipRestoreButton() {
-        view.addSubview(smallSkipRestoreButton)
-        smallSkipRestoreButton.autoHCenterInSuperview()
-        smallSkipRestoreButton.autoPinBottomToSuperviewMargin(withInset: 14)
+    private func addCompactButtonToTheBottom(button: UIButton) -> UIView {
+        button.setContentHuggingVerticalHigh()
+
+        // Compact button centered in a short container view.
+        let buttonContainer = UIView.container()
+        buttonContainer.addSubview(button)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+            button.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            button.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
+        ])
+
+        view.addSubview(buttonContainer)
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            buttonContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            buttonContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        return buttonContainer
     }
 
-    private func addNoRestoreOptionViews(_ stackView: UIStackView) {
+    private func addNoRestoreOptionViews(to stackView: UIStackView) {
         let title = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE",
@@ -251,12 +267,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             title,
             body
         ])
-        stackView.setCustomSpacing(12, after: title)
         stackView.setCustomSpacing(32, after: body)
 
         func labelWithImage(imageName: String, text: String) -> UIView {
             let image = UIImageView(image: UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate))
-            image.tintColor = UIColor.colorForRegistrationExplanationLabel
+            image.tintColor = .Signal.secondaryLabel
             let label = UILabel.explanationLabelForRegistration(text: text)
             label.textAlignment = .natural
             let stackView = UIStackView(
@@ -289,52 +304,59 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             ))
         ])
 
-        // Show the 'No backup to restore'
-        let continueButton = OWSFlatButton.primaryButtonForRegistration(
-            title: CommonStrings.okayButton,
-            target: self,
-            selector: #selector(didTapCancel)
+        let buttonContainer = UIView.container()
+        buttonContainer.preservesSuperviewLayoutMargins = true
+
+        // Show large "No backup to restore" and "Skip Restore"
+        let continueButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.okayButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapCancel()
+            }
         )
-        view.addSubview(continueButton)
-        continueButton.autoSetDimension(.width, toSize: 280)
-        continueButton.autoHCenterInSuperview()
+        buttonContainer.addSubview(continueButton)
 
-        addSmallSkipRestoreButton()
+        let skipRestoreButton = skipRestoreButton(isLargeButton: true)
+        buttonContainer.addSubview(skipRestoreButton)
 
-        continueButton.autoPinEdge(.bottom, to: .top, of: smallSkipRestoreButton, withOffset: -24)
-    }
+        continueButton.translatesAutoresizingMaskIntoConstraints = false
+        skipRestoreButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            continueButton.centerXAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.centerXAnchor),
+            continueButton.topAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.topAnchor),
+            continueButton.leadingAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.leadingAnchor, constant: 22),
 
-    private func render() {
-        view.backgroundColor = Theme.backgroundColor
-        titleLabel.textColor = .colorForRegistrationTitleLabel
-        explanationLabel.textColor = .colorForRegistrationExplanationLabel
-    }
+            skipRestoreButton.topAnchor.constraint(equalTo: continueButton.bottomAnchor, constant: 12),
+            skipRestoreButton.leadingAnchor.constraint(equalTo: continueButton.leadingAnchor),
+            skipRestoreButton.trailingAnchor.constraint(equalTo: continueButton.trailingAnchor),
+            skipRestoreButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
+        ])
+
+        view.addSubview(buttonContainer)
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            buttonContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            buttonContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+   }
 
     // MARK: Events
 
-    @objc
     private func didSelectRestoreFromBackup() {
         presenter?.didChooseRestoreMethod(method: .remote)
     }
 
-    @objc
     private func didSelectDeviceTransfer() {
         presenter?.didChooseRestoreMethod(method: .deviceTransfer)
     }
 
-    @objc
     private func didSkipRestore() {
         presenter?.didChooseRestoreMethod(method: .declined)
     }
 
-    @objc
     private func didTapCancel() {
         presenter?.didCancelRestoreMethodSelection()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        render()
     }
 }
 
