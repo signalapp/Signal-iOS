@@ -116,7 +116,20 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         }
     }
 
-    // MARK: Rendering
+    private func explanationText() -> String {
+        if canChangePhoneNumber {
+            return OWSLocalizedString(
+                "REGISTRATION_PHONE_NUMBER_SUBTITLE",
+                comment: "During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions."
+            )
+        }
+        return OWSLocalizedString(
+            "REGISTRATION_PHONE_NUMBER_SUBTITLE_2",
+            comment: "During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions."
+        )
+    }
+
+    // MARK: UI
 
     private lazy var contextButton: ContextMenuButton = {
         let result = ContextMenuButton(empty: ())
@@ -138,10 +151,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }()
 
     private lazy var explanationLabel: UILabel = {
-        let result = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
-            "REGISTRATION_PHONE_NUMBER_SUBTITLE",
-            comment: "During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions."
-        ))
+        let result = UILabel.explanationLabelForRegistration(text: explanationText())
         result.accessibilityIdentifier = "registration.phonenumber.explanationLabel"
         return result
     }()
@@ -310,6 +320,8 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         phoneNumberInput.isEnabled = canChangePhoneNumber
 
+        explanationLabel.text = explanationText()
+
         // We always render the warning label but sometimes invisibly. This avoids UI jumpiness.
         if isBlockedByValidationError, let validationError {
             validationWarningLabel.alpha = 1
@@ -378,6 +390,11 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             return
         }
         localValidationError = nil
+
+        guard canChangePhoneNumber else {
+            presenter?.goToNextStep(withE164: e164)
+            return
+        }
 
         presentActionSheet(.forRegistrationVerificationConfirmation(
             mode: .sms,
