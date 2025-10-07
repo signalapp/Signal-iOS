@@ -1122,7 +1122,7 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             identityKeyMismatchManager: identityKeyMismatchManager,
-            identityManager: PreKey.Wrappers.IdentityManager(identityManager),
+            identityManager: PreKeyManagerImpl.Wrappers.IdentityManager(identityManager),
             messageProcessor: messageProcessor,
             preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,

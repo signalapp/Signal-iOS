@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension PreKey {
+extension PreKeyManagerImpl {
     public enum Shims {
         public typealias IdentityManager = _PreKeyManager_IdentityManagerShim
     }

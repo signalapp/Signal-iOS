@@ -13,12 +13,12 @@ import LibSignalClient
 // MARK: - Mocks
 //
 //
-extension PreKey {
+extension PreKeyTaskManager {
     enum Mocks {
-        typealias APIClient = _PreKey_APIClientMock
-        typealias DateProvider = _PreKey_DateProviderMock
-        typealias IdentityManager = _PreKey_IdentityManagerMock
-        typealias IdentityKeyMismatchManager = _PreKey_IdentityKeyMismatchManagerMock
+        typealias APIClient = _PreKeyTaskManager_APIClientMock
+        typealias DateProvider = _PreKeyTaskManager_DateProviderMock
+        typealias IdentityManager = _PreKeyTaskManager_IdentityManagerMock
+        typealias IdentityKeyMismatchManager = _PreKeyTaskManager_IdentityKeyMismatchManagerMock
     }
 }
 
@@ -28,7 +28,7 @@ extension PreKey {
 //
 //
 
-class _PreKey_IdentityManagerMock: PreKey.Shims.IdentityManager {
+class _PreKeyTaskManager_IdentityManagerMock: PreKeyManagerImpl.Shims.IdentityManager {
 
     var aciKeyPair: ECKeyPair?
     var pniKeyPair: ECKeyPair?
@@ -54,7 +54,7 @@ class _PreKey_IdentityManagerMock: PreKey.Shims.IdentityManager {
     }
 }
 
-class _PreKey_IdentityKeyMismatchManagerMock: IdentityKeyMismatchManager {
+class _PreKeyTaskManager_IdentityKeyMismatchManagerMock: IdentityKeyMismatchManager {
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
     }
 
@@ -67,12 +67,12 @@ class _PreKey_IdentityKeyMismatchManagerMock: IdentityKeyMismatchManager {
     }
 }
 
-class _PreKey_DateProviderMock {
+class _PreKeyTaskManager_DateProviderMock {
     var currentDate: Date = Date()
     func targetDate() -> Date { return currentDate }
 }
 
-class _PreKey_APIClientMock: PreKeyTaskAPIClient {
+class _PreKeyTaskManager_APIClientMock: PreKeyTaskAPIClient {
     var currentPreKeyCount: Int?
     var currentPqPreKeyCount: Int?
 

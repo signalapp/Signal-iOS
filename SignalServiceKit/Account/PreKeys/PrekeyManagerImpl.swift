@@ -9,6 +9,7 @@ import Foundation
 /// them (they must occur in serial), including deciding which need to happen in the first place.
 /// Actual execution is handed off to ``PreKeyTaskManager``.
 public class PreKeyManagerImpl: PreKeyManager {
+    private let logger = PrefixedLogger(prefix: "[PreKey]")
 
     public enum Constants {
 
@@ -39,7 +40,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     private static let taskQueue = SerialTaskQueue()
 
     private let db: any DB
-    private let identityManager: PreKey.Shims.IdentityManager
+    private let identityManager: PreKeyManagerImpl.Shims.IdentityManager
     private let keyValueStore: KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
     private let chatConnectionManager: any ChatConnectionManager
@@ -51,7 +52,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         identityKeyMismatchManager: IdentityKeyMismatchManager,
-        identityManager: PreKey.Shims.IdentityManager,
+        identityManager: PreKeyManagerImpl.Shims.IdentityManager,
         messageProcessor: MessageProcessor,
         preKeyTaskAPIClient: PreKeyTaskAPIClient,
         protocolStoreManager: SignalProtocolStoreManager,
@@ -151,7 +152,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         // optional, so it's fine to skip it.)
         let shouldSkipPniPreKeyCheck = shouldThrottle && changeNumberState.update(block: { $0.isChangingNumber })
         if shouldSkipPniPreKeyCheck {
-            Logger.warn("Skipping PNI pre key check due to change number.")
+            logger.warn("Skipping PNI pre key check due to change number.")
         }
 
         _ = self._checkPreKeys(
@@ -166,7 +167,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         shouldCheckPniPreKeys: Bool,
         tx: DBReadTransaction,
     ) -> Task<Void, any Error> {
-        var targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
+        var targets: PreKeyTargets = [.signedPreKey, .lastResortPqPreKey]
         if shouldCheckOneTimePreKeys {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
@@ -189,7 +190,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, Error> {
-        PreKey.logger.info("Create registration prekeys")
+        logger.info("Create registration prekeys")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate one time prekeys, so we
         /// shouldn't mark the routine refresh as having been "checked".
@@ -202,7 +203,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
     ) -> Task<RegistrationPreKeyUploadBundles, Error> {
-        PreKey.logger.info("Create provisioning prekeys")
+        logger.info("Create provisioning prekeys")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate one time prekeys, so we
         /// shouldn't mark the routine refresh as having been "checked".
@@ -218,7 +219,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
     ) -> Task<Void, Error> {
-        PreKey.logger.info("Finalize registration prekeys")
+        logger.info("Finalize registration prekeys")
         return Self.taskQueue.enqueue { [taskManager] in
             try await taskManager.persistAfterRegistration(
                 bundles: bundles,
@@ -228,7 +229,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Task<Void, Error> {
-        PreKey.logger.info("Rotate one-time prekeys for registration")
+        logger.info("Rotate one-time prekeys for registration")
 
         return Self.taskQueue.enqueue { [weak self, taskManager] in
             try Task.checkCancellation()
@@ -240,7 +241,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func rotateSignedPreKeysIfNeeded() -> Task<Void, Error> {
-        PreKey.logger.info("Rotating signed prekeys if needed")
+        logger.info("Rotating signed prekeys if needed")
 
         return db.read { tx in
             return _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true, tx: tx)
@@ -265,12 +266,12 @@ public class PreKeyManagerImpl: PreKeyManager {
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) async throws {
-        PreKey.logger.info("[\(identity)] Force refresh onetime prekeys (also refresh signed pre key? \(shouldRefreshSignedPreKey))")
+        logger.info("[\(identity)] Force refresh onetime prekeys (also refresh signed pre key? \(shouldRefreshSignedPreKey))")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate BOTH types of one time prekeys,
         /// so we shouldn't mark the routine refresh as having been "checked".
 
-        var targets: PreKey.Target = [.oneTimePreKey, .oneTimePqPreKey]
+        var targets: PreKeyTargets = [.oneTimePreKey, .oneTimePqPreKey]
         if shouldRefreshSignedPreKey {
             targets.insert(.signedPreKey)
             targets.insert(target: .lastResortPqPreKey)
@@ -320,7 +321,7 @@ public class PreKeyManagerImpl: PreKeyManager {
                 try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
                 try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
             } catch {
-                Logger.warn("Couldn't rotate pre keys: \(error)")
+                logger.warn("Couldn't rotate pre keys: \(error)")
                 throw error
             }
         }
@@ -352,7 +353,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     /// ambiguous (it's either the old one or the new one, but we don't know
     /// which). We should therefore defer periodic pre key refreshes until after
     /// we've finished changing our number.
-    private func waitUntilNotChangingNumberIfNeeded(targets: PreKey.Target) async throws(CancellationError) {
+    private func waitUntilNotChangingNumberIfNeeded(targets: PreKeyTargets) async throws(CancellationError) {
         guard targets.intersects([.signedPreKey, .lastResortPqPreKey]) else {
             return
         }

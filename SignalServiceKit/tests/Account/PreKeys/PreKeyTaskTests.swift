@@ -11,10 +11,10 @@ import XCTest
 final class PreKeyTaskTests: SSKBaseTest {
 
     private var mockTSAccountManager: MockTSAccountManager!
-    private var mockIdentityManager: PreKey.Mocks.IdentityManager!
-    private var mockIdentityKeyMismatchManager: PreKey.Mocks.IdentityKeyMismatchManager!
-    private var mockAPIClient: PreKey.Mocks.APIClient!
-    private var mockDateProvider: PreKey.Mocks.DateProvider!
+    private var mockIdentityManager: PreKeyTaskManager.Mocks.IdentityManager!
+    private var mockIdentityKeyMismatchManager: PreKeyTaskManager.Mocks.IdentityKeyMismatchManager!
+    private var mockAPIClient: PreKeyTaskManager.Mocks.APIClient!
+    private var mockDateProvider: PreKeyTaskManager.Mocks.DateProvider!
     private var mockDb: InMemoryDB!
 
     private var taskManager: PreKeyTaskManager!
