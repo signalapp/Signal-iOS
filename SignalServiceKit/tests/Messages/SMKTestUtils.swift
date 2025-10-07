@@ -133,12 +133,13 @@ class MockClient {
         // SessionBuilder aliceSessionBuilder = new SessionBuilder(aliceStore, new SignalProtocolAddress("+14152222222", 1));
         // aliceSessionBuilder.process(bobBundle);
         let bobProtocolAddress = bobMockClient.protocolAddress
-        try! processPreKeyBundle(bobBundle,
-                                 for: bobProtocolAddress,
-                                 sessionStore: sessionStore,
-                                 identityStore: identityStore,
-                                 context: NullContext(),
-                                 usePqRatchet: true)
+        try! processPreKeyBundle(
+            bobBundle,
+            for: bobProtocolAddress,
+            sessionStore: sessionStore,
+            identityStore: identityStore,
+            context: NullContext(),
+        )
 
         // bobStore.storeSignedPreKey(2, bobSignedPreKey);
         // bobStore.storePreKey(1, new PreKeyRecord(1, bobPreKey));

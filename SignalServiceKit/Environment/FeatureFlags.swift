@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 enum FeatureBuild: Int {
     case dev
@@ -76,6 +77,8 @@ public enum FeatureFlags {
     public static let pollSend = build.includes(.dev)
     public static let pollReceive = build.includes(.dev)
     public static let pollKeepProtoVersion = build.includes(.dev)
+
+    static let netBuildVariant: Net.BuildVariant = build.includes(.beta) ? .beta : .production
 }
 
 // MARK: -

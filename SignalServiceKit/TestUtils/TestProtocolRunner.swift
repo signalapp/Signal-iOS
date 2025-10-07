@@ -54,12 +54,13 @@ public struct TestProtocolRunner {
         )
 
         // Alice processes the bundle:
-        try processPreKeyBundle(bobBundle,
-                                for: recipientClient.protocolAddress,
-                                sessionStore: senderClient.sessionStore,
-                                identityStore: senderClient.identityKeyStore,
-                                context: transaction,
-                                usePqRatchet: true)
+        try processPreKeyBundle(
+            bobBundle,
+            for: recipientClient.protocolAddress,
+            sessionStore: senderClient.sessionStore,
+            identityStore: senderClient.identityKeyStore,
+            context: transaction,
+        )
 
         // Bob does the same:
         try recipientClient.preKeyStore.storePreKey(LibSignalClient.PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
@@ -114,15 +115,16 @@ public struct TestProtocolRunner {
                                        senderClient: senderClient,
                                        recipient: recipientClient.protocolAddress,
                                        context: transaction)
-        _ = try signalDecryptPreKey(message: PreKeySignalMessage(bytes: aliceMessage.serialize()),
-                                    from: senderClient.protocolAddress,
-                                    sessionStore: recipientClient.sessionStore,
-                                    identityStore: recipientClient.identityKeyStore,
-                                    preKeyStore: recipientClient.preKeyStore,
-                                    signedPreKeyStore: recipientClient.signedPreKeyStore,
-                                    kyberPreKeyStore: recipientClient.kyberPreKeyStore,
-                                    context: transaction,
-                                    usePqRatchet: true)
+        _ = try signalDecryptPreKey(
+            message: PreKeySignalMessage(bytes: aliceMessage.serialize()),
+            from: senderClient.protocolAddress,
+            sessionStore: recipientClient.sessionStore,
+            identityStore: recipientClient.identityKeyStore,
+            preKeyStore: recipientClient.preKeyStore,
+            signedPreKeyStore: recipientClient.signedPreKeyStore,
+            kyberPreKeyStore: recipientClient.kyberPreKeyStore,
+            context: transaction,
+        )
 
         // Finally, Bob sends a message back to acknowledge the pre-key.
         let bobMessage = try encrypt(Data(),

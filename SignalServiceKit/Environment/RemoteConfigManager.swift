@@ -271,10 +271,6 @@ public class RemoteConfig {
         return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
-    public var usePqRatchet: Bool {
-        return isEnabled(.usePqRatchet)
-    }
-
     public var allowBackupSettings: Bool {
         if FeatureFlags.Backups.showSettings {
             return true
@@ -506,7 +502,6 @@ private enum IsEnabledFlag: String, FlagType {
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
-    case usePqRatchet = "ios.usePqRatchet"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -534,7 +529,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .serviceExtensionFailureKillSwitch: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
-        case .usePqRatchet: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true
@@ -896,7 +890,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 
-        net.setRemoteConfig(mergedConfig.netConfig())
+        net.setRemoteConfig(mergedConfig.netConfig(), buildVariant: FeatureFlags.netBuildVariant)
 
         mergedConfig.logFlags()
     }
