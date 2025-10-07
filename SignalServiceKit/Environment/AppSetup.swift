@@ -275,8 +275,9 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager
         )
 
-        let aciSignalProtocolStore = SignalProtocolStoreImpl(
-            for: .aci,
+        let aciProtocolStore = SignalProtocolStore.build(
+            dateProvider: dateProvider,
+            identity: .aci,
             recipientIdFinder: recipientIdFinder,
         )
         let blockedRecipientStore = BlockedRecipientStore()
@@ -297,8 +298,9 @@ extension AppSetup.GlobalsContinuation {
         let ows2FAManager = OWS2FAManager()
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
-        let pniSignalProtocolStore = SignalProtocolStoreImpl(
-            for: .pni,
+        let pniProtocolStore = SignalProtocolStore.build(
+            dateProvider: dateProvider,
+            identity: .pni,
             recipientIdFinder: recipientIdFinder,
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
@@ -311,9 +313,9 @@ extension AppSetup.GlobalsContinuation {
 
         let receiptManager = OWSReceiptManager(appReadiness: appReadiness, databaseStorage: databaseStorage, messageSenderJobQueue: messageSenderJobQueue, notificationPresenter: notificationPresenter)
         let senderKeyStore = SenderKeyStore()
-        let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
-            aciProtocolStore: aciSignalProtocolStore,
-            pniProtocolStore: pniSignalProtocolStore
+        let signalProtocolStoreManager = SignalProtocolStoreManager(
+            aciProtocolStore: aciProtocolStore,
+            pniProtocolStore: pniProtocolStore
         )
         let signalService = testDependencies.signalService ?? OWSSignalService(libsignalNet: libsignalNet)
         let signalServiceAddressCache = SignalServiceAddressCache()
@@ -358,9 +360,6 @@ extension AppSetup.GlobalsContinuation {
             authCredentialManager: authCredentialManager,
             groupSendEndorsementStore: groupSendEndorsementStore
         )
-
-        let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
-        let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
             reachabilityManager: reachabilityManager,
@@ -1784,8 +1783,8 @@ extension AppSetup.GlobalsContinuation {
             messageReceiver: messageReceiver,
             blockingManager: blockingManager,
             remoteConfigManager: remoteConfigManager,
-            aciSignalProtocolStore: aciSignalProtocolStore,
-            pniSignalProtocolStore: pniSignalProtocolStore,
+            aciSignalProtocolStore: aciProtocolStore,
+            pniSignalProtocolStore: pniProtocolStore,
             udManager: udManager,
             messageDecrypter: messageDecrypter,
             groupMessageProcessorManager: groupMessageProcessorManager,

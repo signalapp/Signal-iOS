@@ -19,8 +19,8 @@ final class PreKeyTaskTests: SSKBaseTest {
 
     private var taskManager: PreKeyTaskManager!
 
-    private var mockAciProtocolStore: MockSignalProtocolStore!
-    private var mockPniProtocolStore: MockSignalProtocolStore!
+    private var mockAciProtocolStore: SignalProtocolStore!
+    private var mockPniProtocolStore: SignalProtocolStore!
     private var mockProtocolStoreManager: SignalProtocolStoreManager!
 
     override func setUp() {
@@ -36,9 +36,9 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockDateProvider = .init()
         mockDb = InMemoryDB()
 
-        mockAciProtocolStore = .init(identity: .aci)
-        mockPniProtocolStore = .init(identity: .pni)
-        mockProtocolStoreManager = SignalProtocolStoreManagerImpl(
+        mockAciProtocolStore = .mock(identity: .aci)
+        mockPniProtocolStore = .mock(identity: .pni)
+        mockProtocolStoreManager = SignalProtocolStoreManager(
             aciProtocolStore: mockAciProtocolStore,
             pniProtocolStore: mockPniProtocolStore
         )
@@ -63,25 +63,25 @@ final class PreKeyTaskTests: SSKBaseTest {
 
     private func aciPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.mockPreKeyStore.count(tx: tx)
+            return mockAciProtocolStore.preKeyStore.count(tx: tx)
         }
     }
 
     private func aciSignedPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.mockSignedPreKeyStore.count(tx: tx)
+            return mockAciProtocolStore.signedPreKeyStore.count(tx: tx)
         }
     }
 
     private func aciKyberOneTimePreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.mockKyberPreKeyStore.count(isLastResort: false, tx: tx)
+            return mockAciProtocolStore.kyberPreKeyStore.count(isLastResort: false, tx: tx)
         }
     }
 
     private func aciKyberLastResortPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.mockKyberPreKeyStore.count(isLastResort: true, tx: tx)
+            return mockAciProtocolStore.kyberPreKeyStore.count(isLastResort: true, tx: tx)
         }
     }
 
@@ -216,7 +216,7 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         let originalSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: aciKeyPair)
         mockDb.write { tx in
-            mockAciProtocolStore.mockSignedPreKeyStore.storeSignedPreKey(
+            mockAciProtocolStore.signedPreKeyStore.storeSignedPreKey(
                 originalSignedPreKey.id,
                 signedPreKeyRecord: originalSignedPreKey,
                 tx: tx
@@ -240,8 +240,8 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient.setPreKeysResult = .value(())
 
         let records = mockDb.write { tx in
-            let records = mockAciProtocolStore.mockPreKeyStore.generatePreKeyRecords(tx: tx)
-            mockAciProtocolStore.mockPreKeyStore.storePreKeyRecords(records, tx: tx)
+            let records = mockAciProtocolStore.preKeyStore.generatePreKeyRecords(tx: tx)
+            mockAciProtocolStore.preKeyStore.storePreKeyRecords(records, tx: tx)
             return records
         }
 
@@ -254,7 +254,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         XCTAssertEqual(aciPreKeyCount(), 100)
         mockDb.read { tx in
             for record in records {
-                XCTAssertNotNil(mockAciProtocolStore.mockPreKeyStore.loadPreKey(record.id, transaction: tx))
+                XCTAssertNotNil(mockAciProtocolStore.preKeyStore.loadPreKey(record.id, transaction: tx))
             }
         }
         XCTAssertNil(mockAPIClient.preKeyRecords)
@@ -308,7 +308,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient.currentPreKeyCount = 100
         mockAPIClient.currentPqPreKeyCount = 100
         mockDb.write { tx in
-            mockAciProtocolStore.mockSignedPreKeyStore.setLastSuccessfulRotationDate(
+            mockAciProtocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(
                 mockDateProvider.currentDate,
                 tx: tx
             )
@@ -331,7 +331,7 @@ final class PreKeyTaskTests: SSKBaseTest {
 
         mockAPIClient.currentPreKeyCount = 100
         mockDb.write { tx in
-            mockAciProtocolStore.mockSignedPreKeyStore.setLastSuccessfulRotationDate(
+            mockAciProtocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(
                 mockDateProvider.currentDate,
                 tx: tx
             )

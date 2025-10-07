@@ -8,22 +8,15 @@
 import Foundation
 import LibSignalClient
 
-internal class MockSignalProtocolStore: SignalProtocolStore {
-    public var sessionStore: SignalSessionStore { mockSessionStore }
-    public var preKeyStore: PreKeyStoreImpl { mockPreKeyStore }
-    public var signedPreKeyStore: SignedPreKeyStoreImpl { mockSignedPreKeyStore }
-    public var kyberPreKeyStore: KyberPreKeyStoreImpl { mockKyberPreKeyStore }
-
-    init(identity: OWSIdentity) {
-        self.mockPreKeyStore = PreKeyStoreImpl(for: identity)
-        self.mockSignedPreKeyStore = SignedPreKeyStoreImpl(for: identity)
-        self.mockKyberPreKeyStore = KyberPreKeyStoreImpl(for: identity, dateProvider: Date.provider)
+extension SignalProtocolStore {
+    static func mock(identity: OWSIdentity) -> Self {
+        return SignalProtocolStore(
+            sessionStore: MockSessionStore(),
+            preKeyStore: PreKeyStoreImpl(for: identity),
+            signedPreKeyStore: SignedPreKeyStoreImpl(for: identity),
+            kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: Date.provider),
+        )
     }
-
-    internal var mockSessionStore = MockSessionStore()
-    internal var mockPreKeyStore: PreKeyStoreImpl
-    internal var mockSignedPreKeyStore: SignedPreKeyStoreImpl
-    internal var mockKyberPreKeyStore: KyberPreKeyStoreImpl
 }
 
 class MockSessionStore: SignalSessionStore {

@@ -256,8 +256,9 @@ public struct LocalSignalClient: TestSignalClient {
 
     public init(identity: OWSIdentity = .aci) {
         self.identity = identity
-        self.protocolStore = SignalProtocolStoreImpl(
-            for: identity,
+        self.protocolStore = SignalProtocolStore.build(
+            dateProvider: Date.provider,
+            identity: identity,
             recipientIdFinder: DependenciesBridge.shared.recipientIdFinder,
         )
     }

@@ -82,7 +82,10 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             receiptManager: receiptManagerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
             registrationWebSocketManager: MockRegistrationWebSocketManager(),
-            signalProtocolStoreManager: MockSignalProtocolStoreManager(),
+            signalProtocolStoreManager: SignalProtocolStoreManager(
+                aciProtocolStore: .mock(identity: .aci),
+                pniProtocolStore: .mock(identity: .pni),
+            ),
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
@@ -236,20 +239,4 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     ) async throws(SecondaryLinkNSyncError) {
         return
     }
-}
-
-private class MockSignalProtocolStoreManager: SignalProtocolStoreManager {
-    private let aciProtocolStore = MockSignalProtocolStore(identity: .aci)
-    private let pniProtocolStore = MockSignalProtocolStore(identity: .pni)
-
-    init() {}
-
-    func signalProtocolStore(for identity: SignalServiceKit.OWSIdentity) -> any SignalServiceKit.SignalProtocolStore {
-        switch identity {
-        case .aci: aciProtocolStore
-        case .pni: pniProtocolStore
-        }
-    }
-
-    func removeAllKeys(tx: DBWriteTransaction) {}
 }
