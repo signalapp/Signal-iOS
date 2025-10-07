@@ -8,8 +8,22 @@ import SignalUI
 
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var country: PhoneNumberCountry!
-    private let nationalNumberTextField = UITextField()
-    private let nameLabel = UILabel()
+
+    private lazy var nationalNumberTextField: UITextField = {
+        let textField = UITextField()
+        textField.returnKeyType = .done
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        textField.keyboardType = .phonePad
+        textField.textColor = .Signal.label
+        textField.delegate = self
+        return textField
+    }()
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.label
+        return label
+    }()
 
     // Don't allow swipe to dismiss
     override var isModalInPresentation: Bool {
@@ -24,15 +38,6 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         super.init()
     }
 
-    override func loadView() {
-        view = UIView()
-
-        nationalNumberTextField.returnKeyType = .done
-        nationalNumberTextField.autocorrectionType = .no
-        nationalNumberTextField.spellCheckingType = .no
-        nationalNumberTextField.delegate = self
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,7 +45,14 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         navigationItem.rightBarButtonItem = .init(title: CommonStrings.deleteButton, style: .done, target: self, action: #selector(didTapDelete))
-        navigationItem.rightBarButtonItem?.setTitleTextAttributes([.foregroundColor: UIColor.ows_accentRed], for: .normal)
+        if #available(iOS 26, *) {
+            navigationItem.rightBarButtonItem?.tintColor = .Signal.red
+        } else {
+            navigationItem.rightBarButtonItem?.setTitleTextAttributes(
+                [.foregroundColor: UIColor.Signal.red],
+                for: .normal
+            )
+        }
 
         populateDefaultCountryCode()
     }
@@ -48,13 +60,6 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         nationalNumberTextField.becomeFirstResponder()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        nameLabel.textColor = Theme.primaryTextColor
-        nationalNumberTextField.textColor = Theme.primaryTextColor
-        updateTableContents()
     }
 
     func updateTableContents() {
@@ -108,25 +113,15 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         imageView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
         imageView.autoHCenterInSuperview()
 
-        let titleLabel = UILabel()
-        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.textAlignment = .center
-        titleLabel.text = OWSLocalizedString(
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "DELETE_ACCOUNT_CONFIRMATION_TITLE",
             comment: "Title for the 'delete account' confirmation view."
-        )
+        ))
 
-        let descriptionLabel = UILabel()
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.font = .dynamicTypeSubheadline
-        descriptionLabel.textColor = Theme.secondaryTextAndIconColor
-        descriptionLabel.textAlignment = .center
-        descriptionLabel.text = OWSLocalizedString(
+        let descriptionLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
             "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION",
             comment: "Description for the 'delete account' confirmation view."
-        )
+        ))
 
         let headerView = UIStackView(arrangedSubviews: [
             imageContainer,
@@ -151,13 +146,12 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE",
             comment: "Title for the 'phone number' row of the 'delete account confirmation' view controller."
         )
-        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.textColor = .Signal.label
         nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.adjustsFontForContentSizeCategory = true
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
 
-        nationalNumberTextField.textColor = Theme.primaryTextColor
         nationalNumberTextField.font = OWSTableItem.accessoryLabelFont
         nationalNumberTextField.placeholder = TextFieldFormatting.exampleNationalNumber(
             forCountryCode: country.countryCode,
