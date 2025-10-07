@@ -270,7 +270,7 @@ class StoryContextViewController: OWSViewController {
         view.addSubview(closeButton)
         closeButton.autoSetDimensions(to: CGSize(square: 56))
         closeButton.autoPinEdge(toSuperviewSafeArea: .top)
-        closeButton.autoPinEdge(toSuperviewSafeArea: .leading)
+        closeButton.autoPinEdge(toSuperviewSafeArea: .trailing)
 
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
