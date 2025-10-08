@@ -233,6 +233,20 @@ public class RemoteConfig {
         getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
     }
 
+    public var backupListMediaDefaultRefreshIntervalMs: UInt64 {
+        let defaultValue: UInt64
+        if FeatureFlags.useLowerDefaultListMediaRefreshInterval {
+            defaultValue = .dayInMs
+        } else {
+            defaultValue = .dayInMs * 30
+        }
+        return getUInt64Value(forFlag: .backupListMediaDefaultRefreshIntervalMs, defaultValue: defaultValue)
+    }
+
+    public var backupListMediaOutOfQuotaRefreshIntervalMs: UInt64 {
+        getUInt64Value(forFlag: .backupListMediaOutOfQuotaRefreshIntervalMs, defaultValue: .dayInMs)
+    }
+
     public var mediaTierFallbackCdnNumber: UInt32 {
         getUInt32Value(forFlag: .mediaTierFallbackCdnNumber, defaultValue: 3)
     }
@@ -563,6 +577,8 @@ private enum ValueFlag: String, FlagType {
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
+    case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
+    case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.value"
@@ -595,6 +611,8 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
         case .tsAttachmentMigrationBatchDelayMs: true
+        case .backupListMediaDefaultRefreshIntervalMs: true
+        case .backupListMediaOutOfQuotaRefreshIntervalMs: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true

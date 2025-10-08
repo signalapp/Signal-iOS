@@ -157,9 +157,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     public func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
         let currentUploadEra = self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
         let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+        let remoteConfig = remoteConfigManager.currentConfig()
         return self.needsToQueryListMedia(
             currentUploadEra: currentUploadEra,
             currentBackupPlan: currentBackupPlan,
+            remoteConfig: remoteConfig,
             tx: tx
         )
     }
@@ -214,6 +216,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 self.needsToQueryListMedia(
                     currentUploadEra: currentUploadEra,
                     currentBackupPlan: currentBackupPlan,
+                    remoteConfig: remoteConfigManager.currentConfig(),
                     tx: tx
                 ),
                 self.kvStore.getBool(Constants.hasEverRunListMediaKey, defaultValue: false, transaction: tx),
@@ -404,6 +407,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             return self.needsToQueryListMedia(
                 currentUploadEra: currentUploadEra,
                 currentBackupPlan: currentBackupPlan,
+                remoteConfig: remoteConfigManager.currentConfig(),
                 tx: tx
             )
         }
@@ -1095,6 +1099,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private func needsToQueryListMedia(
         currentUploadEra: String,
         currentBackupPlan: BackupPlan,
+        remoteConfig: RemoteConfig,
         tx: DBReadTransaction
     ) -> Bool {
         guard FeatureFlags.Backups.supported else {
@@ -1139,9 +1144,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             // stays in sync with the server.
             let refreshIntervalMs: UInt64
             if backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx) {
-                refreshIntervalMs = Constants.refreshIntervalWhenConsumedMediaTierSpaceMs
+                refreshIntervalMs = remoteConfig.backupListMediaOutOfQuotaRefreshIntervalMs
             } else {
-                refreshIntervalMs = Constants.refreshIntervalMs
+                refreshIntervalMs = remoteConfig.backupListMediaDefaultRefreshIntervalMs
             }
 
             let nowMs = dateProvider().ows_millisecondsSince1970
@@ -1231,10 +1236,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         /// True if we've ever run list media in the lifetime of this app.
         static let hasEverRunListMediaKey = "hasEverRunListMedia"
-
-        /// If we haven't listed in this long, we will list again.
-        static let refreshIntervalMs: UInt64 = .dayInMs * 30
-        static let refreshIntervalWhenConsumedMediaTierSpaceMs: UInt64 = .dayInMs
 
         /// If there is a list media in progress, the value at this key is the upload era that was set
         /// at the start of that in progress run.
