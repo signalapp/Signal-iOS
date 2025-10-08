@@ -29,6 +29,7 @@ protocol RegistrationProfilePresenter: AnyObject {
 
 class RegistrationProfileViewController: OWSViewController {
     var state: RegistrationProfileState
+
     public init(
         state: RegistrationProfileState,
         presenter: RegistrationProfilePresenter
@@ -37,6 +38,8 @@ class RegistrationProfileViewController: OWSViewController {
         self.state = state
 
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -57,18 +60,10 @@ class RegistrationProfileViewController: OWSViewController {
     }
 
     private var avatarData: Data? {
-        didSet { render() }
+        didSet { updateUI() }
     }
 
-    // MARK: Rendering
-
-    private lazy var nextBarButton = UIBarButtonItem(
-        title: CommonStrings.nextButton,
-        style: .done,
-        target: self,
-        action: #selector(didTapNext),
-        accessibilityIdentifier: "registration.profile.nextButton"
-    )
+    // MARK: UI
 
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
@@ -93,56 +88,63 @@ class RegistrationProfileViewController: OWSViewController {
                 return StringStyle.Part.link(URL.Support.profilesAndMessageRequests)
             }())
         ])
-        result.font = .fontForRegistrationExplanationLabel
+        result.textColor = .Signal.secondaryLabel
+        result.font = .dynamicTypeBody
         result.textAlignment = .center
         result.delegate = self
         return result
     }()
 
-    private lazy var avatarTapGestureRecognizer = UITapGestureRecognizer(
-        target: self,
-        action: #selector(didTapAvatar)
-    )
-
     private let avatarSize: CGFloat = 64
     private lazy var avatarView: AvatarImageView = {
         let result = AvatarImageView()
-        result.autoSetDimensions(to: .square(avatarSize))
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.addConstraints([
+            result.widthAnchor.constraint(equalToConstant: avatarSize),
+            result.heightAnchor.constraint(equalToConstant: avatarSize),
+        ])
         result.accessibilityIdentifier = "registration.profile.avatarView"
-
-        result.addGestureRecognizer(avatarTapGestureRecognizer)
+        result.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapAvatar)
+        ))
         result.isUserInteractionEnabled = true
         return result
     }()
 
-    private lazy var avatarContainerView: UIView = {
-        let result = UIView()
-        result.addSubview(avatarView)
-        result.autoSetDimension(.height, toSize: avatarSize)
-        avatarView.autoCenterInSuperview()
-        return result
-    }()
+    private lazy var cameraIconView: UIView = {
+        let iconSize: CGFloat = 16
+        let viewSize: CGFloat = 28
 
-    private lazy var cameraImageView: UIImageView = {
-        let result = UIImageView.withTemplateImageName(
+        let view = UIView()
+        view.backgroundColor = .Signal.background
+        view.layer.cornerRadius = viewSize / 2
+        view.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapAvatar)
+        ))
+        view.isUserInteractionEnabled = true
+
+        let cameraImageIcon =  UIImageView.withTemplateImageName(
             "camera-compact",
             // This color will be swiftly updated during renders.
-            tintColor: Theme.secondaryTextAndIconColor
+            tintColor: .Signal.secondaryLabel
         )
-        result.autoSetDimensions(to: CGSize(square: 16))
-        return result
-    }()
+        view.addSubview(cameraImageIcon)
 
-    private lazy var cameraImageWrapperView: UIView = {
-        let result = UIView()
-        let size = CGSize(square: 28)
-        result.addSubview(cameraImageView)
-        result.layer.cornerRadius = size.largerAxis / 2
-        cameraImageView.autoCenterInSuperview()
-        result.autoSetDimensions(to: size)
-        result.addGestureRecognizer(avatarTapGestureRecognizer)
-        result.isUserInteractionEnabled = true
-        return result
+        view.translatesAutoresizingMaskIntoConstraints = false
+        cameraImageIcon.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            cameraImageIcon.widthAnchor.constraint(equalToConstant: iconSize),
+            cameraImageIcon.heightAnchor.constraint(equalToConstant: iconSize),
+            cameraImageIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cameraImageIcon.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            view.widthAnchor.constraint(equalToConstant: viewSize),
+            view.heightAnchor.constraint(equalToConstant: viewSize),
+        ])
+
+        return view
     }()
 
     private func textField(
@@ -151,21 +153,19 @@ class RegistrationProfileViewController: OWSViewController {
         accessibilityIdentifierSuffix: String
     ) -> UITextField {
         let result = OWSTextField()
-        result.font = .dynamicTypeSubheadlineClamped
+        result.font = .dynamicTypeBodyClamped
+        result.textColor = .Signal.label
         result.adjustsFontForContentSizeCategory = true
         result.textAlignment = .natural
         result.autocorrectionType = .no
         result.spellCheckingType = .no
-
         result.placeholder = placeholder
         result.textContentType = textContentType
         result.accessibilityIdentifier = "registration.profile.\(accessibilityIdentifierSuffix)"
-
         result.delegate = self
         result.addTarget(self, action: #selector(didTextFieldChange), for: .editingChanged)
-
         result.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
-
+        result.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
         return result
     }
 
@@ -186,11 +186,6 @@ class RegistrationProfileViewController: OWSViewController {
         textContentType: .familyName,
         accessibilityIdentifierSuffix: "familyName"
     )
-
-    private lazy var textFieldStrokes: [UIView] = [givenNameTextField, familyNameTextField].map {
-        // This color will be swiftly updated during renders.
-        $0.addBottomStroke(color: Theme.hairlineColor, strokeWidth: .hairlineWidth)
-    }
 
     private enum NameOrder {
         case familyNameFirst
@@ -219,23 +214,94 @@ class RegistrationProfileViewController: OWSViewController {
         return result
     }()
 
-    private lazy var phoneNumberDisclosureView: PhoneNumberPrivacyLabel = {
-        return PhoneNumberPrivacyLabel(phoneNumberDiscoverability: state.phoneNumberDiscoverability, onTap: { [weak self] in
-            guard let self else { return }
-            let vc = RegistrationPhoneNumberDiscoverabilityViewController(
-                state: RegistrationPhoneNumberDiscoverabilityState(
-                    e164: self.state.e164,
-                    phoneNumberDiscoverability: self.state.phoneNumberDiscoverability
-                ),
-                presenter: self
-            )
-            self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-        })
+    private lazy var phoneNumberPrivacyButton: PhoneNumberPrivacyButton = {
+        let button = PhoneNumberPrivacyButton(phoneNumberDiscoverability: state.phoneNumberDiscoverability)
+        button.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                let vc = RegistrationPhoneNumberDiscoverabilityViewController(
+                    state: RegistrationPhoneNumberDiscoverabilityState(
+                        e164: self.state.e164,
+                        phoneNumberDiscoverability: self.state.phoneNumberDiscoverability
+                    ),
+                    presenter: self
+                )
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            },
+            for: .primaryActionTriggered
+        )
+        return button
     }()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        initialRender()
+
+        view.backgroundColor = .Signal.background
+
+        navigationItem.rightBarButtonItem?.tintColor = .Signal.accent
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            style: .done,
+            target: self,
+            action: #selector(didTapNext),
+            accessibilityIdentifier: "registration.profile.nextButton"
+        )
+
+        let scrollView = UIScrollView()
+        scrollView.preservesSuperviewLayoutMargins = true
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+        ])
+
+        let avatarContainerView = UIView.container()
+        avatarContainerView.addSubview(avatarView)
+        avatarContainerView.addSubview(cameraIconView)
+        avatarView.translatesAutoresizingMaskIntoConstraints = false
+        cameraIconView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            avatarView.topAnchor.constraint(equalTo: avatarContainerView.topAnchor),
+            avatarView.centerXAnchor.constraint(equalTo: avatarContainerView.centerXAnchor),
+            avatarView.bottomAnchor.constraint(equalTo: avatarContainerView.bottomAnchor),
+
+            cameraIconView.bottomAnchor.constraint(equalTo: avatarView.bottomAnchor),
+            cameraIconView.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor),
+        ])
+
+        let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            explanationView,
+            avatarContainerView,
+            nameStackView,
+            phoneNumberPrivacyButton,
+            UIView.vStretchingSpacer(),
+        ])
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.spacing = 24
+        stackView.setCustomSpacing(12, after: titleLabel)
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        scrollView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
+        ])
+
+        firstTextField.returnKeyType = .next
+        secondTextField.returnKeyType = .done
+
+        updateUI()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -248,52 +314,8 @@ class RegistrationProfileViewController: OWSViewController {
         }
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
-
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
-
-        let scrollView = UIScrollView()
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 24
-        stackView.setCustomSpacing(12, after: titleLabel)
-        scrollView.addSubview(stackView)
-        stackView.autoPinWidth(toWidthOf: scrollView)
-        stackView.autoPinHeightToSuperview()
-
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(explanationView)
-        stackView.addArrangedSubview(avatarContainerView)
-        stackView.addArrangedSubview(nameStackView)
-        stackView.addArrangedSubview(phoneNumberDisclosureView)
-        stackView.addArrangedSubview(UIView.vStretchingSpacer())
-
-        scrollView.addSubview(cameraImageWrapperView)
-        cameraImageWrapperView.autoPinEdge(.bottom, to: .bottom, of: avatarView)
-        cameraImageWrapperView.autoPinEdge(.trailing, to: .trailing, of: avatarView)
-
-        firstTextField.returnKeyType = .next
-        secondTextField.returnKeyType = .done
-
-        render()
-    }
-
-    private func render() {
-        navigationItem.rightBarButtonItem = givenNameComponent != nil ? nextBarButton : nil
+    private func updateUI() {
+        navigationItem.rightBarButtonItem?.isEnabled = givenNameComponent != nil
 
         avatarView.image = avatarData?.asImage ?? SSKEnvironment.shared.databaseStorageRef.read { transaction in
             SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(
@@ -301,28 +323,13 @@ class RegistrationProfileViewController: OWSViewController {
                 transaction: transaction
             )
         }
-
-        view.backgroundColor = Theme.backgroundColor
-        nextBarButton.tintColor = Theme.accentBlueColor
-        titleLabel.textColor = .colorForRegistrationTitleLabel
-        explanationView.textColor = .colorForRegistrationExplanationLabel
-        explanationView.linkTextAttributes = [
-            .foregroundColor: Theme.accentBlueColor,
-            .underlineColor: UIColor.clear
-        ]
-        cameraImageView.tintColor = Theme.secondaryTextAndIconColor
-        cameraImageWrapperView.backgroundColor = Theme.backgroundColor
-        [givenNameTextField, familyNameTextField].forEach { $0.textColor = Theme.primaryTextColor }
-        textFieldStrokes.forEach { $0.backgroundColor = Theme.hairlineColor }
-
-        phoneNumberDisclosureView.render()
     }
 
     // MARK: Events
 
     @objc
     private func didTextFieldChange() {
-        render()
+        updateUI()
     }
 
     @objc
@@ -376,12 +383,12 @@ extension RegistrationProfileViewController: UITextViewDelegate {
         interaction: UITextItemInteraction
     ) -> Bool {
         if textView == explanationView {
-            showLearnMoreUi()
+            showLearnMoreUI()
         }
         return false
     }
 
-    private func showLearnMoreUi() {
+    private func showLearnMoreUI() {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE",
@@ -427,7 +434,7 @@ extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabil
     var presentedAsModal: Bool { return true }
 
     func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
-        phoneNumberDisclosureView.phoneNumberDiscoverability = phoneNumberDiscoverability
+        phoneNumberPrivacyButton.phoneNumberDiscoverability = phoneNumberDiscoverability
         self.state = RegistrationProfileState(
             e164: self.state.e164,
             phoneNumberDiscoverability: phoneNumberDiscoverability
@@ -436,170 +443,162 @@ extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabil
     }
 }
 
-// MARK: - PhoneNumberPrivacyLabel
+// MARK: - Phone number privacy button
 
 extension RegistrationProfileViewController {
-    private class PhoneNumberPrivacyLabel: UIView {
 
-        private enum Constants {
-            static let iconSize: CGFloat = 24.0
-            static let verticalSpacing: CGFloat = 0.0
-            static let horizontalSpacing: CGFloat = 12.0
-            static let layoutInsets: UIEdgeInsets = UIEdgeInsets(
-                top: 8,
-                leading: 0,
-                bottom: 8,
-                trailing: 0
-            )
-        }
+    private class PhoneNumberPrivacyButton: UIButton {
+
+        private lazy var contentView = PhoneNumberPrivacyButtonContentView(
+            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability)
+        )
 
         var phoneNumberDiscoverability: PhoneNumberDiscoverability {
-            didSet { render() }
+            didSet {
+                contentView.configuration = PhoneNumberPrivacyButtonContentConfiguration(
+                    phoneNumberDiscoverability: phoneNumberDiscoverability
+                )
+            }
         }
-        private var onTap: (() -> Void)?
 
-        // MARK: Init
-
-        init(phoneNumberDiscoverability: PhoneNumberDiscoverability, onTap: (() -> Void)?) {
+        init(phoneNumberDiscoverability: PhoneNumberDiscoverability) {
             self.phoneNumberDiscoverability = phoneNumberDiscoverability
-            self.onTap = onTap
+
             super.init(frame: .zero)
-            initialRender()
+
+            configuration = .filled()
+            configuration?.baseBackgroundColor = .Signal.background
+
+            addSubview(contentView)
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                contentView.topAnchor.constraint(equalTo: topAnchor),
+                contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            ])
         }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+
+    private struct PhoneNumberPrivacyButtonContentConfiguration: UIContentConfiguration {
+        var phoneNumberDiscoverability: PhoneNumberDiscoverability
+
+        func makeContentView() -> UIView & UIContentView {
+            PhoneNumberPrivacyButtonContentView(configuration: self)
+        }
+
+        func updated(for state: UIConfigurationState) -> PhoneNumberPrivacyButtonContentConfiguration {
+            // Looks the same.
+            self
+        }
+    }
+
+    private class PhoneNumberPrivacyButtonContentView: UIView, UIContentView {
+
+        private var _configuration: PhoneNumberPrivacyButtonContentConfiguration!
+
+        var configuration: UIContentConfiguration {
+            get { _configuration }
+            set {
+                guard let configuration = newValue as? PhoneNumberPrivacyButtonContentConfiguration else { return }
+                _configuration = configuration
+                apply(configuration)
+            }
+        }
+
+        init(configuration: PhoneNumberPrivacyButtonContentConfiguration) {
+            super.init(frame: .zero)
+
+            isUserInteractionEnabled = false
+            layoutMargins = .init(hMargin: 0, vMargin: 8)
+
+            let vStack = UIStackView(arrangedSubviews: [ titleLabel, subTitleLabel ])
+            vStack.axis = .vertical
+            vStack.spacing = 4
+
+            let disclosureView = UIImageView()
+            disclosureView.contentMode = .scaleAspectFit
+            disclosureView.setTemplateImage(
+                UIImage(imageLiteralResourceName: "chevron-right-20"),
+                tintColor: .Signal.secondaryLabel
+            )
+            disclosureView.translatesAutoresizingMaskIntoConstraints = false
+            disclosureView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+
+            let hStack = UIStackView(arrangedSubviews: [
+                iconView,
+                vStack,
+                disclosureView
+            ])
+            hStack.axis = .horizontal
+            hStack.spacing = 12
+            hStack.alignment = .center
+
+            addSubview(hStack)
+            hStack.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                hStack.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                hStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                hStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+                hStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            ])
+
+            apply(configuration)
+       }
 
         @available(*, unavailable, message: "Use other constructor")
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
 
-        // MARK: Views
-
-        private lazy var button: OWSFlatButton = {
-            return OWSFlatButton()
-        }()
-
         private lazy var iconView: UIImageView = {
             let iconView = UIImageView()
             iconView.contentMode = .scaleAspectFit
+            iconView.translatesAutoresizingMaskIntoConstraints = false
+            iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
             return iconView
         }()
 
         private lazy var titleLabel: UILabel = {
             let titleLabel = UILabel()
+            titleLabel.font = .dynamicTypeBodyClamped
+            titleLabel.textColor = .Signal.label
             titleLabel.numberOfLines = 0
             titleLabel.lineBreakMode = .byWordWrapping
+            titleLabel.text = OWSLocalizedString(
+                "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
+                comment: "During registration, users can choose who can see their phone number."
+            )
             return titleLabel
         }()
 
         private lazy var subTitleLabel: UILabel = {
             let subTitleLabel = UILabel()
+            subTitleLabel.font = .dynamicTypeSubheadlineClamped
+            subTitleLabel.textColor = .Signal.secondaryLabel
             subTitleLabel.numberOfLines = 0
             subTitleLabel.lineBreakMode = .byWordWrapping
             return subTitleLabel
         }()
 
-        private lazy var disclosureView: UIImageView = {
-            let disclosureView = UIImageView()
-            disclosureView.contentMode = .scaleAspectFit
-            return disclosureView
-        }()
+        private func apply(_ configuration: PhoneNumberPrivacyButtonContentConfiguration) {
+            let discoverability = configuration.phoneNumberDiscoverability
 
-        // MARK: Layout
-
-        private func initialRender() {
-
-            addSubview(button)
-            button.autoPinEdgesToSuperviewEdges()
-
-            let iconContainer = UIView()
-            iconContainer.addSubview(iconView)
-
-            iconView.autoPinWidthToSuperview()
-            iconView.autoSetDimensions(to: CGSize(square: Constants.iconSize))
-            iconView.autoVCenterInSuperview()
-            iconView.autoMatch(
-                .height,
-                to: .height,
-                of: iconContainer,
-                withOffset: 0,
-                relation: .lessThanOrEqual)
-
-            let topSpacer = UIView.vStretchingSpacer()
-            let bottomSpacer = UIView.vStretchingSpacer()
-
-            let vStack = UIStackView(arrangedSubviews: [
-                topSpacer,
-                titleLabel,
-                subTitleLabel,
-                bottomSpacer
-            ])
-            vStack.axis = .vertical
-            vStack.spacing = Constants.verticalSpacing
-            topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-            let disclosureContainer = UIView()
-            disclosureContainer.addSubview(disclosureView)
-
-            disclosureView.autoPinEdgesToSuperviewEdges()
-            disclosureView.autoSetDimension(.width, toSize: Constants.iconSize)
-
-            let hStack = UIStackView(arrangedSubviews: [
-                iconContainer,
-                vStack,
-                disclosureContainer
-            ])
-
-            hStack.axis = .horizontal
-            hStack.spacing = Constants.horizontalSpacing
-            hStack.isLayoutMarginsRelativeArrangement = true
-            hStack.layoutMargins = Constants.layoutInsets
-            hStack.isUserInteractionEnabled = false
-
-            button.addSubview(hStack)
-            hStack.autoPinEdgesToSuperviewEdges()
-            button.addTarget(target: self, selector: #selector(disclosureButtonTapped))
-
-            render()
-        }
-
-        public func render() {
-            button.setBackgroundColors(upColor: Theme.backgroundColor)
+            subTitleLabel.text = discoverability.nameForDiscoverability
 
             let labelIconName: String = {
-                switch phoneNumberDiscoverability {
+                switch discoverability {
                 case .everybody:
                     return "group"
                 case .nobody:
                     return "lock"
                 }
             }()
-
-            titleLabel.text = OWSLocalizedString(
-                "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
-                comment: "During registration, users can choose who can see their phone number.")
-
-            subTitleLabel.text = phoneNumberDiscoverability.nameForDiscoverability
-
             iconView.setTemplateImageName(labelIconName, tintColor: Theme.primaryIconColor)
-
-            titleLabel.font = UIFont.dynamicTypeBodyClamped
-            titleLabel.textColor = Theme.primaryTextColor
-
-            subTitleLabel.font = UIFont.dynamicTypeCaption1Clamped
-            subTitleLabel.textColor = Theme.secondaryTextAndIconColor
-
-            disclosureView.setTemplateImage(
-                UIImage(imageLiteralResourceName: "chevron-right-20"),
-                tintColor: Theme.secondaryTextAndIconColor
-            )
-        }
-
-        // MARK: Actions
-
-        @objc
-        func disclosureButtonTapped() {
-            onTap?()
-            render()
         }
     }
 }

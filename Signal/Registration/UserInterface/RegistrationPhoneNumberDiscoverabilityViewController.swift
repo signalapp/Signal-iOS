@@ -17,20 +17,6 @@ public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
 }
 
 class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
-
-    private enum Constants {
-        static let continueButtonInsets: UIEdgeInsets = .init(
-                 top: 16.0,
-                 leading: 36.0,
-                 bottom: 48,
-                 trailing: 36.0
-             )
-             static let continueButtonEdgeInsets: UIEdgeInsets = .init(
-                 hMargin: 0,
-                 vMargin: 16
-             )
-    }
-
     private let state: RegistrationPhoneNumberDiscoverabilityState
     private weak var presenter: RegistrationPhoneNumberDiscoverabilityPresenter?
 
@@ -41,8 +27,10 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         self.state = state
         self.presenter = presenter
         self.phoneNumberDiscoverability = state.phoneNumberDiscoverability
+
         super.init()
-        render()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -53,142 +41,111 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     // MARK: State
 
     private var phoneNumberDiscoverability: PhoneNumberDiscoverability {
-        didSet { render() }
+        didSet { update() }
     }
 
-    // MARK: Rendering
+    // MARK: UI
 
-    private lazy var titleLabel: UILabel = {
-        let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+    private lazy var everybodyButton: UIButton = createButtonForDiscoverability(.everybody)
+    private lazy var nobodyButton: UIButton = createButtonForDiscoverability(.nobody)
+
+    private func createButtonForDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> UIButton {
+        let button = PrivacySettingButton(phoneNumberDiscoverability: phoneNumberDiscoverability)
+        button.addAction(
+            UIAction { [weak self] _ in
+                self?.phoneNumberDiscoverability = phoneNumberDiscoverability
+            },
+            for: .primaryActionTriggered
+        )
+        return button
+    }
+
+    private lazy var selectionDescriptionLabel: UILabel = {
+        let label = UILabel.explanationLabelForRegistration(text: "")
+        label.font = .dynamicTypeFootnoteClamped
+        return label
+    }()
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .Signal.background
+
+        navigationItem.setHidesBackButton(true, animated: false)
+        if !(presenter?.presentedAsModal ?? true) {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: CommonStrings.nextButton,
+                style: .done,
+                target: self,
+                action: #selector(didTapSave),
+                accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton"
+            )
+        }
+
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
             comment: "Title of the 'onboarding phone number discoverability' view."
         ))
-        result.accessibilityIdentifier = "registration.phoneNumberDiscoverability.titleLabel"
-        return result
-    }()
+        titleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.titleLabel"
 
-    private lazy var explanationLabel: UILabel = {
         let formattedPhoneNumber = state.e164.stringValue
         let explanationTextFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
         )
-
-        let result = UILabel.explanationLabelForRegistration(
+        let subtitleLabel = UILabel.explanationLabelForRegistration(
             text: String(format: explanationTextFormat, formattedPhoneNumber)
         )
-        result.accessibilityIdentifier = "registration.phoneNumberDiscoverability.explanationLabel"
+        subtitleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.explanationLabel"
 
-        return result
-    }()
-
-    private lazy var everybodyButton: ButtonRow = createButtonForDiscoverability(.everybody)
-    private lazy var nobodyButton: ButtonRow = createButtonForDiscoverability(.nobody)
-
-    private func createButtonForDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> ButtonRow {
-        let result = ButtonRow(title: phoneNumberDiscoverability.nameForDiscoverability)
-        result.handler = { [weak self] _ in
-            self?.phoneNumberDiscoverability = phoneNumberDiscoverability
-        }
-        return result
-    }
-
-    private lazy var selectionDescriptionLabel: UILabel = {
-        let result = UILabel()
-        result.font = .dynamicTypeCaption1Clamped
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
-        return result
-    }()
-
-    private lazy var nextBarButton = UIBarButtonItem(
-        title: CommonStrings.nextButton,
-        style: .done,
-        target: self,
-        action: #selector(didTapSave),
-        accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton"
-    )
-
-    private lazy var continueButton: UIView = {
-        let footerView = UIView()
-        let continueButton = OWSFlatButton.insetButton(
-            title: CommonStrings.continueButton,
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapSave))
-        continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
-
-        footerView.addSubview(continueButton)
-
-        continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
-        continueButton.autoPinEdgesToSuperviewEdges(with: Constants.continueButtonInsets)
-
-        return footerView
-    }()
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        initialRender()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
-
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
-        if !(presenter?.presentedAsModal ?? true) {
-            navigationItem.rightBarButtonItem = nextBarButton
-        }
-
-        let descriptionLabelContainer = UIView()
-        descriptionLabelContainer.addSubview(selectionDescriptionLabel)
-        selectionDescriptionLabel.autoPinEdgesToSuperviewMargins()
-
-        var stackSubviews = [
+        let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
-            .spacer(withHeight: 16),
-            explanationLabel,
-            .spacer(withHeight: 24),
+            subtitleLabel,
             everybodyButton,
             nobodyButton,
-            .spacer(withHeight: 16),
-            descriptionLabelContainer,
+            selectionDescriptionLabel,
             .vStretchingSpacer(minHeight: 16)
-        ]
-
+        ])
         if presenter?.presentedAsModal ?? false {
-            stackSubviews.append(contentsOf: [
-                continueButton,
-                .spacer(withHeight: 16)
+            let continueButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.continueButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapSave()
+                }
+            )
+            continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
+            let buttonContainer = UIView.container()
+            buttonContainer.addSubview(continueButton)
+            continueButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                continueButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+                continueButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
+                continueButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+                continueButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
             ])
+            stackView.addArrangedSubview(buttonContainer)
         }
-
-        let stackView = UIStackView(arrangedSubviews: stackSubviews)
         stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.setCustomSpacing(24, after: subtitleLabel)
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
-        render()
+        update()
     }
 
-    private func render() {
+    private func update() {
         everybodyButton.isSelected = phoneNumberDiscoverability == .everybody
-        everybodyButton.render()
-
         nobodyButton.isSelected = phoneNumberDiscoverability == .nobody
-        nobodyButton.render()
-
         selectionDescriptionLabel.text = phoneNumberDiscoverability.descriptionForDiscoverability
-
-        view.backgroundColor = Theme.backgroundColor
-        continueButton.tintColor = Theme.accentBlueColor
-        titleLabel.textColor = .colorForRegistrationTitleLabel
-        explanationLabel.textColor = .colorForRegistrationExplanationLabel
-        selectionDescriptionLabel.textColor = .colorForRegistrationExplanationLabel
     }
 
     // MARK: Events
@@ -199,80 +156,141 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }
 }
 
-// MARK: - ButtonRow
+// MARK: - Privacy setting buttons
 
-private class ButtonRow: UIButton {
-    var handler: ((ButtonRow) -> Void)?
+private extension RegistrationPhoneNumberDiscoverabilityViewController {
 
-    private let selectedImageView = UIImageView()
+    private class PrivacySettingButton: UIButton {
+        private lazy var contentView = PrivacySettingButtonContentView(
+            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability)
+        )
 
-    static let vInset: CGFloat = 11
-    static var hInset: CGFloat { UIDevice.current.isPlusSizePhone ? 20 : 16 }
+        var phoneNumberDiscoverability: PhoneNumberDiscoverability {
+            didSet {
+                contentView.configuration = PrivacySettingButtonContentConfiguration(
+                    phoneNumberDiscoverability: phoneNumberDiscoverability
+                )
+            }
+        }
 
-    override var isSelected: Bool {
-        didSet {
-            selectedImageView.isHidden = !isSelected
+        override var isSelected: Bool {
+            didSet {
+                contentView.configuration = PrivacySettingButtonContentConfiguration(
+                    phoneNumberDiscoverability: phoneNumberDiscoverability,
+                    isSelected: isSelected
+                )
+            }
+        }
+
+        init(phoneNumberDiscoverability: PhoneNumberDiscoverability) {
+            self.phoneNumberDiscoverability = phoneNumberDiscoverability
+
+            super.init(frame: .zero)
+
+            configuration = .filled()
+            configuration?.baseBackgroundColor = .Signal.background
+
+            addSubview(contentView)
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                contentView.topAnchor.constraint(equalTo: topAnchor),
+                contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            ])
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 
-    private lazy var buttonLabel: UILabel = UILabel()
+    private struct PrivacySettingButtonContentConfiguration: UIContentConfiguration {
+        var phoneNumberDiscoverability: PhoneNumberDiscoverability
+        var isSelected = false
 
-    private lazy var divider: UIView = UIView()
+        func makeContentView() -> UIView & UIContentView {
+            PrivacySettingButtonContentView(configuration: self)
+        }
 
-    init(title: String) {
-        super.init(frame: .zero)
-
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
-
-        buttonLabel.text = title
-
-        selectedImageView.isHidden = true
-        selectedImageView.contentMode = .scaleAspectFit
-        selectedImageView.autoSetDimension(.width, toSize: 24)
-
-        let stackView = UIStackView(arrangedSubviews: [buttonLabel, .hStretchingSpacer(), selectedImageView])
-        stackView.isUserInteractionEnabled = false
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(
-            top: Self.vInset,
-            leading: Self.hInset,
-            bottom: Self.vInset,
-            trailing: Self.hInset
-        )
-
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
-        stackView.autoSetDimension(.height, toSize: 44, relation: .greaterThanOrEqual)
-
-        addSubview(divider)
-        divider.autoSetDimension(.height, toSize: .hairlineWidth)
-        divider.autoPinEdge(toSuperviewEdge: .trailing)
-        divider.autoPinEdge(toSuperviewEdge: .bottom)
-        divider.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.hInset)
-
-        render()
+        func updated(for state: UIConfigurationState) -> PrivacySettingButtonContentConfiguration {
+            // Looks the same.
+            self
+        }
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private class PrivacySettingButtonContentView: UIView, UIContentView {
+
+        private var _configuration: PrivacySettingButtonContentConfiguration!
+
+        var configuration: UIContentConfiguration {
+            get { _configuration }
+            set {
+                guard let configuration = newValue as? PrivacySettingButtonContentConfiguration else { return }
+                _configuration = configuration
+                apply(configuration)
+            }
+        }
+
+        init(configuration: PrivacySettingButtonContentConfiguration) {
+            super.init(frame: .zero)
+
+            isUserInteractionEnabled = false
+            layoutMargins = .init(hMargin: 8, vMargin: 8)
+
+            let hStack = UIStackView(arrangedSubviews: [ titleLabel, checkmark ])
+            hStack.axis = .horizontal
+            hStack.alignment = .center
+            hStack.spacing = 12
+
+            addSubview(hStack)
+            hStack.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                hStack.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                hStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                hStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+                hStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+
+                titleLabel.heightAnchor.constraint(greaterThanOrEqualTo: checkmark.heightAnchor),
+                heightAnchor.constraint(greaterThanOrEqualToConstant: 48),
+            ])
+
+            addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
+
+            apply(configuration)
+       }
+
+        @available(*, unavailable, message: "Use other constructor")
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        private lazy var checkmark: UIView = {
+            let iconView = UIImageView()
+            iconView.contentMode = .scaleAspectFit
+            iconView.translatesAutoresizingMaskIntoConstraints = false
+            iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+            iconView.setTemplateImage(Theme.iconImage(.checkmark), tintColor: .Signal.label)
+            return iconView
+        }()
+
+        private lazy var titleLabel: UILabel = {
+            let titleLabel = UILabel()
+            titleLabel.font = .dynamicTypeBodyClamped
+            titleLabel.textColor = .Signal.label
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            titleLabel.text = OWSLocalizedString(
+                "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
+                comment: "During registration, users can choose who can see their phone number."
+            )
+            return titleLabel
+        }()
+
+        private func apply(_ configuration: PrivacySettingButtonContentConfiguration) {
+            titleLabel.text = configuration.phoneNumberDiscoverability.nameForDiscoverability
+            checkmark.isHidden = !configuration.isSelected
+        }
     }
 
-    public func render() {
-        setBackgroundImage(UIImage.image(color: Theme.tableCell2SelectedBackgroundColor), for: .highlighted)
-        setBackgroundImage(UIImage.image(color: Theme.backgroundColor), for: .normal)
-
-        buttonLabel.textColor = Theme.primaryTextColor
-        buttonLabel.font = .dynamicTypeBodyClamped
-
-        divider.backgroundColor = .ows_middleGray
-
-        selectedImageView.setTemplateImage(Theme.iconImage(.checkmark), tintColor: Theme.primaryIconColor)
-    }
-
-    @objc
-    func didTap() {
-        handler?(self)
-    }
 }

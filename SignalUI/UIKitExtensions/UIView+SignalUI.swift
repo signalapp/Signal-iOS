@@ -296,6 +296,7 @@ public extension UIView {
         return addBottomStroke(color: .ows_middleGray, strokeWidth: .hairlineWidth)
     }
 
+    @discardableResult
     func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {
         let strokeView = UIView()
         strokeView.backgroundColor = color
