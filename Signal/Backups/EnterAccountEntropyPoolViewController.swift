@@ -52,10 +52,32 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         super.viewDidLoad()
 
         view.backgroundColor = colorConfig.background
-        navigationItem.rightBarButtonItem = nextBarButtonItem
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            style: .done,
+            target: self,
+            action: #selector(didTapNext)
+        )
 
         let scrollView = UIScrollView()
-        self.view.addSubview(scrollView)
+        view.addSubview(scrollView)
+        scrollView.preservesSuperviewLayoutMargins = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+        ])
+
+        let titleLabel = UILabel.titleLabelForRegistration(text: headerStrings.title)
+        let subtitleLabel = UILabel.explanationLabelForRegistration(text: headerStrings.subtitle)
+        let footerButton = UIButton(
+            configuration: .mediumSecondary(title: footerButtonConfig.title),
+            primaryAction: UIAction { [weak self] _ in
+                self?.footerButtonConfig.action()
+            }
+        )
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -64,19 +86,26 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
             aepIssueLabel,
             footerButton,
         ])
-        scrollView.addSubview(stackView)
         stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.spacing = 24
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
         stackView.setCustomSpacing(16, after: aepTextView)
         stackView.setCustomSpacing(20, after: aepIssueLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
 
-        scrollView.autoPinEdgesToSuperviewEdges()
-
-        stackView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 20)
-        stackView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -20)
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 24)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom)
+        scrollView.addSubview(stackView)
+        aepTextView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            aepTextView.widthAnchor.constraint(equalTo: stackView.layoutMarginsGuide.widthAnchor),
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+        ])
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -86,38 +115,12 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
 
     // MARK: -
 
-    private lazy var nextBarButtonItem = UIBarButtonItem(
-        title: CommonStrings.nextButton,
-        style: .done,
-        target: self,
-        action: #selector(didTapNext)
-    )
-
     private lazy var aepTextView = {
         let textView = AccountEntropyPoolTextView(mode: .entry(onTextViewChanged: { [weak self] in
             self?.onTextViewUpdated()
         }))
         textView.backgroundColor = colorConfig.aepEntryBackground
         return textView
-    }()
-
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = headerStrings.title
-        label.textAlignment = .center
-        label.font = .dynamicTypeTitle1.semibold()
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private lazy var subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = headerStrings.subtitle
-        label.textColor = .secondaryLabel
-        label.textAlignment = .center
-        label.font = .dynamicTypeBody
-        label.numberOfLines = 0
-        return label
     }()
 
     private lazy var aepIssueLabel: UILabel = {
@@ -130,21 +133,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         return label
     }()
 
-    private lazy var footerButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(footerButtonConfig.title, for: .normal)
-        button.titleLabel?.font = .dynamicTypeBody.semibold()
-        button.setTitleColor(UIColor.Signal.ultramarine, for: .normal)
-        button.addTarget(self, action: #selector(didTapNoKeyButton), for: .touchUpInside)
-        return button
-    }()
-
     // MARK: -
-
-    @objc
-    private func didTapNoKeyButton() {
-        footerButtonConfig.action()
-    }
 
     @objc
     private func dismissKeyboard() {
@@ -188,24 +177,24 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
     private func onTextViewUpdated() {
         switch validateAEPText() {
         case .notFullyEntered:
-            nextBarButtonItem.isEnabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = false
             aepIssueLabel.alpha = 0
         case .malformedAEP:
-            nextBarButtonItem.isEnabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL",
                 comment: "Label explaining that an entered 'Recovery Key' is malformed."
             )
             aepIssueLabel.alpha = 1
         case .wellFormedButMismatched:
-            nextBarButtonItem.isEnabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL",
                 comment: "Label explaining that an entered 'Recovery Key' is incorrect."
             )
             aepIssueLabel.alpha = 1
         case .success:
-            nextBarButtonItem.isEnabled = true
+            navigationItem.rightBarButtonItem?.isEnabled = true
             aepIssueLabel.alpha = 0
         }
     }
