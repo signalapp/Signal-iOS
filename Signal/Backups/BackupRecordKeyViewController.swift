@@ -148,23 +148,20 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             configuration: {
                 var configuration: UIButton.Configuration = .plain()
                 configuration.attributedTitle = AttributedString(
-                    OWSLocalizedString(
-                        "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
-                        comment: "Title for a button allowing users to create a new 'Recovery Key'."
-                    ),
+                    CommonStrings.continueButton,
                     attributes: AttributeContainer([
                         .font: UIFont.dynamicTypeHeadline,
                         .foregroundColor: UIColor.white,
                     ])
                 )
-                configuration.contentInsets = .init(hMargin: 0, vMargin: 14)
+                configuration.contentInsets = .init(hMargin: 60, vMargin: 14)
                 configuration.background.cornerRadius = 12
                 configuration.background.backgroundColor = .Signal.accent
                 return configuration
             }(),
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
-                onCreateNewKeyPressedBlock(self)
+                onContinuePressedBlock(self)
             },
         )
 
