@@ -87,7 +87,7 @@ extension AppSetup {
     /// that use the global state, and similarly use this type to inject a
     /// limited set of mock singletons.
     public struct TestDependencies {
-        let backupAttachmentDownloadQueueRunner: BackupAttachmentDownloadQueueRunner?
+        let backupAttachmentCoordinator: BackupAttachmentCoordinator?
         let contactManager: (any ContactManager)?
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
@@ -109,7 +109,7 @@ extension AppSetup {
         let webSocketFactory: (any WebSocketFactory)?
 
         public init(
-            backupAttachmentDownloadQueueRunner: BackupAttachmentDownloadQueueRunner? = nil,
+            backupAttachmentCoordinator: BackupAttachmentCoordinator? = nil,
             contactManager: (any ContactManager)? = nil,
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
@@ -130,7 +130,7 @@ extension AppSetup {
             versionedProfiles: (any VersionedProfiles)? = nil,
             webSocketFactory: (any WebSocketFactory)? = nil
         ) {
-            self.backupAttachmentDownloadQueueRunner = backupAttachmentDownloadQueueRunner
+            self.backupAttachmentCoordinator = backupAttachmentCoordinator
             self.contactManager = contactManager
             self.dateProvider = dateProvider
             self.groupV2Updates = groupV2Updates
@@ -629,10 +629,13 @@ extension AppSetup.GlobalsContinuation {
         let backupAttachmentDownloadScheduler = BackupAttachmentDownloadSchedulerImpl(
             backupAttachmentDownloadStore: backupAttachmentDownloadStore
         )
-        let backupAttachmentCoordinator = BackupAttachmentCoordinatorImpl(
-            downloadRunner: testDependencies.backupAttachmentDownloadQueueRunner ?? BackupAttachmentDownloadQueueRunnerImpl(
+        let backupAttachmentCoordinator = testDependencies.backupAttachmentCoordinator ?? BackupAttachmentCoordinatorImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            downloadRunner: BackupAttachmentDownloadQueueRunnerImpl(
                 appContext: appContext,
-                appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentDownloadManager: attachmentDownloadManager,
                 attachmentUploadStore: attachmentUploadStore,
@@ -670,12 +673,14 @@ extension AppSetup.GlobalsContinuation {
                 backupSettingsStore: backupSettingsStore,
                 dateProvider: dateProvider,
                 db: db,
+                listMediaManager: backupListMediaManager,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 tsAccountManager: tsAccountManager
             ),
+            orphanStore: orphanedBackupAttachmentStore,
+            tsAccountManager: tsAccountManager,
             uploadRunner: BackupAttachmentUploadQueueRunnerImpl(
                 accountKeyStore: accountKeyStore,
-                appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 attachmentUploadManager: attachmentUploadManager,
                 backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
@@ -1041,10 +1046,10 @@ extension AppSetup.GlobalsContinuation {
         let backupDisablingManager = BackupDisablingManager(
             accountEntropyPoolManager: accountEntropyPoolManager,
             authCredentialStore: authCredentialStore,
+            backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupKeyService: backupKeyService,
-            backupListMediaManager: backupListMediaManager,
             backupPlanManager: backupPlanManager,
             backupSettingsStore: backupSettingsStore,
             db: db,

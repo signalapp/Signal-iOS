@@ -9,8 +9,8 @@ public enum BackupExportJobStep: String, OWSSequentialProgressStep {
     case backupExport
     case backupUpload
     case listMedia
-    case attachmentOrphaning
     case attachmentUpload
+    case attachmentOrphaning
     case offloading
 
     /// Amount of the overall job progress, relative to other `Step`s, that
@@ -283,47 +283,24 @@ class BackupExportJobImpl: BackupExportJob {
                 }
             )
 
+            logger.info("Listing media...")
+
             let hasConsumedMediaTierCapacity = db.read { tx in
                 backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
             }
 
-            var downloadSuspendHandle: BackupAttachmentDownloadSuspensionHandle?
-            if hasConsumedMediaTierCapacity {
-                // If capacity is reached, we want to force a list media to run (to discover
-                // any new things we can delete) and then run all our deletions.
-                // In order to do so safely, we must first ensure the upload and download queues
-                // aren't running, otherwise their state updates will race with list/delete ops.
-                // Don't assign progress to these as both queues should be suspended and we are
-                // just waiting on them to clean up any currently-running task.
-                downloadSuspendHandle = await backupAttachmentDownloadQueueStatusManager.suspendDownloadsInMemory()
-                try? await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
-                try? await backupAttachmentCoordinator.backUpAllAttachments(waitOnThumbnails: true)
-            }
-
-            logger.info("Listing media...")
-
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 5,
                 progress: progress?.child(for: .listMedia).addSource(withLabel: "", unitCount: 1),
-            ) { [backupAttachmentCoordinator] in
+            ) { [backupAttachmentCoordinator, logger] in
                 try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
+                    try await backupAttachmentCoordinator.queryListMediaIfNeeded()
                     if hasConsumedMediaTierCapacity {
-                        try await backupAttachmentCoordinator.forceQueryListMedia()
-                    } else {
-                        try await backupAttachmentCoordinator.queryListMediaIfNeeded()
+                        // Run orphans now; include it in the list media progress for simplicity.
+                        logger.info("Deleting orphaned attachments...")
+                        try await backupAttachmentCoordinator.deleteOrphansIfNeeded()
                     }
                 }
-            }
-
-            await downloadSuspendHandle?.release()
-
-            logger.info("Deleting orphaned attachments...")
-
-            try await withEstimatedProgressUpdates(
-                estimatedTimeToCompletion: 2,
-                progress: progress?.child(for: .attachmentOrphaning).addSource(withLabel: "", unitCount: 1),
-            ) { [backupAttachmentCoordinator] in
-                try await backupAttachmentCoordinator.deleteOrphansIfNeeded()
             }
 
             logger.info("Uploading attachments...")
@@ -359,6 +336,17 @@ class BackupExportJobImpl: BackupExportJob {
                 break
             case .bgProcessingTask:
                 try? await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
+            }
+
+            if !hasConsumedMediaTierCapacity {
+                logger.info("Deleting orphaned attachments...")
+
+                try await withEstimatedProgressUpdates(
+                    estimatedTimeToCompletion: 2,
+                    progress: progress?.child(for: .attachmentOrphaning).addSource(withLabel: "", unitCount: 1),
+                ) { [backupAttachmentCoordinator] in
+                    try await backupAttachmentCoordinator.deleteOrphansIfNeeded()
+                }
             }
 
             logger.info("Offloading attachments...")

@@ -27,6 +27,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        listMediaManager: BackupListMediaManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         tsAccountManager: TSAccountManager
     ) {
@@ -38,6 +39,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
+            listMediaManager: listMediaManager,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             tsAccountManager: tsAccountManager
         )
@@ -67,6 +69,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
         private let backupRequestManager: BackupRequestManager
         private let backupSettingsStore: BackupSettingsStore
         private let db: any DB
+        private let listMediaManager: BackupListMediaManager
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let tsAccountManager: TSAccountManager
 
@@ -78,6 +81,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             backupRequestManager: BackupRequestManager,
             backupSettingsStore: BackupSettingsStore,
             db: any DB,
+            listMediaManager: BackupListMediaManager,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             tsAccountManager: TSAccountManager
         ) {
@@ -86,6 +90,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             self.backupRequestManager = backupRequestManager
             self.backupSettingsStore = backupSettingsStore
             self.db = db
+            self.listMediaManager = listMediaManager
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.tsAccountManager = tsAccountManager
 
@@ -109,11 +114,17 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 return .cancelled
             }
 
-            let (localAci, registrationState, mediaRootBackupKey) = db.read { tx in
+            let (
+                localAci,
+                registrationState,
+                mediaRootBackupKey,
+                needsListMedia,
+            ) = db.read { tx in
                 return (
                     tsAccountManager.localIdentifiers(tx: tx)?.aci,
                     tsAccountManager.registrationState(tx: tx),
-                    accountKeyStore.getMediaRootBackupKey(tx: tx)
+                    accountKeyStore.getMediaRootBackupKey(tx: tx),
+                    self.listMediaManager.getNeedsQueryListMedia(tx: tx),
                 )
             }
 
@@ -153,6 +164,12 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 let error = OWSAssertionError("Deleting without being registered")
                 try? await loader.stop(reason: error)
                 return .retryableError(error)
+            }
+
+            if needsListMedia {
+                // If we need to list media, quit out early so we can do that.
+                try? await loader.stop(reason: NeedsListMediaError())
+                return .retryableError(NeedsListMediaError())
             }
 
             let mediaId: Data

@@ -141,10 +141,6 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             return
         }
 
-        // Query list media if needed to ensure we have the latest cdn info
-        // for all our uploads.
-        try await listMediaManager.queryListMediaIfNeeded()
-
         let startTimeMs = dateProvider().ows_millisecondsSince1970
         var lastAttachmentId: Attachment.IDType?
         while true {
@@ -168,6 +164,11 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         lastAttachmentId: Attachment.IDType?
     ) async throws -> Attachment.IDType? {
         let viewedTimestampCutoff = startTimeMs - Attachment.offloadingThresholdMs
+
+        let needsListMedia = db.read(block: listMediaManager.getNeedsQueryListMedia(tx:))
+        if needsListMedia {
+            throw NeedsListMediaError()
+        }
 
         let (candidateAttachments, didHitEnd) = try db.read { (tx) -> ([Attachment], Bool) in
             guard offloadingIsAllowed(tx: tx) else {

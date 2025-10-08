@@ -6,6 +6,8 @@
 import GRDB
 import LibSignalClient
 
+public struct NeedsListMediaError: Error {}
+
 public struct ListMediaIntegrityCheckResult: Codable {
     public struct Result: Codable {
         /// Count of attachments we expected to see on CDN and did see on CDN.
@@ -75,13 +77,11 @@ public struct ListMediaIntegrityCheckResult: Codable {
 }
 
 public protocol BackupListMediaManager {
-    func queryListMediaIfNeeded() async throws
 
-    /// WARNING: DO NOT use this method if download or upload queues may be running in parallel.
-    /// It can result in undefined behavior if list media and download/upload race with each other to
-    /// update local state. This method overrides the checks that normally prevent that and should
-    /// only be used when uploads and downloads are suspended.
-    func forceQueryListMedia() async throws
+    /// Returns true if a list media should be run whenever is next possible.
+    func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool
+
+    func queryListMediaIfNeeded() async throws
 }
 
 public class BackupListMediaManagerImpl: BackupListMediaManager {
@@ -154,10 +154,15 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    /// Nil if we have not run list media this app launch (only held in memory).
-    /// Set to the upload era where we ran list media this app launch.
-    /// Should only be accessed from the taskQueue for locking purposes.
-    private var lastListMediaUploadEraThisAppSession: String?
+    public func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
+        let currentUploadEra = self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
+        let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
+        return self.needsToQueryListMedia(
+            currentUploadEra: currentUploadEra,
+            currentBackupPlan: currentBackupPlan,
+            tx: tx
+        )
+    }
 
     public func queryListMediaIfNeeded() async throws {
         let task = Task {
@@ -181,29 +186,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         )
     }
 
-    public func forceQueryListMedia() async throws {
-        let task = Task {
-            // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
-            try await taskQueue.run { [weak self] in
-                try await self?._queryListMediaIfNeeded(force: true)
-            }
-        }
-        let backgroundTask = OWSBackgroundTask(label: #function) { [task] status in
-            switch status {
-            case .expired:
-                task.cancel()
-            case .couldNotStart, .success:
-                break
-            }
-        }
-        defer { backgroundTask.end() }
-        try await withTaskCancellationHandler(
-            operation: { _ = try await task.value },
-            onCancel: { task.cancel() }
-        )
-    }
-
-    private func _queryListMediaIfNeeded(force: Bool = false) async throws -> ListMediaIntegrityCheckResult {
+    private func _queryListMediaIfNeeded() async throws -> ListMediaIntegrityCheckResult {
         guard FeatureFlags.Backups.supported else {
             return .empty(listMediaStartTimestamp: 0)
         }
@@ -228,7 +211,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 currentUploadEra,
                 kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx),
                 kvStore.getUInt64(Constants.inProgressListMediaStartTimestampKey, transaction: tx),
-                try self.needsToQueryListMedia(
+                self.needsToQueryListMedia(
                     currentUploadEra: currentUploadEra,
                     currentBackupPlan: currentBackupPlan,
                     tx: tx
@@ -238,7 +221,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 integrityCheckResult
             )
         }
-        guard needsToQuery || force else {
+        guard needsToQuery else {
             return .empty(listMediaStartTimestamp: 0)
         }
 
@@ -418,7 +401,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             try self.didFinishListMedia(startTimestamp: startTimestamp, integrityCheckResult: integrityCheckResult, tx: tx)
             let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
             let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-            return try self.needsToQueryListMedia(
+            return self.needsToQueryListMedia(
                 currentUploadEra: currentUploadEra,
                 currentBackupPlan: currentBackupPlan,
                 tx: tx
@@ -1113,7 +1096,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         currentUploadEra: String,
         currentBackupPlan: BackupPlan,
         tx: DBReadTransaction
-    ) throws -> Bool {
+    ) -> Bool {
+        guard FeatureFlags.Backups.supported else {
+            return false
+        }
+
         switch currentBackupPlan {
         case .disabled:
             return false
@@ -1144,21 +1131,22 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         case .free:
             return false
         case .paid, .paidExpiringSoon, .paidAsTester:
-            // Only query once per app session per upload era; this overrides the manual
-            // toggle and the date-based checks.
-            if lastListMediaUploadEraThisAppSession == currentUploadEra {
-                return false
-            }
-
             if backupListMediaStore.getManualNeedsListMedia(tx: tx) {
                 return true
             }
 
             // If paid tier, query periodically as a catch-all to ensure local state
             // stays in sync with the server.
+            let refreshIntervalMs: UInt64
+            if backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx) {
+                refreshIntervalMs = Constants.refreshIntervalWhenConsumedMediaTierSpaceMs
+            } else {
+                refreshIntervalMs = Constants.refreshIntervalMs
+            }
+
             let nowMs = dateProvider().ows_millisecondsSince1970
             let lastListMediaMs = kvStore.getUInt64(Constants.lastListMediaStartTimestampKey, defaultValue: 0, transaction: tx)
-            if nowMs > lastListMediaMs, nowMs - lastListMediaMs > Constants.refreshIntervalMs {
+            if nowMs > lastListMediaMs, nowMs - lastListMediaMs > refreshIntervalMs {
                 return true
             }
             return false
@@ -1196,7 +1184,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.kvStore.setBool(true, key: Constants.hasEverRunListMediaKey, transaction: tx)
         if let uploadEra = kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) {
             self.kvStore.setString(uploadEra, key: Constants.lastListMediaUploadEraKey, transaction: tx)
-            self.lastListMediaUploadEraThisAppSession = uploadEra
             self.kvStore.removeValue(forKey: Constants.inProgressUploadEraKey, transaction: tx)
         } else {
             owsFailDebug("Missing in progress upload era?")
@@ -1219,14 +1206,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
     @objc
     private func backupPlanDidChange() {
-        switch db.read(block: backupSettingsStore.backupPlan(tx:)) {
-        case .free, .paid, .paidAsTester, .paidExpiringSoon, .disabling:
-            return
-        case .disabled:
-            // Rotate the last integrity check failure when disabled
-            db.write { tx in
-                try? backupListMediaStore.setLastFailingIntegrityCheckResult(nil, tx: tx)
-                try? backupListMediaStore.setMostRecentIntegrityCheckResult(nil, tx: tx)
+        Task {
+            switch self.db.read(block: backupSettingsStore.backupPlan(tx:)) {
+            case .free, .paid, .paidAsTester, .paidExpiringSoon, .disabling:
+                return
+            case .disabled:
+                // Rotate the last integrity check failure when disabled
+                await self.db.awaitableWrite { tx in
+                    try? self.backupListMediaStore.setLastFailingIntegrityCheckResult(nil, tx: tx)
+                    try? self.backupListMediaStore.setMostRecentIntegrityCheckResult(nil, tx: tx)
+                }
             }
         }
     }
@@ -1245,6 +1234,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         /// If we haven't listed in this long, we will list again.
         static let refreshIntervalMs: UInt64 = .dayInMs * 30
+        static let refreshIntervalWhenConsumedMediaTierSpaceMs: UInt64 = .dayInMs
 
         /// If there is a list media in progress, the value at this key is the upload era that was set
         /// at the start of that in progress run.
@@ -1272,11 +1262,12 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 #if TESTABLE_BUILD
 
 class MockBackupListMediaManager: BackupListMediaManager {
-    func queryListMediaIfNeeded() async throws {
-        // Nothing
+
+    func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
+        return false
     }
 
-    func forceQueryListMedia() async throws {
+    func queryListMediaIfNeeded() async throws {
         // Nothing
     }
 

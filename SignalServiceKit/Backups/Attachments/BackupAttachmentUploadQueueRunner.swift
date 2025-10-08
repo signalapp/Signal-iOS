@@ -20,7 +20,7 @@ public protocol BackupAttachmentUploadQueueRunner {
     /// backed up as needed.
     ///
     /// Throws an error IFF something would prevent all attachments from backing up (e.g. network issue).
-    func backUpAllAttachments(waitOnThumbnails: Bool) async throws
+    func backUpAllAttachments(mode: BackupAttachmentUploadQueueMode) async throws
 }
 
 class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
@@ -33,7 +33,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     private let backupSettingsStore: BackupSettingsStore
     private let db: any DB
     private let logger: PrefixedLogger
-    private let listMediaManager: BackupListMediaManager
     private let progress: BackupAttachmentUploadProgress
     private let statusManager: BackupAttachmentUploadQueueStatusManager
     private let tsAccountManager: TSAccountManager
@@ -46,7 +45,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
     init(
         accountKeyStore: AccountKeyStore,
-        appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
@@ -71,7 +69,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         self.db = db
         let logger = PrefixedLogger(prefix: "[Backups]")
         self.logger = logger
-        self.listMediaManager = backupListMediaManager
         self.progress = progress
         self.statusManager = statusManager
         self.tsAccountManager = tsAccountManager
@@ -89,6 +86,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 backupSettingsStore: backupSettingsStore,
                 dateProvider: dateProvider,
                 db: db,
+                listMediaManager: backupListMediaManager,
                 logger: logger,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 progress: progress,
@@ -110,60 +108,11 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
         self.fullsizeTaskQueue = makeTaskQueue(mode: .fullsize)
         self.thumbnailTaskQueue = makeTaskQueue(mode: .thumbnail)
-
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.startObservingQueueStatus()
-            self?.backUpAllAttachmentsIfNecessary()
-        }
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(backUpAllAttachmentsIfNecessary),
-            name: .backupPlanChanged,
-            object: nil,
-        )
-    }
-
-    @objc
-    private func backUpAllAttachmentsIfNecessary() {
-        backUpFullsizeAttachmentsIfNecessary()
-        backUpThumbnailAttachmentsIfNecessary()
-    }
-
-    private func backUpFullsizeAttachmentsIfNecessary() {
-        Task {
-            if await self.fullsizeTaskQueue.isRunning {
-                return
-            }
-            try await self._backUpAllAttachments(mode: .fullsize)
-        }
-    }
-
-    private func backUpThumbnailAttachmentsIfNecessary() {
-        Task {
-            if await self.thumbnailTaskQueue.isRunning {
-                return
-            }
-            try await self._backUpAllAttachments(mode: .thumbnail)
-        }
     }
 
     // MARK: -
 
-    public func backUpAllAttachments(waitOnThumbnails: Bool) async throws {
-        async let fullsizeResult = Result.init { [self] in
-            try await self._backUpAllAttachments(mode: .fullsize)
-        }
-        async let thumbnailResult = Result.init { [self] in
-            try await self._backUpAllAttachments(mode: .thumbnail)
-        }
-        if waitOnThumbnails {
-            try await thumbnailResult.get()
-        }
-        try await fullsizeResult.get()
-    }
-
-    private func _backUpAllAttachments(mode: BackupAttachmentUploadQueueMode) async throws {
+    public func backUpAllAttachments(mode: BackupAttachmentUploadQueueMode) async throws {
         let taskQueue: TaskQueueLoader<TaskRunner>
         let logString: String
         switch mode {
@@ -237,10 +186,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             break
         }
 
-        if FeatureFlags.Backups.supported {
-            try await listMediaManager.queryListMediaIfNeeded()
-        }
-
         switch await statusManager.beginObservingIfNecessary(for: mode) {
         case .running:
             logger.info("Running \(logString) Backup uploads.")
@@ -289,33 +234,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
     }
 
-    // MARK: - Observation
-
-    private func startObservingQueueStatus() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(fullsizeQueueStatusDidChange),
-            name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(thumbnailQueueStatusDidChange),
-            name: .backupAttachmentUploadQueueStatusDidChange(for: .thumbnail),
-            object: nil
-        )
-    }
-
-    @objc
-    private func fullsizeQueueStatusDidChange() {
-        backUpFullsizeAttachmentsIfNecessary()
-    }
-
-    @objc
-    private func thumbnailQueueStatusDidChange() {
-        backUpThumbnailAttachmentsIfNecessary()
-    }
-
     // MARK: - TaskRecordRunner
 
     private final class TaskRunner: TaskRecordRunner {
@@ -330,6 +248,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
+        private let listMediaManager: BackupListMediaManager
         private let logger: PrefixedLogger
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let progress: BackupAttachmentUploadProgress
@@ -351,6 +270,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
+            listMediaManager: BackupListMediaManager,
             logger: PrefixedLogger,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             progress: BackupAttachmentUploadProgress,
@@ -367,6 +287,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db
+            self.listMediaManager = listMediaManager
             self.logger = logger
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.progress = progress
@@ -417,14 +338,28 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 return .retryableError(OutOfCapacityError())
             }
 
-            let (attachment, backupPlan, currentUploadEra, backupKey) = db.read { tx in
+            let (
+                attachment,
+                backupPlan,
+                currentUploadEra,
+                backupKey,
+                needsListMedia,
+            ) = db.read { tx in
                 return (
                     self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
                     self.backupSettingsStore.backupPlan(tx: tx),
                     self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx),
-                    self.accountKeyStore.getMediaRootBackupKey(tx: tx)
+                    self.accountKeyStore.getMediaRootBackupKey(tx: tx),
+                    self.listMediaManager.getNeedsQueryListMedia(tx: tx),
                 )
             }
+
+            if needsListMedia {
+                // If we need to list media, quit out early so we can do that.
+                try? await loader.stop(reason: NeedsListMediaError())
+                return .retryableError(NeedsListMediaError())
+            }
+
             guard let attachment else {
                 // Attachment got deleted; early exit.
                 return .cancelled
@@ -826,7 +761,7 @@ open class BackupAttachmentUploadQueueRunnerMock: BackupAttachmentUploadQueueRun
 
     public init() {}
 
-    public func backUpAllAttachments(waitOnThumbnails: Bool) async throws {
+    public func backUpAllAttachments(mode: BackupAttachmentUploadQueueMode) async throws {
         // Do nothing
     }
 }

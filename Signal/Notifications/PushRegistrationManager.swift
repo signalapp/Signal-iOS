@@ -203,6 +203,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     @MainActor
     private func isSusceptibleToFailedPushRegistration() async -> Bool {
 
+        if Platform.isSimulator {
+            return true
+        }
+
         // Only affects users who have disabled both: background refresh *and* notifications
         guard UIApplication.shared.backgroundRefreshStatus == .denied else {
             Logger.info("has backgroundRefreshStatus != .denied, not susceptible to push registration failure")

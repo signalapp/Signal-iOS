@@ -17,22 +17,18 @@ public protocol BackupAttachmentDownloadQueueRunner {
     ///
     /// Returns immediately if there's no attachments left to restore.
     ///
-    /// Each individual attachments has its thumbnail and fullsize data downloaded as appropriate.
-    ///
     /// Throws an error IFF something would prevent all attachments from restoring (e.g. network issue).
-    func restoreAttachmentsIfNeeded() async throws
+    func restoreAttachmentsIfNeeded(mode: BackupAttachmentDownloadQueueMode) async throws
 }
 
 public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunner {
 
     private let appContext: AppContext
-    private let appReadiness: AppReadiness
     private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
-    private let listMediaManager: BackupListMediaManager
     private let logger: PrefixedLogger
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let progress: BackupAttachmentDownloadProgress
@@ -45,7 +41,6 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
 
     public init(
         appContext: AppContext,
-        appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadStore: AttachmentUploadStore,
@@ -62,10 +57,8 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
         tsAccountManager: TSAccountManager
     ) {
         self.appContext = appContext
-        self.appReadiness = appReadiness
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
-        self.listMediaManager = backupListMediaManager
         let logger = PrefixedLogger(prefix: "[Backups]")
         self.logger = logger
         self.backupSettingsStore = backupSettingsStore
@@ -88,6 +81,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                 backupSettingsStore: backupSettingsStore,
                 dateProvider: dateProvider,
                 db: db,
+                listMediaManager: backupListMediaManager,
                 logger: logger,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
                 progress: progress,
@@ -110,36 +104,10 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
 
         self.fullsizeTaskQueue = taskQueue(mode: .fullsize)
         self.thumbnailTaskQueue = taskQueue(mode: .thumbnail)
-
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.startObservingExternalEvents()
-            Task { [weak self] in
-                try await self?.restoreAttachmentsIfNeeded()
-            }
-        }
     }
 
-    public func restoreAttachmentsIfNeeded() async throws {
-        async let fullsizeResult = Result.init {
-            try await self._restoreAttachmentsIfNeeded(mode: .fullsize)
-        }
-        async let thumbnailResult = Result.init {
-            try await self._restoreAttachmentsIfNeeded(mode: .thumbnail)
-        }
-        try await fullsizeResult.get()
-        try await thumbnailResult.get()
-    }
-
-    private func _restoreAttachmentsIfNeeded(mode: BackupAttachmentDownloadQueueMode) async throws {
+    public func restoreAttachmentsIfNeeded(mode: BackupAttachmentDownloadQueueMode) async throws {
         guard appContext.isMainApp else { return }
-
-        if
-            FeatureFlags.Backups.supported,
-            db.read(block: tsAccountManager.registrationState(tx:))
-                .isRegistered
-        {
-            try await listMediaManager.queryListMediaIfNeeded()
-        }
 
         let taskQueue: TaskQueueLoader<TaskRunner>
         let logString: String
@@ -213,51 +181,6 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
         try await taskQueue.loadAndRunTasks()
     }
 
-    // MARK: - Queue status observation
-
-    private func startObservingExternalEvents() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(fullsizeQueueStatusDidChange),
-            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(thumbnailQueueStatusDidChange),
-            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .thumbnail),
-            object: nil
-        )
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(backupPlanDidChange),
-            name: .backupPlanChanged,
-            object: nil
-        )
-    }
-
-    @objc
-    private func fullsizeQueueStatusDidChange() {
-        Task {
-            try await self._restoreAttachmentsIfNeeded(mode: .fullsize)
-        }
-    }
-
-    @objc
-    private func thumbnailQueueStatusDidChange() {
-        Task {
-            try await self._restoreAttachmentsIfNeeded(mode: .thumbnail)
-        }
-    }
-
-    @objc
-    private func backupPlanDidChange() {
-        Task {
-            try await self.restoreAttachmentsIfNeeded()
-        }
-    }
-
     // MARK: - TaskRecordRunner
 
     private final class TaskRunner: TaskRecordRunner {
@@ -270,6 +193,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
         private let backupSettingsStore: BackupSettingsStore
         private let dateProvider: DateProvider
         private let db: any DB
+        private let listMediaManager: BackupListMediaManager
         private let logger: PrefixedLogger
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let progress: BackupAttachmentDownloadProgress
@@ -291,6 +215,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             backupSettingsStore: BackupSettingsStore,
             dateProvider: @escaping DateProvider,
             db: any DB,
+            listMediaManager: BackupListMediaManager,
             logger: PrefixedLogger,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             progress: BackupAttachmentDownloadProgress,
@@ -307,6 +232,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             self.backupSettingsStore = backupSettingsStore
             self.dateProvider = dateProvider
             self.db = db
+            self.listMediaManager = listMediaManager
             self.logger = logger
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.progress = progress
@@ -361,13 +287,21 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             let (
                 attachment,
                 backupPlan,
-                registrationState
-            ) = db.read { (tx) -> (Attachment?, BackupPlan, TSRegistrationState) in
+                registrationState,
+                needsListMedia
+            ) = db.read { (tx) -> (Attachment?, BackupPlan, TSRegistrationState, Bool) in
                 return (
                     attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
                     backupSettingsStore.backupPlan(tx: tx),
-                    tsAccountManager.registrationState(tx: tx)
+                    tsAccountManager.registrationState(tx: tx),
+                    self.listMediaManager.getNeedsQueryListMedia(tx: tx),
                 )
+            }
+
+            if needsListMedia {
+                // If we need to list media, quit out early so we can do that.
+                try? await loader.stop(reason: NeedsListMediaError())
+                return .retryableError(NeedsListMediaError())
             }
 
             guard let attachment else {
@@ -802,7 +736,7 @@ open class BackupAttachmentDownloadQueueRunnerMock: BackupAttachmentDownloadQueu
 
     public init() {}
 
-    public func restoreAttachmentsIfNeeded() async throws {
+    public func restoreAttachmentsIfNeeded(mode: BackupAttachmentDownloadQueueMode) async throws {
         // Do nothing
     }
 

@@ -19,10 +19,10 @@ public final class BackupDisablingManager {
 
     private let accountEntropyPoolManager: AccountEntropyPoolManager
     private let authCredentialStore: AuthCredentialStore
+    private let backupAttachmentCoordinator: BackupAttachmentCoordinator
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupKeyService: BackupKeyService
-    private let backupListMediaManager: BackupListMediaManager
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
@@ -34,10 +34,10 @@ public final class BackupDisablingManager {
     init(
         accountEntropyPoolManager: AccountEntropyPoolManager,
         authCredentialStore: AuthCredentialStore,
+        backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupKeyService: BackupKeyService,
-        backupListMediaManager: BackupListMediaManager,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
@@ -45,10 +45,10 @@ public final class BackupDisablingManager {
     ) {
         self.accountEntropyPoolManager = accountEntropyPoolManager
         self.authCredentialStore = authCredentialStore
+        self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupKeyService = backupKeyService
-        self.backupListMediaManager = backupListMediaManager
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
@@ -163,7 +163,7 @@ public final class BackupDisablingManager {
             logger.info("Waiting for list-media before disabling...")
 
             try await Retry.performWithIndefiniteNetworkRetries {
-                try await backupListMediaManager.queryListMediaIfNeeded()
+                try await backupAttachmentCoordinator.queryListMediaIfNeeded()
             }
 
             logger.info("Done waiting for list-media.")

@@ -22,7 +22,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             asyncBlock: { [weak self] modal in
-                try? await DependenciesBridge.shared.backupListMediaManager.queryListMediaIfNeeded()
+                try? await DependenciesBridge.shared.backupAttachmentCoordinator.queryListMediaIfNeeded()
                 await MainActor.run {
                     self?.updateTableContents()
                 }
