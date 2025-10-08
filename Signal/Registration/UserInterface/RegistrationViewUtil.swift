@@ -32,26 +32,9 @@ extension NSDirectionalEdgeInsets {
         }
     }
 
-    private init(allButTop: CGFloat) {
-        self.init(top: 0, leading: allButTop, bottom: allButTop, trailing: allButTop)
-    }
-
     static func layoutMarginsForLargeRegistrationButtons() -> NSDirectionalEdgeInsets {
         return .init(hMargin: 22, vMargin: 0)
     }
-}
-
-// MARK: - Colors
-
-extension UIColor {
-    static var colorForRegistrationTitleLabel: UIColor { Theme.primaryTextColor }
-    static var colorForRegistrationExplanationLabel: UIColor { Theme.secondaryTextAndIconColor }
-}
-
-// MARK: - Fonts
-
-extension UIFont {
-    static var fontForRegistrationExplanationLabel: UIFont { .dynamicTypeSubheadlineClamped }
 }
 
 // MARK: - Labels
@@ -60,7 +43,7 @@ extension UILabel {
     static func titleLabelForRegistration(text: String) -> UILabel {
         let result = UILabel()
         result.text = text
-        result.textColor = .colorForRegistrationTitleLabel
+        result.textColor = .Signal.label
         result.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
@@ -70,8 +53,8 @@ extension UILabel {
 
     static func explanationLabelForRegistration(text: String) -> UILabel {
         let result = UILabel()
-        result.textColor = .colorForRegistrationExplanationLabel
-        result.font = .fontForRegistrationExplanationLabel
+        result.textColor = .Signal.secondaryLabel
+        result.font = .dynamicTypeBodyClamped
         result.text = text
         result.numberOfLines = 0
         result.textAlignment = .center
@@ -81,49 +64,6 @@ extension UILabel {
 }
 
 // MARK: - Buttons
-
-extension OWSFlatButton {
-    static func primaryButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
-        let result = insetButton(
-            title: title,
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: target,
-            selector: selector
-        )
-        result.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
-        return result
-    }
-
-    static func secondaryButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
-        let result = insetButton(
-            title: title,
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
-            titleColor: .ows_accentBlue,
-            backgroundColor: .clear,
-            target: target,
-            selector: selector
-        )
-        result.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
-        return result
-    }
-
-    static func linkButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
-        let button = OWSFlatButton.button(
-            title: title,
-            font: UIFont.dynamicTypeSubheadlineClamped,
-            titleColor: Theme.accentBlueColor,
-            backgroundColor: .clear,
-            target: target,
-            selector: selector
-        )
-        button.enableMultilineLabel()
-        button.button.layer.cornerRadius = 8
-        button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 8)
-        return button
-    }
-}
 
 extension UIButton {
     class func registrationChoiceButton(
