@@ -87,7 +87,7 @@ extension AppSetup {
     /// that use the global state, and similarly use this type to inject a
     /// limited set of mock singletons.
     public struct TestDependencies {
-        let backupAttachmentDownloadManager: BackupAttachmentDownloadManager?
+        let backupAttachmentDownloadQueueRunner: BackupAttachmentDownloadQueueRunner?
         let contactManager: (any ContactManager)?
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
@@ -109,7 +109,7 @@ extension AppSetup {
         let webSocketFactory: (any WebSocketFactory)?
 
         public init(
-            backupAttachmentDownloadManager: BackupAttachmentDownloadManager? = nil,
+            backupAttachmentDownloadQueueRunner: BackupAttachmentDownloadQueueRunner? = nil,
             contactManager: (any ContactManager)? = nil,
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
@@ -130,7 +130,7 @@ extension AppSetup {
             versionedProfiles: (any VersionedProfiles)? = nil,
             webSocketFactory: (any WebSocketFactory)? = nil
         ) {
-            self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+            self.backupAttachmentDownloadQueueRunner = backupAttachmentDownloadQueueRunner
             self.contactManager = contactManager
             self.dateProvider = dateProvider
             self.groupV2Updates = groupV2Updates
@@ -512,16 +512,9 @@ extension AppSetup.GlobalsContinuation {
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
 
         let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
-        let orphanedBackupAttachmentManager = OrphanedBackupAttachmentManagerImpl(
+        let orphanedBackupAttachmentScheduler = OrphanedBackupAttachmentSchedulerImpl(
             accountKeyStore: accountKeyStore,
-            appReadiness: appReadiness,
-            attachmentStore: attachmentStore,
-            backupRequestManager: backupRequestManager,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            tsAccountManager: tsAccountManager
+            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore
         )
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
@@ -586,6 +579,7 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
         )
 
+        let backupListMediaStore = BackupListMediaStore()
         let backupListMediaManager = BackupListMediaManagerImpl(
             accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
@@ -596,31 +590,13 @@ extension AppSetup.GlobalsContinuation {
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+            backupListMediaStore: backupListMediaStore,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             remoteConfigManager: remoteConfigManager,
-            tsAccountManager: tsAccountManager
-        )
-
-        let backupAttachmentUploadQueueRunner = BackupAttachmentUploadQueueRunnerImpl(
-            accountKeyStore: accountKeyStore,
-            appReadiness: appReadiness,
-            attachmentStore: attachmentStore,
-            attachmentUploadManager: attachmentUploadManager,
-            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-            backupAttachmentUploadStore: backupAttachmentUploadStore,
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupListMediaManager: backupListMediaManager,
-            backupRequestManager: backupRequestManager,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            progress: backupAttachmentUploadProgress,
-            statusManager: backupAttachmentUploadQueueStatusManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -631,7 +607,6 @@ extension AppSetup.GlobalsContinuation {
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             attachmentValidator: attachmentContentValidator,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             backupRequestManager: backupRequestManager,
             backupSettingsStore: backupSettingsStore,
@@ -642,7 +617,7 @@ extension AppSetup.GlobalsContinuation {
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
-            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
             remoteConfigManager: remoteConfigManager,
             signalService: signalService,
@@ -651,34 +626,81 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
-        let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager ?? BackupAttachmentDownloadManagerImpl(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            attachmentStore: attachmentStore,
-            attachmentDownloadManager: attachmentDownloadManager,
-            attachmentUploadStore: attachmentUploadStore,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-            backupListMediaManager: backupListMediaManager,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            progress: backupAttachmentDownloadProgress,
-            remoteConfigProvider: remoteConfigManager,
-            statusManager: backupAttachmentDownloadQueueStatusManager,
-            tsAccountManager: tsAccountManager
+        let backupAttachmentDownloadScheduler = BackupAttachmentDownloadSchedulerImpl(
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore
+        )
+        let backupAttachmentCoordinator = BackupAttachmentCoordinatorImpl(
+            downloadRunner: testDependencies.backupAttachmentDownloadQueueRunner ?? BackupAttachmentDownloadQueueRunnerImpl(
+                appContext: appContext,
+                appReadiness: appReadiness,
+                attachmentStore: attachmentStore,
+                attachmentDownloadManager: attachmentDownloadManager,
+                attachmentUploadStore: attachmentUploadStore,
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+                backupListMediaManager: backupListMediaManager,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+                progress: backupAttachmentDownloadProgress,
+                remoteConfigProvider: remoteConfigManager,
+                statusManager: backupAttachmentDownloadQueueStatusManager,
+                tsAccountManager: tsAccountManager
+            ),
+            listMediaManager: backupListMediaManager,
+            offloadingManager: AttachmentOffloadingManagerImpl(
+                attachmentStore: attachmentStore,
+                attachmentThumbnailService: attachmentThumbnailService,
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+                backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                listMediaManager: backupListMediaManager,
+                orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+                orphanedAttachmentStore: orphanedAttachmentStore,
+                tsAccountManager: tsAccountManager,
+            ),
+            orphanRunner: OrphanedBackupAttachmentQueueRunnerImpl(
+                accountKeyStore: accountKeyStore,
+                appReadiness: appReadiness,
+                attachmentStore: attachmentStore,
+                backupRequestManager: backupRequestManager,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+                tsAccountManager: tsAccountManager
+            ),
+            uploadRunner: BackupAttachmentUploadQueueRunnerImpl(
+                accountKeyStore: accountKeyStore,
+                appReadiness: appReadiness,
+                attachmentStore: attachmentStore,
+                attachmentUploadManager: attachmentUploadManager,
+                backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+                backupAttachmentUploadStore: backupAttachmentUploadStore,
+                backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
+                backupListMediaManager: backupListMediaManager,
+                backupRequestManager: backupRequestManager,
+                backupSettingsStore: backupSettingsStore,
+                dateProvider: dateProvider,
+                db: db,
+                orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
+                progress: backupAttachmentUploadProgress,
+                statusManager: backupAttachmentUploadQueueStatusManager,
+                tsAccountManager: tsAccountManager
+            )
         )
 
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             dateProvider: dateProvider,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
-            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
             remoteConfigManager: remoteConfigManager,
             stickerManager: AttachmentManagerImpl.Wrappers.StickerManager()
         )
@@ -1257,7 +1279,7 @@ extension AppSetup.GlobalsContinuation {
         let backupChatStyleArchiver = BackupArchiveChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentDownloadScheduler: backupAttachmentDownloadScheduler,
             chatColorSettingStore: chatColorSettingStore,
             wallpaperStore: wallpaperStore,
         )
@@ -1317,7 +1339,7 @@ extension AppSetup.GlobalsContinuation {
         let backupAttachmentsArchiver = BackupArchiveMessageAttachmentArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentDownloadScheduler: backupAttachmentDownloadScheduler,
         )
         let backupsOversizeTextArchiver = BackupArchiveInlinedOversizeTextArchiver(
             attachmentsArchiver: backupAttachmentsArchiver,
@@ -1359,7 +1381,7 @@ extension AppSetup.GlobalsContinuation {
             attachmentUploadManager: attachmentUploadManager,
             avatarFetcher: backupArchiveAvatarFetcher,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupNonceMetadataStore: backupNonceMetadataStore,
             backupRequestManager: backupRequestManager,
@@ -1526,35 +1548,18 @@ extension AppSetup.GlobalsContinuation {
             receiptSender: receiptSender,
         )
 
-        let attachmentOffloadingManager = AttachmentOffloadingManagerImpl(
-            attachmentStore: attachmentStore,
-            attachmentThumbnailService: attachmentThumbnailService,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            listMediaManager: backupListMediaManager,
-            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
-            orphanedAttachmentStore: orphanedAttachmentStore,
-            tsAccountManager: tsAccountManager,
-        )
         let backupExportJob = BackupExportJobImpl(
             accountKeyStore: accountKeyStore,
-            attachmentOffloadingManager: attachmentOffloadingManager,
             backupArchiveManager: backupArchiveManager,
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
+            backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadQueueStatusManager: backupAttachmentUploadQueueStatusManager,
             backupKeyService: backupKeyService,
-            backupListMediaManager: backupListMediaManager,
             backupSettingsStore: backupSettingsStore,
             db: db,
             messagePipelineSupervisor: messagePipelineSupervisor,
             messageProcessor: messageProcessor,
-            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             reachabilityManager: reachabilityManager,
             tsAccountManager: tsAccountManager
         )
@@ -1596,12 +1601,11 @@ extension AppSetup.GlobalsContinuation {
             backgroundMessageFetcherFactory: backgroundMessageFetcherFactory,
             backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupArchiveManager: backupArchiveManager,
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusManager,
+            backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusManager,
             backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
@@ -1610,6 +1614,7 @@ extension AppSetup.GlobalsContinuation {
             backupIdService: backupIdService,
             backupKeyService: backupKeyService,
             backupListMediaManager: backupListMediaManager,
+            backupListMediaStore: backupListMediaStore,
             backupRefreshManager: backupRefreshManager,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,
@@ -1669,7 +1674,6 @@ extension AppSetup.GlobalsContinuation {
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
-            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             archivedPaymentStore: archivedPaymentStore,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,

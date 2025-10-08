@@ -9,20 +9,20 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler
     private let chatColorSettingStore: ChatColorSettingStore
     private let wallpaperStore: WallpaperStore
 
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler,
         chatColorSettingStore: ChatColorSettingStore,
         wallpaperStore: WallpaperStore,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentDownloadScheduler = backupAttachmentDownloadScheduler
         self.chatColorSettingStore = chatColorSettingStore
         self.wallpaperStore = wallpaperStore
     }
@@ -524,7 +524,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
         do {
             try results.forEach {
-                try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
+                try backupAttachmentDownloadScheduler.enqueueFromBackupIfNeeded(
                     $0,
                     restoreStartTimestampMs: context.startTimestampMs,
                     backupPlan: backupPlan,

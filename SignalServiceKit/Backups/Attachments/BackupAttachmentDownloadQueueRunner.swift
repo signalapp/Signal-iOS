@@ -7,23 +7,7 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-public protocol BackupAttachmentDownloadManager {
-
-    /// "Enqueue" an attachment from a backup for download, if needed and eligible, otherwise do nothing.
-    ///
-    /// If the same attachment pointed to by the reference is already enqueued, updates it to the greater
-    /// of the existing and new reference's timestamp.
-    ///
-    /// Doesn't actually trigger a download; callers must later call `restoreAttachmentsIfNeeded`
-    /// to insert rows into the normal AttachmentDownloadQueue and download.
-    func enqueueFromBackupIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        restoreStartTimestampMs: UInt64,
-        backupPlan: BackupPlan,
-        remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
-    ) throws
+public protocol BackupAttachmentDownloadQueueRunner {
 
     /// Restores all pending attachments in the BackupAttachmentDownloadQueue.
     ///
@@ -39,7 +23,7 @@ public protocol BackupAttachmentDownloadManager {
     func restoreAttachmentsIfNeeded() async throws
 }
 
-public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManager {
+public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunner {
 
     private let appContext: AppContext
     private let appReadiness: AppReadiness
@@ -132,52 +116,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             Task { [weak self] in
                 try await self?.restoreAttachmentsIfNeeded()
             }
-        }
-    }
-
-    public func enqueueFromBackupIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        restoreStartTimestampMs: UInt64,
-        backupPlan: BackupPlan,
-        remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
-    ) throws {
-        let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
-            referencedAttachment.attachment,
-            reference: referencedAttachment.reference,
-            currentTimestamp: restoreStartTimestampMs,
-            backupPlan: backupPlan,
-            remoteConfig: remoteConfig,
-            isPrimaryDevice: isPrimaryDevice
-        )
-
-        if
-            let state = eligibility.thumbnailMediaTierState,
-            state != .done
-        {
-            try backupAttachmentDownloadStore.enqueue(
-                referencedAttachment,
-                thumbnail: true,
-                // Thumbnails are always media tier
-                canDownloadFromMediaTier: true,
-                state: state,
-                currentTimestamp: restoreStartTimestampMs,
-                tx: tx
-            )
-        }
-        if
-            let state = eligibility.fullsizeState,
-            state != .done
-        {
-            try backupAttachmentDownloadStore.enqueue(
-                referencedAttachment,
-                thumbnail: false,
-                canDownloadFromMediaTier: eligibility.canDownloadMediaTierFullsize,
-                state: state,
-                currentTimestamp: restoreStartTimestampMs,
-                tx: tx
-            )
         }
     }
 
@@ -860,20 +798,9 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
 
 #if TESTABLE_BUILD
 
-open class BackupAttachmentDownloadManagerMock: BackupAttachmentDownloadManager {
+open class BackupAttachmentDownloadQueueRunnerMock: BackupAttachmentDownloadQueueRunner {
 
     public init() {}
-
-    public func enqueueFromBackupIfNeeded(
-        _ referencedAttachment: ReferencedAttachment,
-        restoreStartTimestampMs: UInt64,
-        backupPlan: BackupPlan,
-        remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
 
     public func restoreAttachmentsIfNeeded() async throws {
         // Do nothing

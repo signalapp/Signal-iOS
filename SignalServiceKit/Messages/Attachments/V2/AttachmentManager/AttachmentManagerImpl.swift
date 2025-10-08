@@ -7,35 +7,32 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let dateProvider: DateProvider
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
-    private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
+    private let orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler
     private let remoteConfigManager: RemoteConfigManager
     private let stickerManager: Shims.StickerManager
 
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         dateProvider: @escaping DateProvider,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
-        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
         remoteConfigManager: RemoteConfigManager,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.dateProvider = dateProvider
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
-        self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
+        self.orphanedBackupAttachmentScheduler = orphanedBackupAttachmentScheduler
         self.remoteConfigManager = remoteConfigManager
         self.stickerManager = stickerManager
     }
@@ -123,9 +120,12 @@ public class AttachmentManagerImpl: AttachmentManager {
             },
             tx: tx
         )
+
         // When we create the attachment streams we schedule a backup of the
         // new attachments. Kick the tires so that upload starts happening now.
-        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+        tx.addSyncCompletion {
+            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+        }
     }
 
     public func updateAttachmentWithOversizeTextFromBackup(
@@ -367,7 +367,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
 
         if let mediaName = attachmentParams.mediaName {
-            orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+            orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                 withMediaName: mediaName,
                 tx: tx
             )
@@ -592,7 +592,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
 
             if let mediaName = attachmentParams.mediaName {
-                orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                     withMediaName: mediaName,
                     tx: tx
                 )
@@ -818,7 +818,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                 }
                 if let mediaName = attachmentParams.mediaName {
-                    orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                         withMediaName: mediaName,
                         tx: tx
                     )
@@ -852,7 +852,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
                         backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                        orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+                        orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
                         tx: tx
                     )
                 } else {
@@ -984,7 +984,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
-        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
         tx: DBWriteTransaction
     ) throws -> Attachment.IDType {
         let existingAttachmentId: Attachment.IDType
@@ -1026,7 +1026,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             // Orphan the existing remote upload, both fullsize and thumbnail.
             // We're using a new encryption key now which means a new mediaName.
-            try orphanedBackupAttachmentManager.orphanExistingMediaTierUploads(
+            try orphanedBackupAttachmentScheduler.orphanExistingMediaTierUploads(
                 of: existingAttachment,
                 tx: tx
             )
@@ -1116,7 +1116,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         // Make sure to clear out any orphaning jobs for the newly assigned
         // mediaName, in case it collides with an attachment that was
         // deleted recently.
-        orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+        orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
             withMediaName: pendingAttachmentStreamInfo.mediaName,
             tx: tx
         )
@@ -1238,7 +1238,9 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
             // When we create the attachment stream we schedule a backup of the
             // new attachment. Kick the tires so that upload starts happening now.
-            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+            tx.addSyncCompletion {
+                NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+            }
         case .originalAttachment(let originalAttachmentSource):
             guard let originalAttachment = attachmentStore.fetch(id: originalAttachmentSource.id, tx: tx) else {
                 // The original has been deleted.
@@ -1302,7 +1304,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             if let mediaName = attachmentParams.mediaName {
-                orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                     withMediaName: mediaName,
                     tx: tx
                 )

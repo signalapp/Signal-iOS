@@ -6,46 +6,16 @@
 import GRDB
 
 /// In charge of deleting attachments off the backup cdn after they've been deleted locally (or otherwise orphaned).
-public protocol OrphanedBackupAttachmentManager {
-
-    /// Called when creating an attachment with the provided media name, or
-    /// when updating an attachment (e.g. after downloading) with the media name.
-    /// Required to clean up any pending orphan delete jobs that should now be
-    /// invalidated.
-    ///
-    /// Say we had an attachment with mediaId abcd and deleted it, without having
-    /// deleted it on the backup cdn. Later, we list all backup media on the server,
-    /// and see mediaId abcd there with no associated local attachment.
-    /// We add it to the orphan table to schedule for deletion.
-    /// Later, we either send or receive (and download) an attachment with the same
-    /// mediaId (same file contents). We don't want to delete the upload anymore,
-    /// so dequeue it for deletion.
-    func didCreateOrUpdateAttachment(
-        withMediaName mediaName: String,
-        tx: DBWriteTransaction
-    )
-
-    /// Orphan all existing media tier uploads for an attachment, marking them for
-    /// deletion from the media tier CDN.
-    /// Do this before wiping media tier info on an attachment. Note that this doesn't
-    /// need to be done when deleting an attachment, as a SQLite trigger handles
-    /// deletion automatically.
-    func orphanExistingMediaTierUploads(
-        of attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws
+public protocol OrphanedBackupAttachmentQueueRunner {
 
     /// Run all remote deletions, returning when finished. Supports cooperative cancellation.
     /// Should only be run after backup uploads have finished to avoid races.
     func runIfNeeded() async throws
 }
 
-public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManager {
+public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQueueRunner {
 
-    private let accountKeyStore: AccountKeyStore
     private let appReadiness: AppReadiness
-    private let db: any DB
-    private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
@@ -60,10 +30,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         tsAccountManager: TSAccountManager
     ) {
-        self.accountKeyStore = accountKeyStore
         self.appReadiness = appReadiness
-        self.db = db
-        self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
             accountKeyStore: accountKeyStore,
@@ -80,75 +47,6 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             db: db,
             runner: taskRunner
         )
-    }
-
-    public func didCreateOrUpdateAttachment(
-        withMediaName mediaName: String,
-        tx: DBWriteTransaction
-    ) {
-        guard FeatureFlags.Backups.supported else {
-            return
-        }
-        try! OrphanedBackupAttachment
-            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
-            .deleteAll(tx.database)
-        let mediaKey = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
-        for type in OrphanedBackupAttachment.SizeType.allCases {
-            do {
-                let mediaId = try mediaKey.deriveMediaId(
-                    {
-                        switch type {
-                        case .fullsize:
-                            mediaName
-                        case .thumbnail:
-                            AttachmentBackupThumbnail
-                                .thumbnailMediaName(fullsizeMediaName: mediaName)
-                        }
-                    }(),
-                )
-                try! OrphanedBackupAttachment
-                    .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
-                    .deleteAll(tx.database)
-            } catch {
-                owsFailDebug("Unexpected encryption material error")
-            }
-
-        }
-    }
-
-    public func orphanExistingMediaTierUploads(
-        of attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws {
-        guard let mediaName = attachment.mediaName else {
-            // If we didn't have a mediaName assigned,
-            // there's no uploads to orphan (that we know of locally).
-            return
-        }
-        if
-            let mediaTierInfo = attachment.mediaTierInfo,
-            let cdnNumber = mediaTierInfo.cdnNumber
-        {
-            var fullsizeOrphanRecord = OrphanedBackupAttachment.locallyOrphaned(
-                cdnNumber: cdnNumber,
-                mediaName: mediaName,
-                type: .fullsize
-            )
-            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
-        }
-        if
-            let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo,
-            let cdnNumber = thumbnailMediaTierInfo.cdnNumber
-        {
-            var fullsizeOrphanRecord = OrphanedBackupAttachment.locallyOrphaned(
-                cdnNumber: cdnNumber,
-                mediaName: AttachmentBackupThumbnail.thumbnailMediaName(
-                    fullsizeMediaName: mediaName
-                ),
-                type: .thumbnail
-            )
-            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
-        }
     }
 
     public func runIfNeeded() async throws {
@@ -371,23 +269,9 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 
 #if TESTABLE_BUILD
 
-open class OrphanedBackupAttachmentManagerMock: OrphanedBackupAttachmentManager {
+open class OrphanedBackupAttachmentQueueRunnerMock: OrphanedBackupAttachmentQueueRunner {
 
     public init() {}
-
-    open func didCreateOrUpdateAttachment(
-        withMediaName mediaName: String,
-        tx: DBWriteTransaction
-    ) {
-        // Do nothing
-    }
-
-    open func orphanExistingMediaTierUploads(
-        of attachment: Attachment,
-        tx: DBWriteTransaction
-    ) throws {
-        // Do nothing
-    }
 
     open func runIfNeeded() async throws {
         // Do nothing

@@ -39,7 +39,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let attachmentUploadManager: AttachmentUploadManager
     private let avatarFetcher: BackupArchiveAvatarFetcher
     private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentCoordinator: BackupAttachmentCoordinator
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupNonceMetadataStore: BackupNonceMetadataStore
     private let backupRequestManager: BackupRequestManager
@@ -82,7 +82,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         attachmentUploadManager: AttachmentUploadManager,
         avatarFetcher: BackupArchiveAvatarFetcher,
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupNonceMetadataStore: BackupNonceMetadataStore,
         backupRequestManager: BackupRequestManager,
@@ -121,7 +121,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.attachmentUploadManager = attachmentUploadManager
         self.avatarFetcher = avatarFetcher
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupNonceMetadataStore = backupNonceMetadataStore
         self.backupRequestManager = backupRequestManager
@@ -1337,7 +1337,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             tx.addSyncCompletion { [
                 avatarFetcher,
-                backupAttachmentDownloadManager,
+                backupAttachmentCoordinator,
                 disappearingMessagesJob
             ] in
                 Task {
@@ -1347,7 +1347,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
                 Task {
                     // Kick off attachment downloads enqueued during restore.
-                    try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+                    try await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
                 }
 
                 // Start ticking down for disappearing messages.

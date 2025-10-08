@@ -43,7 +43,6 @@ public class CLVBackupDownloadProgressView {
         }
     }
 
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
@@ -57,7 +56,6 @@ public class CLVBackupDownloadProgressView {
             owsFail("Unexpectedly missing device sleep manager in main app!")
         }
 
-        self.backupAttachmentDownloadManager = DependenciesBridge.shared.backupAttachmentDownloadManager
         self.backupAttachmentDownloadQueueStatusReporter = DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
         self.backupSettingsStore = BackupSettingsStore()
@@ -65,7 +63,6 @@ public class CLVBackupDownloadProgressView {
         self.deviceSleepManager = deviceSleepManager
 
         backupAttachmentDownloadProgressView = BackupAttachmentDownloadProgressView(
-            backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupSettingsStore: backupSettingsStore,
@@ -251,20 +248,17 @@ private class BackupAttachmentDownloadProgressView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager!
     private let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter!
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore!
     private let backupSettingsStore: BackupSettingsStore!
     private let db: DB!
 
     init(
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupSettingsStore: BackupSettingsStore,
         db: DB
     ) {
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupSettingsStore = backupSettingsStore
@@ -282,7 +276,6 @@ private class BackupAttachmentDownloadProgressView: UIView {
     }
 
     fileprivate init(forPreview: (), state: State) {
-        self.backupAttachmentDownloadManager = nil
         self.backupAttachmentDownloadQueueStatusReporter = nil
         self.backupAttachmentDownloadStore = nil
         self.backupSettingsStore = nil

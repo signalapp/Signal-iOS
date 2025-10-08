@@ -21,8 +21,6 @@ public protocol BackupAttachmentUploadQueueRunner {
     ///
     /// Throws an error IFF something would prevent all attachments from backing up (e.g. network issue).
     func backUpAllAttachments(waitOnThumbnails: Bool) async throws
-
-    func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction)
 }
 
 class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
@@ -151,12 +149,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     }
 
     // MARK: -
-
-    public func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction) {
-        tx.addSyncCompletion { [self] in
-            backUpAllAttachmentsIfNecessary()
-        }
-    }
 
     public func backUpAllAttachments(waitOnThumbnails: Bool) async throws {
         async let fullsizeResult = Result.init { [self] in
@@ -835,10 +827,6 @@ open class BackupAttachmentUploadQueueRunnerMock: BackupAttachmentUploadQueueRun
     public init() {}
 
     public func backUpAllAttachments(waitOnThumbnails: Bool) async throws {
-        // Do nothing
-    }
-
-    public func backUpAllAttachmentsAfterTxCommits(tx: DBWriteTransaction) {
         // Do nothing
     }
 }

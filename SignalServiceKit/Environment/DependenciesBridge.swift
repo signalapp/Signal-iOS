@@ -65,12 +65,11 @@ public class DependenciesBridge {
     public let backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory
     public let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     public let backupArchiveManager: BackupArchiveManager
-    public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     public let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     public let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     public let backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
+    public let backupAttachmentCoordinator: BackupAttachmentCoordinator
     public let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
-    public let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     public let backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter
     public let backupDisablingManager: BackupDisablingManager
     public let backupExportJob: BackupExportJob
@@ -79,6 +78,7 @@ public class DependenciesBridge {
     public let backupIdService: BackupIdService
     public let backupKeyService: BackupKeyService
     public let backupListMediaManager: BackupListMediaManager
+    public let backupListMediaStore: BackupListMediaStore
     public let backupRefreshManager: BackupRefreshManager
     public let backupRequestManager: BackupRequestManager
     public let backupPlanManager: BackupPlanManager
@@ -138,7 +138,6 @@ public class DependenciesBridge {
     public let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
-    public let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     public let archivedPaymentStore: ArchivedPaymentStore
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
@@ -202,12 +201,11 @@ public class DependenciesBridge {
         backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory,
         backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
         backupArchiveManager: BackupArchiveManager,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
+        backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupDisablingManager: BackupDisablingManager,
         backupExportJob: BackupExportJob,
@@ -216,6 +214,7 @@ public class DependenciesBridge {
         backupIdService: BackupIdService,
         backupKeyService: BackupKeyService,
         backupListMediaManager: BackupListMediaManager,
+        backupListMediaStore: BackupListMediaStore,
         backupRefreshManager: BackupRefreshManager,
         backupRequestManager: BackupRequestManager,
         backupPlanManager: BackupPlanManager,
@@ -275,7 +274,6 @@ public class DependenciesBridge {
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
-        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         archivedPaymentStore: ArchivedPaymentStore,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
@@ -338,12 +336,11 @@ public class DependenciesBridge {
         self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
         self.backupArchiveManager = backupArchiveManager
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
+        self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupDisablingManager = backupDisablingManager
         self.backupExportJob = backupExportJob
@@ -352,6 +349,7 @@ public class DependenciesBridge {
         self.backupIdService = backupIdService
         self.backupKeyService = backupKeyService
         self.backupListMediaManager = backupListMediaManager
+        self.backupListMediaStore = backupListMediaStore
         self.backupRefreshManager = backupRefreshManager
         self.backupRequestManager = backupRequestManager
         self.backupPlanManager = backupPlanManager
@@ -411,7 +409,6 @@ public class DependenciesBridge {
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager
-        self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.archivedPaymentStore = archivedPaymentStore
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager

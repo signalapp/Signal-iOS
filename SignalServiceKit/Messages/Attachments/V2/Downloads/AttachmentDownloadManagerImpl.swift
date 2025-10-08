@@ -32,7 +32,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         attachmentStore: AttachmentStore,
         attachmentUploadStore: AttachmentUploadStore,
         attachmentValidator: AttachmentContentValidator,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
@@ -43,7 +42,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
-        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+        orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
         profileManager: Shims.ProfileManager,
         remoteConfigManager: RemoteConfigManager,
         signalService: OWSSignalServiceProtocol,
@@ -68,14 +67,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
         self.attachmentUpdater = AttachmentUpdater(
             attachmentStore: attachmentStore,
-            backupAttachmentUploadQueueRunner: backupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
             db: db,
             decrypter: decrypter,
             interactionStore: interactionStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
-            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
             storyStore: storyStore,
             threadStore: threadStore
         )
@@ -1981,39 +1979,36 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class AttachmentUpdater {
 
         private let attachmentStore: AttachmentStore
-        private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
         private let db: any DB
         private let decrypter: Decrypter
         private let interactionStore: InteractionStore
         private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
         private let orphanedAttachmentStore: OrphanedAttachmentStore
-        private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
+        private let orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler
         private let storyStore: StoryStore
         private let threadStore: ThreadStore
 
         public init(
             attachmentStore: AttachmentStore,
-            backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
             db: any DB,
             decrypter: Decrypter,
             interactionStore: InteractionStore,
             orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
             orphanedAttachmentStore: OrphanedAttachmentStore,
-            orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
+            orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
             storyStore: StoryStore,
             threadStore: ThreadStore
         ) {
             self.attachmentStore = attachmentStore
-            self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
             self.db = db
             self.decrypter = decrypter
             self.interactionStore = interactionStore
             self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
             self.orphanedAttachmentStore = orphanedAttachmentStore
-            self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
+            self.orphanedBackupAttachmentScheduler = orphanedBackupAttachmentScheduler
             self.storyStore = storyStore
             self.threadStore = threadStore
         }
@@ -2067,7 +2062,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
-                    self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                    self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                         withMediaName: mediaName,
                         tx: tx
                     )
@@ -2086,7 +2081,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 attachment,
                                 tx: tx
                             )
-                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                            tx.addSyncCompletion {
+                                NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                            }
                         case .mediaTierFullsize, .mediaTierThumbnail:
                             break
                         }
@@ -2130,10 +2127,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
                             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+                            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
                             tx: tx
                         )
-                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                        tx.addSyncCompletion {
+                            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                        }
                     } else {
                         throw error
                     }
@@ -2269,7 +2268,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     if let mediaName = attachmentParams.mediaName {
-                        self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                             withMediaName: mediaName,
                             tx: tx
                         )
@@ -2284,7 +2283,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 attachment,
                                 tx: tx
                             )
-                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                            tx.addSyncCompletion {
+                                NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                            }
                         }
                     }
 
@@ -2314,10 +2315,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
                             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+                            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
                             tx: tx
                         )
-                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                        tx.addSyncCompletion {
+                            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                        }
                     } else {
                         throw error
                     }
@@ -2458,7 +2461,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     if let mediaName = attachmentParams.mediaName {
-                        self.orphanedBackupAttachmentManager.didCreateOrUpdateAttachment(
+                        self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                             withMediaName: mediaName,
                             tx: tx
                         )
@@ -2473,7 +2476,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 attachment,
                                 tx: tx
                             )
-                            backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                            tx.addSyncCompletion {
+                                NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                            }
                         }
                     }
 
@@ -2503,10 +2508,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                             orphanedAttachmentStore: orphanedAttachmentStore,
                             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
-                            orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
+                            orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
                             tx: tx
                         )
-                        backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                        tx.addSyncCompletion {
+                            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                        }
                     } else {
                         throw error
                     }
@@ -2550,7 +2557,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         thumbnailAttachment.attachment,
                         tx: tx
                     )
-                    backupAttachmentUploadQueueRunner.backUpAllAttachmentsAfterTxCommits(tx: tx)
+                    tx.addSyncCompletion {
+                        NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
+                    }
                 }
             }
         }

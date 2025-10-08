@@ -51,8 +51,8 @@ class InternalListMediaViewController: OWSTableViewController2 {
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == false)
                     .fetchCount(tx.database),
                 try! OrphanedBackupAttachment.fetchCount(tx.database),
-                try! DependenciesBridge.shared.backupListMediaManager.getLastFailingIntegrityCheckResult(tx: tx),
-                try! DependenciesBridge.shared.backupListMediaManager.getMostRecentIntegrityCheckResult(tx: tx)
+                try! DependenciesBridge.shared.backupListMediaStore.getLastFailingIntegrityCheckResult(tx: tx),
+                try! DependenciesBridge.shared.backupListMediaStore.getMostRecentIntegrityCheckResult(tx: tx)
             )
         }
 
@@ -80,7 +80,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             )
             vc.addAction(.init(title: "Okay", handler: { _ in
                 DependenciesBridge.shared.db.write { tx in
-                    DependenciesBridge.shared.backupListMediaManager.setManualNeedsListMedia(tx: tx)
+                    DependenciesBridge.shared.backupListMediaStore.setManualNeedsListMedia(true, tx: tx)
                 }
                 exit(0)
             }))

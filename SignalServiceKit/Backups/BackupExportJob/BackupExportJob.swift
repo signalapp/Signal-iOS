@@ -78,59 +78,47 @@ extension NSNotification.Name {
 
 class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
-    private let attachmentOffloadingManager: AttachmentOffloadingManager
     private let backupArchiveManager: BackupArchiveManager
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentCoordinator: BackupAttachmentCoordinator
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
-    private let backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner
     private let backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager
     private let backupKeyService: BackupKeyService
-    private let backupListMediaManager: BackupListMediaManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let logger: PrefixedLogger
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let messageProcessor: MessageProcessor
-    private let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     private let reachabilityManager: SSKReachabilityManager
     private let tsAccountManager: TSAccountManager
 
     public init(
         accountKeyStore: AccountKeyStore,
-        attachmentOffloadingManager: AttachmentOffloadingManager,
         backupArchiveManager: BackupArchiveManager,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
-        backupAttachmentUploadQueueRunner: BackupAttachmentUploadQueueRunner,
         backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager,
         backupKeyService: BackupKeyService,
-        backupListMediaManager: BackupListMediaManager,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
         messagePipelineSupervisor: MessagePipelineSupervisor,
         messageProcessor: MessageProcessor,
-        orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         reachabilityManager: SSKReachabilityManager,
         tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore
-        self.attachmentOffloadingManager = attachmentOffloadingManager
         self.backupArchiveManager = backupArchiveManager
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
-        self.backupAttachmentUploadQueueRunner = backupAttachmentUploadQueueRunner
         self.backupAttachmentUploadQueueStatusManager = backupAttachmentUploadQueueStatusManager
         self.backupKeyService = backupKeyService
-        self.backupListMediaManager = backupListMediaManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
         self.logger = PrefixedLogger(prefix: "[Backups][ExportJob]")
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.messageProcessor = messageProcessor
-        self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
     }
@@ -308,8 +296,8 @@ class BackupExportJobImpl: BackupExportJob {
                 // Don't assign progress to these as both queues should be suspended and we are
                 // just waiting on them to clean up any currently-running task.
                 downloadSuspendHandle = await backupAttachmentDownloadQueueStatusManager.suspendDownloadsInMemory()
-                try? await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
-                try? await backupAttachmentUploadQueueRunner.backUpAllAttachments(waitOnThumbnails: true)
+                try? await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
+                try? await backupAttachmentCoordinator.backUpAllAttachments(waitOnThumbnails: true)
             }
 
             logger.info("Listing media...")
@@ -317,12 +305,12 @@ class BackupExportJobImpl: BackupExportJob {
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 5,
                 progress: progress?.child(for: .listMedia).addSource(withLabel: "", unitCount: 1),
-            ) { [backupListMediaManager] in
+            ) { [backupAttachmentCoordinator] in
                 try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
                     if hasConsumedMediaTierCapacity {
-                        try await backupListMediaManager.forceQueryListMedia()
+                        try await backupAttachmentCoordinator.forceQueryListMedia()
                     } else {
-                        try await backupListMediaManager.queryListMediaIfNeeded()
+                        try await backupAttachmentCoordinator.queryListMediaIfNeeded()
                     }
                 }
             }
@@ -334,8 +322,8 @@ class BackupExportJobImpl: BackupExportJob {
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 2,
                 progress: progress?.child(for: .attachmentOrphaning).addSource(withLabel: "", unitCount: 1),
-            ) { [orphanedBackupAttachmentManager] in
-                try await orphanedBackupAttachmentManager.runIfNeeded()
+            ) { [backupAttachmentCoordinator] in
+                try await backupAttachmentCoordinator.deleteOrphansIfNeeded()
             }
 
             logger.info("Uploading attachments...")
@@ -362,7 +350,7 @@ class BackupExportJobImpl: BackupExportJob {
             case .manual: false
             }
 
-            try await backupAttachmentUploadQueueRunner.backUpAllAttachments(waitOnThumbnails: waitOnThumbnails)
+            try await backupAttachmentCoordinator.backUpAllAttachments(waitOnThumbnails: waitOnThumbnails)
             _ = uploadObserver.take()
             uploadObserver = nil
 
@@ -370,7 +358,7 @@ class BackupExportJobImpl: BackupExportJob {
             case .manual:
                 break
             case .bgProcessingTask:
-                try? await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+                try? await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
             }
 
             logger.info("Offloading attachments...")
@@ -378,8 +366,8 @@ class BackupExportJobImpl: BackupExportJob {
             try await withEstimatedProgressUpdates(
                 estimatedTimeToCompletion: 2,
                 progress: progress?.child(for: .offloading).addSource(withLabel: "", unitCount: 1),
-            ) { [attachmentOffloadingManager] in
-                try await attachmentOffloadingManager.offloadAttachmentsIfNeeded()
+            ) { [backupAttachmentCoordinator] in
+                try await backupAttachmentCoordinator.offloadAttachmentsIfNeeded()
             }
 
             logger.info("Done!")

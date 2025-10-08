@@ -11,16 +11,16 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
-    private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
+    private let backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler
 
     init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
+        backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
-        self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
+        self.backupAttachmentDownloadScheduler = backupAttachmentDownloadScheduler
     }
 
     /// We tend to deal with all attachments for a given message back-to-back, but in separate steps.
@@ -484,7 +484,7 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
 
         do {
             try results.forEach {
-                try backupAttachmentDownloadManager.enqueueFromBackupIfNeeded(
+                try backupAttachmentDownloadScheduler.enqueueFromBackupIfNeeded(
                     $0,
                     restoreStartTimestampMs: context.startTimestampMs,
                     backupPlan: backupPlan,
