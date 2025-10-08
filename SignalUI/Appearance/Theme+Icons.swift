@@ -77,8 +77,8 @@ public enum ThemeIcon: UInt {
     case arrowRight
     case chevronUp
     case chevronDown
-    case maximize
-    case minimize
+    case maximize16
+    case minimize16
     case refresh
     case spam
     case official
@@ -354,10 +354,10 @@ public extension Theme {
             return "chevron-up"
         case .chevronDown:
             return "chevron-down"
-        case .maximize:
-            return "maximize"
-        case .minimize:
-            return "minimize"
+        case .maximize16:
+            return "maximize-compact"
+        case .minimize16:
+            return "minimize-compact"
         case .refresh:
             return "refresh"
         case .spam:

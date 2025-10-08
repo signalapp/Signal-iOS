@@ -89,7 +89,7 @@ class TurnOnPermissionView: UIStackView {
         let text: String
     }
 
-    init(title: String, message: String, steps: [Step], button: OWSFlatButton? = nil) {
+    init(title: String, message: String, steps: [Step], button: UIView? = nil) {
         super.init(frame: .zero)
 
         addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
