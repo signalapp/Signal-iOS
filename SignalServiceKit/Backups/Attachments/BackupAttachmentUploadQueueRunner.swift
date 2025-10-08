@@ -715,7 +715,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private struct NetworkRetryError: Error {}
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), , fullsize? \(record.record.isFullsize), isRetryable: \(isRetryable), error: \(error)")
+            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize), isRetryable: \(isRetryable), error: \(error)")
 
             guard isRetryable else {
                 return

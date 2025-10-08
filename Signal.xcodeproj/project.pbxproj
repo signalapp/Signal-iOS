@@ -2479,6 +2479,7 @@
 		D90D4D842BBB61680097C573 /* BackupArchive+EmptyFrameId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D832BBB61680097C573 /* BackupArchive+EmptyFrameId.swift */; };
 		D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */; };
 		D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */; };
+		D91174562E8F35C1009EB756 /* AccountEntropyPoolTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91174552E8F35BD009EB756 /* AccountEntropyPoolTextView.swift */; };
 		D91444E72CDD72C200221D81 /* TSThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91444E62CDD72BE00221D81 /* TSThread.swift */; };
 		D9170EEA290C57BF00CD813A /* CVViewState+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */; };
 		D9170EEF2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */; };
@@ -6438,6 +6439,7 @@
 		D90D4D832BBB61680097C573 /* BackupArchive+EmptyFrameId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+EmptyFrameId.swift"; sourceTree = "<group>"; };
 		D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodable.swift; sourceTree = "<group>"; };
 		D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodableTest.swift; sourceTree = "<group>"; };
+		D91174552E8F35BD009EB756 /* AccountEntropyPoolTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPoolTextView.swift; sourceTree = "<group>"; };
 		D91444E62CDD72BE00221D81 /* TSThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThread.swift; sourceTree = "<group>"; };
 		D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVViewState+Banners.swift"; sourceTree = "<group>"; };
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
@@ -12509,6 +12511,7 @@
 			isa = PBXGroup;
 			children = (
 				D9DE34FB2DEE76E6005099D7 /* Onboarding */,
+				D91174552E8F35BD009EB756 /* AccountEntropyPoolTextView.swift */,
 				D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
 				D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */,
@@ -16699,6 +16702,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D91174562E8F35C1009EB756 /* AccountEntropyPoolTextView.swift in Sources */,
 				88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */,
 				3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */,
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
