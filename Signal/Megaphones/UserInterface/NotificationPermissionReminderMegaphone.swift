@@ -92,121 +92,101 @@ class TurnOnPermissionView: UIStackView {
     init(title: String, message: String, steps: [Step], button: UIView? = nil) {
         super.init(frame: .zero)
 
-        addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         axis = .vertical
+        spacing = 24 // spacing between steps
         isLayoutMarginsRelativeArrangement = true
-        layoutMargins = UIEdgeInsets(top: 32, leading: 32, bottom: 16, trailing: 32)
+        directionalLayoutMargins = NSDirectionalEdgeInsets(top: 24, leading: 8, bottom: 16, trailing: 8)
 
-        addArrangedSubview(titleLabel(text: title))
-        addArrangedSubview(.spacer(withHeight: 8))
-        addArrangedSubview(explanationLabel(explanationText: message))
+        // Title
+        let titleLabel = UILabel.titleLabelForRegistration(text: title)
+        addArrangedSubview(titleLabel)
+        setCustomSpacing(12, after: titleLabel)
 
-        addArrangedSubview(.spacer(withHeight: 32))
+        // Subtitle
+        let subtitleLabel = UILabel.explanationLabelForRegistration(text: message)
+        addArrangedSubview(subtitleLabel)
+        setCustomSpacing(32, after: subtitleLabel)
 
+        // Steps
         for (index, step) in steps.enumerated() {
             addStepStack(step: step, number: index + 1)
         }
 
-        addArrangedSubview(.spacer(withHeight: 8))
-
-        let button = button ?? self.button(title: CommonStrings.goToSettingsButton, selector: #selector(goToSettings))
-
-        addArrangedSubview(button)
+        // Button
+        let primaryButton = button ?? UIButton(
+            configuration: .largePrimary(title: title),
+            primaryAction: UIAction { [weak self] _ in
+                self?.goToSettings()
+            }
+        )
+        let buttonContainer = UIView.container()
+        buttonContainer.addSubview(primaryButton)
+        primaryButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            primaryButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            primaryButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
+            primaryButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+            primaryButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor),
+        ])
+        addArrangedSubview(buttonContainer)
     }
 
-    @objc
-    func goToSettings() {
+    private func goToSettings() {
         UIApplication.shared.openSystemSettings()
     }
 
-    func titleLabel(text: String) -> UILabel {
-        let titleLabel = UILabel()
-        titleLabel.text = text
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
-        titleLabel.setCompressionResistanceVerticalHigh()
-        titleLabel.setContentHuggingVerticalHigh()
-        return titleLabel
-    }
+    private var lastNumberLabel: UIView?
 
-    func explanationLabel(explanationText: String) -> UILabel {
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = .dynamicTypeSubheadline
-        explanationLabel.text = explanationText
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.setCompressionResistanceVerticalHigh()
-        explanationLabel.setContentHuggingVerticalHigh()
-        return explanationLabel
-    }
+    @discardableResult
+    private func addStepStack(step: Step, number: Int) -> UIView {
+        let imageSize: CGFloat = 32
 
-    func button(title: String, selector: Selector) -> OWSFlatButton {
-        let font = UIFont.dynamicTypeBodyClamped.semibold()
-        let buttonHeight = OWSFlatButton.heightForFont(font)
-        let button = OWSFlatButton.button(title: title,
-                                          font: font,
-                                          titleColor: .white,
-                                          backgroundColor: .ows_accentBlue,
-                                          target: self,
-                                          selector: selector)
-        button.autoSetDimension(.height, toSize: buttonHeight)
-        return button
-    }
-
-    private var lastNumberLabelContainer: UIView?
-    func addStepStack(step: Step, number: Int) {
         let stepStack = UIStackView()
         stepStack.axis = .horizontal
         stepStack.spacing = 8
-
-        addArrangedSubview(stepStack)
-        addArrangedSubview(.spacer(withHeight: 24))
+        stepStack.alignment = .top
+        stepStack.translatesAutoresizingMaskIntoConstraints = false
 
         let numberLabel = UILabel()
         numberLabel.text = "\(number)" + "."
-        numberLabel.textColor = Theme.primaryTextColor
+        numberLabel.textColor = .Signal.label
         numberLabel.font = .dynamicTypeBodyClamped
         numberLabel.textAlignment = .right
-
-        let numberLabelContainer = UIView()
-        numberLabelContainer.addSubview(numberLabel)
-        numberLabel.autoPinWidthToSuperview()
-        numberLabel.autoPinEdge(toSuperviewEdge: .top)
-        numberLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .lessThanOrEqual)
-        numberLabel.autoSetDimension(.height, toSize: 32, relation: .greaterThanOrEqual)
-
-        stepStack.addArrangedSubview(numberLabelContainer)
-
-        lastNumberLabelContainer?.autoMatch(.width, to: .width, of: numberLabelContainer)
-        lastNumberLabelContainer = numberLabelContainer
+        numberLabel.setContentHuggingHorizontalHigh()
+        numberLabel.setCompressionResistanceHorizontalHigh()
+        numberLabel.translatesAutoresizingMaskIntoConstraints = false
+        numberLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: imageSize).isActive = true
+        stepStack.addArrangedSubview(numberLabel)
 
         if let icon = step.icon {
             let iconView = UIImageView()
             iconView.image = icon
-
-            let iconViewContainer = UIView()
-            iconViewContainer.addSubview(iconView)
-            iconView.autoPinWidthToSuperview()
-            iconView.autoPinEdge(toSuperviewEdge: .top)
-            iconView.autoSetDimensions(to: CGSize(square: 32))
-
-            stepStack.addArrangedSubview(iconViewContainer)
+            iconView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                iconView.widthAnchor.constraint(equalToConstant: imageSize),
+                iconView.heightAnchor.constraint(equalToConstant: imageSize),
+            ])
+            stepStack.addArrangedSubview(iconView)
         }
 
         let stepLabel = UILabel()
         stepLabel.text = step.text
-        stepLabel.textColor = Theme.primaryTextColor
+        stepLabel.textColor = .Signal.label
         stepLabel.font = .dynamicTypeBodyClamped
-        stepLabel.setCompressionResistanceHorizontalHigh()
+        stepLabel.numberOfLines = 0
         stepLabel.setContentHuggingHorizontalLow()
-        stepLabel.autoSetDimension(.height, toSize: 32, relation: .greaterThanOrEqual)
-
+        stepLabel.translatesAutoresizingMaskIntoConstraints = false
+        stepLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: imageSize).isActive = true
         stepStack.addArrangedSubview(stepLabel)
+
+        addArrangedSubview(stepStack)
+
+        if let lastNumberLabel {
+            lastNumberLabel.widthAnchor.constraint(equalTo: numberLabel.widthAnchor).isActive = true
+        }
+        lastNumberLabel = numberLabel
+
+        return stepStack
     }
 
     required init(coder: NSCoder) {
