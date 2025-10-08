@@ -51,44 +51,68 @@ public class ScreenLock: NSObject {
         AssertIsOnMainThread()
 
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return self.keyValueStore.getBool(ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
-                                              defaultValue: false,
-                                              transaction: transaction)
+            return isScreenLockEnabled(tx: transaction)
         }
+    }
+
+    public func isScreenLockEnabled(tx: DBReadTransaction) -> Bool {
+        return self.keyValueStore.getBool(
+            ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+            defaultValue: false,
+            transaction: tx
+        )
     }
 
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.keyValueStore.setBool(value,
-                                       key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
-                                       transaction: transaction)
+            setIsScreenLockEnabled(value, tx: transaction)
         }
 
         NotificationCenter.default.postOnMainThread(name: ScreenLock.ScreenLockDidChange, object: nil)
+    }
+
+    public func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction) {
+        self.keyValueStore.setBool(
+            value,
+            key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+            transaction: tx
+        )
     }
 
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return self.keyValueStore.getDouble(ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-                                                defaultValue: ScreenLock.screenLockTimeoutDefault,
-                                                transaction: transaction)
+            return screenLockTimeout(tx: transaction)
         }
+    }
+
+    public func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval {
+        return self.keyValueStore.getDouble(
+            ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+            defaultValue: ScreenLock.screenLockTimeoutDefault,
+            transaction: tx
+        )
     }
 
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.keyValueStore.setDouble(value,
-                                         key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-                                         transaction: transaction)
+            setScreenLockTimeout(value, tx: transaction)
         }
 
         NotificationCenter.default.postOnMainThread(name: ScreenLock.ScreenLockDidChange, object: nil)
+    }
+
+    public func setScreenLockTimeout(_ value: TimeInterval, tx: DBWriteTransaction) {
+        self.keyValueStore.setDouble(
+            value,
+            key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+            transaction: tx
+        )
     }
 
     // MARK: - Methods

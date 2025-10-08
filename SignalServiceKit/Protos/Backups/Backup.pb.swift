@@ -390,6 +390,46 @@ public struct BackupProto_AccountData: Sendable {
 
   }
 
+  public enum SentMediaQuality: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public typealias RawValue = Int
+
+    /// Interpret as "Standard"
+    case unknownQuality // = 0
+    case standard // = 1
+    case high // = 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .unknownQuality
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .unknownQuality
+      case 1: self = .standard
+      case 2: self = .high
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .unknownQuality: return 0
+      case .standard: return 1
+      case .high: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    public static let allCases: [BackupProto_AccountData.SentMediaQuality] = [
+      .unknownQuality,
+      .standard,
+      .high,
+    ]
+
+  }
+
   public struct UsernameLink: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -465,6 +505,68 @@ public struct BackupProto_AccountData: Sendable {
         .orange,
         .pink,
         .purple,
+      ]
+
+    }
+
+    public init() {}
+  }
+
+  public struct AutoDownloadSettings: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var images: BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption = .unknown
+
+    public var audio: BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption = .unknown
+
+    public var video: BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption = .unknown
+
+    public var documents: BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption = .unknown
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public enum AutoDownloadOption: SwiftProtobuf.Enum, Swift.CaseIterable {
+      public typealias RawValue = Int
+
+      /// Interpret as "Never"
+      case unknown // = 0
+      case never // = 1
+      case wifi // = 2
+      case wifiAndCellular // = 3
+      case UNRECOGNIZED(Int)
+
+      public init() {
+        self = .unknown
+      }
+
+      public init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknown
+        case 1: self = .never
+        case 2: self = .wifi
+        case 3: self = .wifiAndCellular
+        default: self = .UNRECOGNIZED(rawValue)
+        }
+      }
+
+      public var rawValue: Int {
+        switch self {
+        case .unknown: return 0
+        case .never: return 1
+        case .wifi: return 2
+        case .wifiAndCellular: return 3
+        case .UNRECOGNIZED(let i): return i
+        }
+      }
+
+      // The compiler won't synthesize support with the UNRECOGNIZED case.
+      public static let allCases: [BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption] = [
+        .unknown,
+        .never,
+        .wifi,
+        .wifiAndCellular,
       ]
 
     }
@@ -595,6 +697,35 @@ public struct BackupProto_AccountData: Sendable {
     public var hasBackupTier: Bool {return _storage._backupTier != nil}
     /// Clears the value of `backupTier`. Subsequent reads from it will return its default value.
     public mutating func clearBackupTier() {_uniqueStorage()._backupTier = nil}
+
+    public var showSealedSenderIndicators: Bool {
+      get {return _storage._showSealedSenderIndicators}
+      set {_uniqueStorage()._showSealedSenderIndicators = newValue}
+    }
+
+    public var defaultSentMediaQuality: BackupProto_AccountData.SentMediaQuality {
+      get {return _storage._defaultSentMediaQuality}
+      set {_uniqueStorage()._defaultSentMediaQuality = newValue}
+    }
+
+    public var autoDownloadSettings: BackupProto_AccountData.AutoDownloadSettings {
+      get {return _storage._autoDownloadSettings ?? BackupProto_AccountData.AutoDownloadSettings()}
+      set {_uniqueStorage()._autoDownloadSettings = newValue}
+    }
+    /// Returns true if `autoDownloadSettings` has been explicitly set.
+    public var hasAutoDownloadSettings: Bool {return _storage._autoDownloadSettings != nil}
+    /// Clears the value of `autoDownloadSettings`. Subsequent reads from it will return its default value.
+    public mutating func clearAutoDownloadSettings() {_uniqueStorage()._autoDownloadSettings = nil}
+
+    /// If unset, consider screen lock to be disabled.
+    public var screenLockTimeoutMinutes: UInt32 {
+      get {return _storage._screenLockTimeoutMinutes ?? 0}
+      set {_uniqueStorage()._screenLockTimeoutMinutes = newValue}
+    }
+    /// Returns true if `screenLockTimeoutMinutes` has been explicitly set.
+    public var hasScreenLockTimeoutMinutes: Bool {return _storage._screenLockTimeoutMinutes != nil}
+    /// Clears the value of `screenLockTimeoutMinutes`. Subsequent reads from it will return its default value.
+    public mutating func clearScreenLockTimeoutMinutes() {_uniqueStorage()._screenLockTimeoutMinutes = nil}
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -6296,6 +6427,10 @@ extension BackupProto_AccountData.PhoneNumberSharingMode: SwiftProtobuf._ProtoNa
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}EVERYBODY\0\u{1}NOBODY\0")
 }
 
+extension BackupProto_AccountData.SentMediaQuality: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_QUALITY\0\u{1}STANDARD\0\u{1}HIGH\0")
+}
+
 extension BackupProto_AccountData.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".UsernameLink"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}entropy\0\u{1}serverId\0\u{1}color\0")
@@ -6340,9 +6475,58 @@ extension BackupProto_AccountData.UsernameLink.Color: SwiftProtobuf._ProtoNamePr
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}BLUE\0\u{1}WHITE\0\u{1}GREY\0\u{1}OLIVE\0\u{1}GREEN\0\u{1}ORANGE\0\u{1}PINK\0\u{1}PURPLE\0")
 }
 
+extension BackupProto_AccountData.AutoDownloadSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AutoDownloadSettings"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}images\0\u{1}audio\0\u{1}video\0\u{1}documents\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.images) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.audio) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.video) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.documents) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.images != .unknown {
+      try visitor.visitSingularEnumField(value: self.images, fieldNumber: 1)
+    }
+    if self.audio != .unknown {
+      try visitor.visitSingularEnumField(value: self.audio, fieldNumber: 2)
+    }
+    if self.video != .unknown {
+      try visitor.visitSingularEnumField(value: self.video, fieldNumber: 3)
+    }
+    if self.documents != .unknown {
+      try visitor.visitSingularEnumField(value: self.documents, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_AccountData.AutoDownloadSettings, rhs: BackupProto_AccountData.AutoDownloadSettings) -> Bool {
+    if lhs.images != rhs.images {return false}
+    if lhs.audio != rhs.audio {return false}
+    if lhs.video != rhs.video {return false}
+    if lhs.documents != rhs.documents {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NEVER\0\u{1}WIFI\0\u{1}WIFI_AND_CELLULAR\0")
+}
+
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -6366,6 +6550,10 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _customChatColors: [BackupProto_ChatStyle.CustomChatColor] = []
     var _optimizeOnDeviceStorage: Bool = false
     var _backupTier: UInt64? = nil
+    var _showSealedSenderIndicators: Bool = false
+    var _defaultSentMediaQuality: BackupProto_AccountData.SentMediaQuality = .unknownQuality
+    var _autoDownloadSettings: BackupProto_AccountData.AutoDownloadSettings? = nil
+    var _screenLockTimeoutMinutes: UInt32? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -6397,6 +6585,10 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _customChatColors = source._customChatColors
       _optimizeOnDeviceStorage = source._optimizeOnDeviceStorage
       _backupTier = source._backupTier
+      _showSealedSenderIndicators = source._showSealedSenderIndicators
+      _defaultSentMediaQuality = source._defaultSentMediaQuality
+      _autoDownloadSettings = source._autoDownloadSettings
+      _screenLockTimeoutMinutes = source._screenLockTimeoutMinutes
     }
   }
 
@@ -6436,6 +6628,10 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 19: try { try decoder.decodeRepeatedMessageField(value: &_storage._customChatColors) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._optimizeOnDeviceStorage) }()
         case 21: try { try decoder.decodeSingularUInt64Field(value: &_storage._backupTier) }()
+        case 22: try { try decoder.decodeSingularBoolField(value: &_storage._showSealedSenderIndicators) }()
+        case 23: try { try decoder.decodeSingularEnumField(value: &_storage._defaultSentMediaQuality) }()
+        case 24: try { try decoder.decodeSingularMessageField(value: &_storage._autoDownloadSettings) }()
+        case 26: try { try decoder.decodeSingularUInt32Field(value: &_storage._screenLockTimeoutMinutes) }()
         default: break
         }
       }
@@ -6511,6 +6707,18 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       try { if let v = _storage._backupTier {
         try visitor.visitSingularUInt64Field(value: v, fieldNumber: 21)
       } }()
+      if _storage._showSealedSenderIndicators != false {
+        try visitor.visitSingularBoolField(value: _storage._showSealedSenderIndicators, fieldNumber: 22)
+      }
+      if _storage._defaultSentMediaQuality != .unknownQuality {
+        try visitor.visitSingularEnumField(value: _storage._defaultSentMediaQuality, fieldNumber: 23)
+      }
+      try { if let v = _storage._autoDownloadSettings {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+      } }()
+      try { if let v = _storage._screenLockTimeoutMinutes {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 26)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6541,6 +6749,10 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._customChatColors != rhs_storage._customChatColors {return false}
         if _storage._optimizeOnDeviceStorage != rhs_storage._optimizeOnDeviceStorage {return false}
         if _storage._backupTier != rhs_storage._backupTier {return false}
+        if _storage._showSealedSenderIndicators != rhs_storage._showSealedSenderIndicators {return false}
+        if _storage._defaultSentMediaQuality != rhs_storage._defaultSentMediaQuality {return false}
+        if _storage._autoDownloadSettings != rhs_storage._autoDownloadSettings {return false}
+        if _storage._screenLockTimeoutMinutes != rhs_storage._screenLockTimeoutMinutes {return false}
         return true
       }
       if !storagesAreEqual {return false}

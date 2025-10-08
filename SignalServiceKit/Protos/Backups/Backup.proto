@@ -72,6 +72,26 @@ message AccountData {
     Color color = 3;
   }
 
+  enum SentMediaQuality {
+    UNKNOWN_QUALITY = 0; // Interpret as "Standard"
+    STANDARD = 1;
+    HIGH = 2;
+  }
+
+  message AutoDownloadSettings {
+    enum AutoDownloadOption {
+      UNKNOWN = 0; // Interpret as "Never"
+      NEVER = 1;
+      WIFI = 2;
+      WIFI_AND_CELLULAR = 3;
+    }
+
+    AutoDownloadOption images = 1;
+    AutoDownloadOption audio = 2;
+    AutoDownloadOption video = 3;
+    AutoDownloadOption documents = 4;
+  }
+
   message AccountSettings {
     bool readReceipts = 1;
     bool sealedSenderIndicators = 2;
@@ -95,6 +115,11 @@ message AccountData {
     bool optimizeOnDeviceStorage = 20;
     // See zkgroup for integer particular values. Unset if backups are not enabled.
     optional uint64 backupTier = 21;
+    bool showSealedSenderIndicators = 22;
+    SentMediaQuality defaultSentMediaQuality = 23;
+    AutoDownloadSettings autoDownloadSettings = 24;
+    reserved /* wifiAutoDownloadSettings */ 25;
+    optional uint32 screenLockTimeoutMinutes = 26; // If unset, consider screen lock to be disabled.
   }
 
   message SubscriberData {

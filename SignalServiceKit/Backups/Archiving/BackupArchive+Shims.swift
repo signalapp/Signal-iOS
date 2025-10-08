@@ -14,11 +14,13 @@ extension BackupArchive {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
         public typealias ContactManager = _MessageBackup_ContactManagerShim
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
+        public typealias ImageQuality = _MessageBackup_ImageQualityLevelShim
         public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerShim
         public typealias Preferences = _MessageBackup_PreferencesShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
         public typealias ReactionManager = _MessageBackup_ReactionManagerShim
         public typealias ReceiptManager = _MessageBackup_ReceiptManagerShim
+        public typealias ScreenLock = _MessageBackup_ScreenLockShim
         public typealias SSKPreferences = _MessageBackup_SSKPreferencesShim
         public typealias StoryManager = _MessageBackup_StoryManagerShim
         public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerShim
@@ -30,11 +32,13 @@ extension BackupArchive {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
         public typealias ContactManager = _MessageBackup_ContactManagerWrapper
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
+        public typealias ImageQuality = _MessageBackup_ImageQualityLevelWrapper
         public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerWrapper
         public typealias Preferences = _MessageBackup_PreferencesWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
         public typealias ReactionManager = _MessageBackup_ReactionManagerWrapper
         public typealias ReceiptManager = _MessageBackup_ReceiptManagerWrapper
+        public typealias ScreenLock = _MessageBackup_ScreenLockWrapper
         public typealias SSKPreferences = _MessageBackup_SSKPreferencesWrapper
         public typealias StoryManager = _MessageBackup_StoryManagerWrapper
         public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerWrapper
@@ -150,6 +154,23 @@ public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_D
 
     public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
         DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - ImageQuality
+
+public protocol _MessageBackup_ImageQualityLevelShim {
+    func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction)
+    func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel
+}
+
+public class _MessageBackup_ImageQualityLevelWrapper: _MessageBackup_ImageQualityLevelShim {
+    public func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction) {
+        ImageQualityLevel.setUserSelectedHighQuality(isHighQuality, tx: tx)
+    }
+
+    public func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
+        ImageQualityLevel.resolvedQuality(tx: tx)
     }
 }
 
@@ -380,6 +401,33 @@ public class _MessageBackup_ReceiptManagerWrapper: _MessageBackup_ReceiptManager
     }
 }
 
+// MARK: - ScreenLock
+
+public protocol _MessageBackup_ScreenLockShim {
+    func isScreenLockEnabled(tx: DBReadTransaction) -> Bool
+    func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction)
+    func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval
+    func setScreenLockTimeout(_ timeout: TimeInterval, tx: DBWriteTransaction)
+}
+
+public class _MessageBackup_ScreenLockWrapper: _MessageBackup_ScreenLockShim {
+    public func isScreenLockEnabled(tx: DBReadTransaction) -> Bool {
+        return ScreenLock.shared.isScreenLockEnabled(tx: tx)
+    }
+
+    public func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction) {
+        ScreenLock.shared.setIsScreenLockEnabled(value, tx: tx)
+    }
+
+    public func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval {
+        return ScreenLock.shared.screenLockTimeout(tx: tx)
+    }
+
+    public func setScreenLockTimeout(_ timeout: TimeInterval, tx: DBWriteTransaction) {
+        ScreenLock.shared.setScreenLockTimeout(timeout, tx: tx)
+    }
+}
+
 // MARK: - SSKPreferences
 
 public protocol _MessageBackup_SSKPreferencesShim {
@@ -514,6 +562,8 @@ public class _MessageBackup_TypingIndicatorsWrapper: _MessageBackup_TypingIndica
 public protocol _MessageBackup_UDManagerShim {
     func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
     func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction)
+    func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool
+    func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_UDManagerWrapper: _MessageBackup_UDManagerShim {
@@ -526,5 +576,12 @@ public class _MessageBackup_UDManagerWrapper: _MessageBackup_UDManagerShim {
     }
     public func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction) {
         udManager.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: false, tx: SDSDB.shimOnlyBridge(tx))
+    }
+    public func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool {
+        udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
+    }
+
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction) {
+        udManager.setShouldAllowUnrestrictedAccessLocal(value, tx: tx)
     }
 }

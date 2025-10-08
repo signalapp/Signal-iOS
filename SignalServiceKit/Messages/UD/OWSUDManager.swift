@@ -116,6 +116,7 @@ public protocol OWSUDManager {
     func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool
 
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+    func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction)
 
     func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
 
@@ -464,15 +465,21 @@ public class OWSUDManagerImpl: OWSUDManager {
 
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: transaction)
+            setShouldAllowUnrestrictedAccessLocal(value, tx: transaction)
         }
+    }
+
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction) {
+        self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: tx)
 
         // Try to update the account attributes to reflect this change.
-        Task {
-            do {
-                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-            } catch {
-                Logger.warn("Error: \(error)")
+        tx.addSyncCompletion {
+            Task {
+                do {
+                    try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+                } catch {
+                    Logger.warn("Error: \(error)")
+                }
             }
         }
     }
