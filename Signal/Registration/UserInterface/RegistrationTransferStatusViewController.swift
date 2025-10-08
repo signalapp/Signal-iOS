@@ -143,11 +143,11 @@ struct TransferStatusView: View {
             Button(CommonStrings.cancelButton) {
                 viewModel.onCancel()
             }
-            .font(.body.weight(.semibold))
+            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
             .padding(.bottom, 32)
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 32)
+        .padding(.horizontal)
         .multilineTextAlignment(.center)
     }
 }

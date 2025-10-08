@@ -42,6 +42,8 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         self.presenter = presenter
 
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -65,31 +67,79 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        initialRender()
+        view.backgroundColor = .Signal.background
+
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_LOCK_TIMEOUT_TITLE",
+            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen."
+        ))
+        titleLabel.accessibilityIdentifier = "registration.reglockTimeout.titleLabel"
+
+        let okayButtonTitle: String
+        switch state.acknowledgeAction {
+        case .resetPhoneNumber:
+            okayButtonTitle = OWSLocalizedString(
+                "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON",
+                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number."
+            )
+        case .close, .none:
+            okayButtonTitle = CommonStrings.okayButton
+        }
+        let okayButton = UIButton(
+            configuration: .largePrimary(title: okayButtonTitle),
+            primaryAction: UIAction { [weak self] _ in
+                self?.presenter?.acknowledgeReglockTimeout()
+            }
+        )
+
+        let learnMoreButton = UIButton(
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON",
+                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information."
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapLearnMoreButton()
+            }
+        )
+        learnMoreButton.accessibilityIdentifier = "registration.reglockTimeout.learnMoreButton"
+
+        let buttonContainer = UIStackView(arrangedSubviews: [ okayButton, learnMoreButton ])
+        buttonContainer.axis = .vertical
+        buttonContainer.spacing = 12
+        buttonContainer.alignment = .fill
+        buttonContainer.isLayoutMarginsRelativeArrangement = true
+        buttonContainer.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 22, bottom: 16, trailing: 22)
+
+        let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            explanationLabel,
+            .vStretchingSpacer(minHeight: 36),
+            buttonContainer,
+        ])
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+        view.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+
+        updateExplanationLabelText()
 
         explanationLabelTimer = Timer.scheduledTimer(
             withTimeInterval: oneMinute,
             repeats: true
         ) { [weak self] _ in
-            self?.renderExplanationLabelText()
+            self?.updateExplanationLabelText()
         }
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
-        renderColors()
-    }
-
-    // MARK: Rendering
-
-    private lazy var titleLabel: UILabel = {
-        let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
-            "REGISTRATION_LOCK_TIMEOUT_TITLE",
-            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen."
-        ))
-        result.accessibilityIdentifier = "registration.reglockTimeout.titleLabel"
-        return result
-    }()
+    // MARK: UI
 
     private var explanationLabelText: String {
         let format = OWSLocalizedString(
@@ -114,93 +164,67 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         return result
     }()
 
-    private lazy var okayButton: UIView? = {
-        let title: String
-        switch state.acknowledgeAction {
-        case .resetPhoneNumber:
-            title = OWSLocalizedString(
-                "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON",
-                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number."
-            )
-        case .close:
-            title = CommonStrings.okayButton
-        case .none:
-            return nil
-        }
-
-        let result = OWSButton(title: title) { [weak self] in
-            self?.presenter?.acknowledgeReglockTimeout()
-        }
-        result.dimsWhenHighlighted = true
-        result.layer.cornerRadius = 8
-        result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-        result.titleLabel?.numberOfLines = 0
-        result.ows_contentEdgeInsets = .init(margin: 14)
-        result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-        return result
-    }()
-
-    private lazy var learnMoreButton: OWSFlatButton = {
-        let result = OWSFlatButton.button(
-            title: OWSLocalizedString(
-                "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON",
-                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information."
-            ),
-            font: UIFont.dynamicTypeBody.semibold(),
-            titleColor: Theme.accentBlueColor,
-            backgroundColor: .clear,
-            target: self,
-            selector: #selector(didTapLearnMoreButton)
-        )
-        result.accessibilityIdentifier = "registration.reglockTimeout.learnMoreButton"
-        return result
-    }()
-
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.directionalLayoutMargins = .layoutMarginsForRegistration(traitCollection.horizontalSizeClass)
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        stackView.addArrangedSubview(titleLabel)
-        stackView.setCustomSpacing(12, after: titleLabel)
-
-        stackView.addArrangedSubview(explanationLabel)
-
-        stackView.addArrangedSubview(UIView.vStretchingSpacer())
-
-        if let okayButton {
-            stackView.addArrangedSubview(okayButton)
-            stackView.setCustomSpacing(24, after: okayButton)
-        }
-
-        stackView.addArrangedSubview(learnMoreButton)
-
-        renderExplanationLabelText()
-        renderColors()
-    }
-
-    private func renderExplanationLabelText() {
+    private func updateExplanationLabelText() {
         explanationLabel.text = explanationLabelText
-    }
-
-    private func renderColors() {
-        view.backgroundColor = Theme.backgroundColor
-        titleLabel.textColor = Theme.primaryTextColor
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        learnMoreButton.setTitleColor(Theme.accentBlueColor)
     }
 
     // MARK: Events
 
-    @objc
     private func didTapLearnMoreButton() {
         present(SFSafariViewController(url: URL.Support.pin), animated: true)
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private class PreviewRegistrationReglockTimeoutPresenter: RegistrationReglockTimeoutPresenter {
+    func acknowledgeReglockTimeout() {
+        print("acknowledgeReglockTimeout")
+    }
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationReglockTimeoutPresenter()
+    UINavigationController(
+        rootViewController: RegistrationReglockTimeoutViewController(
+            state: RegistrationReglockTimeoutState(
+                reglockExpirationDate: Date.now.addingTimeInterval(1000),
+                acknowledgeAction: .resetPhoneNumber
+            ),
+            presenter: presenter
+        )
+    )
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationReglockTimeoutPresenter()
+    UINavigationController(
+        rootViewController: RegistrationReglockTimeoutViewController(
+            state: RegistrationReglockTimeoutState(
+                reglockExpirationDate: Date.now.addingTimeInterval(1000),
+                acknowledgeAction: .close
+            ),
+            presenter: presenter
+        )
+    )
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationReglockTimeoutPresenter()
+    UINavigationController(
+        rootViewController: RegistrationReglockTimeoutViewController(
+            state: RegistrationReglockTimeoutState(
+                reglockExpirationDate: Date.now.addingTimeInterval(1000),
+                acknowledgeAction: .none
+            ),
+            presenter: presenter
+        )
+    )
+}
+
+#endif

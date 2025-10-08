@@ -22,6 +22,8 @@ class RegistrationTransferChoiceViewController: OWSViewController {
         self.presenter = presenter
 
         super.init()
+
+        navigationItem.hidesBackButton = true
     }
 
     @available(*, unavailable)
@@ -29,198 +31,127 @@ class RegistrationTransferChoiceViewController: OWSViewController {
         owsFail("This should not be called")
     }
 
-    // MARK: Rendering
-
-    private lazy var titleLabel: UILabel = {
-        let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
-            "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE",
-            comment: "If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question."
-        ))
-        result.accessibilityIdentifier = "registration.transferChoice.titleLabel"
-        return result
-    }()
-
-    private lazy var explanationLabel: UILabel = {
-        let result = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
-            "REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION",
-            comment: "If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question."
-        ))
-        result.accessibilityIdentifier = "registration.transferChoice.explanationLabel"
-        return result
-    }()
-
-    private func choiceButton(
-        title: String,
-        body: String,
-        iconName: String,
-        selector: Selector,
-        accessibilityIdentifierSuffix: String
-    ) -> OWSFlatButton {
-        let button = OWSFlatButton()
-        button.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray02)
-        button.layer.cornerRadius = 8
-        button.clipsToBounds = true
-
-        // Icon
-
-        let iconContainer = UIView()
-        let iconView = UIImageView(image: UIImage(named: iconName))
-        iconView.contentMode = .scaleAspectFit
-        iconContainer.addSubview(iconView)
-        iconView.autoPinWidthToSuperview()
-        iconView.autoSetDimensions(to: CGSize(square: 60))
-        iconView.autoVCenterInSuperview()
-        iconView.autoMatch(.height, to: .height, of: iconContainer, withOffset: 0, relation: .lessThanOrEqual)
-
-        // Labels
-
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.dynamicTypeBody.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-
-        let bodyLabel = UILabel()
-        bodyLabel.text = body
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.font = .dynamicTypeSubheadline
-        bodyLabel.textColor = Theme.secondaryTextAndIconColor
-
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
-
-        let vStack = UIStackView(arrangedSubviews: [
-            topSpacer,
-            titleLabel,
-            bodyLabel,
-            bottomSpacer
-        ])
-        vStack.axis = .vertical
-        vStack.spacing = 8
-
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-        // Disclosure Indicator
-
-        let disclosureContainer = UIView()
-        let disclosureView = UIImageView()
-        disclosureView.setTemplateImage(
-            UIImage(imageLiteralResourceName: "chevron-right-20"),
-            tintColor: Theme.secondaryTextAndIconColor
-        )
-        disclosureView.contentMode = .scaleAspectFit
-        disclosureContainer.addSubview(disclosureView)
-        disclosureView.autoPinEdgesToSuperviewEdges()
-        disclosureView.autoSetDimension(.width, toSize: 20)
-
-        let hStack = UIStackView(arrangedSubviews: [
-            iconContainer,
-            vStack,
-            disclosureContainer
-        ])
-        hStack.axis = .horizontal
-        hStack.spacing = 16
-        hStack.isLayoutMarginsRelativeArrangement = true
-        hStack.layoutMargins = UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16)
-        hStack.isUserInteractionEnabled = false
-
-        button.addSubview(hStack)
-        hStack.autoPinEdgesToSuperviewEdges()
-
-        button.addTarget(target: self, selector: selector)
-
-        button.accessibilityIdentifier = "registration.transferChoice.\(accessibilityIdentifierSuffix)"
-
-        return button
-    }
-
-    private lazy var transferButton = choiceButton(
-        title: OWSLocalizedString(
-            "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE",
-            comment: "The title for the device transfer 'choice' view 'transfer' option"
-        ),
-        body: OWSLocalizedString(
-            "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
-            comment: "The body for the device transfer 'choice' view 'transfer' option"
-        ),
-        iconName: Theme.iconName(.transfer),
-        selector: #selector(didSelectTransfer),
-        accessibilityIdentifierSuffix: "transferButton"
-    )
-
-    private lazy var registerButton = choiceButton(
-        title: OWSLocalizedString(
-            "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE",
-            comment: "The title for the device transfer 'choice' view 'register' option"
-        ),
-        body: OWSLocalizedString(
-            "DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
-            comment: "The body for the device transfer 'choice' view 'register' option"
-        ),
-        iconName: Theme.iconName(.register),
-        selector: #selector(didSelectRegister),
-        accessibilityIdentifierSuffix: "registerButton"
-    )
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        initialRender()
-    }
+        view.backgroundColor = .Signal.background
 
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render()
-    }
+        // Create UI elements.
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE",
+            comment: "If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question."
+        ))
+        titleLabel.accessibilityIdentifier = "registration.transferChoice.titleLabel"
 
-    private func initialRender() {
-        navigationItem.setHidesBackButton(true, animated: false)
+        let explanationLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION",
+            comment: "If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question."
+        ))
+        explanationLabel.accessibilityIdentifier = "registration.transferChoice.explanationLabel"
 
+        let transferButton = UIButton.registrationChoiceButton(
+            title: OWSLocalizedString(
+                "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE",
+                comment: "The title for the device transfer 'choice' view 'transfer' option"
+            ),
+            subtitle: OWSLocalizedString(
+                "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
+                comment: "The body for the device transfer 'choice' view 'transfer' option"
+            ),
+            iconName: Theme.iconName(.transfer),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSelectTransfer()
+            }
+        )
+        transferButton.accessibilityIdentifier = "registration.transferChoice.transferButton"
+
+        let registerButton = UIButton.registrationChoiceButton(
+            title: OWSLocalizedString(
+                "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE",
+                comment: "The title for the device transfer 'choice' view 'register' option"
+            ),
+            subtitle: OWSLocalizedString(
+                "DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
+                comment: "The body for the device transfer 'choice' view 'register' option"
+            ),
+            iconName: Theme.iconName(.register),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSelectRegister()
+            }
+        )
+        registerButton.accessibilityIdentifier = "registration.transferChoice.registerButton"
+
+        // Put UI elements in a stack view and stack view in a scroll view.
         let scrollView = UIScrollView()
+        scrollView.preservesSuperviewLayoutMargins = true
         view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewMargins()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
             registerButton,
             transferButton,
-            UIView.vStretchingSpacer()
+            UIView.vStretchingSpacer(),
         ])
         stackView.axis = .vertical
         stackView.distribution = .fill
-        stackView.spacing = 16
-        stackView.setCustomSpacing(12, after: titleLabel)
+        stackView.spacing = 12
         stackView.setCustomSpacing(24, after: explanationLabel)
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
-        stackView.autoPinWidth(toWidthOf: scrollView)
-        stackView.autoPinHeightToSuperview()
-
-        render()
-    }
-
-    private func render() {
-        view.backgroundColor = Theme.backgroundColor
-        titleLabel.textColor = .colorForRegistrationTitleLabel
-        explanationLabel.textColor = .colorForRegistrationExplanationLabel
-        // TODO: The buttons should also change color here.
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+        ])
     }
 
     // MARK: Events
 
-    @objc
     private func didSelectTransfer() {
         Logger.info("")
 
         presenter?.transferDevice()
     }
 
-    @objc
     private func didSelectRegister() {
         Logger.info("")
 
         presenter?.continueRegistration()
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private class PreviewRegistrationTransferChoicePresenter: RegistrationTransferChoicePresenter {
+    func transferDevice() {
+        print("transferDevice")
+    }
+    func continueRegistration() {
+        print("continueRegistration")
+    }
+}
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationTransferChoicePresenter()
+    return UINavigationController(
+        rootViewController: RegistrationTransferChoiceViewController(
+            presenter: presenter
+        )
+    )
+}
+
+#endif
