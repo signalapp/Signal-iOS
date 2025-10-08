@@ -163,7 +163,7 @@ private class Tracker {
             case
                     .running,
                     .noWifiReachability, .lowBattery, .lowPowerMode, .noReachability,
-                    .notRegisteredAndReady, .appBackgrounded, .suspended:
+                    .notRegisteredAndReady, .appBackgrounded, .suspended, .hasConsumedMediaTierCapacity:
                 // The queue isn't empty, so attach a new progress observer.
                 //
                 // Progress observers snapshot and filter the queue's state, so
@@ -227,6 +227,9 @@ private class Tracker {
                 return .pausedLowBattery
             case .lowPowerMode:
                 return .pausedLowPowerMode
+            case .hasConsumedMediaTierCapacity:
+                // TODO: [MediaTierCapacity] build UI for this state
+                return nil
             }
         }()
 

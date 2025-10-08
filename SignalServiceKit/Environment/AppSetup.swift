@@ -517,6 +517,7 @@ extension AppSetup.GlobalsContinuation {
             appReadiness: appReadiness,
             attachmentStore: attachmentStore,
             backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,

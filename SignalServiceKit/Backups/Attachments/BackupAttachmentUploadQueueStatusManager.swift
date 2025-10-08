@@ -30,6 +30,8 @@ public enum BackupAttachmentUploadQueueStatus {
     case lowPowerMode
     /// The app is running in the background.
     case appBackgrounded
+    /// Out of space on media tier; uploads suspended until we can free space.
+    case hasConsumedMediaTierCapacity
 }
 
 public extension Notification.Name {
@@ -157,6 +159,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: false,
             isRegistered: nil,
             backupPlan: nil,
+            hasConsumedMediaTierCapacity: nil,
             shouldAllowBackupUploadsOnCellular: nil,
             isWifiReachable: nil,
             isReachable: nil,
@@ -183,6 +186,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
         var backupPlan: BackupPlan?
 
+        var hasConsumedMediaTierCapacity: Bool?
+
         var shouldAllowBackupUploadsOnCellular: Bool?
         var isWifiReachable: Bool?
         var isReachable: Bool?
@@ -202,6 +207,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: Bool,
             isRegistered: Bool?,
             backupPlan: BackupPlan?,
+            hasConsumedMediaTierCapacity: Bool?,
             shouldAllowBackupUploadsOnCellular: Bool?,
             isWifiReachable: Bool?,
             isReachable: Bool?,
@@ -216,6 +222,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             self.isAppReady = isAppReady
             self.isRegistered = isRegistered
             self.backupPlan = backupPlan
+            self.hasConsumedMediaTierCapacity = hasConsumedMediaTierCapacity
             self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
             self.isWifiReachable = isWifiReachable
             self.isReachable = isReachable
@@ -250,6 +257,10 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
                 isRegistered == true
             else {
                 return .notRegisteredAndReady
+            }
+
+            if hasConsumedMediaTierCapacity == true {
+                return .hasConsumedMediaTierCapacity
             }
 
             if areUploadsSuspended == true {
@@ -330,11 +341,13 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     private func observeDeviceAndLocalStates() {
         let (
             backupPlan,
+            hasConsumedMediaTierCapacity,
             shouldAllowBackupUploadsOnCellular,
             areUploadsSuspended
         ) = db.read { tx in
             (
                 backupSettingsStore.backupPlan(tx: tx),
+                backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx),
                 backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
                 backupSettingsStore.isBackupAttachmentUploadQueueSuspended(tx: tx)
             )
@@ -343,6 +356,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         let notificationsToObserve: [(Notification.Name, Selector)] = [
             (.registrationStateDidChange, #selector(registrationStateDidChange)),
             (.backupPlanChanged, #selector(backupPlanDidChange)),
+            (.hasConsumedMediaTierCapacityStatusDidChange, #selector(hasConsumedMediaTierCapacityDidChange)),
             (.shouldAllowBackupUploadsOnCellularChanged, #selector(shouldAllowBackupUploadsOnCellularDidChange)),
             (.reachabilityChanged, #selector(reachabilityDidChange)),
             (.backupAttachmentUploadQueueSuspensionStatusDidChange, #selector(suspensionStatusDidChange)),
@@ -368,6 +382,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             isAppReady: appReadiness.isAppReady,
             isRegistered: tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
             backupPlan: backupPlan,
+            hasConsumedMediaTierCapacity: hasConsumedMediaTierCapacity,
             shouldAllowBackupUploadsOnCellular: shouldAllowBackupUploadsOnCellular,
             isWifiReachable: reachabilityManager.isReachable(via: .wifi),
             isReachable: reachabilityManager.isReachable(via: .any),
@@ -400,6 +415,13 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
     private func backupPlanDidChange() {
         state.backupPlan = db.read { tx in
             backupSettingsStore.backupPlan(tx: tx)
+        }
+    }
+
+    @objc
+    private func hasConsumedMediaTierCapacityDidChange() {
+        state.hasConsumedMediaTierCapacity = db.read { tx in
+            backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
         }
     }
 

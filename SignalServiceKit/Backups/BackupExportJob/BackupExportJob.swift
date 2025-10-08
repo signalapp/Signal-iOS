@@ -295,6 +295,23 @@ class BackupExportJobImpl: BackupExportJob {
                 }
             )
 
+            let hasConsumedMediaTierCapacity = db.read { tx in
+                backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
+            }
+
+            var downloadSuspendHandle: BackupAttachmentDownloadSuspensionHandle?
+            if hasConsumedMediaTierCapacity {
+                // If capacity is reached, we want to force a list media to run (to discover
+                // any new things we can delete) and then run all our deletions.
+                // In order to do so safely, we must first ensure the upload and download queues
+                // aren't running, otherwise their state updates will race with list/delete ops.
+                // Don't assign progress to these as both queues should be suspended and we are
+                // just waiting on them to clean up any currently-running task.
+                downloadSuspendHandle = await backupAttachmentDownloadQueueStatusManager.suspendDownloadsInMemory()
+                try? await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+                try? await backupAttachmentUploadQueueRunner.backUpAllAttachments(waitOnThumbnails: true)
+            }
+
             logger.info("Listing media...")
 
             try await withEstimatedProgressUpdates(
@@ -302,9 +319,15 @@ class BackupExportJobImpl: BackupExportJob {
                 progress: progress?.child(for: .listMedia).addSource(withLabel: "", unitCount: 1),
             ) { [backupListMediaManager] in
                 try await Retry.performWithBackoffForNetworkRequest(maxAttempts: 3) {
-                    try await backupListMediaManager.queryListMediaIfNeeded()
+                    if hasConsumedMediaTierCapacity {
+                        try await backupListMediaManager.forceQueryListMedia()
+                    } else {
+                        try await backupListMediaManager.queryListMediaIfNeeded()
+                    }
                 }
             }
+
+            await downloadSuspendHandle?.release()
 
             logger.info("Deleting orphaned attachments...")
 

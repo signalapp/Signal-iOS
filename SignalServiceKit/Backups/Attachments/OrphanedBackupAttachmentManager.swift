@@ -54,6 +54,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         backupRequestManager: BackupRequestManager,
+        backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
@@ -68,6 +69,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
             backupRequestManager: backupRequestManager,
+            backupSettingsStore: backupSettingsStore,
             db: db,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             tsAccountManager: tsAccountManager
@@ -165,6 +167,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         private let accountKeyStore: AccountKeyStore
         private let attachmentStore: AttachmentStore
         private let backupRequestManager: BackupRequestManager
+        private let backupSettingsStore: BackupSettingsStore
         private let db: any DB
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let tsAccountManager: TSAccountManager
@@ -175,6 +178,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             accountKeyStore: AccountKeyStore,
             attachmentStore: AttachmentStore,
             backupRequestManager: BackupRequestManager,
+            backupSettingsStore: BackupSettingsStore,
             db: any DB,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             tsAccountManager: TSAccountManager
@@ -182,6 +186,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             self.accountKeyStore = accountKeyStore
             self.attachmentStore = attachmentStore
             self.backupRequestManager = backupRequestManager
+            self.backupSettingsStore = backupSettingsStore
             self.db = db
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.tsAccountManager = tsAccountManager
@@ -317,6 +322,11 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
 
         func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.info("Finished deleting backup attachment \(record.id)")
+
+            // Any time we successfully delete anything on remote cdn, optimistically wipe
+            // the local state saying we've consumed all media tier quota; we will set it
+            // again if the server tells us we're still out of space on next upload attempt.
+            backupSettingsStore.setHasConsumedMediaTierCapacity(false, tx: tx)
         }
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {

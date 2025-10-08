@@ -54,6 +54,7 @@ public enum BackupPlan: RawRepresentable {
 extension NSNotification.Name {
     public static let backupAttachmentDownloadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentDownloadQueueSuspensionStatusDidChange")
     public static let backupAttachmentUploadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentUploadQueueSuspensionStatusDidChange")
+    public static let hasConsumedMediaTierCapacityStatusDidChange = Notification.Name("BackupSettingsStore.hasConsumedMediaTierCapacityStatusDidChange")
     public static let shouldAllowBackupDownloadsOnCellularChanged = Notification.Name("BackupSettingsStore.shouldAllowBackupDownloadsOnCellularChanged")
     public static let shouldAllowBackupUploadsOnCellularChanged = Notification.Name("BackupSettingsStore.shouldAllowBackupUploadsOnCellularChanged")
 }
@@ -71,6 +72,7 @@ public struct BackupSettingsStore {
         static let lastBackupSizeBytes = "lastBackupSizeBytes"
         static let isBackupAttachmentDownloadQueueSuspended = "isBackupAttachmentDownloadQueueSuspended"
         static let isBackupAttachmentUploadQueueSuspended = "isBackupAttachmentUploadQueueSuspended"
+        static let hasConsumedMediaTierCapacity = "hasConsumedMediaTierCapacity"
         static let shouldAllowBackupDownloadsOnCellular = "shouldAllowBackupDownloadsOnCellular"
         static let shouldAllowBackupUploadsOnCellular = "shouldAllowBackupUploadsOnCellular"
         static let shouldOptimizeLocalStorage = "shouldOptimizeLocalStorage"
@@ -315,6 +317,25 @@ public struct BackupSettingsStore {
 
         tx.addSyncCompletion {
             NotificationCenter.default.post(name: .backupAttachmentDownloadQueueSuspensionStatusDidChange, object: nil)
+        }
+    }
+
+    // MARK: -
+
+    public func hasConsumedMediaTierCapacity(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(Keys.hasConsumedMediaTierCapacity, defaultValue: false, transaction: tx)
+    }
+
+    /// When we get the relevant error response from the server on an attempt to copy a transit tier
+    /// upload to the media tier, we set this to true, so that we stop attempting uploads until we have
+    /// the chance to perform cleanup.
+    /// This only gets set to false again once we (attempt) clean up, which may free up enough space to
+    /// resume uploading.
+    public func setHasConsumedMediaTierCapacity(_ hasConsumedMediaTierCapacity: Bool, tx: DBWriteTransaction) {
+        kvStore.setBool(hasConsumedMediaTierCapacity, key: Keys.hasConsumedMediaTierCapacity, transaction: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.post(name: .hasConsumedMediaTierCapacityStatusDidChange, object: nil)
         }
     }
 

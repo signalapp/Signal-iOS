@@ -291,6 +291,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .appBackgrounded:
             logger.warn("Skipping \(logString) Backup uploads: app backgrounded")
             try await taskQueue.stop()
+        case .hasConsumedMediaTierCapacity:
+            logger.warn("Skipping \(logString) Backup uploads: out of capacity")
+            try await taskQueue.stop()
         }
     }
 
@@ -417,6 +420,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             case .appBackgrounded:
                 try? await loader.stop()
                 return .retryableError(AppBackgroundedError())
+            case .hasConsumedMediaTierCapacity:
+                try? await loader.stop()
+                return .retryableError(OutOfCapacityError())
             }
 
             let (attachment, backupPlan, currentUploadEra, backupKey) = db.read { tx in
@@ -595,6 +601,13 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         break
                     }
                     fallthrough
+                case .outOfCapacity:
+                    await db.awaitableWrite { tx in
+                        backupSettingsStore.setHasConsumedMediaTierCapacity(true, tx: tx)
+                    }
+                    let error = OutOfCapacityError()
+                    try? await loader.stop(reason: error)
+                    return .retryableError(error)
                 default:
                     // All other errors should be treated as per normal.
                     if error.httpStatusCode == 429 {
@@ -626,7 +639,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // which is what we want because the error is a general network
                             // issue.
                             return .retryableError(NetworkRetryError())
-                        case .noWifiReachability, .notRegisteredAndReady,
+                        case .noWifiReachability, .notRegisteredAndReady, .hasConsumedMediaTierCapacity,
                                 .lowBattery, .lowPowerMode, .appBackgrounded, .empty, .suspended:
                             // These other states may be overriding reachability;
                             // just allow the queue itself to retry and once the
@@ -713,6 +726,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             let retryAfter: TimeInterval?
         }
         private struct NetworkRetryError: Error {}
+        private struct OutOfCapacityError: Error {}
 
         func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize), isRetryable: \(isRetryable), error: \(error)")

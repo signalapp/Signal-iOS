@@ -77,6 +77,12 @@ public struct ListMediaIntegrityCheckResult: Codable {
 public protocol BackupListMediaManager {
     func queryListMediaIfNeeded() async throws
 
+    /// WARNING: DO NOT use this method if download or upload queues may be running in parallel.
+    /// It can result in undefined behavior if list media and download/upload race with each other to
+    /// update local state. This method overrides the checks that normally prevent that and should
+    /// only be used when uploads and downloads are suspended.
+    func forceQueryListMedia() async throws
+
     func getLastFailingIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult?
 
     func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult?
@@ -186,7 +192,29 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         )
     }
 
-    private func _queryListMediaIfNeeded() async throws -> ListMediaIntegrityCheckResult {
+    public func forceQueryListMedia() async throws {
+        let task = Task {
+            // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
+            try await taskQueue.run { [weak self] in
+                try await self?._queryListMediaIfNeeded(force: true)
+            }
+        }
+        let backgroundTask = OWSBackgroundTask(label: #function) { [task] status in
+            switch status {
+            case .expired:
+                task.cancel()
+            case .couldNotStart, .success:
+                break
+            }
+        }
+        defer { backgroundTask.end() }
+        try await withTaskCancellationHandler(
+            operation: { _ = try await task.value },
+            onCancel: { task.cancel() }
+        )
+    }
+
+    private func _queryListMediaIfNeeded(force: Bool = false) async throws -> ListMediaIntegrityCheckResult {
         guard FeatureFlags.Backups.supported else {
             return .empty(listMediaStartTimestamp: 0)
         }
@@ -221,7 +249,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 integrityCheckResult
             )
         }
-        guard needsToQuery else {
+        guard needsToQuery || force else {
             return .empty(listMediaStartTimestamp: 0)
         }
 
@@ -1264,6 +1292,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
 class MockBackupListMediaManager: BackupListMediaManager {
     func queryListMediaIfNeeded() async throws {
+        // Nothing
+    }
+
+    func forceQueryListMedia() async throws {
         // Nothing
     }
 

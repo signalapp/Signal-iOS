@@ -51,6 +51,25 @@ public extension Notification.Name {
     }
 }
 
+public actor BackupAttachmentDownloadSuspensionHandle {
+    private var releaseBlock: (() async -> Void)?
+
+    fileprivate init(_ releaseBlock: @escaping () async -> Void) {
+        self.releaseBlock = releaseBlock
+    }
+
+    public func release() async {
+        await releaseBlock?()
+        releaseBlock = nil
+    }
+
+    deinit {
+        Task { [releaseBlock] in
+            await releaseBlock?()
+        }
+    }
+}
+
 // MARK: -
 
 /// Reports whether we are able to download Backup attachments, via various
@@ -119,6 +138,14 @@ public protocol BackupAttachmentDownloadQueueStatusManager: BackupAttachmentDown
     func didEmptyQueue(for mode: BackupAttachmentDownloadQueueMode)
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool)
+
+    /// Differs from ``BackupSettingsStore/isBackupAttachmentDownloadQueueSuspended(tx:)`` because
+    /// this suspension is not persisted to disk, although its behavior at read time is the same. Use this to suspend in memory
+    /// while running some in-memory operation, without affecting the persisted suspended state.
+    ///
+    /// Note: even after calling this method, the download queue may still be finishing any currently
+    /// running tasks. To await the queue being fully stopped, await the queue itself (it will stop once it flushes).
+    func suspendDownloadsInMemory() async -> BackupAttachmentDownloadSuspensionHandle
 }
 
 // MARK: -
@@ -229,6 +256,18 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         state.isMainAppAndActiveOverride = newValue
     }
 
+    public func suspendDownloadsInMemory() async -> BackupAttachmentDownloadSuspensionHandle {
+        let id = UUID()
+        state.inMemorySuspensions.insert(id)
+        return BackupAttachmentDownloadSuspensionHandle { [weak self] in
+            await self?.releaseSuspendDownloadsInMemory(id: id)
+        }
+    }
+
+    private func releaseSuspendDownloadsInMemory(id: UUID) async {
+        state.inMemorySuspensions.remove(id)
+    }
+
     // MARK: - Init
 
     private let appContext: AppContext
@@ -297,6 +336,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         var isFullsizeQueueEmpty: Bool?
         var isThumbnailQueueEmpty: Bool?
 
+        var inMemorySuspensions = Set<UUID>()
         var areDownloadsSuspended: Bool?
 
         var isMainApp: Bool
@@ -380,7 +420,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 return .notRegisteredAndReady
             }
 
-            if areDownloadsSuspended == true {
+            if areDownloadsSuspended == true || inMemorySuspensions.isEmpty {
                 return .suspended
             }
 
@@ -781,6 +821,10 @@ class MockBackupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQu
     }
 
     func setIsMainAppAndActiveOverride(_ newValue: Bool) {}
+
+    func suspendDownloadsInMemory() async -> BackupAttachmentDownloadSuspensionHandle {
+        return BackupAttachmentDownloadSuspensionHandle({})
+    }
 }
 
 #endif
