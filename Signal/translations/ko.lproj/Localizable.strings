@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "언제나 백업 삭제 가능";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "설정에서 백업을 활성화할 수 있습니다.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal의 안전한 엔드투엔드 암호화 저장소 서비스를 사용하여 메시지와 미디어를 백업하세요. 새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 안전 백업";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "복구 키는 백업을 복구하는 데 필요한 64자 코드입니다.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "암호 관리자와 같은 안전한 곳에 복구 키를 보관하고 다른 사람과 공유하지 마세요.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "키를 분실하면 메시지를 복구할 수 없습니다.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "복구 키 보기";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "복구 키";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "클립보드에 복사";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단한 사용자는 나에게 전화를 걸거나 메시지를 보낼 수 없습니다.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "새 기능: 얼굴 또는 그린 곳을 가릴 수 있습니다.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "사용자 정의 금액 입력";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "현재 플랜";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "플랜 변경";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "플랜을 변경하면 모든 문자 메시지와 지난 45일간의 미디어가 백업에 포함됩니다.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "플랜 변경";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "무료로 다운그레이드하시겠습니까?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "텍스트 + 45일 분량의 미디어";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "이 기기의 Signal에서 로그아웃했습니다.";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "이 전화번호 재등록";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "이 기기의 등록이 해제됐습니다. 다른 기기에서 Signal에 전화번호를 등록했기 때문일 가능성이 높습니다.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Signal 백업에서 계정과 메시지 복원하기";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal 백업 복원";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "메시지 기록과 계정 데이터를 복원할 방법을 선택하세요.";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "복수 투표 허용";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "결과 보기";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "투표 결과 보기";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "질문을 추가하세요.";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "질문과 옵션을 2개 이상 추가하세요.";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "옵션을 2개 이상 추가하세요.";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "새 투표";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "투표 세부 정보";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ 님이 \"%2$@\" 투표를 종료하였습니다.";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "최종 결과";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "투표";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "전화번호를 입력하여 시작하세요.";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "내 전화번호";

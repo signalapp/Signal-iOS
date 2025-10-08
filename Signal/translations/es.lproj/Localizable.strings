@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Copias de seguridad que puedes eliminar en cualquier momento";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Puede activar las copias de seguridad en Ajustes.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Haz una copia de seguridad de tus mensajes y archivos multimedia utilizando el servicio de almacenamiento seguro y cifrado de extremo a extremo de Signal. No perderás ningún mensaje si cambias de teléfono o vuelves a instalar Signal.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Copias Seguras de Signal";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Tu clave de recuperación es un código de 64 caracteres que necesitarás para recuperar tu copia de seguridad.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Guarda tu clave de recuperación en un lugar seguro, como un gestor de contraseñas, y no la compartas con nadie.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "Si la pierdes, no podrás recuperar tus mensajes.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "Ver clave de recuperación";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Clave de recuperación";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copiar al portapapeles";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Las personas que bloquees no podrán llamarte ni enviarte mensajes.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "¡Nuevo! Difumina caras o partes de tus fotos.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduce un importe personalizado";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Plan actual";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Cambiar plan";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Si cambias de plan, todos tus mensajes de texto y los últimos 45 días de archivos multimedia se incluirán en tu copia de seguridad.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Cambiar plan";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "¿Volver al plan gratuito?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Mensajes de texto + 45 días de archivos multimedia";
@@ -2093,7 +2090,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Solicitudes e invitaciones";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notificar siempre";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notificarme siempre";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "No notificar en chat silenciado";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Se ha cerrado tu sesión de Signal en este dispositivo.";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Volver a registrar este número";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Probablemente se deba a que has registrado tu número de teléfono en Signal con un dispositivo diferente.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restaura tu cuenta y tus mensajes desde tu copia de seguridad de Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurar copia de seguridad de Signal";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Elige cómo quieres restaurar tu historial de mensajes y los datos de tu cuenta.";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Permitir varios votos";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Ver resultados";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "Ver votos";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Añade una pregunta";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Añade una pregunta y al menos dos opciones";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Añade al menos dos opciones";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "Nueva encuesta";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Detalles de la encuesta";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ ha finalizado la encuesta \"%2$@\"";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "Resultados finales";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Encuesta";
@@ -6536,7 +6545,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "Escribe aquí tu pregunta";
 
 /* Label specifying the user can select more than one option */
-"POLL_SELECT_LABEL_MULTIPLE" = "Selecciona una o más opciones";
+"POLL_SELECT_LABEL_MULTIPLE" = "Elige una o más opciones";
 
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Elige una opción";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Introduce tu número de teléfono para comenzar.";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Tu número de teléfono";

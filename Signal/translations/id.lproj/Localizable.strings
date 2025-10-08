@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Hapus cadangan kapan saja";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Anda dapat mengaktifkan pencadangan di Pengaturan.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Cadangkan pesan dan media Anda menggunakan layanan penyimpanan Signal yang aman dan terenkripsi secara menyeluruh. Anda tidak akan kehilangan pesan saat berganti ponsel atau menginstal ulang Signal.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal Secure Backups";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Kunci pemulihan adalah kode 64 karakter yang diperlukan untuk memulihkan data cadangan.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Simpan kunci pemulihan di tempat yang aman seperti pengelola kata sandi dan jangan bagikan dengan siapa pun.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "Jika kehilangan kunci pemulihan, Anda tidak akan dapat memulihkan pesan.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "Lihat Kunci Pemulihan";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Kunci Pemulihan";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Salin ke Papan Klip";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna yang diblokir tidak akan bisa menelepon Anda atau mengirimi Anda pesan.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Baru: Kaburkan wajah atau gambar di mana pun untuk mengaburkan.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Masukkan Jumlah Kustom";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Paket saat ini";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Ubah Paket";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Semua pesan teks dan media selama 45 hari terakhir akan disertakan dalam data cadangan jika Anda mengubah jenis paket.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Ubah Paket";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade ke versi Gratis?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Teks + media selama 45 hari";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Anda telah keluar dari Signal di perangkat ini.";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Daftarkan ulang nomor telepon ini";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Perangkat ini sudah tidak terdaftar. Hal ini mungkin karena Anda telah mendaftarkan nomor telepon Anda untuk Signal pada perangkat yang berbeda.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Pulihkan akun dan pesan dari Signal Backup";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Pulihkan Cadangan Signal";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Pilih cara Anda ingin memulihkan riwayat pesan dan data akun.";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Izinkan Multi-Suara";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Lihat Hasil";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "Lihat Suara";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Tambahkan satu pertanyaan";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Tambahkan satu pertanyaan dan minimal 2 opsi";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Tambahkan minimal 2 opsi";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "Polling Baru";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Detail Polling";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ mengakhiri polling “%2$@”";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "Hasil Akhir";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Polling";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Masukkan nomor telepon untuk memulai.";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Nomor Telepon Anda";

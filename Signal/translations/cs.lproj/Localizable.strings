@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Zálohu můžete kdykoli odstranit";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Zálohování můžete povolit v Nastavení.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Zálohujte své zprávy a média pomocí zabezpečené, koncově šifrované služby úložiště Signal. Už nepřijdete o žádnou zprávu, když si pořídíte nový telefon nebo přeinstalujete aplikaci Signal.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Zabezpečené zálohování služby Signal";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Klíč pro obnovení je 64místný kód, který budete potřebovat k obnovení zálohy.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Klíč pro obnovení uložte na bezpečném místě, například ve správci hesel, a nikomu ho nesdělujte.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "Pokud jej ztratíte, nebudete moci své zprávy obnovit.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "Zobrazit klíč pro obnovení";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Klíč pro obnovení";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Zkopírovat do schránky";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaní uživatelé vám nebudou moci volat ani posílat zprávy.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nové: Rozostřit tváře nebo kreslením cokoli";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Zadejte vlastní částku";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Současný plán";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Změnit plán";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Pokud změníte plán, budou do zálohy zahrnuty všechny vaše textové zprávy a média za posledních 45 dní.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Změnit plán";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Přejít na bezplatnou verzi?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Text + 45 dní médií";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Na tomto zařízení jste ze služby Signal odhlášeni.";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Znovu zaregistrovat toto telefonní číslo";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Toto zařízení již není registrované. Je to pravděpodobně proto, že jste své telefonní číslo zaregistrovali v aplikaci Signal z jiného zařízení.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Obnovte svůj účet a zprávy ze zálohy Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Obnovit zálohu Signal";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Zvolte, jak chcete obnovit historii zpráv a data účtu.";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Povolit hlasování pro více možností";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Zobrazit výsledky";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "Zobrazit hlasy";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Přidejte otázku";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Přidejte otázku a alespoň dvě možnosti";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Přidejte alespoň dvě možnosti";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "Nová anketa";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Podrobnosti o anketě";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ ukončil/a anketu „%2$@“";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "Konečné výsledky";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Anketa";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Nejprve zadejte své telefonní číslo.";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Vaše telefonní číslo";

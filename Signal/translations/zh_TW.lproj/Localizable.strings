@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "隨時刪除你的備份";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "你可以在設定中啟用備份。";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "使用 Signal 的端對端加密儲存服務備份你的訊息和媒體。當你使用新手機或重新安裝 Signal 時，絕不會遺失訊息。";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 安全備份";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "你的恢復金鑰是一組 64 個字元的代碼，你需要使用此代碼來還原你的備份。";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "將恢復金鑰存放在安全可靠的地方，例如密碼管理器，並且不要與任何人分享。";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "如果你將其遺失，將會無法恢復訊息。";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "檢視恢復金鑰";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "恢復金鑰";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "複製到剪貼簿";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "已封鎖的聯絡人將無法撥電話或傳訊息給你。";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "新功能：模糊臉部或在任何地方使之模糊。";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "目前計劃";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "變更計畫";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "如果你變更計畫，你的所有簡訊及過去 45 天內的媒體檔案均會納入備份範圍。";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "變更計畫";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "要降級為免費計畫嗎？";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "文字 + 30 天的媒體";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "你已登出此裝置的 Signal 應用程式。";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新註冊此電話號碼";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "此裝置已不再註冊。通常是因為你已在另一部裝置上使用你的電話號碼註冊 Signal。";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "從你的「Signal 備份」中還原帳戶和訊息";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "還原 Signal 備份";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "選擇要轉移訊息紀錄和帳戶資料的方式。";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "允許多次投票";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "檢視結果";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "檢視投票";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "新增問題";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "新增一個問題和至少 2 個選項";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "新增至少 2 個選項";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "新的投票";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "投票詳情";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ 結束了「%2$@」投票";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "最終結果";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "投票";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "輸入你的電話號碼以便開始使用。";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "你的電話號碼";

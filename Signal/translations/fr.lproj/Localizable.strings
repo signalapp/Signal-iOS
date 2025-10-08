@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "… et de supprimer votre sauvegarde à tout moment";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "You can enable backups in Settings.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Vous pouvez activer les sauvegardes dans les paramètres.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sécurisé et chiffré de bout en bout, le service de stockage Signal vous permet de sauvegarder vos messages et médias. Besoin de changer de téléphone ou de réinstaller Signal ? Vos contenus restent à portée de main.";
@@ -602,19 +602,19 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Sauvegardes sécurisées";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Your recovery key is a 64-character code that you will need to restore your backup.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Votre clé de récupération est un code de 64 caractères qui vous permet de restaurer votre sauvegarde.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Store your recovery key somewhere safe like a password manager, and don't share it with anyone.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Ne communiquez cette clé à personne et conservez-la en lieu sûr – par exemple dans un gestionnaire de mots de passe.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "If you lose it, you won't be able to recover your messages.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "Si vous la perdez, vous ne pourrez pas restaurer vos messages.";
 
 /* Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "View Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE" = "Afficher la clé de récupération";
 
 /* Title for a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Recovery Key";
+"BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Clé de récupération";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copier dans le presse-papiers";
@@ -785,7 +785,7 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "Impossible de supprimer votre sauvegarde";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Vous devez être inscrit pour désactiver les sauvegardes.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "L'appareil que vous utilisez pour désactiver les sauvegardes doit être inscrit à Signal.";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Annuler le téléchargement";
@@ -1068,9 +1068,6 @@
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler, ni vous envoyer des messages.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nouveauté : floutez les visages ou n'importe quelle zone de vos photos.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Saisir un montant personnalisé";
@@ -1619,7 +1616,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Une erreur s'est produite. Veuillez vérifier votre connexion et réessayer.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Vous devez être inscrit pour activer les sauvegardes.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "L'appareil que vous utilisez pour activer les sauvegardes doit être inscrit à Signal.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Une erreur s'est produite. Veuillez réessayer.";
@@ -1631,16 +1628,16 @@
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Forfait actuel";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Changer de forfait";
 
 /* Message for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "All of your text messages and last 45 days of media will be included in your backup if you change your plan.";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Si vous changez de forfait, votre sauvegarde comprendra tous vos messages texte, ainsi que vos médias des 45 derniers jours.";
 
 /* Button for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Change Plan";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Changer de forfait";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Downgrade to Free?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "Passer au forfait gratuit ?";
 
 /* Subtitle for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE" = "Messages texte + 45 jours de médias";
@@ -2482,8 +2479,11 @@
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Cet appareil n'est plus connecté à Signal.";
 
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Réenregistrer ce numéro de téléphone";
+/* Button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+
+/* Title for prompt that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Cet appareil n'est plus enregistré. Vous avez probablement inscrit votre numéro de téléphone sur Signal depuis un autre appareil.";
@@ -3194,7 +3194,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Occupé";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Échec de l’appel";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Échec de l'appel";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Clé de récupération incorrecte";
@@ -3224,7 +3224,7 @@
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Impossible de générer la demande d'assistance";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de l’importation des journaux.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de l'importation des journaux.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Impossible d'envoyer le message, car vous avez bloqué ce contact.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restaurez votre compte et vos messages depuis votre sauvegarde sécurisée Signal.";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurer une sauvegarde Signal";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choisissez comment restaurer vos messages et les données de votre compte.";
@@ -6008,7 +6008,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Verrouillage des paiements : authentification annulée.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verrouillage des paiements : échec de l’authentification.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verrouillage des paiements : échec de l'authentification.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Impossible de finaliser le paiement. Veuillez vérifier votre connexion et réessayer.";
@@ -6484,6 +6484,9 @@
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Autoriser plusieurs réponses";
 
+/* Button to view a poll after its ended */
+"POLL_BUTTON_VIEW_POLL" = "View Poll";
+
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Afficher les résultats";
 
@@ -6491,13 +6494,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "Afficher les votes";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "Add a question";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "N'oubliez pas de poser une question";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Add a question and at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "Saisissez une question et au moins 2 options";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Add at least 2 options";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "Proposez au moins 2 options";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "Nouveau sondage";
@@ -6508,11 +6511,17 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Infos du sondage";
 
+/* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "“%1$@” ended the poll: “%2$@”";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: “%1$@”";
+
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ a arrêté le sondage \"%2$@\"";
 
 /* Label specifying the poll is finished and these are the final results */
-"POLL_FINAL_RESULTS_LABEL" = "Final Results";
+"POLL_FINAL_RESULTS_LABEL" = "Résultats finaux";
 
 /* Label specifying the message type as a poll */
 "POLL_LABEL" = "Sondage";
@@ -7014,6 +7023,9 @@
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Prêt à vous lancer ? Saisissez votre numéro de téléphone.";
+
+/* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Votre numéro de téléphone";
