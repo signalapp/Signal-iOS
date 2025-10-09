@@ -19,14 +19,17 @@ public protocol RegistrationSplashPresenter: AnyObject {
 
 // MARK: - RegistrationSplashViewController
 
-public class RegistrationSplashViewController: OWSViewController {
+public class RegistrationSplashViewController: OWSViewController, OWSNavigationChildController {
+
+    public var prefersNavigationBarHidden: Bool {
+        true
+    }
 
     private weak var presenter: RegistrationSplashPresenter?
 
     public init(presenter: RegistrationSplashPresenter) {
         self.presenter = presenter
         super.init()
-        navigationItem.hidesBackButton = true
     }
 
     public override func viewDidLoad() {
