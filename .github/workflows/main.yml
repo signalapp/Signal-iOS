@@ -42,7 +42,7 @@ jobs:
 
       - name: Check Xcode version
         run: |
-          Scripts/check_xcode_version.py --relaxed
+          Scripts/check_xcode_version.py
 
       - uses: ./.github/actions/clone-everything
         with:
