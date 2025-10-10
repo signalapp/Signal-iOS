@@ -114,6 +114,8 @@ open class OWSViewController: UIViewController {
 
         self.lifecycle = .notAppeared
 
+        installContentLayouGuide()
+
         if #unavailable(iOS 16) {
             let layoutGuide = UILayoutGuide()
             layoutGuide.identifier = "iOS15KeyboardLayoutGuide"
@@ -245,6 +247,120 @@ open class OWSViewController: UIViewController {
     @objc
     private func owsViewControllerApplicationDidBecomeActive() {
         setNeedsStatusBarAppearanceUpdate()
+    }
+
+    // MARK: - Content Layout Guide
+
+    // MARGINS
+    //
+    // iPhone portrait (vertical regular, horizontal compact)
+    //  • Top
+    //    * Notch/Dymamic island iPhones: same as safe area.
+    //    * Home button iPhones: same as status bar area (20 pt).
+    //  • Leading/trailing
+    //    * Plus/Air iPhones: 20 pt.
+    //    * Other iPhones: 16 pt.
+    //  • Bottom
+    //    * Notch/Dymamic island iPhones: same as safe area.
+    //    * Home button iPhones: manual 20 pt to match top margin.
+    //
+    // iPhone Landscape (vertical compact, horizontal regular on Plus iPhones)
+    // • Top
+    //   * Same as safe area, which is mostly 20 pt but can be zero
+    //     on smaller phones running older iOS versions.
+    // • Leading/trailing
+    //   * Notch/Dymamic island iPhones: safe area + 16 pts, more if content width is capped at 640 pts.
+    //   * Home button iPhones: 20 pt.
+    // • Bottom
+    //   * All iPhones: 20 pt.
+    //
+    // iPad
+    // • Usable margins (20 or 10 pt) on all sides.
+    //
+    final public var contentLayoutGuide = UILayoutGuide()
+
+    private var currentContentLayoutGuideConstraints: [NSLayoutConstraint] = []
+
+    private func installContentLayouGuide() {
+        contentLayoutGuide.identifier = "Static Content Layout Guide"
+        view.addLayoutGuide(contentLayoutGuide)
+
+        // Permanent constraints.
+        NSLayoutConstraint.activate([
+            contentLayoutGuide.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+        ])
+
+        // Flexible constraints.
+        updateContentLayoutGuideConstraints()
+    }
+
+    private func contentLayoutConstraintsForCurrentTraitCollection() -> [NSLayoutConstraint] {
+        var constraints = [NSLayoutConstraint]()
+
+        let isVerticalCompact = traitCollection.verticalSizeClass == .compact
+        let isHorizontalCompact = traitCollection.horizontalSizeClass == .compact
+        let isiPad = traitCollection.userInterfaceIdiom == .pad
+
+        Logger.debug("Vertical compact: [\(isVerticalCompact ? "Y" : "N")]")
+        Logger.debug("Horizontal compact: [\(isHorizontalCompact ? "Y" : "N")]")
+        Logger.debug("Layout margins: [\(view.layoutMarginsGuide.layoutFrame)]")
+
+        // Vertical
+        if isVerticalCompact {
+            // Whole available height.
+            constraints += [
+                contentLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                contentLayoutGuide.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            ]
+        } else {
+            var bottomMargin: CGFloat = 0
+            // iPhones with home button have zero bottom layout margin for some reason. No bueno!
+            if !isiPad, !UIDevice.current.hasIPhoneXNotch {
+                bottomMargin = 20
+            }
+            constraints += [
+                contentLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                contentLayoutGuide.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -bottomMargin),
+            ]
+        }
+
+        // Horizontal
+        if isiPad, !isHorizontalCompact {
+            // No wider than 628 pts, centered.
+            // 628 is the minimum width of `layoutMarginsGuide.frame` when horizonal size class is regular.
+            constraints.append({
+                let constraint = contentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor)
+                constraint.priority = .init(UILayoutPriority.required.rawValue - 10)
+                return constraint
+            }())
+            constraints += [
+                contentLayoutGuide.leadingAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.leadingAnchor),
+                contentLayoutGuide.widthAnchor.constraint(lessThanOrEqualToConstant: 628),
+            ]
+        } else {
+            // Whole available width.
+            constraints += [
+                contentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            ]
+        }
+
+        return constraints
+    }
+
+    private func updateContentLayoutGuideConstraints() {
+        NSLayoutConstraint.deactivate(currentContentLayoutGuideConstraints)
+        currentContentLayoutGuideConstraints = contentLayoutConstraintsForCurrentTraitCollection()
+        NSLayoutConstraint.activate(currentContentLayoutGuideConstraints)
+    }
+
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if  previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass ||
+            previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass
+        {
+            updateContentLayoutGuideConstraints()
+        }
     }
 
     // MARK: - Orientation
