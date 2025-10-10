@@ -195,7 +195,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // Safe area insets will change during interactive dismiss - ignore those changes.
         guard !(interactiveDismiss?.interactionInProgress ?? false) else { return }
 
-        if let contentLayoutGuideTop = previewViewContentLayoutGuideTop {
+        if let contentLayoutGuideTop = contentLayoutGuideTop {
             contentLayoutGuideTop.constant = view.safeAreaInsets.top
 
             // Rounded corners if preview view isn't full-screen.
@@ -221,8 +221,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
     }
 
-    private let previewViewLayoutGuide = UILayoutGuide()
-    private var previewViewContentLayoutGuideTop: NSLayoutConstraint? // controls vertical position of `previewViewLayoutGuide` on iPhones.
+    private let contentLayoutGuide = UILayoutGuide()
+    private var contentLayoutGuideTop: NSLayoutConstraint? // controls vertical position of `contentLayoutGuide` on iPhones.
 
     // Values match ContentTypeSelectionControl.selectedSegmentIndex.
     private enum ComposerMode: Int {
@@ -425,37 +425,37 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private var doneButtonIPadConstraints: [NSLayoutConstraint]?
 
     private func initializeUI() {
-        // `previewViewLayoutGuide` defines area occupied by the content:
+        // `contentLayoutGuide` defines area occupied by the content:
         // either camera viewfinder or text story composing area.
-        view.addLayoutGuide(previewViewLayoutGuide)
+        view.addLayoutGuide(contentLayoutGuide)
         // Always full-width.
-        view.addConstraints([ previewViewLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                              previewViewLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor) ])
+        view.addConstraints([ contentLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                              contentLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor) ])
         if UIDevice.current.isIPad {
             // Full-height on iPads.
-            view.addConstraints([ previewViewLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-                                  previewViewLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor) ])
+            view.addConstraints([ contentLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+                                  contentLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor) ])
         } else {
             // 9:16 aspect ratio on iPhones.
-            // Note that there's no constraint on the bottom edge of the `previewViewLayoutGuide`.
+            // Note that there's no constraint on the bottom edge of the `contentLayoutGuide`.
             // This works because all iPhones have screens 9:16 or taller.
-            view.addConstraint(previewViewLayoutGuide.heightAnchor.constraint(equalTo: previewViewLayoutGuide.widthAnchor, multiplier: 16/9))
+            view.addConstraint(contentLayoutGuide.heightAnchor.constraint(equalTo: contentLayoutGuide.widthAnchor, multiplier: 16/9))
             // Constrain to the top of the view now and update offset with the height of top safe area later.
             // Can't constrain to the safe area layout guide because safe area insets changes during interactive dismiss.
-            let constraint = previewViewLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor)
+            let constraint = contentLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor)
             view.addConstraint(constraint)
-            previewViewContentLayoutGuideTop = constraint
+            contentLayoutGuideTop = constraint
         }
 
         // Step 1. Initialize all UI elements for iPhone layout (which can also be used on an iPad).
 
-        // Camera Viewfinder - simply occupies the entire frame of `previewViewLayoutGuide`.
+        // Camera Viewfinder - simply occupies the entire frame of `contentLayoutGuide`.
         previewView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(previewView)
-        view.addConstraints([ previewView.leadingAnchor.constraint(equalTo: previewViewLayoutGuide.leadingAnchor),
-                              previewView.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor),
-                              previewView.trailingAnchor.constraint(equalTo: previewViewLayoutGuide.trailingAnchor),
-                              previewView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor) ])
+        view.addConstraints([ previewView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+                              previewView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+                              previewView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+                              previewView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor) ])
         configureCameraGestures()
 
         // Top Bar
@@ -467,7 +467,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         if UIDevice.current.isIPad {
             topBar.autoPinEdge(toSuperviewSafeArea: .top)
         } else {
-            topBar.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor).isActive = true
+            topBar.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor).isActive = true
         }
 
         // Bottom Bar (contains shutter button)
@@ -487,10 +487,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         } else {
             // On `notch` devices:
             //  i. Shutter button is placed 16 pts above the bottom edge of the preview view.
-            bottomBar.shutterButtonLayoutGuide.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor, constant: -16).isActive = true
+            bottomBar.shutterButtonLayoutGuide.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -16).isActive = true
 
             //  ii. Other buttons are centered vertically in the black box between bottom of the preview view and top of bottom safe area.
-            bottomBar.controlButtonsLayoutGuide.topAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor).isActive = true
+            bottomBar.controlButtonsLayoutGuide.topAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor).isActive = true
             // Constrain to the bottom of the view now and update offset with the height of bottom safe area later.
             // Can't constrain to the safe area layout guide because safe area insets changes during interactive dismiss.
             let constraint = bottomBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -735,10 +735,10 @@ extension PhotoCaptureViewController {
         textStoryComposerView.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
         view.insertSubview(textStoryComposerView, aboveSubview: previewView)
         textEditoriPhoneConstraints.append(contentsOf: [
-            textStoryComposerView.leadingAnchor.constraint(equalTo: previewViewLayoutGuide.leadingAnchor),
-            textStoryComposerView.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor),
-            textStoryComposerView.trailingAnchor.constraint(equalTo: previewViewLayoutGuide.trailingAnchor),
-            textStoryComposerView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor)
+            textStoryComposerView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            textStoryComposerView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            textStoryComposerView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            textStoryComposerView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
         ])
 
         // Swipe right to switch to camera.
@@ -791,7 +791,7 @@ extension PhotoCaptureViewController {
         textEditoriPadConstraints.append(contentsOf: [
             textStoryComposerView.topAnchor.constraint(equalTo: topBar.bottomAnchor, constant: -8),
             textStoryComposerView.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: -24),
-            textStoryComposerView.centerXAnchor.constraint(equalTo: previewViewLayoutGuide.centerXAnchor),
+            textStoryComposerView.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
             textStoryComposerView.widthAnchor.constraint(equalTo: textStoryComposerView.heightAnchor, multiplier: 9/16)
         ])
 
