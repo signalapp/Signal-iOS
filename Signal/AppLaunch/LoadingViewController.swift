@@ -185,6 +185,8 @@ class LoadingViewController: UIViewController {
             return
         }
 
+        Logger.info("")
+
         topLabelTimer?.invalidate()
         topLabelTimer = nil
         bottomLabelTimer?.invalidate()
@@ -201,6 +203,7 @@ class LoadingViewController: UIViewController {
 
     @objc
     private func didEnterBackground() {
+        Logger.info("")
         AssertIsOnMainThread()
 
         viewHasEnteredBackground = true
