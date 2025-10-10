@@ -21,6 +21,10 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
 
     private let viewModel: DisappearingMessagesTimerSettingsViewModel
 
+    private lazy var setButton: UIBarButtonItem = .setButton { [weak self] in
+        self?.completeAndDismiss()
+    }
+
     init(
         initialConfiguration: OWSDisappearingMessagesConfiguration,
         settingsMode: SettingsMode,
@@ -51,9 +55,7 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
             hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
         )
 
-        navigationItem.rightBarButtonItem = .setButton { [weak self] in
-            self?.completeAndDismiss()
-        }
+        navigationItem.rightBarButtonItem = self.setButton
 
         updateNavigationItem()
     }
@@ -69,7 +71,7 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
     }
 
     private func updateNavigationItem() {
-        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
+        setButton.isEnabled = hasUnsavedChanges
     }
 
     private func completeAndDismiss() {
