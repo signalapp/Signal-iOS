@@ -14,11 +14,43 @@ public class PinConfirmationViewController: OWSViewController {
     private let actionText: String
 
     private let containerView = UIView()
-    private let pinTextField = UITextField()
+    private lazy var pinTextField: UITextField = {
+        let textField = UITextField()
+        textField.textColor = .Signal.label
+        if #available(iOS 26, *) {
+            textField.tintColor = .Signal.label
+        }
+        textField.font = .systemFont(ofSize: 22)
+        textField.textAlignment = .center
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = .Signal.background
+        textField.defaultTextAttributes.updateValue(5, forKey: .kern)
+        textField.accessibilityIdentifier = "pinConfirmation.pinTextField"
+        textField.delegate = self
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            textField.cornerConfiguration = .capsule()
+        } else {
+            textField.layer.cornerRadius = 10
+        }
+#else
+        textField.layer.cornerRadius = 10
+#endif
+        let currentPinType = context.db.read { tx in
+            context.svr.currentPinType(transaction: tx)
+        }
+        textField.keyboardType = currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
+        return textField
+   }()
 
-    private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
-    private let validationWarningLabel = UILabel()
+    private lazy var validationWarningLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.red
+        label.textAlignment = .center
+        label.font = .dynamicTypeFootnoteClamped
+        label.accessibilityIdentifier = "pinConfirmation.validationWarningLabel"
+        return label
+   }()
 
     enum ValidationState {
         case valid
@@ -73,142 +105,143 @@ public class PinConfirmationViewController: OWSViewController {
         pinTextField.resignFirstResponder()
     }
 
-    override public var preferredStatusBarStyle: UIStatusBarStyle {
-        return Theme.isDarkThemeEnabled ? .lightContent : .default
-    }
-
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    override public func loadView() {
-        view = UIView()
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = .clear
 
-        containerView.backgroundColor = Theme.backgroundColor
-        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .Signal.groupedBackground
+        containerView.preservesSuperviewLayoutMargins = true
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            containerView.cornerConfiguration = .corners(
+                topLeftRadius: .containerConcentric(minimum: 40),
+                topRightRadius: .containerConcentric(minimum: 40),
+                bottomLeftRadius: .none,
+                bottomRightRadius: .none
+            )
+        }
+#endif
         view.addSubview(containerView)
-        NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
         // instead of pinning this view to the safe area
         let safeAreaBackdrop = UIView()
-        safeAreaBackdrop.backgroundColor = Theme.backgroundColor
+        safeAreaBackdrop.backgroundColor = .Signal.groupedBackground
         view.addSubview(safeAreaBackdrop)
-        safeAreaBackdrop.autoPinEdge(.top, to: .bottom, of: containerView)
-        safeAreaBackdrop.autoPinWidthToSuperview()
-        // We don't know the safe area insets, so just guess a big number that will extend off screen
-        safeAreaBackdrop.autoSetDimension(.height, toSize: 150)
+
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        safeAreaBackdrop.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+
+            safeAreaBackdrop.topAnchor.constraint(equalTo: containerView.bottomAnchor),
+            safeAreaBackdrop.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            safeAreaBackdrop.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // We don't know the safe area insets, so just guess a big number that will extend off screen
+            safeAreaBackdrop.heightAnchor.constraint(equalToConstant: 150),
+        ])
+
+        // UI Elements
 
         // Title
-
         let titleLabel = UILabel()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeTitle3Clamped.semibold()
+        titleLabel.textColor = .Signal.label
+        titleLabel.font = UIFont.dynamicTypeHeadlineClamped.semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
         titleLabel.text = titleText
 
         // Explanation
-
         let explanationLabel = UILabel()
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
+        explanationLabel.textColor = .Signal.secondaryLabel
         explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "pinConfirmation.explanationLabel"
         explanationLabel.text = explanationText
 
-        // Pin text field
-
-        pinTextField.delegate = self
-        let currentPinType = context.db.read { tx in
-            context.svr.currentPinType(transaction: tx)
-        }
-        pinTextField.keyboardType = currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
-        pinTextField.textColor = Theme.primaryTextColor
-        pinTextField.font = .dynamicTypeBodyClamped
-        pinTextField.textAlignment = .center
-        pinTextField.isSecureTextEntry = true
-        pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
-        pinTextField.keyboardAppearance = Theme.keyboardAppearance
-        pinTextField.setContentHuggingHorizontalLow()
-        pinTextField.setCompressionResistanceHorizontalLow()
-        pinTextField.autoSetDimension(.height, toSize: 40)
-        pinTextField.accessibilityIdentifier = "pinConfirmation.pinTextField"
-
-        validationWarningLabel.textColor = .ows_accentRed
-        validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.dynamicTypeCaption1Clamped
-        validationWarningLabel.accessibilityIdentifier = "pinConfirmation.validationWarningLabel"
-
-        let pinStack = UIStackView(arrangedSubviews: [
-            pinTextField,
-            UIView.spacer(withHeight: 10),
-            validationWarningLabel
-        ])
+        // Pin text field and warning text
+        let pinStack = UIStackView(arrangedSubviews: [ pinTextField, validationWarningLabel ])
         pinStack.axis = .vertical
         pinStack.alignment = .fill
+        pinStack.spacing = 16
 
-        let pinStackRow = UIView()
-        pinStackRow.addSubview(pinStack)
-        pinStack.autoHCenterInSuperview()
-        pinStack.autoPinHeightToSuperview()
-        pinStack.autoSetDimension(.width, toSize: 227)
-        pinStackRow.setContentHuggingVerticalHigh()
+        let pinTextFieldContainer = UIView()
+        pinTextFieldContainer.addSubview(pinStack)
+        pinStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pinTextField.heightAnchor.constraint(equalToConstant: 50),
 
-        let font = UIFont.dynamicTypeBodyClamped.semibold()
-        let buttonHeight = OWSFlatButton.heightForFont(font)
-        let submitButton = OWSFlatButton.button(
-            title: actionText,
-            font: font,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(submitPressed)
+            pinStack.topAnchor.constraint(equalTo: pinTextFieldContainer.topAnchor),
+            pinStack.leadingAnchor.constraint(equalTo: pinTextFieldContainer.leadingAnchor),
+            pinStack.centerXAnchor.constraint(equalTo: pinTextFieldContainer.centerXAnchor),
+            pinStack.bottomAnchor.constraint(equalTo: pinTextFieldContainer.bottomAnchor),
+        ])
+
+        // Buttons
+        let submitButton = UIButton(
+            configuration: .largePrimary(title: actionText),
+            primaryAction: UIAction { [weak self] _ in
+                self?.submitPressed()
+            }
         )
-        submitButton.autoSetDimension(.height, toSize: buttonHeight)
         submitButton.accessibilityIdentifier = "pinConfirmation.submitButton"
 
-        // Cancel button
-        let cancelButton = UIButton()
-        cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
-        cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-        cancelButton.titleLabel?.font = .dynamicTypeSubheadlineClamped
-        cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
+        let cancelButton = UIButton(
+            configuration: .mediumBorderless(title: CommonStrings.cancelButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.cancelPressed()
+            }
+        )
         cancelButton.accessibilityIdentifier = "pinConfirmation.cancelButton"
 
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
+        let buttonContainer = UIView.container()
+        buttonContainer.addSubview(submitButton)
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        buttonContainer.addSubview(cancelButton)
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            submitButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            submitButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 12),
+            submitButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+
+            cancelButton.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 12),
+            cancelButton.leadingAnchor.constraint(greaterThanOrEqualTo: submitButton.leadingAnchor),
+            cancelButton.centerXAnchor.constraint(equalTo: submitButton.centerXAnchor),
+            cancelButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor),
+        ])
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
-            UIView.spacer(withHeight: 10),
             explanationLabel,
-            topSpacer,
-            pinStackRow,
-            bottomSpacer,
-            submitButton,
-            UIView.spacer(withHeight: 10),
-            cancelButton
+            pinTextFieldContainer,
+            .vStretchingSpacer(minHeight: 24),
+            buttonContainer,
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 16, right: 32)
+        stackView.spacing = 12
+        stackView.setCustomSpacing(24, after: explanationLabel)
+        stackView.preservesSuperviewLayoutMargins = true
         stackView.isLayoutMarginsRelativeArrangement = true
         containerView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
-
-        // Ensure whitespace is balanced, so inputs are vertically centered.
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-        topSpacer.autoSetDimension(.height, toSize: 20, relation: .greaterThanOrEqual)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 32),
+            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
+            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+        ])
 
         updateValidationWarnings()
     }
@@ -216,6 +249,13 @@ public class PinConfirmationViewController: OWSViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        if #unavailable(iOS 26) {
+                updateContainerViewCornerRadius()
+        }
+    }
+
+    @available(iOS, deprecated: 26.0)
+    private func updateContainerViewCornerRadius() {
         let cornerRadius: CGFloat = 16
         let path = UIBezierPath(
             roundedRect: containerView.bounds,
@@ -229,14 +269,12 @@ public class PinConfirmationViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc
     private func cancelPressed() {
         Logger.info("")
 
         dismiss(animated: true) { self.completionHandler(false) }
     }
 
-    @objc
     private func submitPressed() {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
@@ -262,8 +300,6 @@ public class PinConfirmationViewController: OWSViewController {
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        pinStrokeNormal.isHidden = validationState.isInvalid
-        pinStrokeError.isHidden = !validationState.isInvalid
         validationWarningLabel.isHidden = !validationState.isInvalid
 
         switch validationState {

@@ -882,7 +882,7 @@
 		663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */; };
 		663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02E02C06E2F400350632 /* MockAttachmentReference.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
-                663F81D32E789E240033D2AE /* BackupAttachmentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */; };
+		663F81D32E789E240033D2AE /* BackupAttachmentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */; };
 		663F81D52E78A70C0033D2AE /* BackupAttachmentDownloadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D42E78A6F10033D2AE /* BackupAttachmentDownloadScheduler.swift */; };
 		663F81D72E78BB9C0033D2AE /* BackupListMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D62E78B5950033D2AE /* BackupListMediaStore.swift */; };
 		663F81D92E78C2740033D2AE /* OrphanedBackupAttachmentScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D82E78C2580033D2AE /* OrphanedBackupAttachmentScheduler.swift */; };
@@ -1493,9 +1493,9 @@
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */; };
-		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
+		881677C522DD2B21007BAF49 /* PinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* PinReminderViewController.swift */; };
 		881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */; };
-		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
+		881D85B822D92C2B00E118DF /* PinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* PinSetupViewController.swift */; };
 		8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */; };
 		88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */; };
 		88238EBC24F21EE400F28079 /* EmojiSkinTonePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */; };
@@ -1557,7 +1557,7 @@
 		8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */; };
 		8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */; };
 		8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */; };
-		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
+		887889A52476E999001B5FCF /* PinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* PinConfirmationViewController.swift */; };
 		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
 		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
 		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
@@ -4840,7 +4840,7 @@
 		663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleanerTest.swift; sourceTree = "<group>"; };
 		663D02E02C06E2F400350632 /* MockAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentReference.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
-                663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentCoordinator.swift; sourceTree = "<group>"; };
+		663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentCoordinator.swift; sourceTree = "<group>"; };
 		663F81D42E78A6F10033D2AE /* BackupAttachmentDownloadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadScheduler.swift; sourceTree = "<group>"; };
 		663F81D62E78B5950033D2AE /* BackupListMediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupListMediaStore.swift; sourceTree = "<group>"; };
 		663F81D82E78C2580033D2AE /* OrphanedBackupAttachmentScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachmentScheduler.swift; sourceTree = "<group>"; };
@@ -5378,9 +5378,9 @@
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
-		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
+		881677C422DD2B21007BAF49 /* PinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderViewController.swift; sourceTree = "<group>"; };
 		881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeDetailsSheet.swift; sourceTree = "<group>"; };
-		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
+		881D85B722D92C2B00E118DF /* PinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinSetupViewController.swift; sourceTree = "<group>"; };
 		881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Signal-AppStore.entitlements"; sourceTree = "<group>"; };
 		881FF30723B5B16F0023B620 /* SignalShareExtension-AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SignalShareExtension-AppStore.entitlements"; sourceTree = "<group>"; };
 		882159D023677E0500D17403 /* ur */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ur; path = translations/ur.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -5450,7 +5450,7 @@
 		887889952474E199001B5FCF /* ga */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ga; path = translations/ga.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889972474E1BF001B5FCF /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A12474E3B9001B5FCF /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = translations/sr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinConfirmationViewController.swift; sourceTree = "<group>"; };
+		887889A42476E999001B5FCF /* PinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinConfirmationViewController.swift; sourceTree = "<group>"; };
 		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
@@ -8718,9 +8718,9 @@
 				D9E43BAC2CC194140001536E /* NameEditorViewController.swift */,
 				B995C2352D669FA3001EE321 /* NameEducationSheet.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
-				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
-				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
-				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
+				887889A42476E999001B5FCF /* PinConfirmationViewController.swift */,
+				881677C422DD2B21007BAF49 /* PinReminderViewController.swift */,
+				881D85B722D92C2B00E118DF /* PinSetupViewController.swift */,
 				88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */,
 				C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
@@ -17231,9 +17231,6 @@
 				88A4CC1B246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */,
-				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
-				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
-				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				F93461B9291ED28A00366682 /* PaymentDetailsValidity.swift in Sources */,
 				C1661A1E2C3D942300AB887F /* PaymentHistoryItem.swift in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
@@ -17263,7 +17260,10 @@
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				887889A52476E999001B5FCF /* PinConfirmationViewController.swift in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
+				881677C522DD2B21007BAF49 /* PinReminderViewController.swift in Sources */,
+				881D85B822D92C2B00E118DF /* PinSetupViewController.swift in Sources */,
 				04CF4FCE2E724604009D6669 /* PollDetailsViewController.swift in Sources */,
 				886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */,
 				887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */,

@@ -9,16 +9,7 @@ public import SignalUI
 
 public class PinSetupViewController: OWSViewController, OWSNavigationChildController {
 
-    lazy private var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = Theme.primaryTextColor
-        label.font = UIFont.dynamicTypeTitle1Clamped.semibold()
-        label.textAlignment = .center
-        label.text = titleText
-        return label
-    }()
-
-    lazy private var explanationLabel: LinkingTextView = {
+    private lazy var explanationLabel: LinkingTextView = {
         let explanationLabel = LinkingTextView()
         let explanationText: String
         let addLearnMoreLink: Bool
@@ -43,29 +34,36 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             addLearnMoreLink = false
         }
 
-        // The font is too long to fit with dynamic type. Design is looking into
-        // how to design this page to fit dynamic type. In the meantime, we have
-        // to pin the font size.
-        let explanationLabelFont = UIFont.systemFont(ofSize: 15)
-
+        let font = UIFont.dynamicTypeSubheadlineClamped
         let attributedString = NSMutableAttributedString(
             string: explanationText,
             attributes: [
-                .font: explanationLabelFont,
-                .foregroundColor: Theme.secondaryTextAndIconColor
+                .font: font,
+                .foregroundColor: UIColor.Signal.secondaryLabel
             ]
         )
 
         if addLearnMoreLink {
+            let linkFont: UIFont
+            let linkColor: UIColor
+            if #available(iOS 26, *) {
+                linkFont = font.semibold()
+                linkColor = .Signal.label
+            } else {
+                linkFont = font
+                linkColor = UIColor.Signal.accent
+            }
             explanationLabel.isUserInteractionEnabled = true
             attributedString.append("  ")
             attributedString.append(
                 CommonStrings.learnMore,
                 attributes: [
                     .link: URL.Support.pin,
-                    .font: explanationLabelFont
+                    .font: linkFont,
                 ]
             )
+
+            explanationLabel.tintColor = linkColor
         }
         explanationLabel.attributedText = attributedString
         explanationLabel.textAlignment = .center
@@ -73,63 +71,60 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         return explanationLabel
     }()
 
-    private let topSpacer = UIView.vStretchingSpacer()
-    private var proportionalSpacerConstraint: NSLayoutConstraint?
-
-    private let pinTextField: UITextField = {
-        let pinTextField = UITextField()
-        pinTextField.textAlignment = .center
-        pinTextField.textColor = Theme.primaryTextColor
-
-        let font = UIFont.systemFont(ofSize: 17)
-        pinTextField.font = font
-        pinTextField.autoSetDimension(.height, toSize: font.lineHeight + 2 * 8.0)
-
-        pinTextField.textContentType = .password
-        pinTextField.isSecureTextEntry = true
-        pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
-        pinTextField.keyboardAppearance = Theme.keyboardAppearance
-        pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
-        return pinTextField
+    private lazy var pinTextField: UITextField = {
+        let textField = UITextField()
+        textField.textAlignment = .center
+        textField.textColor = .Signal.label
+        if #available(iOS 26, *) {
+            textField.tintColor = .Signal.label
+        }
+        textField.backgroundColor = .Signal.background
+        textField.font = .systemFont(ofSize: 22)
+        textField.textContentType = .password
+        textField.isSecureTextEntry = true
+        textField.defaultTextAttributes.updateValue(5, forKey: .kern)
+        textField.accessibilityIdentifier = "pinCreation.pinTextField"
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            textField.cornerConfiguration = .capsule()
+        } else {
+            textField.layer.cornerRadius = 10
+        }
+#else
+        textField.layer.cornerRadius = 10
+#endif
+        textField.delegate = self
+        return textField
     }()
 
-    private lazy var pinTypeToggle: OWSFlatButton = {
-        let pinTypeToggle = OWSFlatButton()
-        pinTypeToggle.setTitle(font: .dynamicTypeSubheadlineClamped, titleColor: Theme.accentBlueColor)
-        pinTypeToggle.setBackgroundColors(upColor: .clear)
-
-        pinTypeToggle.enableMultilineLabel()
-        pinTypeToggle.button.clipsToBounds = true
-        pinTypeToggle.button.layer.cornerRadius = 8
-        pinTypeToggle.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 8)
-
-        pinTypeToggle.addTarget(target: self, selector: #selector(togglePinType))
-        pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"
-        return pinTypeToggle
+    private lazy var pinTypeToggleButton: UIButton = {
+        let button = UIButton(
+            configuration: .mediumBorderless(title: ""),
+            primaryAction: UIAction { [weak self] _ in
+                self?.togglePinType()
+            }
+        )
+        button.enableMultilineLabel()
+        button.accessibilityIdentifier = "pinCreation.pinTypeToggle"
+        return button
     }()
 
-    private lazy var nextButton: OWSFlatButton = {
-        let nextButton = OWSFlatButton()
-        nextButton.setTitle(
-            title: CommonStrings.nextButton,
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
-            titleColor: .white)
-        nextButton.setBackgroundColors(upColor: .ows_accentBlue)
-
-        nextButton.button.clipsToBounds = true
-        nextButton.button.layer.cornerRadius = 14
-        nextButton.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
-
-        nextButton.addTarget(target: self, selector: #selector(nextPressed))
-        nextButton.accessibilityIdentifier = "pinCreation.nextButton"
-        return nextButton
+    private lazy var continueButton: UIButton = {
+        let button = UIButton(
+            configuration: .largePrimary(title: CommonStrings.continueButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.continuePressed()
+            }
+        )
+        button.accessibilityIdentifier = "pinCreation.nextButton"
+        return button
     }()
 
     private let validationWarningLabel: UILabel = {
         let validationWarningLabel = UILabel()
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.dynamicTypeFootnoteClamped
+        validationWarningLabel.font = .dynamicTypeFootnoteClamped
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
         return validationWarningLabel
@@ -137,33 +132,13 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private let recommendationLabel: UILabel = {
         let recommendationLabel = UILabel()
-        recommendationLabel.textColor = Theme.secondaryTextAndIconColor
+        recommendationLabel.textColor = .Signal.secondaryLabel
         recommendationLabel.textAlignment = .center
-        recommendationLabel.font = UIFont.dynamicTypeFootnoteClamped
+        recommendationLabel.font = .dynamicTypeFootnoteClamped
         recommendationLabel.numberOfLines = 0
         recommendationLabel.accessibilityIdentifier = "pinCreation.recommendationLabel"
         return recommendationLabel
     }()
-
-    private lazy var backButton: UIButton = {
-        let backButton = UIButton.withTemplateImage(
-            UIImage(imageLiteralResourceName: "NavBarBack"),
-            tintColor: Theme.secondaryTextAndIconColor
-        )
-        backButton.autoSetDimensions(to: CGSize(square: 40))
-        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
-        return backButton
-    }()
-
-    private lazy var moreButton: UIButton = {
-        let moreButton = UIButton.withTemplateImage(Theme.iconImage(.buttonMore), tintColor: Theme.primaryIconColor)
-        moreButton.autoSetDimensions(to: CGSize(square: 40))
-        moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
-        return moreButton
-    }()
-
-    private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
-    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
 
     enum Mode: Equatable {
         case creating
@@ -253,10 +228,69 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     public var navbarBackgroundColorOverride: UIColor? {
-        return backgroundColor
+        return .Signal.groupedBackground
     }
 
-    public var prefersNavigationBarHidden: Bool { false }
+    private var titleText: String {
+        switch mode {
+        case .confirming:
+            return OWSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
+        case .changing:
+            return OWSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
+        case .creating:
+            return OWSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
+        }
+    }
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Don't allow interactive dismissal.
+        isModalInPresentation = true
+
+        view.backgroundColor = .Signal.groupedBackground
+
+        navigationItem.title = titleText
+        if showCancelButton {
+            navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
+        }
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
+        let buttonContainer = UIStackView(arrangedSubviews: [ pinTypeToggleButton, continueButton ])
+        buttonContainer.axis = .vertical
+        buttonContainer.spacing = 16
+        buttonContainer.isLayoutMarginsRelativeArrangement = true
+        buttonContainer.directionalLayoutMargins = .init(top: 0, leading: 12, bottom: 16, trailing: 12)
+
+        let stackView = UIStackView(arrangedSubviews: [
+            explanationLabel,
+            pinTextField,
+            recommendationLabel,
+            validationWarningLabel,
+            .vStretchingSpacer(minHeight: 24),
+            buttonContainer,
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 16
+        stackView.setCustomSpacing(24, after: explanationLabel)
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+        view.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        pinTextField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pinTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
+
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+        ])
+
+        updateValidationWarnings()
+        updatePinType()
+    }
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -274,151 +308,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         pinTextField.becomeFirstResponder()
     }
 
-    private var backgroundColor: UIColor {
-        presentingViewController == nil ? Theme.backgroundColor : Theme.tableView2PresentedBackgroundColor
-    }
-
-    override public var preferredStatusBarStyle: UIStatusBarStyle {
-        return Theme.isDarkThemeEnabled ? .lightContent : .default
-    }
-
-    override public func loadView() {
-        owsAssertDebug(navigationController != nil, "This view should always be presented in a nav controller")
-        view = UIView()
-        view.backgroundColor = backgroundColor
-
-        view.addSubview(backButton)
-        backButton.autoPinEdge(toSuperviewSafeArea: .top)
-        backButton.autoPinEdge(toSuperviewSafeArea: .leading)
-
-        view.addSubview(moreButton)
-        moreButton.autoPinEdge(toSuperviewSafeArea: .top)
-        moreButton.autoPinEdge(toSuperviewSafeArea: .trailing)
-
-        let titleSpacer = SpacerView(preferredHeight: 12)
-        let pinFieldSpacer = SpacerView(preferredHeight: 11)
-        let bottomSpacer = SpacerView(preferredHeight: 10)
-        let pinToggleSpacer = SpacerView(preferredHeight: 24)
-        let buttonSpacer = SpacerView(preferredHeight: 32)
-
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            titleSpacer,
-            explanationLabel,
-            topSpacer,
-            pinTextField,
-            pinFieldSpacer,
-            validationWarningLabel,
-            recommendationLabel,
-            bottomSpacer,
-            pinTypeToggle,
-            pinToggleSpacer,
-            ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton),
-            buttonSpacer
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
-        [pinTextField, validationWarningLabel, recommendationLabel].forEach {
-            $0.autoSetDimension(.width, toSize: 227)
-        }
-
-        [titleLabel, explanationLabel, pinTextField, validationWarningLabel, recommendationLabel, pinTypeToggle, nextButton]
-            .forEach { $0.setCompressionResistanceVerticalHigh() }
-
-        // Reduce priority of compression resistance for the spacer views
-        // The array index serves as an ambiguous layout tiebreaker
-        [titleSpacer, pinFieldSpacer, bottomSpacer, pinToggleSpacer, buttonSpacer].enumerated().forEach {
-            $0.element.setContentCompressionResistancePriority(.defaultHigh - .init($0.offset), for: .vertical)
-        }
-
-        // Bottom spacer is the stack view item that grows when there's extra space
-        // Ensure whitespace is balanced, so inputs are vertically centered.
-        bottomSpacer.setContentHuggingPriority(.init(100), for: .vertical)
-        proportionalSpacerConstraint = topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-        updateValidationWarnings()
-        updatePinType()
-
-        // Pin text field
-        pinTextField.delegate = self
-    }
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        title = titleText
-
-        let isNavigationBarVisible = !self.prefersNavigationBarHidden
-        titleLabel.isHidden = isNavigationBarVisible
-        backButton.isHidden = isNavigationBarVisible
-        moreButton.isHidden = isNavigationBarVisible
-
-        if showCancelButton {
-            self.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
-        }
-
-        OWSTableViewController2.removeBackButtonText(viewController: self)
-
-        // Don't allow interactive dismissal.
-        isModalInPresentation = true
-    }
-
-    var titleText: String {
-        switch mode {
-        case .confirming:
-            return OWSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
-        case .changing:
-            return OWSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
-        case .creating:
-            return OWSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
-        }
-    }
-
     // MARK: - Events
 
-    @objc
-    private func navigateBack() {
-        Logger.info("")
-
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc
-    private func didTapMoreButton() {
-        let actionSheet = ActionSheetController()
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        proportionalSpacerConstraint?.isActive = false
-        let pinnedHeightConstraint = topSpacer.autoSetDimension(.height, toSize: topSpacer.height)
-
-        let learnMoreAction = ActionSheetAction(
-            title: OWSLocalizedString(
-                "PIN_CREATION_LEARN_MORE",
-                comment: "Learn more action on the pin creation view"
-            )
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            let vc = SFSafariViewController(url: URL.Support.pin)
-            self.present(vc, animated: true) {
-                pinnedHeightConstraint.isActive = false
-                self.proportionalSpacerConstraint?.isActive = true
-            }
-        }
-        actionSheet.addAction(learnMoreAction)
-
-        presentActionSheet(actionSheet)
-    }
-
-    @objc
-    private func nextPressed() {
+    private func continuePressed() {
         Logger.info("")
 
         tryToContinue()
@@ -460,8 +352,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        pinStrokeNormal.isHidden = validationState.isInvalid
-        pinStrokeError.isHidden = !validationState.isInvalid
         validationWarningLabel.isHidden = !validationState.isInvalid
         recommendationLabel.isHidden = validationState.isInvalid
 
@@ -496,32 +386,41 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
         switch pinType {
         case .numeric:
-            pinTypeToggle.setTitle(title: OWSLocalizedString("PIN_CREATION_CREATE_ALPHANUMERIC",
-                                                            comment: "Button asking if the user would like to create an alphanumeric PIN"))
+            pinTypeToggleButton.configuration?.title = OWSLocalizedString(
+                "PIN_CREATION_CREATE_ALPHANUMERIC",
+                comment: "Button asking if the user would like to create an alphanumeric PIN"
+            )
             pinTextField.keyboardType = .asciiCapableNumberPad
-            recommendationLabelText = OWSLocalizedString("PIN_CREATION_NUMERIC_HINT",
-                                                         comment: "Label indicating the user must use at least 4 digits")
+            recommendationLabelText = OWSLocalizedString(
+                "PIN_CREATION_NUMERIC_HINT",
+                comment: "Label indicating the user must use at least 4 digits"
+            )
         case .alphanumeric:
-            pinTypeToggle.setTitle(title: OWSLocalizedString("PIN_CREATION_CREATE_NUMERIC",
-                                                            comment: "Button asking if the user would like to create an numeric PIN"))
+            pinTypeToggleButton.configuration?.title = OWSLocalizedString(
+                "PIN_CREATION_CREATE_NUMERIC",
+                comment: "Button asking if the user would like to create an numeric PIN"
+            )
             pinTextField.keyboardType = .default
-            recommendationLabelText = OWSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
-                                                        comment: "Label indicating the user must use at least 4 characters")
+            recommendationLabelText = OWSLocalizedString(
+                "PIN_CREATION_ALPHANUMERIC_HINT",
+                comment: "Label indicating the user must use at least 4 characters"
+            )
         }
 
         pinTextField.reloadInputViews()
 
         if mode.isConfirming {
-            pinTypeToggle.isHidden = true
-            recommendationLabel.text = OWSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_HINT",
-                                                         comment: "Label indication the user must confirm their PIN.")
+            pinTypeToggleButton.isHidden = true
+            recommendationLabel.text = OWSLocalizedString(
+                "PIN_CREATION_PIN_CONFIRMATION_HINT",
+                comment: "Label indication the user must confirm their PIN."
+            )
         } else {
-            pinTypeToggle.isHidden = false
+            pinTypeToggleButton.isHidden = false
             recommendationLabel.text = recommendationLabelText
         }
     }
 
-    @objc
     private func togglePinType() {
         switch pinType {
         case .numeric:
@@ -548,12 +447,16 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             )
         )
         view.addSubview(progressView)
-        progressView.autoPinWidthToSuperview()
-        progressView.autoVCenterInSuperview()
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            progressView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            progressView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            progressView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
 
         progressView.startAnimating {
             self.view.isUserInteractionEnabled = false
-            self.nextButton.alpha = 0.5
+            self.explanationLabel.alpha = 0
             self.pinTextField.alpha = 0
             self.validationWarningLabel.alpha = 0
             self.recommendationLabel.alpha = 0
@@ -570,7 +473,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             } catch {
                 DispatchQueue.main.async {
                     progressView.stopAnimating(success: false) {
-                        self.nextButton.alpha = 1
+                        self.explanationLabel.alpha = 1
                         self.pinTextField.alpha = 1
                         self.validationWarningLabel.alpha = 1
                         self.recommendationLabel.alpha = 1
