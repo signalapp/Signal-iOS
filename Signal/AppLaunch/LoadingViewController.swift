@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
 import SignalServiceKit
 import SignalUI
 
@@ -33,13 +34,13 @@ class LoadingViewController: UIViewController {
         logoView.autoSetDimensions(to: CGSize(square: 128))
 
         self.topLabel = buildLabel()
-        topLabel.alpha = 0
+        topLabel.isHiddenInStackView = true
         topLabel.font = UIFont.dynamicTypeTitle2
         topLabel.text = OWSLocalizedString("DATABASE_VIEW_OVERLAY_TITLE", comment: "Title shown while the app is updating its database.")
         labelStack.addArrangedSubview(topLabel)
 
         self.bottomLabel = buildLabel()
-        bottomLabel.alpha = 0
+        bottomLabel.isHiddenInStackView = true
         bottomLabel.font = UIFont.dynamicTypeBody
         bottomLabel.text = OWSLocalizedString(
             "DATABASE_VIEW_OVERLAY_SUBTITLE",
@@ -53,13 +54,13 @@ class LoadingViewController: UIViewController {
         labelStack.setCustomSpacing(20, after: bottomLabel)
 
         progressView.setProgress(0.1, animated: false)
-        progressView.alpha = 0
+        progressView.isHiddenInStackView = true
         labelStack.addArrangedSubview(progressView)
         labelStack.setCustomSpacing(16, after: progressView)
         progressView.autoPinWidthToSuperview(withMargin: 20, relation: .lessThanOrEqual)
         progressView.autoSetDimension(.width, toSize: 330).priority = .defaultLow
 
-        percentCompleteLabel.alpha = 0
+        percentCompleteLabel.isHiddenInStackView = true
         percentCompleteLabel.font = {
             let metrics = UIFontMetrics(forTextStyle: .body)
             let desc = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .body)
@@ -70,7 +71,7 @@ class LoadingViewController: UIViewController {
         labelStack.addArrangedSubview(percentCompleteLabel)
         labelStack.setCustomSpacing(6, after: percentCompleteLabel)
 
-        unitCountLabel.alpha = 0
+        unitCountLabel.isHiddenInStackView = true
         unitCountLabel.font = .dynamicTypeBody.monospaced()
         unitCountLabel.textColor = .Signal.secondaryLabel
         labelStack.addArrangedSubview(unitCountLabel)
@@ -153,6 +154,7 @@ class LoadingViewController: UIViewController {
 
     private func showBottomLabelAnimated() {
         bottomLabel.layer.removeAllAnimations()
+        bottomLabel.isHiddenInStackView = false
         bottomLabel.alpha = kMinAlpha
         UIView.animate(withDuration: 0.3) {
             self.bottomLabel.alpha = 1
@@ -162,6 +164,7 @@ class LoadingViewController: UIViewController {
 
     private func showTopLabel() {
         topLabel.layer.removeAllAnimations()
+        topLabel.isHiddenInStackView = false
         topLabel.alpha = 0.2
         UIView.animate(withDuration: 0.9, delay: 0, options: [.autoreverse, .repeat, .curveEaseInOut], animations: {
             self.topLabel.alpha = 1.0
@@ -170,7 +173,7 @@ class LoadingViewController: UIViewController {
 
     private func showBottomLabel() {
         bottomLabel.layer.removeAllAnimations()
-        self.bottomLabel.alpha = 1
+        bottomLabel.isHiddenInStackView = false
     }
 
     // MARK: -
