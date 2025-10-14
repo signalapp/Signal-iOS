@@ -441,7 +441,7 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
         if hasConsumedMediaTierCapacity {
             // If we are out of storage space...
             // * issue deletes if we can, to free up space
-            if canRunDeleteOrphans() {
+            if canRunDeleteOrphans(), needsToRun(.deleteOrphans) {
 
                 let orphanCount = db.read { tx in
                     (try? orphanStore.peek(count: 1, tx: tx))?.count ?? 1
