@@ -33,6 +33,12 @@ public protocol BackupAttachmentUploadStore {
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentUpload]
 
+    func getEnqueuedUpload(
+        for attachmentId: Attachment.IDType,
+        fullsize: Bool,
+        tx: DBReadTransaction
+    ) throws -> QueuedBackupAttachmentUpload?
+
     /// Remove the upload from the queue. Should be called once uploaded (or permanently failed).
     ///
     /// - Important
@@ -125,6 +131,17 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
                     """,
                 arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, isFullsize, count]
             )
+    }
+
+    public func getEnqueuedUpload(
+        for attachmentId: Attachment.IDType,
+        fullsize: Bool,
+        tx: DBReadTransaction
+    ) throws -> QueuedBackupAttachmentUpload? {
+        return try QueuedBackupAttachmentUpload
+            .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
+            .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == fullsize)
+            .fetchOne(tx.database)
     }
 
     @discardableResult

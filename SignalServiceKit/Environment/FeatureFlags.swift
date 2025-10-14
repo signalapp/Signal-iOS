@@ -53,6 +53,8 @@ public enum FeatureFlags {
 
         public static let avoidAppAttestForDevs = build <= .dev
         public static let avoidStoreKitForTesters = build <= .beta
+
+        public static let performListMediaIntegrityChecks = build <= .beta
     }
 
     public static let runTSAttachmentMigrationInMainAppBackground = true

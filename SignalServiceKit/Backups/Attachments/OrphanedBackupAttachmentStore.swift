@@ -14,6 +14,10 @@ public protocol OrphanedBackupAttachmentStore {
     /// Returns an empty array if the table is empty.
     func peek(count: UInt, tx: DBReadTransaction) throws -> [OrphanedBackupAttachment]
 
+    func hasPendingDelete(forMediaId mediaId: Data, tx: DBReadTransaction) throws -> Bool
+
+    func enumerateMediaNamesPendingDelete(tx: DBReadTransaction, block: (String, _ stop: inout Bool) -> Void) throws
+
     /// Remove any tasks for deleting a fullsize media tier upload with
     /// the given media name and/or derived media id.
     func removeThumbnail(
@@ -61,6 +65,28 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
             .order([Column(OrphanedBackupAttachment.CodingKeys.id).asc])
             .limit(Int(count))
             .fetchAll(db)
+    }
+
+    public func hasPendingDelete(forMediaId mediaId: Data, tx: DBReadTransaction) throws -> Bool {
+        return try OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
+            .isEmpty(tx.database)
+            .negated
+    }
+
+    public func enumerateMediaNamesPendingDelete(tx: DBReadTransaction, block: (String, _ stop: inout Bool) -> Void) throws {
+        let cursor = try OrphanedBackupAttachment
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == nil)
+            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) != nil)
+            .fetchCursor(tx.database)
+
+        var stop = false
+        while !stop {
+            guard let next = try cursor.next()?.mediaName else {
+                return
+            }
+            block(next, &stop)
+        }
     }
 
     public func removeThumbnail(
