@@ -7,20 +7,25 @@ import Testing
 @testable import SignalServiceKit
 
 class BackupFailureStateManagerTests {
-    private let backupSettingStore = BackupSettingsStore()
-    private let db: DB!
-    private var date: Date!
-    private var dateProvider: DateProvider!
+    private let backupSettingStore: BackupSettingsStore
+    private let db: DB
+    private var date: Date
+    private let tsAccountManager: TSAccountManager
+
     private var sut: BackupFailureStateManager!
 
     init() {
+        self.backupSettingStore = BackupSettingsStore()
         self.db = InMemoryDB()
         self.date = Date()
-        self.dateProvider = { self.date }
+        self.tsAccountManager = MockTSAccountManager()
+
         self.sut = BackupFailureStateManager(
-            backupSettingsStore: BackupSettingsStore(),
-            dateProvider: self.dateProvider
+            backupSettingsStore: backupSettingStore,
+            dateProvider: { self.date },
+            tsAccountManager: tsAccountManager,
         )
+
         db.write {
             backupSettingStore.setBackupPlan(.paid(optimizeLocalStorage: true), tx: $0)
         }
@@ -87,6 +92,6 @@ class BackupFailureStateManagerTests {
     private func timeBeforeNow(_ interval: TimeInterval) -> Date {
         // bump the time a second earlier than the requested time to avoid running
         // into small time differences that trip up comparisons.
-        return dateProvider().advanced(by: -(interval) - 1)
+        return date.advanced(by: -(interval) - 1)
     }
 }

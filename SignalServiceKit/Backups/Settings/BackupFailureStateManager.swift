@@ -6,20 +6,22 @@
 import Foundation
 
 public class BackupFailureStateManager {
-
-    let backupSettingsStore: BackupSettingsStore
-    let dateProvider: DateProvider
+    private let backupSettingsStore: BackupSettingsStore
+    private let dateProvider: DateProvider
+    private let tsAccountManager: TSAccountManager
 
     init(
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
+        tsAccountManager: TSAccountManager,
     ) {
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
+        self.tsAccountManager = tsAccountManager
     }
 
     public func shouldShowBackupFailurePrompt(tx: DBReadTransaction) -> Bool {
-        guard areBackupsEnabled(tx: tx) else {
+        guard shouldBackupsBeRunning(tx: tx) else {
             return false
         }
 
@@ -60,7 +62,7 @@ public class BackupFailureStateManager {
     /// This allows each target to be separately cleared, and also allows
     /// backups to reset the state for all of them on a failure
     public func shouldShowErrorBadge(target: String, tx: DBReadTransaction) -> Bool {
-        guard areBackupsEnabled(tx: tx) else {
+        guard shouldBackupsBeRunning(tx: tx) else {
             return false
         }
 
@@ -87,8 +89,13 @@ public class BackupFailureStateManager {
 
     // MARK: -
 
-    private func areBackupsEnabled(tx: DBReadTransaction) -> Bool {
-        switch backupSettingsStore.backupPlan(tx: tx) {
+    private func shouldBackupsBeRunning(tx: DBReadTransaction) -> Bool {
+        guard tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
+            // No backups on iPad, so no errors.
+            return false
+        }
+
+        return switch backupSettingsStore.backupPlan(tx: tx) {
         case .disabled, .disabling: false
         case .free, .paid, .paidExpiringSoon, .paidAsTester: true
         }
