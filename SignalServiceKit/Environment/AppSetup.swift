@@ -1586,6 +1586,7 @@ extension AppSetup.GlobalsContinuation {
         let backupFailureStateManager = BackupFailureStateManager(
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
+            tsAccountManager: tsAccountManager,
         )
 
         let dependenciesBridge = DependenciesBridge(
