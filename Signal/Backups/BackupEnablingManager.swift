@@ -74,7 +74,7 @@ final class BackupEnablingManager {
             LocalIdentifiers?
         ) = db.read { tx in
             return (
-                tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 tsAccountManager.localIdentifiers(tx: tx),
             )
         }

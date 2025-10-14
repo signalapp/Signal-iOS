@@ -164,7 +164,10 @@ class BackupExportJobImpl: BackupExportJob {
             shouldAllowBackupUploadsOnCellular,
             currentBackupPlan,
         ) = try db.read { (tx) throws(BackupExportJobError) in
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            guard
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+            else {
                 owsFailDebug("Creating a backup when unregistered?")
                 throw .unregistered
             }

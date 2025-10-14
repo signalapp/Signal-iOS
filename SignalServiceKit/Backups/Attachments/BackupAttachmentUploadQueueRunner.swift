@@ -127,16 +127,16 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         guard FeatureFlags.Backups.supported else {
             return
         }
-        let (isPrimary, localAci, backupPlan, backupKey) = db.read { tx in
+        let (isRegisteredPrimary, localAci, backupPlan, backupKey) = db.read { tx in
             (
-                self.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
+                self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                 backupSettingsStore.backupPlan(tx: tx),
                 accountKeyStore.getMediaRootBackupKey(tx: tx)
             )
         }
 
-        guard isPrimary, let localAci else {
+        guard isRegisteredPrimary, let localAci else {
             return
         }
 
@@ -417,10 +417,16 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 break
             }
 
-            let localAci = db.read { tx in
-                return self.tsAccountManager.localIdentifiers(tx: tx)?.aci
+            let (localAci, isRegisteredPrimaryDevice) = db.read { tx in
+                return (
+                    self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
+                    self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                )
             }
-            guard let localAci else {
+            guard
+                isRegisteredPrimaryDevice,
+                let localAci
+            else {
                 let error = OWSAssertionError("Not registered!")
                 try? await loader.stop(reason: error)
                 return .retryableError(error)
