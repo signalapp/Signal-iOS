@@ -124,6 +124,8 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyEndPoll;
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
                    messageType:(TSInfoMessageType)messageType
+            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
+              expiresInSeconds:(unsigned int)expiresInSeconds
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
     NS_DESIGNATED_INITIALIZER;
 

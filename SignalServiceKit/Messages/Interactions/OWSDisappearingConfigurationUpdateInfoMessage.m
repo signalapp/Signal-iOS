@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                        timestamp:timestamp
                       serverGuid:nil
                      messageType:TSInfoMessageTypeDisappearingMessagesUpdate
+              expireTimerVersion:nil
+                expiresInSeconds:0
              infoMessageUserInfo:nil];
     if (!self) {
         return self;

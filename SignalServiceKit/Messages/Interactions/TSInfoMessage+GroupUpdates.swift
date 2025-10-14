@@ -49,6 +49,8 @@ extension TSInfoMessage {
             timestamp: timestamp,
             serverGuid: spamReportingServerGuid,
             messageType: .typeGroupUpdate,
+            expireTimerVersion: nil,
+            expiresInSeconds: 0,
             infoMessageUserInfo: userInfoForNewMessage
         )
         return infoMessage

@@ -32,6 +32,8 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                        timestamp:timestamp
                       serverGuid:nil
                      messageType:TSInfoMessageUnknownProtocolVersion
+              expireTimerVersion:nil
+                expiresInSeconds:0
              infoMessageUserInfo:nil];
 
     if (self) {

@@ -82,11 +82,6 @@ extension TSInfoMessage {
             return nil
         }
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
-            Logger.error("Can't find local ACI")
-            return nil
-        }
-
         var pollTerminateAci: Aci?
         do {
             pollTerminateAci = try Aci.parseFrom(serviceIdBinary: endPollItem.authorServiceIdBinary)
@@ -98,14 +93,6 @@ extension TSInfoMessage {
         guard let pollTerminateAci else {
             Logger.error("Couldn't parse ACI from service ID binary")
             return nil
-        }
-
-        if localAci == pollTerminateAci {
-            let formatString = OWSLocalizedString(
-                "POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE",
-                comment: "Shown when the local user ends a poll. Embeds {{ poll question }}."
-            )
-            return String(format: formatString, question)
         }
 
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(

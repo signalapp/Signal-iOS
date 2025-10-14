@@ -83,6 +83,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
                    messageType:(TSInfoMessageType)messageType
+            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
+              expiresInSeconds:(unsigned int)expiresInSeconds
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
 {
     TSMessageBuilder *builder;
@@ -91,6 +93,12 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     } else {
         builder = [TSMessageBuilder messageBuilderWithThread:thread];
     }
+
+    if (expiresInSeconds > 0 && expireTimerVersion != nil) {
+        builder.expiresInSeconds = expiresInSeconds;
+        builder.expireTimerVersion = expireTimerVersion;
+    }
+
     self = [super initMessageWithBuilder:builder];
     if (!self) {
         return self;
@@ -346,11 +354,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 }
 
 #pragma mark - OWSReadTracking
-
-- (uint64_t)expireStartedAt
-{
-    return 0;
-}
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread

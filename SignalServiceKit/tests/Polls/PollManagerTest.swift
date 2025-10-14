@@ -26,6 +26,7 @@ struct PollManagerTest {
             interactionStore: InteractionStoreImpl(),
             accountManager: mockTSAccountManager,
             messageSenderJobQueue: MessageSenderJobQueue(appReadiness: AppReadinessMock()),
+            disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
             db: db
         )
         let testPhone = E164("+16505550101")!

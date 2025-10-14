@@ -1583,6 +1583,7 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
             accountManager: tsAccountManager,
             messageSenderJobQueue: messageSenderJobQueue,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             db: db
         )
 

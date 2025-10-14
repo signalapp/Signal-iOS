@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
                    messageType:(TSInfoMessageType)infoMessage
+            expireTimerVersion:(nullable NSNumber *)expireTimerVersion
+              expiresInSeconds:(unsigned int)expiresInSeconds
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId

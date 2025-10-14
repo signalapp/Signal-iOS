@@ -31,6 +31,7 @@ public class PollMessageManager {
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let accountManager: TSAccountManager
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
 
     init(
         pollStore: PollStore,
@@ -38,6 +39,7 @@ public class PollMessageManager {
         interactionStore: InteractionStore,
         accountManager: TSAccountManager,
         messageSenderJobQueue: MessageSenderJobQueue,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         db: DB
     ) {
         self.pollStore = pollStore
@@ -46,6 +48,7 @@ public class PollMessageManager {
         self.accountManager = accountManager
         self.messageSenderJobQueue = messageSenderJobQueue
         self.db = db
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
     }
 
     public func processIncomingPollCreate(
@@ -207,19 +210,6 @@ public class PollMessageManager {
                 message: preparedMessage,
                 transaction: tx
             )
-
-            guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
-                throw OWSAssertionError("User not registered")
-            }
-
-            insertInfoMessageForEndPoll(
-                timestamp: Date().ows_millisecondsSince1970,
-                groupThread: thread,
-                targetPollTimestamp: targetPoll.timestamp,
-                pollQuestion: poll.question,
-                terminateAuthor: localAci,
-                tx: tx
-            )
         }
     }
 
@@ -238,11 +228,15 @@ public class PollMessageManager {
             timestamp: Int64(targetPollTimestamp)
         )
 
+        let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx)
+
         let infoMessage = TSInfoMessage(
             thread: groupThread,
             timestamp: timestamp,
             serverGuid: nil,
             messageType: .typeEndPoll,
+            expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
+            expiresInSeconds: dmConfig.durationSeconds,
             infoMessageUserInfo: userInfoForNewMessage
         )
 
