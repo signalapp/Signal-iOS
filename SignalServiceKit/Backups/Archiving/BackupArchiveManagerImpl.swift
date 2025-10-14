@@ -21,6 +21,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public enum Constants {
         fileprivate static let keyValueStoreCollectionName = "MessageBackupManager"
         fileprivate static let keyValueStoreRestoreStateKey = "keyValueStoreRestoreStateKey"
+        fileprivate static let keyValueStoreNeedForwardSecrecyTokenFetchKey = "keyValueStoreNeedForwardSecrecyTokenFetchKey"
 
         public static let supportedBackupVersion: UInt64 = 1
 
@@ -273,6 +274,31 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
 
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
+
+        switch backupPurpose {
+        case .remoteExport(let key, let chatAuth):
+            // If an SVR🐝 restore has been scheduled, do this restore before continuing
+            // with the remote backup.  This ensures the local and remote state are
+            // consistent and avoids the possibility of a backup being created that
+            // can't be recovered using the material in SVR🐝.
+            if db.read(block: { needsRestoreFromSVR🐝BeforeRemoteExport(tx: $0) }) {
+                do {
+                    try await fetchRemoteSVR🐝ForwardSecrecyToken(key: key, auth: chatAuth)
+                } catch SVR🐝Error.unrecoverable {
+                    // Not found, so consider a success and fallthrough
+                }
+
+                await db.awaitableWrite {
+                    kvStore.setBool(
+                        false,
+                        key: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+                        transaction: $0
+                    )
+                }
+            }
+        case .linkNsync:
+            break
+        }
 
         let encryptionMetadata = try await backupPurpose.deriveEncryptionMetadataWithSvr🐝IfNeeded(
             backupRequestManager: backupRequestManager,
@@ -1506,5 +1532,48 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupValidationError.unknownError
             }
         }
+    }
+
+    // MARK: -
+
+    public func scheduleRestoreFromSVR🐝BeforeNextExport(tx: DBWriteTransaction) {
+        kvStore.setBool(
+            true,
+            key: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+            transaction: tx
+        )
+    }
+
+    private func needsRestoreFromSVR🐝BeforeRemoteExport(tx: DBReadTransaction) -> Bool {
+        kvStore.getBool(
+            Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+            defaultValue: false,
+            transaction: tx
+        )
+    }
+
+    private func fetchRemoteSVR🐝ForwardSecrecyToken(
+        key: MessageRootBackupKey,
+        auth: ChatServiceAuth
+    ) async throws {
+        let backupServiceAuth = try await backupRequestManager.fetchBackupServiceAuthForRegistration(
+            key: key,
+            localAci: key.aci,
+            chatServiceAuth: auth
+        )
+
+        let metadataHeader = try await backupCdnInfo(
+            backupKey: key,
+            backupAuth: backupServiceAuth
+        ).metadataHeader
+
+        let nonceSource = BackupImportSource.NonceMetadataSource.svr🐝(header: metadataHeader, auth: auth)
+        let source = BackupImportSource.remote(key: key, nonceSource: nonceSource)
+        _ = try await source.deriveBackupEncryptionKeyWithSvr🐝IfNeeded(
+            backupRequestManager: backupRequestManager,
+            db: db,
+            libsignalNet: libsignalNet,
+            nonceStore: backupNonceMetadataStore
+        )
     }
 }

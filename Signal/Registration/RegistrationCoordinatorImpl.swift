@@ -643,7 +643,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else if let metadataHeader = self.inMemoryState.backupMetadataHeader {
                 nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
             } else {
-                owsFailDebug("Missing metadata header; refetching from cdn")
+                Logger.info("Missing metadata header; refetching from cdn")
                 let backupServiceAuth = try await self.deps.backupRequestManager.fetchBackupServiceAuthForRegistration(
                     key: backupKey,
                     localAci: identity.aci,
@@ -1412,6 +1412,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         block: ((DBWriteTransaction) -> Void)? = nil
     ) async -> RegistrationStep {
         await db.awaitableWrite { tx in
+                deps.backupArchiveManager.scheduleRestoreFromSVR🐝BeforeNextExport(tx: tx)
+            if needsToScheduleRestoreFromSvr🐝() {
+            }
+
             if
                 inMemoryState.hasBackedUpToSVR
                     || inMemoryState.didHaveSVRBackupsPriorToReg
@@ -4924,6 +4928,36 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering, .reRegistering:
             return !persistedState.didRefreshOneTimePreKeys
+        case .changingNumber:
+            return false
+        }
+    }
+
+    /// Any path that results in registration with an old AEP that doesn't go
+    /// through the backup restore needs to handle this. Note that the SVR🐝
+    /// restore doesn't need to succeed here, but we do need to persist that a
+    /// restore is needed to ensure the restore happens before the first backup.
+    ///
+    /// Registration paths to consider:
+    /// | Registration path | SVR🐝 action |
+    /// |---|---|
+    /// | re-registration | **Scheduled fetch needed** |
+    /// | basic reg - backup restore | Fetched during restore |
+    /// | basic reg - transfer | none |
+    /// | basic reg - skip restore | New AEP, no fetch needed |
+    /// | manual restore - backup restore | Fetched during restore |
+    /// | manual restore - skip restore | **Scheduled fetch needed** |
+    /// | quick restore - backup restore | Fetched during restore |
+    /// | quick restore - transfer | none |
+    /// | quick restore - skip restore | **Scheduled fetch needed** |
+    private func needsToScheduleRestoreFromSvr🐝() -> Bool {
+        switch mode {
+        case .reRegistering:
+            return true
+        case .registering:
+            return
+                persistedState.restoreMode != nil &&
+                persistedState.restoreMethod == .declined
         case .changingNumber:
             return false
         }

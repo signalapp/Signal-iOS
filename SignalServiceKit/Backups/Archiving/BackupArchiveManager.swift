@@ -93,4 +93,8 @@ public protocol BackupArchiveManager {
     /// will finalize on its own; however if this process is interrupted (by e.g. cancellation or app termination) callers MUST NOT import again
     /// but MUST call this method to finish the in-progress import finalization steps. This method is idempotent; import is not.
     func finalizeBackupImport(progress: OWSProgressSink?) async throws
+
+    /// Schedule an SVR🐝 restore.  This value is checked at the beginning of backup export
+    /// and will block on a completing the SVR🐝 fetch before beginning the export.
+    func scheduleRestoreFromSVR🐝BeforeNextExport(tx: DBWriteTransaction)
 }

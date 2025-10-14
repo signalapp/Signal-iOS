@@ -96,6 +96,10 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
     }
+
+    public func scheduleRestoreFromSVR🐝BeforeNextExport(tx: DBWriteTransaction) {
+        // Do Nothing
+    }
 }
 
 #endif
