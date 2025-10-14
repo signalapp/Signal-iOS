@@ -4,6 +4,12 @@
 <dict>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>
+	<key>com.apple.developer.networking.carrier-constrained.app-optimized</key>
+	<true/>
+	<key>com.apple.developer.networking.carrier-constrained.appcategory</key>
+	<array>
+		<string>messaging-8001</string>
+	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group</string>
