@@ -13,6 +13,13 @@ extension BackupArchive {
             self.timestamp = interaction.timestamp
         }
 
+        /// Constructs an ID for an `InteractionRecord` from which constructing
+        /// a `TSInteraction` fails.
+        public init(invalidInteractionRecord: InteractionRecord) {
+            self.value = invalidInteractionRecord.uniqueId
+            self.timestamp = invalidInteractionRecord.timestamp
+        }
+
         // MARK: BackupArchive.LoggableId
 
         public var typeLogString: String { "TSInteraction" }

@@ -68,6 +68,9 @@ extension BackupArchive {
             /// disallows it and the proto cannot represent it.
             case themedCustomChatColor
 
+            /// A `TSInteraction` database row was invalid, and we couldn't
+            /// instantiate a `TSInteraction` from it.
+            case invalidInteractionDatabaseRow(RawError)
             /// An incoming message has an invalid or missing author address information,
             /// causing the message to be skipped.
             case invalidIncomingMessageAuthor
@@ -103,7 +106,6 @@ extension BackupArchive {
             /// A reaction has an invalid or missing author address information, causing the
             /// reaction to be skipped.
             case invalidReactionAddress
-
             /// A reaction has an invalid (too large) timestamp.
             case invalidReactionTimestamp
 
@@ -291,6 +293,7 @@ extension BackupArchive {
                     .customDistributionListBlocklistViewMode,
                     .distributionListMissingDeletionTimestamp,
                     .distributionListInvalidTimestamp,
+                    .invalidInteractionDatabaseRow,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
@@ -400,6 +403,11 @@ extension BackupArchive {
                     .invalidAdHocCallTimestamp,
                     .unexpectedRevisionsOnMessage:
                 return .error
+            case .invalidInteractionDatabaseRow:
+                // We've seen real world databases with interaction rows that
+                // failed to deserialize into TSInteraciton instances. We'll
+                // drop them from the Backup.
+                return .warning
             case .contactThreadMissingAddress:
                 // We've seen real-world databases with TSContactThreads that
                 // have no contact identifiers (aci/pni/e64).

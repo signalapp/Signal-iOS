@@ -40,16 +40,6 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) throws -> [TSInteraction]
 
-    /// Enumerate all interactions.
-    ///
-    /// - Parameter block
-    /// A block executed for each enumerated interaction. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
-    func enumerateAllInteractions(
-        tx: DBReadTransaction,
-        block: (TSInteraction) throws -> Bool
-    ) throws
-
     func fetchCursor(
         minRowIdExclusive: Int64?,
         maxRowIdInclusive: Int64?,
@@ -167,20 +157,6 @@ public class InteractionStoreImpl: InteractionStore {
             timestamp: timestamp,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
-    }
-
-    public func enumerateAllInteractions(
-        tx: DBReadTransaction,
-        block: (TSInteraction) throws -> Bool
-    ) throws {
-        let cursor = TSInteraction.grdbFetchCursor(
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-
-        while
-            let interaction = try cursor.next(),
-            try block(interaction)
-        {}
     }
 
     public func fetchCursor(
@@ -378,17 +354,6 @@ open class MockInteractionStore: InteractionStore {
         tx: DBReadTransaction
     ) throws -> [TSInteraction] {
         return insertedInteractions.filter { $0.timestamp == timestamp }
-    }
-
-    open func enumerateAllInteractions(
-        tx: DBReadTransaction,
-        block: (TSInteraction) throws -> Bool
-    ) throws {
-        for interaction in insertedInteractions {
-            if !(try block(interaction)) {
-                return
-            }
-        }
     }
 
     open func fetchCursor(

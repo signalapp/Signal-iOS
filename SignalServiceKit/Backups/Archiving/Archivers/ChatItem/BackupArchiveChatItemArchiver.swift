@@ -124,11 +124,21 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         var partialFailures = [ArchiveFrameError]()
 
         func archiveInteraction(
-            _ interaction: TSInteraction,
+            _ interactionRecord: InteractionRecord,
             _ frameBencher: BackupArchive.Bencher.FrameBencher
         ) -> Bool {
-            var stop = false
-            autoreleasepool {
+            return autoreleasepool { () -> Bool in
+                let interaction: TSInteraction
+                do {
+                    interaction = try TSInteraction.fromRecord(interactionRecord)
+                } catch let error {
+                    partialFailures.append(.archiveFrameError(
+                        .invalidInteractionDatabaseRow(error),
+                        BackupArchive.InteractionUniqueId(invalidInteractionRecord: interactionRecord),
+                    ))
+                    return true
+                }
+
                 let result = self.archiveInteraction(
                     interaction,
                     stream: stream,
@@ -137,26 +147,32 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                 )
                 switch result {
                 case .success:
-                    break
+                    return true
                 case .partialSuccess(let errors):
                     partialFailures.append(contentsOf: errors)
+                    return true
                 case .completeFailure(let error):
                     completeFailureError = error
-                    stop = true
-                    return
+                    return false
                 }
             }
-
-            return !stop
         }
 
         do {
             try context.bencher.wrapEnumeration(
-                interactionStore.enumerateAllInteractions(tx:block:),
+                { tx, block in
+                    let cursor = try InteractionRecord
+                        .fetchCursor(tx.database)
+
+                    while
+                        let interactionRecord = try cursor.next(),
+                        try block(interactionRecord)
+                    {}
+                },
                 tx: context.tx
-            ) { interaction, frameBencher in
+            ) { interactionRecord, frameBencher in
                 try Task.checkCancellation()
-                return archiveInteraction(interaction, frameBencher)
+                return archiveInteraction(interactionRecord, frameBencher)
             }
         } catch let error as CancellationError {
             throw error

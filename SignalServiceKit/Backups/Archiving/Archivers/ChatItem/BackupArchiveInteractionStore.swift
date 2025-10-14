@@ -14,25 +14,6 @@ public final class BackupArchiveInteractionStore {
         self.interactionStore = interactionStore
     }
 
-    /// Enumerate all interactions.
-    ///
-    /// - Parameter block
-    /// A block executed for each enumerated interaction. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
-    func enumerateAllInteractions(
-        tx: DBReadTransaction,
-        block: (TSInteraction) throws -> Bool
-    ) throws {
-        let cursor = try InteractionRecord
-            .fetchCursor(tx.database)
-            .map { try TSInteraction.fromRecord($0) }
-
-        while
-            let interaction = try cursor.next(),
-            try block(interaction)
-        {}
-    }
-
     // MARK: Per type inserts
 
     func insert(
