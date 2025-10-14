@@ -1,7 +1,26 @@
 {
   "images" : [
     {
-      "filename" : "backups-subscribed.pdf",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
+      "filename" : "signal-backups-subscribed-light.pdf",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "signal-backups-subscribed-dark.pdf",
       "idiom" : "universal"
     }
   ],

@@ -2651,6 +2651,7 @@
 		D95D9D302E56866200855DE4 /* BackupKeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D95E149D2E3D22FD00B5B70B /* ObjectRetainerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */; };
+		D96149C72E947CF400EF2147 /* BackupSubscriptionIssueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */; };
 		D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
@@ -6619,6 +6620,7 @@
 		D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyService.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectRetainerTest.swift; sourceTree = "<group>"; };
+		D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionIssueStore.swift; sourceTree = "<group>"; };
 		D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursor.swift; sourceTree = "<group>"; };
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D96269D82C58407400152314 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -12706,6 +12708,7 @@
 			children = (
 				D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */,
 				D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */,
+				D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */,
 				D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */,
 				D9EE79102CF5259D007F581B /* BackupSubscriptionRedeemer.swift */,
 				D9EE790E2CF5229C007F581B /* BackupSubscriptionRedemptionContext.swift */,
@@ -17740,6 +17743,7 @@
 				C17310A72BD9D45400B7A151 /* BackupServiceAuth.swift in Sources */,
 				D9388C912DA475230048D4F9 /* BackupSettingsStore.swift in Sources */,
 				C113994B2CA1B32C00D4D90C /* BackupStickerPackDownloadStore.swift in Sources */,
+				D96149C72E947CF400EF2147 /* BackupSubscriptionIssueStore.swift in Sources */,
 				D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */,
 				D9EE79112CF525A4007F581B /* BackupSubscriptionRedeemer.swift in Sources */,
 				D9EE790F2CF5232C007F581B /* BackupSubscriptionRedemptionContext.swift in Sources */,

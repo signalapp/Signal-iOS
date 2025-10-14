@@ -10,7 +10,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "signal-backups-light.pdf",
+      "filename" : "signal-backups-error-light.pdf",
       "idiom" : "universal"
     },
     {
@@ -20,7 +20,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "signal-backups-dark.pdf",
+      "filename" : "signal-backups-error-dark.pdf",
       "idiom" : "universal"
     }
   ],

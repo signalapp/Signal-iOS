@@ -151,6 +151,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupPlanManager: BackupPlanManager
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let backupSubscriptionRedeemer: BackupSubscriptionRedeemer
     private let dateProvider: DateProvider
     private let db: any DB
@@ -163,6 +164,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupPlanManager: BackupPlanManager,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         backupSubscriptionRedeemer: BackupSubscriptionRedeemer,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -173,6 +175,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.backupSubscriptionRedeemer = backupSubscriptionRedeemer
         self.dateProvider = dateProvider
         self.db = db
@@ -390,6 +393,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             if let downgradedBackupPlan {
                 do {
                     try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
+                    backupSubscriptionIssueStore.setShouldWarnSubscriptionExpired(true, tx: tx)
                 } catch {
                     owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
                     throw error

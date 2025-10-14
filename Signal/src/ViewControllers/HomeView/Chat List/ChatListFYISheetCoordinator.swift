@@ -29,14 +29,18 @@ class ChatListFYISheetCoordinator {
 
         struct BackupFailed {}
 
+        struct BackupSubscriptionExpired {}
+
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
         case backupFailed(BackupFailed)
+        case backupSubscriptionExpired(BackupSubscriptionExpired)
     }
 
     private let backupExportJobRunner: BackupExportJobRunner
     private let backupFailureStateManager: BackupFailureStateManager
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let donationSubscriptionManager: DonationSubscriptionManager.Type
     private let db: DB
@@ -46,6 +50,7 @@ class ChatListFYISheetCoordinator {
     init(
         backupExportJobRunner: BackupExportJobRunner,
         backupFailureStateManager: BackupFailureStateManager,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         donationSubscriptionManager: DonationSubscriptionManager.Type,
         db: DB,
@@ -54,6 +59,7 @@ class ChatListFYISheetCoordinator {
     ) {
         self.backupExportJobRunner = backupExportJobRunner
         self.backupFailureStateManager = backupFailureStateManager
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.donationSubscriptionManager = donationSubscriptionManager
         self.db = db
@@ -99,6 +105,8 @@ class ChatListFYISheetCoordinator {
             ))
         } else if backupFailureStateManager.shouldShowBackupFailurePrompt(tx: tx) {
             return .backupFailed(FYISheet.BackupFailed())
+        } else if backupSubscriptionIssueStore.shouldWarnSubscriptionExpired(tx: tx) {
+            return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired())
         } else {
             return nil
         }
@@ -211,6 +219,8 @@ class ChatListFYISheetCoordinator {
             await _present(badgeExpiration: badgeExpiration, from: chatListViewController)
         case .backupFailed(let backupFailed):
             await _present(backupFailed: backupFailed, from: chatListViewController)
+        case .backupSubscriptionExpired(let backupSubscriptionExpired):
+            await _present(backupSubscriptionExpired: backupSubscriptionExpired, from: chatListViewController)
         }
     }
 
@@ -397,6 +407,29 @@ class ChatListFYISheetCoordinator {
         )
         chatListViewController.present(sheet, animated: true)
     }
+
+    private func _present(
+        backupSubscriptionExpired: FYISheet.BackupSubscriptionExpired,
+        from chatListViewController: ChatListViewController
+    ) async {
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        logger.info("Showing BackupSubscriptionExpired FYI sheet.")
+
+        let sheet = BackupSubscriptionExpiredHeroSheet(
+            onManageBackups: {
+                SignalApp.shared.showAppSettings(mode: .backups)
+            },
+        )
+        chatListViewController.present(sheet, animated: true) { [self] in
+            db.write { tx in
+                // We showed the sheet, no need to show it again.
+                backupSubscriptionIssueStore.setShouldWarnSubscriptionExpired(
+                    false,
+                    tx: tx
+                )
+            }
+        }
+    }
 }
 
 // MARK: - ChatListViewController: BadgeIssueSheetDelegate
@@ -421,7 +454,7 @@ private class BackupFailedHeroSheet: HeroSheetViewController {
     ) {
         super.init(
             hero: .circleIcon(
-                icon: UIImage(named: "backup-error-display-bold")!.withRenderingMode(.alwaysTemplate),
+                icon: .backupErrorDisplayBold.withRenderingMode(.alwaysTemplate),
                 iconSize: 40,
                 tintColor: UIColor.Signal.orange,
                 backgroundColor: UIColor.color(rgbHex: 0xF9E4B6)
@@ -457,6 +490,41 @@ private class BackupFailedHeroSheet: HeroSheetViewController {
                     }
                 }
             )
+        )
+    }
+}
+
+// MARK: -
+
+private class BackupSubscriptionExpiredHeroSheet: HeroSheetViewController {
+    init(
+        onManageBackups: @escaping () -> Void,
+    ) {
+        super.init(
+            hero: .image(.backupsError),
+            title: OWSLocalizedString(
+                "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE",
+                comment: "Title for a sheet shown when your Backup plan is downgraded.",
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_PLAN_DOWNGRADED_SHEET_BODY",
+                comment: "Body for a sheet shown when your Backup plan is downgraded.",
+            ),
+            primaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON",
+                    comment: "Primary button for a sheet shown when your Backup plan is downgraded.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        onManageBackups()
+                    }
+                },
+            ),
+            secondaryButton: .dismissing(
+                title: CommonStrings.notNowButton,
+                style: .secondary,
+            ),
         )
     }
 }

@@ -456,9 +456,11 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager
         )
 
+        let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupPlanManager: backupPlanManager,
+            backupSubscriptionIssueStore: backupSubscriptionIssueStore,
             backupSubscriptionRedeemer: BackupSubscriptionRedeemer(
                 authCredentialStore: authCredentialStore,
                 backupPlanManager: backupPlanManager,
