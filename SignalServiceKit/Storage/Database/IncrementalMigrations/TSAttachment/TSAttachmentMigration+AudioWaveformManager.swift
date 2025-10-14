@@ -32,7 +32,7 @@ extension TSAttachmentMigration {
                 throw OWSAssertionError("Audio too long")
             }
 
-            return try sampleWaveform(asset: asset)
+            return try sampleWaveform(asset: asset, filePath: unencryptedFilePath)
         }
 
         private static func assetFromUnencryptedAudioFile(
@@ -91,13 +91,22 @@ extension TSAttachmentMigration {
         private static let maximumDuration: TimeInterval = 15 * .minute
         private static let sampleCount = 100
 
-        private static func sampleWaveform(asset: AVAsset) throws -> TSAttachmentMigration.AudioWaveform {
+        private static func sampleWaveform(asset: AVAsset, filePath: String) throws -> TSAttachmentMigration.AudioWaveform {
             let assetReader = try AVAssetReader(asset: asset)
 
             // We just draw the waveform based on the first track.
             guard let audioTrack = assetReader.asset.tracks.first else {
                 throw OWSAssertionError("audio file has no tracks")
             }
+
+            let lastAttemptedFilePathKey = "TSAttachmentMigrationLastAudioWaveformAttempt"
+            let lastAttemptedFilePath = UserDefaults.standard.string(forKey: lastAttemptedFilePathKey)
+            if lastAttemptedFilePath == filePath {
+                // Previously tried to open an AVAssetReaderTrackOutput but crashed.
+                // Throw an error so we skip this audio file; treat it as corrupted.
+                throw OWSAssertionError("Unable to generate AVAssetReaderTrackOutput on previous run")
+            }
+            UserDefaults.standard.setValue(filePath, forKey: lastAttemptedFilePathKey)
 
             let trackOutput = AVAssetReaderTrackOutputWrapper.safeAssetReaderTrackOutput(
                 with: audioTrack,
@@ -109,6 +118,8 @@ extension TSAttachmentMigration {
                     AVLinearPCMIsNonInterleaved: false
                 ]
             )
+            UserDefaults.standard.removeObject(forKey: lastAttemptedFilePathKey)
+
             guard let trackOutput else {
                 throw OWSAssertionError("unable to generate audio track")
             }
