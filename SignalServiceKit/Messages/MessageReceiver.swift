@@ -512,7 +512,25 @@ public final class MessageReceiver {
                         Logger.error("Failed to terminate poll \(error)")
                         return
                     }
-                    // TODO (KC): Handle syncing poll votes once poll send is implemented
+                } else if let pollVote = dataMessage.pollVote {
+                       guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+                           owsFailDebug("Missing local identifiers!")
+                           return
+                       }
+                       do {
+                           let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                                voteAuthor: localIdentifiers.aci,
+                                pollVoteProto: pollVote,
+                                transaction: tx
+                           )
+
+                           if let targetMessage {
+                               SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                           }
+                       } catch {
+                           Logger.error("Failed to vote in poll \(error)")
+                           return
+                       }
                 } else {
                     guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                         owsFailDebug("Missing local identifiers!")
