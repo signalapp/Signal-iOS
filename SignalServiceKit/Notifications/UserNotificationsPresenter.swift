@@ -227,7 +227,7 @@ public class UserNotificationPresenter {
             // Always show these notifications
             return true
 
-        case .internalError:
+        case .internalError, .listMediaIntegrityCheckFailure:
             // Only show errors alerts on builds run by a test population (beta, internal, etc.)
             return DebugFlags.testPopulationErrorAlerts
 

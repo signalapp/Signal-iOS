@@ -597,6 +597,7 @@ extension AppSetup.GlobalsContinuation {
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
+            notificationPresenter: notificationPresenter,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             remoteConfigManager: remoteConfigManager,
             tsAccountManager: tsAccountManager

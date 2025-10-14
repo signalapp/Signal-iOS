@@ -35,7 +35,7 @@ public class NotificationActionHandler {
             case .showCallLobby:
                 showCallLobby(userInfo: userInfo)
             case .submitDebugLogs:
-                await submitDebugLogs()
+                await submitDebugLogs(supportTag: nil)
             case .reregister:
                 await reregister(appReadiness: appReadiness)
             case .showChatList:
@@ -45,6 +45,8 @@ public class NotificationActionHandler {
                 showLinkedDevices()
             case .showBackupsEnabled:
                 showBackupsEnabled()
+            case .listMediaIntegrityCheck:
+                await submitDebugLogs(supportTag: "BackupsMedia")
             }
         case UNNotificationDismissActionIdentifier:
             // TODO - mark as read?
@@ -343,9 +345,9 @@ public class NotificationActionHandler {
     }
 
     @MainActor
-    private class func submitDebugLogs() async {
+    private class func submitDebugLogs(supportTag: String?) async {
         await withCheckedContinuation { continuation in
-            DebugLogs.submitLogs(dumper: .fromGlobals()) {
+            DebugLogs.submitLogs(supportTag: supportTag, dumper: .fromGlobals()) {
                 continuation.resume()
             }
         }

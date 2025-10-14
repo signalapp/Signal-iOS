@@ -549,6 +549,7 @@ private enum CrashyMocks {
         func notifyUserOfPollEnd(forMessage message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) { failTest(Self.self) }
         func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) { failTest(Self.self) }
+        func notifyUserOfListMediaIntegrityCheckFailure() { failTest(Self.self) }
         func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
         func notifyUserOfDeregistration(tx: DBWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }

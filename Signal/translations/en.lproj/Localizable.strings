@@ -919,6 +919,12 @@
 /* Title for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
 
+/* Body for system notification when we detect paid backup media uploads have encountered a problem */
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+
+/* Title for system notification when we detect paid backup media uploads have encountered a problem */
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Secure Backups";
 

@@ -20,22 +20,35 @@ public struct ListMediaIntegrityCheckResult: Codable {
         /// Count of attachments we expected to see on CDN but did not.
         /// This count is "bad".
         public fileprivate(set) var missingFromCdnCount: Int
+        public fileprivate(set) var missingFromCdnSampleAttachmentIds = Set<Attachment.IDType>()
         /// Count of attachments that exist locally, are eligible for upload, are not marked
         /// uploaded, are not on the CDN, and therefore _should_ be in the upload
         /// queue but are not in the upload queue.
         /// This count is "bad".
         public fileprivate(set) var notScheduledForUploadCount: Int = 0
+        public fileprivate(set) var notScheduledForUploadSampleAttachmentIds = Set<Attachment.IDType>()
         /// Count of attachments we did not expect to see on CDN but did see.
         /// This count can be "bad" because it could indicate a bug with local state management,
         /// but it could happen in normal edge cases if we just didn't know about a completed upload.
         public fileprivate(set) var discoveredOnCdnCount: Int
+        public fileprivate(set) var discoveredOnCdnSampleAttachmentIds = Set<Attachment.IDType>()
 
         static var empty: Result {
             return Result(uploadedCount: 0, ineligibleCount: 0, missingFromCdnCount: 0, discoveredOnCdnCount: 0)
         }
 
         var hasFailures: Bool {
-            return missingFromCdnCount > 0 || discoveredOnCdnCount > 0
+            return missingFromCdnCount > 0 || notScheduledForUploadCount > 0 || discoveredOnCdnCount > 0
+        }
+
+        mutating func addSampleId(_ id: Attachment.IDType, _ keyPath: WritableKeyPath<Result, Set<Attachment.IDType>>) {
+            var sampleIds = self[keyPath: keyPath]
+            if sampleIds.count >= 10 {
+                // Only keep 10 ids
+                return
+            }
+            sampleIds.insert(id)
+            self[keyPath: keyPath] = sampleIds
         }
     }
 
@@ -84,6 +97,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
+    private let notificationPresenter: NotificationPresenter
     private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let remoteConfigManager: RemoteConfigManager
     private let tsAccountManager: TSAccountManager
@@ -105,6 +119,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        notificationPresenter: NotificationPresenter,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager
@@ -124,6 +139,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
+        self.notificationPresenter = notificationPresenter
         self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.remoteConfigManager = remoteConfigManager
         self.tsAccountManager = tsAccountManager
@@ -296,6 +312,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 attachmentStore: attachmentStore,
                 backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                 backupAttachmentUploadStore: backupAttachmentUploadStore,
+                notificationPresenter: notificationPresenter,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             )
         } else {
@@ -421,6 +438,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                 tx: tx
             )
         }
+
+        integrityChecker.logAndNotifyIfNeeded()
+
         if needsToRunAgain {
             // Return the first integrity check result, not the second, because
             // usually earlier results are more interesting. Once we run list
@@ -1309,6 +1329,8 @@ private protocol ListMediaIntegrityChecker {
     )
 
     var result: ListMediaIntegrityCheckResult? { get }
+
+    func logAndNotifyIfNeeded()
 }
 
 private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
@@ -1318,10 +1340,11 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
     private let uploadEraAtStartOfListMedia: String
     private let uploadEraOfLastListMedia: String?
 
-    private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let attachmentStore: AttachmentStore
     private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
     private let backupAttachmentUploadStore: BackupAttachmentUploadStore
+    private let notificationPresenter: NotificationPresenter
+    private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
 
     init(
         inProgressResult: ListMediaIntegrityCheckResult?,
@@ -1331,6 +1354,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         attachmentStore: AttachmentStore,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        notificationPresenter: NotificationPresenter,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
     ) {
         self.uploadEraAtStartOfListMedia = uploadEraAtStartOfListMedia
@@ -1344,6 +1368,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         self.attachmentStore = attachmentStore
         self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
+        self.notificationPresenter = notificationPresenter
         self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
     }
 
@@ -1378,6 +1403,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
             } else {
                 // We've discovered this upload on the media tier.
                 _result[keyPath: resultKeyPath(isFullsize: isFullsize)].discoveredOnCdnCount += 1
+                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.discoveredOnCdnSampleAttachmentIds)
             }
         case remoteCdnNumber:
             // Local and remote state match
@@ -1398,11 +1424,15 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         // If local state says its uploaded, and its not, that's a problem.
         if isFullsize {
             if attachment.mediaTierInfo?.isUploaded(currentUploadEra: uploadEraAtStartOfListMedia) == true {
-                return _result[keyPath: resultKeyPath(isFullsize: isFullsize)].missingFromCdnCount += 1
+                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].missingFromCdnCount += 1
+                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.missingFromCdnSampleAttachmentIds)
+                return
             }
         } else {
             if attachment.thumbnailMediaTierInfo?.isUploaded(currentUploadEra: uploadEraAtStartOfListMedia) == true {
-                return _result[keyPath: resultKeyPath(isFullsize: isFullsize)].missingFromCdnCount += 1
+                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].missingFromCdnCount += 1
+                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.missingFromCdnSampleAttachmentIds)
+                return
             }
         }
 
@@ -1431,6 +1461,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         case .done, nil:
             // Not uploaded, eligible, not scheduled. Uh-oh.
             _result[keyPath: resultKeyPath(isFullsize: isFullsize)].notScheduledForUploadCount += 1
+            _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.notScheduledForUploadSampleAttachmentIds)
             return
         }
 
@@ -1470,6 +1501,47 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         _result.orphanedObjectCount += 1
     }
 
+    func logAndNotifyIfNeeded() {
+        var shouldNotify = false
+
+        Logger.info("\(_result.fullsize.uploadedCount) fullsize uploads")
+        Logger.info("\(_result.fullsize.ineligibleCount) ineligible attachments")
+        Logger.info("\(_result.thumbnail.uploadedCount) thumbnail uploads")
+        Logger.info("\(_result.thumbnail.ineligibleCount) ineligible attachments")
+        if _result.fullsize.missingFromCdnCount > 0 {
+            shouldNotify = true
+            Logger.error("Missing fullsize uploads from CDN, samples: \(_result.fullsize.missingFromCdnSampleAttachmentIds)")
+        }
+        if _result.fullsize.notScheduledForUploadCount > 0 {
+            shouldNotify = true
+            Logger.error("Unscheduled fullsize uploads, samples: \(_result.fullsize.notScheduledForUploadSampleAttachmentIds)")
+        }
+        if _result.fullsize.discoveredOnCdnCount > 0 {
+            shouldNotify = true
+            Logger.error("Discovered fullsize upload on CDN, samples: \(_result.fullsize.discoveredOnCdnSampleAttachmentIds)")
+        }
+
+        // Don't notify for thumbnail issues.
+        if _result.thumbnail.missingFromCdnCount > 0 {
+            Logger.warn("Missing thumbnail uploads from CDN, samples: \(_result.thumbnail.missingFromCdnSampleAttachmentIds)")
+        }
+        if _result.thumbnail.notScheduledForUploadCount > 0 {
+            Logger.warn("Unscheduled thumbnail uploads, samples: \(_result.thumbnail.notScheduledForUploadSampleAttachmentIds)")
+        }
+        if _result.thumbnail.discoveredOnCdnCount > 0 {
+            Logger.warn("Discovered thumbnail upload on CDN, samples: \(_result.thumbnail.discoveredOnCdnSampleAttachmentIds)")
+        }
+
+        if _result.orphanedObjectCount > 0 {
+            shouldNotify = true
+            Logger.error("Discovered \(_result.orphanedObjectCount) orphans on media tier")
+        }
+
+        if shouldNotify {
+            notificationPresenter.notifyUserOfListMediaIntegrityCheckFailure()
+        }
+    }
+
     private func resultKeyPath(isFullsize: Bool) -> WritableKeyPath<ListMediaIntegrityCheckResult, ListMediaIntegrityCheckResult.Result> {
         return isFullsize ? \.fullsize : \.thumbnail
     }
@@ -1501,6 +1573,8 @@ private class ListMediaIntegrityCheckerStub: ListMediaIntegrityChecker {
         backupKey: MediaRootBackupKey,
         tx: DBReadTransaction
     ) {}
+
+    func logAndNotifyIfNeeded() {}
 
     var result: ListMediaIntegrityCheckResult? {
         return nil

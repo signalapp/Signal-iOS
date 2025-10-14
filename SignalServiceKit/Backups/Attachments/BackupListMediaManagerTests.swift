@@ -49,6 +49,7 @@ public class BackupListMediaManagerTests {
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             db: db,
+            notificationPresenter: NoopNotificationPresenterImpl(),
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             remoteConfigManager: remoteConfigManager,
             tsAccountManager: tsAccountManager

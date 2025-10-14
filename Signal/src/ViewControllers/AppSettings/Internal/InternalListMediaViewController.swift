@@ -74,18 +74,19 @@ class InternalListMediaViewController: OWSTableViewController2 {
         }
         lastResultSection.add(.actionItem(withText: "Perform remote integrity check", actionBlock: { [weak self] in
             guard let self else { return }
-            let vc = ActionSheetController(
-                title: "This will schedule the integrity check to run on next app launch, then exit the app. "
-                    + "After tapping \"Okay\", please relaunch the app and return to this screen to check the results."
-            )
-            vc.addAction(.init(title: "Okay", handler: { _ in
-                DependenciesBridge.shared.db.write { tx in
-                    DependenciesBridge.shared.backupListMediaStore.setManualNeedsListMedia(true, tx: tx)
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self,
+                asyncBlock: { [weak self] _ in
+                    await DependenciesBridge.shared.db.awaitableWrite { tx in
+                        DependenciesBridge.shared.backupListMediaStore.setManualNeedsListMedia(true, tx: tx)
+                    }
+                    try? await DependenciesBridge.shared.backupAttachmentCoordinator.queryListMediaIfNeeded()
+                    await MainActor.run {
+                        self?.updateTableContents()
+                        self?.dismiss(animated: false)
+                    }
                 }
-                exit(0)
-            }))
-            vc.addAction(.cancel)
-            present(vc, animated: true)
+            )
         }))
         contents.add(lastResultSection)
 
@@ -105,6 +106,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             subtitle: "Bad if > 0",
             value: "\(listMediaResult.fullsize.missingFromCdnCount)"
         ))
+        section.add(.copyableItem(label: "Unscheduled count: Fullsize", value: "\(listMediaResult.fullsize.notScheduledForUploadCount)"))
         section.add(.copyableItem(label: "Discovered count: Fullsize", value: "\(listMediaResult.fullsize.discoveredOnCdnCount)"))
         section.add(.copyableItem(label: "Uploaded count: Thumbnail", value: "\(listMediaResult.thumbnail.uploadedCount)"))
         section.add(.copyableItem(
@@ -117,6 +119,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             subtitle: "Not good if > 0, but nbd",
             value: "\(listMediaResult.thumbnail.missingFromCdnCount)"
         ))
+        section.add(.copyableItem(label: "Unscheduled count: Thumbnail", value: "\(listMediaResult.thumbnail.notScheduledForUploadCount)"))
         section.add(.copyableItem(label: "Discovered count: Thumbnail", value: "\(listMediaResult.thumbnail.discoveredOnCdnCount)"))
         section.add(.copyableItem(
             label: "Orphan count",

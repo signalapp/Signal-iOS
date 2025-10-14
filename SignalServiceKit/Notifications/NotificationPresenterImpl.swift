@@ -36,6 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case deregistration
     case newDeviceLinked
     case backupsEnabled
+    case listMediaIntegrityCheckFailure
     case pollEndNotification
 }
 
@@ -66,6 +67,7 @@ public enum AppNotificationDefaultAction: String {
     case showChatList
     case showLinkedDevices
     case showBackupsEnabled
+    case listMediaIntegrityCheck
 }
 
 public struct AppNotificationUserInfo {
@@ -194,6 +196,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.newDeviceLinked"
         case .backupsEnabled:
             return "Signal.AppNotificationCategory.backupsEnabled"
+        case .listMediaIntegrityCheckFailure:
+            return "Signal.AppNotificationCategory.listMediaIntegrityCheckFailure"
         case .pollEndNotification:
             return "Signal.AppNotificationCategory.pollEndNotification"
         }
@@ -233,6 +237,8 @@ extension AppNotificationCategory {
         case .newDeviceLinked:
             return []
         case .backupsEnabled:
+            return []
+        case .listMediaIntegrityCheckFailure:
             return []
         case .pollEndNotification:
             return []
@@ -1113,6 +1119,27 @@ public class NotificationPresenterImpl: NotificationPresenter {
                         comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}"
                     ),
                     backupsTimestamp.formatted(date: .omitted, time: .shortened)
+                ),
+                threadIdentifier: nil,
+                userInfo: userInfo,
+                soundQuery: .global
+            )
+        }
+    }
+
+    public func notifyUserOfListMediaIntegrityCheckFailure() {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .listMediaIntegrityCheck
+        enqueueNotificationAction {
+            await self.notifyViaPresenter(
+                category: .listMediaIntegrityCheckFailure,
+                title: ResolvableValue(resolvedValue: OWSLocalizedString(
+                    "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE",
+                    comment: "Title for system notification when we detect paid backup media uploads have encountered a problem"
+                )),
+                body: OWSLocalizedString(
+                    "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY",
+                    comment: "Body for system notification when we detect paid backup media uploads have encountered a problem"
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,

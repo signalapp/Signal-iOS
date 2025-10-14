@@ -56,6 +56,8 @@ public protocol NotificationPresenter {
 
     func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date)
 
+    func notifyUserOfListMediaIntegrityCheckFailure()
+
     /// Notify user to relaunch the app after we deliberately terminate when an incoming device transfer completes.
     func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void)
 

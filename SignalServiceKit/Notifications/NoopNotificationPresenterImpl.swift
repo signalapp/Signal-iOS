@@ -109,6 +109,10 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func notifyUserOfListMediaIntegrityCheckFailure() {
+        Logger.warn("")
+    }
+
     public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
         Logger.warn("")
     }
