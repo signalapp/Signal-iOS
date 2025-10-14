@@ -57,6 +57,13 @@ struct PollDetailsView: View {
     fileprivate let viewModel: PollDetailsViewModel
     private var poll: OWSPoll
 
+    var titleString: String {
+        if poll.isEnded {
+            return OWSLocalizedString("POLL_RESULTS_TITLE", comment: "Title of poll details pane when poll is ended")
+        }
+        return OWSLocalizedString("POLL_DETAILS_TITLE", comment: "Title of poll details pane")
+    }
+
     fileprivate init(poll: OWSPoll, viewModel: PollDetailsViewModel) {
         self.poll = poll
         self.viewModel = viewModel
@@ -65,7 +72,7 @@ struct PollDetailsView: View {
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                Text(OWSLocalizedString("POLL_DETAILS_TITLE", comment: "Title of poll details pane"))
+                Text(titleString)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -147,7 +154,7 @@ struct PollDetailsView: View {
 
         private func addressCell(address: SignalServiceAddress) -> ManualStackView? {
             let cell = ContactCellView()
-            let config = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
+            let config = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
             config.avatarSizeClass = .twentyEight
 
             SSKEnvironment.shared.databaseStorageRef.read { transaction in

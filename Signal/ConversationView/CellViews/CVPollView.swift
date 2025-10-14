@@ -143,11 +143,11 @@ public class CVPollView: ManualStackView {
 
         let circleSize = CGSize(square: 2)
 
-        var optionRowInnerStackConfig: CVStackViewConfig {
+        func buildOptionRowInnerStackConfig(voteLabelWidth: Double) -> CVStackViewConfig {
             CVStackViewConfig(axis: .horizontal,
                               alignment: .leading,
                               spacing: 8,
-                              layoutMargins: UIEdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 30))
+                              layoutMargins: UIEdgeInsets(top: 2, leading: 0, bottom: 2, trailing: voteLabelWidth))
         }
     }
 
@@ -162,6 +162,22 @@ public class CVPollView: ManualStackView {
                      conversationStyle: conversationStyle,
                      localAci: localAci
         )
+    }
+
+    private static func localizedNumber(from votes: Int) -> String {
+        let formatter: NumberFormatter = {
+            let f = NumberFormatter()
+            f.numberStyle = .decimal
+            return f
+        }()
+
+        return formatter.string(from: NSNumber(value: votes))!
+    }
+
+    private static func voteLabelWidthWithPadding(localizedVotes: String) -> Double {
+        let attributes = [NSAttributedString.Key.font: UIFont.dynamicTypeBody]
+        let textSize = localizedVotes.size(withAttributes: attributes)
+        return textSize.width + 4
     }
 
     static func measure(
@@ -226,9 +242,22 @@ public class CVPollView: ManualStackView {
                 lineBreakMode: .byWordWrapping
             )
 
-            let maxOptionLabelWidth = (maxLabelWidth - (configurator.optionRowInnerStackConfig.layoutMargins.right +
-                                                        configurator.checkBoxSize.width +
-                                                        configurator.optionRowInnerStackConfig.spacing))
+            let hasLocalUserVoted = option.localUserHasVoted(localAci: state.localAci)
+
+            // When the poll is ended, the checkbox should be removed except for options
+            // the local user voted for. Those checkboxes should be shifted right.
+            // In order to make sure they don't overlap with vote count, we need to measure
+            // the vote count width and update the option row stack config trailing
+            // spacing accordingly.
+            let checkboxSize = poll.isEnded && !hasLocalUserVoted ? 0 : configurator.checkBoxSize.width
+
+            let localizedVotesString = localizedNumber(from: option.acis.count)
+            let voteLabelWidth = voteLabelWidthWithPadding(localizedVotes: localizedVotesString)
+            let innerStackConfig = configurator.buildOptionRowInnerStackConfig(voteLabelWidth: voteLabelWidth)
+
+            let maxOptionLabelWidth = (maxLabelWidth - (innerStackConfig.layoutMargins.right +
+                                                        checkboxSize +
+                                                        innerStackConfig.spacing))
 
             let optionLabelTextSize = CVText.measureLabel(
                 config: optionTextConfig,
@@ -241,11 +270,22 @@ public class CVPollView: ManualStackView {
                 width: maxOptionLabelWidth,
                 height: optionLabelTextSize.height
             )
+
+            var subViewInfos: [ManualStackSubviewInfo] = []
+            if poll.isEnded {
+                subViewInfos = [optionRowSize.asManualSubviewInfo]
+                if hasLocalUserVoted {
+                    subViewInfos.append(configurator.checkBoxSize.asManualSubviewInfo(hasFixedSize: true))
+                }
+            } else {
+                subViewInfos = [configurator.checkBoxSize.asManualSubviewInfo(hasFixedSize: true), optionRowSize.asManualSubviewInfo]
+            }
+
             let optionRowInnerMeasurement = ManualStackView.measure(
-                config: configurator.optionRowInnerStackConfig,
+                config: innerStackConfig,
                 measurementBuilder: measurementBuilder,
                 measurementKey: measurementKey_optionRowInnerStack + String(option.optionIndex),
-                subviewInfos: [configurator.checkBoxSize.asManualSubviewInfo(hasFixedSize: true), optionRowSize.asManualSubviewInfo]
+                subviewInfos: subViewInfos
             )
 
             let progressBarSize = CGSize(width: maxLabelWidth, height: 8)
@@ -343,7 +383,8 @@ public class CVPollView: ManualStackView {
                         voteType: voteType,
                         delegate: componentDelegate
                     )
-                }
+                },
+                pollIsEnded: poll.isEnded
             )
             optionSubviews.append(row)
         }
@@ -417,6 +458,7 @@ public class CVPollView: ManualStackView {
             totalVotes: Int,
             hasLocalUserAlreadyVoted: Bool,
             pollVoteHandler: @escaping (VoteType) -> Void,
+            pollIsEnded: Bool
         ) {
             self.pollVoteHandler = pollVoteHandler
 
@@ -429,7 +471,8 @@ public class CVPollView: ManualStackView {
                 votes: pollOption.acis.count,
                 totalVotes: totalVotes,
                 hasLocalUserAlreadyVoted: hasLocalUserAlreadyVoted,
-                isPending: pollOption.isPending
+                isPending: pollOption.isPending,
+                pollIsEnded: pollIsEnded
             )
         }
 
@@ -497,7 +540,8 @@ public class CVPollView: ManualStackView {
             votes: Int,
             totalVotes: Int,
             hasLocalUserAlreadyVoted: Bool,
-            isPending: Bool
+            isPending: Bool,
+            pollIsEnded: Bool
         ) {
             checkbox.setImage(UIImage(named: Theme.iconName(.checkCircleFill)), for: .selected)
             checkbox.setImage(UIImage(named: Theme.iconName(.circle)), for: .normal)
@@ -517,17 +561,32 @@ public class CVPollView: ManualStackView {
             )
             optionTextConfig.applyForRendering(label: optionText)
 
+            var subviews: [UIView] = []
+            if pollIsEnded {
+                checkbox.isUserInteractionEnabled = false
+                subviews = [optionText]
+                if hasLocalUserAlreadyVoted {
+                    subviews.append(checkbox)
+                }
+            } else {
+                subviews = [checkbox, optionText]
+            }
+
+            let localizedVotesString = localizedNumber(from: votes)
+            let voteLabelWidth = voteLabelWidthWithPadding(localizedVotes: localizedVotesString)
+            let innerStackConfig = configurator.buildOptionRowInnerStackConfig(voteLabelWidth: voteLabelWidth)
+
             innerStack.configure(
-                config: configurator.optionRowInnerStackConfig,
+                config: innerStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: measurementKey_optionRowInnerStack + String(index),
-                subviews: [checkbox, optionText]
+                subviews: subviews
             )
 
             innerStackContainer.addSubviewToFillSuperviewEdges(innerStack)
 
             let numVotesConfig = CVLabelConfig.unstyledText(
-                String(votes), // TODO: Localize number
+                localizedVotesString,
                 font: UIFont.dynamicTypeBody,
                 textColor: configurator.textColor,
                 numberOfLines: 0,

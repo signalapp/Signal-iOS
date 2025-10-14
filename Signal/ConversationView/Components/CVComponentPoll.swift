@@ -40,7 +40,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: SignalUI.CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let maxWidth = min(maxWidth, conversationStyle.maxMediaMessageWidth)
+        let maxWidth = min(maxWidth, conversationStyle.maxMessageWidth)
         return CVPollView.measure(maxWidth: maxWidth, measurementBuilder: measurementBuilder, state: poll.state)
     }
 
