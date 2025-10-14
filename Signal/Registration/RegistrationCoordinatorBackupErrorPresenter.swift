@@ -57,6 +57,11 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
         case _ where error is SignalError:
             // LibSignalError (e.g. - creating credentials)
             return .incorrectRecoveryKey
+        case let httpError as OWSHTTPError where httpError.responseStatusCode == 401:
+            // Incorrect AEP
+            // -- and/or --
+            // No public key registered for this backupID (AEP+ACI)
+            return .incorrectRecoveryKey
         case let httpError as OWSHTTPError where httpError.responseStatusCode == 404:
             // No backup found in the CDN
             return .backupNotFound
@@ -171,7 +176,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                 continuation.resume(returning: .skipRestore)
             })
             actions.append(ActionSheetAction(title: tryAgainString) { _ in
-                continuation.resume(returning: .tryAgain)
+                continuation.resume(returning: .incorrectRecoveryKey)
             })
         case .incorrectRecoveryKey:
             title = OWSLocalizedString(

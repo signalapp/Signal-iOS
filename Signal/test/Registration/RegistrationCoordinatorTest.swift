@@ -108,6 +108,7 @@ public class RegistrationCoordinatorTest {
             accountEntropyPoolGenerator: { Stubs.accountEntropyPoolToGenerate },
             accountKeyStore: accountKeyStore,
             backupArchiveManager: BackupArchiveManagerMock(),
+            backupIdService: MockBackupIdService(),
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: BackupRequestManagerMock(),
             changeNumberPniManager: changeNumberPniManager,

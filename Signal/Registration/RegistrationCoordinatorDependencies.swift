@@ -11,6 +11,7 @@ public struct RegistrationCoordinatorDependencies {
     public let accountEntropyPoolGenerator: () -> AccountEntropyPool
     public let accountKeyStore: AccountKeyStore
     public let backupArchiveManager: BackupArchiveManager
+    public let backupIdService: BackupIdService
     public let backupNonceStore: BackupNonceMetadataStore
     public let backupRequestManager: BackupRequestManager
     public let changeNumberPniManager: ChangePhoneNumberPniManager
@@ -53,6 +54,7 @@ public struct RegistrationCoordinatorDependencies {
             accountEntropyPoolGenerator: { AccountEntropyPool() },
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
+            backupIdService: DependenciesBridge.shared.backupIdService,
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: DependenciesBridge.shared.backupRequestManager,
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
