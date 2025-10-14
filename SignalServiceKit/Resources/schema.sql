@@ -2482,12 +2482,14 @@ CREATE
             ON UPDATE
                 CASCADE
                 ,"voteCount" INTEGER
+                ,"voteState" INTEGER DEFAULT 0
 )
 ;
 
 CREATE
-    UNIQUE INDEX "index_pollVote_on_voteAuthorId_and_optionId"
+    UNIQUE INDEX "index_pollVote_on_voteAuthorId_and_optionId_voteCount"
         ON "PollVote"("voteAuthorId"
     ,"optionId"
+    ,"voteCount"
 )
 ;

@@ -1582,6 +1582,7 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             interactionStore: interactionStore,
             accountManager: tsAccountManager,
+            messageSenderJobQueue: messageSenderJobQueue,
             db: db
         )
 

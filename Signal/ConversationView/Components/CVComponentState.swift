@@ -1763,7 +1763,9 @@ fileprivate extension CVComponentState.Builder {
         let state = CVPollView.buildState(
             poll: poll,
             isIncoming: isIncoming,
-            conversationStyle: conversationStyle)
+            conversationStyle: conversationStyle,
+            localAci: self.localAci
+        )
 
         self.poll = Poll(state: state)
 

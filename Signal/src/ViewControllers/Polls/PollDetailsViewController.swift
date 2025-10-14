@@ -166,10 +166,11 @@ struct PollDetailsView: View {
         interactionId: 1,
         question: "What is your favorite color?",
         options: ["Red", "Blue", "Yellow"],
+        pendingVotes: [],
         allowsMultiSelect: false,
         votes: [:],
         isEnded: false,
-        ownerIsLocalUser: true
+        ownerIsLocalUser: false
     )
 
     PollDetailsView(poll: poll, viewModel: PollDetailsViewModel())

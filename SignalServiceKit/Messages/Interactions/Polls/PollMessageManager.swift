@@ -6,6 +6,22 @@
 import Foundation
 public import LibSignalClient
 
+public struct CreatePollMessage {
+    let question: String
+    let options: [String]
+    let allowMultiple: Bool
+
+    public init(
+        question: String,
+        options: [String],
+        allowMultiple: Bool
+    ) {
+        self.question = question
+        self.options = options
+        self.allowMultiple = allowMultiple
+    }
+}
+
 public class PollMessageManager {
     static let pollEmoji = "📊"
 
@@ -13,6 +29,7 @@ public class PollMessageManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let interactionStore: InteractionStore
     private let db: DB
+    private let messageSenderJobQueue: MessageSenderJobQueue
     private let accountManager: TSAccountManager
 
     init(
@@ -20,12 +37,14 @@ public class PollMessageManager {
         recipientDatabaseTable: RecipientDatabaseTable,
         interactionStore: InteractionStore,
         accountManager: TSAccountManager,
+        messageSenderJobQueue: MessageSenderJobQueue,
         db: DB
     ) {
         self.pollStore = pollStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.interactionStore = interactionStore
         self.accountManager = accountManager
+        self.messageSenderJobQueue = messageSenderJobQueue
         self.db = db
     }
 
@@ -130,14 +149,16 @@ public class PollMessageManager {
     }
 
     public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {
-        guard let interactionId = message.grdbId?.int64Value,
-              let question = message.body else {
-            return nil
+        guard let question = message.body,
+              let localAci = accountManager.localIdentifiers(tx: transaction)?.aci
+        else {
+            throw OWSAssertionError("Invalid question body or local user not registered")
         }
 
         return try pollStore.owsPoll(
             question: question,
-            interactionId: interactionId,
+            message: message,
+            localUser: localAci,
             transaction: transaction,
             ownerIsLocalUser: message.isOutgoing
         )
@@ -170,7 +191,7 @@ public class PollMessageManager {
             try pollStore.terminatePoll(interactionId: poll.interactionId, transaction: tx)
 
             // Touch message so it reloads to show poll ended state.
-            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetPoll, shouldReindex: false, tx: tx)
+            db.touch(interaction: targetPoll, shouldReindex: false, tx: tx)
 
             let pollTerminateMessage = OutgoingPollTerminateMessage(
                 thread: thread,
@@ -182,7 +203,7 @@ public class PollMessageManager {
                 transientMessageWithoutAttachments: pollTerminateMessage
             )
 
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(
+            messageSenderJobQueue.add(
                 message: preparedMessage,
                 transaction: tx
             )
@@ -227,4 +248,123 @@ public class PollMessageManager {
 
         infoMessage.anyInsert(transaction: tx)
     }
+
+    public func processPollVoteMessageDidSend(
+        targetPollTimestamp: UInt64,
+        targetPollAuthorAci: Aci,
+        optionIndexes: [OWSPoll.OptionIndex],
+        voteCount: UInt32,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+            Logger.error("Can't find local ACI")
+            return
+        }
+
+        guard let localAuthorRecipientId = recipientDatabaseTable.fetchRecipient(
+            serviceId: localAci,
+            transaction: tx
+        )?.id else {
+            Logger.error("Can't find vote author recipient")
+            return
+        }
+
+        guard let interaction = try interactionStore.fetchMessage(
+            timestamp: UInt64(targetPollTimestamp),
+            incomingMessageAuthor: targetPollAuthorAci == localAci ? nil : targetPollAuthorAci,
+            transaction: tx
+        ), let interactionId = interaction.grdbId?.int64Value else {
+            Logger.error("Can't find vote poll")
+            return
+        }
+
+        try pollStore.updatePollWithVotes(
+            interactionId: interactionId,
+            optionsVoted: optionIndexes,
+            voteAuthorId: localAuthorRecipientId,
+            voteCount: voteCount,
+            transaction: tx
+        )
+
+        // Touch message so it reloads to show updated vote state.
+        db.touch(interaction: interaction, shouldReindex: false, tx: tx)
+    }
+
+    public func applyPendingVoteToLocalState(
+        pollInteraction: TSInteraction,
+        optionIndex: UInt32,
+        isUnvote: Bool,
+        thread: TSGroupThread,
+        tx: DBWriteTransaction
+    ) throws -> OutgoingPollVoteMessage? {
+        guard let pollInteractionId = pollInteraction.grdbId?.int64Value,
+              let poll = try pollStore.pollForInteractionId(
+                  interactionId: pollInteractionId,
+                  transaction: tx
+              ) else {
+            Logger.error("Can't find target poll")
+            return nil
+        }
+
+        guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+            Logger.error("Can't find local ACI")
+            return nil
+        }
+
+        var authorAci: Aci?
+        if let _ = pollInteraction as? TSOutgoingMessage {
+            authorAci = localAci
+        } else if let incomingPoll = pollInteraction as? TSIncomingMessage,
+                  let authorUUID = incomingPoll.authorUUID,
+                  let incomingAci = try ServiceId.parseFrom(serviceIdString: authorUUID) as? Aci {
+            authorAci = incomingAci
+        }
+
+        guard let authorAci else {
+            Logger.error("Invalid poll message")
+            return nil
+        }
+
+        guard let localRecipientId = recipientDatabaseTable.fetchRecipient(
+            serviceId: localAci,
+            transaction: tx
+        )?.id else {
+            Logger.error("Can't find vote author recipient")
+            return nil
+        }
+
+        guard let newHighestVoteCount = try pollStore.applyPendingVote(
+            interactionId: pollInteractionId,
+            localRecipientId: localRecipientId,
+            optionIndex: optionIndex,
+            isUnvote: isUnvote,
+            transaction: tx
+        ) else {
+            return nil
+        }
+
+        var optionIndexVotes: [UInt32] = []
+        if poll.allowsMultiSelect {
+            optionIndexVotes = try pollStore.optionIndexVotesIncludingPending(
+                interactionId: pollInteractionId,
+                voteAuthorId: localRecipientId,
+                voteCount: newHighestVoteCount,
+                transaction: tx
+            ).map { UInt32($0) }
+        } else {
+            // Single select, only need to send latest vote (or empty if its an unvote).
+            if !isUnvote {
+                optionIndexVotes.append(optionIndex)
+            }
+        }
+
+        return OutgoingPollVoteMessage(
+            thread: thread,
+            targetPollTimestamp: pollInteraction.timestamp,
+            targetPollAuthorAci: authorAci,
+            voteOptionIndexes: optionIndexVotes,
+            voteCount: UInt32(newHighestVoteCount),
+            tx: tx
+        )
+     }
 }

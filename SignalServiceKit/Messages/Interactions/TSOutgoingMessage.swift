@@ -310,6 +310,11 @@ public extension TSOutgoingMessage {
             }
         }
     }
+
+    /// Called when a message successfully sends.
+    /// Subclasses that need to know when a message send succeeds can override this.
+    @objc
+    func updateWithSendSuccess(tx: DBWriteTransaction) { }
 }
 
 #if TESTABLE_BUILD

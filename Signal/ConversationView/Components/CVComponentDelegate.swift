@@ -20,7 +20,7 @@ public protocol AudioMessageViewDelegate: AnyObject {
     func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
 }
 
-public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
+public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPollVoteDelegate {
 
     func enqueueReload()
 

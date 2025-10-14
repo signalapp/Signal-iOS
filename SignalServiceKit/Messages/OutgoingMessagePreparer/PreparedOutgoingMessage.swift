@@ -272,6 +272,10 @@ public class PreparedOutgoingMessage {
         )
     }
 
+    public func updateWithSendSuccess(tx: DBWriteTransaction) {
+        messageForSendStateUpdates.updateWithSendSuccess(tx: tx)
+    }
+
     // MARK: - Persistence
 
     public func asMessageSenderJobRecord(

@@ -1020,17 +1020,10 @@ extension ConversationViewController: PollSendDelegate {
     public func sendPoll(question: String, options: [String], allowMultipleVotes: Bool) {
         ThreadUtil.enqueueMessage(
             withPoll:
-                OWSPoll(
-                    // We don't know the interactionId yet since it hasn't been inserted in the DB.
-                    // That is OK since this OWSPoll instance will not be persisted or used to re-render
-                    // the conversation view (when interactionId is needed to determine equatability).
-                    interactionId: 0,
+                CreatePollMessage(
                     question: question,
                     options: options,
-                    allowsMultiSelect: allowMultipleVotes,
-                    votes: [:],
-                    isEnded: false,
-                    ownerIsLocalUser: true
+                    allowMultiple: allowMultipleVotes
                 ),
             thread: self.thread
         )

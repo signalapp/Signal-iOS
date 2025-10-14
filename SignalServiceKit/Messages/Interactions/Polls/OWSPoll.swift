@@ -18,15 +18,22 @@ public struct OWSPoll: Equatable {
         public let text: String
         public let acis: [Aci]
         public var id: OptionIndex { optionIndex }
+        public let isPending: Bool
 
         init(
             optionIndex: OptionIndex,
             text: String,
-            acis: [Aci]
+            acis: [Aci],
+            isPending: Bool
         ) {
             self.optionIndex = optionIndex
             self.text = text
             self.acis = acis
+            self.isPending = isPending
+        }
+
+        public func localUserHasVoted(localAci: Aci) -> Bool {
+            return acis.contains(localAci)
         }
     }
 
@@ -41,6 +48,7 @@ public struct OWSPoll: Equatable {
         interactionId: Int64,
         question: String,
         options: [String],
+        pendingVotes: [OptionIndex],
         allowsMultiSelect: Bool,
         votes: [OptionIndex: [Aci]],
         isEnded: Bool,
@@ -55,7 +63,7 @@ public struct OWSPoll: Equatable {
         self.options = Dictionary(uniqueKeysWithValues: options.enumerated().map { index, option in
             let optionIndex = OWSPoll.OptionIndex(index)
             let votes = votes[optionIndex] ?? []
-            return (optionIndex, OWSPollOption(optionIndex: optionIndex, text: option, acis: votes))
+            return (optionIndex, OWSPollOption(optionIndex: optionIndex, text: option, acis: votes, isPending: pendingVotes.contains(optionIndex)))
         })
     }
 

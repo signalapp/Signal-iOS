@@ -462,7 +462,10 @@ public class MessageSenderJobQueue {
             if !operation.job.isInMemoryOnly {
                 operation.job.record.anyRemove(transaction: tx)
             }
-            if case .failure(let error) = result {
+            switch result {
+            case .success(()):
+                operation.message.updateWithSendSuccess(tx: tx)
+            case .failure(let error):
                 operation.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
             }
         }

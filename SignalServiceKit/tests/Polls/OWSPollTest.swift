@@ -18,6 +18,7 @@ struct OWSPollTest {
             interactionId: 1,
             question: "Are polls working?",
             options: ["Yes", "No", "Maybe"],
+            pendingVotes: [],
             allowsMultiSelect: false,
             votes: [:],
             isEnded: false,

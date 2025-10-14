@@ -6,6 +6,41 @@
 import Foundation
 public import GRDB
 
+public enum VoteState: Int, Codable {
+    // Option was previously voted for but has been unvoted for.
+    // This is necessary to track to preserve ordering of votes.
+    case unvote = 0
+
+    // Option is currently voted for.
+    case vote = 1
+
+    // A user has tapped "unvote" but the unvote has not yet sent.
+    // Should only appear for the local aci.
+    case pendingUnvote = 2
+
+    // A user has tapped "vote" but the vote has not yet sent.
+    // Should only appear for the local aci.
+    case pendingVote = 3
+
+    func isUnvote() -> Bool {
+        switch self {
+        case .unvote, .pendingUnvote:
+            return true
+        default:
+            return false
+        }
+    }
+
+    func isPending() -> Bool {
+        switch self {
+        case .pendingVote, .pendingUnvote:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord {
     public static let databaseTableName: String = "PollVote"
 
@@ -13,6 +48,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
     public let optionId: Int64
     public let voteAuthorId: Int64
     public let voteCount: Int32
+    public var voteState: VoteState
 
     mutating public func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
@@ -21,11 +57,13 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
     public init(
         optionId: Int64,
         voteAuthorId: Int64,
-        voteCount: Int32
+        voteCount: Int32,
+        voteState: VoteState
     ) {
         self.optionId = optionId
         self.voteAuthorId = voteAuthorId
         self.voteCount = voteCount
+        self.voteState = voteState
     }
 
     enum CodingKeys: String, CodingKey {
@@ -33,6 +71,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
         case optionId
         case voteAuthorId
         case voteCount
+        case voteState
     }
 
     enum Columns {
@@ -40,5 +79,11 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
         static let optionId = Column(CodingKeys.optionId.rawValue)
         static let voteAuthorId = Column(CodingKeys.voteAuthorId.rawValue)
         static let voteCount = Column(CodingKeys.voteCount.rawValue)
+        static let voteState = Column(CodingKeys.voteState.rawValue)
     }
+
+    public static let persistenceConflictPolicy = PersistenceConflictPolicy(
+        insert: .replace,
+        update: .replace
+    )
 }

@@ -22,7 +22,7 @@ public class UnpreparedOutgoingMessage {
         quotedReplyDraft: DraftQuotedReplyModel.ForSending? = nil,
         messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil,
-        poll: OWSPoll? = nil
+        poll: CreatePollMessage? = nil
     ) -> UnpreparedOutgoingMessage {
         let oversizeTextDataSource = (body?.oversizeText).map {
             AttachmentDataSource.pendingAttachment($0)
@@ -131,7 +131,7 @@ public class UnpreparedOutgoingMessage {
             let quotedReplyDraft: DraftQuotedReplyModel.ForSending?
             let messageStickerDraft: MessageStickerDataSource?
             let contactShareDraft: ContactShareDraft.ForSending?
-            let poll: OWSPoll?
+            let poll: CreatePollMessage?
         }
 
         struct EditMessage {
@@ -251,8 +251,8 @@ public class UnpreparedOutgoingMessage {
         if let poll = message.poll {
             try DependenciesBridge.shared.pollMessageManager.processOutgoingPollCreate(
                 interactionId: messageRowId,
-                pollOptions: poll.sortedOptions().map(\.text),
-                allowsMultiSelect: poll.allowsMultiSelect,
+                pollOptions: poll.options,
+                allowsMultiSelect: poll.allowMultiple,
                 transaction: tx
             )
         }

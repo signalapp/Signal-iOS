@@ -327,6 +327,7 @@ public class GRDBSchemaMigrator {
         case fixUniqueConstraintOnPollVotes
         case migrateTSAccountManagerKeyValueStore
         case populateBackupAttachmentUploadProgressKVStore
+        case addPollVoteState
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -442,7 +443,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 130
+    public static let grdbSchemaVersionLatest: UInt = 131
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4193,6 +4194,25 @@ public class GRDBSchemaMigrator {
                 arguments: ["BackupAttachmentUploadProgress", "maxAttachmentRowId", maxAttachmentRowId],
             )
 
+            return .success(())
+        }
+
+        // This hasn't launched yet, so its OK to drop and re-create the index.
+        // The constraints need to be updated in order to support
+        // a history of vote states.
+        migrator.registerMigration(.addPollVoteState) { tx in
+            try tx.database.alter(table: "PollVote") { table in
+                table.add(column: "voteState", .integer)
+                    .defaults(to: 0)
+            }
+
+            try tx.database.drop(index: "index_pollVote_on_voteAuthorId_and_optionId")
+            try tx.database.create(
+                index: "index_pollVote_on_voteAuthorId_and_optionId_voteCount",
+                on: "PollVote",
+                columns: ["voteAuthorId", "optionId", "voteCount"],
+                options: [.unique]
+            )
             return .success(())
         }
 

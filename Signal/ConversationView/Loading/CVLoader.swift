@@ -65,6 +65,10 @@ public class CVLoader: NSObject {
                     return ConversationViewModel.load(for: thread, tx: transaction)
                 }()
 
+                guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
+                    throw OWSAssertionError("User not registered")
+                }
+
                 let loadContext = CVLoadContext(
                     loadRequest: loadRequest,
                     threadViewModel: threadViewModel,
@@ -72,6 +76,7 @@ public class CVLoader: NSObject {
                     spoilerState: spoilerState,
                     messageLoader: messageLoader,
                     prevRenderState: prevRenderState,
+                    localAci: localAci,
                     transaction: transaction
                 )
 
@@ -319,6 +324,11 @@ public class CVLoader: NSObject {
     ) -> CVRenderItem? {
         AssertIsOnMainThread()
 
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
+            owsFailDebug("User not registered")
+            return nil
+        }
+
         let threadViewModel = ThreadViewModel(thread: thread,
                                               forChatList: false,
                                               transaction: transaction)
@@ -331,7 +341,8 @@ public class CVLoader: NSObject {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: avatarBuilder
+            avatarBuilder: avatarBuilder,
+            localAci: localAci
         )
         guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
                                                                      thread: thread,
@@ -355,6 +366,11 @@ public class CVLoader: NSObject {
 
         guard let thread = interaction.thread(tx: transaction) else {
             owsFailDebug("Missing thread for interaction.")
+            return nil
+        }
+
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
+            owsFailDebug("User not registered")
             return nil
         }
 
@@ -385,7 +401,8 @@ public class CVLoader: NSObject {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: avatarBuilder
+            avatarBuilder: avatarBuilder,
+            localAci: localAci
         )
         do {
             return try CVComponentState.build(interaction: interaction,

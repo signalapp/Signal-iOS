@@ -1289,6 +1289,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapViewVotes(poll: OWSPoll) {}
 
     func didTapViewPoll(pollInteractionUniqueId: String) {}
+
+    func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool) {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

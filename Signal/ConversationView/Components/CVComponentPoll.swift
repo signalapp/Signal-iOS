@@ -20,7 +20,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
     }
 
     public func buildComponentView(componentDelegate: any CVComponentDelegate) -> any CVComponentView {
-        CVComponentViewPoll()
+        CVComponentViewPoll(componentDelegate: componentDelegate)
     }
 
     public func configureForRendering(
@@ -50,12 +50,18 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
     // It could be the entire item or some part thereof.
     public class CVComponentViewPoll: NSObject, CVComponentView {
 
-        fileprivate let pollView = CVPollView(name: "CVPollView")
+        fileprivate var pollView = CVPollView(name: "CVPollView")
+
+        private weak var componentDelegate: CVComponentDelegate?
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
             pollView
+        }
+
+        init(componentDelegate: CVComponentDelegate) {
+            self.componentDelegate = componentDelegate
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}

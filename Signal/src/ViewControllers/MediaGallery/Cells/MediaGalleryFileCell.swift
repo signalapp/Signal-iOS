@@ -102,6 +102,11 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return
         }
 
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
+            owsFailDebug("User not registered")
+            return
+        }
+
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: fileItem.thread, transaction: transaction)
         // Make an itemModel which is needed to play the audio file.
         // This is only used to save the playback rate, which is kind of nuts.
@@ -127,7 +132,8 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: CVAvatarBuilder(transaction: transaction)
+            avatarBuilder: CVAvatarBuilder(transaction: transaction),
+            localAci: localAci
         )
         guard let componentState = try? CVComponentState.build(
             interaction: fileItem.interaction,
@@ -513,4 +519,6 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapViewVotes(poll: OWSPoll) {}
 
     func didTapViewPoll(pollInteractionUniqueId: String) {}
+
+    func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool) {}
 }

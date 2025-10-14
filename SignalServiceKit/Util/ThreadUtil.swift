@@ -338,7 +338,7 @@ extension ThreadUtil {
 public extension ThreadUtil {
 
     class func enqueueMessage(
-        withPoll poll: OWSPoll,
+        withPoll poll: CreatePollMessage,
         thread: TSThread
     ) {
         AssertIsOnMainThread()

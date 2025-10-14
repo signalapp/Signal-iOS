@@ -4,15 +4,23 @@
 //
 
 import Foundation
-import SignalServiceKit
+import LibSignalClient
+public import SignalServiceKit
 public import SignalUI
+
+public protocol CVPollVoteDelegate: AnyObject {
+    func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool)
+}
 
 public class CVPollView: ManualStackView {
     struct State: Equatable {
         let poll: OWSPoll
         let isIncoming: Bool
         let conversationStyle: ConversationStyle
+        let localAci: Aci
     }
+
+    public weak var pollVoteDelegate: CVPollVoteDelegate?
 
     private let subtitleStack = ManualStackView(name: "subtitleStack")
     private let questionTextLabel = CVLabel()
@@ -147,10 +155,13 @@ public class CVPollView: ManualStackView {
         poll: OWSPoll,
         isIncoming: Bool,
         conversationStyle: ConversationStyle,
+        localAci: Aci
     ) -> State {
         return State(poll: poll,
                      isIncoming: isIncoming,
-                     conversationStyle: conversationStyle)
+                     conversationStyle: conversationStyle,
+                     localAci: localAci
+        )
     }
 
     static func measure(
@@ -323,7 +334,16 @@ public class CVPollView: ManualStackView {
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
                 pollOption: option,
-                totalVotes: poll.totalVotes()
+                totalVotes: poll.totalVotes(),
+                hasLocalUserAlreadyVoted: option.localUserHasVoted(localAci: state.localAci),
+                pollVoteHandler: { [weak self, weak componentDelegate] voteType in
+                    self?.handleVote(
+                        for: option,
+                        on: poll,
+                        voteType: voteType,
+                        delegate: componentDelegate
+                    )
+                }
             )
             optionSubviews.append(row)
         }
@@ -343,6 +363,19 @@ public class CVPollView: ManualStackView {
                               subviews: outerStackSubViews)
     }
 
+    private func handleVote(
+        for option: OWSPoll.OWSPollOption,
+        on poll: OWSPoll,
+        voteType: VoteType,
+        delegate: CVPollVoteDelegate?
+    ) {
+        delegate?.didTapVoteOnPoll(
+            poll: poll,
+            optionIndex: option.optionIndex,
+            isUnvote: voteType == .unvote
+        )
+    }
+
     public override func reset() {
         super.reset()
 
@@ -358,8 +391,15 @@ public class CVPollView: ManualStackView {
     // MARK: - PollOptionView
     /// Class representing an option row which displays and updates selected state
 
+    enum VoteType {
+        case unvote
+        case vote
+    }
+
     class PollOptionView: ManualStackView {
         typealias OWSPollOption = OWSPoll.OWSPollOption
+
+        let pollVoteHandler: (VoteType) -> Void
 
         let checkbox = CVButton()
         let optionText = CVLabel()
@@ -374,8 +414,12 @@ public class CVPollView: ManualStackView {
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
             pollOption: OWSPollOption,
-            totalVotes: Int
+            totalVotes: Int,
+            hasLocalUserAlreadyVoted: Bool,
+            pollVoteHandler: @escaping (VoteType) -> Void,
         ) {
+            self.pollVoteHandler = pollVoteHandler
+
             super.init(name: "PollOptionView")
             buildOptionRowStack(
                 configurator: configurator,
@@ -383,7 +427,9 @@ public class CVPollView: ManualStackView {
                 option: pollOption.text,
                 index: pollOption.optionIndex,
                 votes: pollOption.acis.count,
-                totalVotes: totalVotes
+                totalVotes: totalVotes,
+                hasLocalUserAlreadyVoted: hasLocalUserAlreadyVoted,
+                isPending: pollOption.isPending
             )
         }
 
@@ -393,6 +439,7 @@ public class CVPollView: ManualStackView {
 
         @objc private func didTapCheckbox() {
             checkbox.isSelected.toggle()
+            pollVoteHandler(checkbox.isSelected ? .vote : .unvote)
         }
 
         private func buildProgressBar(votes: Int, totalVotes: Int, detailColor: UIColor) {
@@ -448,12 +495,18 @@ public class CVPollView: ManualStackView {
             option: String,
             index: UInt32,
             votes: Int,
-            totalVotes: Int
+            totalVotes: Int,
+            hasLocalUserAlreadyVoted: Bool,
+            isPending: Bool
         ) {
             checkbox.setImage(UIImage(named: Theme.iconName(.checkCircleFill)), for: .selected)
             checkbox.setImage(UIImage(named: Theme.iconName(.circle)), for: .normal)
             checkbox.tintColor = configurator.detailColor
             checkbox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCheckbox)))
+
+            checkbox.isSelected = hasLocalUserAlreadyVoted
+
+            // TODO: animate when pending.
 
             let optionTextConfig = CVLabelConfig.unstyledText(
                 option,

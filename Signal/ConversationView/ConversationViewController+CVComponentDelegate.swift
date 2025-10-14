@@ -1291,6 +1291,49 @@ extension ConversationViewController: CVComponentDelegate {
             isAnimated: true
         )
     }
+
+    public func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool) {
+        guard let groupThread = self.thread as? TSGroupThread else {
+            return
+        }
+        do {
+            try DependenciesBridge.shared.db.write { tx in
+                let targetPoll = DependenciesBridge.shared.interactionStore.fetchInteraction(
+                    rowId: poll.interactionId,
+                    tx: tx
+                )
+
+                guard let targetPoll else {
+                    return
+                }
+
+                guard let pollVoteMessage = try DependenciesBridge.shared.pollMessageManager.applyPendingVoteToLocalState(
+                    pollInteraction: targetPoll,
+                    optionIndex: optionIndex,
+                    isUnvote: isUnvote,
+                    thread: groupThread,
+                    tx: tx
+                ) else {
+                    Logger.error("Unable to update local poll state with votes")
+                    return
+                }
+
+                // Touch message so it reloads to show updated vote state.
+                SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetPoll, shouldReindex: false, tx: tx)
+
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: pollVoteMessage
+                )
+
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                    message: preparedMessage,
+                    transaction: tx
+                )
+            }
+        } catch {
+            Logger.error("Unable to update local poll state with votes: \(error)")
+        }
+    }
 }
 
 // MARK: - OWSNavigationChildController
