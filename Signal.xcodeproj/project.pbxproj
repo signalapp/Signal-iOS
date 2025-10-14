@@ -1254,6 +1254,8 @@
 		66F98DE62DBBED6C009F1A86 /* LineWrappingStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */; };
 		66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */; };
 		66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */; };
+		66FA12B42E9971E300A1F3C2 /* AVAssetReaderTrackOutputWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FA12B32E9971E300A1F3C2 /* AVAssetReaderTrackOutputWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		66FA12B62E99727300A1F3C2 /* AVAssetReaderTrackOutputWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66FA12B52E99726C00A1F3C2 /* AVAssetReaderTrackOutputWrapper.m */; settings = {COMPILER_FLAGS = "-fobjc-exceptions"; }; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
@@ -5219,6 +5221,8 @@
 		66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackView.swift; sourceTree = "<group>"; };
 		66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackViewTestController.swift; sourceTree = "<group>"; };
 		66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupDownloadProgressView.swift"; sourceTree = "<group>"; };
+		66FA12B32E9971E300A1F3C2 /* AVAssetReaderTrackOutputWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVAssetReaderTrackOutputWrapper.h; sourceTree = "<group>"; };
+		66FA12B52E99726C00A1F3C2 /* AVAssetReaderTrackOutputWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVAssetReaderTrackOutputWrapper.m; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
@@ -9954,6 +9958,8 @@
 		66A1ABE02C33118A0033C5EB /* TSAttachment */ = {
 			isa = PBXGroup;
 			children = (
+				66FA12B32E9971E300A1F3C2 /* AVAssetReaderTrackOutputWrapper.h */,
+				66FA12B52E99726C00A1F3C2 /* AVAssetReaderTrackOutputWrapper.m */,
 				66C1BF522D0CC7DB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift */,
 				66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */,
 				66C1BF502D0CC7C7002296F7 /* IncrementalTSAttachmentMigrationStore.swift */,
@@ -14637,6 +14643,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66FA12B42E9971E300A1F3C2 /* AVAssetReaderTrackOutputWrapper.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
@@ -14930,7 +14937,7 @@
 						};
 					};
 					D221A088169C9E5E00537ABF = {
-						LastSwiftMigration = 1020;
+						LastSwiftMigration = 2600;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -17640,6 +17647,7 @@
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
 				6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */,
 				058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */,
+				66FA12B62E99727300A1F3C2 /* AVAssetReaderTrackOutputWrapper.m in Sources */,
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,

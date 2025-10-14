@@ -99,8 +99,8 @@ extension TSAttachmentMigration {
                 throw OWSAssertionError("audio file has no tracks")
             }
 
-            let trackOutput = AVAssetReaderTrackOutput(
-                track: audioTrack,
+            let trackOutput = AVAssetReaderTrackOutputWrapper.safeAssetReaderTrackOutput(
+                with: audioTrack,
                 outputSettings: [
                     AVFormatIDKey: kAudioFormatLinearPCM,
                     AVLinearPCMBitDepthKey: 16,
@@ -109,6 +109,9 @@ extension TSAttachmentMigration {
                     AVLinearPCMIsNonInterleaved: false
                 ]
             )
+            guard let trackOutput else {
+                throw OWSAssertionError("unable to generate audio track")
+            }
             assetReader.add(trackOutput)
 
             let decibelSamples = try readDecibels(from: assetReader)
