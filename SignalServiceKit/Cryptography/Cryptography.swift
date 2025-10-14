@@ -111,7 +111,7 @@ public extension Cryptography {
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
     static func estimatedMediaTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
         let transitTierSize = UInt64(estimatedTransitTierCDNSize(unencryptedSize: unencryptedSize))
-        return UInt32(PaddingBucket.addingEncryptionOverhead(to: transitTierSize))
+        return UInt32(clamping: PaddingBucket.addingEncryptionOverhead(to: transitTierSize))
     }
 
     /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob
@@ -122,7 +122,7 @@ public extension Cryptography {
     /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
     static func estimatedTransitTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
-        return UInt32(PaddingBucket.forUnpaddedPlaintextSize(UInt64(unencryptedSize)).encryptedSize)
+        return UInt32(clamping: PaddingBucket.forUnpaddedPlaintextSize(UInt64(unencryptedSize)).encryptedSize)
     }
 
     static func randomAttachmentEncryptionKey() -> Data {
