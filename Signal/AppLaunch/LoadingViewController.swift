@@ -125,11 +125,13 @@ class LoadingViewController: UIViewController {
         // should be indistinguishable from the launch screen.
         let kTopLabelThreshold: TimeInterval = 5
         topLabelTimer = Timer.scheduledTimer(withTimeInterval: kTopLabelThreshold, repeats: false) { [weak self] _ in
+            Logger.info("")
             self?.showTopLabel()
         }
 
         let kBottomLabelThreshold: TimeInterval = 10
         bottomLabelTimer = Timer.scheduledTimer(withTimeInterval: kBottomLabelThreshold, repeats: false) { [weak self] _ in
+            Logger.info("")
             self?.showBottomLabelAnimated()
         }
 
@@ -152,6 +154,7 @@ class LoadingViewController: UIViewController {
     private let kMinAlpha: CGFloat = 0.1
 
     private func showBottomLabelAnimated() {
+        Logger.info("")
         bottomLabel.layer.removeAllAnimations()
         bottomLabel.alpha = kMinAlpha
         UIView.animate(withDuration: 0.3) {
@@ -161,6 +164,7 @@ class LoadingViewController: UIViewController {
     }
 
     private func showTopLabel() {
+        Logger.info("")
         topLabel.layer.removeAllAnimations()
         topLabel.alpha = 0.2
         UIView.animate(withDuration: 0.9, delay: 0, options: [.autoreverse, .repeat, .curveEaseInOut], animations: {
@@ -169,6 +173,7 @@ class LoadingViewController: UIViewController {
     }
 
     private func showBottomLabel() {
+        Logger.info("")
         bottomLabel.layer.removeAllAnimations()
         self.bottomLabel.alpha = 1
     }
@@ -217,6 +222,7 @@ class LoadingViewController: UIViewController {
     private var progress: OWSProgress?
 
     public func updateProgress(_ progress: OWSProgress) {
+        Logger.info("")
         self.progress = progress
         let percentComplete = progress.percentComplete
         let unitCountToComplete = progress.totalUnitCount
