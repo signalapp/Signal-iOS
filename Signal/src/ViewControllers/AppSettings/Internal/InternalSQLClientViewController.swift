@@ -27,6 +27,8 @@ class InternalSQLClientViewController: UIViewController {
         textField.borderStyle = .roundedRect
         textField.placeholder = "Type your SQL query here"
         textField.autocorrectionType = .no
+        textField.smartQuotesType = .no
+        textField.smartDashesType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()

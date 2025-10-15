@@ -10,6 +10,9 @@ import SignalUI
 
 class InternalListMediaViewController: OWSTableViewController2 {
 
+    private var deviceSleepManager: DeviceSleepManager? { DependenciesBridge.shared.deviceSleepManager }
+    private var sleepBlockObject: DeviceSleepBlockObject?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -18,6 +21,9 @@ class InternalListMediaViewController: OWSTableViewController2 {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        self.sleepBlockObject = DeviceSleepBlockObject(blockReason: "InternalListMedia")
+        deviceSleepManager?.addBlock(blockObject: self.sleepBlockObject!)
 
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
@@ -29,6 +35,12 @@ class InternalListMediaViewController: OWSTableViewController2 {
                 modal.dismiss(animated: true)
             }
         )
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.sleepBlockObject.take().map { self.deviceSleepManager?.removeBlock(blockObject: $0) }
     }
 
     func updateTableContents() {
