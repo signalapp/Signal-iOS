@@ -1,1 +1,1 @@
-• Now it's easy to switch between Signal chats using Ctrl+Tab and Ctrl+Shift+Tab whenever your iPad is connected to a physical keyboard. You can also continue to tap on the screen too. Versatility is key.
+• अगर आपका iPad किसी फ़िजिकल कीबोर्ड से जुड़ा हो, तो Ctrl+Tab और Ctrl+Shift+Tab का इस्तेमाल करके Signal चैट के बीच स्विच करना अब आसान हो गया है। स्क्रीन पर टैप करके भी काम बन सकता है। अलग-अलग तरीके अपनाना अच्छा रहता है।

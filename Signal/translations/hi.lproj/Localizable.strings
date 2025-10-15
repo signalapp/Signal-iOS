@@ -11,10 +11,10 @@
 "ACCESSIBILITY_LABEL_AUDIO" = "ऑडियो";
 
 /* Accessibility label for contact. */
-"ACCESSIBILITY_LABEL_CONTACT" = "संपर्क";
+"ACCESSIBILITY_LABEL_CONTACT" = "कॉन्टैक्ट";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%1$@ के लिए संपर्क करें";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%1$@ के लिए कॉन्टैक्ट";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "मीडिया";
@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_STICKER_FORMAT" = "%1$@ के समान स्टिकर";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ध्वनि संदेश";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "वॉइस मैसेज";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "निर्यात रिपोर्ट करें";
@@ -65,10 +65,10 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "आपका अकाउंट डेटा";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Signal का उपयोग करने के लिए आमंत्रित करें";
+"ACTION_INVITE" = "Signal का इस्तेमाल करने के लिए इनवाइट भेजें";
 
 /* Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "मेसेज भेजें";
+"ACTION_SEND_MESSAGE" = "मैसेज भेजें";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "डाउनलोड करने के लिए टैप करें";
@@ -80,37 +80,37 @@
 "ACTION_VOICE_CALL" = "Signal कॉल";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "सदस्यों को जोड़ें";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "सदस्य जोड़ें";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "क्या आप इस ग्रुप के साथ अपनी प्रोफ़ाइल साझा करना चाहेंगे?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "क्या आपको अपनी प्रोफ़ाइल इस ग्रुप के साथ शेयर करना है?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "क्या आप इस उपयोगकर्ता को अपनी संपर्क सूची में जोङना चाहेंगे?";
+"ADD_TO_CONTACTS_OFFER" = "क्या आपको इस यूज़र का नाम कॉन्टैक्ट में जोड़ना है?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "किसी अन्य ग्रुप में शामिल करें";
+"ADD_TO_GROUP" = "किसी अन्य ग्रुप में जोड़ें";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ग्रुप में शामिल करें";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ग्रुप में जोड़ें";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%1$@ को %2$@ जोड़े";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%1$@ को %2$@ में जोड़ना है?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "नया सदस्य जोड़ें";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "पहले से सदस्य हैं";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "पहले से ही सदस्य हैं";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ को %2$@ में शामिल किया गया था";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ को %2$@ में जोड़ा गया";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "समूह में जोड़ें";
+"ADD_TO_GROUP_TITLE" = "ग्रुप में जोड़ें";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "क्या आप इस उपयोगकर्ता के साथ अपनी प्रोफ़ाइल साझा करना चाहेंगे?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "क्या आपको अपनी प्रोफ़ाइल इस यूज़र के साथ शेयर करना है?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "समझ गया";
@@ -119,7 +119,7 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "इस चैट में %1$@ द्वारा भेजा गया कोई संदेश, स्टिकर, प्रतिक्रिया, प्राप्ति सूचना या मीडिया आपको डिलीवर नहीं किया जा सका।";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "डिलिवरी का मामला";
+"ALERT_DELIVERY_ISSUE_TITLE" = "डिलीवरी से जुड़ी समस्याएं";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ द्वारा भेजा गया कोई संदेश, स्टिकर, प्रतिक्रिया, पढ़ लिया गया रिसीप्ट या मीडिया आपको डिलीवर नहीं किया जा सका। हो सकता है कि उन्होंने इसे सीधे आपको या किसी ग्रुप में भेजने का प्रयास किया हो।";
@@ -131,19 +131,19 @@
 "ALERT_DONT_SAVE" = "सेव ना करें";
 
 /* Generic error indicator. */
-"ALERT_ERROR_TITLE" = "त्रुटि";
+"ALERT_ERROR_TITLE" = "गड़बड़ी";
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "सेव करें";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "इस व्यक्ति के साथ आपका कोई समूह समान नहीं है। अवांछित संदेशों से बचने के लिए स्वीकार करने से पहले अनुरोधों की सावधानीपूर्वक समीक्षा करें।";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "आप और यह व्यक्ति किसी भी कॉमन ग्रुप में एक साथ नहीं हैं। अनचाहे मैसेज से बचने के लिए, अनुरोध स्वीकार करने से पहले उन्हें ध्यान से देख लें।";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "इस ग्रुप के साथ आपके कोई भी समान सदस्य नहीं हैं। अवांछित संदेशों से बचने के लिए स्वीकार करने से पहले रिक्वेस्ट की समीक्षा ध्यान से करें।";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "इस ग्रुप में आपके कॉन्टैक्ट का कोई सदस्य मौजूद नहीं है। अनचाहे मैसेज से बचने के लिए, अनुरोध स्वीकार करने से पहले उन्हें ध्यान से देख लें।";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश अनुरोधों के बारे में";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "मैसेज अनुरोधों के बारे में";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
 "ALL_MEDIA_AUDIO_FILTER_ALL" = "सभी ऑडियो";
@@ -194,10 +194,10 @@
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "सभी कनेक्शन";
 
 /* notification body */
-"APN_Message" = "आपके पास नए मेसेज हो सकते हैं";
+"APN_Message" = "आपके पास नए मैसेज आए हैं";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal शुरु नहीं हो पा रहा है। क्रपया डिबग लॉग support@signal.org पर भेज दें, ताकी हम इस समस्या का उपाय खोज सकें।";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal चालू नहीं हो पा रहा है। कृपया इसके लिए support@signal.org पर डीबग लॉग भेजें, ताकि हम आपकी सहायता कर सकें।";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "फिर भी Signal खोलें";
@@ -209,22 +209,22 @@
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Signal नहीं खोला जा सका";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "डेटाबेस लोड नहीं हो पा रहा है।";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "डेटाबेस लोड नहीं हो सका";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "क्रपया Signal के नवीनतम वर्ज़न इंस्टॉल करें।";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "कृपया Signal का नया वर्ज़न इंस्टॉल करें।";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "डेटाबेस का वर्ज़न अज्ञात है।";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "डेटाबेस के वर्ज़न का पता नहीं चल पाया।";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal खोलने का प्रयास करते समय कुछ समस्या हुई। इस मामले को ट्रबलशूट करने में मदद करने के लिए कृपया support@signal.org को एक डीबग लॉग भेजें।";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal खोलने में कोई समस्या आई। कृपया इसके लिए support@signal.org पर डीबग लॉग भेजें, ताकि हम आपकी सहायता कर सकें।";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal नहीं खोला जा सका";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal नहीं खुला";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal नहीं खुल सका क्योंकि आपकी डिवाइस में स्टोरेज स्पेस कम है। Signal का इस्तेमाल करने के लिए सेटिंग्ज़ में जा कर अपने स्टोरेज को मैनेज करके जगह खाली करें।";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal नहीं खुला, क्योंकि आपके डिवाइस में स्टोरेज स्पेस कम है।Signal का इस्तेमाल करने के लिए, सेटिंग में जाकर अपने स्टोरेज में थोड़ी जगह बनाएं।";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "स्टोरेज स्पेस कम है";
@@ -233,7 +233,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "आपके पुराने डिवाइस से ट्रांसफ़र किया गया डेटा रीस्टोर नहीं हो पाया। कृपया support@signal.org पर एक डीबग लॉग भेजें ताकि हम इस समस्या को सुलझा सकें। अगर आप Signal रीइंस्टॉल करते हैं तो हो सकता है कि आपका संदेश इतिहास खो जाए।";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ट्रान्सफर पूरा नहीं हो पाया";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ट्रांसफ़र नहीं हो पाया";
 
 /* Action in an action sheet offering to wipe all app data. */
 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "ऐप का डेटा रीसेट करें";
@@ -245,25 +245,25 @@
 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "ऐप का सारा डेटा रीसेट करना है?";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "अपना नाम दें";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "अपना नाम डालें";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "अभी नहीं";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "वर्ज़न %1$@ अब ऐप स्टोर पर उपलब्ध है।";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "वर्ज़न %1$@ अब App Store पर उपलब्ध है।";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signal का नया वर्ज़न अब उपलब्ध है।";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "अपडेट";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "अपडेट करें";
 
 /* Name indicating that the dark theme is enabled. */
-"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "अँधेरा";
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "गहरा";
 
 /* Name indicating that the light theme is enabled. */
-"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "रोशनी";
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "हल्का";
 
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "सिस्टम";
@@ -311,7 +311,7 @@
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "नया मेसेज";
 
 /* Label for the archive button for conversations list view */
-"ARCHIVE_ACTION" = "संग्रहित करें";
+"ARCHIVE_ACTION" = "आर्काइव करें";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
 "ASK_TO_JOIN_CALL" = "कॉल में शामिल होने के लिए कहें";
@@ -326,7 +326,7 @@
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "अटैचमेंट निर्यात करने में असफल|";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "अटैचमेंट एक्सपोर्ट नहीं हो सका।";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "सेव नहीं हो पाया";
@@ -335,52 +335,52 @@
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "फ़ाइल टाइप: %1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "माप: %1$@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "साइज़: %1$@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "सेव किया गया";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "धीमा, अधिक डेटा";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "धीमा, ज़्यादा डेटा";
 
 /* Subtitle for the 'standard' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "तेज़, कम डेटा";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "मीडिया गुणवत्ता";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "मीडिया की क्वालिटी";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "अटैचमेंट";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "अटैचमेंट भेजने में गलती हुई है";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "अटैचमेंट भेजने में कोई गड़बड़ी हुई";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "तसवीर JPEG में नहीं बदल पा रही है।";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "इमेज कनवर्ट नहीं हो सकी।";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "वीडियो जोङने मे असमर्थ।";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "वीडियो प्रोसेस नहीं हो सका।";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "तसवीर पार्स नहीं हो पा रही है।";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "इमेज लोड नहीं हो सकी।";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "तस्वीर से मेटाडाटा नहीं निकल पाया है।";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "तस्वीर का आकार नहीं बदल पा रहा है।";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "इमेज का साइज़ नहीं बदला जा सका।";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "अटैचमेंट बहुत बडी है।";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "अटैचमेंट बहुत बड़ा है।";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "अटैचमेंट में अमान्य तत्व हैं।";
+"ATTACHMENT_ERROR_INVALID_DATA" = "अटैचमेंट में कुछ अमान्य कॉन्टेंट शामिल हैं।";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "अटैचमेंट की फ़ाइल का फार्मेट सही नहीं है।";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "अटैचमेंट में किसी फ़ाइल का फ़ॉर्मैट सही नहीं है।";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "अटैचमेंट ख़ाली है।";
+"ATTACHMENT_ERROR_MISSING_DATA" = "अटैचमेंट खाली है।";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "भेजने के लिए मीडिया चुनें";
@@ -434,13 +434,13 @@
 "ATTACHMENT_LABEL" = "अटैचमेंट";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "दस्तावेज़ चुनने में विफल";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "डॉक्यूमेंट नहीं चुना गया।";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "इस फाइल या डायरेक्ट्री को कंप्रेस करके उसको भेजने की कोशिश करें।";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "कृपया इस फ़ाइल या फ़ोल्डर को कंप्रेस करके ज़िप फ़ाइल बनाएं और फिर उसे भेजने की कोशिश करें।";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "असमर्थित फ़ाइल प्रकार";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "यह फ़ाइल काम नहीं करती";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
 "ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "सेव करें";
@@ -473,16 +473,16 @@
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "तस्वीर";
+"ATTACHMENT_TYPE_PHOTO" = "फ़ोटो";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VIDEO" = "वीडियो";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "ध्वनि मेसेज";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "वॉइस मैसेज";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ऑडियो मेसेज";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ऑडियो मैसेज";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
@@ -497,7 +497,7 @@
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "वॉइस संदेश उपलब्ध नहीं है";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "रंग चुने";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "रंग चुनें";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "रंग";
@@ -509,10 +509,10 @@
 "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "कैमरा";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "तस्वीर";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "फ़ोटो";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "एक अवतार चुनें";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "कोई अवतार चुनें";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "टेक्स्ट";
@@ -947,7 +947,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "दान करें";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "अधिक जानें।";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "और जानें।";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "मासिक दान रद्द किया गया";
@@ -965,7 +965,7 @@
 "BADGE_THANKS_BODY" = "आप अपना समर्थन दिखाने के लिए इस बैज को अपने प्रोफ़ाइल पर प्रदर्शित करना चुन सकते हैं।";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "प्रोफ़ाइल पर डिस्प्ले करें";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "प्रोफ़ाइल पर दिखाएं";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "फ़ीचर होने वाले बैज बनाएं";
@@ -974,7 +974,7 @@
 "BADGE_THANKS_TITLE" = "आपके समर्थन के लिए शुक्रिया!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "जब आपके पास एक से ज़्यादा बैज हों, तो आप अपनी प्रोफ़ाइल पर दूसरों को देखने की ख़ातिर फ़ीचर के लिए एक को चुन सकते हैं.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "जब आपके पास एक से ज़्यादा बैज हों, तो आपके पास उनमें से किसी एक को चुनने का विकल्प रहता है, ताकि दूसरे लोग आपकी प्रोफ़ाइल पर उसे देख सकें।";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "अकाउंट जानकारी ढूंढें";
@@ -995,13 +995,13 @@
 "BANK_MANDATE_TITLE" = "बैंक ट्रांसफर";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "बैनर को बंद करें";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "बैनर बंद करें";
 
 /* Beta label */
 "BETA_LABEL" = "बीटा";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "अब आपको इस ग्रुप से कोई संदेश या अपडेट नहीं मिलेंगे।";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "अब आपको इस ग्रुप से कोई मैसेज या अपडेट नहीं मिलेगा।";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ब्लॉक करें";
@@ -1028,13 +1028,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "अनब्लॉक करें";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "आप एक दूसरे को संदेश भेज पाएँगे और कॉल कर पाएँगे।";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "आप एक-दूसरे को मैसेज भेज सकेंगे और कॉल कर सकेंगे।";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "मौजूदा सदस्य आपको फिर से ग्रुप में जोड़ने में सक्षम होंगे।";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "कोई भी मौजूदा सदस्य आपको फिर से ग्रुप में जोड़ सकता है।";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ग्रुप के सदस्य आपको इस ग्रुप में दोबारा शामिल कर पाएँगे।";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ग्रुप के सदस्य आपको फिर से इस ग्रुप में जोड़ सकते हैं।";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "इस ग्रुप को अनब्लॉक करें?";
@@ -1058,13 +1058,13 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "आप खुद को ब्लॉक नहीं कर सकते।";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "त्रुटि";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "गड़बड़ी";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ को अनब्लॉक कर दिया गया है।";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "मौजूदा सदस्य आपको फिर से ग्रुप में जोड़ने में सक्षम होंगे।";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "कोई भी मौजूदा सदस्य आपको फिर से ग्रुप में जोड़ सकता है।";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ब्लॉक यूज़र अब आपको मेसेज भेजने या आपको कॉल करने में सक्षम नहीं होंगे।";
@@ -1076,25 +1076,25 @@
 "BUTTON_ADD" = "जोड़ें";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "आगे";
+"BUTTON_CONTINUE" = "जारी रखें";
 
 /* Label for the 'copy' button. */
-"BUTTON_COPY" = "कॉपी";
+"BUTTON_COPY" = "कॉपी करें";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "पूर्ण";
+"BUTTON_DONE" = "हो गया";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "नक़ल";
+"BUTTON_DUPLICATE" = "डुप्लीकेट बनाएं";
 
 /* Label for the 'edit' button. */
-"BUTTON_EDIT" = "बदलें";
+"BUTTON_EDIT" = "एडिट करें";
 
 /* Label for the 'mute' button. */
 "BUTTON_MUTE" = "म्यूट करें";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "अगला";
+"BUTTON_NEXT" = "अगले पर जाएं";
 
 /* Label for the 'no' button. */
 "BUTTON_NO" = "नहीं";
@@ -1106,28 +1106,28 @@
 "BUTTON_OKAY" = "ठीक है";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "पिछले";
+"BUTTON_PREVIOUS" = "पिछले पर जाएं";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "चुनिए";
+"BUTTON_SELECT" = "चुनें";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "सेट";
+"BUTTON_SET" = "सेट करें";
 
 /* Label for the 'share' button. */
-"BUTTON_SHARE" = "साझा करें";
+"BUTTON_SHARE" = "शेयर करें";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "जमा करें";
+"BUTTON_SUBMIT" = "सबमिट करें";
 
 /* Label for the 'unmute' button. */
 "BUTTON_UNMUTE" = "अनम्यूट करें";
 
 /* Label for the 'view' button. */
-"BUTTON_VIEW" = "देखना";
+"BUTTON_VIEW" = "देखें";
 
 /* Label for the 'yes' button. */
-"BUTTON_YES" = "हाँ";
+"BUTTON_YES" = "हां";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "दोबारा कॉल करें";
@@ -1145,10 +1145,10 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ पर मिस्ड वॉयस कॉल";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "अगर आप Signal से कॉल या वॉइस मेसेज भेजना चाहते हैं तो iOS सेटिंग्स ऐप में जाके Signal को माइक्रोफ़ोन इस्तेमाल करने की अनुमति दें।";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal से कॉल करने या वॉइस मैसेज भेजने के लिए, iOS सेटिंग ऐप में जाकर माइक्रोफ़ोन का ऐक्सेस दें।";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "माइक्रोफ़ोन इस्तेमाल करने की अनुमति चाहिए";
+"CALL_AUDIO_PERMISSION_TITLE" = "माइक्रोफ़ोन का ऐक्सेस देना ज़रूरी है";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_ANSWER" = "जवाब दें";
@@ -1250,13 +1250,13 @@
 "CALL_LOWER_HAND_BUTTON_LABEL" = "हाथ नीचे करें";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ कॉल करने वाले का सुरक्षा नंबर बदल जाने की वजह से कॉल मिस हो गयी।";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ कॉल करने वाले का सेफ़्टी नंबर बदलने की वजह से कॉल मिस हो गई।";
 
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "हाथ बढ़ाएं";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "कॉल पर वापस जाएँ";
+"CALL_RETURN_BUTTON" = "कॉल पर वापस जाएं";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "कोई उत्तर नहीं";
@@ -1265,40 +1265,40 @@
 "CALL_START_BUTTON" = "कॉल शुरू करें";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "कॉल";
+"CALL_USER_ALERT_CALL_BUTTON" = "कॉल करें";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "क्या आप %1$@ को कॉल करना चाहते हैं?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "क्या आपको %1$@ को कॉल करनी है?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "कॉल?";
+"CALL_USER_ALERT_TITLE" = "कॉल करनी है?";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "%1$@ बजे छूटा वीडियो कॉल 📹";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ बजे एक वीडियो कॉल मिस हुई";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 मिस हुई वीडियो कॉल";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "%1$@ को छूटा वीडियो कॉल 📹";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ बजे एक वीडियो कॉल मिस हुई";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "%1$@ को छूटा वीडियो कॉल 📹";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ को छूटा वीडियो कॉल";
 
 /* label for accepting incoming video calls as audio only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "वीडियो के बिना जवाब दें";
 
 /* label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "उत्तर";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "जवाब दें";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ऑडियो";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "रद्द करें";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "खारिज करें";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "कॉल बंद";
+"CALL_VIEW_HANGUP_LABEL" = "कॉल समाप्त करें";
 
 /* Accessibility label for leaving a call */
 "CALL_VIEW_LEAVE_CALL_LABEL" = "कॉल छोड़ें";
@@ -1334,13 +1334,13 @@
 "CALL_WAITING_TO_BE_LET_IN" = "अंदर जाने देने की प्रतीक्षा में...";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "वापस कॉल करें";
+"CALLBACK_BUTTON_TITLE" = "कॉल बैक करें";
 
 /* Indicates to the user that their camera is currently off. */
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "आपका कैमरा बंद है";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal उपभोगकर्ता";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal यूज़र";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal समूह \n";
@@ -1424,7 +1424,7 @@
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "जानकारी";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "एक तस्वीर लें औेर भेजें";
+"CAMERA_BUTTON_HINT" = "कोई तस्वीर लें औेर भेजें";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "कैमरा";
@@ -1433,31 +1433,31 @@
 "CAMERA_VO_ARROW_RIGHT_PROCEED" = "आगे बढ़ें";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "एलबम मोड";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "अलबम मोड";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "बंद";
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "बंद करें";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "पर";
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "चालू करें";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
 "CAMERA_VO_CAMERA_BACK_FACING" = "पीछे का कैमरा";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "कैमरा चयनकर्ता";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "कैमरा चुनें";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "कैमरे बदलता है";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "कैमरा बदलें";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
 "CAMERA_VO_CAMERA_FRONT_FACING" = "सामने का कैमरा";
 
 /* VoiceOver label for close (X) button in camera. */
-"CAMERA_VO_CLOSE_BUTTON" = "बंद करो";
+"CAMERA_VO_CLOSE_BUTTON" = "बंद करें";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "कम्पोज़र मोड";
+"CAMERA_VO_COMPOSER_MODE" = "कंपोज़र मोड";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "ऑटोमैटिक";
@@ -1466,10 +1466,10 @@
 "CAMERA_VO_FLASH_BUTTON" = "फ़्लैश";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_OFF" = "बंद";
+"CAMERA_VO_FLASH_OFF" = "बंद करें";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_ON" = "पर";
+"CAMERA_VO_FLASH_ON" = "चालू करें";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
 "CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "फ़ोटो और वीडियो व्यूअर";
@@ -1478,7 +1478,7 @@
 "CAMERA_VO_STOP_VIDEO_REC" = "वीडियो रिकॉर्डिंग रोकें";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "पिक्चर लें";
+"CAMERA_VO_TAKE_PICTURE" = "तस्वीर लें";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
 "CAMERA_VO_TAKE_VIDEO" = "वीडियो लें";
@@ -1535,16 +1535,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "फ़ोटो एडिट करें";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "आप नए नंबर के रूप में अपना पुराना नंबर इस्तेमाल नहीं कर सकते। अपना नंबर बदलने के लिए कृपया एक नया फोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "नए नंबर के तौर पर अपना पुराना नंबर नहीं डाला जा सकता। फ़ोन नंबर बदलने के लिए अपना नया नंबर डालें।";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "आपके द्वारा दर्ज किया गया फोन नंबर आपके खाते के फोन नंबर से मेल नहीं खाता है।";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "आपने जो फ़ोन नंबर डाला है, वह आपके अकाउंट से मेल नहीं खाता।";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "नया फोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "नया फ़ोन नंबर सही नहीं है। नंबर बदलने के लिए, सही फ़ोन नंबर डालें।";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "पुराना फोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फोन नंबर दर्ज करें।";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "पुराना फ़ोन नंबर सही नहीं है। नंबर बदलने के लिए, सही फ़ोन नंबर डालें।";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "ये चैट रंग का पूर्वावलोकन है।";
@@ -1553,16 +1553,16 @@
 "CHAT_COLOR_INCOMING_MESSAGE_1" = "ये चैट रंग का पूर्वावलोकन है।";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "एक और बुलबुला।";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "एक और बबल";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "रंग केवल आपको दिखाई देता है।";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "रंग सिर्फ़ आपको दिखाई देगा।";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "रंग केवल आपको दिखाई देता है।";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "रंग सिर्फ़ आपको दिखाई देगा।";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "रंग केवल आपको दिखाई देता है।";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "रंग सिर्फ़ आपको दिखाई देगा।";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "ऑटो";
@@ -1577,7 +1577,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "रंग बदले";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "अपने आप वॉलपेपर के रंग जैसा हो जाता है";
+"CHAT_COLORS_AUTO_TOOLTIP" = "यह अपने-आप वॉलपेपर के रंग जैसा हो जाता है";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "अपठित फिल्टर साफ करें";
@@ -1673,10 +1673,10 @@
 "COMPOSE_BUTTON_HINT" = "चैट शुरु करने के लिये किसी Signal उपभोगकर्ता को चुनें या खोजें।";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "संदेश लिखें";
+"COMPOSE_BUTTON_LABEL" = "मैसेज कंपोज़ करें";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "संपर्क";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "कॉन्टैक्ट";
 
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "ग्रुप";
@@ -1703,13 +1703,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "सेटिंग्स खोलें";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपके कितने संपर्क Signal उपभोगकर्ता हैं, यह जानने के लिये iOS सेटिंग्स ऐप में जा कर Signal को आपके संपर्क पढने की अनुमति दें।";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS सेटिंग ऐप में जाकर कॉन्टैक्ट का ऐक्सेस दें। इससे आपको पता चल पाएगा कि आपके कॉन्टैक्ट से कौन-कौन Signal का इस्तेमाल कर रहा है।";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "प्रतिक्रियाएँ कन्फ़िगर करें";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "यह आपके संदेशों को हटाकर एप्लिकेशन को रीसेट कर देगा। यह प्रक्रिया पूरी होने के बाद ऐप बंद हो जाएगा।";
+"CONFIRM_DELETE_DATA_TEXT" = "इससे आपके सभी मैसेज डिलीट हो जाएंगे और ऐप्लिकेशन रीसेट हो जाएगा। प्रक्रिया पूरी होने के बाद ऐप अपने-आप बंद हो जाएगा।";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
@@ -1721,10 +1721,10 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "अब आप इस ग्रुप मे कोई मेसेज भेज या प्राप्त नहीं कर पाऐंगे।";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "इसके बाद आपके पास इस ग्रुप में कोई मैसेज भेजने या पाने की सुविधा नहीं रहेगी।";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "क्या आपको यकीन है आप यह समूर छोङना चाहते हैं?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "क्या आपको वाकई यह ग्रुप छोड़ना है?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "नया डिवाइस लिंक करें";
@@ -1763,13 +1763,13 @@
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "सत्यापित नहीं है";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "नंबर पंजीकृत नहीं है";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "नंबर रजिस्टर नहीं है";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "ईमेल";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "कुलनाम";
+"CONTACT_FIELD_FAMILY_NAME" = "सरनेम";
 
 /* Label for the 'given name' field of a contact. */
 "CONTACT_FIELD_GIVEN_NAME" = "नाम";
@@ -1778,10 +1778,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "मध्य नाम";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "प्रिफिक्स";
+"CONTACT_FIELD_NAME_PREFIX" = "प्रीफ़िक्स";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "सफिक्स";
+"CONTACT_FIELD_NAME_SUFFIX" = "सफ़िक्स";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "संस्था";
@@ -1808,13 +1808,13 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "अपनी चैट में संपर्क के नामों और फ़ोटोस को देखने के लिए:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "नीचे \"सेटिंग्स पर जाएँ\" पर टैप करें";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "नीचे 'सेटिंग पर जाएं' पर टैप करें";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "\"संपर्क\" चालू करें";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "कॉन्टैक्ट चालू करें";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "संपर्क चालू करें";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "कॉन्टैक्ट चालू करें";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "अभी नहीं";
@@ -1835,19 +1835,19 @@
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "ईमेल उपलब्ध नहीं है।";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "फोन नंबर उपलब्ध नहीं है।";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "फ़ोन नंबर उपलब्ध नहीं है।";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "संपर्क चुनें";
+"CONTACT_PICKER_TITLE" = "कॉन्टैक्ट चुनें";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "संपर्क भेजें";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "कॉन्टैक्ट शेयर करें";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "नाम बदलें";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "नाम एडिट करें";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "संपर्क अमान्य है।";
+"CONTACT_SHARE_INVALID_CONTACT" = "कॉन्टैक्ट अमान्य है।";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal को आपके संपर्कों तक पहुंच की आवश्यकता है। iOS सेटिंग्स में जाएं और कॉन्टैक्ट्स ऑन करें। आपके संपर्क एन्क्रिप्टेड हैं और Signal सेवा को दिखाई नहीं देते हैं।";
@@ -1856,13 +1856,13 @@
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "संपर्क देखने की अनुमति दें।";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "समर्थन से संपर्क करें";
+"CONTACT_SUPPORT" = "सपोर्ट टीम से संपर्क करें";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "दान और बैज";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "डोनेशन और बैज";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "दान और बैज";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "डोनेशन और बैज";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "मैं एक नई सुविधा का अनुरोध करना चाहता/चाहती हूं";
@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "आपको इस डिवाइस पर Signal से लॉग आउट कर दिया गया है।";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "फिर से रजिस्टर करें";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "यह फ़ोन नंबर फिर से रजिस्टर करना है?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "यह डिवाइस अब पंजीकृत नहीं है। ऐसा शायद इसलिए हो सकता है कि आपने अपना फोन नंबर किसी दूसरी डिवाइस पर Signal के साथ पंजीकृत किया है।";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "अपने Signal बैकअप से अपना अकाउंट और मैसेज रीस्टोर करें";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal सिक्योर बैकअप रीस्टोर करें";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "चुनें कि आप अपने संदेश इतिहास और अकाउंट के डेटा को कैसे रीस्टोर करना चाहेंगे।";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "एक से ज़्यादा वोट की अनुमति दें";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "पोल देखें";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "परिणाम देखें";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "आरंभ करने के लिए अपना फोन नंबर दर्ज करें।";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "इस नंबर पर एक वेरिफ़िकेशन कोड भेजा जाएगा:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "आपका फोन नंबर";

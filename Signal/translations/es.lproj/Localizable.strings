@@ -239,7 +239,7 @@
 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE" = "Restablecer datos de la aplicación";
 
 /* Message for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "Todos los datos de la aplicación se eliminarán de forma permanente. Esto solo es necesario si no puedes iniciar la aplicación.";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "Todos los datos de la aplicación se eliminarán de forma permanente. Esto solo es necesario si no puedes iniciar Signal.";
 
 /* Title for an action sheet confirming the user wants to wipe all app data. */
 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "¿Restablecer todos los datos de la aplicación?";
@@ -905,7 +905,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Subiendo %1$@ de %2$@ (%3$@)";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Dependiendo del tamaño de tu copia de seguridad, este proceso puede llevar bastante tiempo. Mientras se realiza la copia de seguridad, podrás seguir usando Signal como de costumbre.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Dependiendo del tamaño de tu copia de seguridad, este proceso puede llevar bastante tiempo. Mientras se genera la copia de seguridad, podrás seguir usando Signal como de costumbre.";
 
 /* Title for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "¡Has activado Copias Seguras de Signal! Ya puedes iniciar tu copia de seguridad.";
@@ -2021,7 +2021,7 @@
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Añadir participantes";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Añadir a contacto existente";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Añadir a un contacto";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a contactos del teléfono";
@@ -2291,13 +2291,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Ejecutar";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Esto nos ayudará a solucionar tu problema y puede llevar varios minutos en completarse. Puedes cerrar Signal mientras realizamos esta verificación, pero recuerda regresar para enviar tus registros.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Esto nos ayudará a solucionar tu problema y puede llevar varios minutos en completarse. Puedes cerrar Signal mientras completamos esta verificación, pero recuerda regresar para enviar tus registros.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Omitir";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "¿Realizar diagnóstico de la base de datos?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "¿Ejecutar diagnóstico de la base de datos?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Es posible que parte de tu historial de mensajes esté dañado. Esto no ha afectado a la seguridad de tu cuenta ni de tus mensajes. Toca \"Continuar\" para recuperar tus datos.";
@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "Se ha cerrado tu sesión de Signal en este dispositivo.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "Volver a registrar";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "¿Quieres volver a registrar este número?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Probablemente se deba a que has registrado tu número de teléfono en Signal con un dispositivo diferente.";
@@ -2624,10 +2624,10 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Esperando para conectar al iPhone anterior…";
 
 /* Description in the progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "No se ha podido realizar la transferencia al nuevo dispositivo. Acerca tu dispositivo anterior y vuelve a intentarlo.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "No se ha podido completar la transferencia al nuevo dispositivo. Acerca tu dispositivo anterior y vuelve a intentarlo.";
 
 /* Title for a progress view displayed after failure of device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "No se ha podido realizar la transferencia";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE" = "No se ha podido completar la transferencia";
 
 /* Title for a progress view displayed during device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "Transferencia en curso";
@@ -2702,10 +2702,10 @@
 "DISCARD_DRAFT_CONFIRMATION_TITLE" = "¿Descartar borrador?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Ignorar";
+"DISMISS_BUTTON_TEXT" = "Cerrar";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Ocultar menú contextual";
+"DISMISS_CONTEXT_MENU" = "Cerrar menú contextual";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostrar insignias en mi perfil";
@@ -2777,7 +2777,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Puedes enviar hasta %1$@ mediante transferencia bancaria. Prueba con otro importe o un método de pago.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de realizar otra.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de hacer otra.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
@@ -2888,7 +2888,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Tu pago se ha procesado, pero Signal no ha podido enviar tu mensaje de donación. Contacta con el equipo de asistencia.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "No se ha podido realizar la donación";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "No se ha podido hacer la donación";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ ha hecho una donación en tu nombre";
@@ -2903,7 +2903,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "No puedes hacer una donación en nombre de esta persona porque la has bloqueado.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "No se puede realizar la donación";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "No se puede hacer la donación";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Canjear";
@@ -3638,7 +3638,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ ha iniciado una llamada grupal";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
-"GROUP_CALL_TOO_LARGE_TO_RING" = "No se puede realizar la llamada porque el grupo es demasiado grande.";
+"GROUP_CALL_TOO_LARGE_TO_RING" = "No se puede hacer la llamada porque el grupo es demasiado grande.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ y %2$@ están en esta llamada";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restaura tu cuenta y tus mensajes desde tu copia de seguridad de Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurar Copias Seguras de Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Elige cómo quieres restaurar tu historial de mensajes y los datos de tu cuenta.";
@@ -5657,7 +5657,7 @@
 "ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Notificaciones";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal desea obtener los siguientes permisos.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal necesita los siguientes permisos.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activar permisos";
@@ -5999,7 +5999,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Transacción no válida";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualiza Signal para realizar pagos.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualiza Signal para hacer y recibir pagos.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Todavía no se ha verificado el pago";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "Permitir varios votos";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "Ver encuesta";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Ver resultados";
@@ -6923,7 +6923,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Transferencia no finalizada";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Asegúrate de haber introducido la misma clave de recuperación de 64 caracteres que guardaste al habilitar las copias de seguridad de Signal. Sin esta clave, no se pueden recuperar las copias de seguridad.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Asegúrate de haber introducido la misma clave de recuperación de 64 caracteres que guardaste al habilitar las copias de seguridad de Signal. Sin esta clave, no es posible recuperar las copias de seguridad.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Clave de recuperación incorrecta";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Introduce tu número de teléfono para comenzar.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "Se enviará una clave de verificación a este número:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Tu número de teléfono";

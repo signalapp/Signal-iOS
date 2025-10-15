@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "คุณออกจากระบบ Signal บนอุปกรณ์เครื่องนี้แล้ว";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "ลงทะเบียนอีกรอบ";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "ลงทะเบียนหมายเลขโทรศัพท์นี้อีกครั้งใช่หรือไม่";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "อุปกรณ์เครื่องนี้ไม่ได้ลงทะเบียนอีกต่อไป นี่น่าจะเป็นเพราะคุณลงทะเบียนหมายเลขโทรศัพท์นี้กับ Signal ไว้บนอุปกรณ์เครื่องอื่น";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "กู้คืนบัญชีและข้อความของคุณจากแพ็กเกจสำรองข้อมูลของ Signal";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "กู้คืนจากแพ็กเกจสำรองข้อมูลที่ปลอดภัยของ Signal";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "เลือกวิธีกู้คืนประวัติการส่งข้อความและข้อมูลบัญชีของคุณ";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "อนุญาตให้ตอบได้มากกว่าหนึ่งข้อ";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "ดูโพล";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "ดูผลโพล";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "ใส่หมายเลขโทรศัพท์ของคุณเพื่อเริ่มต้นใช้งาน";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "รหัสยืนยันจะถูกส่งไปยังหมายเลขโทรศัพท์นี้:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "หมายเลขโทรศัพท์ของคุณ";

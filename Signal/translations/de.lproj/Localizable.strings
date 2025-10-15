@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "Du wurdest auf diesem Gerät von Signal abgemeldet.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "Erneut registrieren";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Telefonnummer erneut registrieren?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Dieses Gerät ist nicht mehr registriert. Das liegt wahrscheinlich daran, dass du deine Telefonnummer mit Signal auf einem anderen Gerät registriert hast.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Stelle dein Konto und deine Nachrichten aus deinem Signal Backup wieder her";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal Secure Backups wiederherstellen";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Wähle aus, wie du deinen Nachrichtenverlauf und deine Kontodaten wiederherstellen möchtest.";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "Mehrere Stimmen zulassen";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "Umfrage ansehen";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Ergebnisse ansehen";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Gib deine Telefonnummer ein, um zu beginnen.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "Ein Verifizierungscode wird an folgende Telefonnummer gesendet:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Deine Telefonnummer";

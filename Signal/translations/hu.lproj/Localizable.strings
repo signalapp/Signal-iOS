@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "Kijelentkeztél a Signalból ezen a készüléken.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "Újraregisztrálás";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Telefonszám újraregisztrálása?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Ez az eszköz már nincs regisztrálva. Ennek valószínűleg az az oka, hogy egy másik eszközön regisztráltad a telefonszámod a Signalon.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Fiók és üzenetek visszaállítása a Signal Biztonsági mentésből";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "A Signal biztonsági mentésének visszaállítása";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Válaszd ki, hogyan szeretnéd helyreállítani az üzenet-előzményeket és a fiókadatokat.";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "Több szavazat engedélyezése";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "Szavazás megtekintése";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "Eredmények megtekintése";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "A kezdéshez add meg a telefonszámod.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "Az ellenőrző kódot erre a számra küldjük:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Telefonszámod";

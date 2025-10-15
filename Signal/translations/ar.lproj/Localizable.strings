@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "تمَّ تسجيل خروجك من تطبيق سيجنال على هذا الجهاز.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "إعادة-التسجيل";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "هل ترغبُ بإعادة تسجيل رقم الهاتف هذا؟";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "هذا الجهاز لم يَعُد مُسجلًا. هذا على الأرجح بسبب قيامك بتسجيل رقم هاتفك على سيجنال باستخدام جهازٍ مختلف.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "استعِد حسابك ورسائلك من نسخة سيجنال الاحتياطية الخاصة بك.";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "استعادة النسخة الاحتياطية الآمنة على سيجنال";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "اختر الطريقة التي تودّ أن تستعيد بها سِجل رسائلك وبيانات حسابك.";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "السماح بالتصويت عدة مرّات";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "عرض الاستطلاع";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "عرض النتائج";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخِل رقم هاتفك للبدء.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "سيُرسَل كود التحقُّق إلى هذا الرقم:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "رقم هاتفك";

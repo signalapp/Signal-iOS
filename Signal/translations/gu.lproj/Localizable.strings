@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "તમે આ ડિવાઇસ પર Signalમાંથી લૉગ આઉટ થઈ ગયા છો.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "ફરીથી રજીસ્ટર";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "આ ફોન નંબરને ફરીથી રજીસ્ટર કરવો છે?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "આ ડિવાઇસ હવે રજિસ્ટર્ડ નથી. આ સંભવ છે કારણ કે તમે તમારા ફોન નંબરને Signal સાથે કોઈ બીજા ડિવાઇસ પર રજિસ્ટર કરાવ્યો છે.";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "તમારા Signal બેકઅપમાંથી તમારા એકાઉન્ટ અને મેસેજ રિસ્ટોર કરો";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal સુરક્ષિત બેકઅપ રિસ્ટોર કરો";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "તમે તમારી મેસેજ હિસ્ટ્રી અને એકાઉન્ટ ડેટાને કેવી રીતે રિસ્ટોર કરવા માંગો છો તે પસંદ કરો.";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "એકથી વધુ મતોની મંજૂરી આપો";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "મતદાન જુઓ";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "પરિણામો જુઓ";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "શરુ કરવા માટે તમારો ફોન નંબર દાખલ કરો.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "આ નંબર પર એક વેરિફિકેશન કોડ મોકલવામાં આવશે:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "તમારો ફોન નંબર";

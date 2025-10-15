@@ -2480,10 +2480,10 @@
 "DEREGISTRATION_NOTIFICATION" = "আপনি এই ডিভাইসে Signal থেকে লগ আউট হয়ে গিয়েছেন।";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
+"DEREGISTRATION_REREGISTER_BUTTON" = "পূনঃ নিবন্ধন করুন";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "এই ফোন নম্বর পূনরায় রেজিস্ট্রেশন করবেন?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "এই ডিভাইসটি আর নিবন্ধিত নয়। এটি হওয়ার সম্ভাব্য কারণ হলো, আপনি হয়তো একটি ভিন্ন ডিভাইসে Signal-এর সাথে আপনার ফোন নম্বর নিবন্ধন করেছেন।";
@@ -5561,7 +5561,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "আপনার Signal ব্যাকআপ থেকে আপনার অ্যাকাউন্ট ও মেসেজ পুনরুদ্ধার করুন";
 
 /* The title for the device transfer 'choice' view 'restore backup' option */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal নিরাপদ ব্যাকআপ পুনর্বহাল করুন";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "আপনার মেসেজের ইতিহাস ও অ্যাকাউন্টের ডেটা কীভাবে রিস্টোর করতে চান তা বেছে নিন";
@@ -6485,7 +6485,7 @@
 "POLL_ALLOW_MULTIPLE_LABEL" = "একাধিক ভোটের অনুমতি দিন";
 
 /* Button to view a poll after its ended */
-"POLL_BUTTON_VIEW_POLL" = "View Poll";
+"POLL_BUTTON_VIEW_POLL" = "জরিপ দেখুন";
 
 /* Button to view poll results */
 "POLL_BUTTON_VIEW_RESULTS" = "ফলাফল দেখুন";
@@ -7025,7 +7025,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "শুরু করতে আপনার ফোন নম্বর লিখুন।";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "A verification code will be sent to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "এই নম্বরে একটি যাচাইকরণ কোড পাঠানো হবে:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "আপনার ফোন নম্বর";
