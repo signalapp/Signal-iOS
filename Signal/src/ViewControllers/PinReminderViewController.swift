@@ -26,7 +26,7 @@ public class PinReminderViewController: OWSViewController {
         textField.font = .systemFont(ofSize: 22)
         textField.textAlignment = .center
         textField.isSecureTextEntry = true
-        textField.backgroundColor = .Signal.background
+        textField.backgroundColor = .Signal.secondaryGroupedBackground
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinReminder.pinTextField"
         textField.delegate = self

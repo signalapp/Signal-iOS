@@ -78,7 +78,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         if #available(iOS 26, *) {
             textField.tintColor = .Signal.label
         }
-        textField.backgroundColor = .Signal.background
+        textField.backgroundColor = .Signal.secondaryGroupedBackground
         textField.font = .systemFont(ofSize: 22)
         textField.textContentType = .password
         textField.isSecureTextEntry = true
