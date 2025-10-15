@@ -479,6 +479,8 @@ class BackupSettingsViewController:
 
     @MainActor
     private func _disableBackups(aepSideEffect: BackupDisablingManager.AEPSideEffect?) async {
+        let backupPlanBeforeDisabling = viewModel.backupPlan
+
         // If we were running a manual Backup, cancel it. Most of the manual
         // Backup steps will respond to BackupPlan changing, but for example the
         // message-export stage (ensconced in its own DB transaction) will not.
@@ -495,7 +497,7 @@ class BackupSettingsViewController:
         case .empty, .suspended, .notRegisteredAndReady, .appBackgrounded:
             break
         case .running, .noWifiReachability, .noReachability, .lowBattery, .lowPowerMode, .lowDiskSpace:
-            OWSActionSheets.showActionSheet(
+            let downloadsActionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE",
                     comment: "Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first."
@@ -504,8 +506,38 @@ class BackupSettingsViewController:
                     "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE",
                     comment: "Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first."
                 ),
-                fromViewController: self
             )
+            await OWSActionSheets.showAndAwaitActionSheet(downloadsActionSheet, fromViewController: self)
+        }
+
+        switch backupPlanBeforeDisabling {
+        case .disabled, .disabling, .free, .paidAsTester, .paidExpiringSoon:
+            break
+        case .paid:
+            // If the user still has a paid subscription, suggest that they
+            // cancel it.
+            let cancelSubscriptionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE",
+                    comment: "Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan.",
+                ),
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE",
+                    comment: "Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan.",
+                ),
+            )
+            cancelSubscriptionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON",
+                    comment: "Button for an action sheet shown when the user disables Backups, letting them manage their subscription.",
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    manageOrCancelPaidPlan()
+                }
+            ))
+            cancelSubscriptionSheet.addAction(.cancel)
+            await OWSActionSheets.showAndAwaitActionSheet(cancelSubscriptionSheet, fromViewController: self)
         }
     }
 

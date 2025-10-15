@@ -17,6 +17,20 @@ public enum OWSActionSheets {
         fromViewController.present(actionSheet, animated: true, completion: nil)
     }
 
+    /// Present the given action sheet, resuming when it is dismissed.
+    ///
+    /// Overwrites the action sheet's `onDismiss`.
+    @MainActor
+    public static func showAndAwaitActionSheet(
+        _ actionSheet: ActionSheetController,
+        fromViewController: UIViewController? = nil
+    ) async {
+        await withCheckedContinuation { continuation in
+            actionSheet.onDismiss = { continuation.resume() }
+            showActionSheet(actionSheet, fromViewController: fromViewController)
+        }
+    }
+
     public static func showActionSheet(
         title: String? = nil,
         message: String? = nil,
