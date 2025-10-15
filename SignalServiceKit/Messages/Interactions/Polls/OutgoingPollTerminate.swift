@@ -6,7 +6,9 @@
 import Foundation
 
 class OutgoingPollTerminateMessage: TSOutgoingMessage {
-    var targetPollTimestamp: UInt64?
+
+    @objc
+    var targetPollTimestamp: UInt64 = 0
 
     public init(
         thread: TSGroupThread,
@@ -48,9 +50,7 @@ class OutgoingPollTerminateMessage: TSOutgoingMessage {
 
         let pollTerminateBuilder = SSKProtoDataMessagePollTerminate.builder()
 
-        if let targetPollTimestamp {
-            pollTerminateBuilder.setTargetSentTimestamp(targetPollTimestamp)
-        }
+        pollTerminateBuilder.setTargetSentTimestamp(targetPollTimestamp)
 
         dataMessageBuilder.setPollTerminate(
             pollTerminateBuilder.buildInfallibly()
@@ -61,5 +61,44 @@ class OutgoingPollTerminateMessage: TSOutgoingMessage {
         }
 
         return dataMessageBuilder
+    }
+
+    public override func updateWithAllSendingRecipientsMarkedAsFailed(
+        error: (any Error)? = nil,
+        transaction tx: DBWriteTransaction
+    ) {
+        super.updateWithAllSendingRecipientsMarkedAsFailed(error: error, transaction: tx)
+
+        revertLocalStateIfFailedForEveryone(tx: tx)
+    }
+
+    private func revertLocalStateIfFailedForEveryone(tx: DBWriteTransaction) {
+        // Do nothing if we successfully delivered to anyone. Only cleanup
+        // local state if we fail to deliver to anyone.
+        guard sentRecipientAddresses().isEmpty else {
+            Logger.warn("Failed to send poll terminate to some recipients")
+            return
+        }
+
+        Logger.error("Failed to send poll terminate to all recipients.")
+
+        do {
+            guard let targetMessage = try DependenciesBridge.shared.interactionStore.fetchMessage(
+                timestamp: targetPollTimestamp,
+                incomingMessageAuthor: nil,
+                transaction: tx
+            ),
+                  let interactionId = targetMessage.grdbId?.int64Value
+            else {
+                Logger.error("Can't find target poll")
+                return
+            }
+
+            try PollStore().revertPollTerminate(interactionId: interactionId, transaction: tx)
+
+            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+        } catch {
+            Logger.error("Failed to revert poll terminate: \(error)")
+        }
     }
 }

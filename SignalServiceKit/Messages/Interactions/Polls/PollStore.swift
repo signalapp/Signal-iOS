@@ -44,6 +44,15 @@ public class PollStore {
             .updateAll(transaction.database, [PollRecord.Columns.isEnded.set(to: true)])
     }
 
+    public func revertPollTerminate(
+        interactionId: Int64,
+        transaction: DBWriteTransaction
+    ) throws {
+        try PollRecord
+            .filter(Column(PollRecord.CodingKeys.interactionId.rawValue) == interactionId)
+            .updateAll(transaction.database, [PollRecord.Columns.isEnded.set(to: false)])
+    }
+
     public func owsPoll(
         question: String,
         message: TSMessage,
