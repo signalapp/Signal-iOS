@@ -118,9 +118,18 @@ public extension UIButton {
             button.titleLabel?.lineBreakMode = .byWordWrapping
         }
     }
+
+    func enclosedInVerticalStackView(isFullWidthButton: Bool) -> UIStackView {
+        return [self].enclosedInVerticalStackView(isFullWidthButtons: isFullWidthButton)
+    }
 }
 
-// MARK: - UIButton.Configuration
+public extension Array where Element == UIButton {
+
+    func enclosedInVerticalStackView(isFullWidthButtons: Bool) -> UIStackView {
+        return UIStackView.verticalButtonStack(buttons: self, isFullWidthButtons: isFullWidthButtons)
+    }
+}
 
 extension UIConfigurationTextAttributesTransformer {
     /// Assign to a text attributes transformer (e.g., `UIButton.Configuration.titleTextAttributesTransformer`)

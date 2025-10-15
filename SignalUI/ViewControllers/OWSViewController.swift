@@ -471,3 +471,85 @@ private class PassthroughTouchSpacerView: SpacerView {
         return view
     }
 }
+
+public extension OWSViewController {
+
+    /// Add provided views to view controller's view hierarchy in a vertical stack.
+    ///
+    /// Use this method for adding vertically aligned static content to the view controller's view.
+    ///
+    /// - Parameters:
+    ///   - arrangedSubviews: Views to add to the view hierarchy.
+    ///   - isScrollable: If set to `true`, stack view will be embedded in a vertical scroll view. Use this if there's a chance that content won't fit screen height.
+    ///   - shouldAvoidKeyboard: If set to `true`, bottom edge of the stack view will be pinned to top of the keyboard.
+    ///
+    /// - Returns:
+    ///   A vertical stack view that has been configured using default parameters and added to view controller's view along with necessary auto layout constraints.
+    @discardableResult
+    func addStaticContentStackView(
+        arrangedSubviews: [UIView],
+        isScrollable: Bool = false,
+        shouldAvoidKeyboard: Bool = false
+    ) -> UIStackView {
+
+        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        if isScrollable {
+            let scrollView = UIScrollView()
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(scrollView)
+            scrollView.addSubview(stackView)
+            NSLayoutConstraint.activate([
+                // Scroll view's top is constrained to `contentLayoutGuide`.
+                scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+                // Scroll view's bottom is constrained either to `contentLayouGuide` or to `keyboardLayoutGuide`.
+                {
+                    if shouldAvoidKeyboard {
+                        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
+                    } else {
+                        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+                    }
+
+                }(),
+
+                // Scroll view is horizontally constrained to root view's safe area.
+                // This is done so that scroll view's indicator isn't too close to the content.
+                scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+                scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+
+                // Stack view is vertically constrained to scroll view's `contentLayoutGuide`.
+                stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+                stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+
+                // Stack view is stretched vertically to fill scroll view's height.
+                stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
+
+                // Stack view is horizontally constrained to `contentLayoutGuide`.
+                stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+                stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            ])
+        } else {
+            view.addSubview(stackView)
+            NSLayoutConstraint.activate([
+                // Stack view is constrained to `contentLayoutGuide` in all but one directions.
+                stackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+                stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+                stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+                // Stack view's bottom is constrained either to `contentLayouGuide` or to `keyboardLayoutGuide`.
+                {
+                    if shouldAvoidKeyboard {
+                        stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
+                    } else {
+                        stackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+                    }
+                }(),
+            ])
+        }
+
+        return stackView
+    }
+}
