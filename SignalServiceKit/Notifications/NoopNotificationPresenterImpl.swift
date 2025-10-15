@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
+
 public class NoopNotificationPresenterImpl: NotificationPresenter {
     public func registerNotificationSettings() async {
         Logger.warn("")
@@ -66,6 +68,15 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUserOfPollEnd(
         forMessage message: TSIncomingMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.warn("")
+    }
+
+    public func notifyUserOfPollVote(
+        forMessage message: TSOutgoingMessage,
+        voteAuthor: Aci,
         thread: TSThread,
         transaction: DBWriteTransaction
     ) {

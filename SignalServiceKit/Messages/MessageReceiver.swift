@@ -518,15 +518,16 @@ public final class MessageReceiver {
                            return
                        }
                        do {
-                           let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                           guard let (targetMessage, _) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
                                 voteAuthor: localIdentifiers.aci,
                                 pollVoteProto: pollVote,
                                 transaction: tx
-                           )
-
-                           if let targetMessage {
-                               SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                           ) else {
+                               Logger.error("error processing poll vote!")
+                               return
                            }
+
+                            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
                        } catch {
                            Logger.error("Failed to vote in poll \(error)")
                            return
@@ -1209,15 +1210,28 @@ public final class MessageReceiver {
 
         if let pollVote = dataMessage.pollVote {
             do {
-                let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                guard let (targetMessage, shouldNotifyAuthorOfVote) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
                     voteAuthor: envelope.sourceAci,
                     pollVoteProto: pollVote,
                     transaction: tx
-                )
+                ) else {
+                    Logger.error("error processing poll vote!")
+                    return nil
+                }
 
                 // Update interaction in the conversation view
-                if let targetMessage {
-                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                if shouldNotifyAuthorOfVote {
+                    // If this is not an unvote, the user is the poll creator and the vote isn't authored by them, send a notification.
+                    if let outgoingMessage = targetMessage as? TSOutgoingMessage {
+                            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollVote(
+                                forMessage: outgoingMessage,
+                                voteAuthor: envelope.sourceAci,
+                                thread: thread,
+                                transaction: tx
+                            )
+                    }
                 }
             } catch {
                 owsFailDebug("Could not insert poll vote!")

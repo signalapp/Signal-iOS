@@ -82,7 +82,7 @@ public class PollMessageManager {
         voteAuthor: Aci,
         pollVoteProto: SSKProtoDataMessagePollVote,
         transaction: DBWriteTransaction
-    ) throws -> TSMessage? {
+    ) throws -> (TSMessage, shouldNotifyAuthorOfVote: Bool)? {
         guard let aciBinary = pollVoteProto.targetAuthorAciBinary,
               let pollAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
         else {
@@ -113,7 +113,7 @@ public class PollMessageManager {
             return nil
         }
 
-        try pollStore.updatePollWithVotes(
+        let isUnvote = try pollStore.updatePollWithVotes(
             interactionId: interactionId,
             optionsVoted: pollVoteProto.optionIndexes,
             voteAuthorId: voteAuthorId,
@@ -121,7 +121,9 @@ public class PollMessageManager {
             transaction: transaction
         )
 
-        return targetMessage
+        let shouldNotifyAuthorOfVote = !isUnvote && localAci == pollAuthorAci && localAci != voteAuthor
+
+        return (targetMessage, shouldNotifyAuthorOfVote)
     }
 
     public func processIncomingPollTerminate(
@@ -272,7 +274,7 @@ public class PollMessageManager {
             return
         }
 
-        try pollStore.updatePollWithVotes(
+        _ = try pollStore.updatePollWithVotes(
             interactionId: interactionId,
             optionsVoted: optionIndexes,
             voteAuthorId: localAuthorRecipientId,

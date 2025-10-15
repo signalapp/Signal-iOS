@@ -138,19 +138,22 @@ public class PollStore {
 
     typealias OptionId = Int64
 
+    /// Updates a poll with the new snapshot of votes.
+    /// Returns a bool indicating whether this new
+    /// snapshot only "unvoted" options.
     public func updatePollWithVotes(
         interactionId: Int64,
         optionsVoted: [OWSPoll.OptionIndex],
         voteAuthorId: Int64,
         voteCount: UInt32,
         transaction: DBWriteTransaction
-    ) throws {
+    ) throws -> Bool {
         guard let poll = try pollForInteractionId(
             interactionId: interactionId,
             transaction: transaction
         ), let pollId = poll.id else {
             Logger.error("Can't find target poll")
-            return
+            return false
         }
 
         guard try checkValidVote(
@@ -158,7 +161,7 @@ public class PollStore {
             optionsVoted: optionsVoted,
             transaction: transaction
         ) else {
-            return
+            return false
         }
 
         let highestVoteCount = try highestVoteCount(
@@ -170,7 +173,7 @@ public class PollStore {
 
         guard highestVoteCount < voteCount else {
             Logger.error("Ignoring vote because it is not most recent")
-            return
+            return false
         }
 
         /*
@@ -219,6 +222,8 @@ public class PollStore {
             )
             try pollVoteRecord.insert(transaction.database)
         }
+
+        return optionsVoted.isEmpty || Set(newVoteOptionIds).isSubset(of: currentVoteOptionIds)
     }
 
     private func checkValidVote(

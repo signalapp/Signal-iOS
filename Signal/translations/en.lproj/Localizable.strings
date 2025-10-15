@@ -6565,6 +6565,9 @@
 /* Label specifying the user can select one option */
 "POLL_SELECT_LABEL_SINGULAR" = "Select One";
 
+/* Notification that {{contact}} voted in a poll with question {{poll question}} */
+"POLL_VOTED_NOTIFICATION" = "%@ voted in the poll “%@”";
+
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
 

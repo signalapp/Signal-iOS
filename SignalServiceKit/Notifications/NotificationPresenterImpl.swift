@@ -38,6 +38,7 @@ public enum AppNotificationCategory: CaseIterable {
     case backupsEnabled
     case listMediaIntegrityCheckFailure
     case pollEndNotification
+    case pollVoteNotification
 }
 
 /// Represents "custom" notification actions. These are the ones that appear
@@ -200,6 +201,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.listMediaIntegrityCheckFailure"
         case .pollEndNotification:
             return "Signal.AppNotificationCategory.pollEndNotification"
+        case .pollVoteNotification:
+            return "Signal.AppNotificationCategory.pollVoteNotification"
         }
     }
 
@@ -241,6 +244,8 @@ extension AppNotificationCategory {
         case .listMediaIntegrityCheckFailure:
             return []
         case .pollEndNotification:
+            return []
+        case .pollVoteNotification:
             return []
         }
     }
@@ -655,12 +660,71 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let threadUniqueId = thread.uniqueId
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
-                category: .pollEndNotification,
+                category: .pollVoteNotification,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadUniqueId,
                 userInfo: AppNotificationUserInfo(),
                 intent: intent.map { ($0, .incoming) },
+                soundQuery: .thread(threadUniqueId)
+            )
+        }
+    }
+
+    public func notifyUserOfPollVote(
+        forMessage message: TSOutgoingMessage,
+        voteAuthor: Aci,
+        thread: TSThread,
+        transaction: DBWriteTransaction
+    ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
+        guard !isThreadMuted(thread, transaction: transaction) else { return }
+
+        // Poll vote notifications only get displayed if we can include the poll details.
+        let previewType = self.previewType(tx: transaction)
+        guard previewType == .namePreview else {
+            return
+        }
+        owsPrecondition(Self.shouldShowActions(for: previewType))
+
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: SignalServiceAddress(voteAuthor),
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: transaction
+        )
+
+        let pollVotedFormat = OWSLocalizedString(
+            "POLL_VOTED_NOTIFICATION",
+            comment: "Notification that {{contact}} voted in a poll with question {{poll question}}"
+        )
+        guard let pollQuestion = message.body else {
+            return
+        }
+
+        let voteAuthorName = SSKEnvironment.shared.contactManagerRef.nameForAddress(
+            SignalServiceAddress(voteAuthor),
+            localUserDisplayMode: .noteToSelf,
+            short: false,
+            transaction: transaction
+        )
+
+        let notificationBody: String = "\u{1F4CA}" + String(format: pollVotedFormat, voteAuthorName.string, pollQuestion)
+
+        let threadUniqueId = thread.uniqueId
+        enqueueNotificationAction(afterCommitting: transaction) {
+            await self.notifyViaPresenter(
+                category: .pollVoteNotification,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadUniqueId,
+                userInfo: AppNotificationUserInfo(),
+                intent: nil,
                 soundQuery: .thread(threadUniqueId)
             )
         }
