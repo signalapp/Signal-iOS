@@ -2042,18 +2042,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     error: .incorrectRecoveryKey,
                     isQuickRestore: (restoreMode == .quickRestore)
                 )
-                db.write { tx in
-                    updatePersistedState(tx) {
-                        $0.restoreMethod = nil
-                    }
-                }
                 switch result {
                 case .skipRestore, .none:
                     owsFailDebug("Encountered unexpected recovery path for incorrect recovery key.")
                     fallthrough
                 case .incorrectRecoveryKey, .tryAgain:
+                    // If the user entered an incorrect key, remember the restore method and only
+                    // prompt them to correct the key.  If they want to change the restore method,
+                    // they should be able to hit 'back' here to return to the restore method selection.
                     return .enterRecoveryKey(.init(canShowBackButton: true))
                 case .restartQuickRestore:
+                    // If restarting the QuickRestore flow, allow the user a chance to
+                    // to choose the restore method again.
+                    db.write { tx in
+                        updatePersistedState(tx) {
+                            $0.restoreMethod = nil
+                        }
+                    }
                     return .scanQuickRegistrationQrCode
                 }
             }
