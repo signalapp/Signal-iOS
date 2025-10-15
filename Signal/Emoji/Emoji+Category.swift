@@ -100,6 +100,7 @@ extension Emoji {
                     .sleepy,
                     .droolingFace,
                     .sleeping,
+                    .faceWithBagsUnderEyes,
                     .mask,
                     .faceWithThermometer,
                     .faceWithHeadBandage,
@@ -595,7 +596,8 @@ extension Emoji {
                     .familyAdultAdultChildChild,
                     .familyAdultChild,
                     .familyAdultChildChild,
-                    .footprints
+                    .footprints,
+                    .fingerprint
                 ]
             case .animals:
                 return [
@@ -708,6 +710,11 @@ extension Emoji {
                     .shell,
                     .coral,
                     .jellyfish,
+                    .crab,
+                    .lobster,
+                    .shrimp,
+                    .squid,
+                    .oyster,
                     .snail,
                     .butterfly,
                     .bug,
@@ -751,7 +758,8 @@ extension Emoji {
                     .leaves,
                     .emptyNest,
                     .nestWithEggs,
-                    .mushroom
+                    .mushroom,
+                    .leaflessTree
                 ]
             case .food:
                 return [
@@ -793,6 +801,7 @@ extension Emoji {
                     .gingerRoot,
                     .peaPod,
                     .brownMushroom,
+                    .rootVegetable,
                     .bread,
                     .croissant,
                     .baguetteBread,
@@ -844,11 +853,6 @@ extension Emoji {
                     .dumpling,
                     .fortuneCookie,
                     .takeoutBox,
-                    .crab,
-                    .lobster,
-                    .shrimp,
-                    .squid,
-                    .oyster,
                     .icecream,
                     .shavedIce,
                     .iceCream,
@@ -1278,6 +1282,7 @@ extension Emoji {
                     .longDrum,
                     .maracas,
                     .flute,
+                    .harp,
                     .iphone,
                     .calling,
                     .phone,
@@ -1416,6 +1421,7 @@ extension Emoji {
                     .toolbox,
                     .magnet,
                     .ladder,
+                    .shovel,
                     .alembic,
                     .testTube,
                     .petriDish,
@@ -1604,6 +1610,7 @@ extension Emoji {
                     .copyright,
                     .registered,
                     .tm,
+                    .splatter,
                     .hash,
                     .keycapStar,
                     .zero,
@@ -1752,6 +1759,7 @@ extension Emoji {
                     .cn,
                     .flagCo,
                     .flagCp,
+                    .flagSark,
                     .flagCr,
                     .flagCu,
                     .flagCv,
@@ -2025,6 +2033,7 @@ extension Emoji {
         case .sleepy: return .smileysAndPeople
         case .droolingFace: return .smileysAndPeople
         case .sleeping: return .smileysAndPeople
+        case .faceWithBagsUnderEyes: return .smileysAndPeople
         case .mask: return .smileysAndPeople
         case .faceWithThermometer: return .smileysAndPeople
         case .faceWithHeadBandage: return .smileysAndPeople
@@ -2521,6 +2530,7 @@ extension Emoji {
         case .familyAdultChild: return .smileysAndPeople
         case .familyAdultChildChild: return .smileysAndPeople
         case .footprints: return .smileysAndPeople
+        case .fingerprint: return .smileysAndPeople
         case .monkeyFace: return .animals
         case .monkey: return .animals
         case .gorilla: return .animals
@@ -2630,6 +2640,11 @@ extension Emoji {
         case .shell: return .animals
         case .coral: return .animals
         case .jellyfish: return .animals
+        case .crab: return .animals
+        case .lobster: return .animals
+        case .shrimp: return .animals
+        case .squid: return .animals
+        case .oyster: return .animals
         case .snail: return .animals
         case .butterfly: return .animals
         case .bug: return .animals
@@ -2674,6 +2689,7 @@ extension Emoji {
         case .emptyNest: return .animals
         case .nestWithEggs: return .animals
         case .mushroom: return .animals
+        case .leaflessTree: return .animals
         case .grapes: return .food
         case .melon: return .food
         case .watermelon: return .food
@@ -2712,6 +2728,7 @@ extension Emoji {
         case .gingerRoot: return .food
         case .peaPod: return .food
         case .brownMushroom: return .food
+        case .rootVegetable: return .food
         case .bread: return .food
         case .croissant: return .food
         case .baguetteBread: return .food
@@ -2763,11 +2780,6 @@ extension Emoji {
         case .dumpling: return .food
         case .fortuneCookie: return .food
         case .takeoutBox: return .food
-        case .crab: return .food
-        case .lobster: return .food
-        case .shrimp: return .food
-        case .squid: return .food
-        case .oyster: return .food
         case .icecream: return .food
         case .shavedIce: return .food
         case .iceCream: return .food
@@ -3188,6 +3200,7 @@ extension Emoji {
         case .longDrum: return .objects
         case .maracas: return .objects
         case .flute: return .objects
+        case .harp: return .objects
         case .iphone: return .objects
         case .calling: return .objects
         case .phone: return .objects
@@ -3326,6 +3339,7 @@ extension Emoji {
         case .toolbox: return .objects
         case .magnet: return .objects
         case .ladder: return .objects
+        case .shovel: return .objects
         case .alembic: return .objects
         case .testTube: return .objects
         case .petriDish: return .objects
@@ -3511,6 +3525,7 @@ extension Emoji {
         case .copyright: return .symbols
         case .registered: return .symbols
         case .tm: return .symbols
+        case .splatter: return .symbols
         case .hash: return .symbols
         case .keycapStar: return .symbols
         case .zero: return .symbols
@@ -3656,6 +3671,7 @@ extension Emoji {
         case .cn: return .flags
         case .flagCo: return .flags
         case .flagCp: return .flags
+        case .flagSark: return .flags
         case .flagCr: return .flags
         case .flagCu: return .flags
         case .flagCv: return .flags

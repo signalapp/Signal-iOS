@@ -513,7 +513,7 @@ extension EmojiGenerator {
 
 class WriteHandle {
     static let emojiDirectory = URL(
-        fileURLWithPath: "../Signal/src/util/Emoji",
+        fileURLWithPath: "../Signal/Emoji",
         isDirectory: true,
         relativeTo: EmojiGenerator.pathToFolderContainingThisScript!)
 
