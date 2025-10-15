@@ -46,11 +46,11 @@ public func owsFailDebug(
     line: Int = #line
 ) {
     logger.error(logMessage, file: file, function: function, line: line)
+    logger.flush()
     if IsDebuggerAttached() {
         TrapDebugger()
     } else if Preferences.isFailDebugEnabled {
         Preferences.setIsFailDebugEnabled(false)
-        logger.flush()
         fatalError(logMessage)
     } else {
         assertionFailure(logMessage)
@@ -67,7 +67,6 @@ public func owsFail(
 ) -> Never {
     logger.error(Thread.callStackSymbols.joined(separator: "\n"))
     owsFailDebug(logMessage, logger: logger, file: file, function: function, line: line)
-    logger.flush()
     fatalError(logMessage)
 }
 

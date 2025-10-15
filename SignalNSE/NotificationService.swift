@@ -104,7 +104,8 @@ class NotificationService: UNNotificationServiceExtension {
             // Detect and handle "no GRDB file" and "no keychain access".
             if !hasShownFirstUnlockError {
                 hasShownFirstUnlockError = true
-                logger.error("DB Keys not accessible; showing error.", flushImmediately: true)
+                logger.error("DB Keys not accessible; showing error.")
+                logger.flush()
                 let content = UNMutableNotificationContent()
                 let notificationFormat = OWSLocalizedString(
                     "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
@@ -115,7 +116,8 @@ class NotificationService: UNNotificationServiceExtension {
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
-                logger.error("DB Keys not accessible; completing silently.", flushImmediately: true)
+                logger.error("DB Keys not accessible; completing silently.")
+                logger.flush()
                 let emptyContent = UNMutableNotificationContent()
                 return emptyContent
             }

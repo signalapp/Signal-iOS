@@ -16,7 +16,7 @@ public func owsFailBeta(
     if FeatureFlags.isPrerelease {
         owsFail(logMessage, file: file, function: function, line: line)
     } else {
-        Logger.error(logMessage, file: file, function: function, line: line)
+        owsFailDebug(logMessage, file: file, function: function, line: line)
     }
 }
 

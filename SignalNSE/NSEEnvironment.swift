@@ -36,10 +36,8 @@ class NSEEnvironment {
             didStartAppSetup = true
         }
 
-        logger.info(
-            "pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)",
-            flushImmediately: true
-        )
+        logger.info("pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)")
+        logger.flush()
     }
 
     @MainActor
