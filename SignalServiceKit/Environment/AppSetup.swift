@@ -477,6 +477,7 @@ extension AppSetup.GlobalsContinuation {
         )
         let backupTestFlightEntitlementManager = BackupTestFlightEntitlementManagerImpl(
             backupPlanManager: backupPlanManager,
+            backupSubscriptionIssueStore: backupSubscriptionIssueStore,
             backupSubscriptionManager: backupSubscriptionManager,
             dateProvider: dateProvider,
             db: db,

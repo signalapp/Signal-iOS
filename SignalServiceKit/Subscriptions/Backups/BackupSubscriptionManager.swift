@@ -364,17 +364,21 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         try await db.awaitableWriteWithRollbackIfThrows { tx in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
-            let downgradedBackupPlan: BackupPlan? = {
+            enum Downgrade {
+                case toFreeTier
+                case toPaidExpiringSoon(optimizeLocalStorage: Bool)
+            }
+            let downgrade: Downgrade? = {
                 switch currentBackupPlan {
                 case
                         .paid where isEntitlementExpired,
                         .paidExpiringSoon where isEntitlementExpired:
                     logger.warn("Entitlement expired: downgrading.")
-                    return .free
+                    return .toFreeTier
 
                 case .paid(let optimizeLocalStorage) where isSubscriptionCanceled:
                     logger.warn("Subscription canceled: downgrading.")
-                    return .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                    return .toPaidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
 
                 case .paid, .paidExpiringSoon:
                     // No reason to downgrade.
@@ -390,10 +394,23 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 }
             }()
 
-            if let downgradedBackupPlan {
+            if let downgrade {
+                let downgradedBackupPlan: BackupPlan = switch downgrade {
+                case .toFreeTier:
+                    .free
+                case .toPaidExpiringSoon(let optimizeLocalStorage):
+                    .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                }
+
                 do {
                     try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
-                    backupSubscriptionIssueStore.setShouldWarnSubscriptionExpired(true, tx: tx)
+
+                    switch downgrade {
+                    case .toFreeTier:
+                        backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
+                    case .toPaidExpiringSoon:
+                        break
+                    }
                 } catch {
                     owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
                     throw error

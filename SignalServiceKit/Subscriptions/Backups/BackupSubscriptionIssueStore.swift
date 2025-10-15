@@ -5,7 +5,8 @@
 
 public struct BackupSubscriptionIssueStore {
     private enum Keys {
-        static let shouldWarnSubscriptionExpired = "shouldWarnSubscriptionExpired"
+        static let shouldWarnIAPSubscriptionExpired = "shouldWarnIAPSubscriptionExpired"
+        static let shouldWarnTestFlightSubscriptionExpired = "shouldWarnTestFlightSubscriptionExpired"
     }
 
     private let kvStore: NewKeyValueStore
@@ -16,15 +17,29 @@ public struct BackupSubscriptionIssueStore {
 
     // MARK: -
 
-    public func shouldWarnSubscriptionExpired(tx: DBReadTransaction) -> Bool {
+    public func shouldWarnIAPSubscriptionExpired(tx: DBReadTransaction) -> Bool {
         return kvStore.fetchValue(
             Bool.self,
-            forKey: Keys.shouldWarnSubscriptionExpired,
+            forKey: Keys.shouldWarnIAPSubscriptionExpired,
             tx: tx,
         ) ?? false
     }
 
-    public func setShouldWarnSubscriptionExpired(_ value: Bool, tx: DBWriteTransaction) {
-        kvStore.writeValue(value, forKey: Keys.shouldWarnSubscriptionExpired, tx: tx)
+    public func setShouldWarnIAPSubscriptionExpired(_ value: Bool, tx: DBWriteTransaction) {
+        kvStore.writeValue(value, forKey: Keys.shouldWarnIAPSubscriptionExpired, tx: tx)
+    }
+
+    // MARK: -
+
+    public func shouldWarnTestFlightSubscriptionExpired(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(
+            Bool.self,
+            forKey: Keys.shouldWarnTestFlightSubscriptionExpired,
+            tx: tx,
+        ) ?? false
+    }
+
+    public func setShouldWarnTestFlightSubscriptionExpired(_ value: Bool, tx: DBWriteTransaction) {
+        kvStore.writeValue(value, forKey: Keys.shouldWarnTestFlightSubscriptionExpired, tx: tx)
     }
 }

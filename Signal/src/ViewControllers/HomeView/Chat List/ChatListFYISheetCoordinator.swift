@@ -8,7 +8,7 @@ import SignalServiceKit
 
 @MainActor
 class ChatListFYISheetCoordinator {
-    private enum FYISheet {
+    fileprivate enum FYISheet {
         struct BadgeThanks {
             let redemptionSuccess: DonationReceiptCredentialRedemptionSuccess
             let successMode: DonationReceiptCredentialResultStore.Mode
@@ -29,7 +29,14 @@ class ChatListFYISheetCoordinator {
 
         struct BackupFailed {}
 
-        struct BackupSubscriptionExpired {}
+        struct BackupSubscriptionExpired {
+            enum SubscriptionType {
+                case iap
+                case testFlight
+            }
+
+            let subscriptionType: SubscriptionType
+        }
 
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
@@ -105,8 +112,10 @@ class ChatListFYISheetCoordinator {
             ))
         } else if backupFailureStateManager.shouldShowBackupFailurePrompt(tx: tx) {
             return .backupFailed(FYISheet.BackupFailed())
-        } else if backupSubscriptionIssueStore.shouldWarnSubscriptionExpired(tx: tx) {
-            return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired())
+        } else if backupSubscriptionIssueStore.shouldWarnIAPSubscriptionExpired(tx: tx) {
+            return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .iap))
+        } else if backupSubscriptionIssueStore.shouldWarnTestFlightSubscriptionExpired(tx: tx) {
+            return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .testFlight))
         } else {
             return nil
         }
@@ -416,17 +425,23 @@ class ChatListFYISheetCoordinator {
         logger.info("Showing BackupSubscriptionExpired FYI sheet.")
 
         let sheet = BackupSubscriptionExpiredHeroSheet(
+            subscriptionType: backupSubscriptionExpired.subscriptionType,
             onManageBackups: {
                 SignalApp.shared.showAppSettings(mode: .backups)
             },
         )
         chatListViewController.present(sheet, animated: true) { [self] in
             db.write { tx in
+                let snoozeMethod: (Bool, DBWriteTransaction) -> Void
+                switch backupSubscriptionExpired.subscriptionType {
+                case .iap:
+                    snoozeMethod = backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired
+                case .testFlight:
+                    snoozeMethod = backupSubscriptionIssueStore.setShouldWarnTestFlightSubscriptionExpired
+                }
+
                 // We showed the sheet, no need to show it again.
-                backupSubscriptionIssueStore.setShouldWarnSubscriptionExpired(
-                    false,
-                    tx: tx
-                )
+                snoozeMethod(false, tx)
             }
         }
     }
@@ -498,18 +513,29 @@ private class BackupFailedHeroSheet: HeroSheetViewController {
 
 private class BackupSubscriptionExpiredHeroSheet: HeroSheetViewController {
     init(
+        subscriptionType: ChatListFYISheetCoordinator.FYISheet.BackupSubscriptionExpired.SubscriptionType,
         onManageBackups: @escaping () -> Void,
     ) {
+        let bodyString: String = switch subscriptionType {
+        case .iap:
+            OWSLocalizedString(
+                "BACKUP_PLAN_DOWNGRADED_SHEET_BODY",
+                comment: "Body for a sheet shown when your Backup plan is downgraded.",
+            )
+        case .testFlight:
+            OWSLocalizedString(
+                "BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT",
+                comment: "Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight.",
+            )
+        }
+
         super.init(
             hero: .image(.backupsError),
             title: OWSLocalizedString(
                 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE",
                 comment: "Title for a sheet shown when your Backup plan is downgraded.",
             ),
-            body: OWSLocalizedString(
-                "BACKUP_PLAN_DOWNGRADED_SHEET_BODY",
-                comment: "Body for a sheet shown when your Backup plan is downgraded.",
-            ),
+            body: bodyString,
             primaryButton: HeroSheetViewController.Button(
                 title: OWSLocalizedString(
                     "BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON",

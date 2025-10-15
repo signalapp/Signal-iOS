@@ -24,6 +24,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     private let appAttestManager: AppAttestManager
     private let backupPlanManager: BackupPlanManager
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dateProvider: DateProvider
     private let db: DB
@@ -34,6 +35,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     init(
         backupPlanManager: BackupPlanManager,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         dateProvider: @escaping DateProvider,
         db: DB,
@@ -49,6 +51,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             networkManager: networkManager
         )
         self.backupPlanManager = backupPlanManager
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dateProvider = dateProvider
         self.db = db
@@ -129,29 +132,9 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
         }
 
         guard isCurrentlyTesterBuild else {
-            // We think we're a paid-tier tester, but our current build isn't a
-            // tester build! We likely went from TestFlight -> App Store builds.
-            //
-            // It's plausible, though, that we are still a paid-tier user by
-            // virtue of having an IAP subscription either from before we were
-            // on TestFlight, or from having moved to iOS from an Android on
-            // which we had an IAP subscription.
-            //
-            // To that end, check if we have an active IAP subscription. If so,
-            // set to `.paid`. If not, set to `.free`.
-            let newBackupPlan: BackupPlan
-            if
-                let subscription = try await backupSubscriptionManager.fetchAndMaybeDowngradeSubscription(),
-                subscription.active
-            {
-                newBackupPlan = .paid(optimizeLocalStorage: optimizeLocalStorage)
-            } else {
-                newBackupPlan = .free
-            }
-
-            try await db.awaitableWriteWithRollbackIfThrows { tx in
-                try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
-            }
+            try await downgradeForNoLongerTestFlight(
+                hadOptimizeLocalStorage: optimizeLocalStorage
+            )
             return
         }
 
@@ -170,6 +153,40 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
                 key: StoreKeys.lastEntitlementRenewalDate,
                 transaction: tx
             )
+        }
+    }
+
+    private func downgradeForNoLongerTestFlight(
+        hadOptimizeLocalStorage: Bool,
+    ) async throws {
+        let iapSubscription = try await backupSubscriptionManager.fetchAndMaybeDowngradeSubscription()
+
+        // We think we're a paid-tier tester, but our current build isn't a
+        // tester build! We likely went from TestFlight -> App Store builds.
+        //
+        // It's plausible, though, that we are still a paid-tier user by
+        // virtue of having an IAP subscription either from before we were
+        // on TestFlight, or from having moved to iOS from an Android on
+        // which we had an IAP subscription.
+        //
+        // To that end, check if we have an active IAP subscription. If so,
+        // set to `.paid`. If not, set to `.free`.
+        let newBackupPlan: BackupPlan
+        let shouldWarnDowngraded: Bool
+        if let iapSubscription, iapSubscription.active {
+            newBackupPlan = .paid(optimizeLocalStorage: hadOptimizeLocalStorage)
+            shouldWarnDowngraded = false
+        } else {
+            newBackupPlan = .free
+            shouldWarnDowngraded = true
+        }
+
+        try await db.awaitableWriteWithRollbackIfThrows { tx in
+            try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+
+            if shouldWarnDowngraded {
+                backupSubscriptionIssueStore.setShouldWarnTestFlightSubscriptionExpired(true, tx: tx)
+            }
         }
     }
 }
