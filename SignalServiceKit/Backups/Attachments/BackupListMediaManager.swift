@@ -20,18 +20,18 @@ public struct ListMediaIntegrityCheckResult: Codable {
         /// Count of attachments we expected to see on CDN but did not.
         /// This count is "bad".
         public fileprivate(set) var missingFromCdnCount: Int
-        public fileprivate(set) var missingFromCdnSampleAttachmentIds = Set<Attachment.IDType>()
+        public fileprivate(set) var missingFromCdnSampleAttachmentIds: Set<Attachment.IDType>? = Set()
         /// Count of attachments that exist locally, are eligible for upload, are not marked
         /// uploaded, are not on the CDN, and therefore _should_ be in the upload
         /// queue but are not in the upload queue.
         /// This count is "bad".
         public fileprivate(set) var notScheduledForUploadCount: Int = 0
-        public fileprivate(set) var notScheduledForUploadSampleAttachmentIds = Set<Attachment.IDType>()
+        public fileprivate(set) var notScheduledForUploadSampleAttachmentIds: Set<Attachment.IDType>? = Set()
         /// Count of attachments we did not expect to see on CDN but did see.
         /// This count can be "bad" because it could indicate a bug with local state management,
         /// but it could happen in normal edge cases if we just didn't know about a completed upload.
         public fileprivate(set) var discoveredOnCdnCount: Int
-        public fileprivate(set) var discoveredOnCdnSampleAttachmentIds = Set<Attachment.IDType>()
+        public fileprivate(set) var discoveredOnCdnSampleAttachmentIds: Set<Attachment.IDType>? = Set()
 
         static var empty: Result {
             return Result(uploadedCount: 0, ineligibleCount: 0, missingFromCdnCount: 0, discoveredOnCdnCount: 0)
@@ -41,8 +41,8 @@ public struct ListMediaIntegrityCheckResult: Codable {
             return missingFromCdnCount > 0 || notScheduledForUploadCount > 0 || discoveredOnCdnCount > 0
         }
 
-        mutating func addSampleId(_ id: Attachment.IDType, _ keyPath: WritableKeyPath<Result, Set<Attachment.IDType>>) {
-            var sampleIds = self[keyPath: keyPath]
+        mutating func addSampleId(_ id: Attachment.IDType, _ keyPath: WritableKeyPath<Result, Set<Attachment.IDType>?>) {
+            var sampleIds = self[keyPath: keyPath] ?? Set()
             if sampleIds.count >= 10 {
                 // Only keep 10 ids
                 return
@@ -1510,26 +1510,26 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         Logger.info("\(_result.thumbnail.ineligibleCount) ineligible attachments")
         if _result.fullsize.missingFromCdnCount > 0 {
             shouldNotify = true
-            Logger.error("Missing fullsize uploads from CDN, samples: \(_result.fullsize.missingFromCdnSampleAttachmentIds)")
+            Logger.error("Missing fullsize uploads from CDN, samples: \(_result.fullsize.missingFromCdnSampleAttachmentIds ?? Set())")
         }
         if _result.fullsize.notScheduledForUploadCount > 0 {
             shouldNotify = true
-            Logger.error("Unscheduled fullsize uploads, samples: \(_result.fullsize.notScheduledForUploadSampleAttachmentIds)")
+            Logger.error("Unscheduled fullsize uploads, samples: \(_result.fullsize.notScheduledForUploadSampleAttachmentIds ?? Set())")
         }
         if _result.fullsize.discoveredOnCdnCount > 0 {
             shouldNotify = true
-            Logger.error("Discovered fullsize upload on CDN, samples: \(_result.fullsize.discoveredOnCdnSampleAttachmentIds)")
+            Logger.error("Discovered fullsize upload on CDN, samples: \(_result.fullsize.discoveredOnCdnSampleAttachmentIds ?? Set())")
         }
 
         // Don't notify for thumbnail issues.
         if _result.thumbnail.missingFromCdnCount > 0 {
-            Logger.warn("Missing thumbnail uploads from CDN, samples: \(_result.thumbnail.missingFromCdnSampleAttachmentIds)")
+            Logger.warn("Missing thumbnail uploads from CDN, samples: \(_result.thumbnail.missingFromCdnSampleAttachmentIds ?? Set())")
         }
         if _result.thumbnail.notScheduledForUploadCount > 0 {
-            Logger.warn("Unscheduled thumbnail uploads, samples: \(_result.thumbnail.notScheduledForUploadSampleAttachmentIds)")
+            Logger.warn("Unscheduled thumbnail uploads, samples: \(_result.thumbnail.notScheduledForUploadSampleAttachmentIds ?? Set())")
         }
         if _result.thumbnail.discoveredOnCdnCount > 0 {
-            Logger.warn("Discovered thumbnail upload on CDN, samples: \(_result.thumbnail.discoveredOnCdnSampleAttachmentIds)")
+            Logger.warn("Discovered thumbnail upload on CDN, samples: \(_result.thumbnail.discoveredOnCdnSampleAttachmentIds ?? Set())")
         }
 
         if _result.orphanedObjectCount > 0 {
