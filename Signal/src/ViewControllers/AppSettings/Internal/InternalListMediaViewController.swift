@@ -118,7 +118,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             subtitle: "Bad if > 0",
             value: "\(listMediaResult.fullsize.missingFromCdnCount)"
         ))
-        section.add(.copyableItem(label: "Unscheduled count: Fullsize", value: "\(listMediaResult.fullsize.notScheduledForUploadCount)"))
+        section.add(.copyableItem(label: "Unscheduled count: Fullsize", value: "\(listMediaResult.fullsize.notScheduledForUploadCount ?? 0)"))
         section.add(.copyableItem(label: "Discovered count: Fullsize", value: "\(listMediaResult.fullsize.discoveredOnCdnCount)"))
         section.add(.copyableItem(label: "Uploaded count: Thumbnail", value: "\(listMediaResult.thumbnail.uploadedCount)"))
         section.add(.copyableItem(
@@ -131,7 +131,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
             subtitle: "Not good if > 0, but nbd",
             value: "\(listMediaResult.thumbnail.missingFromCdnCount)"
         ))
-        section.add(.copyableItem(label: "Unscheduled count: Thumbnail", value: "\(listMediaResult.thumbnail.notScheduledForUploadCount)"))
+        section.add(.copyableItem(label: "Unscheduled count: Thumbnail", value: "\(listMediaResult.thumbnail.notScheduledForUploadCount ?? 0)"))
         section.add(.copyableItem(label: "Discovered count: Thumbnail", value: "\(listMediaResult.thumbnail.discoveredOnCdnCount)"))
         section.add(.copyableItem(
             label: "Orphan count",

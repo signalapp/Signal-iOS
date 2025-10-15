@@ -25,7 +25,7 @@ public struct ListMediaIntegrityCheckResult: Codable {
         /// uploaded, are not on the CDN, and therefore _should_ be in the upload
         /// queue but are not in the upload queue.
         /// This count is "bad".
-        public fileprivate(set) var notScheduledForUploadCount: Int = 0
+        public fileprivate(set) var notScheduledForUploadCount: Int? = 0
         public fileprivate(set) var notScheduledForUploadSampleAttachmentIds: Set<Attachment.IDType>? = Set()
         /// Count of attachments we did not expect to see on CDN but did see.
         /// This count can be "bad" because it could indicate a bug with local state management,
@@ -38,7 +38,7 @@ public struct ListMediaIntegrityCheckResult: Codable {
         }
 
         var hasFailures: Bool {
-            return missingFromCdnCount > 0 || notScheduledForUploadCount > 0 || discoveredOnCdnCount > 0
+            return missingFromCdnCount > 0 || (notScheduledForUploadCount ?? 0) > 0 || discoveredOnCdnCount > 0
         }
 
         mutating func addSampleId(_ id: Attachment.IDType, _ keyPath: WritableKeyPath<Result, Set<Attachment.IDType>?>) {
@@ -1460,7 +1460,8 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
             return
         case .done, nil:
             // Not uploaded, eligible, not scheduled. Uh-oh.
-            _result[keyPath: resultKeyPath(isFullsize: isFullsize)].notScheduledForUploadCount += 1
+            _result[keyPath: resultKeyPath(isFullsize: isFullsize)].notScheduledForUploadCount =
+                (_result[keyPath: resultKeyPath(isFullsize: isFullsize)].notScheduledForUploadCount ?? 0) + 1
             _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.notScheduledForUploadSampleAttachmentIds)
             return
         }
@@ -1512,7 +1513,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
             shouldNotify = true
             Logger.error("Missing fullsize uploads from CDN, samples: \(_result.fullsize.missingFromCdnSampleAttachmentIds ?? Set())")
         }
-        if _result.fullsize.notScheduledForUploadCount > 0 {
+        if (_result.fullsize.notScheduledForUploadCount ?? 0) > 0 {
             shouldNotify = true
             Logger.error("Unscheduled fullsize uploads, samples: \(_result.fullsize.notScheduledForUploadSampleAttachmentIds ?? Set())")
         }
@@ -1525,7 +1526,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         if _result.thumbnail.missingFromCdnCount > 0 {
             Logger.warn("Missing thumbnail uploads from CDN, samples: \(_result.thumbnail.missingFromCdnSampleAttachmentIds ?? Set())")
         }
-        if _result.thumbnail.notScheduledForUploadCount > 0 {
+        if (_result.thumbnail.notScheduledForUploadCount ?? 0) > 0 {
             Logger.warn("Unscheduled thumbnail uploads, samples: \(_result.thumbnail.notScheduledForUploadSampleAttachmentIds ?? Set())")
         }
         if _result.thumbnail.discoveredOnCdnCount > 0 {
