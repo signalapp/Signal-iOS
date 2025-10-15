@@ -98,8 +98,8 @@ public extension Cryptography {
         static let diskPageSize = 8192
     }
 
-    static func paddedSize(unpaddedSize: UInt) -> UInt {
-        return UInt(PaddingBucket.forUnpaddedPlaintextSize(UInt64(unpaddedSize)).plaintextSize)
+    static func paddedSize(unpaddedSize: UInt) -> UInt? {
+        return PaddingBucket.forUnpaddedPlaintextSize(UInt64(unpaddedSize)).flatMap { UInt(exactly: $0.plaintextSize) }
     }
 
     /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob
@@ -111,7 +111,7 @@ public extension Cryptography {
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
     static func estimatedMediaTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
         let transitTierSize = UInt64(estimatedTransitTierCDNSize(unencryptedSize: unencryptedSize))
-        return UInt32(clamping: PaddingBucket.addingEncryptionOverhead(to: transitTierSize))
+        return UInt32(clamping: PaddingBucket.addingEncryptionOverhead(to: transitTierSize) ?? .max)
     }
 
     /// Given an unencrypted, unpadded byte count, returns the *estimated* byte count of the final padded, encrypted blob
@@ -122,7 +122,7 @@ public extension Cryptography {
     /// 1. It may be a different client uploading with a differing padding scheme (or a bug with its padding scheme)
     /// 2. Our padding scheme may change between when this is checked and when we upload(ed).
     static func estimatedTransitTierCDNSize(unencryptedSize: UInt32) -> UInt32 {
-        return UInt32(clamping: PaddingBucket.forUnpaddedPlaintextSize(UInt64(unencryptedSize)).encryptedSize)
+        return UInt32(clamping: PaddingBucket.forUnpaddedPlaintextSize(UInt64(unencryptedSize))?.encryptedSize ?? .max)
     }
 
     static func randomAttachmentEncryptionKey() -> Data {
@@ -387,15 +387,17 @@ public extension Cryptography {
             }
 
             // Add zero padding to the plaintext attachment data if necessary.
-            let paddedPlaintextLength = paddedSize(unpaddedSize: unpaddedPlaintextLength)
-            if applyExtraPadding, paddedPlaintextLength > unpaddedPlaintextLength {
-                let ciphertextBlock = try cipherContext.update(
-                    Data(repeating: 0, count: Int(paddedPlaintextLength - unpaddedPlaintextLength))
-                )
+            if applyExtraPadding {
+                let paddedPlaintextLength = paddedSize(unpaddedSize: unpaddedPlaintextLength)!
+                if paddedPlaintextLength > unpaddedPlaintextLength {
+                    let ciphertextBlock = try cipherContext.update(
+                        Data(repeating: 0, count: Int(paddedPlaintextLength - unpaddedPlaintextLength))
+                    )
 
-                hmac.update(data: ciphertextBlock)
-                sha256.update(data: ciphertextBlock)
-                output(ciphertextBlock)
+                    hmac.update(data: ciphertextBlock)
+                    sha256.update(data: ciphertextBlock)
+                    output(ciphertextBlock)
+                }
             }
 
             // Finalize the encryption and write out the last block.

@@ -25,7 +25,7 @@ struct PaddingBucketTest {
         (1_000_000_000, 1_012_633_066),
     ])
     func testPaddedSize(testCase: (unpaddedSize: UInt64, paddedSize: UInt64)) {
-        #expect(PaddingBucket.forUnpaddedPlaintextSize(testCase.unpaddedSize).plaintextSize == testCase.paddedSize)
+        #expect(PaddingBucket.forUnpaddedPlaintextSize(testCase.unpaddedSize)?.plaintextSize == testCase.paddedSize)
     }
 
     @Test(arguments: [
@@ -44,7 +44,7 @@ struct PaddingBucketTest {
         (1_000_000_000, 1_012_633_120),
     ])
     func testEncryptedSize(testCase: (unpaddedSize: UInt64, encryptedSize: UInt64)) {
-        #expect(PaddingBucket.forUnpaddedPlaintextSize(testCase.unpaddedSize).encryptedSize == testCase.encryptedSize)
+        #expect(PaddingBucket.forUnpaddedPlaintextSize(testCase.unpaddedSize)?.encryptedSize == testCase.encryptedSize)
     }
 
     @Test(arguments: [
@@ -57,8 +57,14 @@ struct PaddingBucketTest {
 
     @Test(arguments: 130...483)
     func testAllInterestingLimits(bucketNumber: Int) {
-        let encryptedSize = PaddingBucket(bucketNumber: bucketNumber).encryptedSize
+        let encryptedSize = PaddingBucket(bucketNumber: bucketNumber)!.encryptedSize
         #expect(PaddingBucket.forEncryptedSizeLimit(encryptedSize).bucketNumber == bucketNumber)
         #expect(PaddingBucket.forEncryptedSizeLimit(encryptedSize - 1).bucketNumber == bucketNumber - 1)
+    }
+
+    @Test
+    func testOverflow() {
+        let largestBucket = PaddingBucket.forEncryptedSizeLimit(.max)
+        #expect(largestBucket.bucketNumber == 909)
     }
 }

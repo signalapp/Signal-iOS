@@ -364,7 +364,7 @@ class CryptographyTestsSwift: XCTestCase {
             // When we encrypt, we add custom padding 0s to a determined length.
             // Normally these get truncated in the final output using the hint of plaintextLength;
             // since we are omitting that we need to expect them in the final output.
-            let customPaddedLength = UInt32(Cryptography.paddedSize(unpaddedSize: UInt(plaintextLength)))
+            let customPaddedLength = UInt32(Cryptography.paddedSize(unpaddedSize: UInt(plaintextLength))!)
             let customPaddingLength = customPaddedLength - plaintextLength
             let expectedPlaintextOutput = plaintextData + Data(repeating: 0, count: Int(customPaddingLength))
 
