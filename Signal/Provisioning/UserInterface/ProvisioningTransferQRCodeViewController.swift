@@ -15,25 +15,27 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         provisioningTransferQRCodeViewModel = ProvisioningTransferQRCodeView.Model(url: nil)
 
         super.init(provisioningController: provisioningController)
-    }
+
+        navigationItem.hidesBackButton = true
+   }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .Signal.background
-
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
 
         let qrCodeHostingViewContainer = HostingContainer(wrappedView: ProvisioningTransferQRCodeView(
             model: provisioningTransferQRCodeViewModel,
             onGetHelpTapped: { [weak self] in self?.didTapHelp() },
             onCancelTapped: { [weak self] in self?.didTapCancel() }
         ))
-
         addChild(qrCodeHostingViewContainer)
-        primaryView.addSubview(qrCodeHostingViewContainer.view)
-        qrCodeHostingViewContainer.view.autoPinEdgesToSuperviewMargins()
+        view.addSubview(qrCodeHostingViewContainer.view)
+        qrCodeHostingViewContainer.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            qrCodeHostingViewContainer.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            qrCodeHostingViewContainer.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            qrCodeHostingViewContainer.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            qrCodeHostingViewContainer.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
         qrCodeHostingViewContainer.didMove(toParent: self)
     }
 
@@ -101,12 +103,14 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
                     )
                 )
             ],
-            button: primaryButton(
-                title: OWSLocalizedString(
+            button: UIButton(
+                configuration: .largePrimary(title: OWSLocalizedString(
                     "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP",
                     comment: "A button asking the user if they need further help getting their transfer working."
-                ),
-                selector: #selector(didTapContactSupport)
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapContactSupport()
+                }
             )
         )
 
@@ -138,11 +142,6 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
             logDumper: .fromGlobals(),
             fromViewController: self
         )
-    }
-
-    override func shouldShowBackButton() -> Bool {
-        // Never show the back button here
-        return false
     }
 }
 
@@ -235,14 +234,13 @@ private struct ProvisioningTransferQRCodeView: View {
                 )) {
                     onGetHelpTapped()
                 }
-                .font(.subheadline)
-                .foregroundStyle(Color.Signal.accent)
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
 
                 Button(CommonStrings.cancelButton) {
                     onCancelTapped()
                 }
-                .font(.subheadline)
-                .foregroundStyle(Color.Signal.accent)
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
             }
             .multilineTextAlignment(.center)
         }

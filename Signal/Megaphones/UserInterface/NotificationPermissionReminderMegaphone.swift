@@ -89,7 +89,7 @@ class TurnOnPermissionView: UIStackView {
         let text: String
     }
 
-    init(title: String, message: String, steps: [Step], button: UIView? = nil) {
+    init(title: String, message: String, steps: [Step], button: UIButton? = nil) {
         super.init(frame: .zero)
 
         axis = .vertical

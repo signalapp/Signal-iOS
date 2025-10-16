@@ -7,17 +7,30 @@ import SignalServiceKit
 import SignalUI
 
 class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
-    override func loadView() {
-        view = UIView()
-        view.backgroundColor = Theme.backgroundColor
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
 
-        let content = RegistrationPermissionsViewController(requestingContactsAuthorization: false, presenter: self)
-        addChild(content)
-        primaryView.addSubview(content.view)
-        content.view.autoPinEdgesToSuperviewMargins()
-        content.didMove(toParent: self)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        navigationItem.hidesBackButton = true
+
+        let hostingController = HostingController(
+            wrappedView: RegistrationPermissionsView(
+                requestingContactsAuthorization: false,
+                permissionTask: { [weak self] in
+                    await self?.requestPermissions()
+                }
+            )
+        )
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
+        hostingController.didMove(toParent: self)
     }
 
     func needsToAskForAnyPermissions() async -> Bool {

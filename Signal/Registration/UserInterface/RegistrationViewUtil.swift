@@ -31,10 +31,6 @@ extension NSDirectionalEdgeInsets {
             return NSDirectionalEdgeInsets(top: 0, leading: 32, bottom: 32, trailing: 32)
         }
     }
-
-    static func layoutMarginsForLargeRegistrationButtons() -> NSDirectionalEdgeInsets {
-        return .init(hMargin: 22, vMargin: 0)
-    }
 }
 
 // MARK: - Labels

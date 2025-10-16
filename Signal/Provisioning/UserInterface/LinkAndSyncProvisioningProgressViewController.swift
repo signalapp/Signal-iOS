@@ -107,7 +107,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
 
 // MARK: Hosting Controller
 
-class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView>, LinkAndSyncProgressUI {
+class LinkAndSyncProvisioningProgressViewController: ProvisioningBaseViewController, LinkAndSyncProgressUI {
 
     public var shouldSuppressNotifications: Bool { true }
 
@@ -121,11 +121,14 @@ class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSy
         }
     }
 
-    init(viewModel: LinkAndSyncSecondaryProgressViewModel) {
+    init(provisioningController: ProvisioningController, viewModel: LinkAndSyncSecondaryProgressViewModel) {
         self.viewModel = viewModel
-        super.init(wrappedView: LinkAndSyncProvisioningProgressView(viewModel: viewModel))
-        self.modalPresentationStyle = .fullScreen
-        self.modalTransitionStyle = .crossDissolve
+
+        super.init(provisioningController: provisioningController)
+
+        modalPresentationStyle = .fullScreen
+        modalTransitionStyle = .crossDissolve
+        navigationItem.hidesBackButton = true
 
         NotificationCenter.default.addObserver(
             self,
@@ -133,6 +136,22 @@ class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSy
             name: .OWSApplicationDidEnterBackground,
             object: nil
         )
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let linkAndSyncViewHostingContainer = HostingContainer(wrappedView: LinkAndSyncProvisioningProgressView(viewModel: viewModel))
+        addChild(linkAndSyncViewHostingContainer)
+        view.addSubview(linkAndSyncViewHostingContainer.view)
+        linkAndSyncViewHostingContainer.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            linkAndSyncViewHostingContainer.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            linkAndSyncViewHostingContainer.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            linkAndSyncViewHostingContainer.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            linkAndSyncViewHostingContainer.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
+        linkAndSyncViewHostingContainer.didMove(toParent: self)
     }
 
     @objc
@@ -277,6 +296,7 @@ struct LinkAndSyncProvisioningProgressView: View {
                 }
                 .opacity(viewModel.canBeCancelled ? 1 : 0)
                 .disabled(!viewModel.canBeCancelled || viewModel.didTapCancel)
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                 .padding(.bottom, 56)
             }
 
@@ -293,12 +313,10 @@ struct LinkAndSyncProvisioningProgressView: View {
                     CurrentAppContext().frontmostViewController()?.present(vc, animated: true)
                 }
                 .font(.footnote)
-                .frame(maxWidth: 412)
             }
             .foregroundStyle(Color.Signal.secondaryLabel)
         }
         .tint(Color.Signal.accent)
-        .padding()
         .multilineTextAlignment(.center)
     }
 }
@@ -308,7 +326,7 @@ struct LinkAndSyncProvisioningProgressView: View {
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    let view = LinkAndSyncProvisioningProgressViewController(viewModel: LinkAndSyncSecondaryProgressViewModel())
+    let view = LinkAndSyncProvisioningProgressView(viewModel: LinkAndSyncSecondaryProgressViewModel())
 
     let task = Task { @MainActor in
         let progressSink = await OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
@@ -337,7 +355,7 @@ struct LinkAndSyncProvisioningProgressView: View {
         }
     }
 
-    view.linkNSyncTask = Task {
+    view.viewModel.linkNSyncTask = Task {
         try? await task.value
     }
 

@@ -416,7 +416,10 @@ class ProvisioningController: NSObject {
                         return
                     }
                 } else {
-                    progressViewController = LinkAndSyncProvisioningProgressViewController(viewModel: progressViewModel)
+                    progressViewController = LinkAndSyncProvisioningProgressViewController(
+                        provisioningController: self,
+                        viewModel: progressViewModel
+                    )
                 }
                 progressViewController.linkNSyncTask = task
                 viewController.present(progressViewController, animated: false)

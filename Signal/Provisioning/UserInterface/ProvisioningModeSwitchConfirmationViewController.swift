@@ -7,72 +7,66 @@ import SignalServiceKit
 import SignalUI
 
 class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewController {
-    var warningText: String?
 
-    override func loadView() {
-        view = UIView()
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
+            comment: "header text indicating to the user they're switching from linking to registering flow"
+        ))
+        let explanationLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
+            "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
+            comment: "explanation to the user they're switching from linking to registering flow"
+        ))
 
-        let titleText: String
-        let explanationText: String
-        let nextButtonText: String
-        let image: UIImage?
-
-        titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
-                                      comment: "header text indicating to the user they're switching from linking to registering flow")
-        explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
-                                            comment: "explanation to the user they're switching from linking to registering flow")
-        nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
-                                           comment: "button indicating that the user will register their ipad")
-        warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
-                                        comment: "warning to the user that registering an ipad is not recommended")
-        image = #imageLiteral(resourceName: "ipad-primary")
-
-        let imageView = UIImageView(image: image)
+        let imageView = UIImageView(image: UIImage(named: "ipad-primary"))
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingHigh()
+        let imageViewContainer = UIView.container()
+        imageViewContainer.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: imageViewContainer.topAnchor),
+            imageView.leadingAnchor.constraint(greaterThanOrEqualTo: imageViewContainer.leadingAnchor),
+            imageView.centerXAnchor.constraint(equalTo: imageViewContainer.centerXAnchor),
+            imageView.bottomAnchor.constraint(equalTo: imageViewContainer.bottomAnchor),
+        ])
 
-        let titleLabel = self.createTitleLabel(text: titleText)
-
-        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
-
-        let nextButton = self.primaryButton(title: nextButtonText,
-                                            selector: #selector(didPressNext))
+        let nextButton = UIButton(
+            configuration: .largePrimary(title: OWSLocalizedString(
+                "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
+                comment: "button indicating that the user will register their ipad"
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didPressNext()
+            }
+        )
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
-        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer(minHeight: 12)
         let bottomSpacer = UIView.vStretchingSpacer(minHeight: 12)
 
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            UIView.spacer(withHeight: 12),
-            explanationLabel,
+        let stackView = addStaticContentStackView(arrangedSubviews: [
             topSpacer,
-            imageView,
+            titleLabel,
+            explanationLabel,
+            imageViewContainer,
             bottomSpacer,
-            primaryButtonView
+            nextButton.enclosedInVerticalStackView(isFullWidthButton: true)
         ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        primaryView.addSubview(stackView)
+        stackView.setCustomSpacing(24, after: explanationLabel)
 
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-        stackView.autoPinEdgesToSuperviewMargins()
+        topSpacer.translatesAutoresizingMaskIntoConstraints = false
+        bottomSpacer.translatesAutoresizingMaskIntoConstraints = false
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 0.5).isActive = true
     }
 
-    override func shouldShowBackButton() -> Bool {
-        return true
-    }
-
-    @objc
     private func didPressNext() {
-        let actionSheet = ActionSheetController(message: warningText)
+        let actionSheet = ActionSheetController(message: OWSLocalizedString(
+            "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
+            comment: "warning to the user that registering an ipad is not recommended"
+        ))
 
         let continueAction = ActionSheetAction(
             title: CommonStrings.continueButton,

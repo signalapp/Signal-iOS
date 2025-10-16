@@ -9,25 +9,25 @@ import SignalUI
 
 class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
-    lazy var animationView = LottieAnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
-    let isTransferring: Bool
+    private lazy var animationView: LottieAnimationView = {
+        let view = LottieAnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
+        view.loopMode = .playOnce
+        view.backgroundBehavior = .pauseAndRestore
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+
+    private let isTransferring: Bool
 
     init(provisioningController: ProvisioningController, isTransferring: Bool) {
         self.isTransferring = isTransferring
         super.init(provisioningController: provisioningController)
     }
 
-    override func loadView() {
-        view = UIView()
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
-
-        animationView.loopMode = .playOnce
-        animationView.backgroundBehavior = .pauseAndRestore
-        animationView.contentMode = .scaleAspectFit
-        animationView.setContentHuggingHigh()
+        navigationItem.hidesBackButton = true
 
         let titleText: String
         if isTransferring {
@@ -38,43 +38,61 @@ class ProvisioningPrepViewController: ProvisioningBaseViewController {
             titleText = OWSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY",
                                           comment: "header text before the user can link this device")
         }
-
-        let titleLabel = self.createTitleLabel(text: titleText)
-        primaryView.addSubview(titleLabel)
+        let titleLabel = UILabel.titleLabelForRegistration(text: titleText)
+        titleLabel.setCompressionResistanceHigh()
         titleLabel.accessibilityIdentifier = "onboarding.prelink.titleLabel"
 
-        let dontHaveSignalButton = UILabel()
-        dontHaveSignalButton.text = OWSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
-                                                      comment: "Link explaining what to do when trying to link a device before having a primary device.")
-        dontHaveSignalButton.textColor = Theme.accentBlueColor
-        dontHaveSignalButton.font = UIFont.dynamicTypeSubheadlineClamped
-        dontHaveSignalButton.numberOfLines = 0
-        dontHaveSignalButton.textAlignment = .center
-        dontHaveSignalButton.lineBreakMode = .byWordWrapping
-        dontHaveSignalButton.isUserInteractionEnabled = true
-        dontHaveSignalButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapExplanationLabel)))
+        let animationViewContainer = UIView.container()
+        animationViewContainer.addSubview(animationView)
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            animationView.topAnchor.constraint(equalTo: animationViewContainer.topAnchor),
+            animationView.leadingAnchor.constraint(greaterThanOrEqualTo: animationViewContainer.leadingAnchor),
+            animationView.centerXAnchor.constraint(equalTo: animationViewContainer.centerXAnchor),
+            animationView.bottomAnchor.constraint(equalTo: animationViewContainer.bottomAnchor),
+        ])
+
+        let dontHaveSignalButton = UIButton(
+            configuration: .mediumBorderless(title: OWSLocalizedString(
+                "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
+                comment: "Link explaining what to do when trying to link a device before having a primary device."
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapNoSignalApp()
+            }
+        )
+        dontHaveSignalButton.enableMultilineLabel()
         dontHaveSignalButton.accessibilityIdentifier = "onboarding.prelink.explanationLabel"
         dontHaveSignalButton.isHidden = isTransferring
 
-        let nextButton = self.primaryButton(title: CommonStrings.nextButton,
-                                            selector: #selector(didPressNext))
+        let nextButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.nextButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didPressNext()
+            }
+        )
         nextButton.accessibilityIdentifier = "onboarding.prelink.nextButton"
-        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
-        let stackView = UIStackView(arrangedSubviews: [
+        let topSpacer = UIView.transparentSpacer()
+        let bottomSpacer = UIView.transparentSpacer()
+
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            topSpacer,
             titleLabel,
-            UIView.spacer(withHeight: 12),
-            animationView,
-            dontHaveSignalButton,
-            UIView.vStretchingSpacer(minHeight: 12),
-            primaryButtonView
-            ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        primaryView.addSubview(stackView)
+            animationViewContainer,
+            bottomSpacer,
+            [dontHaveSignalButton, nextButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+        ])
+        stackView.setCustomSpacing(24, after: titleLabel)
 
-        stackView.autoPinEdgesToSuperviewMargins()
+        topSpacer.translatesAutoresizingMaskIntoConstraints = false
+        bottomSpacer.translatesAutoresizingMaskIntoConstraints = false
+        animationViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 0.5),
+            animationViewContainer.heightAnchor.constraint(equalTo: contentLayoutGuide.heightAnchor, multiplier: 0.5),
+        ])
+
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -84,13 +102,7 @@ class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
     // MARK: - Events
 
-    @objc
-    func didTapExplanationLabel(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            owsFailDebug("unexpected state: \(sender.state)")
-            return
-        }
-
+    func didTapNoSignalApp() {
         let title = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE", comment: "alert title")
         let message = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY", comment: "alert body")
         let alert = ActionSheetController(title: title, message: message)
@@ -98,7 +110,6 @@ class ProvisioningPrepViewController: ProvisioningBaseViewController {
         presentActionSheet(alert)
     }
 
-    @objc
     func didPressNext() {
         Logger.info("")
 

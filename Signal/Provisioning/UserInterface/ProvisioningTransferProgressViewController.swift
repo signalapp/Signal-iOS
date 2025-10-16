@@ -13,51 +13,50 @@ class ProvisioningTransferProgressViewController: ProvisioningBaseViewController
 
     init(provisioningController: ProvisioningController, progress: Progress) {
         self.progressView = TransferProgressView(progress: progress)
+
         super.init(provisioningController: provisioningController)
+
+        navigationItem.hidesBackButton = true
     }
 
-    override func loadView() {
-        view = UIView()
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
-
-        let titleLabel = self.createTitleLabel(
-            text: OWSLocalizedString("DEVICE_TRANSFER_RECEIVING_TITLE",
-                                    comment: "The title on the view that shows receiving progress")
-        )
-        primaryView.addSubview(titleLabel)
+        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "DEVICE_TRANSFER_RECEIVING_TITLE",
+            comment: "The title on the view that shows receiving progress"
+        ))
         titleLabel.accessibilityIdentifier = "onboarding.transferProgress.titleLabel"
-        titleLabel.setContentHuggingHigh()
 
-        let explanationLabel = self.createExplanationLabel(
-            explanationText: OWSLocalizedString("DEVICE_TRANSFER_RECEIVING_EXPLANATION",
-                                               comment: "The explanation on the view that shows receiving progress")
-        )
+        let explanationLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "DEVICE_TRANSFER_RECEIVING_EXPLANATION",
+            comment: "The explanation on the view that shows receiving progress"
+        ))
         explanationLabel.accessibilityIdentifier = "onboarding.transferProgress.bodyLabel"
-        explanationLabel.setContentHuggingHigh()
 
-        let cancelButton = self.linkButton(title: CommonStrings.cancelButton, selector: #selector(didTapCancel))
+        let cancelButton = UIButton(
+            configuration: .mediumSecondary(title: CommonStrings.cancelButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapCancel()
+            }
+        )
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
 
-        let stackView = UIStackView(arrangedSubviews: [
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            topSpacer,
             titleLabel,
             explanationLabel,
-            topSpacer,
             progressView,
             bottomSpacer,
-            cancelButton
+            cancelButton.enclosedInVerticalStackView(isFullWidthButton: false)
         ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        primaryView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.setCustomSpacing(24, after: explanationLabel)
 
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        topSpacer.translatesAutoresizingMaskIntoConstraints = false
+        bottomSpacer.translatesAutoresizingMaskIntoConstraints = false
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 0.5).isActive = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -79,7 +78,6 @@ class ProvisioningTransferProgressViewController: ProvisioningBaseViewController
 
     // MARK: - Events
 
-    @objc
     private func didTapCancel() {
         Logger.info("")
 
@@ -105,11 +103,6 @@ class ProvisioningTransferProgressViewController: ProvisioningBaseViewController
         actionSheet.addAction(okAction)
 
         present(actionSheet, animated: true)
-    }
-
-    override func shouldShowBackButton() -> Bool {
-        // Never show the back button here
-        return false
     }
 }
 

@@ -31,18 +31,21 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .Signal.background
-
-        view.addSubview(primaryView)
-        primaryView.autoPinEdgesToSuperviewEdges()
+        navigationItem.hidesBackButton = true
 
         let qrCodeViewHostingContainer = HostingContainer(wrappedView: ProvisioningQRCodeView(
             model: provisioningQRCodeViewModel
         ))
 
         addChild(qrCodeViewHostingContainer)
-        primaryView.addSubview(qrCodeViewHostingContainer.view)
-        qrCodeViewHostingContainer.view.autoPinEdgesToSuperviewMargins()
+        view.addSubview(qrCodeViewHostingContainer.view)
+        qrCodeViewHostingContainer.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            qrCodeViewHostingContainer.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            qrCodeViewHostingContainer.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            qrCodeViewHostingContainer.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            qrCodeViewHostingContainer.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
         qrCodeViewHostingContainer.didMove(toParent: self)
 
         provisioningQRCodeViewModel.updateURLDisplayMode(.loading)
@@ -55,11 +58,6 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
     }
 
     // MARK: -
-
-    override func shouldShowBackButton() -> Bool {
-        // Never show the back button here
-        return false
-    }
 
     func reset() {
         provisioningSocketManager.stop()
@@ -97,7 +95,7 @@ private struct ProvisioningQRCodeView: View {
                     comment: "body text while displaying a QR code which, when scanned, will link this device."
                 ))
                 .font(.body)
-                .foregroundStyle(Color.Signal.label)
+                .foregroundStyle(Color.Signal.secondaryLabel)
 
                 Spacer()
                     .frame(height: overallGeometry.size.height * 0.05)
@@ -106,16 +104,6 @@ private struct ProvisioningQRCodeView: View {
 
                 Spacer()
                     .frame(height: overallGeometry.size.height * (overallGeometry.size.isLandscape ? 0.05 : 0.1))
-
-                Link(
-                    OWSLocalizedString(
-                        "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
-                        comment: "Link text for page with troubleshooting info shown on the QR scanning screen"
-                    ),
-                    destination: URL.Support.troubleshootingMultipleDevices
-                )
-                .font(.subheadline)
-                .foregroundStyle(Color.Signal.accent)
 
 #if TESTABLE_BUILD
                 if
@@ -131,9 +119,8 @@ private struct ProvisioningQRCodeView: View {
                         Text(LocalizationNotNeeded(
                             "Debug only: Share URL"
                         ))
-                        .font(.subheadline)
-                        .foregroundStyle(Color.Signal.accent)
                     }
+                    .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                     .simultaneousGesture(TapGesture().onEnded {
                         // When tapped, also copy to the clipboard for easy
                         // extraction from a simulator.
@@ -143,10 +130,19 @@ private struct ProvisioningQRCodeView: View {
                     Button(LocalizationNotNeeded("Debug only: Copy URL")) {
                         UIPasteboard.general.url = provisioningUrl
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(Color.Signal.accent)
+                    .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                 }
 #endif
+
+                Link(
+                    OWSLocalizedString(
+                        "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
+                        comment: "Link text for page with troubleshooting info shown on the QR scanning screen"
+                    ),
+                    destination: URL.Support.troubleshootingMultipleDevices
+                )
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
             }
             .multilineTextAlignment(.center)
         }
