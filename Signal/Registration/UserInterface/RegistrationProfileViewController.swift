@@ -112,39 +112,36 @@ class RegistrationProfileViewController: OWSViewController {
         return result
     }()
 
-    private lazy var cameraIconView: UIView = {
-        let iconSize: CGFloat = 16
-        let viewSize: CGFloat = 28
+    private lazy var cameraIconButton: UIButton = {
+        let buttonSize: CGFloat = 28
 
-        let view = UIView()
-        view.backgroundColor = .Signal.background
-        view.layer.cornerRadius = viewSize / 2
-        view.addGestureRecognizer(UITapGestureRecognizer(
-            target: self,
-            action: #selector(didTapAvatar)
-        ))
-        view.isUserInteractionEnabled = true
+        var buttonConfiguration: UIButton.Configuration?
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            buttonConfiguration = .prominentClearGlass()
+        }
+#endif
+        if buttonConfiguration == nil {
+            buttonConfiguration = .filled()
+            buttonConfiguration?.baseBackgroundColor = .Signal.background
+            buttonConfiguration?.baseForegroundColor = .Signal.secondaryLabel
+        }
+        buttonConfiguration?.cornerStyle = .capsule
+        buttonConfiguration?.image = UIImage(named: "camera-compact")
 
-        let cameraImageIcon =  UIImageView.withTemplateImageName(
-            "camera-compact",
-            // This color will be swiftly updated during renders.
-            tintColor: .Signal.secondaryLabel
+        let button = UIButton(
+            configuration: buttonConfiguration!,
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapAvatar()
+            }
         )
-        view.addSubview(cameraImageIcon)
-
-        view.translatesAutoresizingMaskIntoConstraints = false
-        cameraImageIcon.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            cameraImageIcon.widthAnchor.constraint(equalToConstant: iconSize),
-            cameraImageIcon.heightAnchor.constraint(equalToConstant: iconSize),
-            cameraImageIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cameraImageIcon.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-
-            view.widthAnchor.constraint(equalToConstant: viewSize),
-            view.heightAnchor.constraint(equalToConstant: viewSize),
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addConstraints([
+            button.widthAnchor.constraint(equalToConstant: buttonSize),
+            button.heightAnchor.constraint(equalToConstant: buttonSize),
         ])
 
-        return view
+        return button
     }()
 
     private func textField(
@@ -155,17 +152,19 @@ class RegistrationProfileViewController: OWSViewController {
         let result = OWSTextField()
         result.font = .dynamicTypeBodyClamped
         result.textColor = .Signal.label
+        if #available(iOS 26, *) {
+            result.tintColor = result.textColor
+        }
         result.adjustsFontForContentSizeCategory = true
         result.textAlignment = .natural
         result.autocorrectionType = .no
         result.spellCheckingType = .no
-        result.placeholder = placeholder
+        result.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.Signal.secondaryLabel])
         result.textContentType = textContentType
         result.accessibilityIdentifier = "registration.profile.\(accessibilityIdentifierSuffix)"
         result.delegate = self
         result.addTarget(self, action: #selector(didTextFieldChange), for: .editingChanged)
         result.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
-        result.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
         return result
     }
 
@@ -208,10 +207,40 @@ class RegistrationProfileViewController: OWSViewController {
     }()
 
     private lazy var nameStackView: UIView = {
-        let result = UIStackView(arrangedSubviews: [firstTextField, secondTextField])
-        result.axis = .vertical
-        result.distribution = .fillEqually
-        return result
+        let stackView = UIStackView(arrangedSubviews: [firstTextField, secondTextField])
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        if #available(iOS 26, *) {
+            // Can't use `addBottomStroke` because trailing edge of the stroke must extend beyond text field's edge.
+            let textField = firstTextField
+            let strokeView = UIView()
+            strokeView.backgroundColor = .Signal.opaqueSeparator
+            stackView.addSubview(strokeView)
+            strokeView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                strokeView.heightAnchor.constraint(equalToConstant: .hairlineWidth),
+                strokeView.bottomAnchor.constraint(equalTo: textField.bottomAnchor),
+                strokeView.leadingAnchor.constraint(equalTo: textField.leadingAnchor),
+                strokeView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+            ])
+
+            stackView.backgroundColor = .Signal.secondaryBackground
+            // Stack view has a background so horizontal margins are necessary.
+            stackView.directionalLayoutMargins = .init(top: 0, leading: 16, bottom: 0, trailing: 8)
+            stackView.isLayoutMarginsRelativeArrangement = true
+
+#if compiler(>=6.2)
+            stackView.cornerConfiguration = .uniformCorners(radius: 26)
+#else
+            stackView.layer.cornerRadius = 26
+            stackView.layer.masksToBounds = true
+#endif
+
+        } else {
+            firstTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
+            secondTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
+        }
+        return stackView
     }()
 
     private lazy var phoneNumberPrivacyButton: PhoneNumberPrivacyButton = {
@@ -249,16 +278,17 @@ class RegistrationProfileViewController: OWSViewController {
 
         let avatarContainerView = UIView.container()
         avatarContainerView.addSubview(avatarView)
-        avatarContainerView.addSubview(cameraIconView)
+        avatarContainerView.addSubview(cameraIconButton)
         avatarView.translatesAutoresizingMaskIntoConstraints = false
-        cameraIconView.translatesAutoresizingMaskIntoConstraints = false
+        cameraIconButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             avatarView.topAnchor.constraint(equalTo: avatarContainerView.topAnchor),
             avatarView.centerXAnchor.constraint(equalTo: avatarContainerView.centerXAnchor),
             avatarView.bottomAnchor.constraint(equalTo: avatarContainerView.bottomAnchor),
 
-            cameraIconView.bottomAnchor.constraint(equalTo: avatarView.bottomAnchor),
-            cameraIconView.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor),
+            // Looks better with tiny offset.
+            cameraIconButton.bottomAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 1),
+            cameraIconButton.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 1),
         ])
 
         let stackView = addStaticContentStackView(
@@ -275,6 +305,7 @@ class RegistrationProfileViewController: OWSViewController {
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(12, after: titleLabel)
+        stackView.setCustomSpacing(20, after: nameStackView)
 
         firstTextField.returnKeyType = .next
         secondTextField.returnKeyType = .done
@@ -502,7 +533,7 @@ extension RegistrationProfileViewController {
             disclosureView.contentMode = .scaleAspectFit
             disclosureView.setTemplateImage(
                 UIImage(imageLiteralResourceName: "chevron-right-20"),
-                tintColor: .Signal.secondaryLabel
+                tintColor: .Signal.tertiaryLabel
             )
             disclosureView.translatesAutoresizingMaskIntoConstraints = false
             disclosureView.widthAnchor.constraint(equalToConstant: 24).isActive = true
@@ -520,9 +551,9 @@ extension RegistrationProfileViewController {
             hStack.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 hStack.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-                hStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                hStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor, constant: 8),
                 hStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-                hStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+                hStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor, constant: -8),
             ])
 
             apply(configuration)
@@ -535,6 +566,7 @@ extension RegistrationProfileViewController {
 
         private lazy var iconView: UIImageView = {
             let iconView = UIImageView()
+            iconView.tintColor = .Signal.label
             iconView.contentMode = .scaleAspectFit
             iconView.translatesAutoresizingMaskIntoConstraints = false
             iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
@@ -576,7 +608,7 @@ extension RegistrationProfileViewController {
                     return "lock"
                 }
             }()
-            iconView.setTemplateImageName(labelIconName, tintColor: Theme.primaryIconColor)
+            iconView.image = UIImage(named: labelIconName)
         }
     }
 }
