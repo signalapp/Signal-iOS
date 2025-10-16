@@ -739,9 +739,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se ha encontrado %1$d conflicto de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>Se ha encontrado %1$d conflicto de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que quieras.</string>
 			<key>other</key>
-			<string>Se han encontrado %1$d conflictos de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>Se han encontrado %1$d conflictos de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que quieras.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -755,9 +755,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que quieras.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que quieras.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
