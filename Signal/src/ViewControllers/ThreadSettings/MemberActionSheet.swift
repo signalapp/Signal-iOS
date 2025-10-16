@@ -112,10 +112,6 @@ class MemberActionSheet: OWSTableSheetViewController {
         viewController.present(self, animated: true)
     }
 
-    // When presenting the contact view, we must retain ourselves
-    // as we are the delegate. This will get released when contact
-    // editing has concluded.
-    private var strongSelf: MemberActionSheet?
     public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
