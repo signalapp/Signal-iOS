@@ -112,7 +112,11 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         reloadTextLabels()
         let phoneNumberContainerView = UIView()
         phoneNumberContainerView.backgroundColor = .Signal.secondaryGroupedBackground
-        phoneNumberContainerView.layer.cornerRadius = 10
+        if #available(iOS 26, *) {
+            phoneNumberContainerView.layer.cornerRadius = 26
+        } else {
+            phoneNumberContainerView.layer.cornerRadius = 10
+        }
         phoneNumberContainerView.directionalLayoutMargins = NSDirectionalEdgeInsets(margin: 24)
         phoneNumberContainerView.addSubview(phoneNumberLabel)
         phoneNumberLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -122,14 +126,6 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
             phoneNumberLabel.bottomAnchor.constraint(equalTo: phoneNumberContainerView.layoutMarginsGuide.bottomAnchor),
             phoneNumberLabel.trailingAnchor.constraint(equalTo: phoneNumberContainerView.layoutMarginsGuide.trailingAnchor),
         ])
-
-        let stackView = UIStackView(arrangedSubviews: [ descriptionLabel, phoneNumberContainerView, warningLabel ])
-        stackView.spacing = 20
-        stackView.setCustomSpacing(12, after: phoneNumberContainerView)
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.preservesSuperviewLayoutMargins = true
 
         // Buttons
         let continueButton = UIButton(
@@ -151,37 +147,16 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
                 self?.didTapEdit()
             }
         )
-        let buttonContainer = UIView.container()
-        buttonContainer.addSubview(continueButton)
-        continueButton.translatesAutoresizingMaskIntoConstraints = false
-        buttonContainer.addSubview(editButton)
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            continueButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-            continueButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
-            continueButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
 
-            editButton.topAnchor.constraint(equalTo: continueButton.bottomAnchor, constant: 12),
-            editButton.leadingAnchor.constraint(equalTo: continueButton.leadingAnchor),
-            editButton.trailingAnchor.constraint(equalTo: continueButton.trailingAnchor),
-            editButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            descriptionLabel,
+            phoneNumberContainerView,
+            warningLabel,
+            .vStretchingSpacer(),
+            [ continueButton, editButton ].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
-
-        // Constraints.
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
-        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(buttonContainer)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            buttonContainer.topAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 24),
-            buttonContainer.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            buttonContainer.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        ])
+        stackView.spacing = 20
+        stackView.setCustomSpacing(12, after: phoneNumberContainerView)
 
         updateContents()
     }

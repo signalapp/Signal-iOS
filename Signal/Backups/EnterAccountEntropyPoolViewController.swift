@@ -61,10 +61,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.preservesSuperviewLayoutMargins = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
@@ -79,33 +78,22 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
             }
         )
 
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            subtitleLabel,
-            aepTextView,
-            aepIssueLabel,
-            footerButton,
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                titleLabel,
+                subtitleLabel,
+                aepTextView,
+                aepIssueLabel,
+                footerButton.enclosedInVerticalStackView(isFullWidthButton: false),
+                .vStretchingSpacer(),
+            ],
+            isScrollable: true,
+            shouldAvoidKeyboard: true
+        )
         stackView.spacing = 24
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
         stackView.setCustomSpacing(16, after: aepTextView)
         stackView.setCustomSpacing(20, after: aepIssueLabel)
         stackView.setCustomSpacing(12, after: titleLabel)
-
-        scrollView.addSubview(stackView)
-        aepTextView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            aepTextView.widthAnchor.constraint(equalTo: stackView.layoutMarginsGuide.widthAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-        ])
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)

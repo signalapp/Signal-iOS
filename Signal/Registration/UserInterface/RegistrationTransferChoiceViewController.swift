@@ -81,40 +81,14 @@ class RegistrationTransferChoiceViewController: OWSViewController {
         )
         registerButton.accessibilityIdentifier = "registration.transferChoice.registerButton"
 
-        // Put UI elements in a stack view and stack view in a scroll view.
-        let scrollView = UIScrollView()
-        scrollView.preservesSuperviewLayoutMargins = true
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-
-        let stackView = UIStackView(arrangedSubviews: [
+        let stackView = addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
             registerButton,
             transferButton,
-            UIView.vStretchingSpacer(),
+            .vStretchingSpacer(),
         ])
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 12
         stackView.setCustomSpacing(24, after: explanationLabel)
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-        ])
     }
 
     // MARK: Events

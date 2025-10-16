@@ -42,20 +42,47 @@ public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, E
     }
 }
 
-class RegistrationRestoreFromBackupConfirmationViewController: HostingController<RegistrationRestoreFromBackupConfirmationView> {
+class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController, OWSNavigationChildController {
+    private var state: RegistrationRestoreFromBackupConfirmationState
+    private weak var presenter: (any RegistrationRestoreFromBackupConfirmationPresenter)?
+
     init(
         state: RegistrationRestoreFromBackupConfirmationState,
         presenter: RegistrationRestoreFromBackupConfirmationPresenter
     ) {
-        super.init(
-            wrappedView: RegistrationRestoreFromBackupConfirmationView(
-                state: state,
-                presenter: presenter
-            )
-        )
+        self.state = state
+        self.presenter = presenter
+        super.init()
+        self.navigationItem.hidesBackButton = true
     }
 
-    override var prefersNavigationBarHidden: Bool { true }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = UIColor.Signal.background
+
+        let hostingController = HostingController(
+            wrappedView: RegistrationRestoreFromBackupConfirmationView(
+                state: state,
+                presenter: presenter!
+            )
+        )
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
+        hostingController.didMove(toParent: self)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 struct RegistrationRestoreFromBackupConfirmationView: View {
@@ -71,8 +98,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
     }
 
     var body: some View {
-        VStack {
-
+        VStack(spacing: 12) {
             if state.mode == .manual {
                 Image(.backupsLogo)
                     .resizable()
@@ -86,14 +112,11 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             .multilineTextAlignment(.center)
             .font(.title.weight(.semibold))
             .foregroundStyle(Color.Signal.label)
-            .padding(.horizontal, 20)
 
             bodyText()
                 .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color.Signal.secondaryLabel)
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
 
             if state.mode == .manual {
                 Text(OWSLocalizedString(
@@ -103,8 +126,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color.Signal.secondaryLabel)
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+
                 Spacer()
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -155,7 +177,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             }
             .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-            .frame(maxWidth: 300)
+            .padding(.horizontal, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.leading)
 
             Button(secondaryOptionLabel()) {
                 switch state.mode {
@@ -168,10 +190,8 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             }
             .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-            .frame(maxWidth: 300)
-            .padding(20)
+            .padding(EdgeInsets(NSDirectionalEdgeInsets.buttonContainerLayoutMargins))
         }
-        .padding(.top, 44)
     }
 
     private func bodyText() -> Text {

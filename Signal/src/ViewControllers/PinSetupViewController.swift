@@ -267,7 +267,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             pinTextField,
             recommendationLabel,
             validationWarningLabel,
-            .vStretchingSpacer(minHeight: 24),
+            .vStretchingSpacer(),
             buttonContainer,
         ])
         stackView.axis = .vertical

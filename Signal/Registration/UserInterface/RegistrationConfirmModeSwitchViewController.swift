@@ -58,34 +58,11 @@ class RegistrationConfirmModeSwitchViewController: OWSViewController {
         )
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
 
-        let buttonContainer = UIView.container()
-        buttonContainer.addSubview(nextButton)
-        nextButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            nextButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
-            nextButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-            nextButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
-            nextButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-        ])
-
-        let stackView = UIStackView(arrangedSubviews: [
+        addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            UIView.vStretchingSpacer(minHeight: 36),
-            buttonContainer
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.preservesSuperviewLayoutMargins = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            .vStretchingSpacer(),
+            nextButton.enclosedInVerticalStackView(isFullWidthButton: true)
         ])
     }
 
@@ -104,3 +81,25 @@ class RegistrationConfirmModeSwitchViewController: OWSViewController {
         presentActionSheet(actionSheet)
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private class PreviewRegistrationConfimModeSwitchPresenter: RegistrationConfimModeSwitchPresenter {
+    func confirmSwitchToDeviceLinkingMode() {
+        print("confirmSwitchToDeviceLinkingMode")
+    }
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationConfimModeSwitchPresenter()
+    return UINavigationController(
+        rootViewController: RegistrationConfirmModeSwitchViewController(
+            presenter: presenter
+        )
+    )
+}
+
+#endif

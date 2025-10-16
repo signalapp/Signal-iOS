@@ -196,32 +196,18 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             return barButtonItem
         }()
 
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            explanationLabel,
-            phoneNumberInput,
-            validationWarningLabel,
-        ])
-        stackView.spacing = 12
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.directionalLayoutMargins.top = 0
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                titleLabel,
+                explanationLabel,
+                phoneNumberInput,
+                validationWarningLabel,
+                .vStretchingSpacer(),
+                cancelButton.enclosedInVerticalStackView(isFullWidthButton: false),
+            ],
+            shouldAvoidKeyboard: true
+        )
         stackView.setCustomSpacing(24, after: explanationLabel)
-        stackView.axis = .vertical
-
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(cancelButton)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            cancelButton.topAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 24),
-            cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -24),
-        ])
 
         configureUI()
 

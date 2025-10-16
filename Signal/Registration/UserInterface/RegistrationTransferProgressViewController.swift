@@ -32,7 +32,6 @@ public class RegistrationTransferProgressViewController: OWSViewController {
             )
         )
         titleLabel.accessibilityIdentifier = "onboarding.transferProgress.titleLabel"
-        titleLabel.setContentHuggingHigh()
 
         let explanationLabel = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
@@ -41,7 +40,6 @@ public class RegistrationTransferProgressViewController: OWSViewController {
             )
         )
         explanationLabel.accessibilityIdentifier = "onboarding.transferProgress.bodyLabel"
-        explanationLabel.setContentHuggingHigh()
 
         let cancelButton = UIButton(
             configuration: .mediumSecondary(title: CommonStrings.cancelButton),
@@ -49,43 +47,21 @@ public class RegistrationTransferProgressViewController: OWSViewController {
                 self?.didTapCancel()
             }
         )
-        let cancelButtonContainer = UIView.container()
-        cancelButtonContainer.addSubview(cancelButton)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            cancelButton.topAnchor.constraint(equalTo: cancelButtonContainer.topAnchor),
-            cancelButton.centerXAnchor.constraint(equalTo: cancelButtonContainer.centerXAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: cancelButtonContainer.bottomAnchor, constant: -16),
-        ])
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
 
-        let stackView = UIStackView(arrangedSubviews: [
+        addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
             topSpacer,
             progressView,
             bottomSpacer,
-            cancelButtonContainer
+            cancelButton.enclosedInVerticalStackView(isFullWidthButton: false)
         ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         topSpacer.translatesAutoresizingMaskIntoConstraints = false
         bottomSpacer.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor),
-        ])
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor).isActive = true
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -226,22 +202,13 @@ private class TransferRelaunchSheet: InteractiveSheetViewController {
                 self?.didTapExitButton()
             }
         )
-        let buttonContainer = UIView.container()
-        buttonContainer.addSubview(exitButton)
-        exitButton.translatesAutoresizingMaskIntoConstraints = false
-        buttonContainer.addConstraints([
-            exitButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-            exitButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
-            exitButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
-            exitButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-        ])
 
         let stackView = UIStackView(arrangedSubviews: [
             imageViewContainer,
             titleLabel,
             subtitleLabel,
             .vStretchingSpacer(minHeight: 32),
-            buttonContainer,
+            exitButton.enclosedInVerticalStackView(isFullWidthButton: true),
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill

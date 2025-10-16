@@ -14,8 +14,6 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
 
     public var navbarBackgroundColorOverride: UIColor? { .clear }
 
-    public var prefersNavigationBarHidden: Bool { true }
-
     public override var preferredStatusBarStyle: UIStatusBarStyle {
         return isQRCodeExpanded ? .lightContent : super.preferredStatusBarStyle
     }
@@ -103,8 +101,8 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         return explanationLabel2
     }()
 
-    private lazy var helpButton: UIButton = {
-        let button = UIButton(
+    private lazy var bottomButtonsContainer: UIView = {
+        let helpButton = UIButton(
             configuration: .mediumBorderless(title: OWSLocalizedString(
                 "DEVICE_TRANSFER_QRCODE_NOT_SEEING",
                 comment: "A prompt to provide further explanation if the user is not seeing the transfer on both devices."
@@ -113,16 +111,17 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
                 self?.didTapHelp()
             }
         )
-        button.enableMultilineLabel()
-        return button
-    }()
+        helpButton.enableMultilineLabel()
 
-    private lazy var cancelButton = UIButton(
-        configuration: .mediumSecondary(title: CommonStrings.cancelButton),
-        primaryAction: UIAction { [weak self] _ in
-            self?.didTapCancel()
-        }
-    )
+        var cancelButton = UIButton(
+            configuration: .mediumSecondary(title: CommonStrings.cancelButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapCancel()
+            }
+        )
+
+        return UIStackView.verticalButtonStack(buttons: [ helpButton, cancelButton ], isFullWidthButtons: false)
+    }()
 
     private let url: URL
 
@@ -139,31 +138,28 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
 
         view.backgroundColor = .Signal.background
 
+        // Put QR code view into full-width container to allow centering of the rounded edges view.
+        let qrCodeContainerView = UIView.container()
+        qrCodeContainerView.addSubview(compactQRCodeContainer)
+        compactQRCodeContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            compactQRCodeContainer.topAnchor.constraint(equalTo: qrCodeContainerView.topAnchor),
+            compactQRCodeContainer.bottomAnchor.constraint(equalTo: qrCodeContainerView.bottomAnchor),
+            compactQRCodeContainer.leadingAnchor.constraint(greaterThanOrEqualTo: qrCodeContainerView.leadingAnchor),
+            compactQRCodeContainer.centerXAnchor.constraint(equalTo: qrCodeContainerView.centerXAnchor),
+        ])
+
         // Content view.
-        let stackView = UIStackView(arrangedSubviews: [
+        let stackView = addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            compactQRCodeContainer,
+            qrCodeContainerView,
             explanationLabel2,
-            UIView.vStretchingSpacer(),
-            helpButton,
-            cancelButton
+            .vStretchingSpacer(),
+            bottomButtonsContainer,
         ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 12
         stackView.setCustomSpacing(24, after: explanationLabel)
         stackView.setCustomSpacing(24, after: compactQRCodeContainer)
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
 
         // QR code view.
         qrCodeView.translatesAutoresizingMaskIntoConstraints = false
@@ -180,8 +176,8 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         view.addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            closeButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            closeButton.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            closeButton.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor, constant: 8),
         ])
 
         updateExpansionState(animated: false)
@@ -209,6 +205,17 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         AppEnvironment.shared.deviceTransferServiceRef.stopAcceptingTransfersFromOldDevices()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        guard isQRCodeExpanded else { return }
+
+        coordinator.animate { context in
+            self.isQRCodeExpanded = false
+            self.updateExpansionState(animated: false)
+        }
+    }
+
     // MARK: - QR Code expansion
 
     private var isQRCodeExpanded = false
@@ -219,21 +226,20 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         let otherViews = [
             titleLabel,
             explanationLabel,
-            helpButton,
-            cancelButton
+            bottomButtonsContainer,
         ]
 
         let animations: () -> Void = {
             if self.isQRCodeExpanded {
                 let darkTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
 
-                let desiredSize = UIScreen.main.bounds.width - (Constants.expandedQRCodeMargin * 2)
+                let desiredSize = min(self.contentLayoutGuide.layoutFrame.width, 0.7 * self.contentLayoutGuide.layoutFrame.height) - (Constants.expandedQRCodeMargin * 2)
                 let qrExpandScale = desiredSize / self.qrCodeView.frame.width
                 let currentQRCenterY = self.view.convert(
                     self.qrCodeView.center,
                     from: self.qrCodeView.superview
                 ).y
-                let desiredQRCenterY = self.view.frame.height * 0.4
+                let desiredQRCenterY = self.contentLayoutGuide.layoutFrame.minY + 0.4 * self.contentLayoutGuide.layoutFrame.height
                 let qrExpandYOffset = desiredQRCenterY - currentQRCenterY
                 self.qrCodeView.layer.anchorPoint = .init(x: 0.5, y: 0.5)
                 self.qrCodeView.transform = .scale(qrExpandScale)

@@ -114,8 +114,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         view.backgroundColor = .Signal.background
 
         // Content view.
-        let stackView = UIStackView()
-        var bottomView: UIView?
+        let stackView = addStaticContentStackView(arrangedSubviews: [], isScrollable: true)
         switch self.restorePath {
         case .quickRestore(let tier, let platform) where platform == .android:
             switch tier {
@@ -124,6 +123,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 stackView.addArrangedSubviews([
                     prominentRestoreButton(),
                     prominentSkipRestoreButton(),
+                    .vStretchingSpacer(),
                 ])
             case .none:
                 addNoRestoreOptionViews(to: stackView)
@@ -132,79 +132,52 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             addDefaultTitle(to: stackView)
             switch tier {
             case .free:
+                let bottomButton = skipRestoreButton(isLargeButton: false)
                 stackView.addArrangedSubviews([
                     prominentTransferButton(),
                     prominentRestoreButton(),
+                    .vStretchingSpacer(),
+                    bottomButton.enclosedInVerticalStackView(isFullWidthButton: false),
                 ])
-                bottomView = addCompactButtonToTheBottom(button: skipRestoreButton(isLargeButton: false))
+
             case .paid:
+                let bottomButton = skipRestoreButton(isLargeButton: false)
                 stackView.addArrangedSubviews([
                     prominentRestoreButton(),
-                    prominentTransferButton()
+                    prominentTransferButton(),
+                    .vStretchingSpacer(),
+                    bottomButton.enclosedInVerticalStackView(isFullWidthButton: false),
                 ])
-                bottomView = addCompactButtonToTheBottom(button: skipRestoreButton(isLargeButton: false))
             case .none:
                 stackView.addArrangedSubviews([
                     prominentTransferButton(),
                     prominentSkipRestoreButton(),
+                    .vStretchingSpacer(),
                 ])
             }
         case .manualRestore:
             addDefaultTitle(to: stackView)
-            stackView.addArrangedSubviews([
-                prominentRestoreButton(),
-                prominentSkipRestoreButton(),
-            ])
-            let cancelButton = UIButton(
+            let bottomButton = UIButton(
                 configuration: .mediumSecondary(title: CommonStrings.cancelButton),
                 primaryAction: UIAction { [weak self] _ in
                     self?.didTapCancel()
                 }
             )
-            bottomView = addCompactButtonToTheBottom(button: cancelButton)
+            stackView.addArrangedSubviews([
+                prominentRestoreButton(),
+                prominentSkipRestoreButton(),
+                .vStretchingSpacer(),
+                bottomButton.enclosedInVerticalStackView(isFullWidthButton: false),
+            ])
         case .unspecified:
             addDefaultTitle(to: stackView)
             stackView.addArrangedSubviews([
                 prominentTransferButton(),
                 prominentRestoreButton(),
                 prominentSkipRestoreButton(),
+                .vStretchingSpacer(),
             ])
         }
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 12
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        // Constraints.
-        let scrollView = UIScrollView()
-        scrollView.preservesSuperviewLayoutMargins = true
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-        if let bottomView {
-            NSLayoutConstraint.activate([
-                scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: bottomView.topAnchor),
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            ])
-        }
-
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-        ])
     }
 
     private func addDefaultTitle(to stackView: UIStackView) {
@@ -225,29 +198,6 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             explanationLabel
         ])
         stackView.setCustomSpacing(24, after: explanationLabel)
-    }
-
-    private func addCompactButtonToTheBottom(button: UIButton) -> UIView {
-        button.setContentHuggingVerticalHigh()
-
-        // Compact button centered in a short container view.
-        let buttonContainer = UIView.container()
-        buttonContainer.addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
-            button.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-            button.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-        ])
-
-        view.addSubview(buttonContainer)
-        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            buttonContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            buttonContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-        return buttonContainer
     }
 
     private func addNoRestoreOptionViews(to stackView: UIStackView) {
@@ -304,9 +254,6 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             ))
         ])
 
-        let buttonContainer = UIView.container()
-        buttonContainer.preservesSuperviewLayoutMargins = true
-
         // Show large "No backup to restore" and "Skip Restore"
         let continueButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.okayButton),
@@ -314,30 +261,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 self?.didTapCancel()
             }
         )
-        buttonContainer.addSubview(continueButton)
-
         let skipRestoreButton = skipRestoreButton(isLargeButton: true)
-        buttonContainer.addSubview(skipRestoreButton)
 
-        continueButton.translatesAutoresizingMaskIntoConstraints = false
-        skipRestoreButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            continueButton.centerXAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.centerXAnchor),
-            continueButton.topAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.topAnchor),
-            continueButton.leadingAnchor.constraint(equalTo: buttonContainer.layoutMarginsGuide.leadingAnchor, constant: 22),
-
-            skipRestoreButton.topAnchor.constraint(equalTo: continueButton.bottomAnchor, constant: 12),
-            skipRestoreButton.leadingAnchor.constraint(equalTo: continueButton.leadingAnchor),
-            skipRestoreButton.trailingAnchor.constraint(equalTo: continueButton.trailingAnchor),
-            skipRestoreButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-        ])
-
-        view.addSubview(buttonContainer)
-        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            buttonContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            buttonContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        stackView.addArrangedSubviews([
+            .vStretchingSpacer(),
+            [ continueButton, skipRestoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
    }
 

@@ -60,8 +60,8 @@ class RegistrationLoadingViewController: OWSViewController {
         view.addSubview(spinnerView)
         spinnerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            spinnerView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            spinnerView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+            spinnerView.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+            spinnerView.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor),
         ])
     }
 

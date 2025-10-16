@@ -39,7 +39,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
 
         // Buttons in the top right corner.
         let canSwitchModes = UIDevice.current.isIPad || FeatureFlags.linkedPhones
-        var transferButtonTrailingAnchor: NSLayoutAnchor<NSLayoutXAxisAnchor> = view.layoutMarginsGuide.trailingAnchor
+        var transferButtonTrailingAnchor: NSLayoutAnchor<NSLayoutXAxisAnchor> = contentLayoutGuide.trailingAnchor
         if canSwitchModes {
             let modeSwitchButton = UIButton(
                 configuration: .plain(),
@@ -49,15 +49,15 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
             )
             modeSwitchButton.configuration?.image = .init(named: UIDevice.current.isIPad ? "link" : "link-slash")
             modeSwitchButton.tintColor = .ows_gray25
-            modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
+            modeSwitchButton.accessibilityIdentifier = "registration.splash.modeSwitch"
 
             view.addSubview(modeSwitchButton)
             modeSwitchButton.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 modeSwitchButton.widthAnchor.constraint(equalToConstant: 40),
                 modeSwitchButton.heightAnchor.constraint(equalToConstant: 40),
-                modeSwitchButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-                modeSwitchButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                modeSwitchButton.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+                modeSwitchButton.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             ])
 
             transferButtonTrailingAnchor = modeSwitchButton.leadingAnchor
@@ -71,7 +71,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
                 }
             )
             transferButton.configuration?.image = Theme.iconImage(.transfer).resizedImage(to: .square(24))
-            transferButton.accessibilityIdentifier = "onboarding.splash.transfer"
+            transferButton.accessibilityIdentifier = "registration.splash.transfer"
 
             view.addSubview(transferButton)
             transferButton.translatesAutoresizingMaskIntoConstraints = false
@@ -79,40 +79,28 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
                 transferButton.widthAnchor.constraint(equalToConstant: 40),
                 transferButton.heightAnchor.constraint(equalToConstant: 40),
                 transferButton.trailingAnchor.constraint(equalTo: transferButtonTrailingAnchor),
-                transferButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                transferButton.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             ])
         }
 
-        // Main content view.
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        view.sendSubviewToBack(stackView) // don't obscure buttons in the corner
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: UIDevice.current.hasIPhoneXNotch ? 0 : -32
-            ),
-        ])
-
         // Image at the top.
-        let heroImage = UIImage(named: "onboarding_splash_hero")
-        let heroImageView = UIImageView(image: heroImage)
-        heroImageView.contentMode = .scaleAspectFit
-        heroImageView.layer.minificationFilter = .trilinear
-        heroImageView.layer.magnificationFilter = .trilinear
-        heroImageView.setCompressionResistanceLow()
-        heroImageView.setContentHuggingVerticalLow()
-        heroImageView.accessibilityIdentifier = "registration.splash.heroImageView"
-        stackView.addArrangedSubview(heroImageView)
-        stackView.setCustomSpacing(22, after: heroImageView)
+        let imageView = UIImageView(image: UIImage(named: "onboarding_splash_hero"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
+        imageView.setCompressionResistanceLow()
+        imageView.setContentHuggingVerticalLow()
+        imageView.accessibilityIdentifier = "registration.splash.heroImageView"
+        let heroImageContainer = UIView.container()
+        heroImageContainer.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        // Center image vertically in the available space above title text.
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: heroImageContainer.centerXAnchor),
+            imageView.widthAnchor.constraint(equalTo: heroImageContainer.widthAnchor),
+            imageView.centerYAnchor.constraint(equalTo: heroImageContainer.centerYAnchor),
+            imageView.heightAnchor.constraint(equalTo: heroImageContainer.heightAnchor, constant: 0.8),
+        ])
 
         // Welcome text.
         let titleText = {
@@ -127,8 +115,6 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         }()
         let titleLabel = UILabel.titleLabelForRegistration(text: titleText)
         titleLabel.accessibilityIdentifier = "registration.splash.titleLabel"
-        stackView.addArrangedSubview(titleLabel)
-        stackView.setCustomSpacing(12, after: titleLabel)
 
         // Terms of service and privacy policy.
         let tosPPButton = UIButton(
@@ -143,8 +129,6 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         tosPPButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
         tosPPButton.enableMultilineLabel()
         tosPPButton.accessibilityIdentifier = "registration.splash.explanationLabel"
-        stackView.addArrangedSubview(tosPPButton)
-        stackView.setCustomSpacing(57, after: tosPPButton)
 
         // Large buttons enclosed in a container with some extra horizontal padding.
         let continueButton = UIButton(
@@ -155,14 +139,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         )
         continueButton.accessibilityIdentifier = "registration.splash.continueButton"
 
-        let largeButtonsContainer = UIStackView(arrangedSubviews: [continueButton])
-        largeButtonsContainer.isLayoutMarginsRelativeArrangement = true
-        largeButtonsContainer.directionalLayoutMargins = .layoutMarginsForLargeRegistrationButtons()
-        largeButtonsContainer.spacing = 16
-        largeButtonsContainer.axis = .vertical
-        largeButtonsContainer.alignment = .fill
-        stackView.addArrangedSubview(largeButtonsContainer)
-
+        let largeButtonsContainer: UIView
         if FeatureFlags.Backups.supported {
             let restoreOrTransferButton = UIButton(
                 configuration: .largeSecondary(title: OWSLocalizedString(
@@ -175,8 +152,23 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
             )
             restoreOrTransferButton.enableMultilineLabel()
             restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
-            largeButtonsContainer.addArrangedSubview(restoreOrTransferButton)
+
+            largeButtonsContainer = UIStackView.verticalButtonStack(buttons: [ continueButton, restoreOrTransferButton ])
+        } else {
+            largeButtonsContainer = UIStackView.verticalButtonStack(buttons: [ continueButton ])
         }
+
+        // Main content view.
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            heroImageContainer,
+            titleLabel,
+            tosPPButton,
+            largeButtonsContainer,
+        ])
+        stackView.setCustomSpacing(44, after: imageView)
+        stackView.setCustomSpacing(82, after: tosPPButton)
+
+        view.sendSubviewToBack(stackView)
     }
 
     // MARK: - Events
@@ -261,6 +253,8 @@ private class RestoreOrTransferPickerController: StackSheetViewController {
         stackView.addArrangedSubview(noDeviceButton)
     }
 }
+
+// MARK: -
 
 #if DEBUG
 private class PreviewRegistrationSplashPresenter: RegistrationSplashPresenter {

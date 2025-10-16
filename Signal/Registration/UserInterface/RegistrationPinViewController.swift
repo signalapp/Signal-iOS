@@ -174,18 +174,7 @@ class RegistrationPinViewController: OWSViewController {
         accessibilityIdentifier: "registration.pin.backButton"
     )
 
-    private lazy var stackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [titleLabel, explanationView, pinTextField])
-        result.axis = .vertical
-        result.distribution = .fill
-        result.spacing = 12
-        result.setCustomSpacing(24, after: explanationView)
-        result.preservesSuperviewLayoutMargins = true
-        result.isLayoutMarginsRelativeArrangement = true
-        result.directionalLayoutMargins.top = 0
-        result.directionalLayoutMargins.bottom = 16
-        return result
-    }()
+    private var stackView: UIStackView!
 
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(text: {
@@ -317,6 +306,8 @@ class RegistrationPinViewController: OWSViewController {
         return button
     }()
 
+    private lazy var togglePinCharacterSetButtonContainer = togglePinCharacterSetButton.enclosedInVerticalStackView(isFullWidthButton: false)
+
     private func exitAction() -> UIAction? {
         let exitTitle: String
         switch state.exitConfiguration {
@@ -357,27 +348,12 @@ class RegistrationPinViewController: OWSViewController {
             return barButtonItem
         }()
 
-        let scrollView = UIScrollView()
-        view.addSubview(scrollView)
-        scrollView.preservesSuperviewLayoutMargins = true
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-        ])
+        self.stackView = addStaticContentStackView(
+            arrangedSubviews: [titleLabel, explanationView, pinTextField],
+            isScrollable: true,
+            shouldAvoidKeyboard: true
+        )
+        stackView.setCustomSpacing(24, after: explanationView)
 
         pinTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
@@ -477,8 +453,8 @@ class RegistrationPinViewController: OWSViewController {
 
         replaceViewsAfterTextField(with: [
             pinValidationLabel,
-            UIView.vStretchingSpacer(),
-            togglePinCharacterSetButton
+            UIView.vStretchingSpacer(minHeight: 24),
+            togglePinCharacterSetButtonContainer,
         ])
     }
 
@@ -560,7 +536,7 @@ class RegistrationPinViewController: OWSViewController {
         newViewsAtTheBottom.append(contentsOf: [
             needHelpWithExistingPinButton,
             UIView.vStretchingSpacer(),
-            togglePinCharacterSetButton
+            togglePinCharacterSetButtonContainer,
         ])
         replaceViewsAfterTextField(with: newViewsAtTheBottom)
     }

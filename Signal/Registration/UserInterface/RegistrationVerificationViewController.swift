@@ -230,17 +230,6 @@ class RegistrationVerificationViewController: OWSViewController {
         navigationItem.setHidesBackButton(true, animated: false)
         view.backgroundColor = .Signal.background
 
-        let scrollView = UIScrollView()
-        scrollView.preservesSuperviewLayoutMargins = true
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
         // Buttons at the bottom
         let resendButtonsContainer = UIStackView(arrangedSubviews: [
             resendSMSCodeButton,
@@ -253,32 +242,21 @@ class RegistrationVerificationViewController: OWSViewController {
         resendButtonsContainer.spacing = 16
 
         // Main content stack embedded in a scroll view.
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            explanationLabel,
-            wrongNumberButton,
-            verificationCodeView,
-            helpButton,
-            UIView.vStretchingSpacer(),
-            resendButtonsContainer,
-        ])
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                titleLabel,
+                explanationLabel,
+                wrongNumberButton,
+                verificationCodeView,
+                helpButton,
+                .vStretchingSpacer(),
+                resendButtonsContainer,
+            ],
+            isScrollable: true,
+            shouldAvoidKeyboard: true
+        )
         stackView.setCustomSpacing(24, after: wrongNumberButton)
         stackView.setCustomSpacing(24, after: verificationCodeView)
-        stackView.axis = .vertical
-        stackView.spacing = 12
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
-        ])
 
         configureUI()
 

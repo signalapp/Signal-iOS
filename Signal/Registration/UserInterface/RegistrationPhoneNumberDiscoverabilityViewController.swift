@@ -98,13 +98,13 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         )
         subtitleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.explanationLabel"
 
-        let stackView = UIStackView(arrangedSubviews: [
+        let stackView = addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             subtitleLabel,
             everybodyButton,
             nobodyButton,
             selectionDescriptionLabel,
-            .vStretchingSpacer(minHeight: 16)
+            .vStretchingSpacer(),
         ])
         if presenter?.presentedAsModal ?? false {
             let continueButton = UIButton(
@@ -114,30 +114,11 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
                 }
             )
             continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
-            let buttonContainer = UIView.container()
-            buttonContainer.addSubview(continueButton)
-            continueButton.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                continueButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-                continueButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
-                continueButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
-                continueButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-            ])
-            stackView.addArrangedSubview(buttonContainer)
+
+            stackView.addArrangedSubview(continueButton.enclosedInVerticalStackView(isFullWidthButton: true))
         }
-        stackView.axis = .vertical
         stackView.spacing = 16
         stackView.setCustomSpacing(24, after: subtitleLabel)
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
 
         update()
     }

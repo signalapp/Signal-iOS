@@ -103,30 +103,11 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         )
         learnMoreButton.accessibilityIdentifier = "registration.reglockTimeout.learnMoreButton"
 
-        let buttonContainer = UIStackView(arrangedSubviews: [ okayButton, learnMoreButton ])
-        buttonContainer.axis = .vertical
-        buttonContainer.spacing = 12
-        buttonContainer.alignment = .fill
-        buttonContainer.isLayoutMarginsRelativeArrangement = true
-        buttonContainer.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 22, bottom: 16, trailing: 22)
-
-        let stackView = UIStackView(arrangedSubviews: [
+        addStaticContentStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            .vStretchingSpacer(minHeight: 36),
-            buttonContainer,
-        ])
-        stackView.axis = .vertical
-        stackView.spacing = 12
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            .vStretchingSpacer(),
+            [ okayButton, learnMoreButton ].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
 
         updateExplanationLabelText()

@@ -37,11 +37,7 @@ class RegistrationQuickRestoreQRCodeViewController:
         super.init()
 
         self.provisioningSocketManager.delegate = self
-
-        self.addChild(hostingController)
-        self.view.addSubview(hostingController.view)
-        hostingController.view.autoPinEdgesToSuperviewEdges()
-        hostingController.didMove(toParent: self)
+        self.navigationItem.hidesBackButton = true
     }
 
     private lazy var hostingController = UIHostingController(rootView: ContentStack(
@@ -51,6 +47,23 @@ class RegistrationQuickRestoreQRCodeViewController:
             self?.presenter?.cancelChosenRestoreMethod()
         }
     ))
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .Signal.background
+
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+        ])
+        hostingController.didMove(toParent: self)
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -106,8 +119,6 @@ class RegistrationQuickRestoreQRCodeViewController:
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
     public var navbarBackgroundColorOverride: UIColor? { .clear }
-
-    public var prefersNavigationBarHidden: Bool { true }
 }
 
 // MARK: - SwiftUI
@@ -117,50 +128,30 @@ private struct ContentStack: View {
 
     let cancelAction: () -> Void
 
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-
-    private var isCompactLayout: Bool {
-        horizontalSizeClass == .compact || verticalSizeClass == .compact
-    }
-
-    private var layoutMargins: EdgeInsets {
-        if isCompactLayout {
-            EdgeInsets(.layoutMarginsForRegistration(UIUserInterfaceSizeClass(horizontalSizeClass)))
-        } else {
-            EdgeInsets()
-        }
-    }
-
     var body: some View {
-        VStack {
-            ScrollView {
-                VStack(spacing: 36) {
-                    Text(OWSLocalizedString(
-                        "REGISTRATION_SCAN_QR_CODE_TITLE",
-                        comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
-                    ))
-                    .font(.title.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 32)
+        ScrollView {
+            VStack(spacing: 36) {
+                Text(OWSLocalizedString(
+                    "REGISTRATION_SCAN_QR_CODE_TITLE",
+                    comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
+                ))
+                .font(.title.weight(.semibold))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
-                    RotatingQRCodeView(model: model)
-                        .padding(.horizontal, 50)
+                RotatingQRCodeView(model: model)
+                    .padding(.horizontal, 40)
 
-                    TutorialStack()
+                TutorialStack()
+
+                Button(CommonStrings.cancelButton) {
+                    self.cancelAction()
                 }
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
             }
-
-            Spacer(minLength: 36)
-
-            Button(CommonStrings.cancelButton) {
-                self.cancelAction()
-            }
-            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
-            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         }
-        .padding(layoutMargins)
     }
 }
 

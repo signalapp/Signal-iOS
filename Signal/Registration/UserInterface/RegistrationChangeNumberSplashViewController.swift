@@ -51,13 +51,24 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         }
 
         // UI Elements
-        let heroImageCircle = OWSLayerView.circleView(size: 112)
+        let heroImageCircle = OWSLayerView.circleView()
         heroImageCircle.backgroundColor = .Signal.secondaryFill
         heroImageCircle.addSubview(heroImageView)
+        let heroImageContainer = UIView.container()
+        heroImageContainer.addSubview(heroImageCircle)
         heroImageView.translatesAutoresizingMaskIntoConstraints = false
+        heroImageCircle.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             heroImageView.centerXAnchor.constraint(equalTo: heroImageCircle.centerXAnchor),
             heroImageView.centerYAnchor.constraint(equalTo: heroImageCircle.centerYAnchor),
+
+            heroImageCircle.widthAnchor.constraint(equalToConstant: 112),
+            heroImageCircle.heightAnchor.constraint(equalToConstant: 112),
+
+            heroImageCircle.topAnchor.constraint(equalTo: heroImageContainer.topAnchor),
+            heroImageCircle.leadingAnchor.constraint(greaterThanOrEqualTo: heroImageContainer.leadingAnchor),
+            heroImageCircle.centerXAnchor.constraint(equalTo: heroImageContainer.centerXAnchor),
+            heroImageCircle.bottomAnchor.constraint(equalTo: heroImageContainer.bottomAnchor),
         ])
         let titleLabel = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
@@ -77,54 +88,15 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
                 self?.didTapContinue()
             }
         )
-        let buttonContainer = UIView.container()
-        buttonContainer.addSubview(continueButton)
-        continueButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            continueButton.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
-            continueButton.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor, constant: 22),
-            continueButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
-            continueButton.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor, constant: -16),
-        ])
 
-        // Layout
-        let scrollView = UIScrollView()
-        scrollView.preservesSuperviewLayoutMargins = true
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-
-        let stackView = UIStackView(arrangedSubviews: [
-            heroImageCircle,
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            heroImageContainer,
             titleLabel,
             subtitleLabel,
-            .vStretchingSpacer(minHeight: 36),
-            buttonContainer
+            .vStretchingSpacer(),
+            continueButton.enclosedInVerticalStackView(isFullWidthButton: true),
         ])
-        stackView.setCustomSpacing(24, after: heroImageCircle)
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 12
-        stackView.directionalLayoutMargins.top = 24
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.preservesSuperviewLayoutMargins = true
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            buttonContainer.widthAnchor.constraint(equalTo: stackView.layoutMarginsGuide.widthAnchor),
-
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-        ])
+        stackView.setCustomSpacing(24, after: heroImageContainer)
 
         updateContents()
     }

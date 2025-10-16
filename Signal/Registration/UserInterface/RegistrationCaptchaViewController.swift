@@ -50,18 +50,7 @@ class RegistrationCaptchaViewController: OWSViewController {
         titleLabel.setContentHuggingHigh()
         titleLabel.accessibilityIdentifier = "registration.captcha.titleLabel"
 
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, captchaView])
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 12
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-        ])
+        addStaticContentStackView(arrangedSubviews: [titleLabel, captchaView])
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -81,3 +70,25 @@ extension RegistrationCaptchaViewController: CaptchaViewDelegate {
         captchaView.loadCaptcha()
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private class PreviewRegistrationCaptchaPresenter: RegistrationCaptchaPresenter {
+    func submitCaptcha(_ token: String) {
+        print("submitCaptcha")
+    }
+}
+
+@available(iOS 17, *)
+#Preview {
+    let presenter = PreviewRegistrationCaptchaPresenter()
+    return UINavigationController(
+        rootViewController: RegistrationCaptchaViewController(
+            presenter: presenter
+        )
+    )
+}
+
+#endif

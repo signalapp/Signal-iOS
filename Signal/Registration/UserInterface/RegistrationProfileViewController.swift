@@ -247,17 +247,6 @@ class RegistrationProfileViewController: OWSViewController {
             accessibilityIdentifier: "registration.profile.nextButton"
         )
 
-        let scrollView = UIScrollView()
-        scrollView.preservesSuperviewLayoutMargins = true
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
         let avatarContainerView = UIView.container()
         avatarContainerView.addSubview(avatarView)
         avatarContainerView.addSubview(cameraIconView)
@@ -272,31 +261,20 @@ class RegistrationProfileViewController: OWSViewController {
             cameraIconView.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor),
         ])
 
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            explanationView,
-            avatarContainerView,
-            nameStackView,
-            phoneNumberPrivacyButton,
-            UIView.vStretchingSpacer(),
-        ])
-        stackView.axis = .vertical
-        stackView.distribution = .fill
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                titleLabel,
+                explanationView,
+                avatarContainerView,
+                nameStackView,
+                phoneNumberPrivacyButton,
+                .vStretchingSpacer(),
+            ],
+            isScrollable: true,
+            shouldAvoidKeyboard: true
+        )
         stackView.spacing = 24
         stackView.setCustomSpacing(12, after: titleLabel)
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        scrollView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            stackView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor),
-        ])
 
         firstTextField.returnKeyType = .next
         secondTextField.returnKeyType = .done
