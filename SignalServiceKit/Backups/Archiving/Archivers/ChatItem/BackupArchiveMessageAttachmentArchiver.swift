@@ -642,7 +642,15 @@ extension ReferencedAttachment {
             }
         }
 
-        if let plaintextHash = attachment.sha256ContentHash {
+        // If we have absolutely no present-time source of data
+        // for this attachment, even if we have a plaintext hash because
+        // we _previously_ had data, don't bother exporting it. Its unrecoverable.
+        let isTotallyMissingAttachment =
+            attachment.streamInfo == nil
+            && transitTierInfoToExport == nil
+            && attachment.mediaTierInfo == nil
+
+        if !isTotallyMissingAttachment, let plaintextHash = attachment.sha256ContentHash {
             locatorInfo.integrityCheck = .plaintextHash(plaintextHash)
             if let mediaTierCdnNumber = attachment.mediaTierInfo?.cdnNumber {
                 locatorInfo.mediaTierCdnNumber = mediaTierCdnNumber
