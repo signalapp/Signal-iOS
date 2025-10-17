@@ -112,9 +112,8 @@ class MemberActionSheet: OWSTableSheetViewController {
         viewController.present(self, animated: true)
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    public override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let topSpacerSection = OWSTableSection()
         topSpacerSection.customHeaderHeight = 12
@@ -131,7 +130,9 @@ class MemberActionSheet: OWSTableSheetViewController {
         )
 
         // If the local user, show no options.
-        guard !address.isLocalAddress else { return }
+        guard !address.isLocalAddress else {
+            return contents
+        }
 
         // Nickname
         section.add(.item(
@@ -173,7 +174,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     self?.didTapUnblockThread {}
                 }
             ))
-            return
+            return contents
         }
 
         section.add(.item(
@@ -306,6 +307,8 @@ class MemberActionSheet: OWSTableSheetViewController {
                 }
             }
         ))
+
+        return contents
     }
 
     private func viewSystemContactDetails(contactAddress: SignalServiceAddress) {

@@ -120,7 +120,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    public override func tableContents() -> OWSTableContents {
         do {
             try loadEditHistory()
         } catch {
@@ -128,8 +128,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
 
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
-        guard let parentItems = parentRenderItems else { return }
+
+        guard let parentItems = parentRenderItems else {
+            return contents
+        }
 
         let topSection = OWSTableSection()
         topSection.add(createMessageListTableItem(items: parentItems))
@@ -149,6 +151,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         section.hasSeparators = false
         section.add(createMessageListTableItem(items: renderItems))
         contents.add(section)
+
+        return contents
     }
 
     // MARK: - Utility Methods

@@ -35,30 +35,24 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
             ConversationPickerCell.self,
             forCellReuseIdentifier: ConversationPickerCell.reuseIdentifier
         )
+    }
 
-        let doneButton = OWSButton(title: CommonStrings.okayButton) { [weak self] in
-            self?.dismiss(animated: true) {
-                self?.onApprove()
+    public override func tableFooterView() -> UIView? {
+        let doneButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.okayButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismiss(animated: true) {
+                    self?.onApprove()
+                }
             }
-        }
-        doneButton.dimsWhenHighlighted = true
-        doneButton.layer.cornerRadius = 8
-        doneButton.backgroundColor = .ows_accentBlue
-        doneButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-        footerStack.addArrangedSubview(doneButton)
-        doneButton.autoSetDimension(.height, toSize: 48)
-        doneButton.autoPinWidthToSuperview(withMargin: 48)
-        doneButton.autoHCenterInSuperview()
-
-        footerStack.addArrangedSubview(SpacerView(preferredHeight: 20))
+        )
+        let stackView = doneButton.enclosedInVerticalStackView(isFullWidthButton: true)
+        stackView.directionalLayoutMargins.leading = 48
+        stackView.directionalLayoutMargins.trailing = 48
+        return stackView
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
-        let contents = generateTableContents()
-        self.tableViewController.setContents(contents, shouldReload: shouldReload)
-    }
-
-    private func generateTableContents() -> OWSTableContents {
+    public override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()

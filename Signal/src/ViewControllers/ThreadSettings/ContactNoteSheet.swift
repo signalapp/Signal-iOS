@@ -39,9 +39,8 @@ class ContactNoteSheet: OWSTableSheetViewController {
         }
     }
 
-    override func updateTableContents(shouldReload: Bool = true) {
-        self.contactNoteTableViewController.updateTableContents(shouldReload: shouldReload)
-        self.updateMinimizedHeight()
+    override func tableContents() -> OWSTableContents {
+        return contactNoteTableViewController.tableContents()
     }
 
     private func didTapEdit() {
@@ -85,7 +84,7 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
         self.context = context
     }
 
-    func updateTableContents(shouldReload: Bool) {
+    func tableContents() -> OWSTableContents {
         let header: UIView = {
             let headerContainer = UIView()
             headerContainer.layoutMargins = .init(
@@ -147,9 +146,6 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
             headerView: header
         )
 
-        let contents = OWSTableContents(sections: [section])
-
-        self.setContents(contents, shouldReload: shouldReload)
-        self.tableView.layoutIfNeeded()
+        return OWSTableContents(sections: [section])
     }
 }

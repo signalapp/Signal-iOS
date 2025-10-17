@@ -21,7 +21,7 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
 
     // MARK: - Table contents
 
-    override func updateTableContents(shouldReload: Bool = true) {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let displayLinkSection = OWSTableSection(
@@ -88,6 +88,6 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
             actionsSection
         ])
 
-        self.tableViewController.setContents(contents, shouldReload: shouldReload)
+        return contents
     }
 }

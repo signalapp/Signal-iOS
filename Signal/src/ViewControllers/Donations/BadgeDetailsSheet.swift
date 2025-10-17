@@ -66,9 +66,8 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
         !owner.isLocal && !localProfileHasBadges()
     }
 
-    override public func updateTableContents(shouldReload: Bool = true) {
+    override public func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let focusedBadgeSection = OWSTableSection()
         focusedBadgeSection.hasBackground = false
@@ -153,6 +152,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             contents.add(buttonSection)
         }
 
+        return contents
     }
 
     @objc

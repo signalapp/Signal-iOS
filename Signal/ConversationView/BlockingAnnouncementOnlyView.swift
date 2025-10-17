@@ -143,16 +143,14 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
 
         tableViewController.tableView.register(
             ContactTableViewCell.self,
-            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
-
-        updateViewState()
+            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier
+        )
     }
 
     // MARK: -
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    public override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let section = OWSTableSection()
         let header = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
@@ -187,5 +185,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
                     }
                 }))
         }
+
+        return contents
     }
 }

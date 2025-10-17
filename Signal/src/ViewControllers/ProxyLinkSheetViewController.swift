@@ -15,9 +15,8 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
         super.init()
     }
 
-    override func updateTableContents(shouldReload: Bool = true) {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let proxyHost = url.fragment!
 
@@ -104,6 +103,8 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
             return cell
         }))
+
+        return contents
     }
 
     private func button(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {

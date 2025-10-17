@@ -7,9 +7,8 @@ import SignalServiceKit
 public import SignalUI
 
 public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableSheetViewController {
-    override public func updateTableContents(shouldReload: Bool = true) {
+    override public func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let section = OWSTableSection()
         section.hasBackground = false
@@ -51,5 +50,7 @@ public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableS
         }))
 
         contents.add(section)
+
+        return contents
     }
 }

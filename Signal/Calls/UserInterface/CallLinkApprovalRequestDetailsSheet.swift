@@ -55,7 +55,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
     // MARK: Table contents
 
-    override func updateTableContents(shouldReload: Bool = true) {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         contents.add(.init(
@@ -91,7 +91,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
             headerView: self.buildHeader()
         ))
 
-        tableViewController.setContents(contents, shouldReload: shouldReload)
+        return contents
     }
 
     // MARK: Header

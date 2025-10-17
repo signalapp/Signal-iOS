@@ -36,11 +36,10 @@ class StoryInfoSheet: OWSTableSheetViewController {
         }
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    public override func tableContents() -> OWSTableContents {
         storyMessage = SSKEnvironment.shared.databaseStorageRef.read { StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0) ?? storyMessage }
 
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let metadataSection = OWSTableSection()
         metadataSection.hasBackground = false
@@ -65,6 +64,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
         case .incoming:
             contents.add(buildSenderSection())
         }
+
+        return contents
     }
 
     private let byteCountFormatter: ByteCountFormatter = ByteCountFormatter()

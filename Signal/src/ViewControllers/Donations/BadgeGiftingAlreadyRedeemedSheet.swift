@@ -21,9 +21,8 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
         updateTableContents()
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    public override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
-        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
@@ -77,6 +76,8 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
 
             return cell
         }, actionBlock: nil))
+
+        return contents
     }
 
     public override func willDismissInteractively() {

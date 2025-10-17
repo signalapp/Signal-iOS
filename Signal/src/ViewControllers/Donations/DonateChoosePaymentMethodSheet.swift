@@ -93,12 +93,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 
     // MARK: - Updating table contents
 
-    public override func updateTableContents(shouldReload: Bool = true) {
-        updateTop(shouldReload: shouldReload)
-        updateBottom()
-    }
-
-    private func updateTop(shouldReload: Bool) {
+    public override func tableContents() -> OWSTableContents {
         let infoStackView: UIView = {
             let stackView = UIStackView()
             stackView.axis = .vertical
@@ -143,9 +138,51 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         })])
         section.hasBackground = false
         section.shouldDisableCellSelection = true
-        let contents = OWSTableContents(sections: [section])
 
-        self.tableViewController.setContents(contents, shouldReload: shouldReload)
+        return OWSTableContents(sections: [section])
+    }
+
+    public override func tableFooterView() -> UIView? {
+        let paymentMethods: [DonationPaymentMethod]
+        let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
+
+        if let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
+           applePayFirstRegions.contains(e164: localNumber) {
+            paymentMethods = [
+                .applePay,
+                .creditOrDebitCard,
+                .paypal,
+                .sepa,
+                .ideal
+            ]
+        } else {
+            paymentMethods = [
+                .ideal,
+                .creditOrDebitCard,
+                .paypal,
+                .applePay,
+                .sepa,
+            ]
+        }
+
+        let paymentMethodButtons = paymentMethods
+            .filter(supportedPaymentMethods.contains)
+            .map(createButtonFor(paymentMethod:))
+
+        owsPrecondition(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
+
+        let stackView = UIStackView(arrangedSubviews: paymentMethodButtons)
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 12
+        stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 20, trailing: 20)
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        for button in paymentMethodButtons {
+            button.autoSetDimension(.height, toSize: buttonHeight)
+        }
+
+        return stackView
     }
 
     private func createButtonFor(paymentMethod: DonationPaymentMethod) -> UIView {
@@ -255,58 +292,5 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             guard let self else { return }
             self.didChoosePaymentMethod(self, .ideal)
         }
-    }
-
-    private func updateBottom() {
-        let paymentButtonContainerView: UIView = {
-            let paymentMethods: [DonationPaymentMethod]
-            let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
-
-            if let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-               applePayFirstRegions.contains(e164: localNumber) {
-                paymentMethods = [
-                    .applePay,
-                    .creditOrDebitCard,
-                    .paypal,
-                    .sepa,
-                    .ideal
-                ]
-            } else {
-                paymentMethods = [
-                    .ideal,
-                    .creditOrDebitCard,
-                    .paypal,
-                    .applePay,
-                    .sepa,
-                ]
-            }
-
-            let paymentMethodButtons = paymentMethods
-                .filter(supportedPaymentMethods.contains)
-                .map(createButtonFor(paymentMethod:))
-
-            owsPrecondition(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
-
-            let stackView = UIStackView(arrangedSubviews: paymentMethodButtons)
-            stackView.axis = .vertical
-            stackView.alignment = .fill
-            stackView.spacing = 12
-
-            for button in paymentMethodButtons {
-                button.autoSetDimension(.height, toSize: buttonHeight)
-            }
-
-            return stackView
-        }()
-
-        footerStack.removeAllSubviews()
-        footerStack.addArrangedSubview(paymentButtonContainerView)
-        footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 20, right: 20)
-        footerStack.isLayoutMarginsRelativeArrangement = true
-
-        paymentButtonContainerView.autoPinWidthToSuperviewMargins()
-
-        footerStack.layoutIfNeeded()
     }
 }
