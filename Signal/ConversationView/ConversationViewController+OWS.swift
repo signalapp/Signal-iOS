@@ -95,7 +95,10 @@ extension ConversationViewController {
         let oldInsets = collectionView.contentInset
         var newInsets = oldInsets
 
-        newInsets.bottom = keyboardLayoutGuide.layoutFrame.height - view.safeAreaInsets.bottom + (bottomBar.frame.height - bottomBar.safeAreaInsets.bottom)
+        // With collectionView constrained to bottomBar.top, we only need to account for
+        // the bottomBar height and safe area insets. The keyboard layout guide height
+        // is no longer needed since collectionView no longer extends to superview bottom.
+        newInsets.bottom = bottomBar.frame.height - bottomBar.safeAreaInsets.bottom
         newInsets.top = (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom
