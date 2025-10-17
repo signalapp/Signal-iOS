@@ -185,11 +185,12 @@ private class RegistrationChoiceButtonContentView: UIView, UIContentView {
         vStack.spacing = 2
 
         // Disclosure Indicator
-        let disclosureView = UILabel()
-        disclosureView.attributedText = SignalSymbol.chevronTrailing
-            .attributedString(for: .body)
-            .styled(with: .color(UIColor.Signal.tertiaryLabel))
-        disclosureView.setContentHuggingHigh()
+        let disclosureView = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-right-20"))
+        disclosureView.tintColor = .Signal.tertiaryLabel
+        disclosureView.translatesAutoresizingMaskIntoConstraints = false
+        // This must be unnecessary but I've observed that without this constraint
+        // UIKit does not split `titleLabel` in two lines when it should, clipping it instead.
+        disclosureView.widthAnchor.constraint(equalToConstant: 20).isActive = true
 
         let hStack = UIStackView(arrangedSubviews: [
             iconContainer,
