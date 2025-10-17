@@ -15,17 +15,6 @@ class UsernameEducationViewController: OWSTableViewController2 {
         static let itemIconSize: CGFloat = 48.0
         static let itemMargin: CGFloat = 20.0
 
-        static let continueButtonInsets: UIEdgeInsets = .init(
-            top: 16.0,
-            leading: 36.0,
-            bottom: 12,
-            trailing: 36.0
-        )
-        static let continueButtonEdgeInsets: UIEdgeInsets = .init(
-            hMargin: 0,
-            vMargin: 14
-        )
-
         static let pillSize: CGSize = .init(width: 36, height: 5)
         static let pillTopMargin: CGFloat = 12.0
     }
@@ -79,37 +68,38 @@ class UsernameEducationViewController: OWSTableViewController2 {
     }()
 
     private lazy var footerView: UIView = {
-        let continueButton = OWSFlatButton.insetButton(
-            title: OWSLocalizedString(
+        let continueButton = UIButton(
+            configuration: .largePrimary(title: OWSLocalizedString(
                 "USERNAME_EDUCATION_SET_UP_BUTTON",
                 comment: "Label for the 'set up' button on the username education sheet"
-            ),
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapContinue))
-        continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapContinue()
+            }
+        )
 
-        let dismissButton = OWSFlatButton.insetButton(
-            title: CommonStrings.notNowButton,
-            font: .dynamicTypeBodyClamped.semibold(),
-            titleColor: .ows_accentBlue,
-            backgroundColor: .clear,
-            target: self,
-            selector: #selector(didTapDismiss))
-        dismissButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
+        let dismissButton = UIButton(
+            configuration: .largeSecondary(title: CommonStrings.notNowButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapDismiss()
+            }
+        )
 
-        let stackView = UIStackView(arrangedSubviews: [
-            continueButton,
-            dismissButton,
-        ])
-        stackView.axis = .vertical
-        stackView.spacing = 16
+        let stackView = UIStackView.verticalButtonStack(
+            buttons: [ continueButton, dismissButton ],
+            isFullWidthButtons: true
+        )
 
         let container = UIView()
+        container.preservesSuperviewLayoutMargins = true
         container.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewSafeArea(with: Constants.continueButtonInsets)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: container.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
         return container
     }()
 
@@ -246,14 +236,12 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
     // MARK: Actions
 
-    @objc
     private func didTapContinue() {
         dismiss(animated: true) {
             self.continueCompletion?()
         }
     }
 
-    @objc
     private func didTapDismiss() {
         dismiss(animated: true)
     }
