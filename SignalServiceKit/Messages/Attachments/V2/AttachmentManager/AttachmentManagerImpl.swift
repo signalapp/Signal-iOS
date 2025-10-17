@@ -587,7 +587,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             if let sourceUnencryptedByteCount {
                 attachmentByteCounter.addToByteCount(
                     attachmentID: attachmentRowId,
-                    byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: sourceUnencryptedByteCount)
+                    byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: sourceUnencryptedByteCount)) ?? UInt64(UInt32.max),
                 )
             }
 

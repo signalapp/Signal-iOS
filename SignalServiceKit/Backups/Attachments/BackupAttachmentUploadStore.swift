@@ -81,9 +81,9 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             attachmentRowId: attachment.id,
             highestPriorityOwnerType: owner,
             isFullsize: fullsize,
-            estimatedByteCount: Cryptography.estimatedMediaTierCDNSize(
-                unencryptedSize: unencryptedSize
-            )
+            estimatedByteCount: UInt32(clamping: Cryptography.estimatedMediaTierCDNSize(
+                unencryptedSize: UInt64(safeCast: unencryptedSize),
+            ) ?? .max),
         )
 
         let existingRecord = try QueuedBackupAttachmentUpload

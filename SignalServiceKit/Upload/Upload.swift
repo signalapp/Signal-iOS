@@ -240,26 +240,20 @@ extension Upload.LocalUploadMetadata {
         fileUrl: URL,
         metadata: EncryptionMetadata
     ) throws -> Upload.LocalUploadMetadata {
-        let lengthRaw = metadata.length
-        let plaintextLengthRaw = metadata.plaintextLength
-
         guard
-            lengthRaw > 0,
-            lengthRaw <= UInt32.max,
-            plaintextLengthRaw > 0,
-            plaintextLengthRaw <= UInt32.max
+            let encryptedLength = UInt32(exactly: metadata.encryptedLength),
+            encryptedLength > 0,
+            let plaintextLength = UInt32(exactly: metadata.plaintextLength),
+            plaintextLength > 0
         else {
             throw OWSAssertionError("Invalid length.")
         }
 
-        let length = UInt32(lengthRaw)
-        let plaintextLength = UInt32(plaintextLengthRaw)
-
         guard
             plaintextLength <= Self.maxPlaintextSizeBytes,
-            length <= Self.maxUploadSizeBytes
+            encryptedLength <= Self.maxUploadSizeBytes
         else {
-            throw OWSAssertionError("Data is too large: \(length).")
+            throw OWSAssertionError("Data is too large: \(encryptedLength).")
         }
 
         let digest = metadata.digest
@@ -268,7 +262,7 @@ extension Upload.LocalUploadMetadata {
             fileUrl: fileUrl,
             key: metadata.key,
             digest: digest,
-            encryptedDataLength: length,
+            encryptedDataLength: encryptedLength,
             plaintextDataLength: plaintextLength
         )
     }

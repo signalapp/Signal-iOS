@@ -16,7 +16,7 @@ public struct EncryptedFileHandleImageSource: OWSImageSource {
     public init(
         encryptedFileUrl: URL,
         encryptionKey: Data,
-        plaintextLength: UInt32
+        plaintextLength: UInt64
     ) throws {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: encryptedFileUrl,
@@ -30,16 +30,16 @@ public struct EncryptedFileHandleImageSource: OWSImageSource {
 
     public func readData(byteOffset: Int, byteLength: Int) throws -> Data {
         if fileHandle.offset() != byteOffset {
-            try fileHandle.seek(toOffset: UInt32(byteOffset))
+            try fileHandle.seek(toOffset: UInt64(byteOffset))
         }
-        return try fileHandle.read(upToCount: UInt32(byteLength))
+        return try fileHandle.read(upToCount: byteLength)
     }
 
     public func readIntoMemory() throws -> Data {
         if fileHandle.offset() != 0 {
             try fileHandle.seek(toOffset: 0)
         }
-        return try fileHandle.read(upToCount: fileHandle.plaintextLength)
+        return try fileHandle.read(upToCount: Int(fileHandle.plaintextLength))
     }
 
     // Class-bound wrapper around FileHandle

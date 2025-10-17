@@ -74,7 +74,7 @@ extension UIImage {
             at: fileURL,
             metadata: .init(
                 key: encryptionKey,
-                plaintextLength: plaintextLength.map(Int.init(_:))
+                plaintextLength: plaintextLength.map(UInt64.init(safeCast:)),
             )
         )
         let image: UIImage?
@@ -114,7 +114,7 @@ extension CGDataProvider {
         if let plaintextLength {
             fileHandle = try Cryptography.encryptedAttachmentFileHandle(
                 at: fileURL,
-                plaintextLength: plaintextLength,
+                plaintextLength: UInt64(safeCast: plaintextLength),
                 encryptionKey: encryptionKey
             )
         } else {
@@ -142,9 +142,9 @@ extension CGDataProvider {
                 let fileHandle = unmanagedFileHandle.takeUnretainedValue().fileHandle
                 do {
                     if offset != fileHandle.offset() {
-                        try fileHandle.seek(toOffset: UInt32(offset))
+                        try fileHandle.seek(toOffset: UInt64(offset))
                     }
-                    let data = try fileHandle.read(upToCount: UInt32(byteCount))
+                    let data = try fileHandle.read(upToCount: byteCount)
                     data.withUnsafeBytes { bytes in
                         buffer.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count)
                     }

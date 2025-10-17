@@ -135,7 +135,7 @@ public class AttachmentStream {
             at: fileURL,
             metadata: DecryptionMetadata(
                 key: attachment.encryptionKey,
-                plaintextLength: Int(info.unencryptedByteCount)
+                plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
             ),
             output: tmpURL
         )
@@ -150,8 +150,7 @@ public class AttachmentStream {
             at: fileURL,
             metadata: .init(
                 key: attachment.encryptionKey,
-                length: Int(info.encryptedByteCount),
-                plaintextLength: Int(info.unencryptedByteCount)
+                plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
             )
         )
     }

@@ -565,8 +565,8 @@ class AttachmentUploadManagerTests {
             return EncryptionMetadata(
                 key: Data(),
                 digest: Data(),
-                length: Int(encryptedSize),
-                plaintextLength: Int(streamInfo.unencryptedByteCount)
+                encryptedLength: UInt64(safeCast: encryptedSize),
+                plaintextLength: UInt64(safeCast: streamInfo.unencryptedByteCount),
             )
         }
 
@@ -631,8 +631,8 @@ class AttachmentUploadManagerTests {
             return EncryptionMetadata(
                 key: Data(),
                 digest: Data(),
-                length: Int(encryptedSize),
-                plaintextLength: Int(streamInfo.unencryptedByteCount)
+                encryptedLength: UInt64(safeCast: encryptedSize),
+                plaintextLength: UInt64(safeCast: streamInfo.unencryptedByteCount),
             )
         }
 

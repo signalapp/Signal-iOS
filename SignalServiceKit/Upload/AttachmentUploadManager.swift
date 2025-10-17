@@ -1236,8 +1236,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             key: attachmentStream.attachment.encryptionKey,
             // No need to validate for an already-validated stream
             integrityCheck: .sha256ContentHash(attachmentStream.sha256ContentHash),
-            length: Int(clamping: attachmentStream.info.encryptedByteCount),
-            plaintextLength: Int(clamping: attachmentStream.info.unencryptedByteCount)
+            plaintextLength: UInt64(safeCast: attachmentStream.info.unencryptedByteCount),
         )
         try attachmentEncrypter.decryptAttachment(at: attachmentStream.fileURL, metadata: decryptionMedatata, output: tmpDecryptedFile)
 

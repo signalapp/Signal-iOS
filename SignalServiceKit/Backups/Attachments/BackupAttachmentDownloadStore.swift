@@ -401,8 +401,8 @@ public extension QueuedBackupAttachmentDownload {
             // We don't know how big the thumbnail will be; just estimate
             // it to be its largest allowed size.
             return Cryptography.estimatedMediaTierCDNSize(
-                unencryptedSize: UInt32(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
-            )
+                unencryptedSize: UInt64(safeCast: AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
+            ).flatMap(UInt32.init(exactly:))!
         } else {
             // Media tier has the larger byte count, and its better to overcount than
             // undercount, so prefer that if we think there's a chance to download from
@@ -420,18 +420,18 @@ public extension QueuedBackupAttachmentDownload {
                     ?? attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {
-                return Cryptography.estimatedMediaTierCDNSize(
-                    unencryptedSize: unencryptedByteCount
-                )
+                return UInt32(clamping: Cryptography.estimatedMediaTierCDNSize(
+                    unencryptedSize: UInt64(safeCast: unencryptedByteCount),
+                ) ?? .max)
             } else if
                 let unencryptedByteCount =
                     attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? attachment.mediaTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {
-                return Cryptography.estimatedTransitTierCDNSize(
-                    unencryptedSize: unencryptedByteCount
-                )
+                return UInt32(clamping: Cryptography.estimatedTransitTierCDNSize(
+                    unencryptedSize: UInt64(safeCast: unencryptedByteCount),
+                ) ?? .max)
             } else {
                 return 0
             }

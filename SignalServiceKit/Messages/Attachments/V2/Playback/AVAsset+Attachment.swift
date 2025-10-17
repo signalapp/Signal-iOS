@@ -57,7 +57,7 @@ extension AVAsset {
     ) throws -> AVAsset {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: fileURL,
-            plaintextLength: plaintextLength,
+            plaintextLength: UInt64(safeCast: plaintextLength),
             encryptionKey: encryptionKey
         )
 
@@ -140,7 +140,7 @@ extension AVAsset {
             return true
         }
 
-        private static let chunkSize: UInt32 = 4096
+        private static let chunkSize = 4096
 
         private func handleDataRequest(for loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
             guard
@@ -149,10 +149,10 @@ extension AVAsset {
                 return false
             }
 
-            let requestedOffset = UInt32(dataRequest.requestedOffset)
-            var requestedLength = UInt32(clamping: dataRequest.requestedLength)
+            let requestedOffset = UInt64(dataRequest.requestedOffset)
+            var requestedLength = dataRequest.requestedLength
             if dataRequest.requestsAllDataToEndOfResource {
-                requestedLength = fileHandle.plaintextLength - requestedOffset
+                requestedLength = Int(fileHandle.plaintextLength - requestedOffset)
             }
 
             do {
@@ -164,12 +164,12 @@ extension AVAsset {
                 return true
             }
 
-            var bytesReadSoFar: UInt32 = 0
+            var bytesReadSoFar = 0
             do {
                 while bytesReadSoFar < requestedLength {
                     let lengthToRead = min(Self.chunkSize, requestedLength - bytesReadSoFar)
                     let data = try fileHandle.read(upToCount: lengthToRead)
-                    bytesReadSoFar += UInt32(data.byteLength)
+                    bytesReadSoFar += data.count
                     dataRequest.respond(with: data)
                 }
             } catch let error {

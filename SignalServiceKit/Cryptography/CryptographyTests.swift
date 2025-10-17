@@ -9,11 +9,11 @@ import XCTest
 
 class CryptographyTestsSwift: XCTestCase {
 
-    private func Assert(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #filePath, line: UInt = #line) {
+    private func Assert(unpaddedSize: UInt64, hasPaddedSize paddedSize: UInt64, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)
     }
 
-    private func AssertFalse(unpaddedSize: UInt, hasPaddedSize paddedSize: UInt, file: StaticString = #filePath, line: UInt = #line) {
+    private func AssertFalse(unpaddedSize: UInt64, hasPaddedSize paddedSize: UInt64, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertNotEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)
     }
 
@@ -63,9 +63,9 @@ class CryptographyTestsSwift: XCTestCase {
     }
 
     func test_paddedSizeBucketsRounding() {
-        var prevBucketMax: UInt = 541
+        var prevBucketMax: UInt64 = 541
         for _ in 2..<401 {
-            let bucketMax = UInt(floor(pow(1.05, ceil(log(Double(prevBucketMax) + 1)/log(1.05)))))
+            let bucketMax = UInt64(floor(pow(1.05, ceil(log(Double(prevBucketMax) + 1)/log(1.05)))))
 
             // This test is mostly reflexive, but checks rounding errors around the bucket edges.
             Assert(unpaddedSize: bucketMax, hasPaddedSize: bucketMax)
@@ -87,7 +87,6 @@ class CryptographyTestsSwift: XCTestCase {
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
 
@@ -123,7 +122,6 @@ class CryptographyTestsSwift: XCTestCase {
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
         decryptedData = try Cryptography.decryptAttachment(
@@ -148,7 +146,6 @@ class CryptographyTestsSwift: XCTestCase {
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
         try Cryptography.decryptAttachment(
@@ -173,8 +170,7 @@ class CryptographyTestsSwift: XCTestCase {
         let invalidMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
-            plaintextLength: encryptionMetadata.length + 1
+            plaintextLength: encryptionMetadata.encryptedLength + 1,
         )
 
         try FileManager.default.removeItem(at: plaintextFile)
@@ -202,7 +198,6 @@ class CryptographyTestsSwift: XCTestCase {
         let invalidMetadata = DecryptionMetadata(
             key: Randomness.generateRandomBytes(64),
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
 
@@ -231,7 +226,6 @@ class CryptographyTestsSwift: XCTestCase {
         let invalidMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: nil,
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
 
@@ -260,7 +254,6 @@ class CryptographyTestsSwift: XCTestCase {
         let metadataWithoutDigest = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: nil,
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
 
@@ -288,7 +281,6 @@ class CryptographyTestsSwift: XCTestCase {
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-            length: encryptionMetadata.length,
             plaintextLength: encryptionMetadata.plaintextLength
         )
         let decryptedData = try Cryptography.decryptAttachment(
@@ -328,8 +320,7 @@ class CryptographyTestsSwift: XCTestCase {
                 metadata: .init(
                     key: encryptionMetadata.key,
                     integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
-                    length: encryptionMetadata.length,
-                    plaintextLength: Int(plaintextLength)
+                    plaintextLength: UInt64(safeCast: plaintextLength),
                 )
             )
 
@@ -364,7 +355,7 @@ class CryptographyTestsSwift: XCTestCase {
             // When we encrypt, we add custom padding 0s to a determined length.
             // Normally these get truncated in the final output using the hint of plaintextLength;
             // since we are omitting that we need to expect them in the final output.
-            let customPaddedLength = UInt32(Cryptography.paddedSize(unpaddedSize: UInt(plaintextLength))!)
+            let customPaddedLength = UInt32(Cryptography.paddedSize(unpaddedSize: UInt64(safeCast: plaintextLength))!)
             let customPaddingLength = customPaddedLength - plaintextLength
             let expectedPlaintextOutput = plaintextData + Data(repeating: 0, count: Int(customPaddingLength))
 
@@ -403,40 +394,40 @@ class CryptographyTestsSwift: XCTestCase {
 
         let encryptedFileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: encryptedFile,
-            plaintextLength: UInt32(plaintextData.count),
+            plaintextLength: UInt64(plaintextData.count),
             encryptionKey: metadata.key
         )
 
         // Ensure we can read the whole thing
-        var decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData.count))
+        var decryptedData = try encryptedFileHandle.read(upToCount: plaintextData.count)
         XCTAssertEqual(plaintextData, decryptedData)
 
         // Now go back and read just the first chunk of bytes.
         try encryptedFileHandle.seek(toOffset: 0)
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData1.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData1.count)
         XCTAssertEqual(plaintextData1, decryptedData)
 
         // Read the next three segments in sequence.
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData2.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData2.count)
         XCTAssertEqual(plaintextData2, decryptedData)
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData3.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData3.count)
         XCTAssertEqual(plaintextData3, decryptedData)
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData4.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData4.count)
         XCTAssertEqual(plaintextData4, decryptedData)
 
         // Seek back to the third segment and read it in isolation.
-        try encryptedFileHandle.seek(toOffset: UInt32(plaintextData1.count + plaintextData2.count))
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData3.count))
+        try encryptedFileHandle.seek(toOffset: UInt64(plaintextData1.count + plaintextData2.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData3.count)
         XCTAssertEqual(plaintextData3, decryptedData)
 
         // Seek back to the second segment and read it in isolation.
-        try encryptedFileHandle.seek(toOffset: UInt32(plaintextData1.count))
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData2.count))
+        try encryptedFileHandle.seek(toOffset: UInt64(plaintextData1.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData2.count)
         XCTAssertEqual(plaintextData2, decryptedData)
 
         // Seek to the fourth segment and read it in isolation.
-        try encryptedFileHandle.seek(toOffset: UInt32(plaintextData1.count + plaintextData2.count + plaintextData3.count))
-        decryptedData = try encryptedFileHandle.read(upToCount: UInt32(plaintextData4.count))
+        try encryptedFileHandle.seek(toOffset: UInt64(plaintextData1.count + plaintextData2.count + plaintextData3.count))
+        decryptedData = try encryptedFileHandle.read(upToCount: plaintextData4.count)
         XCTAssertEqual(plaintextData4, decryptedData)
     }
 }

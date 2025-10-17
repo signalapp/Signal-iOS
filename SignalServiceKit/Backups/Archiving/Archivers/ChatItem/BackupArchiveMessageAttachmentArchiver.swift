@@ -592,7 +592,7 @@ extension ReferencedAttachment {
         {
             attachmentByteCounter.addToByteCount(
                 attachmentID: attachment.id,
-                byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: unencryptedByteCount)
+                byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: unencryptedByteCount)) ?? UInt64(UInt32.max),
             )
         }
 

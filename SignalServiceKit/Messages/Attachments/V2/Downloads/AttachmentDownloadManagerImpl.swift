@@ -778,8 +778,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 )
                 downloadSizeSource = transitTierInfo.unencryptedByteCount.map({
                     .estimatedSizeBytes(UInt(Cryptography.estimatedTransitTierCDNSize(
-                        unencryptedSize: $0
-                    )))
+                        unencryptedSize: UInt64(safeCast: $0),
+                    ) ?? UInt64(UInt32.max)))
                 }) ?? .useHeadRequest
             case .mediaTierFullsize:
                 let cdnNumber = attachment.mediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
@@ -807,8 +807,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 )
                 downloadSizeSource = .estimatedSizeBytes(UInt(Cryptography.estimatedMediaTierCDNSize(
-                    unencryptedSize: mediaTierInfo.unencryptedByteCount
-                )))
+                    unencryptedSize: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
+                ) ?? UInt64(UInt32.max)))
             case .mediaTierThumbnail:
                 let cdnNumber = attachment.thumbnailMediaTierInfo?.cdnNumber ?? remoteConfigManager.currentConfig().mediaTierFallbackCdnNumber
                 guard
@@ -847,8 +847,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // We don't know thumbnail sizes and don't want to issue a
                 // request for each one to check. Just estimate as the max size.
                 downloadSizeSource = .estimatedSizeBytes(UInt(Cryptography.estimatedMediaTierCDNSize(
-                    unencryptedSize: UInt32(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
-                )))
+                    unencryptedSize: UInt64(safeCast: AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes),
+                ) ?? UInt64(UInt32.max)))
             }
 
             guard let downloadMetadata, let downloadSizeSource else {
@@ -1862,7 +1862,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         metadata: DecryptionMetadata(
                             key: metadata.encryptionKey,
                             integrityCheck: metadata.integrityCheck,
-                            plaintextLength: metadata.plaintextLength.map(Int.init)
+                            plaintextLength: metadata.plaintextLength.map(UInt64.init(safeCast:)),
                         ),
                         output: outputUrl
                     )
@@ -1932,9 +1932,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceFilename: nil
                     )
                 case .mediaTierFullsize(_, let outerEncryptionMetadata, let integrityCheck, let plaintextLength):
-                    let innerPlaintextLength: Int? = {
+                    let innerPlaintextLength: UInt64? = {
                         guard let plaintextLength else { return nil }
-                        return Int(plaintextLength)
+                        return UInt64(safeCast: plaintextLength)
                     }()
 
                     return try await attachmentValidator.validateContents(

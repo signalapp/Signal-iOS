@@ -66,7 +66,7 @@ public class ViewOnceContent {
             at: fileUrl,
             metadata: .init(
                 key: encryptionKey,
-                plaintextLength: Int(plaintextLength)
+                plaintextLength: UInt64(safeCast: plaintextLength),
             )
         )
         guard let image = SDAnimatedImage(data: data) else {

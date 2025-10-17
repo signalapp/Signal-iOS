@@ -170,7 +170,7 @@ public class EncryptedStickerMetadata: StickerMetadata {
             at: encryptedStickerDataUrl,
             metadata: .init(
                 key: encryptionKey,
-                plaintextLength: Int(plaintextLength)
+                plaintextLength: UInt64(safeCast: plaintextLength),
             )
         )
     }

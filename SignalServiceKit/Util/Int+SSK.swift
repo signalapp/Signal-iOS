@@ -16,6 +16,18 @@ public extension UInt32 {
     }
 }
 
+// MARK: - Safe Casts
+
+// Casts that can't fail and will complain if they become unsafe or redundant.
+
+extension UInt64 {
+    public init(safeCast source: UInt) { self = UInt64(source) }
+    public init(safeCast source: UInt8) { self = UInt64(source) }
+    public init(safeCast source: UInt16) { self = UInt64(source) }
+    public init(safeCast source: UInt32) { self = UInt64(source) }
+    // It's safe to cast a UInt64 from a UInt64, but we shouldn't.
+}
+
 // MARK: -
 
 public extension Int {

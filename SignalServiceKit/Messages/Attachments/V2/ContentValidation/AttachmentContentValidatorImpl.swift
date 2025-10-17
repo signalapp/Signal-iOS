@@ -103,7 +103,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             metadata: .init(
                 key: inputEncryptionKey,
                 integrityCheck: integrityCheck,
-                plaintextLength: plaintextLength.map(Int.init)
+                plaintextLength: plaintextLength.map(UInt64.init(safeCast:))
             ),
             output: { data in
                 decryptedLength += data.count
@@ -181,7 +181,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             output: tmpFileUrl
         )
 
-        func makeInputType(plaintextLength: Int) -> InputType {
+        func makeInputType(plaintextLength: UInt64) -> InputType {
             return InputType.encryptedFile(
                 tmpFileUrl,
                 inputEncryptionKey: innerDecryptionData.key,
@@ -197,17 +197,17 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             inputType = makeInputType(plaintextLength: innerPlainTextLength)
             primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
         } else {
-            var decryptedLength = 0
+            var decryptedLength = 0 as UInt64
             var sha256 = SHA256()
             try Cryptography.decryptFile(
                 at: tmpFileUrl,
                 metadata: innerDecryptionData,
                 output: { data in
-                    decryptedLength += data.count
+                    decryptedLength += UInt64(data.count)
                     sha256.update(data: data)
                 }
             )
-            inputType =  makeInputType(plaintextLength: decryptedLength)
+            inputType = makeInputType(plaintextLength: decryptedLength)
             primaryFilePlaintextHash = Data(sha256.finalize())
         }
         return try await validateContents(
@@ -570,7 +570,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return try EncryptedFileHandleImageSource(
                     encryptedFileUrl: fileUrl,
                     encryptionKey: encryptionKey,
-                    plaintextLength: plaintextLength
+                    plaintextLength: UInt64(safeCast: plaintextLength),
                 )
             }
         }()
@@ -1003,7 +1003,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
                 let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
                     at: fileUrl,
-                    plaintextLength: plaintextLength,
+                    plaintextLength: UInt64(safeCast: plaintextLength),
                     encryptionKey: encryptionKey
                 )
                 var sha256 = SHA256()
@@ -1064,7 +1064,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // and pass back the updated encryption metadata
             if inputEncryptionKey == input.encryptionKey {
 
-                guard let encryptedLength = OWSFileSystem.fileSize(of: fileUrl)?.intValue else {
+                let encryptedLength = OWSFileSystem.fileSize(of: fileUrl).flatMap({ UInt64(exactly: $0.intValue) })
+                guard let encryptedLength else {
                     throw OWSAssertionError("Unable to get file length")
                 }
 
@@ -1085,8 +1086,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                     EncryptionMetadata(
                         key: input.encryptionKey,
                         digest: digest,
-                        length: encryptedLength,
-                        plaintextLength: Int(plaintextLength)
+                        encryptedLength: encryptedLength,
+                        plaintextLength: UInt64(safeCast: plaintextLength),
                     )
                 )
             } else {
