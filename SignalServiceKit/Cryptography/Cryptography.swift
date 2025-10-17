@@ -849,10 +849,10 @@ public extension Cryptography {
                 paddingBlockPlaintext.append(try paddingCipherContext.finalize())
 
                 // Grab the last byte of the last ciphertext block; this is the pkcs7
-                // padding (which needs to be XORd with the equivalent byte in the iv.
-                var paddingByte = paddingBlockPlaintext[paddingBlockPlaintext.count - 1]
+                // padding (which needs to be XORd with the equivalent byte in the iv).
+                var paddingByte = paddingBlockPlaintext.last!
                 // Bitwise XOR it with the previous block's last byte
-                paddingByte = paddingByte ^ paddingBlockIV[paddingBlockIV.count - 1]
+                paddingByte = paddingByte ^ paddingBlockIV.last!
                 // Each byte of padding is itself the length of the padding.
                 let paddingLength = paddingByte
 
@@ -961,13 +961,14 @@ public extension Cryptography {
             // If we have data in the plaintext buffer, use that first.
             if numBytesInPlaintextBuffer > 0 {
                 let numBytesToReadOffPlaintextBuffer = min(totalBytesInOutput, numBytesInPlaintextBuffer)
-                outputBuffer[0..<numBytesToReadOffPlaintextBuffer] = plaintextBuffer[0..<numBytesToReadOffPlaintextBuffer]
-                // Shift the remaining bytes forward in the buffer so they start at 0
-                if numBytesToReadOffPlaintextBuffer < numBytesInPlaintextBuffer {
-                    plaintextBuffer[0..<(numBytesInPlaintextBuffer - numBytesToReadOffPlaintextBuffer)] =
-                        plaintextBuffer[numBytesToReadOffPlaintextBuffer..<numBytesInPlaintextBuffer]
+                let outputBufferRange = outputBuffer.indices.prefix(numBytesToReadOffPlaintextBuffer)
+                outputBuffer[outputBufferRange] = self.plaintextBuffer.prefix(numBytesToReadOffPlaintextBuffer)
+                // Shift the remaining bytes forward in the buffer so they start at startIndex
+                if numBytesToReadOffPlaintextBuffer < self.numBytesInPlaintextBuffer {
+                    let plaintextBufferRange = self.plaintextBuffer.indices.prefix(numBytesInPlaintextBuffer - numBytesToReadOffPlaintextBuffer)
+                    self.plaintextBuffer[plaintextBufferRange] = self.plaintextBuffer.prefix(numBytesInPlaintextBuffer).dropFirst(numBytesToReadOffPlaintextBuffer)
                 }
-                numBytesInPlaintextBuffer -= numBytesToReadOffPlaintextBuffer
+                self.numBytesInPlaintextBuffer -= numBytesToReadOffPlaintextBuffer
                 bytesWrittenToOutput += numBytesToReadOffPlaintextBuffer
             }
 
@@ -1075,12 +1076,12 @@ public extension Cryptography {
                     let numBytesToCopyToPlaintextBuffer = actualPlaintextLength - numBytesToCopyToOutput
                     _ = try writeToBuffer { tmpBuffer, _ in
                         // Copy bytes to the output buffer up to what we need.
-                        outputBuffer[bytesWrittenToOutput..<(bytesWrittenToOutput + numBytesToCopyToOutput)] =
-                            tmpBuffer[0..<numBytesToCopyToOutput]
+                        let outputBufferRange = outputBuffer.indices.dropFirst(bytesWrittenToOutput).prefix(numBytesToCopyToOutput)
+                        outputBuffer[outputBufferRange] = tmpBuffer.prefix(numBytesToCopyToOutput)
                         // Copy the rest into the plaintext buffer.
                         if numBytesToCopyToPlaintextBuffer > 0 {
-                            self.plaintextBuffer[0..<numBytesToCopyToPlaintextBuffer] =
-                                tmpBuffer[numBytesToCopyToOutput..<actualPlaintextLength]
+                            let plaintextBufferRange = self.plaintextBuffer.indices.prefix(numBytesToCopyToPlaintextBuffer)
+                            self.plaintextBuffer[plaintextBufferRange] = tmpBuffer.dropFirst(numBytesToCopyToOutput).prefix(numBytesToCopyToPlaintextBuffer)
                         }
                         self.numBytesInPlaintextBuffer += numBytesToCopyToPlaintextBuffer
                         return 0 /* return value irrelevant */
