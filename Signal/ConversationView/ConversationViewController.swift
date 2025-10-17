@@ -245,7 +245,11 @@ public final class ConversationViewController: OWSViewController {
 
         self.view.addSubview(self.collectionView)
         self.collectionView.autoPinEdge(toSuperviewEdge: .top)
-        self.collectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        // Constrain collectionView bottom to bottomBar top to ensure messages are always
+        // visible and prevent collectionView from extending behind the input area when
+        // keyboard is dismissed. This fixes the layout issue where tapping outside the
+        // keyboard would make messages invisible.
+        self.collectionView.autoPinEdge(.bottom, to: .top, of: bottomBar)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
 
