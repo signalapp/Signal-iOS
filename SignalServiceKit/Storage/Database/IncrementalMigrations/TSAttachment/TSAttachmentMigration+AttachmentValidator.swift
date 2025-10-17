@@ -44,7 +44,7 @@ extension TSAttachmentMigration {
         static func validateContents(
             unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
-            encryptionKey: Data? = nil,
+            attachmentKey: AttachmentKey? = nil,
             mimeType: String,
             renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?
@@ -56,12 +56,12 @@ extension TSAttachmentMigration {
                 throw AttachmentTooLargeError()
             }
 
-            let encryptionKey = encryptionKey ?? Cryptography.randomAttachmentEncryptionKey()
+            let attachmentKey = attachmentKey ?? .generate()
             let pendingAttachment = try validateContents(
                 unencryptedFileUrl: unencryptedFileUrl,
                 byteSize: byteSize,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename
@@ -74,7 +74,7 @@ extension TSAttachmentMigration {
             unencryptedFileUrl: URL,
             byteSize: Int,
             reservedFileIds: ReservedRelativeFileIds,
-            encryptionKey: Data,
+            attachmentKey: AttachmentKey,
             mimeType: String,
             renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?
@@ -84,13 +84,13 @@ extension TSAttachmentMigration {
                 unencryptedFileUrl: unencryptedFileUrl,
                 byteSize: byteSize,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: &mimeType
             )
             return try prepareAttachmentFiles(
                 unencryptedFileUrl,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename,
@@ -273,7 +273,7 @@ extension TSAttachmentMigration {
             unencryptedFileUrl: URL,
             byteSize: Int,
             reservedFileIds: ReservedRelativeFileIds,
-            encryptionKey: Data,
+            attachmentKey: AttachmentKey,
             mimeType: inout String
         ) throws -> ContentTypeResult {
             let invalidResult = ContentTypeResult(
@@ -323,7 +323,7 @@ extension TSAttachmentMigration {
                     unencryptedFileUrl,
                     reservedFileIds: reservedFileIds,
                     mimeType: mimeType,
-                    encryptionKey: encryptionKey
+                    attachmentKey: attachmentKey,
                 ) ?? invalidResult
             case .audio:
                 guard byteSize < 95 * 1000 * 1000 /* SignalAttachment.kMaxFileSizeAudio */ else {
@@ -333,7 +333,7 @@ extension TSAttachmentMigration {
                     unencryptedFileUrl,
                     reservedFileIds: reservedFileIds,
                     mimeType: mimeType,
-                    encryptionKey: encryptionKey
+                    attachmentKey: attachmentKey,
                 ) ?? invalidResult
             }
         }
@@ -400,7 +400,7 @@ extension TSAttachmentMigration {
             _ unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
             mimeType: String,
-            encryptionKey: Data
+            attachmentKey: AttachmentKey,
         ) throws -> ContentTypeResult? {
             let asset: AVAsset = {
                 return AVAsset(url: unencryptedFileUrl)
@@ -423,7 +423,7 @@ extension TSAttachmentMigration {
                 .jpegData(compressionQuality: 1)
                 .map { thumbnailData in
                     let thumbnailTmpFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-                    let (encryptedThumbnail, _) = try Cryptography.encrypt(thumbnailData, encryptionKey: encryptionKey)
+                    let (encryptedThumbnail, _) = try Cryptography.encrypt(thumbnailData, attachmentKey: attachmentKey)
                     try encryptedThumbnail.write(to: thumbnailTmpFile)
                     return TSAttachmentMigration.V2AttachmentContentValidator.PendingFile(
                         tmpFileUrl: thumbnailTmpFile,
@@ -458,7 +458,7 @@ extension TSAttachmentMigration {
             _ unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
             mimeType: String,
-            encryptionKey: Data
+            attachmentKey: AttachmentKey,
         ) throws -> ContentTypeResult? {
             let duration = try computeAudioDuration(unencryptedFileUrl, mimeType: mimeType)
             guard let duration else {
@@ -471,7 +471,7 @@ extension TSAttachmentMigration {
                 unencryptedFileUrl,
                 reservedFileIds: reservedFileIds,
                 mimeType: mimeType,
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
 
             return ContentTypeResult(
@@ -535,7 +535,7 @@ extension TSAttachmentMigration {
             _ unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
             mimeType: String,
-            encryptionKey: Data
+            attachmentKey: AttachmentKey,
         ) throws -> TSAttachmentMigration.V2AttachmentContentValidator.PendingFile {
             let waveform: TSAttachmentMigration.AudioWaveform = try TSAttachmentMigration.AudioWaveformManager
                 .buildAudioWaveForm(unencryptedFilePath: unencryptedFileUrl.path)
@@ -543,7 +543,7 @@ extension TSAttachmentMigration {
             let outputWaveformFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
 
             let waveformData = try waveform.archive()
-            let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
+            let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, attachmentKey: attachmentKey)
             try encryptedWaveform.write(to: outputWaveformFile, options: .atomicWrite)
 
             return .init(
@@ -560,7 +560,7 @@ extension TSAttachmentMigration {
         private static func prepareAttachmentFiles(
             _ unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
-            encryptionKey: Data,
+            attachmentKey: AttachmentKey,
             mimeType: String,
             renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?,
@@ -572,7 +572,7 @@ extension TSAttachmentMigration {
             let (primaryPendingFile, primaryFileMetadata) = try encryptPrimaryFile(
                 unencryptedFileUrl: unencryptedFileUrl,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
             let primaryFileDigest = primaryFileMetadata.digest
             guard
@@ -590,10 +590,10 @@ extension TSAttachmentMigration {
             }
 
             let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
             let videoStillFrameFile = try contentResult.videoStillFrameFile?.encryptFileIfNeeded(
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
 
             // Now we can copy files.
@@ -622,7 +622,7 @@ extension TSAttachmentMigration {
                 encryptedByteCount: primaryEncryptedLength,
                 unencryptedByteCount: primaryPlaintextLength,
                 mimeType: mimeType,
-                encryptionKey: encryptionKey,
+                encryptionKey: attachmentKey.combinedKey,
                 digestSHA256Ciphertext: primaryFileDigest,
                 localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
                 renderingFlag: renderingFlag,
@@ -645,13 +645,13 @@ extension TSAttachmentMigration {
         private static func encryptPrimaryFile(
             unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
-            encryptionKey: Data
+            attachmentKey: AttachmentKey,
         ) throws -> (TSAttachmentMigration.V2AttachmentContentValidator.PendingFile, EncryptionMetadata) {
             let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let encryptionMetadata = try Cryptography.encryptAttachment(
                 at: unencryptedFileUrl,
                 output: outputFile,
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
             return (
                 TSAttachmentMigration.V2AttachmentContentValidator.PendingFile(
@@ -670,7 +670,7 @@ extension TSAttachmentMigration {
 extension TSAttachmentMigration.V2AttachmentContentValidator.PendingFile {
 
     fileprivate func encryptFileIfNeeded(
-        encryptionKey: Data
+        attachmentKey: AttachmentKey,
     ) throws -> Self {
         if isTmpFileEncrypted {
             return self
@@ -684,7 +684,7 @@ extension TSAttachmentMigration.V2AttachmentContentValidator.PendingFile {
         _ = try Cryptography.encryptFile(
             at: tmpFileUrl,
             output: outputFile,
-            encryptionKey: encryptionKey
+            attachmentKey: attachmentKey,
         )
         return Self(
             tmpFileUrl: outputFile,

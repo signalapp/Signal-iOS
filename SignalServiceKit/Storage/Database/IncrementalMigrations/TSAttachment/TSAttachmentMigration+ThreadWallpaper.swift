@@ -152,7 +152,7 @@ extension TSAttachmentMigration {
             pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
                 unencryptedFileUrl: wallpaperFile,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: nil,
+                attachmentKey: nil,
                 mimeType: "image/jpeg",
                 renderingFlag: .default,
                 sourceFilename: nil
@@ -175,7 +175,7 @@ extension TSAttachmentMigration {
             pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
                 unencryptedFileUrl: resizedImageFile,
                 reservedFileIds: reservedFileIds,
-                encryptionKey: nil,
+                attachmentKey: nil,
                 mimeType: "image/jpeg",
                 renderingFlag: .default,
                 sourceFilename: nil

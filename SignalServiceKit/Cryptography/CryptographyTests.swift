@@ -196,7 +196,7 @@ class CryptographyTestsSwift: XCTestCase {
         let encryptionMetadata = try Cryptography.encryptAttachment(at: plaintextFile, output: encryptedFile)
 
         let invalidMetadata = DecryptionMetadata(
-            key: Randomness.generateRandomBytes(64),
+            key: .generate(),
             integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength
         )
@@ -395,7 +395,7 @@ class CryptographyTestsSwift: XCTestCase {
         let encryptedFileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: encryptedFile,
             plaintextLength: UInt64(plaintextData.count),
-            encryptionKey: metadata.key
+            attachmentKey: metadata.key,
         )
 
         // Ensure we can read the whole thing

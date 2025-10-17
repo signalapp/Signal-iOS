@@ -98,7 +98,7 @@ public protocol AttachmentContentValidator {
     /// and will not be truncated after decrypting.
     func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32?,
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
@@ -111,7 +111,7 @@ public protocol AttachmentContentValidator {
     /// Errors are thrown if data reading/parsing/decryption fails.
     func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) async throws -> RevalidatedAttachment
@@ -139,7 +139,7 @@ public protocol AttachmentContentValidator {
         ofBackupMediaFileAt fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
-        finalEncryptionKey: Data,
+        finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -168,7 +168,7 @@ public protocol AttachmentContentValidator {
     /// input, a random key will be used.
     func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody],
-        encryptionKeys: [Key: Data],
+        attachmentKeys: [Key: AttachmentKey],
     ) async throws -> [Key: ValidatedMessageBody]
 
     /// Build a `QuotedReplyAttachmentDataSource` for a reply to a message with the provided attachment.
@@ -222,7 +222,7 @@ extension AttachmentContentValidator {
     ) async throws -> ValidatedMessageBody {
         return try await prepareOversizeTextsIfNeeded(
             from: ["": body],
-            encryptionKeys: [:]
+            attachmentKeys: [:]
         ).values.first!
     }
 }

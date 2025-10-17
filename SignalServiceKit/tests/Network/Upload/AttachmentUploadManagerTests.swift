@@ -557,13 +557,13 @@ class AttachmentUploadManagerTests {
         var didDecrypt = false
         helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
             didDecrypt = true
-            #expect(encryptionMetadata.key == attachment.encryptionKey)
+            #expect(encryptionMetadata.key.combinedKey == attachment.encryptionKey)
         }
         var didEncrypt = false
         helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
             didEncrypt = true
             return EncryptionMetadata(
-                key: Data(),
+                key: try! AttachmentKey(combinedKey: Data(count: 64)),
                 digest: Data(),
                 encryptedLength: UInt64(safeCast: encryptedSize),
                 plaintextLength: UInt64(safeCast: streamInfo.unencryptedByteCount),
@@ -623,13 +623,13 @@ class AttachmentUploadManagerTests {
         var didDecrypt = false
         helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
             didDecrypt = true
-            #expect(encryptionMetadata.key == attachment.encryptionKey)
+            #expect(encryptionMetadata.key.combinedKey == attachment.encryptionKey)
         }
         var didEncrypt = false
         helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
             didEncrypt = true
             return EncryptionMetadata(
-                key: Data(),
+                key: try! AttachmentKey(combinedKey: Data(count: 64)),
                 digest: Data(),
                 encryptedLength: UInt64(safeCast: encryptedSize),
                 plaintextLength: UInt64(safeCast: streamInfo.unencryptedByteCount),

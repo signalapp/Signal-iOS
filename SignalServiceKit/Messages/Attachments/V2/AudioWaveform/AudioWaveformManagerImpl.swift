@@ -43,9 +43,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                 // waveform is validated at creation time; no need to revalidate every read.
                 let data = try Cryptography.decryptFileWithoutValidating(
                     at: fileURL,
-                    metadata: .init(
-                        key: encryptionKey
-                    )
+                    metadata: DecryptionMetadata(key: AttachmentKey(combinedKey: encryptionKey))
                 )
                 return try AudioWaveform(archivedData: data)
             }
@@ -66,7 +64,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     public func audioWaveform(
         forEncryptedAudioFileAtPath filePath: String,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
         mimeType: String,
         outputWaveformPath: String
@@ -74,7 +72,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         let task = buildAudioWaveForm(
             source: .encryptedFile(
                 path: filePath,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
             ),
@@ -97,14 +95,14 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     public func audioWaveformSync(
         forEncryptedAudioFileAtPath filePath: String,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
         mimeType: String
     ) throws -> AudioWaveform {
         return try _buildAudioWaveForm(
             source: .encryptedFile(
                 path: filePath,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
             ),
@@ -116,7 +114,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         case unencryptedFile(path: String)
         case encryptedFile(
             path: String,
-            encryptionKey: Data,
+            attachmentKey: AttachmentKey,
             plaintextDataLength: UInt32,
             mimeType: String
         )
@@ -196,10 +194,10 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         switch source {
         case .unencryptedFile(let path):
             asset = try assetFromUnencryptedAudioFile(atAudioPath: path)
-        case let .encryptedFile(path, encryptionKey, plaintextDataLength, mimeType):
+        case let .encryptedFile(path, attachmentKey, plaintextDataLength, mimeType):
             asset = try assetFromEncryptedAudioFile(
                 atPath: path,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType
             )
@@ -223,9 +221,9 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                     switch source {
                     case .unencryptedFile:
                         try waveform.write(toFile: waveformPath, atomically: true)
-                    case .encryptedFile(_, let encryptionKey, _, _):
+                    case .encryptedFile(_, let attachmentKey, _, _):
                         let waveformData = try waveform.archive()
-                        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
+                        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, attachmentKey: attachmentKey)
                         try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
                     }
 
@@ -269,14 +267,14 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     private func assetFromEncryptedAudioFile(
         atPath filePath: String,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
         let audioUrl = URL(fileURLWithPath: filePath)
         return try AVAsset.fromEncryptedFile(
             at: audioUrl,
-            encryptionKey: encryptionKey,
+            attachmentKey: attachmentKey,
             plaintextLength: plaintextDataLength,
             mimeType: mimeType
         )

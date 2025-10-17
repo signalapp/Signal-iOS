@@ -32,7 +32,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32?,
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
@@ -44,7 +44,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) async throws -> RevalidatedAttachment {
@@ -55,7 +55,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         ofBackupMediaFileAt fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
-        finalEncryptionKey: Data,
+        finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -85,7 +85,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody],
-        encryptionKeys: [Key: Data],
+        attachmentKeys: [Key: AttachmentKey],
     ) async throws -> [Key: ValidatedMessageBody] {
         throw OWSAssertionError("Unimplemented")
     }

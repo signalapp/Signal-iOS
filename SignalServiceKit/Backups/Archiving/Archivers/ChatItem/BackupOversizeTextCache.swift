@@ -496,11 +496,11 @@ class BackupArchiveInlinedOversizeTextArchiver {
             messageBodies[record.id!] = MessageBody(text: record.text, ranges: .empty)
         }
 
-        var encryptionKeys = [BackupOversizeTextCache.IDType: Data]()
-        db.read { tx in
+        var attachmentKeys = [BackupOversizeTextCache.IDType: AttachmentKey]()
+        try db.read { tx in
             for attachment in attachmentStore.fetch(ids: Array(attachmentIdToCacheIds.keys), tx: tx) {
                 for recordId in attachmentIdToCacheIds[attachment.id] ?? [] {
-                    encryptionKeys[recordId] = attachment.encryptionKey
+                    attachmentKeys[recordId] = try AttachmentKey(combinedKey: attachment.encryptionKey)
                 }
             }
         }
@@ -508,7 +508,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         do {
             let pendingAttachments = try await attachmentContentValidator.prepareOversizeTextsIfNeeded(
                 from: messageBodies,
-                encryptionKeys: encryptionKeys
+                attachmentKeys: attachmentKeys,
             )
 
             try await db.awaitableWriteWithRollbackIfThrows { tx in

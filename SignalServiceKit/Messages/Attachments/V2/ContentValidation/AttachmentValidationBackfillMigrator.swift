@@ -164,7 +164,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             do {
                 let revalidationResult = try await self.reValidateContents(
                     ofEncryptedFileAt: fileUrl,
-                    encryptionKey: attachment.encryptionKey,
+                    attachmentKey: AttachmentKey(combinedKey: attachment.encryptionKey),
                     plaintextLength: plaintextLength,
                     mimeType: attachment.mimeType
                 )
@@ -201,13 +201,13 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
 
     private func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) async throws -> RevalidatedAttachment {
         try await self.validator.reValidateContents(
             ofEncryptedFileAt: fileUrl,
-            encryptionKey: encryptionKey,
+            attachmentKey: attachmentKey,
             plaintextLength: plaintextLength,
             mimeType: mimeType
         )

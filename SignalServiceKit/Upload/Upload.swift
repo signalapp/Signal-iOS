@@ -260,7 +260,7 @@ extension Upload.LocalUploadMetadata {
 
         return Upload.LocalUploadMetadata(
             fileUrl: fileUrl,
-            key: metadata.key,
+            key: metadata.key.combinedKey,
             digest: digest,
             encryptedDataLength: encryptedLength,
             plaintextDataLength: plaintextLength

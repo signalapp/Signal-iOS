@@ -59,7 +59,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                     at: AttachmentStream.absoluteAttachmentFileURL(
                         relativeFilePath: attachmentStream.localRelativeFilePath
                     ),
-                    encryptionKey: attachmentStream.attachment.encryptionKey,
+                    attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
                     plaintextLength: attachmentStream.unencryptedByteCount,
                     mimeType: attachmentStream.mimeType
                 )
@@ -175,7 +175,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             do {
                 return try UIImage.fromEncryptedFile(
                     at: cacheUrl,
-                    encryptionKey: attachmentStream.attachment.encryptionKey,
+                    attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
                     // thumbnails have no special padding;
                     // therefore no plaintext length needed.
                     plaintextLength: nil,
@@ -234,7 +234,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             // so we can trim the custom padding at read time.
             let (encryptedImageData, _) = try Cryptography.encrypt(
                 imageData,
-                encryptionKey: attachmentStream.attachment.encryptionKey
+                attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
             )
 
             try encryptedImageData.write(to: cacheUrl, options: .atomic)

@@ -54,7 +54,7 @@ public class ViewOnceContent {
     public func loadImage() throws -> UIImage {
         return try UIImage.fromEncryptedFile(
             at: fileUrl,
-            encryptionKey: encryptionKey,
+            attachmentKey: AttachmentKey(combinedKey: encryptionKey),
             plaintextLength: plaintextLength,
             mimeType: mimeType
         )
@@ -64,8 +64,8 @@ public class ViewOnceContent {
         // hmac and digest are validated at download time; no need to revalidate every read.
         let data = try Cryptography.decryptFileWithoutValidating(
             at: fileUrl,
-            metadata: .init(
-                key: encryptionKey,
+            metadata: DecryptionMetadata(
+                key: AttachmentKey(combinedKey: encryptionKey),
                 plaintextLength: UInt64(safeCast: plaintextLength),
             )
         )
@@ -78,7 +78,7 @@ public class ViewOnceContent {
     public func loadAVAsset() throws -> AVAsset {
         return try AVAsset.fromEncryptedFile(
             at: fileUrl,
-            encryptionKey: encryptionKey,
+            attachmentKey: AttachmentKey(combinedKey: encryptionKey),
             plaintextLength: plaintextLength,
             mimeType: mimeType
         )

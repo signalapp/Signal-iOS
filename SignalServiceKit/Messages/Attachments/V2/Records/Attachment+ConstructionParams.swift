@@ -159,7 +159,7 @@ extension Attachment {
                 mimeType: mimeType,
                 // We don't have any cdn info from which to download, so what
                 // encryption key we use is irrelevant. Just generate a new one.
-                encryptionKey: Cryptography.randomAttachmentEncryptionKey(),
+                encryptionKey: AttachmentKey.generate().combinedKey,
                 streamInfo: nil,
                 latestTransitTierInfo: nil,
                 originalTransitTierInfo: nil,

@@ -17,8 +17,8 @@ public struct MediaTierEncryptionMetadata: Equatable {
     let hmacKey: Data
     let aesKey: Data
 
-    public var encryptionKey: Data {
-        return aesKey + hmacKey
+    func attachmentKey() throws -> AttachmentKey {
+        return try AttachmentKey(combinedKey: aesKey + hmacKey)
     }
 }
 

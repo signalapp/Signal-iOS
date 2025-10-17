@@ -445,7 +445,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
                     let (encryptedThumbnailData, _) = try Cryptography.encrypt(
                         thumbnailData,
-                        encryptionKey: attachment.thumbnailEncryptionKey,
+                        attachmentKey: AttachmentKey(combinedKey: attachment.thumbnailEncryptionKey),
                         applyExtraPadding: true
                     )
 

@@ -13,7 +13,7 @@ extension UIImage {
     ) throws -> UIImage {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
-            encryptionKey: attachment.attachment.encryptionKey,
+            attachmentKey: AttachmentKey(combinedKey: attachment.attachment.encryptionKey),
             plaintextLength: attachment.info.unencryptedByteCount,
             mimeType: attachment.mimeType
         )
@@ -24,16 +24,16 @@ extension UIImage {
     ) throws -> UIImage {
         return try .fromEncryptedFile(
             at: attachmentThumbnail.fileURL,
-            encryptionKey: attachmentThumbnail.attachment.encryptionKey,
+            attachmentKey: AttachmentKey(combinedKey: attachmentThumbnail.attachment.encryptionKey),
             plaintextLength: nil,
             mimeType: MimeType.imageWebp.rawValue
         )
     }
 
     /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
-    public static func fromEncryptedFile(
+    static func fromEncryptedFile(
         at fileURL: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32?,
         mimeType: String
     ) throws -> UIImage {
@@ -43,7 +43,7 @@ extension UIImage {
             /// but this at least makes it possible for it to choose not to.
             let jpegImage = try? CGDataProvider.loadFromEncryptedFile(
                 at: fileURL,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextLength: plaintextLength,
                 block: { dataProvider in
                     let (cgImage, orientation) = try dataProvider.toJpegCGImage()
@@ -59,7 +59,7 @@ extension UIImage {
             /// but this at least makes it possible for it to choose not to.
             let pngImage = try? CGDataProvider.loadFromEncryptedFile(
                 at: fileURL,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextLength: plaintextLength,
                 block: { dataProvider in
                     return UIImage(cgImage: try dataProvider.toPngCGImage())
@@ -72,8 +72,8 @@ extension UIImage {
         // hmac and digest are validated at download time; no need to revalidate every read.
         let data = try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
-            metadata: .init(
-                key: encryptionKey,
+            metadata: DecryptionMetadata(
+                key: attachmentKey,
                 plaintextLength: plaintextLength.map(UInt64.init(safeCast:)),
             )
         )
@@ -106,7 +106,7 @@ extension CGDataProvider {
     /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
     fileprivate static func loadFromEncryptedFile<T>(
         at fileURL: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32?,
         block: (CGDataProvider) throws -> T
     ) throws -> T {
@@ -115,12 +115,12 @@ extension CGDataProvider {
             fileHandle = try Cryptography.encryptedAttachmentFileHandle(
                 at: fileURL,
                 plaintextLength: UInt64(safeCast: plaintextLength),
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
         } else {
             fileHandle = try Cryptography.encryptedFileHandle(
                 at: fileURL,
-                encryptionKey: encryptionKey
+                attachmentKey: attachmentKey,
             )
         }
         let dataProvider = try CGDataProvider.from(fileHandle: fileHandle)

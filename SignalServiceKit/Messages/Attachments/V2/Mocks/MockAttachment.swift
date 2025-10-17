@@ -20,12 +20,12 @@ extension Attachment.StreamInfo {
         localRelativeFilePath: String? = nil
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
-            sha256ContentHash: sha256ContentHash ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            sha256ContentHash: sha256ContentHash ?? Randomness.generateRandomBytes(32),
             mediaName: mediaName ?? UUID().uuidString,
             encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             contentType: contentType ?? .file,
-            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            digestSHA256Ciphertext: digestSHA256Ciphertext ?? Randomness.generateRandomBytes(32),
             localRelativeFilePath: localRelativeFilePath ?? UUID().uuidString
         )
     }
@@ -46,9 +46,9 @@ extension Attachment.TransitTierInfo {
             cdnNumber: cdnNumber ?? 3,
             cdnKey: cdnKey ?? "\(UInt64.random(in: 0..<(.max)))",
             uploadTimestamp: uploadTimestamp ?? Date().ows_millisecondsSince1970,
-            encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            encryptionKey: encryptionKey ?? Randomness.generateRandomBytes(64),
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
-            integrityCheck: integrityCheck ?? .digestSHA256Ciphertext(UInt64.random(in: 0..<(.max)).bigEndianData),
+            integrityCheck: integrityCheck ?? .digestSHA256Ciphertext(Randomness.generateRandomBytes(32)),
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
@@ -67,7 +67,7 @@ extension Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
             unencryptedByteCount: unencryptedByteCount ?? 16,
-            sha256ContentHash: sha256ContentHash ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            sha256ContentHash: sha256ContentHash ?? Randomness.generateRandomBytes(32),
             incrementalMacInfo: incrementalMacInfo,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
@@ -148,7 +148,7 @@ public class MockAttachment: Attachment {
            sqliteId: .random(in: 0..<(.max)),
            blurHash: blurHash,
            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
-           encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+           encryptionKey: encryptionKey ?? Randomness.generateRandomBytes(64),
            sha256ContentHash: sha256ContentHash ?? streamInfo?.sha256ContentHash ?? UUID().data,
            mediaName: mediaName ?? streamInfo?.mediaName ?? UUID().uuidString,
            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,

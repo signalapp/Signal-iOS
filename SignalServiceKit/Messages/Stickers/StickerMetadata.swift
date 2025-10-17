@@ -168,8 +168,8 @@ public class EncryptedStickerMetadata: StickerMetadata {
     public func readStickerData() throws -> Data {
         return try Cryptography.decryptFile(
             at: encryptedStickerDataUrl,
-            metadata: .init(
-                key: encryptionKey,
+            metadata: DecryptionMetadata(
+                key: AttachmentKey(combinedKey: encryptionKey),
                 plaintextLength: UInt64(safeCast: plaintextLength),
             )
         )

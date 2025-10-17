@@ -13,22 +13,22 @@ extension AVAsset {
     ) throws -> AVAsset {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
-            encryptionKey: attachment.attachment.encryptionKey,
+            attachmentKey: AttachmentKey(combinedKey: attachment.attachment.encryptionKey),
             plaintextLength: attachment.info.unencryptedByteCount,
             mimeType: attachment.mimeType
         )
     }
 
-    public static func fromEncryptedFile(
+    static func fromEncryptedFile(
         at fileURL: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
         func createAsset(mimeTypeOverride: String? = nil) throws -> AVAsset {
             return try AVAsset._fromEncryptedFile(
                 at: fileURL,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextLength: plaintextLength,
                 mimeType: mimeTypeOverride ?? mimeType
             )
@@ -51,14 +51,14 @@ extension AVAsset {
 
     private static func _fromEncryptedFile(
         at fileURL: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: fileURL,
             plaintextLength: UInt64(safeCast: plaintextLength),
-            encryptionKey: encryptionKey
+            attachmentKey: attachmentKey,
         )
 
         guard let utiType = MimeTypeUtil.utiTypeForMimeType(mimeType) else {

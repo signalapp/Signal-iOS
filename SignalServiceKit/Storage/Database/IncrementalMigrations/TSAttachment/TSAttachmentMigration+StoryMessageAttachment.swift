@@ -173,7 +173,7 @@ extension TSAttachmentMigration {
                             audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
                             videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
                         ),
-                        encryptionKey: oldAttachment.encryptionKey,
+                        attachmentKey: oldAttachment.encryptionKey.map(AttachmentKey.init(combinedKey:)),
                         mimeType: oldAttachment.contentType,
                         renderingFlag: renderingFlag,
                         sourceFilename: oldAttachment.sourceFilename
@@ -237,7 +237,7 @@ extension TSAttachmentMigration {
                         encryptedByteCount: nil,
                         unencryptedByteCount: nil,
                         mimeType: oldAttachment.contentType,
-                        encryptionKey: oldAttachment.encryptionKey ?? Cryptography.randomAttachmentEncryptionKey(),
+                        encryptionKey: oldAttachment.encryptionKey ?? AttachmentKey.generate().combinedKey,
                         digestSHA256Ciphertext: nil,
                         contentType: nil,
                         transitCdnNumber: oldAttachment.cdnNumber,

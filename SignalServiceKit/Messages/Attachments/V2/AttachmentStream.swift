@@ -134,7 +134,7 @@ public class AttachmentStream {
         try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
             metadata: DecryptionMetadata(
-                key: attachment.encryptionKey,
+                key: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
             ),
             output: tmpURL
@@ -148,8 +148,8 @@ public class AttachmentStream {
         // hmac and digest are validated at download time; no need to revalidate every read.
         return try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
-            metadata: .init(
-                key: attachment.encryptionKey,
+            metadata: DecryptionMetadata(
+                key: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
             )
         )
@@ -189,7 +189,7 @@ public class AttachmentStream {
             }
             return try UIImage.fromEncryptedFile(
                 at: Self.absoluteAttachmentFileURL(relativeFilePath: stillImageRelativeFilePath),
-                encryptionKey: attachment.encryptionKey,
+                attachmentKey: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: nil,
                 mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue
             )

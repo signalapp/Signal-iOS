@@ -5,23 +5,23 @@
 
 import Foundation
 
-public struct EncryptedFileHandleImageSource: OWSImageSource {
+struct EncryptedFileHandleImageSource: OWSImageSource {
 
     private let fileHandle: EncryptedFileHandle
 
-    public init(fileHandle: EncryptedFileHandle) {
+    init(fileHandle: EncryptedFileHandle) {
         self.fileHandle = fileHandle
     }
 
-    public init(
+    init(
         encryptedFileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt64
     ) throws {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: encryptedFileUrl,
             plaintextLength: plaintextLength,
-            encryptionKey: encryptionKey
+            attachmentKey: attachmentKey,
         )
         self.init(fileHandle: fileHandle)
     }

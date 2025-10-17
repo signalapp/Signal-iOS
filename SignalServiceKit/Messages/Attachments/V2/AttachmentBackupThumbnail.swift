@@ -47,7 +47,7 @@ public class AttachmentBackupThumbnail {
         // hmac and digest are validated at download time; no need to revalidate every read.
         return try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
-            metadata: .init(key: attachment.encryptionKey)
+            metadata: DecryptionMetadata(key: AttachmentKey(combinedKey: attachment.encryptionKey))
         )
     }
 

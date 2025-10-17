@@ -14,7 +14,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private let db: DB
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
 
-    public init(
+    init(
         attachmentStore: AttachmentStore,
         audioWaveformManager: AudioWaveformManager,
         db: DB,
@@ -44,12 +44,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         }()
         let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-        let encryptionKey = encryptionKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputEncryptionKey: nil)
+        let attachmentKey = try attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: nil)
         let pendingAttachment = try await validateContents(
             inputs: ["": Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename
@@ -71,12 +71,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     ) async throws -> PendingAttachment {
         let inputType = InputType.inMemory(data)
         let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-        let encryptionKey = encryptionKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputEncryptionKey: nil)
+        let attachmentKey = try attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: nil)
         let pendingAttachment = try await validateContents(
             inputs: ["": Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename
@@ -88,7 +88,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey inputEncryptionKey: Data,
+        attachmentKey inputAttachmentKey: AttachmentKey,
         plaintextLength: UInt32?,
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
@@ -100,8 +100,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         var decryptedLength = 0
         try Cryptography.decryptFile(
             at: fileUrl,
-            metadata: .init(
-                key: inputEncryptionKey,
+            metadata: DecryptionMetadata(
+                key: inputAttachmentKey,
                 integrityCheck: integrityCheck,
                 plaintextLength: plaintextLength.map(UInt64.init(safeCast:))
             ),
@@ -113,7 +113,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let inputType = InputType.encryptedFile(
             fileUrl,
-            inputEncryptionKey: inputEncryptionKey,
+            inputAttachmentKey: inputAttachmentKey,
             plaintextLength: plaintextLength,
             integrityCheck: integrityCheck
         )
@@ -122,7 +122,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             inputs: ["": Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputEncryptionKey: inputEncryptionKey),
+                attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: inputAttachmentKey),
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename
@@ -132,13 +132,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
         mimeType: String
     ) async throws -> RevalidatedAttachment {
         let inputType = InputType.encryptedFile(
             fileUrl,
-            inputEncryptionKey: encryptionKey,
+            inputAttachmentKey: attachmentKey,
             plaintextLength: plaintextLength,
             // No need to validate integrity check
             integrityCheck: nil
@@ -148,7 +148,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: mimeType,
                 // Unused and irrelevant
                 renderingFlag: .default,
@@ -165,7 +165,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         ofBackupMediaFileAt fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
-        finalEncryptionKey: Data,
+        finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -184,7 +184,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         func makeInputType(plaintextLength: UInt64) -> InputType {
             return InputType.encryptedFile(
                 tmpFileUrl,
-                inputEncryptionKey: innerDecryptionData.key,
+                inputAttachmentKey: innerDecryptionData.key,
                 plaintextLength: UInt32(plaintextLength),
                 integrityCheck: innerDecryptionData.integrityCheck
             )
@@ -214,7 +214,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             inputs: ["": Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputEncryptionKey: finalEncryptionKey),
+                attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: finalAttachmentKey),
                 mimeType: mimeType,
                 renderingFlag: renderingFlag,
                 sourceFilename: sourceFilename
@@ -239,7 +239,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func prepareOversizeTextsIfNeeded<Key: Hashable>(
         from texts: [Key: MessageBody],
-        encryptionKeys: [Key: Data],
+        attachmentKeys: [Key: AttachmentKey],
     ) async throws -> [Key: ValidatedMessageBody] {
         var truncatedBodies = [Key: MessageBody]()
         var oversizedTextInputs = [Key: Input]()
@@ -258,14 +258,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let oversizedTextData = Data(messageBody.text.trimToUtf8ByteCount(OWSMediaUtils.kMaxOversizeTextMessageSendSizeBytes).utf8)
             let inputType = InputType.inMemory(oversizedTextData)
             let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-            let encryptionKey = encryptionKeyToUse(
+            let attachmentKey = try attachmentKeyToUse(
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                inputEncryptionKey: encryptionKeys[key]
+                inputAttachmentKey: attachmentKeys[key],
             )
             oversizedTextInputs[key] = Input(
                 type: inputType,
                 primaryFilePlaintextHash: primaryFilePlaintextHash,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 mimeType: MimeType.textXSignalPlain.rawValue,
                 renderingFlag: .default,
                 sourceFilename: nil
@@ -367,7 +367,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case unencryptedFile(URL)
         case encryptedFile(
             URL,
-            inputEncryptionKey: Data,
+            inputAttachmentKey: AttachmentKey,
             plaintextLength: UInt32,
             integrityCheck: AttachmentIntegrityCheck?
         )
@@ -376,7 +376,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private class Input {
         let type: InputType
         let primaryFilePlaintextHash: Data
-        let encryptionKey: Data
+        let attachmentKey: AttachmentKey
         /// Gets overriden in some cases when we validate content type.
         var mimeType: String
         let renderingFlag: AttachmentReference.RenderingFlag
@@ -385,14 +385,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         init(
             type: InputType,
             primaryFilePlaintextHash: Data,
-            encryptionKey: Data,
+            attachmentKey: AttachmentKey,
             mimeType: String,
             renderingFlag: AttachmentReference.RenderingFlag,
             sourceFilename: String?
         ) {
             self.type = type
             self.primaryFilePlaintextHash = primaryFilePlaintextHash
-            self.encryptionKey = encryptionKey
+            self.attachmentKey = attachmentKey
             self.mimeType = mimeType
             self.renderingFlag = renderingFlag
             self.sourceFilename = sourceFilename
@@ -566,10 +566,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return data
             case .unencryptedFile(let fileUrl):
                 return try FileHandleImageSource(fileUrl: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+            case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
                 return try EncryptedFileHandleImageSource(
                     encryptedFileUrl: fileUrl,
-                    encryptionKey: encryptionKey,
+                    attachmentKey: attachmentKey,
                     plaintextLength: UInt64(safeCast: plaintextLength),
                 )
             }
@@ -617,11 +617,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                     return nil
                 }
                 return try? BlurHash.computeBlurHashSync(for: image)
-            case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+            case .encryptedFile(let fileUrl, let attachmentKey, let plaintextLength, _):
                 guard
                     let image = try? UIImage.fromEncryptedFile(
                         at: fileUrl,
-                        encryptionKey: encryptionKey,
+                        attachmentKey: attachmentKey,
                         plaintextLength: plaintextLength,
                         mimeType: mimeType
                     )
@@ -660,10 +660,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return AVAsset(url: tmpFile)
             case .unencryptedFile(let fileUrl):
                 return AVAsset(url: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+            case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
                 return try AVAsset.fromEncryptedFile(
                     at: fileUrl,
-                    encryptionKey: encryptionKey,
+                    attachmentKey: attachmentKey,
                     plaintextLength: plaintextLength,
                     mimeType: input.mimeType
                 )
@@ -691,7 +691,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             .jpegData(compressionQuality: 1)
             .map { thumbnailData in
                 let thumbnailTmpFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-                let (encryptedThumbnail, _) = try Cryptography.encrypt(thumbnailData, encryptionKey: input.encryptionKey)
+                let (encryptedThumbnail, _) = try Cryptography.encrypt(thumbnailData, attachmentKey: input.attachmentKey)
                 try encryptedThumbnail.write(to: thumbnailTmpFile)
                 return PendingFile(tmpFileUrl: thumbnailTmpFile, isTmpFileEncrypted: true)
             }
@@ -742,7 +742,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let waveformFile = try? self.createAudioWaveform(
             input,
             mimeType: input.mimeType,
-            encryptionKey: input.encryptionKey
+            attachmentKey: input.attachmentKey,
         )
 
         return (
@@ -765,12 +765,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let player = try AVAudioPlayer(contentsOf: fileUrl)
             player.prepareToPlay()
             return player.duration
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+        case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
             // We can't load an AVAudioPlayer for encrypted files.
             // Use AVAsset instead.
             let asset = try AVAsset.fromEncryptedFile(
                 at: fileUrl,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextLength: plaintextLength,
                 mimeType: mimeType
             )
@@ -789,7 +789,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func createAudioWaveform(
         _ input: Input,
         mimeType: String,
-        encryptionKey: Data
+        attachmentKey: AttachmentKey,
     ) throws -> PendingFile {
         let waveform: AudioWaveform
         switch input.type {
@@ -805,10 +805,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         case .unencryptedFile(let fileUrl):
             waveform = try audioWaveformManager.audioWaveformSync(forAudioPath: fileUrl.path)
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
+        case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
             waveform = try audioWaveformManager.audioWaveformSync(
                 forEncryptedAudioFileAtPath: fileUrl.path,
-                encryptionKey: encryptionKey,
+                attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextLength,
                 mimeType: mimeType
             )
@@ -817,7 +817,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let outputWaveformFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
 
         let waveformData = try waveform.archive()
-        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
+        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, attachmentKey: attachmentKey)
         try encryptedWaveform.write(to: outputWaveformFile, options: .atomicWrite)
 
         return .init(
@@ -897,7 +897,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 encryptedByteCount: primaryFile.encryptedLength,
                 unencryptedByteCount: primaryFile.plaintextLength,
                 mimeType: input.mimeType,
-                encryptionKey: input.encryptionKey,
+                encryptionKey: input.attachmentKey.combinedKey,
                 digestSHA256Ciphertext: primaryFile.digest,
                 localRelativeFilePath: primaryFile.pendingFile.reservedRelativeFilePath,
                 renderingFlag: input.renderingFlag,
@@ -943,10 +943,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         var filesForCopying = [PendingFile]()
         for (key, contentResult) in contentResults {
             let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(
-                encryptionKey: contentResult.input.encryptionKey
+                attachmentKey: contentResult.input.attachmentKey,
             )
             let videoStillFrameFile = try contentResult.videoStillFrameFile?.encryptFileIfNeeded(
-                encryptionKey: contentResult.input.encryptionKey
+                attachmentKey: contentResult.input.attachmentKey,
             )
 
             // Before we copy files to their final location, orphan them.
@@ -1000,11 +1000,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return Data(SHA256.hash(data: data))
             case .unencryptedFile(let fileUrl):
                 return try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
-            case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+            case .encryptedFile(let fileUrl, let attachmentKey, let plaintextLength, _):
                 let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
                     at: fileUrl,
                     plaintextLength: UInt64(safeCast: plaintextLength),
-                    encryptionKey: encryptionKey
+                    attachmentKey: attachmentKey,
                 )
                 var sha256 = SHA256()
                 var bytesRemaining = plaintextLength
@@ -1030,7 +1030,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case .inMemory(let data):
             let (encryptedData, encryptionMetadata) = try Cryptography.encrypt(
                 data,
-                encryptionKey: input.encryptionKey,
+                attachmentKey: input.attachmentKey,
                 applyExtraPadding: true
             )
             let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
@@ -1047,7 +1047,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let encryptionMetadata = try Cryptography.encryptAttachment(
                 at: fileUrl,
                 output: outputFile,
-                encryptionKey: input.encryptionKey
+                attachmentKey: input.attachmentKey,
             )
             return (
                 PendingFile(
@@ -1056,13 +1056,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 ),
                 encryptionMetadata
             )
-        case .encryptedFile(let fileUrl, let inputEncryptionKey, let plaintextLength, let integrityCheckParam):
+        case .encryptedFile(let fileUrl, let inputAttachmentKey, let plaintextLength, let integrityCheckParam):
             // If the input and output encryption keys are the same
             // the file is already encrypted, so nothing to encrypt.
             // Just compute the digest if we don't already have it.
             // If they don't match, re-encrypt the source to a new file
             // and pass back the updated encryption metadata
-            if inputEncryptionKey == input.encryptionKey {
+            if inputAttachmentKey.combinedKey == input.attachmentKey.combinedKey {
 
                 let encryptedLength = OWSFileSystem.fileSize(of: fileUrl).flatMap({ UInt64(exactly: $0.intValue) })
                 guard let encryptedLength else {
@@ -1084,18 +1084,18 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                         isTmpFileEncrypted: true
                     ),
                     EncryptionMetadata(
-                        key: input.encryptionKey,
+                        key: input.attachmentKey,
                         digest: digest,
                         encryptedLength: encryptedLength,
                         plaintextLength: UInt64(safeCast: plaintextLength),
                     )
                 )
             } else {
-                let fileHandle = try Cryptography.encryptedFileHandle(at: fileUrl, encryptionKey: inputEncryptionKey)
+                let fileHandle = try Cryptography.encryptedFileHandle(at: fileUrl, attachmentKey: inputAttachmentKey)
                 let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
                 let encryptionMetadata = try Cryptography.reencryptFileHandle(
                     at: fileHandle,
-                    encryptionKey: input.encryptionKey,
+                    attachmentKey: input.attachmentKey,
                     encryptedOutputUrl: outputFile,
                     applyExtraPadding: false
                 )
@@ -1121,14 +1121,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     /// Note: the merge happens later in a separate write tx, so things can change between now and
     /// then. That's ok; worst case when we merge two different encryption keys we drop media tier
     /// uploads and have to reupload again, and everything recovers.
-    private func encryptionKeyToUse(primaryFilePlaintextHash: Data, inputEncryptionKey: Data?) -> Data {
+    private func attachmentKeyToUse(primaryFilePlaintextHash: Data, inputAttachmentKey: AttachmentKey?) throws -> AttachmentKey {
         let existingAttachment = db.read(block: { tx in
             attachmentStore.fetchAttachment(sha256ContentHash: primaryFilePlaintextHash, tx: tx)
         })
         if let existingAttachment {
-            return existingAttachment.encryptionKey
+            return try AttachmentKey(combinedKey: existingAttachment.encryptionKey)
         } else {
-            return inputEncryptionKey ?? Cryptography.randomAttachmentEncryptionKey()
+            return inputAttachmentKey ?? .generate()
         }
     }
 }
@@ -1136,7 +1136,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 extension AttachmentContentValidatorImpl.PendingFile {
 
     fileprivate func encryptFileIfNeeded(
-        encryptionKey: Data
+        attachmentKey: AttachmentKey,
     ) throws -> Self {
         if isTmpFileEncrypted {
             return self
@@ -1150,7 +1150,7 @@ extension AttachmentContentValidatorImpl.PendingFile {
         _ = try Cryptography.encryptFile(
             at: tmpFileUrl,
             output: outputFile,
-            encryptionKey: encryptionKey
+            attachmentKey: attachmentKey,
         )
         return Self(
             tmpFileUrl: outputFile,

@@ -1061,10 +1061,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             }
 
             let thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
+            let attachmentKey = try encryptionKey.attachmentKey()
 
             let (encryptedThumbnailData, encryptedThumbnailMetadata) = try Cryptography.encrypt(
                 thumbnailData,
-                encryptionKey: encryptionKey.encryptionKey,
+                attachmentKey: attachmentKey,
                 applyExtraPadding: true
             )
 
@@ -1073,7 +1074,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
             return .reuse(Upload.LocalUploadMetadata(
                 fileUrl: fileUrl,
-                key: encryptionKey.encryptionKey,
+                key: attachmentKey.combinedKey,
                 digest: encryptedThumbnailMetadata.digest,
                 encryptedDataLength: UInt32(encryptedThumbnailData.count),
                 plaintextDataLength: UInt32(thumbnailData.count)
@@ -1233,7 +1234,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         // First we need to decrypt, so we can re-encrypt for upload.
         let tmpDecryptedFile = fileSystem.temporaryFileUrl()
         let decryptionMedatata = DecryptionMetadata(
-            key: attachmentStream.attachment.encryptionKey,
+            key: try AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
             // No need to validate for an already-validated stream
             integrityCheck: .sha256ContentHash(attachmentStream.sha256ContentHash),
             plaintextLength: UInt64(safeCast: attachmentStream.info.unencryptedByteCount),
