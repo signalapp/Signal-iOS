@@ -66,11 +66,15 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
 
         addChild(tableViewController)
         contentView.addSubview(tableViewController.view)
+        tableViewController.didMove(toParent: self)
         contentView.addSubview(footerStack)
 
         tableViewController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         footerStack.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         tableViewController.view.autoPinEdge(.bottom, to: .top, of: footerStack)
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            footerStack.autoSetDimension(.height, toSize: 0)
+        }
 
         updateViewState()
     }
