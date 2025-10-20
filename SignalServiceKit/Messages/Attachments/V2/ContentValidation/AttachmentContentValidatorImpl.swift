@@ -644,7 +644,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func validateVideoContentType(
         _ input: Input
     ) throws -> (Attachment.ContentType, stillFrame: PendingFile?, blurHash: String?) {
-        guard input.byteSize < SignalAttachment.kMaxFileSizeVideo else {
+        guard input.byteSize < OWSMediaUtils.kMaxFileSizeVideo else {
             throw OWSAssertionError("Video too big!")
         }
 

@@ -149,14 +149,6 @@ public class SignalAttachment: NSObject {
 
     private(set) public var isVoiceMessage = false
 
-    // MARK: Constants
-
-    public static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
-    public static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
-    public static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
-    public static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
-    public static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
-
     public static let maxAttachmentsAllowed: Int = 32
 
     // MARK: Constructor
@@ -858,7 +850,7 @@ public class SignalAttachment: NSObject {
         let imageMetadata = dataSource.imageMetadata
         let isAnimated = imageMetadata.isAnimated
         if isAnimated {
-            guard dataSource.dataLength <= kMaxFileSizeAnimatedImage else {
+            guard dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                 attachment.error = .fileSizeTooLarge
                 return attachment
             }
@@ -1051,7 +1043,7 @@ public class SignalAttachment: NSObject {
             let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
             outputDataSource.sourceFilename = newFilenameWithExtension
 
-            if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= kMaxFileSizeImage {
+            if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= OWSMediaUtils.kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
                 return .signalAttachment(signalAttachment: recompressedAttachment)
             }
@@ -1252,7 +1244,7 @@ public class SignalAttachment: NSObject {
         return newAttachment(dataSource: dataSource,
                              dataUTI: dataUTI,
                              validUTISet: videoUTISet,
-                             maxFileSize: kMaxFileSizeVideo)
+                             maxFileSize: OWSMediaUtils.kMaxFileSizeVideo)
     }
 
     public class func copyToVideoTempDir(url fromUrl: URL) throws -> URL {
@@ -1342,7 +1334,7 @@ public class SignalAttachment: NSObject {
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
-            if dataSource.dataLength > SignalAttachment.kMaxFileSizeVideo {
+            if dataSource.dataLength > OWSMediaUtils.kMaxFileSizeVideo {
                 attachment.error = .fileSizeTooLarge
             }
             return attachment
@@ -1374,7 +1366,7 @@ public class SignalAttachment: NSObject {
             return false
         }
 
-        if dataSource.dataLength <= kMaxFileSizeVideo {
+        if dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeVideo {
             return true
         }
         Logger.warn("Invalid file size.")
@@ -1391,7 +1383,7 @@ public class SignalAttachment: NSObject {
         return newAttachment(dataSource: dataSource,
                              dataUTI: dataUTI,
                              validUTISet: audioUTISet,
-                             maxFileSize: kMaxFileSizeAudio)
+                             maxFileSize: OWSMediaUtils.kMaxFileSizeAudio)
     }
 
     // MARK: Generic Attachments
@@ -1404,7 +1396,7 @@ public class SignalAttachment: NSObject {
         return newAttachment(dataSource: dataSource,
                              dataUTI: dataUTI,
                              validUTISet: nil,
-                             maxFileSize: kMaxFileSizeGeneric)
+                             maxFileSize: OWSMediaUtils.kMaxFileSizeGeneric)
     }
 
     // MARK: Voice Messages
