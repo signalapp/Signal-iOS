@@ -117,6 +117,14 @@ struct PollDetailsView: View {
                                 .padding(.vertical, 1)
                                 .padding(.horizontal, 4)
                         }
+                        if option.acis.count == 0 {
+                            Text(OWSLocalizedString(
+                                "POLL_NO_VOTES",
+                                comment: "String to display when a poll has no votes"
+                            ))
+                            .font(.body)
+                            .foregroundColor(Color.Signal.secondaryLabel)
+                        }
                     } header: {
                         // TODO: add star icon to winning option if poll is ended
                         HStack {
@@ -124,17 +132,19 @@ struct PollDetailsView: View {
                                 .font(.body)
                                 .fontWeight(.medium)
                             Spacer()
-                            Text(
-                                String(
-                                    format: OWSLocalizedString(
-                                        "POLL_VOTE_COUNT",
-                                        tableName: "PluralAware",
-                                        comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"
-                                    ),
-                                    option.acis.count
+                            if option.acis.count > 0 {
+                                Text(
+                                    String(
+                                        format: OWSLocalizedString(
+                                            "POLL_VOTE_COUNT",
+                                            tableName: "PluralAware",
+                                            comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"
+                                        ),
+                                        option.acis.count
+                                    )
                                 )
-                            )
-                            .font(.body)
+                                .font(.body)
+                            }
                         }
                     }
                 }
