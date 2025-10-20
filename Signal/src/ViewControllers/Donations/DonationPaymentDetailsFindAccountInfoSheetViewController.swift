@@ -18,33 +18,24 @@ public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableS
         section.customHeaderView = imageView
 
         section.add(.init(customCellBlock: {
-            let headerLabel = UILabel()
-            headerLabel.font = .dynamicTypeTitle3.semibold()
-            headerLabel.textAlignment = .center
-            headerLabel.numberOfLines = 0
-            headerLabel.text = OWSLocalizedString(
+            let headerLabel = UILabel.title2Label(text: OWSLocalizedString(
                 "FIND_ACCOUNT_INFO_SHEET_TITLE",
                 comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet."
-            )
+            ))
 
-            let descriptionLabel = UILabel()
-            descriptionLabel.font = .dynamicTypeSubheadlineClamped
-            descriptionLabel.textColor = .secondaryLabel
-            descriptionLabel.textAlignment = .center
-            descriptionLabel.numberOfLines = 0
-            descriptionLabel.text = OWSLocalizedString(
+            let descriptionLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
                 "FIND_ACCOUNT_INFO_SHEET_BODY",
                 comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet."
-            )
+            ))
 
             let stackView = UIStackView(arrangedSubviews: [headerLabel, descriptionLabel])
             stackView.axis = .vertical
-            stackView.spacing = 20
+            stackView.spacing = 12
 
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewEdges(with: .init(top: 12, leading: 45, bottom: 24, trailing: 45))
+            stackView.autoPinEdgesToSuperviewEdges()
 
             return cell
         }))

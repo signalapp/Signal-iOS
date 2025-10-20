@@ -110,6 +110,9 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         }
         NSLayoutConstraint.activate(footerViewConstraints)
 
+        footerView.setNeedsLayout()
+        footerView.layoutIfNeeded()
+
         // Update height.
         updateMinimizedHeight()
     }

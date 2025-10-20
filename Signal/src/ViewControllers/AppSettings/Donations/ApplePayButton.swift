@@ -16,18 +16,22 @@ class ApplePayButton: UIButton {
 
         applePayButton = PKPaymentButton(
             paymentButtonType: .plain,
-            paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
+            paymentButtonStyle: .automatic
         )
 
         super.init(frame: .zero)
-        applePayButton.addTarget(self, action: #selector(self.didTouchUpInside), for: .touchUpInside)
+        applePayButton.addAction(
+            UIAction { [weak self] _ in
+                self?.actionBlock()
+            },
+            for: .primaryActionTriggered
+        )
 
-        self.addSubview(applePayButton)
-        applePayButton.autoPinEdgesToSuperviewEdges()
+        addSubview(applePayButton)
 
 #if compiler(>=6.2)
         if #available(iOS 26.0, *){
-            tintColor = Theme.isDarkThemeEnabled ? .white : .black
+            tintColor = .Signal.label
             configuration = .prominentGlass()
         }
 #endif
@@ -37,14 +41,10 @@ class ApplePayButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
-    private func didTouchUpInside() {
-        actionBlock()
-    }
-
     override func layoutSubviews() {
         super.layoutSubviews()
-        applePayButton.cornerRadius = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        applePayButton.frame = bounds
+        applePayButton.cornerRadius = if #available(iOS 26, *) {
             height / 2
         } else {
             12

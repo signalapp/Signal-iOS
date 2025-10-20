@@ -34,10 +34,6 @@ class DonationReceiptsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    override func themeDidChange() {
-        updateTableContents()
-    }
-
     private func updateTableContents() {
         let contents = OWSTableContents()
         defer { self.contents = contents }
@@ -76,7 +72,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
                         itemName: formattedDate,
                         subtitle: donationReceipt.localizedName,
                         accessoryText: formattedAmount,
-                        accessoryTextColor: Theme.primaryTextColor,
+                        accessoryTextColor: .Signal.label,
                         accessoryType: .disclosureIndicator,
                         accessibilityIdentifier: accessibilityIdentifier
                     )

@@ -24,15 +24,10 @@ class DonationHeroView: UIStackView {
         self.addArrangedSubview(avatarView)
         self.setCustomSpacing(12, after: avatarView)
 
-        let titleLabel = UILabel()
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.text = OWSLocalizedString(
+        let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
             "DONATION_SCREENS_HEADER_TITLE",
             comment: "On donation screens, a small amount of information text is shown. This is the title for that text."
-        )
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
+        ))
         self.addArrangedSubview(titleLabel)
         self.setCustomSpacing(6, after: titleLabel)
 
@@ -61,7 +56,7 @@ class DonationHeroView: UIStackView {
             descriptionBodyText,
             " ",
             readMoreText
-        ]).styled(with: .color(UIColor.Signal.label), .font(.dynamicTypeBody))
+        ]).styled(with: .color(UIColor.Signal.secondaryLabel), .font(.dynamicTypeBody))
         descriptionTextView.linkTextAttributes = [
             .foregroundColor: UIColor.Signal.accent,
             .underlineColor: UIColor.clear,

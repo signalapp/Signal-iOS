@@ -133,12 +133,6 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
         loadDataIfNecessary()
         updateTableContents()
-        setUpBottomFooter()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
         updateBottomFooter()
     }
 
@@ -153,38 +147,36 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.hasBackground = false
             section.customHeaderView = {
-                let introStack = UIStackView()
-                introStack.axis = .vertical
-                introStack.spacing = 12
-
-                let imageName = Theme.isDarkThemeEnabled ? "badge-gifting-promo-image-dark" : "badge-gifting-promo-image-light"
-                let imageView = UIImageView(image: UIImage(named: imageName))
-                introStack.addArrangedSubview(imageView)
+                let imageView = UIImageView(image: UIImage(named: "badge-gifting-promo-image"))
                 imageView.contentMode = .scaleAspectFit
+                let imageViewContainer = UIView.container()
+                imageViewContainer.addSubview(imageView)
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                imageViewContainer.addConstraints([
+                    imageView.topAnchor.constraint(equalTo: imageViewContainer.topAnchor),
+                    imageView.leadingAnchor.constraint(greaterThanOrEqualTo: imageViewContainer.leadingAnchor),
+                    imageView.centerXAnchor.constraint(equalTo: imageViewContainer.centerXAnchor),
+                    imageView.bottomAnchor.constraint(equalTo: imageViewContainer.bottomAnchor),
+                ])
 
-                let titleLabel = UILabel()
-                introStack.addArrangedSubview(titleLabel)
-                titleLabel.text = OWSLocalizedString(
+                let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE",
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive."
-                )
-                titleLabel.textAlignment = .center
-                titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-                titleLabel.numberOfLines = 0
-                titleLabel.lineBreakMode = .byWordWrapping
-                titleLabel.autoPinWidthToSuperview(withMargin: 26)
-
-                let paragraphLabel = UILabel()
-                introStack.addArrangedSubview(paragraphLabel)
-                paragraphLabel.text = OWSLocalizedString(
+                ))
+                titleLabel.setCompressionResistanceVerticalHigh()
+                let subtitleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION",
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive."
-                )
-                paragraphLabel.textAlignment = .center
-                paragraphLabel.font = UIFont.dynamicTypeBody
-                paragraphLabel.numberOfLines = 0
-                paragraphLabel.lineBreakMode = .byWordWrapping
-                paragraphLabel.autoPinWidthToSuperview(withMargin: 26)
+                ))
+                subtitleLabel.setCompressionResistanceVerticalHigh()
+
+                let introStack = UIStackView(arrangedSubviews: [
+                    imageViewContainer,
+                    titleLabel,
+                    subtitleLabel
+                ])
+                introStack.axis = .vertical
+                introStack.spacing = 12
 
                 return introStack
             }()
@@ -222,36 +214,30 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell()
 
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.spacing = 16
-
             let textLabel = UILabel()
-            stackView.addArrangedSubview(textLabel)
             textLabel.text = OWSLocalizedString("DONATION_VIEW_LOAD_FAILED",
                                                comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
             textLabel.font = .dynamicTypeSubheadline
             textLabel.textAlignment = .center
-            textLabel.textColor = Theme.primaryTextColor
+            textLabel.textColor = .Signal.label
             textLabel.numberOfLines = 0
 
-            let retryButton = OWSButton { [weak self] in self?.loadDataIfNecessary() }
-            stackView.addArrangedSubview(retryButton)
-            retryButton.setTitle(CommonStrings.retryButton, for: .normal)
-            if Theme.isDarkThemeEnabled {
-                retryButton.setTitleColor(.ows_gray05, for: .normal)
-                retryButton.setBackgroundImage(UIImage.image(color: .ows_gray85), for: .normal)
-            } else {
-                retryButton.setTitleColor(.ows_gray90, for: .normal)
-                retryButton.setBackgroundImage(UIImage.image(color: .ows_gray05), for: .normal)
-            }
-            retryButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
-            retryButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
-            retryButton.autoHCenterInSuperview()
-            retryButton.setContentHuggingHigh()
-            retryButton.layer.cornerRadius = 16
-            retryButton.clipsToBounds = true
+            let retryButton = UIButton(
+                configuration: .mediumSecondary(title: CommonStrings.retryButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.loadDataIfNecessary()
+                }
+            )
+            // Container is needed to center button instead of stretching it horizontally.
+            let retryButtonContainer = retryButton.enclosedInVerticalStackView(isFullWidthButton: false)
+            retryButtonContainer.directionalLayoutMargins.bottom = 0
 
+            let stackView = UIStackView(arrangedSubviews: [
+                textLabel,
+                retryButtonContainer,
+            ])
+            stackView.axis = .vertical
+            stackView.spacing = 16
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewMargins()
 
@@ -287,7 +273,14 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             }
 
             cell.contentView.addSubview(currencyPickerButton)
-            currencyPickerButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0))
+            currencyPickerButton.translatesAutoresizingMaskIntoConstraints = false
+            cell.addConstraints([
+                // Cell might be a little too tall - center button vertically.
+                currencyPickerButton.topAnchor.constraint(greaterThanOrEqualTo: cell.contentView.topAnchor),
+                currencyPickerButton.leadingAnchor.constraint(greaterThanOrEqualTo: cell.contentView.leadingAnchor),
+                currencyPickerButton.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
+                currencyPickerButton.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            ])
 
             return cell
         }))
@@ -313,41 +306,33 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     // MARK: - Footer contents
 
     open override var bottomFooter: UIView? {
-        get { bottomFooterStackView }
+        get { bottomFooterContainer }
         set {}
     }
-    private let nextButton = OWSButton()
-    private let bottomFooterStackView = UIStackView()
 
-    private func setUpBottomFooter() {
-        bottomFooterStackView.axis = .vertical
-        bottomFooterStackView.alignment = .center
-        bottomFooterStackView.layoutMargins = UIEdgeInsets(top: 10, leading: 23, bottom: 10, trailing: 23)
-        bottomFooterStackView.spacing = 16
-        bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
-
-        bottomFooterStackView.addArrangedSubview(nextButton)
-        nextButton.block = { [weak self] in
+    private lazy var nextButton = UIButton(
+        configuration: .largePrimary(title: CommonStrings.nextButton),
+        primaryAction: UIAction { [weak self] _ in
             self?.didTapNext()
         }
-        nextButton.setTitle(CommonStrings.nextButton, for: .normal)
-        nextButton.dimsWhenHighlighted = true
-        nextButton.layer.cornerRadius = 8
-        nextButton.backgroundColor = .ows_accentBlue
-        nextButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-        nextButton.autoSetDimension(.height, toSize: 48)
-        nextButton.autoPinWidthToSuperviewMargins()
+    )
 
-        updateBottomFooter()
-    }
+    private lazy var bottomFooterContainer: UIView = {
+        let stackView = UIStackView.verticalButtonStack(buttons: [ nextButton ])
+        let containerView = UIView()
+        containerView.preservesSuperviewLayoutMargins = true
+        containerView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+        ])
+        return containerView
+    }()
 
     private func updateBottomFooter() {
-        bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
-
         nextButton.isEnabled = state.canContinue
-        nextButton.backgroundColor = .ows_accentBlue
-        if !nextButton.isEnabled {
-            nextButton.backgroundColor = nextButton.backgroundColor?.withAlphaComponent(0.5)
-        }
     }
 }

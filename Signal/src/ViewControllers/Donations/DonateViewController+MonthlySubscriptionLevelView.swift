@@ -10,8 +10,18 @@ extension DonateViewController {
     internal class MonthlySubscriptionLevelView: UIStackView {
         private let background: UIView = {
             let result = UIView()
+            result.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
             result.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+            result.layer.borderColor = result.backgroundColor?.cgColor
+#if compiler(>=6.2)
+            if #available(iOS 26, *) {
+                result.cornerConfiguration = .uniformCorners(radius: 26)
+            } else {
+                result.layer.cornerRadius = DonateViewController.cornerRadius
+            }
+#else
             result.layer.cornerRadius = DonateViewController.cornerRadius
+#endif
             return result
         }()
 
@@ -94,10 +104,9 @@ extension DonateViewController {
             }()
             let isSelectedInUi = selectedSubscriptionLevel?.level == subscriptionLevel.level
 
-            background.layer.backgroundColor = DonateViewController.bubbleBackgroundColor
             background.layer.borderColor = isSelectedInUi
             ? DonateViewController.selectedColor
-            : DonateViewController.bubbleBackgroundColor
+            : background.backgroundColor?.cgColor
 
             headingLabel.text = {
                 let format = OWSLocalizedString(
@@ -114,7 +123,7 @@ extension DonateViewController {
             headingStackView.addArrangedSubview(headingLabel)
             if isCurrentSubscription {
                 let checkmark = UIImageView(image: UIImage(named: "check-20"))
-                checkmark.tintColor = Theme.primaryTextColor
+                checkmark.tintColor = .Signal.label
                 headingStackView.addArrangedSubview(checkmark)
                 checkmark.setCompressionResistanceHorizontalHigh()
                 checkmark.autoSetDimensions(to: CGSize(square: 15))

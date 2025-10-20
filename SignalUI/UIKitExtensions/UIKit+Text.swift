@@ -207,6 +207,39 @@ extension UILabel {
 
         return (textContainer, textStorage, layoutManager)
     }
+
+    public class func title1Label(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .Signal.label
+        label.font = UIFont.dynamicTypeTitle1Clamped.semibold()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        return label
+    }
+
+    public class func title2Label(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .Signal.label
+        label.font = UIFont.dynamicTypeTitle2Clamped.semibold()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        return label
+    }
+
+    public class func explanationTextLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.textColor = .Signal.secondaryLabel
+        label.font = .dynamicTypeBodyClamped
+        label.text = text
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }
 }
 
 // MARK: -

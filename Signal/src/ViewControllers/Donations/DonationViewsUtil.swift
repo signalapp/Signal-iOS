@@ -67,7 +67,7 @@ public class ProfileBadgeLookup {
 
 // MARK: - Currency picker view
 
-public class DonationCurrencyPickerButton: UIStackView {
+public class DonationCurrencyPickerButton: UIView {
     init(
         currentCurrencyCode: Currency.Code,
         hasLabel: Bool,
@@ -75,55 +75,65 @@ public class DonationCurrencyPickerButton: UIStackView {
     ) {
         super.init(frame: .zero)
 
-        self.axis = .horizontal
-        self.alignment = .center
-        self.spacing = 8
-
+        let leadingAnchorForButton: NSLayoutXAxisAnchor
         if hasLabel {
             let label = UILabel()
             label.font = .dynamicTypeBodyClamped
-            label.textColor = Theme.primaryTextColor
+            label.textColor = .Signal.label
             label.text = OWSLocalizedString(
                 "DONATIONS_CURRENCY_PICKER_LABEL",
                 comment: "Label for the currency picker button in donation views"
             )
-            self.addArrangedSubview(label)
+            label.setContentHuggingHorizontalHigh()
+            label.setContentHuggingVerticalLow()
+            label.setCompressionResistanceHigh()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(label)
+            addConstraints([
+                label.leadingAnchor.constraint(equalTo: leadingAnchor),
+                label.topAnchor.constraint(equalTo: topAnchor),
+                label.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+            leadingAnchorForButton = label.trailingAnchor
+        } else {
+            leadingAnchorForButton = leadingAnchor
         }
 
-        let picker = OWSButton(block: block)
-        picker.setAttributedTitle(NSAttributedString.composed(of: [
-            currentCurrencyCode,
-            Special.noBreakSpace,
-            NSAttributedString.with(
-                image: UIImage(imageLiteralResourceName: "chevron-down-extra-small"),
-                font: .regularFont(ofSize: 17)
-            ).styled(
-                with: .color(DonationViewsUtil.bubbleBorderColor)
+        let picker = UIButton(
+            configuration: .bordered(),
+            primaryAction: UIAction { _ in
+                block()
+            }
+        )
+        picker.configuration?.attributedTitle = AttributedString(
+            NSAttributedString.composed(of: [
+                currentCurrencyCode,
+                Special.noBreakSpace,
+                NSAttributedString.with(
+                    image: UIImage(imageLiteralResourceName: "chevron-down-extra-small"),
+                    font: .regularFont(ofSize: 17)
+                ).styled(
+                    with: .color(.Signal.tertiaryLabel)
+                )
+            ]).styled(
+                with: .font(.regularFont(ofSize: 17)),
+                .color(.Signal.label)
             )
-        ]).styled(
-            with: .font(.regularFont(ofSize: 17)),
-            .color(Theme.primaryTextColor)
-        ), for: .normal)
-
-        picker.setBackgroundImage(UIImage.image(color: DonationViewsUtil.bubbleBackgroundColor), for: .normal)
-        picker.setBackgroundImage(UIImage.image(color: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
-
-        let pillView = PillView()
-        pillView.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-        pillView.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
-        pillView.clipsToBounds = true
-        pillView.addSubview(picker)
-        picker.autoPinEdgesToSuperviewEdges()
-        picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
-
-        self.addArrangedSubview(pillView)
-        pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
-
-        let leadingSpacer = UIView.hStretchingSpacer()
-        let trailingSpacer = UIView.hStretchingSpacer()
-        self.insertArrangedSubview(leadingSpacer, at: 0)
-        self.addArrangedSubview(trailingSpacer)
-        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        )
+        picker.configuration?.contentInsets = .init(hMargin: 12, vMargin: 8)
+        picker.configuration?.baseBackgroundColor = DonationViewsUtil.bubbleBackgroundColor
+        picker.configuration?.background.strokeColor = .Signal.tertiaryLabel
+        picker.configuration?.cornerStyle = .capsule
+        picker.setContentHuggingHigh()
+        picker.setCompressionResistanceHigh()
+        picker.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(picker)
+        addConstraints([
+            picker.leadingAnchor.constraint(equalTo: leadingAnchorForButton, constant: hasLabel ? 8 : 0),
+            picker.topAnchor.constraint(equalTo: topAnchor),
+            picker.bottomAnchor.constraint(equalTo: bottomAnchor),
+            picker.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
     }
 
     required init(coder: NSCoder) {
@@ -150,7 +160,7 @@ public class GiftBadgeCellView: UIStackView {
 
         let titleLabel = UILabel()
         titleLabel.text = badge.localizedName
-        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.textColor = .Signal.label
         titleLabel.font = .dynamicTypeBody.semibold()
         titleLabel.numberOfLines = 0
 
@@ -190,7 +200,7 @@ public class GiftBadgeCellView: UIStackView {
                 formattedPrice, formattedDurationText
             )
         }()
-        secondLineLabel.textColor = Theme.primaryTextColor
+        secondLineLabel.textColor = .Signal.label
         secondLineLabel.font = .dynamicTypeSubheadline
         secondLineLabel.numberOfLines = 0
 
@@ -210,8 +220,8 @@ public class GiftBadgeCellView: UIStackView {
 
 public final class DonationViewsUtil {
     public static let bubbleBorderWidth: CGFloat = 1.5
-    fileprivate static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
-    public static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
+    public static var bubbleBackgroundColor: UIColor { .Signal.secondaryGroupedBackground }
+    public static var amountFieldMinHeight: CGFloat = if #available(iOS 26, *) { 52 } else { 48 }
 
     public static func avatarView() -> ConversationAvatarView {
         let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight

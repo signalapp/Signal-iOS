@@ -55,7 +55,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
                 comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
             )
             titleLabel.font = .dynamicTypeTitle2.semibold()
-            titleLabel.textColor = Theme.primaryTextColor
+            titleLabel.textColor = .Signal.label
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
             titleLabel.text = String(format: titleFormat, self.shortName)
@@ -68,7 +68,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
                 comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
             )
             label.font = .dynamicTypeBody
-            label.textColor = Theme.primaryTextColor
+            label.textColor = .Signal.label
             label.numberOfLines = 0
             label.text = String(format: labelFormat, self.shortName)
             label.textAlignment = .center

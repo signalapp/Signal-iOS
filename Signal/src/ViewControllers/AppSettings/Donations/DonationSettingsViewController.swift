@@ -299,20 +299,19 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 "DONATION_SCREEN_DONATE_BUTTON",
                 comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
             )
-            let button = OWSButton(title: buttonTitle) { [weak self] in
-                if Self.canDonateInAnyWay {
-                    self?.showDonateViewController(preferredDonateMode: .oneTime)
-                } else {
-                    DonationViewsUtil.openDonateWebsite()
+            let button = UIButton(
+                configuration: .largePrimary(title: buttonTitle),
+                primaryAction: UIAction { [weak self] _ in
+                    if Self.canDonateInAnyWay {
+                        self?.showDonateViewController(preferredDonateMode: .oneTime)
+                    } else {
+                        DonationViewsUtil.openDonateWebsite()
+                    }
                 }
-            }
-            button.dimsWhenHighlighted = true
-            button.layer.cornerRadius = 8
-            button.backgroundColor = .ows_accentBlue
-            button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+            )
             heroStack.addArrangedSubview(button)
-            button.autoSetDimension(.height, toSize: 48)
-            button.autoPinWidthToSuperviewMargins()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.widthAnchor.constraint(equalTo: heroStack.layoutMarginsGuide.widthAnchor).isActive = true
 
             cell.contentView.addSubview(heroStack)
             heroStack.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(hMargin: 0, vMargin: 6))

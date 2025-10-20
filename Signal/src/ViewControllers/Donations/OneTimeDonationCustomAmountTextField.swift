@@ -33,6 +33,8 @@ class OneTimeDonationCustomAmountTextField: UIView {
 
         super.init(frame: .zero)
 
+        backgroundColor = DonationViewsUtil.bubbleBackgroundColor
+
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.keyboardType = .decimalPad
@@ -51,7 +53,7 @@ class OneTimeDonationCustomAmountTextField: UIView {
         stackView.autoPinHeightToSuperview()
         stackView.autoMatch(.width, to: .width, of: self, withMultiplier: 1, relation: .lessThanOrEqual)
         stackView.autoHCenterInSuperview()
-        stackView.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+        stackView.autoSetDimension(.height, toSize: DonationViewsUtil.amountFieldMinHeight, relation: .greaterThanOrEqual)
 
         updateVisibility()
         setCurrencyCode(currencyCode)
@@ -95,7 +97,10 @@ class OneTimeDonationCustomAmountTextField: UIView {
             textField.textColor = newValue
             placeholderLabel.textColor = newValue
             symbolLabel.textColor = newValue
-        }
+            if #available(iOS 26, *) {
+                textField.tintColor = newValue // caret color
+            }
+       }
     }
 
     var placeholder: String? {

@@ -20,7 +20,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
     private let supportedPaymentMethods: Set<DonationPaymentMethod>
     private let didChoosePaymentMethod: (DonateChoosePaymentMethodSheet, DonationPaymentMethod) -> Void
 
-    private let buttonHeight: CGFloat = 48
+    private let buttonHeight: CGFloat = if #available(iOS 26, *) { 52 } else { 48 }
 
     private var titleText: String {
         let currencyString = CurrencyFormatter.format(money: amount)
@@ -107,23 +107,11 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                 stackView.setCustomSpacing(12, after: badgeImageView)
             }
 
-            let titleLabel = UILabel()
-            titleLabel.font = .dynamicTypeTitle2.semibold()
-            titleLabel.textColor = Theme.primaryTextColor
-            titleLabel.textAlignment = .center
-            titleLabel.numberOfLines = 0
-            titleLabel.lineBreakMode = .byWordWrapping
-            titleLabel.text = titleText
+            let titleLabel = UILabel.title2Label(text: titleText)
             stackView.addArrangedSubview(titleLabel)
 
-            if let bodyText = bodyText {
-                let bodyLabel = UILabel()
-                bodyLabel.font = .dynamicTypeBody
-                bodyLabel.textColor = Theme.primaryTextColor
-                bodyLabel.textAlignment = .center
-                bodyLabel.numberOfLines = 0
-                bodyLabel.lineBreakMode = .byWordWrapping
-                bodyLabel.text = bodyText
+            if let bodyText {
+                let bodyLabel = UILabel.explanationTextLabel(text: bodyText)
                 stackView.addArrangedSubview(bodyLabel)
             }
 
@@ -171,33 +159,48 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 
         owsPrecondition(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
 
-        let stackView = UIStackView(arrangedSubviews: paymentMethodButtons)
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 20, trailing: 20)
-        stackView.isLayoutMarginsRelativeArrangement = true
+        let stackView = UIStackView.verticalButtonStack(buttons: paymentMethodButtons)
 
-        for button in paymentMethodButtons {
-            button.autoSetDimension(.height, toSize: buttonHeight)
-        }
+        let view = UIView()
+        view.preservesSuperviewLayoutMargins = true
+        view.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
-        return stackView
+        return view
     }
 
-    private func createButtonFor(paymentMethod: DonationPaymentMethod) -> UIView {
-        switch paymentMethod {
-        case .applePay:
-            return createApplePayButton()
-        case .creditOrDebitCard:
-            return createCreditOrDebitCardButton()
-        case .paypal:
-            return createPaypalButton()
-        case .sepa:
-            return createSEPAButton()
-        case .ideal:
-            return createIDEALButton()
+    private func createButtonFor(paymentMethod: DonationPaymentMethod) -> UIButton {
+        var fixedHeight = true
+        let button: UIButton = {
+            switch paymentMethod {
+            case .applePay:
+                return createApplePayButton()
+            case .creditOrDebitCard:
+                fixedHeight = false
+                return createCreditOrDebitCardButton()
+            case .paypal:
+                return createPaypalButton()
+            case .sepa:
+                fixedHeight = false
+                return createSEPAButton()
+            case .ideal:
+                return createIDEALButton()
+            }
+        }()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        if fixedHeight {
+            button.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        } else {
+            button.heightAnchor.constraint(greaterThanOrEqualToConstant: buttonHeight).isActive = true
         }
+
+        return button
     }
 
     private func createApplePayButton() -> ApplePayButton {
@@ -219,49 +222,61 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         image: UIImage?,
         action: @escaping () -> Void
     ) -> UIButton {
-        var config = UIButton.Configuration.bordered()
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        var configuration: UIButton.Configuration
 #if compiler(>=6.2)
-            config = UIButton.Configuration.glass()
-#endif
+        if #available(iOS 26, *) {
+            configuration = UIButton.Configuration.glass()
         } else {
-            config.background.cornerRadius = 12
-            config.baseForegroundColor = .label
-            config.baseBackgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .white
+            configuration = .bordered()
+            configuration.background.cornerRadius = 12
+            configuration.baseForegroundColor = .label
+            configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
         }
+#else
+        configuration = .bordered()
+        configuration.background.cornerRadius = 12
+        configuration.baseForegroundColor = .label
+        configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
+#endif
 
-        config.title = title
-        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
-        config.image = image
-        config.imagePadding = 8
+        configuration.title = title
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        configuration.image = image
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
 
         let button = UIButton(
-            configuration: config,
+            configuration: configuration,
             primaryAction: UIAction { _ in action() }
         )
         return button
     }
 
     private func createCreditOrDebitCardButton() -> UIButton {
-        var config = UIButton.Configuration.borderedProminent()
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        var configuration: UIButton.Configuration
 #if compiler(>=6.2)
-            config = UIButton.Configuration.prominentGlass()
-#endif
+        if #available(iOS 26, *) {
+            configuration = .prominentGlass()
         } else {
-            config.background.cornerRadius = 12
+            configuration = .borderedProminent()
+            configuration.background.cornerRadius = 12
         }
+#else
+        configuration = .borderedProminent()
+        configuration.background.cornerRadius = 12
+#endif
 
-        config.title = OWSLocalizedString(
+        configuration.title = OWSLocalizedString(
             "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
             comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
         )
-        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
-        config.image = UIImage(named: "payment")
-        config.imagePadding = 8
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        configuration.image = UIImage(named: "payment")
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
 
         let button = UIButton(
-            configuration: config,
+            configuration: configuration,
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
                 self.didChoosePaymentMethod(self, .creditOrDebitCard)

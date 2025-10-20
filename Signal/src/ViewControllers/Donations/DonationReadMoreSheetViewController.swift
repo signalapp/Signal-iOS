@@ -10,7 +10,7 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
-    public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
+    public override var sheetBackgroundColor: UIColor { UIColor.Signal.groupedBackground }
 
     override public func viewDidLoad() {
         self.animationsShouldBeInterruptible = true
@@ -43,15 +43,10 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
         imageView.contentMode = .scaleAspectFit
         stackView.addArrangedSubview(imageView)
 
-        let titleLabel = UILabel()
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.text = OWSLocalizedString(
+        let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
             "DONATION_READ_MORE_SCREEN_TITLE",
             comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
-        )
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
+        ))
         stackView.addArrangedSubview(titleLabel)
 
         let paragraphs: [String] = [

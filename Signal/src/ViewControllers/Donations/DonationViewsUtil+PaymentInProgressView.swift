@@ -19,7 +19,7 @@ extension DonationViewsUtil {
         backdropView.autoPinEdgesToSuperviewEdges()
 
         let progressViewContainer = UIView()
-        progressViewContainer.backgroundColor = Theme.backgroundColor
+        progressViewContainer.backgroundColor = .Signal.background
         progressViewContainer.layer.cornerRadius = 12
         backdropView.addSubview(progressViewContainer)
         progressViewContainer.autoCenterInSuperview()

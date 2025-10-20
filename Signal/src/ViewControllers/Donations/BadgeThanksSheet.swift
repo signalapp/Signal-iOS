@@ -318,18 +318,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.addArrangedSubview(badgeImageView)
             stackView.setCustomSpacing(24, after: badgeImageView)
 
-            let titleLabel = UILabel()
-            titleLabel.font = .dynamicTypeTitle2.semibold()
-            titleLabel.textColor = Theme.primaryTextColor
-            titleLabel.textAlignment = .center
-            titleLabel.numberOfLines = 0
-            titleLabel.text = self.titleText
+            let titleLabel = UILabel.title2Label(text: self.titleText)
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let bodyLabel = UILabel()
             bodyLabel.font = .dynamicTypeSubheadlineClamped
-            bodyLabel.textColor = Theme.secondaryTextAndIconColor
+            bodyLabel.textColor = .Signal.secondaryLabel
             bodyLabel.textAlignment = .center
             bodyLabel.numberOfLines = 0
             bodyLabel.text = self.bodyText
@@ -402,29 +397,23 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             cell.selectionStyle = .none
             guard let self = self else { return cell }
 
-            let button = OWSFlatButton()
-            button.setTitle(
-                title: CommonStrings.doneButton,
-                font: .dynamicTypeBody.semibold(),
-                titleColor: .white
-            )
-            button.setBackgroundColors(upColor: .ows_accentBlue)
-            button.setPressedBlock { [weak self] in
-                guard let self = self else { return }
-                // Capture this value on the main thread.
-                let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
-                Task {
-                    do {
-                        try await self.performConfirmationAction {
-                            try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+            let button = UIButton(
+                configuration: .largePrimary(title: CommonStrings.doneButton),
+                primaryAction: UIAction { [weak self] _ in
+                    guard let self = self else { return }
+                    // Capture this value on the main thread.
+                    let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
+                    Task {
+                        do {
+                            try await self.performConfirmationAction {
+                                try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+                            }
+                        } catch {
+                            self.dismiss(animated: true)
                         }
-                    } catch {
-                        self.dismiss(animated: true)
                     }
                 }
-            }
-            button.autoSetHeightUsingFont()
-            button.cornerRadius = 8
+            )
             cell.contentView.addSubview(button)
             button.autoPinEdgesToSuperviewMargins()
             return cell
@@ -440,58 +429,46 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             cell.selectionStyle = .none
             guard let self = self else { return cell }
 
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.alignment = .center
-            stackView.spacing = 24
-            stackView.isLayoutMarginsRelativeArrangement = true
-            cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewMargins()
-
-            let redeemButton = OWSFlatButton()
-            redeemButton.setTitle(
-                title: CommonStrings.redeemGiftButton,
-                font: .dynamicTypeBody.semibold(),
-                titleColor: .white
-            )
-            redeemButton.setBackgroundColors(upColor: .ows_accentBlue)
-            redeemButton.setPressedBlock { [weak self] in
-                guard let self = self else { return }
-                // Capture this value on the main thread.
-                let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
-                Task {
-                    do {
-                        try await self.performConfirmationAction {
-                            try await Self.redeemGiftBadge(incomingMessage: incomingMessage)
-                            try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
-                        }
-                    } catch {
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
-                                comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
-                            ),
-                            message: OWSLocalizedString(
-                                "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
-                                comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+            let redeemButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.redeemGiftButton),
+                primaryAction: UIAction { [weak self] _ in
+                    guard let self = self else { return }
+                    // Capture this value on the main thread.
+                    let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
+                    Task {
+                        do {
+                            try await self.performConfirmationAction {
+                                try await Self.redeemGiftBadge(incomingMessage: incomingMessage)
+                                try await self.saveVisibilityChanges(shouldMakeVisibleAndPrimary: shouldMakeVisibleAndPrimary)
+                            }
+                        } catch {
+                            OWSActionSheets.showActionSheet(
+                                title: OWSLocalizedString(
+                                    "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
+                                    comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                                ),
+                                message: OWSLocalizedString(
+                                    "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
+                                    comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            }
-            redeemButton.autoSetHeightUsingFont()
-            redeemButton.cornerRadius = 8
-            stackView.addArrangedSubview(redeemButton)
-            redeemButton.autoPinWidthToSuperviewMargins()
+            )
 
-            let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
-                notNowAction()
-                self?.dismiss(animated: true)
-            }
-            notNowButton.titleLabel?.font = .dynamicTypeBody
-            notNowButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-            notNowButton.dimsWhenHighlighted = true
-            stackView.addArrangedSubview(notNowButton)
+            let notNowButton = UIButton(
+                configuration: .largeSecondary(title: CommonStrings.notNowButton),
+                primaryAction: UIAction { [weak self] _ in
+                    notNowAction()
+                    self?.dismiss(animated: true)
+                }
+            )
+
+            let stackView = UIStackView.verticalButtonStack(buttons: [ redeemButton, notNowButton ], isFullWidthButtons: true)
+            stackView.directionalLayoutMargins.bottom = 0
+            cell.contentView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewMargins()
 
             return cell
         }, actionBlock: nil))

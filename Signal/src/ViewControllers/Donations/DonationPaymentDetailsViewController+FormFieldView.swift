@@ -66,7 +66,7 @@ extension DonationPaymentDetailsViewController {
                 }
             )
 
-            result.textColor = Theme.primaryTextColor
+            result.textColor = .Signal.label
 
             return result
         }()
@@ -151,7 +151,7 @@ extension DonationPaymentDetailsViewController {
         }
 
         func render(errorMessage: String?) {
-            textField.textColor = Theme.primaryTextColor
+            textField.textColor = .Signal.label
             errorLabel.text = errorMessage
         }
 

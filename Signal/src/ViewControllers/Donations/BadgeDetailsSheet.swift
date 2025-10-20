@@ -78,25 +78,22 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             guard let self = self else { return cell }
             cell.selectionStyle = .none
 
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.alignment = .center
-
-            cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewMargins()
-
             let badgeImageView = UIImageView()
             badgeImageView.image = self.focusedBadge.assets?.universal160
-            badgeImageView.autoSetDimensions(to: CGSize(square: 160))
-            stackView.addArrangedSubview(badgeImageView)
-            stackView.setCustomSpacing(14, after: badgeImageView)
+            let badgeImageContainer = UIView.container()
+            badgeImageContainer.addSubview(badgeImageView)
+            badgeImageView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                badgeImageView.widthAnchor.constraint(equalToConstant: 160),
+                badgeImageView.heightAnchor.constraint(equalToConstant: 160),
 
-            let badgeLabel = UILabel()
-            badgeLabel.font = .dynamicTypeTitle3.semibold()
-            badgeLabel.textColor = Theme.primaryTextColor
-            badgeLabel.textAlignment = .center
-            badgeLabel.numberOfLines = 0
-            badgeLabel.text = {
+                badgeImageView.leadingAnchor.constraint(greaterThanOrEqualTo: badgeImageContainer.leadingAnchor),
+                badgeImageView.centerXAnchor.constraint(equalTo: badgeImageContainer.centerXAnchor),
+                badgeImageView.topAnchor.constraint(equalTo: badgeImageContainer.topAnchor),
+                badgeImageView.bottomAnchor.constraint(equalTo: badgeImageContainer.bottomAnchor, constant: -16),
+            ])
+
+            let text = {
                 if let remoteSupporterName = self.remoteSupporterName {
                     let format = OWSLocalizedString(
                         "BADGE_DETAILS_TITLE_FOR_SUPPORTER",
@@ -107,19 +104,22 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                     return self.focusedBadge.localizedName
                 }
             }()
-            stackView.addArrangedSubview(badgeLabel)
-            stackView.setCustomSpacing(36, after: badgeLabel)
+            let badgeLabel = UILabel.title2Label(text: text)
 
-            let badgeDescription = UILabel()
-            badgeDescription.font = .dynamicTypeBody
-            badgeDescription.textColor = Theme.primaryTextColor
-            badgeDescription.textAlignment = .center
-            badgeDescription.numberOfLines = 0
-            badgeDescription.text = self.owner.formattedDescription(for: self.focusedBadge)
+            let badgeDescription = UILabel.explanationTextLabel(text: self.owner.formattedDescription(for: self.focusedBadge))
             badgeDescription.setCompressionResistanceVerticalHigh()
             badgeDescription.setContentHuggingVerticalHigh()
-            stackView.addArrangedSubview(badgeDescription)
-            stackView.setCustomSpacing(30, after: badgeDescription)
+
+            let stackView = UIStackView(arrangedSubviews: [
+                badgeImageContainer,
+                badgeLabel,
+                badgeDescription,
+            ])
+            stackView.setCustomSpacing(36, after: badgeLabel)
+            stackView.axis = .vertical
+            stackView.alignment = .fill
+            cell.contentView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewEdges()
 
             return cell
         }, actionBlock: nil))
@@ -130,21 +130,19 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                 cell.selectionStyle = .none
 
                 guard let self = self else { return cell }
-                let button = OWSFlatButton.button(
-                    title: OWSLocalizedString(
+                let button = UIButton(
+                    configuration: .largePrimary(title: OWSLocalizedString(
                         "BADGE_DETAILS_DONATE_TO_SIGNAL",
                         comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
-                    ),
-                    font: UIFont.dynamicTypeBody.semibold(),
-                    titleColor: .white,
-                    backgroundColor: .ows_accentBlue,
-                    target: self,
-                    selector: #selector(self.didTapDonate)
+                    )),
+                    primaryAction: UIAction { [weak self] _ in
+                        self?.didTapDonate()
+                    }
                 )
-                button.autoSetHeightUsingFont()
-                button.cornerRadius = 8
-                cell.contentView.addSubview(button)
-                button.autoPinEdgesToSuperviewMargins()
+                let buttonContainer = button.enclosedInVerticalStackView(isFullWidthButton: true)
+                buttonContainer.directionalLayoutMargins.top = 16
+                cell.contentView.addSubview(buttonContainer)
+                buttonContainer.autoPinEdgesToSuperviewEdges()
 
                 return cell
             })])
@@ -155,7 +153,6 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
         return contents
     }
 
-    @objc
     private func didTapDonate() {
         dismiss(animated: true) {
             if DonationUtilities.canDonateInAnyWay(

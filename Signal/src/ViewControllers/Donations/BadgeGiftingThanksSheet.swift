@@ -55,14 +55,10 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
         titleSection.add(.init(customCellBlock: {
             let cell = Self.tableCell()
 
-            let titleLabel = UILabel()
-            titleLabel.text = OWSLocalizedString(
+            let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE",
                 comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet."
-            )
-            titleLabel.textAlignment = .center
-            titleLabel.font = .dynamicTypeTitle2.semibold()
-            titleLabel.numberOfLines = 0
+            ))
 
             cell.contentView.addSubview(titleLabel)
             titleLabel.autoPinEdgesToSuperviewMargins()
@@ -75,15 +71,11 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
         infoSection.add(.init(customCellBlock: {
             let cell = Self.tableCell()
 
-            let infoLabel = UILabel()
             let infoLabelFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT",
                 comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}."
             )
-            infoLabel.text = String(format: infoLabelFormat, recipientName)
-            infoLabel.textAlignment = .center
-            infoLabel.font = .dynamicTypeBody
-            infoLabel.numberOfLines = 0
+            let infoLabel = UILabel.explanationTextLabel(text: String(format: infoLabelFormat, recipientName))
 
             cell.contentView.addSubview(infoLabel)
             infoLabel.autoPinEdgesToSuperviewMargins()
@@ -111,20 +103,14 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
         dismissButtonSection.add(.init(customCellBlock: { [weak self] in
             let cell = Self.tableCell()
 
-            let dismissButton = OWSFlatButton()
-            dismissButton.setTitle(
-                title: CommonStrings.okayButton,
-                font: .dynamicTypeBody.semibold(),
-                titleColor: .white
+            let dismissButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.okayButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.dismiss(animated: true)
+                }
             )
-            dismissButton.setBackgroundColors(upColor: .ows_accentBlue)
-            dismissButton.setPressedBlock { [weak self] in
-                self?.dismiss(animated: true)
-            }
-            dismissButton.autoSetHeightUsingFont()
-            dismissButton.cornerRadius = 8
             cell.contentView.addSubview(dismissButton)
-            dismissButton.autoPinWidthToSuperviewMargins()
+            dismissButton.autoPinEdgesToSuperviewMargins()
 
             return cell
         }))

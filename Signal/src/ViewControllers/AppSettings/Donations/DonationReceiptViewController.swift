@@ -15,28 +15,29 @@ class DonationReceiptViewController: OWSTableViewController2 {
         return view
     }()
 
-    let shareReceiptButton: OWSButton = {
-        let button = OWSButton()
-        button.setTitle(OWSLocalizedString("DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON", comment: "Text on the button that exports the receipt"),
-                        for: .normal)
-        button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
-        button.clipsToBounds = true
-        button.layer.cornerRadius = 8
-        button.ows_contentEdgeInsets = UIEdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
-        button.dimsWhenHighlighted = true
-        button.backgroundColor = .ows_accentBlue
+    private lazy var shareReceiptButton = UIButton(
+        configuration: .largePrimary(title: OWSLocalizedString(
+            "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON",
+            comment: "Text on the button that exports the receipt"
+        )),
+        primaryAction: UIAction { [weak self] _ in
+            self?.showShareReceiptActivity()
+        }
+    )
 
-        return button
-    }()
-    let shareReceiptButtonContainer: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.layoutMargins.top = 10
-        stackView.layoutMargins.bottom = 10
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        return stackView
+    private lazy var shareReceiptButtonContainer: UIView = {
+        let stackView = UIStackView.verticalButtonStack(buttons: [shareReceiptButton])
+        let containerView = UIView()
+        containerView.preservesSuperviewLayoutMargins = true
+        containerView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+        ])
+        return containerView
     }()
 
     private lazy var dateFormatter: DateFormatter = {
@@ -55,23 +56,20 @@ class DonationReceiptViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString("DONATION_RECEIPT_DETAILS", comment: "Title on the view where you can see a single receipt")
 
-        shareReceiptButton.block = { self.showShareReceiptActivity() }
-        shareReceiptButtonContainer.addArrangedSubview(shareReceiptButton)
-
         updateTableContents()
         updateSignalLogoImage()
-        updateShareReceiptButton()
     }
 
-    override func themeDidChange() {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.themeDidChange()
-        updateSignalLogoImage()
-        updateShareReceiptButton()
+        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
+            updateSignalLogoImage()
+        }
     }
 
     private func updateSignalLogoImage() {
         let signalLogoImage = UIImage(named: "signal-full-logo")
-        if Theme.isDarkThemeEnabled {
+        if traitCollection.userInterfaceStyle == .dark {
             signalLogoView.image = signalLogoImage?.tintedImage(color: .ows_white)
         } else {
             signalLogoView.image = signalLogoImage
@@ -91,8 +89,8 @@ class DonationReceiptViewController: OWSTableViewController2 {
 
                 let amountLabel = UILabel()
                 amountLabel.text = CurrencyFormatter.format(money: model.amount)
-                amountLabel.textColor = Theme.primaryTextColor
-                amountLabel.font = .preferredFont(forTextStyle: .largeTitle)
+                amountLabel.textColor = .Signal.label
+                amountLabel.font = .dynamicTypeLargeTitle1Clamped
                 amountLabel.adjustsFontForContentSizeCategory = true
 
                 let content = UIStackView(arrangedSubviews: [self.signalLogoView, amountLabel])
@@ -130,11 +128,6 @@ class DonationReceiptViewController: OWSTableViewController2 {
     open override var bottomFooter: UIView? {
         get { shareReceiptButtonContainer }
         set {}
-    }
-
-    private func updateShareReceiptButton() {
-        let textColor: UIColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_white
-        shareReceiptButton.setTitleColor(textColor, for: .normal)
     }
 
     private func showShareReceiptActivity() {

@@ -18,12 +18,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         )
     }
 
-    private var backgroundColor: UIColor {
-        OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-    }
     static let cornerRadius: CGFloat = 18
     static var bubbleBackgroundColor: CGColor { DonationViewsUtil.bubbleBackgroundColor.cgColor }
-    static var selectedColor: CGColor { Theme.accentBlueColor.cgColor }
+    static var selectedColor: CGColor { UIColor.Signal.accent.cgColor }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     public var navbarBackgroundColorOverride: UIColor? { .clear }
@@ -79,6 +76,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.groupedBackground
+
         let isPresentedStandalone = navigationController?.viewControllers.first == self
         if isPresentedStandalone {
             navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
@@ -114,11 +113,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        render(oldState: nil)
     }
 
     // MARK: - Events
@@ -855,8 +849,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             stackView.removeAllSubviews()
             stackView.addArrangedSubviews([heroView, bodyView])
         }
-
-        view.backgroundColor = backgroundColor
     }
 
     // MARK: - Hero
@@ -997,7 +989,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private var currencyPickerContainerView: UIStackView = {
         let result = UIStackView()
         result.axis = .vertical
-        result.alignment = .fill
+        result.alignment = .center
+        result.isLayoutMarginsRelativeArrangement = true
+        result.directionalLayoutMargins.bottom = 16
         return result
     }()
 
@@ -1068,7 +1062,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     private struct OneTimePresetButton {
         let amount: FiatMoney
-        let view: OWSFlatButton
+        let view: UIButton
     }
 
     private var oneTimePresetButtons = [OneTimePresetButton]()
@@ -1087,20 +1081,28 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         let field = OneTimeDonationCustomAmountTextField(currencyCode: currencyCode)
-
+        field.font = .dynamicTypeBodyClamped
         field.placeholder = OWSLocalizedString(
             "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
             comment: "Default text for the custom amount field of the boost view."
         )
+        field.textColor = .Signal.label
         field.delegate = self
         field.accessibilityIdentifier = UIView.accessibilityIdentifier(
             in: self,
             name: "custom_amount_text_field"
         )
 
-        field.layer.cornerRadius = Self.cornerRadius
         field.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-        field.font = .dynamicTypeBodyClamped
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            field.cornerConfiguration = .capsule()
+        } else {
+            field.layer.cornerRadius = Self.cornerRadius
+        }
+#else
+        field.layer.cornerRadius = Self.cornerRadius
+#endif
 
         let tap = UITapGestureRecognizer(
             target: self,
@@ -1111,18 +1113,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         return field
     }()
 
-    private lazy var oneTimeContinueButton: OWSButton = {
-        let button = OWSButton(title: CommonStrings.continueButton) { [weak self] in
+    private lazy var oneTimeContinueButton = UIButton(
+        configuration: .largePrimary(title: CommonStrings.continueButton),
+        primaryAction: UIAction { [weak self] _ in
             self?.didTapToContinueOneTimeDonation()
         }
-        button.dimsWhenHighlighted = true
-        button.dimsWhenDisabled = true
-        button.layer.cornerRadius = 12
-        button.backgroundColor = .ows_accentBlue
-        button.titleLabel?.font = .dynamicTypeHeadline
-        button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-        return button
-    }()
+    )
 
     private lazy var oneTimeView: UIStackView = Self.commonStack()
 
@@ -1139,7 +1135,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             oneTimeView.addArrangedSubviews([
                 oneTimePresetsView,
                 oneTimeCustomAmountTextField,
-                oneTimeContinueButton
+                oneTimeContinueButton.enclosedInVerticalStackView(isFullWidthButton: true)
             ])
         }
     }
@@ -1155,38 +1151,45 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             row.distribution = .fillEqually
             row.spacing = UIDevice.current.isIPhone5OrShorter ? 8 : 14
 
+            let font = UIFont.regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20)
             for (colIndex, amount) in amounts.enumerated() {
-                let button = OWSFlatButton()
-                button.setPressedBlock { [weak self] in
-                    let animationNames = [
-                        "boost_smile",
-                        "boost_clap",
-                        "boost_heart_eyes",
-                        "boost_fire",
-                        "boost_shock",
-                        "boost_rockets"
-                    ]
-                    let animationIndex = (rowIndex * 3) + colIndex
-                    self?.didSelectOneTimeAmount(
-                        amount: amount,
-                        animationAnchor: button,
-                        animationName: animationNames[safe: animationIndex] ?? "boost_fire"
-                    )
-                }
-                button.setBackgroundColors(
-                    upColor: DonationViewsUtil.bubbleBackgroundColor,
-                    downColor: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)
+                let button = UIButton(configuration: .bordered())
+                button.addAction(
+                    UIAction { [weak self] _ in
+                        let animationNames = [
+                            "boost_smile",
+                            "boost_clap",
+                            "boost_heart_eyes",
+                            "boost_fire",
+                            "boost_shock",
+                            "boost_rockets"
+                        ]
+                        let animationIndex = (rowIndex * 3) + colIndex
+                        self?.didSelectOneTimeAmount(
+                            amount: amount,
+                            animationAnchor: button,
+                            animationName: animationNames[safe: animationIndex] ?? "boost_fire"
+                        )
+                    },
+                    for: .primaryActionTriggered
                 )
-                button.setTitle(
-                    title: CurrencyFormatter.format(money: amount),
-                    font: .regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
-                    titleColor: Theme.primaryTextColor
-                )
-                button.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
+                button.configuration?.title = CurrencyFormatter.format(money: amount)
+                button.configuration?.titleTextAttributesTransformer = .defaultFont(font)
+                button.configuration?.baseForegroundColor = .Signal.label
+                button.configuration?.baseBackgroundColor = .Signal.secondaryGroupedBackground
+                button.autoSetDimension(.height, toSize: DonationViewsUtil.amountFieldMinHeight, relation: .greaterThanOrEqual)
                 button.enableMultilineLabel()
-                button.layer.cornerRadius = Self.cornerRadius
                 button.clipsToBounds = true
                 button.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+#if compiler(>=6.2)
+                if #available(iOS 26, *) {
+                    button.cornerConfiguration = .capsule()
+                } else {
+                    button.layer.cornerRadius = Self.cornerRadius
+                }
+#else
+                button.layer.cornerRadius = Self.cornerRadius
+#endif
 
                 row.addArrangedSubview(button)
 
@@ -1232,9 +1235,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             oneTimeCustomAmountTextField.layer.borderColor = Self.selectedColor
             scrollView.scrollIntoView(subview: oneTimeCustomAmountTextField)
         }
-
-        oneTimeCustomAmountTextField.textColor = Theme.primaryTextColor
-        oneTimeCustomAmountTextField.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
     }
 
     private func renderOneTimeContinueButton(oneTime: State.OneTimeState) {
@@ -1260,11 +1260,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         return result
     }()
 
-    private lazy var monthlyButtonsView: UIStackView = {
-        let result = Self.commonStack()
-        result.spacing = 10
-        return result
-    }()
+    private lazy var monthlyButtonsView = UIStackView.verticalButtonStack(buttons: [])
 
     private lazy var monthlyView: UIStackView = Self.commonStack()
 
@@ -1323,23 +1319,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     private func renderMonthlyButtonsView(monthly: State.MonthlyState) {
-        let buttons = buttonsForMonthlyView(monthly: monthly)
-
-        for button in buttons {
-            button.dimsWhenHighlighted = true
-            button.dimsWhenDisabled = true
-            button.layer.cornerRadius = 8
-            button.titleLabel?.numberOfLines = 0
-            button.titleLabel?.lineBreakMode = .byWordWrapping
-            button.titleLabel?.textAlignment = .center
-            button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-        }
-
         monthlyButtonsView.removeAllSubviews()
-        monthlyButtonsView.addArrangedSubviews(buttons)
+        monthlyButtonsView.addArrangedSubviews(buttonsForMonthlyView(monthly: monthly))
     }
 
-    private func buttonsForMonthlyView(monthly: State.MonthlyState) -> [OWSButton] {
+    private func buttonsForMonthlyView(monthly: State.MonthlyState) -> [UIButton] {
         func isDifferentSubscriptionLevelSelected(_ currentSubscription: Subscription?) -> Bool {
             guard let currentSubscription else { return false }
 
@@ -1356,28 +1340,28 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             return false
         }
 
-        func doomedContinueButton(errorAlertTitle: String, errorAlertMessage: String, isEnabled: Bool) -> OWSButton {
-            let doomedContinueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
-                self?.showError(title: errorAlertTitle, errorAlertMessage)
-            }
-
-            doomedContinueButton.backgroundColor = .ows_accentBlue
-            doomedContinueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+        func doomedContinueButton(errorAlertTitle: String, errorAlertMessage: String, isEnabled: Bool) -> UIButton {
+            let doomedContinueButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.continueButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.showError(title: errorAlertTitle, errorAlertMessage)
+                }
+            )
             doomedContinueButton.isEnabled = isEnabled
 
             return doomedContinueButton
         }
 
-        func cancelSubscriptionButton(block: @escaping () -> Void) -> OWSButton {
-            let cancelButton = OWSButton(
-                title: OWSLocalizedString(
+        func cancelSubscriptionButton(block: @escaping () -> Void) -> UIButton {
+            return UIButton(
+                configuration: .largeSecondary(title: OWSLocalizedString(
                     "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION",
                     comment: "Sustainer view Cancel Subscription button title"
-                ),
-                block: block
+                )),
+                primaryAction: UIAction { _ in
+                    block()
+                }
             )
-            cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-            return cancelButton
         }
 
         if monthly.pendingIDEALSubscription != nil {
@@ -1479,11 +1463,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",
                     comment: "On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button."
                 )
-                let updateButton = OWSButton(title: updateTitle) { [weak self] in
-                    self?.didTapToUpdateMonthlyDonation()
-                }
-                updateButton.backgroundColor = .ows_accentBlue
-                updateButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+                let updateButton = UIButton(
+                    configuration: .largePrimary(title: updateTitle),
+                    primaryAction: UIAction { [weak self] _ in
+                        self?.didTapToUpdateMonthlyDonation()
+                    }
+                )
                 updateButton.isEnabled = isDifferentSubscriptionLevelSelected(currentSubscription)
 
                 return [updateButton, cancelButton]
@@ -1491,12 +1476,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 return [cancelButton]
             }
         } else {
-            let continueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
-                self?.didTapToStartNewMonthlyDonation()
-            }
-            continueButton.backgroundColor = .ows_accentBlue
-            continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-
+            let continueButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.continueButton),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapToStartNewMonthlyDonation()
+                }
+            )
             return [continueButton]
         }
     }
