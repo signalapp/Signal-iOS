@@ -67,11 +67,8 @@ public enum ImageFormat: CustomStringConvertible {
         }
     }
 
-    internal func isValid(mimeType: String?) -> Bool {
-        owsAssertDebug(!(mimeType?.isEmpty ?? true))
-
-        guard let mimeType else { return true }
-
+    internal func isValid(mimeType: String) -> Bool {
+        owsAssertDebug(!mimeType.isEmpty)
         let mimeTypes = self.mimeTypes
         return ([mimeTypes.preferredMimeType] + mimeTypes.alternativeMimeTypes).contains(where: {
             return mimeType.caseInsensitiveCompare($0.rawValue) == .orderedSame
