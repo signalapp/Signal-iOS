@@ -37,23 +37,19 @@ public enum ImageFormat: CustomStringConvertible {
     }
 
     public var mimeType: MimeType {
+        return self.mimeTypes.preferredMimeType
+    }
+
+    private var mimeTypes: (preferredMimeType: MimeType, alternativeMimeTypes: [MimeType]) {
         switch self {
-        case .png:
-            return MimeType.imagePng
-        case .gif:
-            return MimeType.imageGif
-        case .tiff:
-            return MimeType.imageTiff
-        case .jpeg:
-            return MimeType.imageJpeg
-        case .bmp:
-            return MimeType.imageBmp
-        case .webp:
-            return MimeType.imageWebp
-        case .heic:
-            return MimeType.imageHeic
-        case .heif:
-            return MimeType.imageHeif
+        case .png: (.imagePng, [.imageApng, .imageVndMozillaApng])
+        case .gif: (.imageGif, [])
+        case .tiff: (.imageTiff, [.imageXTiff])
+        case .jpeg: (.imageJpeg, [])
+        case .bmp: (.imageBmp, [.imageXWindowsBmp])
+        case .webp: (.imageWebp, [])
+        case .heic: (.imageHeic, [])
+        case .heif: (.imageHeif, [])
         }
     }
 
@@ -75,28 +71,11 @@ public enum ImageFormat: CustomStringConvertible {
         owsAssertDebug(!(mimeType?.isEmpty ?? true))
 
         guard let mimeType else { return true }
-        switch self {
-        case .png:
-            return (mimeType.caseInsensitiveCompare(MimeType.imagePng.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageApng.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageVndMozillaApng.rawValue) == .orderedSame)
-        case .gif:
-            return mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame
-        case .tiff:
-            return (mimeType.caseInsensitiveCompare(MimeType.imageTiff.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageXTiff.rawValue) == .orderedSame)
-        case .jpeg:
-            return mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
-        case .bmp:
-            return (mimeType.caseInsensitiveCompare(MimeType.imageBmp.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageXWindowsBmp.rawValue) == .orderedSame)
-        case .webp:
-            return mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame
-        case .heic:
-            return mimeType.caseInsensitiveCompare(MimeType.imageHeic.rawValue) == .orderedSame
-        case .heif:
-            return mimeType.caseInsensitiveCompare(MimeType.imageHeif.rawValue) == .orderedSame
-        }
+
+        let mimeTypes = self.mimeTypes
+        return ([mimeTypes.preferredMimeType] + mimeTypes.alternativeMimeTypes).contains(where: {
+            return mimeType.caseInsensitiveCompare($0.rawValue) == .orderedSame
+        })
     }
 }
 
