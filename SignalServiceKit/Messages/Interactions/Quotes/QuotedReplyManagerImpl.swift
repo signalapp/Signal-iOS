@@ -424,12 +424,12 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             case .webp:
                 stickerType = .webp
 
-            case .unknown:
+            case nil:
                 owsFailDebug("Unknown sticker data format")
                 return nil
 
-            default:
-                owsFailDebug("Invalid sticker data format: \(imageMetadata.imageFormat)")
+            case .some(let imageFormat):
+                owsFailDebug("Invalid sticker data format: \(imageFormat)")
                 return nil
             }
 

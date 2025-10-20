@@ -114,7 +114,7 @@ extension OWSImageSource {
         return subRange != Data(count: 4)
     }
 
-    fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat {
+    fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat? {
         // A HEIF image file has the first 16 bytes like
         // 0000 0018 6674 7970 6865 6963 0000 0000
         // so in this case the 5th to 12th bytes shall make a string of "ftypheic"
@@ -127,7 +127,7 @@ extension OWSImageSource {
         let heifSupportedBrandLength = 5
         let totalHeaderLength = heifBrandStartsAt - heifHeaderStartsAt + heifSupportedBrandLength
         guard byteLength >= heifBrandStartsAt + heifSupportedBrandLength else {
-            return .unknown
+            return nil
         }
 
         // These are the brands of HEIF formatted files that are renderable by CoreGraphics
@@ -143,13 +143,13 @@ extension OWSImageSource {
         } else if header == heifBrandHeaderHeif || header == heifBrandHeaderHeifStream {
             return .heif
         } else {
-            return .unknown
+            return nil
         }
     }
 
-    fileprivate func ows_guessImageFormat() -> ImageFormat {
+    fileprivate func ows_guessImageFormat() -> ImageFormat? {
         guard byteLength >= 2 else {
-            return .unknown
+            return nil
         }
 
         switch try? readData(byteOffset: 0, byteLength: 2) {
@@ -333,15 +333,12 @@ extension OWSImageSource {
         }
 
         let imageFormat = ows_guessImageFormat()
-        guard imageFormat.isValid(source: self) else {
+        guard let imageFormat, imageFormat.isValid(source: self) else {
             Logger.warn("Image does not have valid format.")
             return .invalid
         }
 
-        guard let mimeType = imageFormat.mimeType else {
-            Logger.warn("Image does not have MIME type.")
-            return .invalid
-        }
+        let mimeType = imageFormat.mimeType
 
         let isAnimated: Bool
         switch imageFormat {
@@ -404,7 +401,7 @@ extension OWSImageSource {
         return .valid(metadata)
     }
 
-    fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata {
+    fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat?) -> ImageMetadata {
         if imageFormat == .webp {
             let imageSize = sizeForWebpData
             guard Data.ows_isValidImage(dimension: imageSize, depthBytes: 1, isAnimated: isAnimated) else {
@@ -421,7 +418,7 @@ extension OWSImageSource {
         return Data.imageMetadata(withImageSource: imageSource, imageFormat: imageFormat, isAnimated: isAnimated)
     }
 
-    fileprivate static func imageMetadata(withImageSource imageSource: CGImageSource, imageFormat: ImageFormat, isAnimated: Bool) -> ImageMetadata {
+    fileprivate static func imageMetadata(withImageSource imageSource: CGImageSource, imageFormat: ImageFormat?, isAnimated: Bool) -> ImageMetadata {
         let options = [kCGImageSourceShouldCache as String: false]
         guard let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary) as? [String: AnyObject] else {
             Logger.warn("Missing imageProperties.")

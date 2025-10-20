@@ -234,17 +234,13 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         guard imageMetadata.isValid else {
             return nil
         }
-        let hasValidFormat = imageMetadata.imageFormat != .unknown
-        guard hasValidFormat else {
+        guard let imageFormat = imageMetadata.imageFormat else {
             return nil
         }
 
         let maxImageSize: CGFloat = 2400
 
-        switch imageMetadata.imageFormat {
-        case .unknown:
-            owsFailDebug("Invalid imageFormat.")
-            return nil
+        switch imageFormat {
         case .webp:
             guard let stillImage = srcImageData.stillForWebpData() else {
                 owsFailDebug("Couldn't derive still image for Webp.")

@@ -1892,13 +1892,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     throw OWSAssertionError("Missing sticker")
                 }
 
-                let mimeType: String
+                let mimeType: MimeType
                 let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
-                if imageMetadata.imageFormat != .unknown,
-                   let mimeTypeFromMetadata = imageMetadata.mimeType {
-                    mimeType = mimeTypeFromMetadata
+                if let imageFormat = imageMetadata.imageFormat {
+                    mimeType = imageFormat.mimeType
                 } else {
-                    mimeType = MimeType.imageWebp.rawValue
+                    mimeType = MimeType.imageWebp
                 }
 
                 return try await attachmentValidator.validateContents(
@@ -1907,7 +1906,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         shouldDeleteOnDeallocation: false
                     ),
                     shouldConsume: false,
-                    mimeType: mimeType,
+                    mimeType: mimeType.rawValue,
                     renderingFlag: .borderless,
                     sourceFilename: nil
                 )

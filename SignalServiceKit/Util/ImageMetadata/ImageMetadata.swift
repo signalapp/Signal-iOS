@@ -6,7 +6,6 @@
 import Foundation
 
 public enum ImageFormat: CustomStringConvertible {
-    case unknown
     case png
     case gif
     case tiff
@@ -18,8 +17,6 @@ public enum ImageFormat: CustomStringConvertible {
 
     public var description: String {
         switch self {
-        case .unknown:
-            "ImageFormat_Unknown"
         case .png:
             "ImageFormat_Png"
         case .gif:
@@ -39,7 +36,7 @@ public enum ImageFormat: CustomStringConvertible {
         }
     }
 
-    internal var mimeType: MimeType? {
+    internal var mimeType: MimeType {
         switch self {
         case .png:
             return MimeType.imagePng
@@ -57,15 +54,11 @@ public enum ImageFormat: CustomStringConvertible {
             return MimeType.imageHeic
         case .heif:
             return MimeType.imageHeif
-        case .unknown:
-            return nil
         }
     }
 
     internal func isValid(source: OWSImageSource) -> Bool {
         switch self {
-        case .unknown:
-            return false
         case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
             return true
         case .gif:
@@ -76,36 +69,27 @@ public enum ImageFormat: CustomStringConvertible {
     internal func isValid(mimeType: String?) -> Bool {
         owsAssertDebug(!(mimeType?.isEmpty ?? true))
 
+        guard let mimeType else { return true }
         switch self {
-        case .unknown:
-            return false
         case .png:
-            guard let mimeType else { return true }
             return (mimeType.caseInsensitiveCompare(MimeType.imagePng.rawValue) == .orderedSame ||
                     mimeType.caseInsensitiveCompare(MimeType.imageApng.rawValue) == .orderedSame ||
                     mimeType.caseInsensitiveCompare(MimeType.imageVndMozillaApng.rawValue) == .orderedSame)
         case .gif:
-            guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame
         case .tiff:
-            guard let mimeType else { return true }
             return (mimeType.caseInsensitiveCompare(MimeType.imageTiff.rawValue) == .orderedSame ||
                     mimeType.caseInsensitiveCompare(MimeType.imageXTiff.rawValue) == .orderedSame)
         case .jpeg:
-            guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
         case .bmp:
-            guard let mimeType else { return true }
             return (mimeType.caseInsensitiveCompare(MimeType.imageBmp.rawValue) == .orderedSame ||
                     mimeType.caseInsensitiveCompare(MimeType.imageXWindowsBmp.rawValue) == .orderedSame)
         case .webp:
-            guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame
         case .heic:
-            guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageHeic.rawValue) == .orderedSame
         case .heif:
-            guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageHeif.rawValue) == .orderedSame
         }
     }
@@ -113,12 +97,12 @@ public enum ImageFormat: CustomStringConvertible {
 
 public struct ImageMetadata {
     public let isValid: Bool
-    public let imageFormat: ImageFormat
+    public let imageFormat: ImageFormat?
     public let pixelSize: CGSize
     public let hasAlpha: Bool
     let isAnimated: Bool
 
-    internal init(isValid: Bool, imageFormat: ImageFormat, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
+    internal init(isValid: Bool, imageFormat: ImageFormat?, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
         self.isValid = isValid
         self.imageFormat = imageFormat
         self.pixelSize = pixelSize
@@ -127,12 +111,13 @@ public struct ImageMetadata {
     }
 
     internal static func invalid() -> ImageMetadata {
-        .init(isValid: false, imageFormat: .unknown, pixelSize: .zero, hasAlpha: false, isAnimated: false)
+        .init(isValid: false, imageFormat: nil, pixelSize: .zero, hasAlpha: false, isAnimated: false)
     }
 
     public var mimeType: String? {
-        imageFormat.mimeType?.rawValue
+        return imageFormat?.mimeType.rawValue
     }
+
     public var fileExtension: String? {
         guard let mimeType else {
             return nil
