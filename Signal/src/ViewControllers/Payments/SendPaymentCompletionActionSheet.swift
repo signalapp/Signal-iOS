@@ -188,7 +188,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let titleLabel = UILabel()
         titleLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
                                             comment: "Title for the 'confirm payment' ui in the 'send payment' UI.")
-        titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
+        titleLabel.font = UIFont.dynamicTypeHeadlineClamped
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byTruncatingTail

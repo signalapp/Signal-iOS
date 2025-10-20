@@ -63,7 +63,7 @@ final class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.dynamicTypeBody.semibold()
+        label.font = UIFont.dynamicTypeHeadline
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 

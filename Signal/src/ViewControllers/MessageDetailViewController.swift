@@ -440,7 +440,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
                 let label = UILabel()
                 label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-                label.font = UIFont.dynamicTypeBodyClamped.semibold()
+                label.font = UIFont.dynamicTypeHeadlineClamped
                 label.text = sectionTitle
 
                 headerView.addSubview(label)

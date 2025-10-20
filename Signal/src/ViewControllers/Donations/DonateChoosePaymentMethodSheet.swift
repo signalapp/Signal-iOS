@@ -240,7 +240,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 #endif
 
         configuration.title = title
-        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         configuration.image = image
         configuration.imagePadding = 8
         configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
@@ -270,7 +270,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
             comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
         )
-        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped.semibold())
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         configuration.image = UIImage(named: "payment")
         configuration.imagePadding = 8
         configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)

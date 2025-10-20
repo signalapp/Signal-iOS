@@ -35,7 +35,7 @@ public class NewStoryHeaderView: UIStackView {
 
         let textView = LinkingTextView()
         textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
+        textView.font = UIFont.dynamicTypeHeadlineClamped
         textView.text = title
 
         addArrangedSubview(textView)

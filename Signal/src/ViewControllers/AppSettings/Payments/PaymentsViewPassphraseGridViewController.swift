@@ -54,7 +54,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     private func buildBottomView() {
         let nextButton = OWSFlatButton.insetButton(
             title: CommonStrings.nextButton,
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,

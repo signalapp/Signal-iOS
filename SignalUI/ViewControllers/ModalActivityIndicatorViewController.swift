@@ -219,7 +219,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                 cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
                 cancelButton.setTitleColor(UIColor.white, for: .normal)
                 cancelButton.backgroundColor = UIColor.ows_gray80
-                let font = UIFont.dynamicTypeBody.semibold()
+                let font = UIFont.dynamicTypeHeadline
                 cancelButton.titleLabel?.font = font
                 cancelButton.layer.cornerRadius = .scaleFromIPhone5To7Plus(4, 5)
                 cancelButton.clipsToBounds = true

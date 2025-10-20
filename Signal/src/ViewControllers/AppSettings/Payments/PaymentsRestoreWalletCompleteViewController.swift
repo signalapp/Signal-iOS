@@ -53,7 +53,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private func buildBottomView() {
         let doneButton = OWSFlatButton.button(title: CommonStrings.doneButton,
-                                              font: UIFont.dynamicTypeBody.semibold(),
+                                              font: UIFont.dynamicTypeHeadline,
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,

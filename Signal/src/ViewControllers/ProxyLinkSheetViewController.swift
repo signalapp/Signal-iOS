@@ -109,7 +109,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
     private func button(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
         let flatButton = OWSFlatButton()
-        flatButton.setTitle(title: title, font: UIFont.dynamicTypeBodyClamped.semibold(), titleColor: titleColor)
+        flatButton.setTitle(title: title, font: UIFont.dynamicTypeHeadlineClamped, titleColor: titleColor)
         flatButton.setBackgroundColors(upColor: tableViewController.cellBackgroundColor)
         flatButton.setPressedBlock(touchHandler)
         flatButton.useDefaultCornerRadius()

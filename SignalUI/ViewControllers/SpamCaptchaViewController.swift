@@ -80,7 +80,7 @@ extension SpamCaptchaViewController {
         let continueButton = OWSFlatButton()
         continueButton.setTitle(
             title: CommonStrings.continueButton,
-            font: UIFont.dynamicTypeBodyClamped.semibold(),
+            font: UIFont.dynamicTypeHeadlineClamped,
             titleColor: .white)
         continueButton.setBackgroundColors(upColor: Theme.accentBlueColor)
         continueButton.layer.cornerRadius = 8

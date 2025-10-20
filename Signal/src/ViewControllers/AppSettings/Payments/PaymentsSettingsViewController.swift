@@ -700,7 +700,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_TITLE",
                                             comment: "Title for the 'payments opt-in' view in the app settings.")
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
+        titleLabel.font = UIFont.dynamicTypeHeadlineClamped
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -726,7 +726,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                             : OWSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
                                                 comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings."))
         let activateButton = OWSFlatButton.button(title: buttonTitle,
-                                                  font: UIFont.dynamicTypeBody.semibold(),
+                                                  font: UIFont.dynamicTypeHeadline,
                                                   titleColor: .white,
                                                   backgroundColor: .ows_accentBlue,
                                                   target: self,
@@ -747,7 +747,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let buttonTitle = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON",
                                                 comment: "Label for 'restore payments' button in the payments settings.")
             let restorePaymentsButton = OWSFlatButton.button(title: buttonTitle,
-                                                             font: UIFont.dynamicTypeBody.semibold(),
+                                                             font: UIFont.dynamicTypeHeadline,
                                                              titleColor: .ows_accentBlue,
                                                              backgroundColor: self.tableBackgroundColor,
                                                              target: self,
@@ -843,7 +843,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.textColor = Theme.primaryTextColor
-            titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
+            titleLabel.font = UIFont.dynamicTypeHeadlineClamped
 
             let bodyLabel = UILabel()
             bodyLabel.text = body

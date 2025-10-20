@@ -606,7 +606,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private func button(title: String, selector: Selector, backgroundColor: UIColor = .ows_accentBlue) -> UIView {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .white,
             backgroundColor: backgroundColor,
             target: self,

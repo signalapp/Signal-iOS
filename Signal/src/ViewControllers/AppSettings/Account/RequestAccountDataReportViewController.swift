@@ -48,7 +48,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+        result.titleLabel?.font = UIFont.dynamicTypeHeadline
         result.autoSetDimension(.height, toSize: 48)
         return result
     }()

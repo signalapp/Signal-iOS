@@ -96,7 +96,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: 10)
 
         let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.dynamicTypeBody.semibold(),
+                                              font: UIFont.dynamicTypeHeadline,
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,

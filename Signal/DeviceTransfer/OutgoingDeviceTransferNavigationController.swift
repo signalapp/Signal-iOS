@@ -123,7 +123,7 @@ class DeviceTransferBaseViewController: UIViewController {
     }
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
-        let font = UIFont.dynamicTypeBodyClamped.semibold()
+        let font = UIFont.dynamicTypeHeadlineClamped
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let button = OWSFlatButton.button(title: title,
                                           font: font,

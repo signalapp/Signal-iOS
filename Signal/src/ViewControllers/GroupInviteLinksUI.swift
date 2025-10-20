@@ -150,7 +150,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         let buttonColor = ActionSheetAction.buttonBackgroundColor
         let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
-                                                font: UIFont.dynamicTypeBody.semibold(),
+                                                font: UIFont.dynamicTypeHeadline,
                                                 titleColor: Theme.secondaryTextAndIconColor,
                                                 backgroundColor: buttonColor,
                                                 target: self,
@@ -161,7 +161,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         self.cancelButton = cancelButton
 
         let joinButton = OWSFlatButton.button(title: "",
-                                              font: UIFont.dynamicTypeBody.semibold(),
+                                              font: UIFont.dynamicTypeHeadline,
                                               titleColor: .ows_accentBlue,
                                               backgroundColor: buttonColor,
                                               target: self,
@@ -173,7 +173,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         self.joinButton = joinButton
 
         let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
-                                              font: UIFont.dynamicTypeBody.semibold(),
+                                              font: UIFont.dynamicTypeHeadline,
                                               titleColor: Theme.primaryTextColor,
                                               backgroundColor: buttonColor,
                                               target: self,

@@ -92,7 +92,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
         let pasteFromPasteboardButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD",
                                                                                       comment: "Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view."),
-                                               font: UIFont.dynamicTypeBody.semibold(),
+                                               font: UIFont.dynamicTypeHeadline,
                                                titleColor: .ows_accentBlue,
                                                backgroundColor: backgroundColor,
                                                target: self,
@@ -101,7 +101,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
         let enterManuallyButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY",
                                                                                 comment: "Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view."),
-                                               font: UIFont.dynamicTypeBody.semibold(),
+                                               font: UIFont.dynamicTypeHeadline,
                                                titleColor: .white,
                                                backgroundColor: .ows_accentBlue,
                                                target: self,

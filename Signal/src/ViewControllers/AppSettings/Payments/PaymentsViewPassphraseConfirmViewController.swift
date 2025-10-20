@@ -155,7 +155,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
             title: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
                 comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings."),
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -169,7 +169,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
             title: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
                 comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .ows_accentBlue,
             backgroundColor: self.tableBackgroundColor,
             target: self,

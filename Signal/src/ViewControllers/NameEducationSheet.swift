@@ -68,7 +68,7 @@ class NameEducationSheet: StackSheetViewController {
         }
         label.attributedText = text.styled(
             with: .font(.dynamicTypeBody),
-            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeBody.semibold())))])
+            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))])
         )
         label.textColor = .label
         label.numberOfLines = 0

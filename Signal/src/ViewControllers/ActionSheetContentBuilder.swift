@@ -46,7 +46,7 @@ public class ActionSheetContentBuilder {
         target: Any,
         selector: Selector
     ) {
-        let buttonFont = UIFont.dynamicTypeBodyClamped.semibold()
+        let buttonFont = UIFont.dynamicTypeHeadlineClamped
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
         let upgradeButton = OWSFlatButton.button(title: title,
                                                  font: buttonFont,

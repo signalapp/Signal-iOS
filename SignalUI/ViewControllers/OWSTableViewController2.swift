@@ -587,7 +587,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         UITableView.automaticDimension
     }
 
-    private var headerFont: UIFont { .dynamicTypeBodyClamped.semibold() }
+    private var headerFont: UIFont { .dynamicTypeHeadlineClamped }
     private var footerFont: UIFont { .dynamicTypeCaption1Clamped }
 
     private func headerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {

@@ -283,7 +283,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
             comment: "Text prompting the user to choose a color when editing their avatar"
         )
         label.textColor = .Signal.label
-        label.font = UIFont.dynamicTypeBodyClamped.semibold()
+        label.font = UIFont.dynamicTypeHeadlineClamped
 
         let view = UIView()
         view.layoutMargins = UIEdgeInsets(

@@ -120,7 +120,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
         let transferBalanceButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",
                                                                                   comment: "Label for 'transfer balance' button in the 'deactivate payments' settings."),
-                                                         font: UIFont.dynamicTypeBody.semibold(),
+                                                         font: UIFont.dynamicTypeHeadline,
                                                          titleColor: .white,
                                                          backgroundColor: .ows_accentBlue,
                                                          target: self,
@@ -129,7 +129,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
         let deactivateImmediatelyButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE",
                                                                                         comment: "Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings."),
-                                                               font: UIFont.dynamicTypeBody.semibold(),
+                                                               font: UIFont.dynamicTypeHeadline,
                                                                titleColor: .ows_accentRed,
                                                                backgroundColor: backgroundColor,
                                                                target: self,

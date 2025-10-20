@@ -121,7 +121,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let nextButton = OWSFlatButton.insetButton(
             title: CommonStrings.nextButton,
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -133,7 +133,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let cancelButton = OWSFlatButton.insetButton(
             title: CommonStrings.notNowButton,
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: .ows_accentBlue,
             backgroundColor: .clear,
             target: self,

@@ -166,7 +166,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
                                                   vMargin: 0)
 
         let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.dynamicTypeBody.semibold(),
+                                              font: UIFont.dynamicTypeHeadline,
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,

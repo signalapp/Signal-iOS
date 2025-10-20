@@ -73,7 +73,7 @@ class CallControls: UIView {
         let button = OWSButton()
         button.setTitleColor(.ows_white, for: .normal)
         button.setBackgroundImage(UIImage.image(color: .ows_accentGreen), for: .normal)
-        button.titleLabel?.font = UIFont.dynamicTypeBodyClamped.semibold()
+        button.titleLabel?.font = UIFont.dynamicTypeHeadlineClamped
         button.clipsToBounds = true
         button.layer.cornerRadius = height / 2
         button.block = { [weak self, unowned button] in

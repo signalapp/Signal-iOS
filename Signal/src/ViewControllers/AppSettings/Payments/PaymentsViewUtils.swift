@@ -118,7 +118,7 @@ public class PaymentsViewUtils {
                                       ])
                 attributedText.append(wordAndIndex.word,
                                       attributes: [
-                                        .font: UIFont.dynamicTypeBodyClamped.semibold(),
+                                        .font: UIFont.dynamicTypeHeadlineClamped,
                                         .foregroundColor: Theme.primaryTextColor
                                       ])
                 let wordLabel = UILabel()
@@ -170,7 +170,7 @@ public class PaymentsViewUtils {
         textView.textColor = (Theme.isDarkThemeEnabled
                                 ? UIColor.ows_gray05
                                 : UIColor.ows_gray90)
-        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
+        textView.font = UIFont.dynamicTypeHeadlineClamped
         textView.textContainerInset = .zero
 
         textView.attributedText = NSAttributedString.composed(of: [

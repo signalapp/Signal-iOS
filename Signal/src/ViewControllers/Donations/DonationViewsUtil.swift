@@ -161,7 +161,7 @@ public class GiftBadgeCellView: UIStackView {
         let titleLabel = UILabel()
         titleLabel.text = badge.localizedName
         titleLabel.textColor = .Signal.label
-        titleLabel.font = .dynamicTypeBody.semibold()
+        titleLabel.font = .dynamicTypeHeadline
         titleLabel.numberOfLines = 0
 
         let secondLineLabel = UILabel()

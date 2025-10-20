@@ -131,7 +131,7 @@ public class StickerPackViewController: OWSViewController {
 
         let installButton = OWSFlatButton.button(
             title: OWSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: Theme.accentBlueColor,
             backgroundColor: UIColor.white,
             target: self,
@@ -140,7 +140,7 @@ public class StickerPackViewController: OWSViewController {
         self.installButton = installButton
         let uninstallButton = OWSFlatButton.button(
             title: OWSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
-            font: UIFont.dynamicTypeBody.semibold(),
+            font: UIFont.dynamicTypeHeadline,
             titleColor: Theme.accentBlueColor,
             backgroundColor: UIColor.white,
             target: self,

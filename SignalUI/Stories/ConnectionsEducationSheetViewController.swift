@@ -49,7 +49,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
             comment: "Header for the explainer sheet for signal connections"
         ).styled(
             with: .font(.dynamicTypeBody),
-            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeBody.semibold())))])
+            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))])
         )
         label.textColor = .label
         label.numberOfLines = 0

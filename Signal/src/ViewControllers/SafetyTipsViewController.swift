@@ -193,7 +193,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
                 "SAFETY_TIPS_PREVIOUS_TIP_BUTTON",
                 comment: "Button that will show the previous safety tip."
             ),
-            font: .dynamicTypeBodyClamped.semibold(),
+            font: .dynamicTypeHeadlineClamped,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -210,7 +210,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
                 "SAFETY_TIPS_NEXT_TIP_BUTTON",
                 comment: "Button that will show the next safety tip."
             ),
-            font: .dynamicTypeBodyClamped.semibold(),
+            font: .dynamicTypeHeadlineClamped,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,

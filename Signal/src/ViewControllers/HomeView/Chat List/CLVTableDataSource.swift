@@ -302,7 +302,7 @@ extension CLVTableDataSource: UITableViewDelegate {
         let label = UILabel()
         container.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
-        label.font = UIFont.dynamicTypeBody.semibold()
+        label.font = UIFont.dynamicTypeHeadline
         label.textColor = Theme.primaryTextColor
         label.text = title
 

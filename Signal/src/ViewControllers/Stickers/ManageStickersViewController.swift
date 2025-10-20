@@ -386,7 +386,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.font = UIFont.dynamicTypeBody.semibold()
+        titleLabel.font = UIFont.dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.lineBreakMode = .byTruncatingTail
 

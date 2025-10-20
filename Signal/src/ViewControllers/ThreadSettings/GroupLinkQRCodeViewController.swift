@@ -55,7 +55,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
         let shareCodeButton = OWSFlatButton.button(title: OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
                                                                             comment: "Label for the 'share code' button in the 'group link QR code' view."),
-                                                   font: UIFont.dynamicTypeBody.semibold(),
+                                                   font: UIFont.dynamicTypeHeadline,
                                                    titleColor: .white,
                                                    backgroundColor: .ows_accentBlue,
                                                    target: self,

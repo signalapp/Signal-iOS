@@ -487,7 +487,7 @@ class MessageRequestView: UIStackView {
     private func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSRoundedButton {
         let button = OWSRoundedButton(title: title, block: touchHandler)
         button.setTitleColor(titleColor, for: .normal)
-        button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
+        button.titleLabel?.font = .dynamicTypeHeadlineClamped
         button.dimsWhenHighlighted = true
         button.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
         return button

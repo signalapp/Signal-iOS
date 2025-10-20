@@ -35,7 +35,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
     private var titleAttributes: [NSAttributedString.Key: Any] {
         [
-            .font: UIFont.dynamicTypeBodyClamped.semibold(),
+            .font: UIFont.dynamicTypeHeadlineClamped,
             .foregroundColor: Theme.primaryTextColor,
         ]
     }

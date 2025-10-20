@@ -99,7 +99,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         let proxyAddressSection = OWSTableSection()
         proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
             with: .color((Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90).withAlphaComponent(useProxy ? 1 : 0.25)),
-            .font(UIFont.dynamicTypeBodyClamped.semibold())
+            .font(UIFont.dynamicTypeHeadlineClamped)
         )
         proxyAddressSection.add(.init(
             customCellBlock: { [weak self] in

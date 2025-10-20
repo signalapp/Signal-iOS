@@ -149,7 +149,7 @@ class GiftBadgeView: ManualStackView {
     // This is a label, not a button, to remain compatible with the hit testing code.
     private let redeemButtonLabel = CVLabel()
     private static func redeemButtonLabelConfig(for state: State) -> CVLabelConfig {
-        let font: UIFont = .dynamicTypeBody.semibold()
+        let font: UIFont = .dynamicTypeHeadline
         let color = self.redeemButtonTextColor(for: state)
         return CVLabelConfig(
             text: .attributedText(Self.redeemButtonText(for: state, font: font)),

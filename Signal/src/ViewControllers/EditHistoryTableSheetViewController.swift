@@ -144,7 +144,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
         let section = OWSTableSection()
         section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
-            .font: UIFont.dynamicTypeBodyClamped.semibold(),
+            .font: UIFont.dynamicTypeHeadlineClamped,
             .foregroundColor: Theme.primaryTextColor
         ])
         section.hasBackground = true

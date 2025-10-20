@@ -145,7 +145,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     }
 
     private static var nameFont: UIFont {
-        UIFont.dynamicTypeBodyClamped.semibold()
+        UIFont.dynamicTypeHeadlineClamped
     }
 
     // Used for profile names.

@@ -123,7 +123,7 @@ class SendPaymentHelper {
     }
 
     public static var bottomButtonFont: UIFont {
-        UIFont.dynamicTypeBody.semibold()
+        UIFont.dynamicTypeHeadline
     }
 
     public static func buildBottomLabel() -> UILabel {
