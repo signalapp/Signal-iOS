@@ -286,7 +286,7 @@ public class RemoteConfig {
     }
 
     public var allowBackupSettings: Bool {
-        if FeatureFlags.Backups.showSettings {
+        if FeatureFlags.Backups.alwaysShowSettings {
             return true
         }
 
