@@ -111,13 +111,9 @@ public enum ImageFormat: CustomStringConvertible {
     }
 }
 
-// TODO: Convert to struct once all users of this type are swift.
-@objc
-public class ImageMetadata: NSObject {
-    @objc
+public struct ImageMetadata {
     public let isValid: Bool
     public let imageFormat: ImageFormat
-    @objc
     public let pixelSize: CGSize
     public let hasAlpha: Bool
     let isAnimated: Bool
