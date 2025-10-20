@@ -1410,8 +1410,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         block: ((DBWriteTransaction) -> Void)? = nil
     ) async -> RegistrationStep {
         await db.awaitableWrite { tx in
-                deps.backupArchiveManager.scheduleRestoreFromSVR🐝BeforeNextExport(tx: tx)
             if needsToScheduleRestoreFromSvr🐝() {
+                deps.backupArchiveManager.scheduleRestoreFromSVR🐝BeforeNextExport(tx: tx)
             }
 
             if
