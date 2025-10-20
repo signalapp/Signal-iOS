@@ -303,7 +303,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         }
 
         let integrityChecker: ListMediaIntegrityChecker
-        if FeatureFlags.Backups.performListMediaIntegrityChecks, isPrimaryDevice {
+        if
+            FeatureFlags.Backups.performListMediaIntegrityChecks,
+            isPrimaryDevice,
+            // Skip integrity checks if we're in a new upload era, since we
+            // expect media to not yet be uploaded.
+            currentUploadEra == uploadEraOfLastListMedia
+        {
             integrityChecker = ListMediaIntegrityCheckerImpl(
                 inProgressResult: inProgressIntegrityCheckResult,
                 listMediaStartTimestamp: startTimestamp,
