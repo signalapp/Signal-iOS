@@ -142,6 +142,10 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
     // MARK: - List Media
 
     public func queryListMediaIfNeeded() async throws {
+        if !isRunning(.listMedia), db.read(block: listMediaManager.getNeedsQueryListMedia(tx:)) {
+            // Early exit if we don't need to run list media at all and aren't currently running.
+            return
+        }
         try await self.awaitOperation(.listMedia)
     }
 
