@@ -584,6 +584,7 @@
 		50150DAC2C80E2CE0047F1CB /* CallLinkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */; };
 		50159CDD2B4EF75600D344D4 /* LocalProfileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */; };
 		5015B8D82E958783002A156F /* Int+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5015B8D72E958783002A156F /* Int+SSKTest.swift */; };
+		501631CA2EA03615006F9B0E /* ImageMetadataTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501631C92EA03615006F9B0E /* ImageMetadataTest.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
@@ -4535,6 +4536,7 @@
 		501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyValueStore.swift; sourceTree = "<group>"; };
 		50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProfileChecker.swift; sourceTree = "<group>"; };
 		5015B8D72E958783002A156F /* Int+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+SSKTest.swift"; sourceTree = "<group>"; };
+		501631C92EA03615006F9B0E /* ImageMetadataTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadataTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
@@ -13286,6 +13288,7 @@
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
 				D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */,
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
+				501631C92EA03615006F9B0E /* ImageMetadataTest.swift */,
 				5015B8D72E958783002A156F /* Int+SSKTest.swift */,
 				D931080D2B338D15006A034E /* InterleavingCompositeCursorTest.swift */,
 				50D5E2422980B53000899660 /* LinkValidatorTest.swift */,
@@ -18877,6 +18880,7 @@
 				F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */,
 				D9F399B02A967664001599EC /* IdentityKeyCheckerTest.swift in Sources */,
 				D9F399B42A96E54C001599EC /* IdentityKeyMismatchManagerTest.swift in Sources */,
+				501631CA2EA03615006F9B0E /* ImageMetadataTest.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
 				04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,

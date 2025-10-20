@@ -47,7 +47,10 @@ private extension CVComponentState {
         )
 
         let imageMetadata = avatarData.imageMetadata(withPath: nil, mimeType: nil)
-        let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension, isAvailableWhileDeviceLocked: true)
+        let cacheFileUrl = OWSFileSystem.temporaryFileUrl(
+            fileExtension: imageMetadata.imageFormat?.fileExtension,
+            isAvailableWhileDeviceLocked: true,
+        )
         guard imageMetadata.isValid else {
             let cachedAvatar = GroupInviteLinkCachedAvatar(
                 cacheFileUrl: cacheFileUrl,

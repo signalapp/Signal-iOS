@@ -36,7 +36,7 @@ public enum ImageFormat: CustomStringConvertible {
         }
     }
 
-    internal var mimeType: MimeType {
+    public var mimeType: MimeType {
         switch self {
         case .png:
             return MimeType.imagePng
@@ -55,6 +55,11 @@ public enum ImageFormat: CustomStringConvertible {
         case .heif:
             return MimeType.imageHeif
         }
+    }
+
+    public var fileExtension: String {
+        // All known ImageFormats must have a corresponding extension.
+        return MimeTypeUtil.fileExtensionForMimeType(mimeType.rawValue)!
     }
 
     internal func isValid(source: OWSImageSource) -> Bool {
@@ -112,17 +117,6 @@ public struct ImageMetadata {
 
     internal static func invalid() -> ImageMetadata {
         .init(isValid: false, imageFormat: nil, pixelSize: .zero, hasAlpha: false, isAnimated: false)
-    }
-
-    public var mimeType: String? {
-        return imageFormat?.mimeType.rawValue
-    }
-
-    public var fileExtension: String? {
-        guard let mimeType else {
-            return nil
-        }
-        return MimeTypeUtil.fileExtensionForMimeType(mimeType)
     }
 }
 

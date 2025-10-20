@@ -264,17 +264,14 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             }
             return PreviewThumbnail(imageData: stillData, mimetype: MimeType.imagePng.rawValue)
         default:
-            guard let mimeType = imageMetadata.mimeType else {
-                owsFailDebug("Unknown mimetype for thumbnail.")
-                return nil
-            }
+            let mimeType = imageFormat.mimeType
 
             let imageSize = imageMetadata.pixelSize
             let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
             if (imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png), !shouldResize {
                 // If we don't need to resize or convert the file format,
                 // return the original data.
-                return PreviewThumbnail(imageData: srcImageData, mimetype: mimeType)
+                return PreviewThumbnail(imageData: srcImageData, mimetype: mimeType.rawValue)
             }
 
             guard let srcImage = UIImage(data: srcImageData) else {

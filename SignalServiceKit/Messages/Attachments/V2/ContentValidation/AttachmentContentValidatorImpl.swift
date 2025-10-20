@@ -595,7 +595,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // as it may cause us to blow up for attachments we previously "handled"
             // even if the contents didn't match the mime type.
             Logger.error("MIME type mismatch")
-            mimeType = metadata.mimeType ?? mimeType
+            mimeType = metadata.imageFormat?.mimeType.rawValue ?? mimeType
             imageMetadata = metadata
         }
 
