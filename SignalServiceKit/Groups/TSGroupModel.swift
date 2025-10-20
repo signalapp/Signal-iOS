@@ -212,13 +212,11 @@ public class TSGroupModelV2: TSGroupModel {
         result += "]"
         return result
     }
-}
 
-// MARK: -
+    // MARK: -
 
-@objc
-public extension TSGroupModelV2 {
-    var groupInviteLinkMode: GroupsV2LinkMode {
+    @objc
+    public var groupInviteLinkMode: GroupsV2LinkMode {
         guard let inviteLinkPassword = inviteLinkPassword,
               !inviteLinkPassword.isEmpty else {
             return .disabled
@@ -234,7 +232,8 @@ public extension TSGroupModelV2 {
         }
     }
 
-    var isGroupInviteLinkEnabled: Bool {
+    @objc
+    public var isGroupInviteLinkEnabled: Bool {
         if let inviteLinkPassword = inviteLinkPassword,
            !inviteLinkPassword.isEmpty,
            access.canJoinFromInviteLink {
@@ -246,37 +245,37 @@ public extension TSGroupModelV2 {
 
 // MARK: -
 
-@objc
-public extension TSGroupModel {
-    var isPlaceholder: Bool {
+extension TSGroupModel {
+    @objc
+    public var isPlaceholder: Bool {
         guard let groupModelV2 = self as? TSGroupModelV2 else {
             return false
         }
         return groupModelV2.isJoinRequestPlaceholder
     }
 
-    var wasJustMigratedToV2: Bool {
+    @objc
+    public var wasJustMigratedToV2: Bool {
         guard let groupModelV2 = self as? TSGroupModelV2 else {
             return false
         }
         return groupModelV2.wasJustMigrated
     }
 
-    var didJustAddSelfViaGroupLinkV2: Bool {
+    @objc
+    public var didJustAddSelfViaGroupLinkV2: Bool {
         guard let groupModelV2 = self as? TSGroupModelV2 else {
             return false
         }
         return groupModelV2.didJustAddSelfViaGroupLink
     }
-}
 
-// MARK: -
+    // MARK: -
 
-public extension TSGroupModel {
     private static let avatarsCache = LRUCache<String, Data>(maxSize: 16, nseMaxSize: 0)
 
     @objc
-    func persistAvatarData(_ data: Data) throws {
+    public func persistAvatarData(_ data: Data) throws {
         guard !data.isEmpty else {
             self.avatarHash = nil
             return
@@ -309,9 +308,59 @@ public extension TSGroupModel {
         self.avatarHash = hash
     }
 
+    private static let kMaxAvatarDimension = 1024
+
+    public static func isValidGroupAvatarData(_ imageData: Data) -> Bool {
+        guard imageData.count <= kMaxAvatarSize else {
+            return false
+        }
+        let metadata = imageData.imageMetadata(withPath: nil, mimeType: nil)
+        return (
+            metadata.isValid
+            && metadata.pixelSize.height <= CGFloat(kMaxAvatarDimension)
+            && metadata.pixelSize.width <= CGFloat(kMaxAvatarDimension)
+        )
+    }
+
+    public static func dataForGroupAvatar(_ image: UIImage) -> Data? {
+        var image = image
+
+        // First, resize the image if necessary
+        if image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension {
+            let thumbnailSizePixels = min(kMaxAvatarDimension, min(image.pixelWidth, image.pixelHeight))
+            image = image.resizedImage(toFillPixelSize: CGSize(width: thumbnailSizePixels, height: thumbnailSizePixels))
+        }
+        if image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension {
+            owsFailDebug("Could not resize group avatar.")
+            return nil
+        }
+
+        // Then, convert the image to jpeg. Try to use 0.6 compression quality, but we'll ratchet down if the
+        // image is still too large.
+        let kMaxQuality = 0.6 as CGFloat
+        for targetQuality in stride(from: kMaxQuality, through: 0, by: -0.1) {
+            let avatarData = image.jpegData(compressionQuality: targetQuality)
+
+            guard let avatarData else {
+                owsFailDebug("Failed to generate jpeg representation with quality \(targetQuality)")
+                return nil
+            }
+
+            if avatarData.count <= kMaxAvatarSize {
+                guard isValidGroupAvatarData(avatarData) else {
+                    owsFailDebug("Invalid image")
+                    return nil
+                }
+                return avatarData
+            }
+        }
+        owsFailDebug("All quality levels produced an avatar that was too large")
+        return nil
+    }
+
     // MARK: -
 
-    enum AvatarDataState {
+    public enum AvatarDataState {
         case available(Data)
         case missing
         case failedToFetchFromCDN
@@ -333,7 +382,7 @@ public extension TSGroupModel {
         }
     }
 
-    var avatarDataState: AvatarDataState {
+    public var avatarDataState: AvatarDataState {
         if let selfAsV2 = self as? TSGroupModelV2 {
             if selfAsV2.avatarDataFailedToFetchFromCDN {
                 return .failedToFetchFromCDN
@@ -387,17 +436,17 @@ public extension TSGroupModel {
         return URL(fileURLWithPath: "\(hash).png", relativeTo: avatarsDirectory)
     }
 
-    static let avatarsDirectory = URL(
+    public static let avatarsDirectory = URL(
         fileURLWithPath: "GroupAvatars",
         isDirectory: true,
         relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     )
 
-    static func hash(forAvatarData avatarData: Data) throws -> String {
+    public static func hash(forAvatarData avatarData: Data) throws -> String {
         return Data(SHA256.hash(data: avatarData)).hexadecimalString
     }
 
-    static func allGroupAvatarFilePaths(transaction: DBReadTransaction) throws -> Set<String> {
+    public static func allGroupAvatarFilePaths(transaction: DBReadTransaction) throws -> Set<String> {
         let cursor = TSThread.grdbFetchCursor(
             sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
             transaction: transaction
@@ -412,11 +461,9 @@ public extension TSGroupModel {
 
         return filePaths
     }
-}
 
-// MARK: -
+    // MARK: -
 
-extension TSGroupModel {
     static func generateRandomGroupId(_ version: GroupsVersion) -> Data {
         let length = switch version {
         case .V1: kGroupIdLengthV1

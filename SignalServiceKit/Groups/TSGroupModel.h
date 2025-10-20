@@ -41,9 +41,6 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
 @property (nonatomic, readonly) GroupsVersion groupsVersion;
 @property (nonatomic, readonly) GroupMembership *groupMembership;
 
-+ (BOOL)isValidGroupAvatarData:(nullable NSData *)imageData;
-+ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
-
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

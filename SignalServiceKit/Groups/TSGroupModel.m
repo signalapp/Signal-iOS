@@ -23,7 +23,6 @@ const NSUInteger kMaxAvatarSize = (kMaxEncryptedAvatarSize
     - 12
     /* Reserved byte. See GroupSecretParams:encrypt_blob in LibSignal. */
     - 1);
-const CGFloat kMaxAvatarDimension = 1024;
 const NSUInteger kGroupIdLengthV1 = 16;
 const NSUInteger kGroupIdLengthV2 = 32;
 
@@ -116,59 +115,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
 - (GroupMembership *)groupMembership
 {
     return [[GroupMembership alloc] initWithV1Members:self.groupMembers];
-}
-
-+ (BOOL)isValidGroupAvatarData:(nullable NSData *)imageData
-{
-    ImageMetadata *metadata = [imageData imageMetadataWithPath:nil mimeType:nil];
-
-    BOOL isValid = YES;
-    isValid = isValid && metadata.isValid;
-    isValid = isValid && metadata.pixelSize.height <= kMaxAvatarDimension;
-    isValid = isValid && metadata.pixelSize.width <= kMaxAvatarDimension;
-    isValid = isValid && imageData.length <= kMaxAvatarSize;
-    return isValid;
-}
-
-+ (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
-{
-    if (image == nil) {
-        return nil;
-    }
-
-    // First, resize the image if necessary
-    if (image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension) {
-        CGFloat thumbnailSizePixels = MIN(kMaxAvatarDimension, MIN(image.pixelWidth, image.pixelHeight));
-        image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
-    }
-    if (image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension) {
-        OWSFailDebug(@"Could not resize group avatar.");
-        return nil;
-    }
-
-    // Then, convert the image to jpeg. Try to use 0.6 compression quality, but we'll ratchet down if the
-    // image is still too large.
-    const CGFloat kMaxQuality = 0.6;
-    NSData *_Nullable imageData = nil;
-    for (CGFloat targetQuality = kMaxQuality; targetQuality >= 0 && imageData == nil; targetQuality -= 0.1) {
-        NSData *data = UIImageJPEGRepresentation(image, targetQuality);
-
-        if (data.length >= 0 && data.length <= kMaxAvatarSize) {
-            imageData = data;
-        } else if (data.length > kMaxAvatarSize) {
-            OWSLogInfo(@"Jpeg representation with quality %f is too large.", targetQuality);
-        } else {
-            OWSFailDebug(@"Failed to generate jpeg representation with quality %f", targetQuality);
-            return nil;
-        }
-    }
-
-    // Double check the image is still valid after we converted.
-    if (![self isValidGroupAvatarData:imageData]) {
-        OWSFailDebug(@"Invalid image");
-        return nil;
-    }
-    return imageData;
 }
 
 #endif

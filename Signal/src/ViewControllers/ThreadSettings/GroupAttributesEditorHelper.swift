@@ -341,7 +341,7 @@ struct GroupAvatar {
         guard let image = image else {
             return nil
         }
-        guard let imageData = TSGroupModel.data(forGroupAvatar: image) else {
+        guard let imageData = TSGroupModel.dataForGroupAvatar(image) else {
             owsFailDebug("Invalid image.")
             return nil
         }
