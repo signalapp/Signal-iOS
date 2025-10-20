@@ -11,6 +11,11 @@ public struct OWSPoll: Equatable {
         static let maxCharacterLength = 100
     }
 
+    public enum PendingVoteType {
+        case pendingVote
+        case pendingUnvote
+    }
+
     public typealias OptionIndex = UInt32
 
     public struct OWSPollOption: Equatable, Identifiable {
@@ -18,18 +23,18 @@ public struct OWSPoll: Equatable {
         public let text: String
         public let acis: [Aci]
         public var id: OptionIndex { optionIndex }
-        public let isPending: Bool
+        public let latestPendingState: PendingVoteType?
 
         init(
             optionIndex: OptionIndex,
             text: String,
             acis: [Aci],
-            isPending: Bool
+            latestPendingState: PendingVoteType?
         ) {
             self.optionIndex = optionIndex
             self.text = text
             self.acis = acis
-            self.isPending = isPending
+            self.latestPendingState = latestPendingState
         }
 
         public func localUserHasVoted(localAci: Aci) -> Bool {
@@ -48,7 +53,7 @@ public struct OWSPoll: Equatable {
         interactionId: Int64,
         question: String,
         options: [String],
-        pendingVotes: [OptionIndex],
+        localUserPendingState: [OptionIndex: PendingVoteType],
         allowsMultiSelect: Bool,
         votes: [OptionIndex: [Aci]],
         isEnded: Bool,
@@ -63,7 +68,16 @@ public struct OWSPoll: Equatable {
         self.options = Dictionary(uniqueKeysWithValues: options.enumerated().map { index, option in
             let optionIndex = OWSPoll.OptionIndex(index)
             let votes = votes[optionIndex] ?? []
-            return (optionIndex, OWSPollOption(optionIndex: optionIndex, text: option, acis: votes, isPending: pendingVotes.contains(optionIndex)))
+            var latestPendingState: PendingVoteType?
+            if let pendingState = localUserPendingState[optionIndex] {
+                switch pendingState {
+                case .pendingVote:
+                    latestPendingState = .pendingVote
+                case .pendingUnvote:
+                    latestPendingState = .pendingUnvote
+                }
+            }
+            return (optionIndex, OWSPollOption(optionIndex: optionIndex, text: option, acis: votes, latestPendingState: latestPendingState))
         })
     }
 

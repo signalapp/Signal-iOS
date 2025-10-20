@@ -76,7 +76,8 @@ public class PollStore {
 
         var optionStrings: [String] = []
         var votes: [OWSPoll.OptionIndex: [Aci]] = [:]
-        var pendingVotes: [OWSPoll.OptionIndex] = []
+        var pendingVotes: [OWSPoll.OptionIndex: OWSPoll.PendingVoteType] = [:]
+        var maxPendingVoteCount: Int32 = 0
 
         let optionRows = try PollOptionRecord
             .filter(PollOptionRecord.Columns.pollId == pollId)
@@ -87,6 +88,7 @@ public class PollStore {
 
             let voteRows = try PollVoteRecord
                 .filter(PollVoteRecord.Columns.optionId == optionRow.id)
+                .order(PollVoteRecord.Columns.voteCount.asc)
                 .fetchAll(transaction.database)
 
             for voteRow in voteRows {
@@ -108,7 +110,24 @@ public class PollStore {
                 }
 
                 if voteRow.voteState.isPending() {
-                    pendingVotes.append(index)
+                    if !poll.allowsMultiSelect && voteRow.voteState == .pendingVote {
+                        // If most recent single select vote, visually "un-vote" everything else to avoid UX
+                        // confusion, since only the latest vote will apply when pending vote messages send.
+                        if voteRow.voteCount > maxPendingVoteCount {
+                            for (_index, state) in pendingVotes {
+                                if state == .pendingVote {
+                                    pendingVotes[_index] = .pendingUnvote
+                                }
+                            }
+                            maxPendingVoteCount = voteRow.voteCount
+                            pendingVotes[index] = voteRow.voteState.isUnvote() ? .pendingUnvote : .pendingVote
+                            continue
+                        }
+                        // Flip non-most-recent pending votes to pending unvote.
+                        pendingVotes[index] = .pendingUnvote
+                        continue
+                    }
+                    pendingVotes[index] = voteRow.voteState.isUnvote() ? .pendingUnvote : .pendingVote
                 }
             }
         }
@@ -117,7 +136,7 @@ public class PollStore {
             interactionId: interactionId,
             question: question,
             options: optionStrings,
-            pendingVotes: pendingVotes,
+            localUserPendingState: pendingVotes,
             allowsMultiSelect: poll.allowsMultiSelect,
             votes: votes,
             isEnded: poll.isEnded,

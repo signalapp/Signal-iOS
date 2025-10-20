@@ -351,6 +351,23 @@ public class CVPollView: ManualStackView {
         )
     }
 
+    private func localUserVoteState(
+        localAci: Aci,
+        option: OWSPoll.OWSPollOption
+    ) -> VoteState {
+        if option.localUserHasVoted(localAci: localAci) && option.latestPendingState == nil {
+            return .vote
+        } else if let pendingState = option.latestPendingState {
+            switch pendingState {
+            case .pendingUnvote:
+                return .pendingUnvote
+            case .pendingVote:
+                return .pendingVote
+            }
+        }
+        return .unvote
+    }
+
     func configureForRendering(
         state: CVPollView.State,
         cellMeasurement: CVCellMeasurement,
@@ -375,7 +392,7 @@ public class CVPollView: ManualStackView {
                 cellMeasurement: cellMeasurement,
                 pollOption: option,
                 totalVotes: poll.totalVotes(),
-                hasLocalUserAlreadyVoted: option.localUserHasVoted(localAci: state.localAci),
+                localUserVoteState: localUserVoteState(localAci: state.localAci, option: option),
                 pollVoteHandler: { [weak self, weak componentDelegate] voteType in
                     self?.handleVote(
                         for: option,
@@ -442,7 +459,7 @@ public class CVPollView: ManualStackView {
 
         let pollVoteHandler: (VoteType) -> Void
 
-        let checkbox = CVButton()
+        let checkbox = ManualLayoutView(name: "checkbox")
         let optionText = CVLabel()
         let innerStack = ManualStackView(name: "innerStack")
         let numVotesLabel = CVLabel()
@@ -450,17 +467,22 @@ public class CVPollView: ManualStackView {
         let progressFill = UIView()
         let progressBarBackground = UIView()
         let progressBarContainer = ManualLayoutView(name: "progressBarContainer")
+        let generator = UINotificationFeedbackGenerator()
+
+        var localUserVoteState: VoteState = .unvote
 
         fileprivate init(
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
             pollOption: OWSPollOption,
             totalVotes: Int,
-            hasLocalUserAlreadyVoted: Bool,
+            localUserVoteState: VoteState,
             pollVoteHandler: @escaping (VoteType) -> Void,
             pollIsEnded: Bool
         ) {
             self.pollVoteHandler = pollVoteHandler
+            self.localUserVoteState = localUserVoteState
+            generator.prepare()
 
             super.init(name: "PollOptionView")
             buildOptionRowStack(
@@ -470,8 +492,6 @@ public class CVPollView: ManualStackView {
                 index: pollOption.optionIndex,
                 votes: pollOption.acis.count,
                 totalVotes: totalVotes,
-                hasLocalUserAlreadyVoted: hasLocalUserAlreadyVoted,
-                isPending: pollOption.isPending,
                 pollIsEnded: pollIsEnded
             )
         }
@@ -481,8 +501,15 @@ public class CVPollView: ManualStackView {
         }
 
         @objc private func didTapCheckbox() {
-            checkbox.isSelected.toggle()
-            pollVoteHandler(checkbox.isSelected ? .vote : .unvote)
+            var attemptedVoteType: VoteType
+            switch localUserVoteState {
+            case .unvote, .pendingUnvote:
+                attemptedVoteType = .vote
+            case .vote, .pendingVote:
+                attemptedVoteType = .unvote
+            }
+            pollVoteHandler(attemptedVoteType)
+            generator.notificationOccurred(.success)
         }
 
         private func buildProgressBar(votes: Int, totalVotes: Int, detailColor: UIColor) {
@@ -532,6 +559,44 @@ public class CVPollView: ManualStackView {
             })
         }
 
+        private func spinView(view: UIView) {
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+            animation.toValue = NSNumber(value: Double.pi * 2)
+            animation.duration = TimeInterval.second
+            animation.isCumulative = true
+            animation.repeatCount = .greatestFiniteMagnitude
+            view.layer.add(animation, forKey: "spin")
+        }
+
+        private func displayPendingUI(type: VoteState) {
+            guard type.isPending() else {
+                return
+            }
+            checkbox.subviews.forEach { $0.removeFromSuperview() }
+
+            switch type {
+            case .pendingVote, .pendingUnvote:
+                let spinningEllipse = UIImageView(image: UIImage(named: Theme.iconName(.ellipse)))
+                let checkMark = UIImageView(image: UIImage(named: Theme.iconName(.checkmark)))
+                checkbox.addSubview(spinningEllipse, withLayoutBlock: { [weak self] _ in
+                    guard let self else { return }
+                    spinningEllipse.frame = checkbox.bounds
+                    spinView(view: spinningEllipse)
+                    checkMark.frame = CGRect(
+                        x: (checkbox.bounds.width - 15) / 2,
+                        y: (checkbox.bounds.height - 15) / 2,
+                        width: 15,
+                        height: 15
+                    )
+                })
+                if type == .pendingVote {
+                    checkbox.addSubview(checkMark)
+                }
+            default:
+                owsFailDebug("Function should only be called for pending states")
+            }
+        }
+
         private func buildOptionRowStack(
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
@@ -539,18 +604,20 @@ public class CVPollView: ManualStackView {
             index: UInt32,
             votes: Int,
             totalVotes: Int,
-            hasLocalUserAlreadyVoted: Bool,
-            isPending: Bool,
             pollIsEnded: Bool
         ) {
-            checkbox.setImage(UIImage(named: Theme.iconName(.checkCircleFill)), for: .selected)
-            checkbox.setImage(UIImage(named: Theme.iconName(.circle)), for: .normal)
+            checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.circle))))
             checkbox.tintColor = configurator.detailColor
             checkbox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCheckbox)))
 
-            checkbox.isSelected = hasLocalUserAlreadyVoted
-
-            // TODO: animate when pending.
+            switch localUserVoteState {
+            case .vote:
+                checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill))))
+            case .pendingVote, .pendingUnvote:
+                displayPendingUI(type: localUserVoteState)
+            case .unvote:
+                break
+            }
 
             let optionTextConfig = CVLabelConfig.unstyledText(
                 option,
@@ -565,7 +632,7 @@ public class CVPollView: ManualStackView {
             if pollIsEnded {
                 checkbox.isUserInteractionEnabled = false
                 subviews = [optionText]
-                if hasLocalUserAlreadyVoted {
+                if localUserVoteState == .vote {
                     subviews.append(checkbox)
                 }
             } else {

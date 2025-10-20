@@ -22,7 +22,7 @@ public enum VoteState: Int, Codable {
     // Should only appear for the local aci.
     case pendingVote = 3
 
-    func isUnvote() -> Bool {
+    public func isUnvote() -> Bool {
         switch self {
         case .unvote, .pendingUnvote:
             return true
@@ -31,7 +31,7 @@ public enum VoteState: Int, Codable {
         }
     }
 
-    func isPending() -> Bool {
+    public func isPending() -> Bool {
         switch self {
         case .pendingVote, .pendingUnvote:
             return true

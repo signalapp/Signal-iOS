@@ -173,7 +173,7 @@ struct PollDetailsView: View {
         interactionId: 1,
         question: "What is your favorite color?",
         options: ["Red", "Blue", "Yellow"],
-        pendingVotes: [],
+        localUserPendingState: [:],
         allowsMultiSelect: false,
         votes: [:],
         isEnded: false,
