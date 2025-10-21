@@ -114,7 +114,7 @@ public class DataSourceValue: DataSource {
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let cachedImageMetadata = DataImageSource(data).imageMetadata(ignoreFileSize: true)
+            let cachedImageMetadata = DataImageSource(data).imageMetadata(ignorePerTypeFileSizeLimits: true)
             _imageMetadata = cachedImageMetadata
             return cachedImageMetadata
         }
@@ -346,7 +346,7 @@ public class DataSourcePath: DataSource {
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let imageMetadata = (try? DataImageSource.forPath(fileUrl.path))?.imageMetadata(ignoreFileSize: true)
+            let imageMetadata = (try? DataImageSource.forPath(fileUrl.path))?.imageMetadata(ignorePerTypeFileSizeLimits: true)
             _imageMetadata = imageMetadata
             return imageMetadata
         }

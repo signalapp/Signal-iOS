@@ -150,8 +150,8 @@ extension OWSImageSource {
     // MARK: - Image Metadata
 
     /// load image metadata about the current object
-    public func imageMetadata(ignoreFileSize: Bool = false) -> ImageMetadata? {
-        let result = _imageMetadataResult(ignorePerTypeFileSizeLimits: ignoreFileSize)
+    public func imageMetadata(ignorePerTypeFileSizeLimits: Bool = false) -> ImageMetadata? {
+        let result = _imageMetadataResult(ignorePerTypeFileSizeLimits: ignorePerTypeFileSizeLimits)
         switch result {
         case .invalid:
             return nil
