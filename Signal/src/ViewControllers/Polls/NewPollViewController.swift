@@ -184,7 +184,8 @@ struct NewPollView: View {
                     .padding()
                     Spacer()
 
-                    let sendButtonEnabled = pollOptions.count >= 3 && !pollQuestion.isEmpty ? true : false
+                    let filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
+                    let sendButtonEnabled = filteredPollOptions.count >= 2 && !pollQuestion.isEmpty
                     Button(MessageStrings.sendButton, action: {
                         if sendButtonEnabled {
                             viewModel.onSend(
@@ -281,7 +282,7 @@ struct NewPollView: View {
         }
 
         // If 0/1 option, we want exactly 2 fields in this case, so don't append or filter.
-        guard filteredPollOptions.count > 1 else {
+        if filteredPollOptions.count <= 1 && pollOptions.count == 2 {
             return
         }
 
