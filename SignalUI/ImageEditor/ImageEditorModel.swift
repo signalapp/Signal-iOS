@@ -41,8 +41,8 @@ protocol ImageEditorModelObserver: AnyObject {
 class ImageEditorModel: NSObject {
 
     let srcImagePath: String
-
     let srcImageSizePixels: CGSize
+    let srcImageMetadata: ImageMetadata
 
     private var contents: ImageEditorContents
 
@@ -77,7 +77,14 @@ class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
 
-        let srcImageSizePixels = (try? DataImageSource.forPath(srcImagePath).imageMetadata()?.pixelSize) ?? .zero
+        let srcImageMetadata = try? DataImageSource.forPath(srcImagePath).imageMetadata()
+        guard let srcImageMetadata else {
+            Logger.error("Invalid image")
+            throw ImageEditorError.invalidInput
+        }
+        self.srcImageMetadata = srcImageMetadata
+
+        let srcImageSizePixels = srcImageMetadata.pixelSize
         guard srcImageSizePixels.width > 0, srcImageSizePixels.height > 0 else {
             Logger.error("Couldn't determine image size.")
             throw ImageEditorError.invalidInput

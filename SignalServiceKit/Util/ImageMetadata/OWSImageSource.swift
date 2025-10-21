@@ -116,22 +116,6 @@ extension OWSImageSource {
         }
     }
 
-    public static func hasAlpha(forValidImageFilePath filePath: String) -> Bool {
-        if isWebp(filePath: filePath) {
-            return true
-        }
-
-        let url = URL(fileURLWithPath: filePath)
-
-        // With CGImageSource we avoid loading the whole image into memory.
-        guard let _ = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-            owsFailDebug("Could not load image: \(url)")
-            return false
-        }
-
-        return (try? DataImageSource.forPath(filePath))?.imageMetadata()?.hasAlpha ?? false
-    }
-
     /// Determine whether something is an animated PNG.
     ///
     /// Does this by checking that the `acTL` chunk appears before any `IDAT` chunk.
@@ -268,11 +252,6 @@ extension OWSImageSource {
         }
 
         return UIImage.sd_image(with: data)
-    }
-
-    fileprivate static func isWebp(filePath: String) -> Bool {
-        let fileExtension = ((filePath as NSString).lastPathComponent as NSString).pathExtension.lowercased()
-        return "webp" == fileExtension
     }
 
     fileprivate var sizeForWebpData: CGSize {
