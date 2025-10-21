@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Återställningsnyckel";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Your backup subscription has expired because it couldn’t be renewed with your payment method.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Ditt abonnemang för säkerhetskopiering har löpt ut eftersom den inte kunde förnyas med din betalningsmetod.\n\nFör att fortsätta säkerhetskopiera media kan du abonnera igen. Du kommer fortfarande att ha tillgång till den kostnadsfria planen av Säkerhetskopiering av Signal.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Your backup subscription has expired because you're no longer using TestFlight.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Ditt abonnemang för säkerhetskopiering har löpt ut eftersom du inte längre använder TestFlight.\n\nFör att fortsätta säkerhetskopiera media kan du abonnera igen. Du kommer fortfarande att ha tillgång till det kostnadsfria abonnemanget av Säkerhetskopiering av Signal.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Manage Backups";
+"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Hantera säkerhetskopiering";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Your Backups Subscription Expired";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Ditt abonnemang för säkerhetskopiering har upphört";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Kopiera till urklipp";
@@ -800,13 +800,13 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Du måste vara registrerad för att inaktivera säkerhetskopior.";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Manage Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Hantera abonnemang";
 
 /* Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "If you would like to cancel your subscription tap Manage Subscription > Signal > Cancel Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "Om du vill avsluta ditt abonnemang trycker du på Hantera prenumeration > Signal > Avsluta abonnemang";
 
 /* Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "You’re still subscribed to a paid backup plan";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "Du prenumererar fortfarande på en betald säkerhetskopieringsplan";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Avbryt nedladdning";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Välkommen till Säker säkerhetskopiering av Signal. Starta din säkerhetskopiering nu.";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Skicka oss felsökningsloggar så att vi kan lösa problemet.";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Ett fel uppstod när du säkerhetskopierade dina media";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Säkra säkerhetskopior";
@@ -6539,7 +6539,7 @@
 "POLL_DETAILS_TITLE" = "Omröstningsdetaljer";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
-"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ended the poll: %2$@";
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ avslutade omröstningen: %2$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ avslutade omröstningen “%2$@”";
@@ -6569,7 +6569,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "Ställ en fråga";
 
 /* Title of poll details pane when poll is ended */
-"POLL_RESULTS_TITLE" = "Poll Results";
+"POLL_RESULTS_TITLE" = "Resultat från omröstningen";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Välj en eller flera";
@@ -6578,7 +6578,7 @@
 "POLL_SELECT_LABEL_SINGULAR" = "Välj en";
 
 /* Notification that {{contact}} voted in a poll with question {{poll question}} */
-"POLL_VOTED_NOTIFICATION" = "%1$@ voted in the poll “%2$@”";
+"POLL_VOTED_NOTIFICATION" = "%1$@ röstade i omröstningen “%2$@”";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verifierad";
@@ -6920,7 +6920,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Du har provat för ofta. Vänta en minut innan du provar igen.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "There is no backup associated with this recovery key. Please ensure the key is correct and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Det finns ingen säkerhetskopia kopplad till denna återställningsnyckel. Kontrollera att nyckeln är korrekt och försök igen.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Säkerhetskopia hittades inte";

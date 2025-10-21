@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Теперь вы легко можете переключаться между чатами Signal с помощью сочетаний клавиш Ctrl+Tab и Ctrl+Shift+Tab, если ваш iPad подключён к физической клавиатуре. А также можете продолжать нажимать на экран. Универсальность — ключ ко всему.
+
+• Специально к осени — среди эмодзи-реакций появился новый эмодзи «Дерево без листьев» (а также шесть других новых эмодзи в Unicode 16.0).

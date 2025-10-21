@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Teraz w aplikacji Signal na iPadzie możesz łatwo przełączać się między czatami za pomocą kombinacji klawiszy Ctrl+Tab i Ctrl+Shift+Tab, gdy urządzenie jest podłączone do klawiatury zewnętrznej. Oczywiście w dalszym ciągu możesz obsługiwać ekran dotykowo. Grunt to wszechstronność.
+
+• W samą porę na jesień – nowe emoji „bezlistne drzewo” (wraz z pozostałymi sześcioma nowymi emoji z Unicode 16.0) jest już dostępne w reakcjach emoji.

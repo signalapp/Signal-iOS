@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "ئەسلىگە كەلتۈرۈش ئاچقۇچى";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Your backup subscription has expired because it couldn’t be renewed with your payment method.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "زاپاسلاش مۇشتەرىلىكىڭىزنىڭ ۋاقتى ئۆتتى، چۈنكى پۇل تۆلەش ئۇسۇلىڭىز بىلەن يېڭىلىغىلى بولمىدى.\n\nمېدىيانى زاپاسلاشنى داۋاملاشتۇرۇش ئۈچۈن قايتا مۇشتەرى بولۇڭ. ھەقسىز Signal زاپاسلانمىسى پىلانىنى داۋاملىق زىيارەت قىلالايسىز.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Your backup subscription has expired because you're no longer using TestFlight.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "TestFlightنى داۋاملىق ئىشلەتمىگەچكە زاپاسلاش مۇشتەرىلىكىڭىزنىڭ ۋاقتى ئۆتكەن.\n\nمېدىيانى زاپاسلاشنى داۋاملاشتۇرۇش ئۈچۈن قايتا مۇشتەرى بولۇڭ. ھەقسىز Signal زاپاسلانمىسى پىلانىنى داۋاملىق زىيارەت قىلالايسىز.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Manage Backups";
+"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "زاپاسلارنى باشقۇرۇش";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Your Backups Subscription Expired";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "زاپاسلاش مۇشتەرىلىكىڭىزنىڭ ۋاقتى ئۆتۈپ كەتتى";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "چاپلاش تاختىسىغا كۆچۈر";
@@ -800,13 +800,13 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "زاپاسلاشنى چەكلەش ئۈچۈن چوقۇم تىزىملىتىشىڭىز كېرەك.";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Manage Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "مۇشتەرىلىكنى باشقۇرۇش";
 
 /* Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "If you would like to cancel your subscription tap Manage Subscription > Signal > Cancel Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "مۇشتەرىلىكىڭىزنى ئەمەلدىن قالدۇرماقچى بولسىڭىز «مۇشتەرىلىكنى باشقۇرۇش>Signal > مۇشتەرىلىكنى بىكار قىلىش»نى چېكىڭ";
 
 /* Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "You’re still subscribed to a paid backup plan";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "سىز يەنىلا ھەقلىق زاپاسلاش پىلانىغا مۇشتەرى";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "چۈشۈرۈشنى بىكار قىلىش";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "«Signal بىخەتەر زاپاسلانمىللىرى»نى ئىشلىتىشىڭىزنى قارشى ئالىمىز. زاپاسلاشنى ھازىرلا باشلاڭ.";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "بۇ مەسىلىنى ياردەملىشىپ ھەل قىلىشىمىز ئۈچۈن بىزگە كاشىلا ھەل قىلىش خاتىرىسىنى ئەۋەتىپ بېرىڭ!";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "مېدىيانى زاپاسلاۋاتقاندا بىر خاتالىق كۆرۈلدى";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "بىخەتەر زاپاسلانمىلار";
@@ -6539,7 +6539,7 @@
 "POLL_DETAILS_TITLE" = "راي سىناش تەپسىلاتلىرى";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
-"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ended the poll: %2$@";
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ راي سىناشنى ئاخىرلاشتۇردى: %2$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ راي سىناشنى ئاخىرلاشتۇردى «%2$@»";
@@ -6569,7 +6569,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "سۇئال سوراڭ";
 
 /* Title of poll details pane when poll is ended */
-"POLL_RESULTS_TITLE" = "Poll Results";
+"POLL_RESULTS_TITLE" = "راي سىناش نەتىجىللىرى";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "بىر ياكى بىرقانچىنى تاللاڭ";
@@ -6578,7 +6578,7 @@
 "POLL_SELECT_LABEL_SINGULAR" = "بىرنى تاللاڭ";
 
 /* Notification that {{contact}} voted in a poll with question {{poll question}} */
-"POLL_VOTED_NOTIFICATION" = "%1$@ voted in the poll “%2$@”";
+"POLL_VOTED_NOTIFICATION" = "%1$@ «%2$@» راي سىناش سۇئالىغا بېلەت تاشلىدى";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "دەلىللەندى";
@@ -6920,7 +6920,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "سىز بەك كۆپ قېتىم سىناپ بولدىڭىز. قايتا سىناپ بېقىشتىن بۇرۇن بىر مىنۇتتەك ساقلاڭ.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "There is no backup associated with this recovery key. Please ensure the key is correct and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "بۇ ئەسلىگە كەلتۈرۈش ئاچقۇچىغا مۇناسىۋەتلىك زاپاسلاش يوق. ئاچقۇچنىڭ توغرا بولۇشىغا كاپالەتلىك قىلىڭ ھەمدە قايتا سىناڭ.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "زاپاسلاش تېپىلمىدى";

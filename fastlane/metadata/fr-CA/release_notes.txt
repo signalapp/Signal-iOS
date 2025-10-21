@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Si votre iPad est connecté à un clavier physique, vous pouvez maintenant utiliser les touches Ctrl+Tab et Ctrl+Maj+Tab pour passer facilement d'une conversation à l'autre. Mais votre écran n'est pas pour autant mis sur la touche : si vous êtes plutôt du genre tactile, vous pouvez encore le tapoter.
+
+• Les feuilles mortes se ramassent à la pelle… Et les émojis aussi ! Pour réagir aux messages, vous pouvez maintenant utiliser l'émoji "arbre sans feuilles" et une pelletée de 6 autres émojis Unicode 16.0.

@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Ahora puedes cambiar fácilmente de un chat a otro en Signal usando Ctrl + Tab y Ctrl + Shift + Tab (siempre que tu iPad esté conectado a un teclado físico). También puedes seguir tocando la pantalla como has hecho hasta ahora. La versatilidad, al alcance de una tecla.
+
+• Sabemos que este 2025 ya se siente largo… Por eso, ya puedes reaccionar con los nuevos emojis de Unicode 16.0, incluida la cara con ojeras y seis más, ¡perfectos para sobrevivir la recta final del año!

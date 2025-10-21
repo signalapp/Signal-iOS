@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Acum este ușor să schimbi între chaturile Signal folosind Ctrl+Tab și Ctrl+Shift+Tab ori de câte ori iPad-ul este conectat la o tastatură fizică. De asemenea, poți continua să atingi ecranul. Versatilitatea este esențială.
+
+• Chiar la timp pentru toamnă, noul emoji „Copac fără frunze” (împreună cu celelalte șase emoji noi din Unicode 16.0) este acum acceptat în reacții emoji.

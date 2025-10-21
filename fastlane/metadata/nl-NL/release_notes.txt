@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Je kunt nu eenvoudig schakelen tussen Signal-chats met Ctrl+Tab en Ctrl+Shift+Tab wanneer je iPad is aangesloten op een fysiek toetsenbord. Je kunt ook op het scherm blijven tikken. Fijn voor de afwisseling.
+
+• Net op tijd voor de herfst: de nieuwe ‘Bladloze boom’-emoji (samen met de andere zes nieuwe emoji in Unicode 16.0) wordt nu ondersteund in Signal Desktop.

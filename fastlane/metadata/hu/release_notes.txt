@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Mostantól egyszerűen válthatsz a Signal csevegések között a Ctrl+Tab és a Ctrl+Shift+Tab billentyűkombinációkkal, amikor az iPaded fizikai billentyűzethez csatlakozik. Továbbra is rákoppinthatsz a képernyőre. A sokoldalúság kulcsfontosságú.
+
+Az emoji-reakciókban mostantól további emojik is támogatottak.

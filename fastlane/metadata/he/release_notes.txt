@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• כעת קל לעבור בין צ׳אטים ב–Signal באמצעות Ctrl+Tab או Ctrl+Shift+Tab בכל פעם שה–iPad שלך מחובר למקלדת פיזית.
+
+• עוד אימוג׳ים נתמכים כעת בתגובות האימוג׳י.

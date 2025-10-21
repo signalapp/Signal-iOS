@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• เพิ่มความสะดวกอีกขั้นสำหรับ iPad ที่เชื่อมต่อกับแป้นพิมพ์ ให้คุณสลับหน้าแชท Signal ได้ง่ายๆ ด้วยการกด Ctrl+Tab และ Ctrl+Shift+Tab
+
+• เพิ่มความสามารถในการรองรับอีโมจิใหม่ทั้ง 7 ตัวให้คุณใช้แสดงความรู้สึกในแชทได้แล้ว

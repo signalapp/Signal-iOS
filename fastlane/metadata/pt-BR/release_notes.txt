@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Alternar entre conversas no Signal ficou ainda mais fácil: use Ctrl+Tab e Ctrl+Shift+Tab quando o iPad estiver com um teclado conectado. Você também pode continuar tocando na tela se precisar. 
+
+• O novo emoji “Árvore sem folhas”, junto com outros seis do Unicode 16.0, já está disponível nas reações com emoji. 

@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• iPadを外付けのキーボードに接続している場合は、Ctrl+TabとCtrl+Shift+TabでSignalチャットを簡単に切り替えられるようになりました。
+
+• 絵文字リアクションに、使える絵文字が増えました。

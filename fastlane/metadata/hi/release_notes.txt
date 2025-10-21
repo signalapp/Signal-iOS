@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• अगर आपका iPad किसी फ़िजिकल कीबोर्ड से जुड़ा हो, तो Ctrl+Tab और Ctrl+Shift+Tab का इस्तेमाल करके Signal चैट के बीच स्विच करना अब आसान हो गया है। स्क्रीन पर टैप करके भी काम बन सकता है। अलग-अलग तरीके अपनाना अच्छा रहता है।
+
+• शरद ऋतु के आते ही, अब इमोजी रिएक्शन में आपको मिलेगा "बिना पत्तों का पेड़" वाला नया इमोजी। इसके अलावा, यूनिकोड 16.0 में अन्य छह नए इमोजी भी मिलेंगे।

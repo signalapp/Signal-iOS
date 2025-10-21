@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• أصبح الآن من السهل التبديل بين دردشات سيجنال باستخدام Ctrl+Tab وCtrl+Shift+Tab كلما كان جهاز iPad الخاص بك متصلًا بلوحة مفاتيح فعلية. يمكنك أيضًا مواصلة النقر على الشاشة. تعدُّد الاستخدامات هو أمر أساسي.
+
+• مع حلول فصل الربيع، أصبح الرمز التعبيري "شجرة بلا أوراق" (بالإضافة إلى الرموز التعبيرية الستة الجديدة الأخرى في Unicode 16.0) مدعومة في تفاعلات الرموز التعبيرية.

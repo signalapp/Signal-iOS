@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Ara, quan tinguis un teclat físic connectat al teu iPad, podràs canviar fàcilment entre els xats de Signal amb Ctrl+Tab i Ctrl+Shift+Tab.
+
+• Ara tens més emojis disponibles per triar quan reaccionis a un missatge.

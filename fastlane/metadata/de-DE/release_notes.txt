@@ -1,1 +1,3 @@
-• Just in time for autumn, the new "Leafless Tree" emoji (along with the other six new emoji in Unicode 16.0) are now supported in emoji reactions.
+• Jetzt kannst du ganz einfach zwischen Signal-Chats wechseln, indem du Strg+Tab und Strg+Umschalttaste+Tab drückst, wenn dein iPad an eine klassische Tastatur angeschlossen ist. Du kannst natürlich auch weiterhin auf den Bildschirm tippen. Einfach total vielseitig.
+
+• Pünktlich zum Herbstanfang wird das neue Emoji »Baum ohne Laub« (und sechs weitere neue Emojis in Unicode 16.0) in Emoji Reaktionen unterstützt.
