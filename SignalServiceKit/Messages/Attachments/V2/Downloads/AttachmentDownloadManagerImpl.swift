@@ -1894,8 +1894,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 let mimeType: MimeType
                 let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
-                if let imageFormat = imageMetadata.imageFormat {
-                    mimeType = imageFormat.mimeType
+                if let imageMetadata {
+                    mimeType = imageMetadata.imageFormat.mimeType
                 } else {
                     mimeType = MimeType.imageWebp
                 }

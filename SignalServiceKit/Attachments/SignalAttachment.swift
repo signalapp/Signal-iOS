@@ -508,7 +508,7 @@ public class SignalAttachment: NSObject {
             return true
         }
         if MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
-            return dataSource.imageMetadata.isAnimated
+            return dataSource.imageMetadata?.isAnimated ?? false
         }
         return false
     }
@@ -693,7 +693,7 @@ public class SignalAttachment: NSObject {
                 // There is a known bug with the iOS pasteboard where it will randomly give a
                 // single green pixel, and nothing else. Work around this by refetching the
                 // pasteboard after a brief delay (once, then give up).
-                if dataSource?.imageMetadata.pixelSize == CGSize(square: 1), retrySinglePixelImages {
+                if dataSource?.imageMetadata?.pixelSize == CGSize(square: 1), retrySinglePixelImages {
                     try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * 50)
                     return await attachmentFromPasteboard(pasteboardUTIs: pasteboardUTIs, index: index, retrySinglePixelImages: false)
                 }
@@ -848,7 +848,7 @@ public class SignalAttachment: NSObject {
         }
 
         let imageMetadata = dataSource.imageMetadata
-        let isAnimated = imageMetadata.isAnimated
+        let isAnimated = imageMetadata?.isAnimated ?? false
         if isAnimated {
             guard dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                 attachment.error = .fileSizeTooLarge
@@ -961,7 +961,7 @@ public class SignalAttachment: NSObject {
             owsAssertDebug(attachment.error == nil)
 
             let maxSize = imageUploadQuality.maxEdgeSize
-            let pixelSize = dataSource.imageMetadata.pixelSize
+            let pixelSize = dataSource.imageMetadata?.pixelSize ?? .zero
             var imageProperties = [CFString: Any]()
 
             let cgImage: CGImage
@@ -1067,7 +1067,7 @@ public class SignalAttachment: NSObject {
     }
 
     private class func cgImageSource(for dataSource: DataSource) -> CGImageSource? {
-        if dataSource.imageMetadata.imageFormat == ImageFormat.webp {
+        if dataSource.imageMetadata?.imageFormat == ImageFormat.webp {
             // CGImageSource doesn't know how to handle webp, so we have
             // to pass it through YYImage. This is costly and we could
             // perhaps do better, but webp images are usually small.

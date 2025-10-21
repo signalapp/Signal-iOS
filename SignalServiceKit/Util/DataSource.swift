@@ -29,7 +29,7 @@ public protocol DataSource: AnyObject {
     var isValidImage: Bool { get }
     var isValidVideo: Bool { get }
     var hasStickerLikeProperties: Bool { get }
-    var imageMetadata: ImageMetadata { get }
+    var imageMetadata: ImageMetadata? { get }
 
     func writeTo(_ dstUrl: URL) throws
 
@@ -107,8 +107,8 @@ public class DataSourceValue: DataSource {
 
     /// This property is lazily-populated.
     /// Should only be accessed while holding `lock`.
-    private var _imageMetadata: ImageMetadata?
-    public var imageMetadata: ImageMetadata {
+    private var _imageMetadata: ImageMetadata??
+    public var imageMetadata: ImageMetadata? {
         return lock.withLock {
             owsAssertDebug(!_isConsumed)
             if let _imageMetadata {
@@ -218,7 +218,7 @@ public class DataSourceValue: DataSource {
 
     public var hasStickerLikeProperties: Bool {
         owsAssertDebug(!isConsumed)
-        return Data.ows_hasStickerLikeProperties(withImageMetadata: imageMetadata)
+        return imageMetadata?.hasStickerLikeProperties ?? false
     }
 }
 
@@ -337,11 +337,11 @@ public class DataSourcePath: DataSource {
 
     public var hasStickerLikeProperties: Bool {
         owsAssertDebug(!isConsumed)
-        return Data.ows_hasStickerLikeProperties(withImageMetadata: imageMetadata)
+        return imageMetadata?.hasStickerLikeProperties ?? false
     }
 
-    private var _imageMetadata: ImageMetadata?
-    public var imageMetadata: ImageMetadata {
+    private var _imageMetadata: ImageMetadata??
+    public var imageMetadata: ImageMetadata? {
         lock.withLock {
             owsAssertDebug(!_isConsumed)
             if let _imageMetadata {

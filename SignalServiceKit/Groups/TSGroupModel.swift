@@ -314,10 +314,11 @@ extension TSGroupModel {
         guard imageData.count <= kMaxAvatarSize else {
             return false
         }
-        let metadata = imageData.imageMetadata(withPath: nil, mimeType: nil)
+        guard let metadata = imageData.imageMetadata(withPath: nil, mimeType: nil) else {
+            return false
+        }
         return (
-            metadata.isValid
-            && metadata.pixelSize.height <= CGFloat(kMaxAvatarDimension)
+            metadata.pixelSize.height <= CGFloat(kMaxAvatarDimension)
             && metadata.pixelSize.width <= CGFloat(kMaxAvatarDimension)
         )
     }

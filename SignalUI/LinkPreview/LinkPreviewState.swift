@@ -206,7 +206,7 @@ public class LinkPreviewDraft: LinkPreviewState {
             return .zero
         }
         let imageMetadata = imageData.imageMetadata(withPath: nil, mimeType: nil)
-        guard imageMetadata.isValid else {
+        guard let imageMetadata else {
             owsFailDebug("Invalid image.")
             return .zero
         }

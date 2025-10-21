@@ -320,7 +320,7 @@ extension UIImage {
 
     public static func validJpegData(fromAvatarData avatarData: Data) -> Data? {
         let imageMetadata = avatarData.imageMetadata(withPath: nil, mimeType: nil)
-        guard imageMetadata.isValid else {
+        guard let imageMetadata else {
             return nil
         }
 

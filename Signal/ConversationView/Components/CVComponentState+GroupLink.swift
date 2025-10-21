@@ -47,14 +47,10 @@ private extension CVComponentState {
         )
 
         let imageMetadata = avatarData.imageMetadata(withPath: nil, mimeType: nil)
-        let cacheFileUrl = OWSFileSystem.temporaryFileUrl(
-            fileExtension: imageMetadata.imageFormat?.fileExtension,
-            isAvailableWhileDeviceLocked: true,
-        )
-        guard imageMetadata.isValid else {
+        guard let imageMetadata else {
             let cachedAvatar = GroupInviteLinkCachedAvatar(
-                cacheFileUrl: cacheFileUrl,
-                imageSizePixels: imageMetadata.pixelSize,
+                cacheFileUrl: OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true),
+                imageSizePixels: .zero,
                 isValid: false
             )
             groupLinkState.update {
@@ -62,6 +58,10 @@ private extension CVComponentState {
             }
             throw OWSAssertionError("Invalid group avatar.")
         }
+        let cacheFileUrl = OWSFileSystem.temporaryFileUrl(
+            fileExtension: imageMetadata.imageFormat.fileExtension,
+            isAvailableWhileDeviceLocked: true,
+        )
         try avatarData.write(to: cacheFileUrl)
         let cachedAvatar = GroupInviteLinkCachedAvatar(
             cacheFileUrl: cacheFileUrl,

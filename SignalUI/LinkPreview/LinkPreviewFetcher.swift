@@ -231,12 +231,10 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             return nil
         }
         let imageMetadata = srcImageData.imageMetadata(withPath: nil, mimeType: srcMimeType)
-        guard imageMetadata.isValid else {
+        guard let imageMetadata else {
             return nil
         }
-        guard let imageFormat = imageMetadata.imageFormat else {
-            return nil
-        }
+        let imageFormat = imageMetadata.imageFormat
 
         let maxImageSize: CGFloat = 2400
 

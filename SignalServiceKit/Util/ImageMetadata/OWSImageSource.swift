@@ -47,16 +47,16 @@ extension OWSImageSource {
 
     /// If mimeType is non-nil, we ensure that the magic numbers agree with the mimeType.
     public static func ows_isValidImage(at fileUrl: URL, mimeType: String?) -> Bool {
-        imageMetadata(withPath: fileUrl.path, mimeType: mimeType).isValid
+        return imageMetadata(withPath: fileUrl.path, mimeType: mimeType) != nil
     }
     public static func ows_isValidImage(atPath filePath: String, mimeType: String? = nil) -> Bool {
-        imageMetadata(withPath: filePath, mimeType: mimeType).isValid
+        return imageMetadata(withPath: filePath, mimeType: mimeType) != nil
     }
     public func ows_isValidImage(withMimeType mimeType: String? = nil) -> Bool {
-        imageMetadata(withPath: nil, mimeType: mimeType).isValid
+        return imageMetadata(withPath: nil, mimeType: mimeType) != nil
     }
     fileprivate func ows_isValidImage(withPath filePath: String?, mimeType: String?) -> Bool {
-        imageMetadata(withPath: filePath, mimeType: mimeType).isValid
+        return imageMetadata(withPath: filePath, mimeType: mimeType) != nil
     }
 
     fileprivate static func ows_isValidImage(dimension imageSize: CGSize, depthBytes: CGFloat, isAnimated: Bool) -> Bool {
@@ -196,7 +196,7 @@ extension OWSImageSource {
             return false
         }
 
-        return imageMetadata(withPath: filePath, mimeType: nil).hasAlpha
+        return imageMetadata(withPath: filePath, mimeType: nil)?.hasAlpha ?? false
     }
 
     /// Returns the image size in pixels.
@@ -204,10 +204,7 @@ extension OWSImageSource {
     /// Returns CGSizeZero on error.
     public static func imageSize(forFilePath filePath: String, mimeType: String?) -> CGSize {
         let imageMetadata = imageMetadata(withPath: filePath, mimeType: mimeType)
-        guard imageMetadata.isValid else {
-            return CGSize.zero
-        }
-        return imageMetadata.pixelSize
+        return imageMetadata?.pixelSize ?? .zero
     }
 
     /// Determine whether something is an animated PNG.
@@ -241,29 +238,9 @@ extension OWSImageSource {
         return nil
     }
 
-    // MARK: - Sticker Like Properties
-
-    public static func ows_hasStickerLikeProperties(withPath filePath: String) -> Bool {
-        return ows_hasStickerLikeProperties(withImageMetadata: imageMetadata(withPath: filePath, mimeType: nil))
-    }
-
-    public func ows_hasStickerLikeProperties() -> Bool {
-        let imageMetadata = imageMetadata(withIsAnimated: false, imageFormat: ows_guessImageFormat())
-        return Data.ows_hasStickerLikeProperties(withImageMetadata: imageMetadata)
-    }
-
-    public static func ows_hasStickerLikeProperties(withImageMetadata imageMetadata: ImageMetadata) -> Bool {
-        let maxStickerHeight = CGFloat(512)
-        return (imageMetadata.isValid
-                && imageMetadata.pixelSize.width <= maxStickerHeight
-                && imageMetadata.pixelSize.height <= maxStickerHeight
-                && imageMetadata.pixelSize != CGSize(width: 1, height: 1)
-                && imageMetadata.hasAlpha)
-    }
-
     // MARK: - Image Metadata
 
-    public static func imageMetadata(withPath filePath: String, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata {
+    public static func imageMetadata(withPath filePath: String, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata? {
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
             // Use memory-mapped NSData instead of a URL-based
@@ -273,7 +250,7 @@ extension OWSImageSource {
             return data.imageMetadata(withPath: filePath, mimeType: declaredMimeType, ignoreFileSize: ignoreFileSize)
         } catch {
             Logger.warn("Could not read image data: \(error)")
-            return .invalid()
+            return nil
         }
     }
 
@@ -288,7 +265,7 @@ extension OWSImageSource {
     ///
     /// If maxImageDimension is supplied we enforce the _smaller_ of
     /// that value and the per-format max dimension
-    public func imageMetadata(withPath filePath: String?, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata {
+    public func imageMetadata(withPath filePath: String?, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata? {
         let fileExtension = (filePath as? NSString)?.pathExtension.lowercased().nilIfEmpty
         let result = _imageMetadata(
             mimeTypeForValidation: declaredMimeType?.nilIfEmpty,
@@ -297,16 +274,16 @@ extension OWSImageSource {
         )
         switch result {
         case .invalid:
-            return .invalid()
+            return nil
         case .valid(let imageMetadata):
             return imageMetadata
         case .mimeTypeMismatch(let imageMetadata), .fileExtensionMismatch(let imageMetadata):
             // Do not fail in production.
             return imageMetadata
         case .genericSizeLimitExceeded:
-            return .invalid()
+            return nil
         case .imageTypeSizeLimitExceeded:
-            return .invalid()
+            return nil
         }
     }
 
@@ -379,7 +356,7 @@ extension OWSImageSource {
 
         let metadata = imageMetadata(withIsAnimated: isAnimated, imageFormat: imageFormat)
 
-        guard metadata.isValid else {
+        guard let metadata else {
             return .invalid
         }
 
@@ -401,44 +378,44 @@ extension OWSImageSource {
         return .valid(metadata)
     }
 
-    fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat?) -> ImageMetadata {
+    fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata? {
         if imageFormat == .webp {
             let imageSize = sizeForWebpData
             guard Data.ows_isValidImage(dimension: imageSize, depthBytes: 1, isAnimated: isAnimated) else {
                 Logger.warn("Image does not have valid dimensions: \(imageSize)")
-                return .invalid()
+                return nil
             }
-            return .init(isValid: true, imageFormat: imageFormat, pixelSize: imageSize, hasAlpha: true, isAnimated: isAnimated)
+            return .init(imageFormat: imageFormat, pixelSize: imageSize, hasAlpha: true, isAnimated: isAnimated)
         }
 
         guard let imageSource = try? self.cgImageSource() else {
             Logger.warn("Could not build imageSource.")
-            return .invalid()
+            return nil
         }
         return Data.imageMetadata(withImageSource: imageSource, imageFormat: imageFormat, isAnimated: isAnimated)
     }
 
-    fileprivate static func imageMetadata(withImageSource imageSource: CGImageSource, imageFormat: ImageFormat?, isAnimated: Bool) -> ImageMetadata {
+    fileprivate static func imageMetadata(withImageSource imageSource: CGImageSource, imageFormat: ImageFormat, isAnimated: Bool) -> ImageMetadata? {
         let options = [kCGImageSourceShouldCache as String: false]
         guard let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary) as? [String: AnyObject] else {
             Logger.warn("Missing imageProperties.")
-            return .invalid()
+            return nil
         }
 
         guard let widthNumber = imageProperties[kCGImagePropertyPixelWidth as String] as? NSNumber else {
             Logger.warn("widthNumber was unexpectedly nil")
-            return .invalid()
+            return nil
         }
         guard let heightNumber = imageProperties[kCGImagePropertyPixelHeight as String] as? NSNumber else {
             Logger.warn("heightNumber was unexpectedly nil")
-            return .invalid()
+            return nil
         }
 
         var pixelSize = CGSize(width: widthNumber.doubleValue, height: heightNumber.doubleValue)
         if let orientationNumber = imageProperties[kCGImagePropertyOrientation as String] as? NSNumber {
             guard let orientation = CGImagePropertyOrientation(rawValue: orientationNumber.uint32Value) else {
                 Logger.warn("orientation number was invalid")
-                return .invalid()
+                return nil
             }
             pixelSize = applyImageOrientation(orientation, to: pixelSize)
         }
@@ -448,7 +425,7 @@ extension OWSImageSource {
         // The number of bits in each color sample of each pixel. The value of this key is a CFNumberRef.
         guard let depthNumber = imageProperties[kCGImagePropertyDepth as String] as? NSNumber else {
             Logger.warn("depthNumber was unexpectedly nil")
-            return .invalid()
+            return nil
         }
         let depthBits = depthNumber.uintValue
         // This should usually be 1.
@@ -457,19 +434,19 @@ extension OWSImageSource {
         // The color model of the image such as "RGB", "CMYK", "Gray", or "Lab". The value of this key is CFStringRef.
         guard let colorModel = (imageProperties[kCGImagePropertyColorModel as String] as? NSString) as String? else {
             Logger.warn("colorModel was unexpectedly nil")
-            return .invalid()
+            return nil
         }
         guard colorModel == kCGImagePropertyColorModelRGB as String || colorModel == kCGImagePropertyColorModelGray as String else {
             Logger.warn("Invalid colorModel: \(colorModel)")
-            return .invalid()
+            return nil
         }
 
         guard ows_isValidImage(dimension: pixelSize, depthBytes: depthBytes, isAnimated: isAnimated) else {
             Logger.warn("Image does not have valid dimensions: \(pixelSize).")
-            return .invalid()
+            return nil
         }
 
-        return .init(isValid: true, imageFormat: imageFormat, pixelSize: pixelSize, hasAlpha: hasAlpha.boolValue, isAnimated: isAnimated)
+        return .init(imageFormat: imageFormat, pixelSize: pixelSize, hasAlpha: hasAlpha.boolValue, isAnimated: isAnimated)
     }
 
     // MARK: - WEBP

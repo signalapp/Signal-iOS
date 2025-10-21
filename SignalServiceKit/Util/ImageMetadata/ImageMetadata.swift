@@ -77,22 +77,26 @@ public enum ImageFormat: CustomStringConvertible {
 }
 
 public struct ImageMetadata {
-    public let isValid: Bool
-    public let imageFormat: ImageFormat?
+    public let imageFormat: ImageFormat
     public let pixelSize: CGSize
     public let hasAlpha: Bool
     let isAnimated: Bool
 
-    internal init(isValid: Bool, imageFormat: ImageFormat?, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
-        self.isValid = isValid
+    internal init(imageFormat: ImageFormat, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
         self.imageFormat = imageFormat
         self.pixelSize = pixelSize
         self.hasAlpha = hasAlpha
         self.isAnimated = isAnimated
     }
 
-    internal static func invalid() -> ImageMetadata {
-        .init(isValid: false, imageFormat: nil, pixelSize: .zero, hasAlpha: false, isAnimated: false)
+    var hasStickerLikeProperties: Bool {
+        let maxStickerHeight = CGFloat(512)
+        return (
+            pixelSize.width <= maxStickerHeight
+            && pixelSize.height <= maxStickerHeight
+            && pixelSize != CGSize(width: 1, height: 1)
+            && hasAlpha
+        )
     }
 }
 

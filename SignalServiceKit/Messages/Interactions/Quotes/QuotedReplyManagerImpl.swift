@@ -414,7 +414,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
             let stickerType: StickerType
             let imageMetadata = stickerData.imageMetadata(withPath: nil, mimeType: nil)
-            switch imageMetadata.imageFormat {
+            switch imageMetadata?.imageFormat {
             case .png:
                 stickerType = .apng
 
