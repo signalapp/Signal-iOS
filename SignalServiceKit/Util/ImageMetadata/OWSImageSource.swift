@@ -127,7 +127,7 @@ extension OWSImageSource {
     ///   `true` if the contents appear to be an APNG.
     ///   `false` if the contents are a still PNG.
     ///   `nil` if the contents are invalid.
-    func isAnimatedPngData() -> NSNumber? {
+    func isAnimatedPng() -> Bool? {
         let actl = "acTL".data(using: .ascii)
         let idat = "IDAT".data(using: .ascii)
 
@@ -135,9 +135,9 @@ extension OWSImageSource {
             let chunker = try PngChunker(source: self)
             while let chunk = try chunker.next() {
                 if chunk.type == actl {
-                    return NSNumber(value: true)
+                    return true
                 } else if chunk.type == idat {
-                    return NSNumber(value: false)
+                    return false
                 }
             }
         } catch {
@@ -194,11 +194,11 @@ extension OWSImageSource {
             }
             isAnimated = webpMetadata.frameCount > 1
         case .png:
-            guard let isAnimatedPng = isAnimatedPngData() else {
+            guard let isAnimatedPng = isAnimatedPng() else {
                 Logger.warn("Could not determine if png is animated.")
                 return .invalid
             }
-            isAnimated = isAnimatedPng.boolValue
+            isAnimated = isAnimatedPng
         default:
             isAnimated = false
         }
