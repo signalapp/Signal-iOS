@@ -283,38 +283,6 @@ extension TSAttachmentMigration {
             return true
         }
 
-        // Parse the GIF header to prevent the "GIF of death" issue.
-        //
-        // See: https://blog.flanker017.me/cve-2017-2416-gif-remote-exec/
-        // See: https://www.w3.org/Graphics/GIF/spec-gif89a.txt
-        //
-        // This behavior was ported over from objective-c and ends up effectively just checking for GIF headers and then that the size isn't zero.
-        // It appears to be a somewhat broken attempt to workaround the above CVE which was fixed so long ago we don't ship to iOS builds with the
-        // problem anymore.
-        var ows_hasValidGifSize: Bool {
-            let signatureLength = 3
-            let versionLength = 3
-            let widthLength = 2
-            let heightLength = 2
-            let prefixLength = signatureLength + versionLength
-            let bufferLength = signatureLength + versionLength + widthLength + heightLength
-
-            guard byteLength >= bufferLength else {
-                return false
-            }
-
-            let gif87aPrefix = Data([0x47, 0x49, 0x46, 0x38, 0x37, 0x61])
-            let gif89aPrefix = Data([0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
-            let prefix = try? self.readData(byteOffset: 0, byteLength: prefixLength)
-            guard prefix == gif87aPrefix || prefix == gif89aPrefix else {
-                return false
-            }
-            guard let subRange = try? self.readData(byteOffset: prefixLength, byteLength: 4) else {
-                return false
-            }
-            return subRange != Data(count: 4)
-        }
-
         fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat {
             // A HEIF image file has the first 16 bytes like
             // 0000 0018 6674 7970 6865 6963 0000 0000

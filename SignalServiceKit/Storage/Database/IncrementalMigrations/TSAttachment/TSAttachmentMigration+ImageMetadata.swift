@@ -44,10 +44,8 @@ extension TSAttachmentMigration {
             switch self {
             case .unknown:
                 return false
-            case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
+            case .png, .gif, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
                 return true
-            case .gif:
-                return source.ows_hasValidGifSize
             }
         }
 

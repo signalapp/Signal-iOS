@@ -58,15 +58,6 @@ public enum ImageFormat: CustomStringConvertible {
         return MimeTypeUtil.fileExtensionForMimeType(mimeType.rawValue)!
     }
 
-    internal func isValid(source: OWSImageSource) -> Bool {
-        switch self {
-        case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
-            return true
-        case .gif:
-            return source.ows_hasValidGifSize
-        }
-    }
-
     internal func isValid(mimeType: String) -> Bool {
         owsAssertDebug(!mimeType.isEmpty)
         let mimeTypes = self.mimeTypes
