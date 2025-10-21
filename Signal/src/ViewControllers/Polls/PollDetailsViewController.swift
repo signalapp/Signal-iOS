@@ -71,21 +71,6 @@ struct PollDetailsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                Text(titleString)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                HStack {
-                    Button(CommonStrings.doneButton, action: {
-                        viewModel.onDismiss()
-                    })
-                    .foregroundColor(Color.Signal.label)
-                    .padding()
-                    Spacer()
-                }
-            }
-            .background(Color.Signal.groupedBackground)
             SignalList {
                 SignalSection {
                     Text(poll.question)
@@ -147,6 +132,24 @@ struct PollDetailsView: View {
                             }
                         }
                     }
+                }
+            }
+        }
+        .navigationTitle(titleString)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        viewModel.onDismiss()
+                    }) {
+                        Image(Theme.iconName(.xBold))
+                    }
+                    .accessibilityLabel(CommonStrings.doneButton)
+                } else {
+                    Button(CommonStrings.doneButton, action: {
+                        viewModel.onDismiss()
+                    })
+                    .foregroundColor(Color.Signal.label)
                 }
             }
         }

@@ -166,43 +166,6 @@ struct NewPollView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                Text(
-                    OWSLocalizedString(
-                        "POLL_CREATE_TITLE",
-                        comment: "Title of create poll pane"
-                    )
-                )
-                .font(.headline)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity, alignment: .center)
-                HStack {
-                    Button(CommonStrings.cancelButton, action: {
-                        viewModel.onDismiss()
-                    })
-                    .foregroundColor(Color.Signal.label)
-                    .padding()
-                    Spacer()
-
-                    let filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
-                    let sendButtonEnabled = filteredPollOptions.count >= 2 && !pollQuestion.isEmpty
-                    Button(MessageStrings.sendButton, action: {
-                        if sendButtonEnabled {
-                            viewModel.onSend(
-                                pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
-                                question: pollQuestion,
-                                allowMultipleVotes: allowMultipleVotes
-                            )
-                        } else {
-                            viewModel.showToast(hasQuestion: !pollQuestion.isEmpty, hasEnoughOptions: pollOptions.count >= 3)
-                        }
-                    })
-                    .foregroundColor(Color.Signal.label)
-                    .padding()
-                    .opacity(sendButtonEnabled ? 1 : 0.5)
-                }
-            }
-            .background(Color.Signal.groupedBackground)
             SignalList {
                 SignalSection {
                     TextField(
@@ -266,6 +229,64 @@ struct NewPollView: View {
                     )
                 }
             }
+        }
+        .navigationTitle(OWSLocalizedString(
+            "POLL_CREATE_TITLE",
+            comment: "Title of create poll pane"
+        ))
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        viewModel.onDismiss()
+                    }) {
+                        Image(Theme.iconName(.xBold))
+                    }
+                    .accessibilityLabel(CommonStrings.cancelButton)
+                } else {
+                    Button(CommonStrings.cancelButton, action: {
+                        viewModel.onDismiss()
+                    })
+                    .foregroundColor(Color.Signal.label)
+                }
+            }
+
+            ToolbarItem(placement: .confirmationAction) {
+                let filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
+                let sendButtonEnabled = filteredPollOptions.count >= 2 && !pollQuestion.isEmpty
+
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        sendButtonPressed(sendButtonEnabled: sendButtonEnabled)
+                    }) {
+                        Image(Theme.iconName(.arrowUp))
+                    }
+                    .accessibilityLabel(MessageStrings.sendButton)
+                    .tint(Color.Signal.ultramarine)
+#if compiler(>=6.2)
+                    .buttonStyle(.glassProminent)
+#endif
+                    .opacity(sendButtonEnabled ? 1 : 0.5)
+                } else {
+                    Button(MessageStrings.sendButton, action: {
+                        sendButtonPressed(sendButtonEnabled: sendButtonEnabled)
+                    })
+                    .foregroundColor(Color.Signal.label)
+                    .opacity(sendButtonEnabled ? 1 : 0.5)
+                }
+            }
+        }
+    }
+
+    private func sendButtonPressed(sendButtonEnabled: Bool) {
+        if sendButtonEnabled {
+            viewModel.onSend(
+                pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
+                question: pollQuestion,
+                allowMultipleVotes: allowMultipleVotes
+            )
+        } else {
+            viewModel.showToast(hasQuestion: !pollQuestion.isEmpty, hasEnoughOptions: pollOptions.count >= 3)
         }
     }
 

@@ -1281,7 +1281,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapViewVotes(poll: OWSPoll) {
         let pollDetails = PollDetailsViewController(poll: poll)
         pollDetails.delegate = self
-        self.present(pollDetails, animated: true)
+        self.present(OWSNavigationController(rootViewController: pollDetails), animated: true)
     }
 
     public func didTapViewPoll(pollInteractionUniqueId: String) {
