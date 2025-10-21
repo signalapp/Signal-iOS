@@ -41,7 +41,7 @@ public struct DataImageSource: OWSImageSource {
     public var byteLength: Int { self.rawValue.count }
 
     public func readData(byteOffset: Int, byteLength: Int) throws -> Data {
-        return self.rawValue[byteOffset..<(byteOffset + byteLength)]
+        return self.rawValue.dropFirst(byteOffset).prefix(byteLength)
     }
 
     public func cgImageSource() throws -> CGImageSource? {
