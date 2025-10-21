@@ -1152,6 +1152,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             let blockedByPendingMessageRequest = self.isDownloadBlockedByPendingMessageRequest(
                 priority: priority,
+                source: source,
                 owner: reference.owner,
                 tx: tx
             )
@@ -1192,6 +1193,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private func isDownloadBlockedByPendingMessageRequest(
             priority: AttachmentDownloadPriority,
+            source: QueuedAttachmentDownloadRecord.SourceType,
             owner: AttachmentReference.Owner,
             tx: DBReadTransaction
         ) -> Bool {
@@ -1201,6 +1203,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             case .default, .backupRestore:
                 break
+            }
+            switch source {
+            case .transitTier:
+                break
+            case .mediaTierFullsize, .mediaTierThumbnail:
+                // Even if we are in message request state, the fact
+                // that these downloads are on media tier means the
+                // client that backed them up had them downloaded
+                // before. Therefore, they should be good to redownload.
+                return false
             }
 
             let threadRowId: Int64
