@@ -286,6 +286,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     try await fetchRemoteSVR🐝ForwardSecrecyToken(key: key, auth: chatAuth)
                 } catch SVR🐝Error.unrecoverable {
                     // Not found, so consider a success and fallthrough
+                    Logger.info("SVR🐝 not found, skipping restore.")
+                } catch {
+                    Logger.warn("Encountered error restoring SVR🐝: \(error)")
+                    throw error
                 }
 
                 await db.awaitableWrite {
@@ -1562,10 +1566,16 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             chatServiceAuth: auth
         )
 
-        let metadataHeader = try await backupCdnInfo(
-            backupKey: key,
-            backupAuth: backupServiceAuth
-        ).metadataHeader
+        let metadataHeader: BackupNonce.MetadataHeader
+        do {
+            metadataHeader = try await backupCdnInfo(
+                backupKey: key,
+                backupAuth: backupServiceAuth
+            ).metadataHeader
+        } catch let error as OWSHTTPError where error.responseStatusCode == 404 {
+            // If no backup is found, treat this as unrecoverable
+            throw SVR🐝Error.unrecoverable
+        }
 
         let nonceSource = BackupImportSource.NonceMetadataSource.svr🐝(header: metadataHeader, auth: auth)
         let source = BackupImportSource.remote(key: key, nonceSource: nonceSource)
