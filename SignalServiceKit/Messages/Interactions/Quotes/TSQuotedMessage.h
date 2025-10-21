@@ -104,6 +104,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 /// that indicates this was a reply to a view-once message.
 @property (nonatomic, readonly) BOOL isTargetMessageViewOnce;
 
+@property (nonatomic, readonly) BOOL isPoll;
+
 #pragma mark - Attachments
 
 - (nullable OWSAttachmentInfo *)attachmentInfo;
@@ -138,7 +140,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
                                                        bodySource:(TSQuotedMessageContentSource)bodySource
                                              quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                                       isGiftBadge:(BOOL)isGiftBadge
-                                          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
+                                          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
+                                                           isPoll:(BOOL)isPoll;
 
 @end
 

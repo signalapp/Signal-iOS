@@ -46,6 +46,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: BackupArchiveInteractionStore
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
+    private let pollArchiver: BackupArchivePollArchiver
     private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
 
@@ -57,7 +58,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         archivedPaymentStore: archivedPaymentStore,
         attachmentsArchiver: attachmentsArchiver,
         oversizeTextArchiver: oversizeTextArchiver,
-        reactionArchiver: reactionArchiver
+        reactionArchiver: reactionArchiver,
+        pollArchiver: pollArchiver
     )
     private lazy var incomingMessageArchiver = BackupArchiveTSIncomingMessageArchiver(
         contentsArchiver: contentsArchiver,
@@ -89,6 +91,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: BackupArchiveInteractionStore,
         oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
+        pollArchiver: BackupArchivePollArchiver,
         reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
     ) {
@@ -102,6 +105,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.oversizeTextArchiver = oversizeTextArchiver
+        self.pollArchiver = pollArchiver
         self.reactionStore = reactionStore
         self.threadStore = threadStore
     }
@@ -467,7 +471,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                     .paymentNotification,
                     .remoteDeletedMessage,
                     .stickerMessage,
-                    .directStoryReplyMessage:
+                    .directStoryReplyMessage,
+                    .poll:
                 return restoreFrameError(.invalidProtoData(.directionlessChatItemNotUpdateMessage))
             case .updateMessage:
                 restoreInteractionResult = chatUpdateMessageArchiver.restoreChatItem(

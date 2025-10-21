@@ -154,7 +154,7 @@ public class PollMessageManager {
     }
 
     public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {
-        guard let question = message.body,
+        guard let question = message.body?.nilIfEmpty,
               let localAci = accountManager.localIdentifiers(tx: transaction)?.aci
         else {
             throw OWSAssertionError("Invalid question body or local user not registered")
@@ -362,5 +362,147 @@ public class PollMessageManager {
             voteCount: UInt32(newHighestVoteCount),
             tx: tx
         )
-     }
+    }
+}
+
+// MARK: - Backups
+
+public struct BackupsPollData {
+    public struct BackupsPollOption {
+        public struct BackupsPollVote {
+            let voteAuthorId: SignalRecipient.RowId
+            let voteCount: UInt32
+        }
+
+        let text: String
+        let votes: [BackupsPollVote]
+    }
+
+    let question: String
+    let options: [BackupsPollOption]
+    let allowMultiple: Bool
+    let isEnded: Bool
+
+    public init(
+        question: String,
+        allowMultiple: Bool,
+        isEnded: Bool,
+        options: [BackupsPollOption]
+    ) {
+        self.question = question
+        self.options = options
+        self.allowMultiple = allowMultiple
+        self.isEnded = isEnded
+    }
+}
+
+extension PollMessageManager {
+    public func buildPollForBackup(
+        message: TSMessage,
+        messageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData, BackupArchive.InteractionUniqueId> {
+        guard let question = message.body?.nilIfEmpty else {
+            return .failure(.archiveFrameError(.pollMessageMissingQuestionBody, BackupArchive.InteractionUniqueId(interaction: message)))
+        }
+
+        return pollStore.backupPollData(
+            question: question,
+            message: message,
+            interactionId: messageRowId,
+            transaction: tx
+        )
+    }
+
+    public func restorePollFromBackup(
+        pollBackupData: BackupsPollData,
+        message: TSMessage,
+        chatItemId: BackupArchive.ChatItemId,
+        tx: DBWriteTransaction
+    ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
+        guard let interactionId = message.grdbId?.int64Value else {
+            return .failure([.restoreFrameError(
+                .databaseModelMissingRowId(modelClass: type(of: message)),
+                chatItemId
+            )])
+        }
+
+        do {
+            try pollStore.createPoll(
+                interactionId: interactionId,
+                allowsMultiSelect: pollBackupData.allowMultiple,
+                options: pollBackupData.options.map(\.text),
+                transaction: tx
+            )
+        } catch {
+            return .failure([.restoreFrameError(
+                .pollCreateFailedToInsertInDatabase,
+                chatItemId
+                )])
+        }
+
+        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+
+        var votesByAuthorId: [Int64: [OWSPoll.OptionIndex]] = [:]
+        var voteCountByAuthorId: [Int64: UInt32] = [:]
+
+        for (index, optionData) in pollBackupData.options.enumerated() {
+            for vote in optionData.votes {
+                votesByAuthorId[vote.voteAuthorId, default: []].append(OWSPoll.OptionIndex(index))
+                if let currentVoteCount = voteCountByAuthorId[vote.voteAuthorId] {
+                    if vote.voteCount != currentVoteCount {
+                        partialErrors += [.restoreFrameError(
+                            .invalidProtoData(.pollVoteCountRepeated),
+                            chatItemId
+                            )]
+                        continue
+                    }
+                } else {
+                    voteCountByAuthorId[vote.voteAuthorId] = vote.voteCount
+                }
+            }
+        }
+
+        for (voteAuthorId, optionIndices) in votesByAuthorId {
+            guard let voteCount = voteCountByAuthorId[voteAuthorId] else {
+                partialErrors += [.restoreFrameError(
+                    .invalidProtoData(.noPollVoteCountForAuthor),
+                    chatItemId
+                    )]
+                continue
+            }
+
+            do {
+                _ = try pollStore.updatePollWithVotes(
+                    interactionId: interactionId,
+                    optionsVoted: optionIndices,
+                    voteAuthorId: voteAuthorId,
+                    voteCount: voteCount,
+                    transaction: tx
+                )
+            } catch {
+                partialErrors += [.restoreFrameError(
+                    .pollVoteFailedToInsertInDatabase,
+                    chatItemId
+                    )]
+            }
+        }
+
+        do {
+            if pollBackupData.isEnded {
+                try pollStore.terminatePoll(interactionId: interactionId, transaction: tx)
+            }
+        } catch {
+            partialErrors += [.restoreFrameError(
+                .pollTerminateFailedToInsertInDatabase,
+                chatItemId
+                )]
+        }
+
+        if partialErrors.isEmpty {
+            return .success
+        }
+
+        return .partialRestore(partialErrors)
+    }
 }

@@ -433,6 +433,9 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 // Peers can't reply to their own stories; if a 1:1 story reply is incoming
                 // that means the author of the story being replied to was the local user.
                 messageBuilder.storyAuthorAci = AciObjC(context.recipientContext.localIdentifiers.aci)
+            case .poll(let poll):
+                messageBuilder.isPoll = true
+                messageBuilder.setMessageBody(poll.question)
             }
 
             return messageBuilder.build()

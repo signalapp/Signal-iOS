@@ -2061,6 +2061,14 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._item = .directStoryReplyMessage(newValue)}
   }
 
+  public var poll: BackupProto_Poll {
+    get {
+      if case .poll(let v)? = _storage._item {return v}
+      return BackupProto_Poll()
+    }
+    set {_uniqueStorage()._item = .poll(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this item without throwing an error.
@@ -2083,6 +2091,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     case viewOnceMessage(BackupProto_ViewOnceMessage)
     /// group story reply messages are not backed up
     case directStoryReplyMessage(BackupProto_DirectStoryReplyMessage)
+    case poll(BackupProto_Poll)
 
   }
 
@@ -3619,6 +3628,7 @@ public struct BackupProto_Quote: Sendable {
     case normal // = 1
     case giftBadge // = 2
     case viewOnce // = 3
+    case poll // = 4
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -3631,6 +3641,7 @@ public struct BackupProto_Quote: Sendable {
       case 1: self = .normal
       case 2: self = .giftBadge
       case 3: self = .viewOnce
+      case 4: self = .poll
       default: self = .UNRECOGNIZED(rawValue)
       }
     }
@@ -3641,6 +3652,7 @@ public struct BackupProto_Quote: Sendable {
       case .normal: return 1
       case .giftBadge: return 2
       case .viewOnce: return 3
+      case .poll: return 4
       case .UNRECOGNIZED(let i): return i
       }
     }
@@ -3651,6 +3663,7 @@ public struct BackupProto_Quote: Sendable {
       .normal,
       .giftBadge,
       .viewOnce,
+      .poll,
     ]
 
   }
@@ -3816,6 +3829,57 @@ public struct BackupProto_Reaction: Sendable {
   public init() {}
 }
 
+public struct BackupProto_Poll: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Between 1-100 characters
+  public var question: String = String()
+
+  public var allowMultiple: Bool = false
+
+  /// At least two
+  public var options: [BackupProto_Poll.PollOption] = []
+
+  public var hasEnded_p: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public struct PollOption: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// Between 1-100 characters
+    public var option: String = String()
+
+    public var votes: [BackupProto_Poll.PollOption.PollVote] = []
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public struct PollVote: Sendable {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// A direct reference to Recipient proto id. Must be self or contact.
+      public var voterID: UInt64 = 0
+
+      /// Tracks how many times you voted.
+      public var voteCount: UInt32 = 0
+
+      public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      public init() {}
+    }
+
+    public init() {}
+  }
+
+  public init() {}
+}
+
 public struct BackupProto_ChatUpdateMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3896,6 +3960,14 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
     set {update = .learnedProfileChange(newValue)}
   }
 
+  public var pollTerminate: BackupProto_PollTerminateUpdate {
+    get {
+      if case .pollTerminate(let v)? = update {return v}
+      return BackupProto_PollTerminateUpdate()
+    }
+    set {update = .pollTerminate(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should ignore the update message without throwing an error.
@@ -3909,6 +3981,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
     case individualCall(BackupProto_IndividualCall)
     case groupCall(BackupProto_GroupCall)
     case learnedProfileChange(BackupProto_LearnedProfileChatUpdate)
+    case pollTerminate(BackupProto_PollTerminateUpdate)
 
   }
 
@@ -5516,6 +5589,21 @@ public struct BackupProto_GroupExpirationTimerUpdate: Sendable {
   public init() {}
 
   fileprivate var _updaterAci: Data? = nil
+}
+
+public struct BackupProto_PollTerminateUpdate: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var targetSentTimestamp: UInt64 = 0
+
+  /// Between 1-100 characters
+  public var question: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 public struct BackupProto_StickerPack: Sendable {
@@ -8177,7 +8265,7 @@ extension BackupProto_DistributionList.PrivacyMode: SwiftProtobuf._ProtoNameProv
 
 extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0")
 
   fileprivate class _StorageClass {
     var _chatID: UInt64 = 0
@@ -8389,6 +8477,19 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
             _storage._item = .directStoryReplyMessage(v)
           }
         }()
+        case 20: try {
+          var v: BackupProto_Poll?
+          var hadOneofValue = false
+          if let current = _storage._item {
+            hadOneofValue = true
+            if case .poll(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._item = .poll(v)
+          }
+        }()
         default: break
         }
       }
@@ -8473,6 +8574,10 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       case .directStoryReplyMessage?: try {
         guard case .directStoryReplyMessage(let v)? = _storage._item else { preconditionFailure() }
         try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
+      }()
+      case .poll?: try {
+        guard case .poll(let v)? = _storage._item else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
       }()
       case nil: break
       }
@@ -10506,7 +10611,7 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 }
 
 extension BackupProto_Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NORMAL\0\u{1}GIFT_BADGE\0\u{1}VIEW_ONCE\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NORMAL\0\u{1}GIFT_BADGE\0\u{1}VIEW_ONCE\0\u{1}POLL\0")
 }
 
 extension BackupProto_Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -10669,9 +10774,124 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
+extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Poll"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}question\0\u{1}allowMultiple\0\u{1}options\0\u{1}hasEnded\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.question) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.allowMultiple) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.options) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.hasEnded_p) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.question.isEmpty {
+      try visitor.visitSingularStringField(value: self.question, fieldNumber: 1)
+    }
+    if self.allowMultiple != false {
+      try visitor.visitSingularBoolField(value: self.allowMultiple, fieldNumber: 2)
+    }
+    if !self.options.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.options, fieldNumber: 3)
+    }
+    if self.hasEnded_p != false {
+      try visitor.visitSingularBoolField(value: self.hasEnded_p, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_Poll, rhs: BackupProto_Poll) -> Bool {
+    if lhs.question != rhs.question {return false}
+    if lhs.allowMultiple != rhs.allowMultiple {return false}
+    if lhs.options != rhs.options {return false}
+    if lhs.hasEnded_p != rhs.hasEnded_p {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_Poll.PollOption: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_Poll.protoMessageName + ".PollOption"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}option\0\u{1}votes\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.option) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.votes) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.option.isEmpty {
+      try visitor.visitSingularStringField(value: self.option, fieldNumber: 1)
+    }
+    if !self.votes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.votes, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_Poll.PollOption, rhs: BackupProto_Poll.PollOption) -> Bool {
+    if lhs.option != rhs.option {return false}
+    if lhs.votes != rhs.votes {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_Poll.PollOption.protoMessageName + ".PollVote"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}voterId\0\u{1}voteCount\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.voterID) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.voteCount) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.voterID != 0 {
+      try visitor.visitSingularUInt64Field(value: self.voterID, fieldNumber: 1)
+    }
+    if self.voteCount != 0 {
+      try visitor.visitSingularUInt32Field(value: self.voteCount, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_Poll.PollOption.PollVote, rhs: BackupProto_Poll.PollOption.PollVote) -> Bool {
+    if lhs.voterID != rhs.voterID {return false}
+    if lhs.voteCount != rhs.voteCount {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatUpdateMessage"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}simpleUpdate\0\u{1}groupChange\0\u{1}expirationTimerChange\0\u{1}profileChange\0\u{1}threadMerge\0\u{1}sessionSwitchover\0\u{1}individualCall\0\u{1}groupCall\0\u{1}learnedProfileChange\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}simpleUpdate\0\u{1}groupChange\0\u{1}expirationTimerChange\0\u{1}profileChange\0\u{1}threadMerge\0\u{1}sessionSwitchover\0\u{1}individualCall\0\u{1}groupCall\0\u{1}learnedProfileChange\0\u{1}pollTerminate\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10796,6 +11016,19 @@ extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._M
           self.update = .learnedProfileChange(v)
         }
       }()
+      case 10: try {
+        var v: BackupProto_PollTerminateUpdate?
+        var hadOneofValue = false
+        if let current = self.update {
+          hadOneofValue = true
+          if case .pollTerminate(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.update = .pollTerminate(v)
+        }
+      }()
       default: break
       }
     }
@@ -10842,6 +11075,10 @@ extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._M
     case .learnedProfileChange?: try {
       guard case .learnedProfileChange(let v)? = self.update else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    }()
+    case .pollTerminate?: try {
+      guard case .pollTerminate(let v)? = self.update else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case nil: break
     }
@@ -13090,6 +13327,41 @@ extension BackupProto_GroupExpirationTimerUpdate: SwiftProtobuf.Message, SwiftPr
   public static func ==(lhs: BackupProto_GroupExpirationTimerUpdate, rhs: BackupProto_GroupExpirationTimerUpdate) -> Bool {
     if lhs.expiresInMs != rhs.expiresInMs {return false}
     if lhs._updaterAci != rhs._updaterAci {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_PollTerminateUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PollTerminateUpdate"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}question\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.targetSentTimestamp) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.question) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.targetSentTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.targetSentTimestamp, fieldNumber: 1)
+    }
+    if !self.question.isEmpty {
+      try visitor.visitSingularStringField(value: self.question, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_PollTerminateUpdate, rhs: BackupProto_PollTerminateUpdate) -> Bool {
+    if lhs.targetSentTimestamp != rhs.targetSentTimestamp {return false}
+    if lhs.question != rhs.question {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

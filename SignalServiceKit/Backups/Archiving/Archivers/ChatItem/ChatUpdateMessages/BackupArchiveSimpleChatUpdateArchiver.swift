@@ -74,7 +74,8 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                 .profileUpdate,
                 .threadMerge,
                 .sessionSwitchover,
-                .learnedProfileName:
+                .learnedProfileName,
+                .typeEndPoll:
             // Non-simple chat update types
             return .completeFailure(.fatalArchiveError(
                 .developerError(OWSAssertionError("Unexpected info message type: \(infoMessage.messageType)"))
@@ -182,11 +183,6 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             // We accepted, so we're the author.
             updateAuthor = .localUser
             updateType = .messageRequestAccepted
-        case .typeEndPoll:
-            // TODO (KC): fill in once we implement backups polls
-            return .completeFailure(.fatalArchiveError(
-                .developerError(OWSAssertionError("Unexpected info message type: \(infoMessage.messageType)"))
-            ))
         }
 
         let updateAuthorAddress: Details.AuthorAddress

@@ -628,6 +628,9 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                         + partialErrors
                     )
                 }
+            case .poll(let poll):
+                outgoingMessageBuilder.isPoll = true
+                outgoingMessageBuilder.setMessageBody(poll.question)
             }
 
             return .success(TSOutgoingMessage(

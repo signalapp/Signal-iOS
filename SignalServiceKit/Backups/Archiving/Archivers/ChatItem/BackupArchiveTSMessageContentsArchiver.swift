@@ -110,6 +110,13 @@ extension BackupArchive {
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
+        struct Poll {
+            let poll: BackupsPollData
+            let question: Text.RestoredMessageBody
+
+            fileprivate let reactions: [BackupProto_Reaction]
+        }
+
         case archivedPayment(Payment)
         case remoteDeleteTombstone
         case text(Text)
@@ -119,6 +126,7 @@ extension BackupArchive {
         case viewOnceMessage(ViewOnceMessage)
         /// Note: only includes 1:1 story replies, not group story replies.
         case storyReply(StoryReply)
+        case poll(Poll)
     }
 }
 
@@ -140,19 +148,22 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     )
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let reactionArchiver: BackupArchiveReactionArchiver
+    private let pollArchiver: BackupArchivePollArchiver
 
     init(
         interactionStore: BackupArchiveInteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
         attachmentsArchiver: BackupArchiveMessageAttachmentArchiver,
         oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
-        reactionArchiver: BackupArchiveReactionArchiver
+        reactionArchiver: BackupArchiveReactionArchiver,
+        pollArchiver: BackupArchivePollArchiver
     ) {
         self.interactionStore = interactionStore
         self.archivedPaymentStore = archivedPaymentStore
         self.attachmentsArchiver = attachmentsArchiver
         self.oversizeTextArchiver = oversizeTextArchiver
         self.reactionArchiver = reactionArchiver
+        self.pollArchiver = pollArchiver
     }
 
     // MARK: - Archiving
@@ -214,6 +225,13 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 message,
                 interactionUniqueId: message.uniqueInteractionId,
                 messageRowId: messageRowId,
+                context: context
+            )
+        } else if message.isPoll {
+            return pollArchiver.archivePoll(
+                message,
+                messageRowId: messageRowId,
+                interactionUniqueId: message.uniqueInteractionId,
                 context: context
             )
         } else {
@@ -1085,6 +1103,13 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 chatThread: chatThread,
                 context: context
             )
+        case .poll(let poll):
+            return restorePollMessage(
+                poll,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context
+            )
         case .updateMessage:
             return .messageFailure([.restoreFrameError(
                 .developerError(OWSAssertionError("Chat update has no contents to restore!")),
@@ -1245,6 +1270,23 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             case .emoji:
                 break
             }
+        case .poll(let poll):
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
+                poll.reactions,
+                chatItemId: chatItemId,
+                message: message,
+                context: context.recipientContext
+            ))
+
+            downstreamObjectResults.append(
+                pollArchiver.restorePoll(
+                    poll,
+                    chatItemId: chatItemId,
+                    message: message,
+                    context: context.recipientContext
+                )
+            )
+
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
@@ -1665,16 +1707,24 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
         let isGiftBadge: Bool
         let isTargetMessageViewOnce: Bool
+        let isPoll: Bool
         switch quote.type {
         case .UNRECOGNIZED, .unknown, .normal:
             isGiftBadge = false
             isTargetMessageViewOnce = false
+            isPoll = false
         case .viewOnce:
             isGiftBadge = false
             isTargetMessageViewOnce = true
+            isPoll = false
         case .giftBadge:
             isGiftBadge = true
             isTargetMessageViewOnce = false
+            isPoll = false
+        case .poll:
+            isGiftBadge = false
+            isTargetMessageViewOnce = false
+            isPoll = true
         }
 
         let quotedAttachmentInfo: OWSAttachmentInfo?
@@ -1722,7 +1772,8 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             bodySource: bodySource,
             quotedAttachmentInfo: quotedAttachmentInfo,
             isGiftBadge: isGiftBadge,
-            isTargetMessageViewOnce: isTargetMessageViewOnce
+            isTargetMessageViewOnce: isTargetMessageViewOnce,
+            isPoll: isPoll
         )
 
         if partialErrors.isEmpty {
@@ -1986,6 +2037,102 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             replyType: replyType,
             reactions: storyReply.reactions
         )))
+    }
+
+    // MARK: -
+
+    typealias BackupsPollVote = BackupsPollData.BackupsPollOption.BackupsPollVote
+    typealias BackupsPollOption = BackupsPollData.BackupsPollOption
+
+    /// Polls
+    private func restorePollMessage(
+        _ poll: BackupProto_Poll,
+        chatItemId: BackupArchive.ChatItemId,
+        chatThread: BackupArchive.ChatThread,
+        context: BackupArchive.ChatItemRestoringContext
+    ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
+        var partialErrors = [RestoreFrameError]()
+
+        var options: [BackupsPollData.BackupsPollOption] = []
+        for optionProto in poll.options {
+            var votes: [BackupsPollVote] = []
+            for voteProto in optionProto.votes {
+                var voteAuthorId: SignalRecipient.RowId?
+                let recipientId = BackupArchive.RecipientId(value: voteProto.voterID)
+                switch context.recipientContext[recipientId] {
+                case .localAddress:
+                    voteAuthorId = context.recipientContext.localSignalRecipientRowId
+                case .contact:
+                    voteAuthorId = context.recipientContext.recipientDbRowId(forBackupRecipientId: recipientId)
+                default:
+                    partialErrors += [.restoreFrameError(
+                        .invalidProtoData(.pollVoteAuthorNotContact),
+                        chatItemId
+                    )]
+                }
+
+                guard let voteAuthorId else {
+                    partialErrors += [.restoreFrameError(
+                        .invalidProtoData(.recipientIdNotFound(recipientId)),
+                        chatItemId
+                    )]
+                    continue
+                }
+                votes.append(BackupsPollVote(voteAuthorId: voteAuthorId, voteCount: voteProto.voteCount))
+            }
+            options.append(BackupsPollOption(text: optionProto.option, votes: votes))
+        }
+
+        let pollData = BackupsPollData(
+            question: poll.question,
+            allowMultiple: poll.allowMultiple,
+            isEnded: poll.hasEnded_p,
+            options: options
+        )
+
+        var pollQuestion: RestoredMessageBody
+
+        switch self
+            .restoreMessageBody(
+                text: poll.question,
+                bodyRangeProtos: [],
+                oversizeTextAttachment: nil,
+                chatItemId: chatItemId
+            )
+            .bubbleUp(
+                BackupArchive.RestoredMessageContents.self,
+                partialErrors: &partialErrors
+            )
+        {
+        case .continue(let component):
+            guard let component else {
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.pollQuestionEmpty),
+                    chatItemId
+                )] + partialErrors)
+            }
+            pollQuestion = component
+        case .bubbleUpError(let error):
+            return error
+        }
+
+        let poll = BackupArchive.RestoredMessageContents.Poll(
+            poll: pollData,
+            question: pollQuestion,
+            reactions: []
+        )
+
+        // TODO (KC): store actual reactions once they are in the spec
+        if partialErrors.isEmpty {
+            return .success(
+                .poll(poll)
+            )
+        } else {
+            return .partialRestore(
+                .poll(poll),
+                partialErrors
+            )
+        }
     }
 }
 

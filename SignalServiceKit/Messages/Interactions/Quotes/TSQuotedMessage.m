@@ -189,6 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                                                       isGiftBadge:(BOOL)isGiftBadge
                                           isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
+                                                           isPoll:(BOOL)isPoll
 {
     OWSAssertDebug(authorAddress.isValid);
 
@@ -203,6 +204,8 @@ NS_ASSUME_NONNULL_BEGIN
                          receivedQuotedAttachmentInfo:attachmentInfo
                                           isGiftBadge:isGiftBadge
                               isTargetMessageViewOnce:isTargetMessageViewOnce];
+
+    // TODO (KC): add polls prefix for backup quoted messages when its implemented
 }
 
 - (nullable NSNumber *)getTimestampValue

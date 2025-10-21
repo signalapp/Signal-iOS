@@ -187,6 +187,8 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
             unexpectedRevisionsMessageType = .giftBadge
         case .viewOnceMessage:
             unexpectedRevisionsMessageType = .viewOnceMessage
+        case .poll:
+            unexpectedRevisionsMessageType = .poll
         }
         if let unexpectedRevisionsMessageType {
             return .partialFailure((), [.archiveFrameError(

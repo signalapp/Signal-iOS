@@ -551,6 +551,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw OWSAssertionError("Failed to archive local recipient!")
             }
 
+            guard let localSignalRecipientRowId = localRecipientArchiver.fetchLocalRecipientRowId(
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            ) else {
+                throw OWSAssertionError("Failed to fetch local recipient row ID!")
+            }
+
             let recipientArchivingContext = BackupArchive.RecipientArchivingContext(
                 bencher: bencher,
                 attachmentByteCounter: attachmentByteCounter,
@@ -558,6 +565,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 includedContentFilter: includedContentFilter,
                 localIdentifiers: localIdentifiers,
                 localRecipientId: localRecipientId,
+                localSignalRecipientRowId: localSignalRecipientRowId,
                 startTimestampMs: startTimestampMs,
                 tx: tx
             )

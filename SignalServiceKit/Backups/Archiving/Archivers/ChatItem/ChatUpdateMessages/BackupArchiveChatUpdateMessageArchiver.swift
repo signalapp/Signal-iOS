@@ -17,6 +17,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
     private let sessionSwitchoverChatUpdateArchiver: BackupArchiveSessionSwitchoverChatUpdateArchiver
     private let simpleChatUpdateArchiver: BackupArchiveSimpleChatUpdateArchiver
     private let threadMergeChatUpdateArchiver: BackupArchiveThreadMergeChatUpdateArchiver
+    private let pollTerminatedChatUpdateArchiver: BackupArchivePollTerminateChatUpdateArchiver
 
     init(
         callRecordStore: any CallRecordStore,
@@ -58,6 +59,9 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             interactionStore: interactionStore
         )
         threadMergeChatUpdateArchiver = BackupArchiveThreadMergeChatUpdateArchiver(
+            interactionStore: interactionStore
+        )
+        pollTerminatedChatUpdateArchiver = BackupArchivePollTerminateChatUpdateArchiver(
             interactionStore: interactionStore
         )
     }
@@ -194,8 +198,11 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
                 context: context
             )
         case .typeEndPoll:
-            // TODO (KC): Update once polls are implemented in backups
-            return .skippableInteraction(.poll)
+            return pollTerminatedChatUpdateArchiver.archivePollTerminateChatUpdate(
+                infoMessage: infoMessage,
+                threadInfo: threadInfo,
+                context: context
+            )
         }
     }
 
@@ -283,6 +290,13 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
         case .learnedProfileChange(let learnedProfileChangeProto):
             return learnedProfileChatUpdateArchiver.restoreLearnedProfileChatUpdate(
                 learnedProfileChangeProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context
+            )
+        case .pollTerminate(let pollTerminateUpdateProto):
+            return pollTerminatedChatUpdateArchiver.restorePollTerminateChatUpdate(
+                pollTerminateUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
                 context: context

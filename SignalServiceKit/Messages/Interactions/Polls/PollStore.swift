@@ -491,3 +491,72 @@ public class PollStore {
             .deleteAll(transaction.database)
     }
 }
+
+// MARK: - Backups
+
+extension PollStore {
+    public func backupPollData(
+        question: String,
+        message: TSMessage,
+        interactionId: Int64,
+        transaction: DBReadTransaction
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData, BackupArchive.InteractionUniqueId> {
+        let interactionUniqueId = BackupArchive.InteractionUniqueId(interaction: message)
+        var poll: PollRecord
+        var pollId: Int64
+        do {
+            guard let wrappedPoll = try PollRecord
+                .filter(PollRecord.Columns.interactionId == interactionId)
+                .fetchOne(transaction.database),
+                  let wrappedPollId = wrappedPoll.id
+            else {
+                return .failure(.archiveFrameError(.pollMissing, interactionUniqueId))
+            }
+            poll = wrappedPoll
+            pollId = wrappedPollId
+        } catch {
+            return .failure(.archiveFrameError(.invalidPollRecordDatabaseRow, interactionUniqueId))
+        }
+
+        var optionRows: [PollOptionRecord]
+        do {
+            optionRows = try PollOptionRecord
+                .filter(PollOptionRecord.Columns.pollId == pollId)
+                .fetchAll(transaction.database)
+        } catch {
+            return .failure(.archiveFrameError(.invalidPollOptionRecordDatabaseRow, interactionUniqueId))
+        }
+
+        var voteRows: [PollVoteRecord]
+        do {
+            let optionRowIds = optionRows.compactMap{ $0.id }
+            voteRows = try PollVoteRecord
+                .filter(optionRowIds.contains(PollVoteRecord.Columns.optionId))
+                .fetchAll(transaction.database)
+        } catch {
+            return .failure(.archiveFrameError(.invalidPollVoteRecordDatabaseRow, interactionUniqueId))
+        }
+
+        let optionIdToVotes = Dictionary(grouping: voteRows, by: { $0.optionId })
+
+        var optionData: [BackupsPollData.BackupsPollOption] = []
+        for optionRow in optionRows {
+            guard let optionId = optionRow.id else {
+                return .failure(.archiveFrameError(.pollOptionIdMissing, interactionUniqueId))
+            }
+            var votes: [BackupsPollData.BackupsPollOption.BackupsPollVote] = []
+            for voteRow in optionIdToVotes[optionId] ?? [] {
+                if voteRow.voteState == .vote {
+                    votes.append(BackupsPollData.BackupsPollOption.BackupsPollVote(voteAuthorId: voteRow.voteAuthorId, voteCount: UInt32(voteRow.voteCount)))
+                }
+            }
+            optionData.append(BackupsPollData.BackupsPollOption(text: optionRow.option, votes: votes))
+        }
+
+        return .success(BackupsPollData(
+            question: question,
+            allowMultiple: poll.allowsMultiSelect,
+            isEnded: poll.isEnded,
+            options: optionData))
+    }
+}

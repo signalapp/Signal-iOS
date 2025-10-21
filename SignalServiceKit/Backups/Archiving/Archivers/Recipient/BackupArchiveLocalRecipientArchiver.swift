@@ -78,6 +78,13 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
         }
     }
 
+    func fetchLocalRecipientRowId(
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
+    ) -> SignalRecipient.RowId? {
+        return recipientStore.fetchRecipient(localIdentifiers: localIdentifiers, tx: tx)?.id
+    }
+
     /// Restore a single ``BackupProto/Recipient`` frame for the local recipient.
     public func restoreSelfRecipient(
         _ selfRecipientProto: BackupProto_Self,
@@ -95,6 +102,10 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
             try recipientStore.insertRecipient(localSignalRecipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+        }
+
+        if let localSignalRecipientId = localSignalRecipient.id {
+            context.localSignalRecipientRowId = localSignalRecipientId
         }
 
         if

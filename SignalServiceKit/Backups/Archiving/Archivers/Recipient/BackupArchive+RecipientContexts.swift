@@ -111,6 +111,7 @@ extension BackupArchive {
         }
 
         let localRecipientId: RecipientId
+        let localSignalRecipientRowId: SignalRecipient.RowId
         let localIdentifiers: LocalIdentifiers
 
         var localRecipientAddress: ContactAddress {
@@ -138,11 +139,13 @@ extension BackupArchive {
             includedContentFilter: IncludedContentFilter,
             localIdentifiers: LocalIdentifiers,
             localRecipientId: RecipientId,
+            localSignalRecipientRowId: SignalRecipient.RowId,
             startTimestampMs: UInt64,
             tx: DBReadTransaction
         ) {
             self.localIdentifiers = localIdentifiers
             self.localRecipientId = localRecipientId
+            self.localSignalRecipientRowId = localSignalRecipientRowId
 
             // Start after the local recipient id.
             currentRecipientId = RecipientId(value: localRecipientId.value + 1)
@@ -227,6 +230,9 @@ extension BackupArchive {
         }
 
         func recipientId(forRecipientDbRowId recipientDbRowId: SignalRecipient.RowId) -> RecipientId? {
+            if localSignalRecipientRowId == recipientDbRowId {
+                return localRecipientId
+            }
             return recipientDbRowIdMap[recipientDbRowId]
         }
     }
@@ -242,6 +248,7 @@ extension BackupArchive {
         }
 
         let localIdentifiers: LocalIdentifiers
+        var localSignalRecipientRowId: SignalRecipient.RowId?
 
         private let map = SharedMap<RecipientId, Address>()
         private let recipientDbRowIdCache = SharedMap<RecipientId, SignalRecipient.RowId>()

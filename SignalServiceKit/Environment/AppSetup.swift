@@ -1357,6 +1357,20 @@ extension AppSetup.GlobalsContinuation {
             attachmentStore: attachmentStore,
             db: db,
         )
+        let pollMessageManager = PollMessageManager(
+            pollStore: PollStore(),
+            recipientDatabaseTable: recipientDatabaseTable,
+            interactionStore: interactionStore,
+            accountManager: tsAccountManager,
+            messageSenderJobQueue: messageSenderJobQueue,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            db: db
+        )
+        let pollArchiver = BackupArchivePollArchiver(
+            pollManager: pollMessageManager,
+            db: db,
+            recipientDatabaseTable: recipientDatabaseTable
+        )
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
@@ -1420,6 +1434,7 @@ extension AppSetup.GlobalsContinuation {
                 individualCallRecordManager: individualCallRecordManager,
                 interactionStore: backupInteractionStore,
                 oversizeTextArchiver: backupsOversizeTextArchiver,
+                pollArchiver: pollArchiver,
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore,
             ),
@@ -1577,16 +1592,6 @@ extension AppSetup.GlobalsContinuation {
         )
         let backupExportJobRunner = BackupExportJobRunnerImpl(
             backupExportJob: backupExportJob
-        )
-
-        let pollMessageManager = PollMessageManager(
-            pollStore: PollStore(),
-            recipientDatabaseTable: recipientDatabaseTable,
-            interactionStore: interactionStore,
-            accountManager: tsAccountManager,
-            messageSenderJobQueue: messageSenderJobQueue,
-            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            db: db
         )
 
         let backupFailureStateManager = BackupFailureStateManager(

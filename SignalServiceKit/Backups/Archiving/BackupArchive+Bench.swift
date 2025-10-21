@@ -397,11 +397,13 @@ extension BackupArchive {
             case ChatItem_ChatUpdateMessage_LearnedProfileChange
             case ChatItem_ChatUpdateMessage_IndividualCall
             case ChatItem_ChatUpdateMessage_GroupCall
+            case ChatItem_ChatUpdateMessage_PollTerminate
 
             case ChatItem_PaymentNotification
             case ChatItem_GiftBadge
             case ChatItem_ViewOnceMessage
             case ChatItem_DirectStoryReplyMessage
+            case ChatItem_Poll
 
             case StickerPack
 
@@ -462,6 +464,8 @@ extension BackupArchive {
                         self = .ChatItem_ViewOnceMessage
                     case .directStoryReplyMessage:
                         self = .ChatItem_DirectStoryReplyMessage
+                    case .poll:
+                        self = .ChatItem_Poll
                     case nil:
                         return nil
 
@@ -498,6 +502,8 @@ extension BackupArchive {
                             self = .ChatItem_ChatUpdateMessage_GroupCall
                         case .individualCall:
                             self = .ChatItem_ChatUpdateMessage_IndividualCall
+                        case .pollTerminate:
+                            self = .ChatItem_ChatUpdateMessage_PollTerminate
                         case nil:
                             return nil
                         }
