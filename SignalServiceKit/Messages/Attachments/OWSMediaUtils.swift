@@ -38,7 +38,7 @@ public enum OWSMediaUtils {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard Data.ows_isValidImage(atPath: path) else {
+        guard (try? DataImageSource.forPath(path))?.ows_isValidImage ?? false else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(contentsOfFile: path) else {
@@ -51,7 +51,7 @@ public enum OWSMediaUtils {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard Data.ows_isValidImage(atPath: path) else {
+        guard (try? DataImageSource.forPath(path))?.ows_isValidImage ?? false else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(contentsOfFile: path) else {
@@ -61,7 +61,7 @@ public enum OWSMediaUtils {
     }
 
     public static func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
-        guard imageData.ows_isValidImage else {
+        guard DataImageSource(imageData).ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(data: imageData) else {
@@ -71,7 +71,7 @@ public enum OWSMediaUtils {
     }
 
     public static func thumbnail(forImageData imageData: Data, maxDimensionPixels: CGFloat) throws -> UIImage {
-        guard imageData.ows_isValidImage else {
+        guard DataImageSource(imageData).ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(data: imageData) else {
@@ -84,11 +84,10 @@ public enum OWSMediaUtils {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard Data.ows_isValidImage(atPath: path) else {
+        guard let imageSource = try? DataImageSource.forPath(path), imageSource.ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
-        let data = try Data(contentsOf: URL(fileURLWithPath: path))
-        guard let stillImage = data.stillForWebpData() else {
+        guard let stillImage = imageSource.stillForWebpData() else {
             throw OWSMediaError.failure(description: "Could not generate still.")
         }
         return try thumbnail(forImage: stillImage, maxDimensionPoints: maxDimensionPoints)

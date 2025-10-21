@@ -46,7 +46,7 @@ private extension CVComponentState {
             groupSecretParams: contextInfo.groupSecretParams
         )
 
-        let imageMetadata = avatarData.imageMetadata()
+        let imageMetadata = DataImageSource(avatarData).imageMetadata()
         guard let imageMetadata else {
             let cachedAvatar = GroupInviteLinkCachedAvatar(
                 cacheFileUrl: OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true),

@@ -49,8 +49,8 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
         let thumbnailImage: UIImage?
         if attachmentStream.mimeType == MimeType.imageWebp.rawValue {
-            thumbnailImage = try? attachmentStream
-                .decryptedRawData()
+            let imageSource = (try? attachmentStream.decryptedRawData()).map(DataImageSource.init(_:))
+            thumbnailImage = imageSource?
                 .stillForWebpData()?
                 .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
         } else {

@@ -232,7 +232,8 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         guard let srcImageData = srcImageData else {
             return nil
         }
-        let imageMetadata = srcImageData.imageMetadata()
+        let imageSource = DataImageSource(srcImageData)
+        let imageMetadata = imageSource.imageMetadata()
         guard let imageMetadata else {
             return nil
         }
@@ -242,7 +243,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
         switch imageFormat {
         case .webp:
-            guard let stillImage = srcImageData.stillForWebpData() else {
+            guard let stillImage = imageSource.stillForWebpData() else {
                 owsFailDebug("Couldn't derive still image for Webp.")
                 return nil
             }

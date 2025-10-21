@@ -207,23 +207,7 @@ public class SignalAttachment: NSObject {
 
     public override var debugDescription: String {
         let fileSize = ByteCountFormatter.string(fromByteCount: Int64(dataLength), countStyle: .file)
-        let string = "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
-
-        // Computing resolution from dataUrl could cause DataSourceValue to write to disk, which
-        // can be expensive. Only do it in debug.
-        #if DEBUG
-        if let dataUrl = dataUrl {
-            if isVideo {
-                let resolution = OWSMediaUtils.videoResolution(url: dataUrl)
-                return "\(string), resolution: \(resolution), aspectRatio: \(resolution.aspectRatio)"
-            } else if isImage {
-                let resolution = Data.imageSize(forFilePath: dataUrl.path)
-                return "\(string), resolution: \(resolution), aspectRatio: \(resolution.aspectRatio)"
-            }
-        }
-        #endif
-
-        return string
+        return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
     public class var missingDataErrorMessage: String {
@@ -1142,7 +1126,7 @@ public class SignalAttachment: NSObject {
     /// - Throws: `SignalAttachmentError.couldNotRemoveMetadata` if the PNG parser fails.
     private static func removeMetadata(fromPng pngData: Data) throws -> Data {
         do {
-            let chunker = try PngChunker(source: pngData)
+            let chunker = try PngChunker(source: DataImageSource(pngData))
             var result = PngChunker.pngSignature
             while let chunk = try chunker.next() {
                 if pngChunkTypesToKeep.contains(chunk.type) {

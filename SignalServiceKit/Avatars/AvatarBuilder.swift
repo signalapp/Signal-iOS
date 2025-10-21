@@ -988,7 +988,7 @@ public class AvatarBuilder {
     ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
         if shouldValidate {
-            guard Data.ows_isValidImage(atPath: fileUrl.path) else {
+            guard (try? DataImageSource.forPath(fileUrl.path))?.ows_isValidImage ?? false else {
                 owsFailDebug("Invalid image.")
                 return nil
             }
@@ -1018,7 +1018,7 @@ public class AvatarBuilder {
     ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
         if shouldValidate {
-            guard imageData.ows_isValidImage else {
+            guard DataImageSource(imageData).ows_isValidImage else {
                 owsFailDebug("Invalid imageData.")
                 return nil
             }

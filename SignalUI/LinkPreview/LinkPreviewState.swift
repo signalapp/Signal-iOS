@@ -205,7 +205,7 @@ public class LinkPreviewDraft: LinkPreviewState {
             owsFailDebug("Missing imageData.")
             return .zero
         }
-        let imageMetadata = imageData.imageMetadata()
+        let imageMetadata = DataImageSource(imageData).imageMetadata()
         guard let imageMetadata else {
             owsFailDebug("Invalid image.")
             return .zero

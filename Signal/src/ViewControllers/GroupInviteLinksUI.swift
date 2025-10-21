@@ -243,7 +243,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                             avatarUrlPath: avatarUrlPath,
                             groupSecretParams: groupV2ContextInfo.groupSecretParams
                         )
-                        guard avatarData.ows_isValidImage else {
+                        guard DataImageSource(avatarData).ows_isValidImage else {
                             throw OWSAssertionError("Invalid group avatar.")
                         }
                         guard let image = UIImage(data: avatarData) else {

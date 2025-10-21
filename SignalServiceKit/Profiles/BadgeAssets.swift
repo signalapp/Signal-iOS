@@ -115,14 +115,14 @@ public class BadgeAssets {
         guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {
             throw OWSAssertionError("Sprite url missing")
         }
-        guard Data.ows_isValidImage(at: resultUrl) else {
+        guard (try? DataImageSource.forPath(resultUrl.path))?.ows_isValidImage ?? false else {
             throw OWSAssertionError("Invalid sprite")
         }
         try OWSFileSystem.moveFile(from: resultUrl, to: spriteUrl)
     }
 
     private func extractSpritesFromSpritesheetIfNecessary() throws {
-        guard Data.ows_isValidImage(atPath: fileUrlForSpritesheet().path) else {
+        guard (try? DataImageSource.forPath(fileUrlForSpritesheet().path))?.ows_isValidImage ?? false else {
             throw OWSAssertionError("Invalid spritesheet source image")
         }
 

@@ -118,7 +118,7 @@ public class DecryptedStickerMetadata: StickerMetadata {
     }
 
     public func isValidImage() -> Bool {
-        return Data.ows_isValidImage(at: stickerDataUrl)
+        return (try? DataImageSource.forPath(stickerDataUrl.path))?.ows_isValidImage ?? false
     }
 
     public func readStickerData() throws -> Data {

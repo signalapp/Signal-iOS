@@ -196,10 +196,10 @@ class GifPickerCell: UICollectionViewCell {
         if asset.assetDescription.fileExtension == "mp4", let video = LoopingVideo(decryptedLocalFileUrl: URL(fileURLWithPath: asset.filePath)) {
             mp4View.video = video
             mp4View.isHidden = false
-        } else if Data.ows_isValidImage(atPath: asset.filePath), let image = SDAnimatedImage(contentsOfFile: asset.filePath) {
+        } else if (try? DataImageSource.forPath(asset.filePath))?.ows_isValidImage ?? false, let image = SDAnimatedImage(contentsOfFile: asset.filePath) {
             imageView.image = image
             imageView.isHidden = false
-        } else if Data.ows_isValidImage(atPath: asset.filePath), let image = UIImage(contentsOfFile: asset.filePath) {
+        } else if (try? DataImageSource.forPath(asset.filePath))?.ows_isValidImage ?? false, let image = UIImage(contentsOfFile: asset.filePath) {
             imageView.image = image
             imageView.isHidden = false
         } else {

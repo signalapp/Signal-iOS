@@ -563,7 +563,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let imageSource: OWSImageSource = try {
             switch input.type {
             case .inMemory(let data):
-                return data
+                return DataImageSource(data)
             case .unencryptedFile(let fileUrl):
                 return try FileHandleImageSource(fileUrl: fileUrl)
             case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):

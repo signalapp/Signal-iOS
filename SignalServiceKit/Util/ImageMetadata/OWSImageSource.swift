@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import ImageIO
 import Foundation
 
 import SDWebImage
@@ -19,55 +20,42 @@ public protocol OWSImageSource {
     func readIntoMemory() throws -> Data
 }
 
-extension Data: OWSImageSource {
+public struct DataImageSource: OWSImageSource {
+    public let rawValue: Data
 
-    public var byteLength: Int { count }
+    public init(_ rawValue: Data) {
+        self.rawValue = rawValue
+    }
+
+    public static func forPath(_ filePath: String) throws -> Self {
+        do {
+            // Use memory-mapped Data instead of a URL-based CGImageSource because we
+            // may only need to read from a small portion of the file header.
+            return Self(try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe))
+        } catch {
+            Logger.warn("Could not read image data: \(error)")
+            throw error
+        }
+    }
+
+    public var byteLength: Int { self.rawValue.count }
 
     public func readData(byteOffset: Int, byteLength: Int) throws -> Data {
-        return self[byteOffset..<(byteOffset + byteLength)]
+        return self.rawValue[byteOffset..<(byteOffset + byteLength)]
     }
 
     public func cgImageSource() throws -> CGImageSource? {
-        return CGImageSourceCreateWithData(self as CFData, nil)
+        return CGImageSourceCreateWithData(self.rawValue as CFData, nil)
     }
 
     public func readIntoMemory() throws -> Data {
-        return self
+        return self.rawValue
     }
 }
 
 extension OWSImageSource {
     public var ows_isValidImage: Bool {
         return imageMetadata() != nil
-    }
-
-    public static func ows_isValidImage(at fileUrl: URL) -> Bool {
-        return imageMetadata(withPath: fileUrl.path) != nil
-    }
-    public static func ows_isValidImage(atPath filePath: String) -> Bool {
-        return imageMetadata(withPath: filePath) != nil
-    }
-
-    fileprivate static func ows_isValidImage(dimension imageSize: CGSize, depthBytes: CGFloat, isAnimated: Bool) -> Bool {
-        if imageSize.width < 1 || imageSize.height < 1 || depthBytes < 1 {
-            // Invalid metadata.
-            return false
-        }
-
-        // We only support (A)RGB and (A)Grayscale, so worst case is 4.
-        let worstCaseComponentsPerPixel = CGFloat(4)
-        let bytesPerPixel = worstCaseComponentsPerPixel * depthBytes
-
-        let expectedBytesPerPixel: CGFloat = 4
-        let maxValidImageDimension: CGFloat = CGFloat(isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions)
-        let maxBytes = maxValidImageDimension * maxValidImageDimension * expectedBytesPerPixel
-        let actualBytes = imageSize.width * imageSize.height * bytesPerPixel
-        if actualBytes > maxBytes {
-            Logger.warn("invalid dimensions width: \(imageSize.width), height \(imageSize.height), bytesPerPixel: \(bytesPerPixel)")
-            return false
-        }
-
-        return true
     }
 
     fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat? {
@@ -128,17 +116,6 @@ extension OWSImageSource {
         }
     }
 
-    fileprivate static func applyImageOrientation(_ orientation: CGImagePropertyOrientation, to imageSize: CGSize) -> CGSize {
-        // NOTE: UIImageOrientation and CGImagePropertyOrientation values
-        //       DO NOT match.
-        switch orientation {
-        case .up, .upMirrored, .down, .downMirrored:
-            return imageSize
-        case .left, .leftMirrored, .right, .rightMirrored:
-            return CGSize(width: imageSize.height, height: imageSize.width)
-        }
-    }
-
     public static func hasAlpha(forValidImageFilePath filePath: String) -> Bool {
         if isWebp(filePath: filePath) {
             return true
@@ -152,15 +129,7 @@ extension OWSImageSource {
             return false
         }
 
-        return imageMetadata(withPath: filePath)?.hasAlpha ?? false
-    }
-
-    /// Returns the image size in pixels.
-    ///
-    /// Returns CGSizeZero on error.
-    public static func imageSize(forFilePath filePath: String) -> CGSize {
-        let imageMetadata = imageMetadata(withPath: filePath)
-        return imageMetadata?.pixelSize ?? .zero
+        return (try? DataImageSource.forPath(filePath))?.imageMetadata()?.hasAlpha ?? false
     }
 
     /// Determine whether something is an animated PNG.
@@ -195,20 +164,6 @@ extension OWSImageSource {
     }
 
     // MARK: - Image Metadata
-
-    public static func imageMetadata(withPath filePath: String, ignoreFileSize: Bool = false) -> ImageMetadata? {
-        do {
-            let data = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
-            // Use memory-mapped NSData instead of a URL-based
-            // CGImageSource. We should usually only be reading
-            // from (a small portion of) the file header,
-            // depending on the file format.
-            return data.imageMetadata(ignoreFileSize: ignoreFileSize)
-        } catch {
-            Logger.warn("Could not read image data: \(error)")
-            return nil
-        }
-    }
 
     /// load image metadata about the current object
     public func imageMetadata(ignoreFileSize: Bool = false) -> ImageMetadata? {
@@ -286,7 +241,7 @@ extension OWSImageSource {
     fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata? {
         if imageFormat == .webp {
             let imageSize = sizeForWebpData
-            guard Data.ows_isValidImage(dimension: imageSize, depthBytes: 1, isAnimated: isAnimated) else {
+            guard isImageSizeValid(imageSize, depthBytes: 1, isAnimated: isAnimated) else {
                 Logger.warn("Image does not have valid dimensions: \(imageSize)")
                 return nil
             }
@@ -297,61 +252,7 @@ extension OWSImageSource {
             Logger.warn("Could not build imageSource.")
             return nil
         }
-        return Data.imageMetadata(withImageSource: imageSource, imageFormat: imageFormat, isAnimated: isAnimated)
-    }
-
-    fileprivate static func imageMetadata(withImageSource imageSource: CGImageSource, imageFormat: ImageFormat, isAnimated: Bool) -> ImageMetadata? {
-        let options = [kCGImageSourceShouldCache as String: false]
-        guard let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary) as? [String: AnyObject] else {
-            Logger.warn("Missing imageProperties.")
-            return nil
-        }
-
-        guard let widthNumber = imageProperties[kCGImagePropertyPixelWidth as String] as? NSNumber else {
-            Logger.warn("widthNumber was unexpectedly nil")
-            return nil
-        }
-        guard let heightNumber = imageProperties[kCGImagePropertyPixelHeight as String] as? NSNumber else {
-            Logger.warn("heightNumber was unexpectedly nil")
-            return nil
-        }
-
-        var pixelSize = CGSize(width: widthNumber.doubleValue, height: heightNumber.doubleValue)
-        if let orientationNumber = imageProperties[kCGImagePropertyOrientation as String] as? NSNumber {
-            guard let orientation = CGImagePropertyOrientation(rawValue: orientationNumber.uint32Value) else {
-                Logger.warn("orientation number was invalid")
-                return nil
-            }
-            pixelSize = applyImageOrientation(orientation, to: pixelSize)
-        }
-
-        let hasAlpha = imageProperties[kCGImagePropertyHasAlpha as String] as? NSNumber ?? false
-
-        // The number of bits in each color sample of each pixel. The value of this key is a CFNumberRef.
-        guard let depthNumber = imageProperties[kCGImagePropertyDepth as String] as? NSNumber else {
-            Logger.warn("depthNumber was unexpectedly nil")
-            return nil
-        }
-        let depthBits = depthNumber.uintValue
-        // This should usually be 1.
-        let depthBytes = ceil(Double(depthBits) / 8.0)
-
-        // The color model of the image such as "RGB", "CMYK", "Gray", or "Lab". The value of this key is CFStringRef.
-        guard let colorModel = (imageProperties[kCGImagePropertyColorModel as String] as? NSString) as String? else {
-            Logger.warn("colorModel was unexpectedly nil")
-            return nil
-        }
-        guard colorModel == kCGImagePropertyColorModelRGB as String || colorModel == kCGImagePropertyColorModelGray as String else {
-            Logger.warn("Invalid colorModel: \(colorModel)")
-            return nil
-        }
-
-        guard ows_isValidImage(dimension: pixelSize, depthBytes: depthBytes, isAnimated: isAnimated) else {
-            Logger.warn("Image does not have valid dimensions: \(pixelSize).")
-            return nil
-        }
-
-        return .init(imageFormat: imageFormat, pixelSize: pixelSize, hasAlpha: hasAlpha.boolValue, isAnimated: isAnimated)
+        return imageMetadataWithImageSource(imageSource, imageFormat: imageFormat, isAnimated: isAnimated)
     }
 
     // MARK: - WEBP
@@ -400,4 +301,92 @@ extension OWSImageSource {
             frameCount: UInt32(count)
         )
     }
+}
+
+private func applyImageOrientation(_ orientation: CGImagePropertyOrientation, to imageSize: CGSize) -> CGSize {
+    // NOTE: UIImageOrientation and CGImagePropertyOrientation values
+    //       DO NOT match.
+    switch orientation {
+    case .up, .upMirrored, .down, .downMirrored:
+        return imageSize
+    case .left, .leftMirrored, .right, .rightMirrored:
+        return CGSize(width: imageSize.height, height: imageSize.width)
+    }
+}
+
+private func isImageSizeValid(_ imageSize: CGSize, depthBytes: CGFloat, isAnimated: Bool) -> Bool {
+    if imageSize.width < 1 || imageSize.height < 1 || depthBytes < 1 {
+        // Invalid metadata.
+        return false
+    }
+
+    // We only support (A)RGB and (A)Grayscale, so worst case is 4.
+    let worstCaseComponentsPerPixel = CGFloat(4)
+    let bytesPerPixel = worstCaseComponentsPerPixel * depthBytes
+    let actualBytes = imageSize.width * imageSize.height * bytesPerPixel
+
+    let expectedBytesPerPixel: CGFloat = 4
+    let maxValidImageDimension = CGFloat(isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions)
+    let maxBytes = maxValidImageDimension * maxValidImageDimension * expectedBytesPerPixel
+
+    if actualBytes > maxBytes {
+        Logger.warn("invalid dimensions width: \(imageSize.width), height \(imageSize.height), bytesPerPixel: \(bytesPerPixel)")
+        return false
+    }
+
+    return true
+}
+
+private func imageMetadataWithImageSource(_ imageSource: CGImageSource, imageFormat: ImageFormat, isAnimated: Bool) -> ImageMetadata? {
+    let options = [kCGImageSourceShouldCache as String: false]
+    guard let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, options as CFDictionary) as? [String: AnyObject] else {
+        Logger.warn("Missing imageProperties.")
+        return nil
+    }
+
+    guard let widthNumber = imageProperties[kCGImagePropertyPixelWidth as String] as? NSNumber else {
+        Logger.warn("widthNumber was unexpectedly nil")
+        return nil
+    }
+    guard let heightNumber = imageProperties[kCGImagePropertyPixelHeight as String] as? NSNumber else {
+        Logger.warn("heightNumber was unexpectedly nil")
+        return nil
+    }
+
+    var pixelSize = CGSize(width: widthNumber.doubleValue, height: heightNumber.doubleValue)
+    if let orientationNumber = imageProperties[kCGImagePropertyOrientation as String] as? NSNumber {
+        guard let orientation = CGImagePropertyOrientation(rawValue: orientationNumber.uint32Value) else {
+            Logger.warn("orientation number was invalid")
+            return nil
+        }
+        pixelSize = applyImageOrientation(orientation, to: pixelSize)
+    }
+
+    let hasAlpha = imageProperties[kCGImagePropertyHasAlpha as String] as? NSNumber ?? false
+
+    // The number of bits in each color sample of each pixel. The value of this key is a CFNumberRef.
+    guard let depthNumber = imageProperties[kCGImagePropertyDepth as String] as? NSNumber else {
+        Logger.warn("depthNumber was unexpectedly nil")
+        return nil
+    }
+    let depthBits = depthNumber.uintValue
+    // This should usually be 1.
+    let depthBytes = ceil(Double(depthBits) / 8.0)
+
+    // The color model of the image such as "RGB", "CMYK", "Gray", or "Lab". The value of this key is CFStringRef.
+    guard let colorModel = (imageProperties[kCGImagePropertyColorModel as String] as? NSString) as String? else {
+        Logger.warn("colorModel was unexpectedly nil")
+        return nil
+    }
+    guard colorModel == kCGImagePropertyColorModelRGB as String || colorModel == kCGImagePropertyColorModelGray as String else {
+        Logger.warn("Invalid colorModel: \(colorModel)")
+        return nil
+    }
+
+    guard isImageSizeValid(pixelSize, depthBytes: depthBytes, isAnimated: isAnimated) else {
+        Logger.warn("Image does not have valid dimensions: \(pixelSize).")
+        return nil
+    }
+
+    return .init(imageFormat: imageFormat, pixelSize: pixelSize, hasAlpha: hasAlpha.boolValue, isAnimated: isAnimated)
 }

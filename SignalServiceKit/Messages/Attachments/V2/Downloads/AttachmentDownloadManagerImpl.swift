@@ -1893,7 +1893,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 let mimeType: MimeType
-                let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path)
+                let imageMetadata = try? DataImageSource.forPath(stickerDataUrl.path).imageMetadata()
                 if let imageMetadata {
                     mimeType = imageMetadata.imageFormat.mimeType
                 } else {

@@ -569,12 +569,12 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         guard let avatarFileName else {
             return nil
         }
-        let avatarFileUrl = URL(fileURLWithPath: Self.profileAvatarFilePath(for: avatarFileName))
-        guard let avatarData = try? Data(contentsOf: avatarFileUrl), avatarData.ows_isValidImage else {
+        let imageSource = try? DataImageSource.forPath(Self.profileAvatarFilePath(for: avatarFileName))
+        guard let imageSource, imageSource.ows_isValidImage else {
             Logger.warn("Couldn't load or validate avatar image data")
             return nil
         }
-        return avatarData
+        return imageSource.rawValue
     }
 
     public func loadAvatarImage() -> UIImage? {

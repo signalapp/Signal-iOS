@@ -12,20 +12,20 @@ class SignalAttachmentTest: SignalBaseTest {
     // MARK: - Utilities
 
     func testMetadataStrippingDoesNotChangeOrientation(url: URL) throws {
-        let size = Data.imageSize(forFilePath: url.path)
+        let size = (try? DataImageSource.forPath(url.path).imageMetadata()?.pixelSize) ?? .zero
 
         let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
         let attachment = SignalAttachment.attachment(
             dataSource: dataSource,
             dataUTI: UTType.jpeg.identifier
         )
-        let newSize = attachment.data.imageMetadata()?.pixelSize
+        let newSize = DataImageSource(attachment.data).imageMetadata()?.pixelSize
 
         XCTAssertEqual(newSize, size, "image dimensions changed for \(url.lastPathComponent)")
     }
 
     private func pngChunks(data: Data) throws -> [PngChunker.Chunk] {
-        let chunker = try PngChunker(source: data)
+        let chunker = try PngChunker(source: DataImageSource(data))
         var result = [PngChunker.Chunk]()
         while let chunk = try chunker.next() {
             result.append(chunk)

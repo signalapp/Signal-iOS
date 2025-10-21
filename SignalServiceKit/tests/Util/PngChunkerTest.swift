@@ -19,7 +19,7 @@ class PngChunkerTest: XCTestCase {
             PngChunker.pngSignature
         ]
         for data in tooSmall {
-            XCTAssertThrowsError(try PngChunker(source: data)) { error in
+            XCTAssertThrowsError(try PngChunker(source: DataImageSource(data))) { error in
                 XCTAssertEqual(
                     error as? PngChunker.PngChunkerError,
                     PngChunker.PngChunkerError.tooSmall
@@ -36,7 +36,7 @@ class PngChunkerTest: XCTestCase {
             Randomness.generateRandomBytes(123)
         ]
         for data in wrongPrefix {
-            XCTAssertThrowsError(try PngChunker(source: data)) { error in
+            XCTAssertThrowsError(try PngChunker(source: DataImageSource(data))) { error in
                 XCTAssertEqual(
                     error as? PngChunker.PngChunkerError,
                     PngChunker.PngChunkerError.fileDoesNotStartWithPngSignature
@@ -48,7 +48,7 @@ class PngChunkerTest: XCTestCase {
     func testBarebonesPng() throws {
         let data = fixture(filename: "test-png")
 
-        let chunker = try XCTUnwrap(PngChunker(source: data), "test-png chunker")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(data)), "test-png chunker")
         let chunks = try XCTUnwrap(allChunks(from: chunker), "test-png chunks")
 
         XCTAssertEqual(reconstruct(from: chunks), data)
@@ -60,7 +60,7 @@ class PngChunkerTest: XCTestCase {
     func testApng() throws {
         let data = fixture(filename: "test-apng")
 
-        let chunker = try XCTUnwrap(PngChunker(source: data), "test-apng chunker")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(data)), "test-apng chunker")
         let chunks = try XCTUnwrap(allChunks(from: chunker), "test-apng chunks")
 
         XCTAssertEqual(reconstruct(from: chunks), data)
@@ -71,7 +71,7 @@ class PngChunkerTest: XCTestCase {
 
     func testNextAfterFinished() throws {
         let data = fixture(filename: "test-png")
-        let chunker = try XCTUnwrap(PngChunker(source: data), "test-png chunker")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(data)), "test-png chunker")
         while try chunker.next() != nil {}
 
         XCTAssertNil(try chunker.next())
@@ -81,7 +81,7 @@ class PngChunkerTest: XCTestCase {
 
     func testNextAfterError() throws {
         let data = PngChunker.pngSignature + Data(count: 100)
-        let chunker = try XCTUnwrap(PngChunker(source: data), "test-png chunker")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(data)), "test-png chunker")
 
         XCTAssertThrowsError(try chunker.next())
 
@@ -94,7 +94,7 @@ class PngChunkerTest: XCTestCase {
         let invalidData: Data = try {
             var result = PngChunker.pngSignature
             let validData = fixture(filename: "test-png")
-            let chunker = try XCTUnwrap(PngChunker(source: validData), "Test not set up correctly")
+            let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(validData)), "Test not set up correctly")
             while let chunk = try chunker.next() {
                 let allBytes = chunk.allBytes()
                 if chunk.type.asString(.ascii) == "IDAT" {
@@ -106,7 +106,7 @@ class PngChunkerTest: XCTestCase {
             }
             return result
         }()
-        let chunker = try XCTUnwrap(PngChunker(source: invalidData), "Chunker for invalid data")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(invalidData)), "Chunker for invalid data")
 
         XCTAssertEqual((try XCTUnwrap(chunker.next())).type.asString(.ascii), "IHDR")
         XCTAssertThrowsError(try chunker.next()) { error in
@@ -121,7 +121,7 @@ class PngChunkerTest: XCTestCase {
         let invalidData: Data = try {
             var result = PngChunker.pngSignature
             let validData = fixture(filename: "test-png")
-            let chunker = try XCTUnwrap(PngChunker(source: validData), "Test not set up correctly")
+            let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(validData)), "Test not set up correctly")
             while let chunk = try chunker.next() {
                 let allBytes = chunk.allBytes()
                 if chunk.type.asString(.ascii) == "IDAT" {
@@ -133,7 +133,7 @@ class PngChunkerTest: XCTestCase {
             }
             return result
         }()
-        let chunker = try XCTUnwrap(PngChunker(source: invalidData), "Chunker for invalid data")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(invalidData)), "Chunker for invalid data")
 
         XCTAssertEqual((try XCTUnwrap(chunker.next())).type.asString(.ascii), "IHDR")
         XCTAssertThrowsError(try chunker.next()) { error in
@@ -146,7 +146,7 @@ class PngChunkerTest: XCTestCase {
 
     func testEndedUnexpectedly() throws {
         let invalidData = fixture(filename: "test-png").dropLast(8)
-        let chunker = try XCTUnwrap(PngChunker(source: invalidData), "Invalid data chunker")
+        let chunker = try XCTUnwrap(PngChunker(source: DataImageSource(invalidData)), "Invalid data chunker")
 
         XCTAssertEqual((try XCTUnwrap(chunker.next())).type.asString(.ascii), "IHDR")
         XCTAssertEqual((try XCTUnwrap(chunker.next())).type.asString(.ascii), "IDAT")

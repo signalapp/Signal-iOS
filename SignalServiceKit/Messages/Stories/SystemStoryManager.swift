@@ -27,7 +27,7 @@ public class OnboardingStoryManagerFilesystem {
     }
 
     public class func isValidImage(at url: URL) -> Bool {
-        return Data.ows_isValidImage(at: url)
+        return (try? DataImageSource.forPath(url.path))?.ows_isValidImage ?? false
     }
 }
 

@@ -744,7 +744,7 @@ extension OWSContactsManager: ContactManager {
             return nil
         }
 
-        guard avatarData.ows_isValidImage else {
+        guard DataImageSource(avatarData).ows_isValidImage else {
             owsFailDebug("Couldn't validate system contact avatar")
             return nil
         }

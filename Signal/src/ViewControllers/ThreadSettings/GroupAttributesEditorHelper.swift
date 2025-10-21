@@ -322,7 +322,7 @@ struct GroupAvatar {
         guard let imageData = imageData else {
             return nil
         }
-        guard imageData.ows_isValidImage else {
+        guard DataImageSource(imageData).ows_isValidImage else {
             owsFailDebug("Invalid image data.")
             return nil
         }

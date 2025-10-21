@@ -413,7 +413,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
             // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
             let stickerType: StickerType
-            let imageMetadata = stickerData.imageMetadata()
+            let imageMetadata = DataImageSource(stickerData).imageMetadata()
             switch imageMetadata?.imageFormat {
             case .png:
                 stickerType = .apng
@@ -437,7 +437,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let thumbnailImage: UIImage? = { () -> UIImage? in
                 switch stickerType {
                 case .webp:
-                    let image: UIImage? = stickerData.stillForWebpData()
+                    let image: UIImage? = DataImageSource(stickerData).stillForWebpData()
                     return image
                 case .apng:
                     return UIImage(data: stickerData)

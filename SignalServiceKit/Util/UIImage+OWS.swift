@@ -319,7 +319,7 @@ extension UIImage {
     }
 
     public static func validJpegData(fromAvatarData avatarData: Data) -> Data? {
-        let imageMetadata = avatarData.imageMetadata()
+        let imageMetadata = DataImageSource(avatarData).imageMetadata()
         guard let imageMetadata else {
             return nil
         }

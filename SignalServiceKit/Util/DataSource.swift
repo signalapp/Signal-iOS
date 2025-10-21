@@ -114,7 +114,7 @@ public class DataSourceValue: DataSource {
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let cachedImageMetadata = data.imageMetadata(ignoreFileSize: true)
+            let cachedImageMetadata = DataImageSource(data).imageMetadata(ignoreFileSize: true)
             _imageMetadata = cachedImageMetadata
             return cachedImageMetadata
         }
@@ -200,7 +200,7 @@ public class DataSourceValue: DataSource {
 
     public var isValidImage: Bool {
         owsAssertDebug(!isConsumed)
-        return data.ows_isValidImage
+        return DataImageSource(data).ows_isValidImage
     }
 
     public var isValidVideo: Bool {
@@ -322,7 +322,7 @@ public class DataSourcePath: DataSource {
 
     public var isValidImage: Bool {
         owsAssertDebug(!isConsumed)
-        return Data.ows_isValidImage(at: fileUrl)
+        return (try? DataImageSource.forPath(fileUrl.path))?.ows_isValidImage ?? false
     }
 
     public var isValidVideo: Bool {
@@ -346,7 +346,7 @@ public class DataSourcePath: DataSource {
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let imageMetadata = Data.imageMetadata(withPath: fileUrl.path, ignoreFileSize: true)
+            let imageMetadata = (try? DataImageSource.forPath(fileUrl.path))?.imageMetadata(ignoreFileSize: true)
             _imageMetadata = imageMetadata
             return imageMetadata
         }

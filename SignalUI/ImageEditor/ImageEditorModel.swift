@@ -77,7 +77,7 @@ class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
 
-        let srcImageSizePixels = Data.imageSize(forFilePath: srcImagePath)
+        let srcImageSizePixels = (try? DataImageSource.forPath(srcImagePath).imageMetadata()?.pixelSize) ?? .zero
         guard srcImageSizePixels.width > 0, srcImageSizePixels.height > 0 else {
             Logger.error("Couldn't determine image size.")
             throw ImageEditorError.invalidInput

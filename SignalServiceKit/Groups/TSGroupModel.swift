@@ -314,7 +314,7 @@ extension TSGroupModel {
         guard imageData.count <= kMaxAvatarSize else {
             return false
         }
-        guard let metadata = imageData.imageMetadata() else {
+        guard let metadata = DataImageSource(imageData).imageMetadata() else {
             return false
         }
         return (
@@ -423,7 +423,7 @@ extension TSGroupModel {
             return nil
         }
 
-        guard avatarData.ows_isValidImage else {
+        guard DataImageSource(avatarData).ows_isValidImage else {
             owsFailDebug("Invalid group avatar data.")
             return nil
         }
