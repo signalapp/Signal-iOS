@@ -102,12 +102,11 @@ class LinkPreviewFetcherTest: XCTestCase {
     func testLinkParsingWithRealData4_direct_image() async throws {
         try XCTSkipUnless(shouldRunNetworkTests)
 
-        guard case .image(_, let mimeType, let contents) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://share.redd.it/preview/post/a7j3mm")!) else {
+        guard case .image(_, let contents) = try await linkPreviewFetcher.fetchStringOrImageResource(from: URL(string: "https://share.redd.it/preview/post/a7j3mm")!) else {
             XCTFail("fetched page had a non-image content type")
             return
         }
 
-        XCTAssertNotNil(mimeType)
         XCTAssertFalse(contents.isEmpty)
     }
 

@@ -26,8 +26,8 @@ public class OnboardingStoryManagerFilesystem {
         try OWSFileSystem.moveFile(from: fromUrl, to: toUrl)
     }
 
-    public class func isValidImage(at url: URL, mimeType: String?) -> Bool {
-        return Data.ows_isValidImage(at: url, mimeType: mimeType)
+    public class func isValidImage(at url: URL) -> Bool {
+        return Data.ows_isValidImage(at: url)
     }
 }
 
@@ -544,9 +544,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         guard fileSystem.fileOrFolderExists(url: resultUrl) else {
             throw OWSAssertionError("Onboarding story url missing")
         }
-        guard
-            fileSystem.isValidImage(at: resultUrl, mimeType: Constants.imageExtension)
-        else {
+        guard fileSystem.isValidImage(at: resultUrl) else {
             throw OWSAssertionError("Invalid onboarding asset")
         }
         let dataSource = try DataSourcePath(

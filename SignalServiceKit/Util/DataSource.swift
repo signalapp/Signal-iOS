@@ -109,13 +109,12 @@ public class DataSourceValue: DataSource {
     /// Should only be accessed while holding `lock`.
     private var _imageMetadata: ImageMetadata??
     public var imageMetadata: ImageMetadata? {
-        return lock.withLock {
+        return lock.withLock { () -> ImageMetadata? in
             owsAssertDebug(!_isConsumed)
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let mimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)
-            let cachedImageMetadata = data.imageMetadata(withPath: nil, mimeType: mimeType, ignoreFileSize: true)
+            let cachedImageMetadata = data.imageMetadata(ignoreFileSize: true)
             _imageMetadata = cachedImageMetadata
             return cachedImageMetadata
         }
@@ -323,7 +322,7 @@ public class DataSourcePath: DataSource {
 
     public var isValidImage: Bool {
         owsAssertDebug(!isConsumed)
-        return Data.ows_isValidImage(at: fileUrl, mimeType: mimeType)
+        return Data.ows_isValidImage(at: fileUrl)
     }
 
     public var isValidVideo: Bool {
@@ -342,12 +341,12 @@ public class DataSourcePath: DataSource {
 
     private var _imageMetadata: ImageMetadata??
     public var imageMetadata: ImageMetadata? {
-        lock.withLock {
+        lock.withLock { () -> ImageMetadata? in
             owsAssertDebug(!_isConsumed)
             if let _imageMetadata {
                 return _imageMetadata
             }
-            let imageMetadata = Data.imageMetadata(withPath: fileUrl.path, mimeType: mimeType, ignoreFileSize: true)
+            let imageMetadata = Data.imageMetadata(withPath: fileUrl.path, ignoreFileSize: true)
             _imageMetadata = imageMetadata
             return imageMetadata
         }

@@ -314,7 +314,7 @@ extension TSGroupModel {
         guard imageData.count <= kMaxAvatarSize else {
             return false
         }
-        guard let metadata = imageData.imageMetadata(withPath: nil, mimeType: nil) else {
+        guard let metadata = imageData.imageMetadata() else {
             return false
         }
         return (

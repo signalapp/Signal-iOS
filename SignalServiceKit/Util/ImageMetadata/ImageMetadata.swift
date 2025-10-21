@@ -119,12 +119,4 @@ public enum ImageMetadataResult {
     case invalid
 
     case valid(ImageMetadata)
-
-    /// A mime type was provided, and it did not match the contents.
-    /// Metadata is still valid and the error can be safely ignored.
-    case mimeTypeMismatch(ImageMetadata)
-
-    /// A file extension was provided, and it did not match the contents.
-    /// Metadata is still valid and the error can be safely ignored.
-    case fileExtensionMismatch(ImageMetadata)
 }

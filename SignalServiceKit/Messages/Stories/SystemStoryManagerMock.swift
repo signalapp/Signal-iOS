@@ -100,7 +100,7 @@ public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesys
         return
     }
 
-    public override class func isValidImage(at url: URL, mimeType: String?) -> Bool {
+    public override class func isValidImage(at url: URL) -> Bool {
         return true
     }
 }

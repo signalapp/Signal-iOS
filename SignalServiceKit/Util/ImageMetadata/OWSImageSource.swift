@@ -38,25 +38,14 @@ extension Data: OWSImageSource {
 
 extension OWSImageSource {
     public var ows_isValidImage: Bool {
-        ows_isValidImage()
+        return imageMetadata() != nil
     }
 
-    public func ows_isValidImage(mimeType: String?) -> Bool {
-        ows_isValidImage(withMimeType: mimeType)
+    public static func ows_isValidImage(at fileUrl: URL) -> Bool {
+        return imageMetadata(withPath: fileUrl.path) != nil
     }
-
-    /// If mimeType is non-nil, we ensure that the magic numbers agree with the mimeType.
-    public static func ows_isValidImage(at fileUrl: URL, mimeType: String?) -> Bool {
-        return imageMetadata(withPath: fileUrl.path, mimeType: mimeType) != nil
-    }
-    public static func ows_isValidImage(atPath filePath: String, mimeType: String? = nil) -> Bool {
-        return imageMetadata(withPath: filePath, mimeType: mimeType) != nil
-    }
-    public func ows_isValidImage(withMimeType mimeType: String? = nil) -> Bool {
-        return imageMetadata(withPath: nil, mimeType: mimeType) != nil
-    }
-    fileprivate func ows_isValidImage(withPath filePath: String?, mimeType: String?) -> Bool {
-        return imageMetadata(withPath: filePath, mimeType: mimeType) != nil
+    public static func ows_isValidImage(atPath filePath: String) -> Bool {
+        return imageMetadata(withPath: filePath) != nil
     }
 
     fileprivate static func ows_isValidImage(dimension imageSize: CGSize, depthBytes: CGFloat, isAnimated: Bool) -> Bool {
@@ -196,14 +185,14 @@ extension OWSImageSource {
             return false
         }
 
-        return imageMetadata(withPath: filePath, mimeType: nil)?.hasAlpha ?? false
+        return imageMetadata(withPath: filePath)?.hasAlpha ?? false
     }
 
     /// Returns the image size in pixels.
     ///
     /// Returns CGSizeZero on error.
-    public static func imageSize(forFilePath filePath: String, mimeType: String?) -> CGSize {
-        let imageMetadata = imageMetadata(withPath: filePath, mimeType: mimeType)
+    public static func imageSize(forFilePath filePath: String) -> CGSize {
+        let imageMetadata = imageMetadata(withPath: filePath)
         return imageMetadata?.pixelSize ?? .zero
     }
 
@@ -240,45 +229,27 @@ extension OWSImageSource {
 
     // MARK: - Image Metadata
 
-    public static func imageMetadata(withPath filePath: String, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata? {
+    public static func imageMetadata(withPath filePath: String, ignoreFileSize: Bool = false) -> ImageMetadata? {
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
             // Use memory-mapped NSData instead of a URL-based
             // CGImageSource. We should usually only be reading
             // from (a small portion of) the file header,
             // depending on the file format.
-            return data.imageMetadata(withPath: filePath, mimeType: declaredMimeType, ignoreFileSize: ignoreFileSize)
+            return data.imageMetadata(ignoreFileSize: ignoreFileSize)
         } catch {
             Logger.warn("Could not read image data: \(error)")
             return nil
         }
     }
 
-    /// load image metadata about the current Data object
-    ///
-    /// If filePath and/or declaredMimeType is supplied, we warn
-    /// if they do not match the actual file contents.  But they are
-    /// both optional, we consider the actual image format (deduced
-    /// using magic numbers) to be authoritative.  The file extension
-    /// and declared MIME type could be wrong, but we can proceed in
-    /// that case.
-    ///
-    /// If maxImageDimension is supplied we enforce the _smaller_ of
-    /// that value and the per-format max dimension
-    public func imageMetadata(withPath filePath: String?, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata? {
-        let fileExtension = (filePath as? NSString)?.pathExtension.lowercased().nilIfEmpty
-        let result = _imageMetadata(
-            mimeTypeForValidation: declaredMimeType?.nilIfEmpty,
-            fileExtensionForValidation: fileExtension,
-            ignorePerTypeFileSizeLimits: ignoreFileSize
-        )
+    /// load image metadata about the current object
+    public func imageMetadata(ignoreFileSize: Bool = false) -> ImageMetadata? {
+        let result = _imageMetadataResult(ignorePerTypeFileSizeLimits: ignoreFileSize)
         switch result {
         case .invalid:
             return nil
         case .valid(let imageMetadata):
-            return imageMetadata
-        case .mimeTypeMismatch(let imageMetadata), .fileExtensionMismatch(let imageMetadata):
-            // Do not fail in production.
             return imageMetadata
         case .genericSizeLimitExceeded:
             return nil
@@ -289,22 +260,11 @@ extension OWSImageSource {
 
     /// Load image metadata about the current Data object.
     /// Returns nil if metadata could not be determined.
-    public func imageMetadata(
-        mimeTypeForValidation declaredMimeType: String?,
-        fileExtensionForValidation: String? = nil
-    ) -> ImageMetadataResult {
-        return _imageMetadata(
-            mimeTypeForValidation: declaredMimeType,
-            fileExtensionForValidation: fileExtensionForValidation,
-            ignorePerTypeFileSizeLimits: false
-        )
+    public func imageMetadataResult() -> ImageMetadataResult {
+        return _imageMetadataResult(ignorePerTypeFileSizeLimits: false)
     }
 
-    private func _imageMetadata(
-        mimeTypeForValidation declaredMimeType: String?,
-        fileExtensionForValidation: String?,
-        ignorePerTypeFileSizeLimits: Bool
-    ) -> ImageMetadataResult {
+    private func _imageMetadataResult(ignorePerTypeFileSizeLimits: Bool) -> ImageMetadataResult {
         guard byteLength < OWSMediaUtils.kMaxFileSizeGeneric else {
             return .genericSizeLimitExceeded
         }
@@ -314,8 +274,6 @@ extension OWSImageSource {
             Logger.warn("Image does not have valid format.")
             return .invalid
         }
-
-        let mimeType = imageFormat.mimeType
 
         let isAnimated: Bool
         switch imageFormat {
@@ -358,21 +316,6 @@ extension OWSImageSource {
 
         guard let metadata else {
             return .invalid
-        }
-
-        if let declaredMimeType, !imageFormat.isValid(mimeType: declaredMimeType) {
-            Logger.info("Mimetypes do not match: \(mimeType), \(declaredMimeType)")
-            return .mimeTypeMismatch(metadata)
-        }
-
-        if
-            let fileExtensionForValidation,
-            let mimeTypeForFileExtension = MimeTypeUtil.mimeTypeForFileExtension(fileExtensionForValidation),
-            !mimeTypeForFileExtension.isEmpty,
-            mimeType.rawValue.caseInsensitiveCompare(mimeTypeForFileExtension) != .orderedSame
-        {
-            Logger.info("fileExtension does not match: \(fileExtensionForValidation), \(mimeType), \(mimeTypeForFileExtension)")
-            return .fileExtensionMismatch(metadata)
         }
 
         return .valid(metadata)

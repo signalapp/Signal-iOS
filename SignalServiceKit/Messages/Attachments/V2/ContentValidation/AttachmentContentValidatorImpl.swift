@@ -575,9 +575,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         }()
 
-        let imageMetadataResult = imageSource.imageMetadata(
-            mimeTypeForValidation: mimeType
-        )
+        let imageMetadataResult = imageSource.imageMetadataResult()
 
         let imageMetadata: ImageMetadata
         switch imageMetadataResult {
@@ -589,14 +587,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             return (.invalid, nil)
         case .valid(let metadata):
             imageMetadata = metadata
-        case .mimeTypeMismatch(let metadata), .fileExtensionMismatch(let metadata):
-            // Ignore these types of errors for now; we did so historically
-            // and introducing a new failure mode should be done carefully
-            // as it may cause us to blow up for attachments we previously "handled"
-            // even if the contents didn't match the mime type.
+        }
+
+        if !imageMetadata.imageFormat.isValid(mimeType: mimeType) {
+            // Ignore this error for now; we did so historically and introducing a new
+            // failure mode should be done carefully as it may cause us to blow up for
+            // attachments we previously "handled" with mismatching mime types.
             Logger.error("MIME type mismatch")
-            mimeType = metadata.imageFormat.mimeType.rawValue
-            imageMetadata = metadata
+            mimeType = imageMetadata.imageFormat.mimeType.rawValue
         }
 
         let pixelSize = imageMetadata.pixelSize

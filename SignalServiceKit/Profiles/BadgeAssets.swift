@@ -115,7 +115,7 @@ public class BadgeAssets {
         guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {
             throw OWSAssertionError("Sprite url missing")
         }
-        guard Data.ows_isValidImage(at: resultUrl, mimeType: nil) else {
+        guard Data.ows_isValidImage(at: resultUrl) else {
             throw OWSAssertionError("Invalid sprite")
         }
         try OWSFileSystem.moveFile(from: resultUrl, to: spriteUrl)
