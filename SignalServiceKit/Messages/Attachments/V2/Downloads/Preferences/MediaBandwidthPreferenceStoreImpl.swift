@@ -50,22 +50,6 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
         return result
     }
 
-    public func downloadableSources() -> Set<QueuedAttachmentDownloadRecord.SourceType> {
-        let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
-        var set = Set<QueuedAttachmentDownloadRecord.SourceType>()
-        QueuedAttachmentDownloadRecord.SourceType.allCases.forEach {
-            switch $0 {
-            case .transitTier:
-                set.insert($0)
-            case .mediaTierFullsize, .mediaTierThumbnail:
-                if hasWifiConnection {
-                    set.insert($0)
-                }
-            }
-        }
-        return set
-    }
-
     public func set(
         _ mediaBandwidthPreference: MediaBandwidthPreferences.Preference,
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,

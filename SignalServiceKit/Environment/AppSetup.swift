@@ -623,6 +623,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedAttachmentStore: orphanedAttachmentStore,
             orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
+            reachabilityManager: reachabilityManager,
             remoteConfigManager: remoteConfigManager,
             signalService: signalService,
             stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),

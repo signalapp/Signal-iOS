@@ -428,6 +428,46 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                     // Stop the queue now proactively.
                     try? await loader.stop()
                 }
+
+                switch (error as? AttachmentDownloads.Error) {
+                case nil, .expiredCredentials:
+                    break
+                case .blockedByAutoDownloadSettings:
+                    owsFailDebug("Backup downloads should never by blocked by auto download settings!")
+                    // This should be impossible. Stop the queue, it can start up again later
+                    // on whatever the next trigger is.
+                    try? await loader.stop()
+                    return .retryableError(error)
+                case .blockedByActiveCall:
+                    // TODO: [Backups] suspend downloads during calls and resume after
+                    owsFailDebug("Backup downloads are currently not blocked by active calls!")
+                    try? await loader.stop()
+                    return .retryableError(error)
+                case .blockedByPendingMessageRequest:
+                    switch source {
+                    case .transitTier:
+                        // Don't do transit tier downloads of message request state chats.
+                        // When we restore transit tier download info from a backup, we don't
+                        // know if the attachment had been previously downloaded (we'd back up
+                        // the transit tier info even if it hadn't been) and, if it hadn't, we
+                        // should not auto-download stuff in message request state.
+                        return .unretryableError(error)
+                    case .mediaTierFullsize, .mediaTierThumbnail:
+                        owsFailDebug("Media tier downloads should never by blocked by message request state!")
+                        // This should be impossible. Stop the queue, it can start up again later
+                        // on whatever the next trigger is.
+                        try? await loader.stop()
+                        return .retryableError(error)
+                    }
+                case .blockedByNetworkState:
+                    // The attachment download is the thing that discovered incompatible reachability state
+                    // (e.g. we need wifi and aren't connected). Stop the queue; the status should
+                    // catch up momentarily and notify when reachability state changes.
+                    Logger.warn("Download failed due to reachability; proactively stopping the queue")
+                    try? await loader.stop()
+                    return .retryableError(error)
+                }
+
                 // We only retry fullsize media tier 404s.
                 // Retries work one of two ways: we first fall back to transit tier
                 // if possible with no backoff, then only if we're on a linked device

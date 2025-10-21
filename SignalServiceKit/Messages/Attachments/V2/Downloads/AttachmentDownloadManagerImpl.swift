@@ -44,6 +44,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         orphanedAttachmentStore: OrphanedAttachmentStore,
         orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
         profileManager: Shims.ProfileManager,
+        reachabilityManager: SSKReachabilityManager,
         remoteConfigManager: RemoteConfigManager,
         signalService: OWSSignalServiceProtocol,
         stickerManager: Shims.StickerManager,
@@ -79,10 +80,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
         self.downloadabilityChecker = DownloadabilityChecker(
             attachmentStore: attachmentStore,
+            backupSettingsStore: backupSettingsStore,
             currentCallProvider: currentCallProvider,
             db: db,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             profileManager: profileManager,
+            reachabilityManager: reachabilityManager,
             threadStore: threadStore
         )
         let taskRunner = DownloadTaskRunner(
@@ -705,26 +708,24 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return .cancelled
             }
 
-            struct SkipDownloadError: Error {}
-
             switch self.downloadabilityChecker.downloadability(record, attachment: attachment) {
             case .downloadable:
                 break
             case .blockedByActiveCall:
                 // This is a temporary setback; retry in a bit if the source allows it.
                 Logger.info("Skipping attachment download due to active call \(record.attachmentId)")
-                return .retryableError(SkipDownloadError())
+                return .retryableError(AttachmentDownloads.Error.blockedByActiveCall)
             case .blockedByPendingMessageRequest:
                 Logger.info("Skipping attachment download due to pending message request \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                return .unretryableError(SkipDownloadError())
+                return .unretryableError(AttachmentDownloads.Error.blockedByPendingMessageRequest)
             case .blockedByAutoDownloadSettings:
                 Logger.info("Skipping attachment download due to auto download settings \(record.attachmentId)")
                 // These can only be resolved by user action; cancel the enqueued download.
-                return .unretryableError(SkipDownloadError())
+                return .unretryableError(AttachmentDownloads.Error.blockedByAutoDownloadSettings)
             case .blockedByNetworkState:
                 Logger.info("Skipping attachment download due to network state \(record.attachmentId)")
-                return .unretryableError(SkipDownloadError())
+                return .unretryableError(AttachmentDownloads.Error.blockedByNetworkState)
             }
 
             Logger.info("Downloading attachment \(record.attachmentId) from \(record.sourceType)")
@@ -1049,25 +1050,31 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class DownloadabilityChecker {
 
         private let attachmentStore: AttachmentStore
+        private let backupSettingsStore: BackupSettingsStore
         private let currentCallProvider: CurrentCallProvider
         private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
         private let profileManager: Shims.ProfileManager
+        private let reachabilityManager: SSKReachabilityManager
         private let threadStore: ThreadStore
 
         init(
             attachmentStore: AttachmentStore,
+            backupSettingsStore: BackupSettingsStore,
             currentCallProvider: CurrentCallProvider,
             db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
             profileManager: Shims.ProfileManager,
+            reachabilityManager: SSKReachabilityManager,
             threadStore: ThreadStore
         ) {
             self.attachmentStore = attachmentStore
+            self.backupSettingsStore = backupSettingsStore
             self.currentCallProvider = currentCallProvider
             self.db = db
             self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
             self.profileManager = profileManager
+            self.reachabilityManager = reachabilityManager
             self.threadStore = threadStore
         }
 
@@ -1135,8 +1142,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return .blockedByActiveCall
             }
 
-            if !self.mediaBandwidthPreferenceStore.downloadableSources().contains(source) {
-                return .blockedByNetworkState
+            switch source {
+            case .transitTier:
+                // Transit tier can download regardless of reachability
+                break
+            case .mediaTierFullsize, .mediaTierThumbnail:
+                guard
+                    backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx)
+                    || reachabilityManager.isReachable(via: .wifi)
+                else {
+                    return .blockedByNetworkState
+                }
             }
 
             let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
@@ -1173,7 +1189,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
-            case .default, .backupRestore:
+            case .backupRestore:
+                // Don't suspend during a call until we have mechanisms
+                // to resume once the call ends.
+                // TODO: [Backups] suspend downloads during calls and resume after
+                return false
+            case .default:
                 break
             }
 

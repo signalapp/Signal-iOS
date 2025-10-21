@@ -69,10 +69,6 @@ public protocol MediaBandwidthPreferenceStore {
 
     func autoDownloadableMediaTypes(tx: DBReadTransaction) -> Set<MediaBandwidthPreferences.MediaType>
 
-    /// Which sources (e.g. transit, media tier) are capable of being downloaded given the current network
-    /// state. (At time of writing, there is no user-level setting for this, but that could change.)
-    func downloadableSources() -> Set<QueuedAttachmentDownloadRecord.SourceType>
-
     func set(
         _ mediaBandwidthPreference: MediaBandwidthPreferences.Preference,
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
