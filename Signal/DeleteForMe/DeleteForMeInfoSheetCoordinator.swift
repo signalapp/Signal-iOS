@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalUI
 import SignalServiceKit
 
 /// Responsible for optionally showing informational UX before a deletion occurs
@@ -57,22 +57,40 @@ final class DeleteForMeInfoSheetCoordinator {
             return
         }
 
-        let infoSheet = DeleteForMeSyncMessage.InfoSheet(onConfirmBlock: {
-            self.db.write { tx in
-                self.keyValueStore.setBool(
-                    true,
-                    key: StoreKeys.hasShownDeleteForMeInfoSheet,
-                    transaction: tx
-                )
+        let imageName = Theme.isDarkThemeEnabled ? "delete-sync-dark" : "delete-sync-light"
+
+        let heroSheet = HeroSheetViewController(
+            hero: .image(UIImage(named: imageName)!),
+            title: OWSLocalizedString(
+                "DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE",
+                comment: "Title for an info sheet explaining that deletes are now synced across devices."
+            ),
+            body: OWSLocalizedString(
+                "DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE",
+                comment: "Subtitle for an info sheet explaining that deletes are now synced across devices."
+            ),
+            primaryButton: .init(title: OWSLocalizedString(
+                "DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON",
+                comment: "Label for a button in an info sheet confirming that deletes are now synced across devices."
+            )) { sheet in
+                sheet.dismiss(animated: true) {
+                    self.db.write { tx in
+                        self.keyValueStore.setBool(
+                            true,
+                            key: StoreKeys.hasShownDeleteForMeInfoSheet,
+                            transaction: tx
+                        )
+                    }
+
+                    deletionBlock(
+                        self.interactionDeleteManager,
+                        self.threadSoftDeleteManager
+                    )
+                }
             }
+        )
 
-            deletionBlock(
-                self.interactionDeleteManager,
-                self.threadSoftDeleteManager
-            )
-        })
-
-        fromViewController.present(infoSheet, animated: true)
+        fromViewController.present(heroSheet, animated: true)
     }
 
     #if USE_DEBUG_UI

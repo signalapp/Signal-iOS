@@ -154,78 +154,30 @@ extension RegistrationTransferProgressViewController: DeviceTransferServiceObser
     }
 }
 
-private class TransferRelaunchSheet: InteractiveSheetViewController {
+private class TransferRelaunchSheet: HeroSheetViewController {
+    override var canBeDismissed: Bool { false }
 
-    public override var canBeDismissed: Bool { false }
-
-    public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
-
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-
-        minimizedHeight = 460
-        allowsExpansion = false
-
-        let imageView = UIImageView(image: UIImage(named: "transfer_complete"))
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.addConstraints([
-            imageView.widthAnchor.constraint(equalToConstant: 128),
-            imageView.heightAnchor.constraint(equalToConstant: 64),
-        ])
-        let imageViewContainer = UIView.container()
-        imageViewContainer.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageViewContainer.addConstraints([
-            imageView.topAnchor.constraint(equalTo: imageViewContainer.topAnchor),
-            imageView.centerXAnchor.constraint(equalTo: imageViewContainer.centerXAnchor),
-            imageView.leadingAnchor.constraint(greaterThanOrEqualTo: imageViewContainer.leadingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: imageViewContainer.bottomAnchor),
-        ])
-
-        let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
-            "TRANSFER_COMPLETE_SHEET_TITLE",
-            comment: "Title for bottom sheet shown when device transfer completes on the receiving device."
-        ))
-
-        let subtitleLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
-            "TRANSFER_COMPLETE_SHEET_SUBTITLE",
-            comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device."
-        ))
-
-        let exitButton = UIButton(
-            configuration: .largePrimary(title: OWSLocalizedString(
+    init() {
+        super.init(
+            hero: .image(UIImage(named: "transfer_complete")!),
+            title: OWSLocalizedString(
+                "TRANSFER_COMPLETE_SHEET_TITLE",
+                comment: "Title for bottom sheet shown when device transfer completes on the receiving device."
+            ),
+            body: OWSLocalizedString(
+                "TRANSFER_COMPLETE_SHEET_SUBTITLE",
+                comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device."
+            ),
+            primaryButton: .init(title: OWSLocalizedString(
                 "TRANSFER_COMPLETE_SHEET_BUTTON",
                 comment: "Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch."
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapExitButton()
+            )) { _ in
+                Self.didTapExitButton()
             }
         )
-
-        let stackView = UIStackView(arrangedSubviews: [
-            imageViewContainer,
-            titleLabel,
-            subtitleLabel,
-            .vStretchingSpacer(minHeight: 32),
-            exitButton.enclosedInVerticalStackView(isFullWidthButton: true),
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 24, leading: 8, bottom: 0, trailing: 8)
-        stackView.spacing = 22
-        stackView.isLayoutMarginsRelativeArrangement = true
-        contentView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
-        ])
     }
 
-    private func didTapExitButton() {
+    private static func didTapExitButton() {
         Logger.info("")
         SSKEnvironment.shared.notificationPresenterRef.notifyUserToRelaunchAfterTransfer {
             Logger.info("Deliberately terminating app post-transfer.")

@@ -4,40 +4,19 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public class DonationReadMoreSheetViewController: InteractiveSheetViewController {
-    let contentScrollView = UIScrollView()
-    let stackView = UIStackView()
-    public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
-    public override var sheetBackgroundColor: UIColor { UIColor.Signal.groupedBackground }
+class DonationReadMoreSheetViewController: StackSheetViewController {
+    override var stackViewInsets: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 24, vMargin: 24)
+    }
+    override var sheetBackgroundColor: UIColor { UIColor.Signal.groupedBackground }
 
-    override public func viewDidLoad() {
-        self.animationsShouldBeInterruptible = true
-
+    override func viewDidLoad() {
         super.viewDidLoad()
 
-        minimizedHeight = 600
-        super.allowsExpansion = true
-
-        contentView.addSubview(contentScrollView)
-
-        stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
         stackView.spacing = 32
-        stackView.isLayoutMarginsRelativeArrangement = true
-        contentScrollView.addSubview(stackView)
-        stackView.autoPinHeightToSuperview()
-        // Pin to the scroll view's viewport, not to its scrollable area
-        stackView.autoPinWidth(toWidthOf: contentScrollView)
 
-        contentScrollView.autoPinEdgesToSuperviewEdges()
-        contentScrollView.alwaysBounceVertical = true
-
-        buildContents()
-    }
-
-    private func buildContents() {
         let image = UIImage(named: "sustainer-heart")
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
