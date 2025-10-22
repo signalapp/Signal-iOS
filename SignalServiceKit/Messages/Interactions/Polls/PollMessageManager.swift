@@ -254,6 +254,19 @@ public class PollMessageManager {
                 message: preparedMessage,
                 transaction: tx
             )
+
+            guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+                throw OWSAssertionError("User not registered")
+            }
+
+            insertInfoMessageForEndPoll(
+                timestamp: Date().ows_millisecondsSince1970,
+                groupThread: thread,
+                targetPollTimestamp: targetPoll.timestamp,
+                pollQuestion: poll.question,
+                terminateAuthor: localAci,
+                tx: tx
+            )
         }
     }
 

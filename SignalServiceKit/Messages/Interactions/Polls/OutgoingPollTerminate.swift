@@ -96,6 +96,8 @@ class OutgoingPollTerminateMessage: TSOutgoingMessage {
 
             try PollStore().revertPollTerminate(interactionId: interactionId, transaction: tx)
 
+            // TODO: delete info message.
+
             SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
         } catch {
             Logger.error("Failed to revert poll terminate: \(error)")
