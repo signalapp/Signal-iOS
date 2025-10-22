@@ -657,14 +657,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let intent = thread.generateSendMessageIntent(context: .senderAddress(message.authorAddress), transaction: transaction)
 
+        var userInfo = AppNotificationUserInfo()
         let threadUniqueId = thread.uniqueId
+        userInfo.threadId = threadUniqueId
+
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
                 category: .pollVoteNotification,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadUniqueId,
-                userInfo: AppNotificationUserInfo(),
+                userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
                 soundQuery: .thread(threadUniqueId)
             )
