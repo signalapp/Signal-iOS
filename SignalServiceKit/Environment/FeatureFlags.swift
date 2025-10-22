@@ -76,9 +76,9 @@ public enum FeatureFlags {
     public static let iOS26SDKIsAvailable = false
 #endif
 
-    public static let pollSend = build <= .dev
-    public static let pollReceive = build <= .dev
-    public static let pollKeepProtoVersion = build <= .dev
+    public static let pollSend = build <= .internal
+    public static let pollReceive = build <= .internal
+    public static let pollKeepProtoVersion = build <= .internal
 
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 }
