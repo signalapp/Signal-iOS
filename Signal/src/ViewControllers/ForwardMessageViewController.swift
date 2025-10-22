@@ -195,6 +195,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.viewWillAppear(animated)
 
         ensureBottomFooterVisibility()
+
+        DispatchQueue.main.async {
+            self.pickerVC.updateTableMargins()
+        }
     }
 
     private func selectRecipientsStep() {

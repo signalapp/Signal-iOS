@@ -324,13 +324,17 @@ open class OWSTableViewController2: OWSViewController {
 
     public var shouldDeferInitialLoad = true
 
-    private func applyContents(shouldReload: Bool = true) {
-        AssertIsOnMainThread()
-
+    public func updateTableMargins() {
         tableView.insetsLayoutMarginsFromSafeArea = false
         let hMargin = Self.cellOuterInset(in: view)
         tableView.layoutMargins.left = hMargin + view.safeAreaInsets.left
         tableView.layoutMargins.right = hMargin + view.safeAreaInsets.right
+    }
+
+    private func applyContents(shouldReload: Bool = true) {
+        AssertIsOnMainThread()
+
+        updateTableMargins()
 
         if let title = contents.title, !title.isEmpty {
             self.title = title
