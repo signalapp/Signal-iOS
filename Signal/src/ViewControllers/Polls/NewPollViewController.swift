@@ -122,6 +122,8 @@ struct NewPollView: View {
     @State var pollOptions: [NewOption] = [NewOption(text: ""), NewOption(text: "")]
     @State var allowMultipleVotes: Bool = false
 
+    @FocusState private var focusedItemID: UUID?
+
     let characterLimit: Int = 100
 
     fileprivate init(viewModel: NewPollViewModel) {
@@ -199,6 +201,7 @@ struct NewPollView: View {
                                     option.text = String(newText.prefix(characterLimit))
                                 }
                             }
+                            .focused($focusedItemID, equals: option.id)
                     }
                     .onMove(perform: { from, to in
                         pollOptions.move(fromOffsets: from, toOffset: to)
@@ -317,7 +320,14 @@ struct NewPollView: View {
         // Add back a blank field at the end since we aren't at the option limit.
         // Note this will call onChange() again since we are changing the pollOptions array.
         filteredPollOptions.append(NewOption(text: ""))
+        let oldPollRowCount = pollOptions.count
         pollOptions = filteredPollOptions
+
+        // Re-focus latest row if this is a deletion so we don't lose
+        // first responder status.
+        if filteredPollOptions.count < oldPollRowCount {
+            focusedItemID = pollOptions.last?.id
+        }
     }
 }
 
