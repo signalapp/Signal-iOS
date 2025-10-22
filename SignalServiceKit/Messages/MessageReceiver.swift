@@ -1151,18 +1151,15 @@ public final class MessageReceiver {
         }
 
         let pollCreate = dataMessage.pollCreate
-        if let pollCreate, let question = pollCreate.question {
-            guard question.count <= OWSPoll.Constants.maxCharacterLength
-                    && question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
-            else {
-                owsFailDebug("Poll question too large")
+        if let pollCreate {
+            do {
+                body = try DependenciesBridge.shared.pollMessageManager.validateIncomingPollCreate(
+                    pollCreate: pollCreate,
+                    tx: tx)
+            } catch {
+                Logger.error("Error validating incoming poll create: \(error)")
                 return nil
             }
-
-            body =  DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
-                MessageBody(text: question, ranges: .empty),
-                tx: tx
-            )
         }
 
         if let pollTerminate = dataMessage.pollTerminate{

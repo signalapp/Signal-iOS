@@ -1365,6 +1365,7 @@ extension AppSetup.GlobalsContinuation {
             accountManager: tsAccountManager,
             messageSenderJobQueue: messageSenderJobQueue,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            attachmentContentValidator: attachmentContentValidator,
             db: db
         )
         let pollArchiver = BackupArchivePollArchiver(

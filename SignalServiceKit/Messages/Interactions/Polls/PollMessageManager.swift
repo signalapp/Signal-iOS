@@ -32,6 +32,7 @@ public class PollMessageManager {
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let accountManager: TSAccountManager
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
+    private let attachmentContentValidator: AttachmentContentValidator
 
     init(
         pollStore: PollStore,
@@ -40,6 +41,7 @@ public class PollMessageManager {
         accountManager: TSAccountManager,
         messageSenderJobQueue: MessageSenderJobQueue,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
+        attachmentContentValidator: AttachmentContentValidator,
         db: DB
     ) {
         self.pollStore = pollStore
@@ -49,6 +51,46 @@ public class PollMessageManager {
         self.messageSenderJobQueue = messageSenderJobQueue
         self.db = db
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
+        self.attachmentContentValidator = attachmentContentValidator
+    }
+
+    public func validateIncomingPollCreate(
+        pollCreate: SSKProtoDataMessagePollCreate,
+        tx: DBWriteTransaction
+    ) throws -> ValidatedInlineMessageBody {
+        guard let question = pollCreate.question else {
+            throw OWSAssertionError("Poll missing question")
+        }
+        guard question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
+                && question.count <= OWSPoll.Constants.maxCharacterLength
+        else {
+            throw OWSAssertionError("Poll question too large")
+        }
+
+        guard question.count > 0 else {
+            throw OWSAssertionError("Poll question empty")
+        }
+
+        guard pollCreate.options.count >= 2 else {
+            throw OWSAssertionError("Poll does not have enough options")
+        }
+
+        for option in pollCreate.options {
+            guard option.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
+                    && option.count <= OWSPoll.Constants.maxCharacterLength
+            else {
+                throw OWSAssertionError("Poll option too large")
+            }
+
+            guard option.count > 0 else {
+                throw OWSAssertionError("Poll option empty")
+            }
+        }
+
+        return self.attachmentContentValidator.truncatedMessageBodyForInlining(
+            MessageBody(text: question, ranges: .empty),
+            tx: tx
+        )
     }
 
     public func processIncomingPollCreate(

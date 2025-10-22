@@ -181,6 +181,9 @@ struct NewPollView: View {
                         if newText.count > characterLimit {
                             pollQuestion = String(newText.prefix(characterLimit))
                         }
+                        if pollQuestion.stripped.isEmpty {
+                            pollQuestion = ""
+                        }
                     }
                 } header: {
                     Text(
@@ -199,6 +202,9 @@ struct NewPollView: View {
                             .onChange(of: option.text) { newText in
                                 if newText.count > characterLimit {
                                     option.text = String(newText.prefix(characterLimit))
+                                }
+                                if option.text.stripped.isEmpty {
+                                    option.text = ""
                                 }
                             }
                             .focused($focusedItemID, equals: option.id)
@@ -284,8 +290,10 @@ struct NewPollView: View {
     private func sendButtonPressed(sendButtonEnabled: Bool) {
         if sendButtonEnabled {
             viewModel.onSend(
-                pollOptions: pollOptions.map(\.text).filter { !$0.isEmpty },
-                question: pollQuestion,
+                pollOptions: pollOptions.map(\.text)
+                    .filter { !$0.stripped.isEmpty }
+                    .map { $0.stripped },
+                question: pollQuestion.stripped,
                 allowMultipleVotes: allowMultipleVotes
             )
         } else {
@@ -299,7 +307,7 @@ struct NewPollView: View {
 
     private func onChange() {
         // Filter out all blank fields since user may have deleted a middle option.
-        var filteredPollOptions = pollOptions.filter({ !$0.text.isEmpty })
+        var filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
 
         if filteredPollOptions.count >= 10 {
             return

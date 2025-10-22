@@ -27,6 +27,7 @@ struct PollManagerTest {
             accountManager: mockTSAccountManager,
             messageSenderJobQueue: MessageSenderJobQueue(appReadiness: AppReadinessMock()),
             disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
+            attachmentContentValidator: AttachmentContentValidatorMock(),
             db: db
         )
         let testPhone = E164("+16505550101")!
