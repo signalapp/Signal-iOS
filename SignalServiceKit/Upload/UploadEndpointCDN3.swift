@@ -173,15 +173,15 @@ struct UploadEndpointCDN3: UploadEndpoint {
             switch error {
             case let error where error.httpStatusCode == 415:
                 // 415 is a checksum error, log the error and retry
-                attempt.logger.warn("Upload checksum validation failed, retry.\(debugInfo)")
+                attempt.logger.warn("Upload checksum validation failed [415], retry.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .restart(retryMode))
             case let error where (400...499).contains(error.responseStatusCode):
                 // On 4XX errors, clients should restart the upload
-                attempt.logger.warn("Unexpected upload failure, restart.\(debugInfo)")
+                attempt.logger.warn("Unexpected upload failure [\(error.responseStatusCode)], restart.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .restart(retryMode))
             case let error where (500...599).contains(error.responseStatusCode):
                 // On 5XX errors, clients should try to resume the upload
-                attempt.logger.warn("Temporary upload failure, retry.\(debugInfo)")
+                attempt.logger.warn("Temporary upload failure [\(error.responseStatusCode)], retry.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
             case .networkFailure(let wrappedError):
                 let debugMessage = DebugFlags.internalLogging ? " Error: \(wrappedError.debugDescription)" : ""
@@ -193,7 +193,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
                     throw Upload.Error.networkError
                 }
             default:
-                attempt.logger.warn("Unknown upload failure. (HTTP status code: \(error.responseStatusCode)) \(debugInfo)")
+                attempt.logger.warn("Unknown upload failure. [\(error.responseStatusCode)] \(debugInfo)")
                 throw Upload.Error.unknown
             }
         } catch _ as CancellationError {
