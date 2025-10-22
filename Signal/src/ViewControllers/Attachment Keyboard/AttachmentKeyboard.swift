@@ -62,6 +62,7 @@ class AttachmentKeyboard: CustomKeyboard {
         ])
         stackView.axis = .vertical
         stackView.setCustomSpacing(12, after: limitedPhotoPermissionsView)
+        limitedPhotoPermissionsView.isHiddenInStackView = true
         contentView.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
