@@ -420,6 +420,12 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                     progress: progressSink
                 )
             } catch let error {
+                if Task.isCancelled {
+                    logger.info("Cancelled; stopping the queue")
+                    try? await loader.stop(reason: CancellationError())
+                    return .retryableError(CancellationError())
+                }
+
                 switch await statusManager.jobDidExperienceError(error, token: statusToken, mode: mode) {
                 case nil:
                     // No state change, keep going.

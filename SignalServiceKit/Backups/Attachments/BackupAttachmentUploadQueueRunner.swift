@@ -508,6 +508,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     )
                 }
             } catch let error {
+                if Task.isCancelled {
+                    logger.info("Cancelled; stopping the queue")
+                    try? await loader.stop(reason: CancellationError())
+                    return .retryableError(CancellationError())
+                }
+
                 switch error as? BackupArchive.Response.CopyToMediaTierError {
                 case .sourceObjectNotFound:
                     // Any time we find this error, retry. It means the upload

@@ -1408,8 +1408,24 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
                 return
             } else {
                 // We've discovered this upload on the media tier.
-                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].discoveredOnCdnCount += 1
-                _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.discoveredOnCdnSampleAttachmentIds)
+                let enqueuedUpload = try? backupAttachmentUploadStore.getEnqueuedUpload(
+                    for: attachment.id,
+                    fullsize: isFullsize,
+                    tx: tx
+                )
+                switch enqueuedUpload?.state {
+                case .ready:
+                    // If it was enqueued for upload, its possible we previously attempted to upload
+                    // and succeeded server-side but got interrupted before updating local state after,
+                    // so its still in the upload queue. This is ok; we would have re-attempted upload
+                    // and found it already uploaded, given the chance.
+                    return
+                case .done, nil:
+                    // If it was not in the queue, that means discovering it on the server is unexpected.
+                    _result[keyPath: resultKeyPath(isFullsize: isFullsize)].discoveredOnCdnCount += 1
+                    _result[keyPath: resultKeyPath(isFullsize: isFullsize)].addSampleId(attachment.id, \.discoveredOnCdnSampleAttachmentIds)
+                    return
+                }
             }
         case remoteCdnNumber:
             // Local and remote state match
