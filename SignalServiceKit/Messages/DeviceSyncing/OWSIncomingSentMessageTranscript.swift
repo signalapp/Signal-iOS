@@ -210,7 +210,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? MessageBodyRanges.empty : MessageBodyRanges(protos: dataMessage.bodyRanges)
-        let body = dataMessage.body.map {
+        var body = dataMessage.body.map {
             DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
                 MessageBody(text: $0, ranges: bodyRanges),
                 tx: tx
@@ -284,7 +284,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         }
 
         var makePollCreateBuilder: ((Int64, DBWriteTransaction) throws -> Void)?
-        if let pollCreateMessage = dataMessage.pollCreate {
+        if let pollCreateMessage = dataMessage.pollCreate, let question = pollCreateMessage.question {
             makePollCreateBuilder = { [pollCreateMessage] (interactionId: Int64, tx: DBWriteTransaction) in
                 try DependenciesBridge.shared.pollMessageManager.processIncomingPollCreate(
                     interactionId: interactionId,
@@ -292,6 +292,10 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
                     transaction: tx
                 )
             }
+            body = DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
+                MessageBody(text: question, ranges: .empty),
+                tx: tx
+            )
         }
 
         let storyTimestamp: UInt64?

@@ -442,15 +442,29 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     // exceeds this threshold, and therefore possible to hit this assert (by forwarding
     // an older message). But it is good for us to know when this happens.
     OWSAssertDebug(body.length == trimmedBody.length);
-    [builder setBody:trimmedBody];
 
-    NSArray<SSKProtoBodyRange *> *bodyRanges =
-        [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.body.length];
-    if (bodyRanges.count > 0) {
-        [builder setBodyRanges:bodyRanges];
+    if (self.isPoll) {
+        SSKProtoDataMessagePollCreate *_Nullable pollCreateProto = [self buildPollProtoWithTx:transaction];
 
-        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
-            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+        if (!pollCreateProto) {
+            OWSFailDebug(@"Could not build poll protobuf");
+        }
+        [builder setPollCreate:pollCreateProto];
+
+        if ([self shouldBumpProtoForPolls]) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPolls;
+        }
+    } else {
+        [builder setBody:trimmedBody];
+
+        NSArray<SSKProtoBodyRange *> *bodyRanges =
+            [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.body.length];
+        if (bodyRanges.count > 0) {
+            [builder setBodyRanges:bodyRanges];
+
+            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
+                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+            }
         }
     }
 
@@ -591,19 +605,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         SSKProtoDataMessageGiftBadgeBuilder *giftBadgeBuilder = [SSKProtoDataMessageGiftBadge builder];
         [giftBadgeBuilder setReceiptCredentialPresentation:self.giftBadge.redemptionCredential];
         [builder setGiftBadge:[giftBadgeBuilder buildInfallibly]];
-    }
-
-    if (self.isPoll) {
-        SSKProtoDataMessagePollCreate *_Nullable pollCreateProto = [self buildPollProtoWithTx:transaction];
-
-        if (!pollCreateProto) {
-            OWSFailDebug(@"Could not build poll protobuf");
-        }
-        [builder setPollCreate:pollCreateProto];
-
-        if ([self shouldBumpProtoForPolls]) {
-            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPolls;
-        }
     }
 
     [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
