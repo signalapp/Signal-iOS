@@ -57,30 +57,52 @@ public class CVPollView: ManualStackView {
      ]
      */
     fileprivate struct Configurator {
+        fileprivate struct ColorConfigurator {
+            let textColor: UIColor
+            let subtitleColor: UIColor
+            let checkboxOutlineColor: UIColor
+            let voteProgressBackgroundColor: UIColor
+            let voteProgressForegroundColor: UIColor
+            let checkboxSelectedColor: UIColor
+
+            init(state: CVPollView.State) {
+                self.textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
+                self.subtitleColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
+
+                if state.isIncoming {
+                    self.checkboxOutlineColor = UIColor.Signal.tertiaryLabel
+                    self.voteProgressBackgroundColor = UIColor.Signal.label.withAlphaComponent(0.1)
+                    self.voteProgressForegroundColor = UIColor.Signal.ultramarine
+                    self.checkboxSelectedColor = UIColor.Signal.ultramarine
+                } else {
+                    self.checkboxOutlineColor = textColor.withAlphaComponent(0.8)
+                    self.voteProgressBackgroundColor = textColor.withAlphaComponent(0.4)
+                    self.voteProgressForegroundColor = textColor
+                    self.checkboxSelectedColor = textColor
+                }
+            }
+        }
+
         let poll: OWSPoll
-        let textColor: UIColor
-        let subtitleColor: UIColor
-        var detailColor: UIColor
+        var outerStackConfig: CVStackViewConfig
+        let colorConfigurator: ColorConfigurator
 
         init(state: CVPollView.State) {
             self.poll = state.poll
-            self.textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
-            self.subtitleColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
-            self.detailColor = state.isIncoming ? UIColor.Signal.ultramarine : textColor
-        }
-
-        var outerStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .leading,
-                              spacing: 2,
-                              layoutMargins: UIEdgeInsets(hMargin: 4, vMargin: 6))
+            self.outerStackConfig = CVStackViewConfig(
+                axis: .vertical,
+                alignment: .leading,
+                spacing: 2,
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: state.isIncoming ? 0 : 8)
+            )
+            self.colorConfigurator = ColorConfigurator(state: state)
         }
 
         var questionTextLabelConfig: CVLabelConfig {
             return CVLabelConfig.unstyledText(
                 poll.question,
                 font: UIFont.dynamicTypeHeadline,
-                textColor: textColor,
+                textColor: colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping
             )
@@ -97,7 +119,7 @@ public class CVPollView: ManualStackView {
             return CVLabelConfig.unstyledText(
                 OWSLocalizedString("POLL_LABEL", comment: "Label specifying the message type as a poll"),
                 font: UIFont.dynamicTypeFootnote,
-                textColor: textColor.withAlphaComponent(0.8),
+                textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping
             )
@@ -119,7 +141,7 @@ public class CVPollView: ManualStackView {
             return CVLabelConfig.unstyledText(
                 selectLabel,
                 font: UIFont.dynamicTypeFootnote,
-                textColor: textColor.withAlphaComponent(0.8),
+                textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping
             )
@@ -237,7 +259,7 @@ public class CVPollView: ManualStackView {
             let optionTextConfig = CVLabelConfig.unstyledText(
                 option.text,
                 font: UIFont.dynamicTypeBody,
-                textColor: configurator.textColor,
+                textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping
             )
@@ -327,7 +349,7 @@ public class CVPollView: ManualStackView {
         chooseLabelConfig.applyForRendering(label: chooseLabel)
 
         let circleView = UIView()
-        circleView.backgroundColor = configurator.subtitleColor
+        circleView.backgroundColor = configurator.colorConfigurator.subtitleColor
         circleView.layer.cornerRadius = configurator.circleSize.width / 2
 
         let circleContainer = ManualLayoutView(name: "circleContainer")
@@ -500,7 +522,7 @@ public class CVPollView: ManualStackView {
             fatalError("init(coder:) has not been implemented")
         }
 
-        @objc private func didTapCheckbox() {
+        @objc private func didTapOption() {
             var attemptedVoteType: VoteType
             switch localUserVoteState {
             case .unvote, .pendingUnvote:
@@ -512,10 +534,15 @@ public class CVPollView: ManualStackView {
             generator.notificationOccurred(.success)
         }
 
-        private func buildProgressBar(votes: Int, totalVotes: Int, detailColor: UIColor) {
-            progressFill.backgroundColor = detailColor
+        private func buildProgressBar(
+            votes: Int,
+            totalVotes: Int,
+            foregroundColor: UIColor,
+            backgroundColor: UIColor,
+        ) {
+            progressFill.backgroundColor = foregroundColor
             progressFill.layer.cornerRadius = 5
-            progressBarBackground.backgroundColor = detailColor.withAlphaComponent(0.5)
+            progressBarBackground.backgroundColor = backgroundColor
             progressBarBackground.layer.cornerRadius = 5
 
             progressBarContainer.addSubview(progressBarBackground, withLayoutBlock: { [weak self] _ in
@@ -607,22 +634,23 @@ public class CVPollView: ManualStackView {
             pollIsEnded: Bool
         ) {
             checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.circle))))
-            checkbox.tintColor = configurator.detailColor
-            checkbox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCheckbox)))
+            addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapOption)))
 
             switch localUserVoteState {
             case .vote:
                 checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill))))
+                checkbox.tintColor = configurator.colorConfigurator.checkboxSelectedColor
             case .pendingVote, .pendingUnvote:
                 displayPendingUI(type: localUserVoteState)
+                checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
             case .unvote:
-                break
+                checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
             }
 
             let optionTextConfig = CVLabelConfig.unstyledText(
                 option,
                 font: UIFont.dynamicTypeBody,
-                textColor: configurator.textColor,
+                textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping
             )
@@ -655,7 +683,7 @@ public class CVPollView: ManualStackView {
             let numVotesConfig = CVLabelConfig.unstyledText(
                 localizedVotesString,
                 font: UIFont.dynamicTypeBody,
-                textColor: configurator.textColor,
+                textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping,
                 textAlignment: .right
@@ -663,7 +691,12 @@ public class CVPollView: ManualStackView {
             numVotesConfig.applyForRendering(label: numVotesLabel)
             innerStackContainer.addSubviewToFillSuperviewEdges(numVotesLabel)
 
-            buildProgressBar(votes: votes, totalVotes: totalVotes, detailColor: configurator.detailColor)
+            buildProgressBar(
+                votes: votes,
+                totalVotes: totalVotes,
+                foregroundColor: configurator.colorConfigurator.voteProgressForegroundColor,
+                backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor
+            )
 
             configure(
                 config: configurator.optionRowOuterStackConfig,
