@@ -10,13 +10,7 @@ public import SignalUI
 
 public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNavigationChildController {
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
-
-    public var navbarBackgroundColorOverride: UIColor? { .clear }
-
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
-        return isQRCodeExpanded ? .lightContent : super.preferredStatusBarStyle
-    }
+    public var prefersNavigationBarHidden: Bool { true }
 
     private lazy var qrCodeView = QRCodeView(contentInset: 8)
 
@@ -150,14 +144,18 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         ])
 
         // Content view.
-        let stackView = addStaticContentStackView(arrangedSubviews: [
-            titleLabel,
-            explanationLabel,
-            qrCodeContainerView,
-            explanationLabel2,
-            .vStretchingSpacer(),
-            bottomButtonsContainer,
-        ])
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                .spacer(withHeight: 16),
+                titleLabel,
+                explanationLabel,
+                qrCodeContainerView,
+                explanationLabel2,
+                .vStretchingSpacer(),
+                bottomButtonsContainer,
+            ],
+            isScrollable: true
+        )
         stackView.setCustomSpacing(24, after: explanationLabel)
         stackView.setCustomSpacing(24, after: compactQRCodeContainer)
 
