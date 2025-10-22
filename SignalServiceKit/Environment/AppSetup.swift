@@ -430,14 +430,14 @@ extension AppSetup.GlobalsContinuation {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
+        let backupAttachmentDownloadStore = BackupAttachmentDownloadStore()
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(
             attachmentStore: attachmentStore,
             backupSettingsStore: backupSettingsStore,
             db: db,
         )
-        let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
+        let backupAttachmentUploadStore = BackupAttachmentUploadStore()
         let backupCDNCredentialStore = BackupCDNCredentialStore()
 
         let backupIdService = BackupIdServiceImpl(

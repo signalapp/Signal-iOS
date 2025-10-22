@@ -13,9 +13,9 @@ public class BackupListMediaManagerTests {
 
     let accountKeyStore: AccountKeyStore
     let attachmentStore = AttachmentStoreImpl()
-    let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
+    let backupAttachmentDownloadStore = BackupAttachmentDownloadStore()
     let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerMock()
-    let backupAttachmentUploadStore = BackupAttachmentUploadStoreImpl()
+    let backupAttachmentUploadStore = BackupAttachmentUploadStore()
     fileprivate let backupRequestManager = BackupRequestManagerMock()
     let backupSettingsStore = BackupSettingsStore()
     let db = InMemoryDB()

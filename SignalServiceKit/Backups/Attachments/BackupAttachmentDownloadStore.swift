@@ -6,7 +6,13 @@
 import Foundation
 import GRDB
 
-public protocol BackupAttachmentDownloadStore {
+public class BackupAttachmentDownloadStore {
+
+    private let kvStore: KeyValueStore
+
+    public init() {
+        self.kvStore = KeyValueStore(collection: "BackupAttachmentDownloadStoreImpl")
+    }
 
     /// "Enqueue" an attachment from a backup for download (using its reference).
     ///
@@ -15,116 +21,21 @@ public protocol BackupAttachmentDownloadStore {
     ///
     /// Doesn't actually trigger a download; callers must later call ``BackupAttachmentDownloadManager``
     /// to actually kick off downloads.
-    func enqueue(
-        _ referencedAttachment: ReferencedAttachment,
-        thumbnail: Bool,
-        canDownloadFromMediaTier: Bool,
-        state: QueuedBackupAttachmentDownload.State,
-        currentTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) throws
-
-    func getEnqueuedDownload(
-        attachmentRowId: Attachment.IDType,
-        thumbnail: Bool,
-        tx: DBReadTransaction
-    ) throws -> QueuedBackupAttachmentDownload?
-
-    /// Read the next highest priority downloads off the queue, up to count.
-    /// Returns an empty array if nothing is left to download.
-    func peek(
-        count: UInt,
-        isThumbnail: Bool,
-        tx: DBReadTransaction
-    ) throws -> [QueuedBackupAttachmentDownload]
-
-    /// Returns true if there are any rows in the ready state.
-    func hasAnyReadyDownloads(
-        isThumbnail: Bool,
-        tx: DBReadTransaction
-    ) throws -> Bool
-
-    /// Mark a download as done.
-    /// If we mark a fullsize as done, the thumbnail is marked done too
-    /// (since we never need a thumbnail once we have a fullsize).
-    func markDone(
-        attachmentId: Attachment.IDType,
-        thumbnail: Bool,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Mark a download as ineligible.
-    func markIneligible(
-        attachmentId: Attachment.IDType,
-        thumbnail: Bool,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Delete a download.
-    /// WARNING: typically when a download finishes, we want to mark it done
-    /// rather than deleting, so that it still contributes to the total byte count.
-    /// Deleting is appropriate if we learn the upload is gone from the CDN,
-    /// the attachment is deleted, etc; things that mean we will never download.
-    func remove(
-        attachmentId: Attachment.IDType,
-        thumbnail: Bool,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Mark all enqueued & ready media tier fullsize downloads from the table for attachments
-    /// older than the provided timestamp as ineligible.
-    /// Applies independently of whether that download is also eligible to download from the
-    /// transit tier; its assumed that anything on the media tier is stable and if its offloaded to
-    /// there we don't need to worry about downloading from transit tier before it expires.
-    func markAllMediaTierFullsizeDownloadsIneligible(
-        olderThan timestamp: UInt64,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Marks all ineligible rows as ready (no filtering applied).
-    func markAllIneligibleReady(tx: DBWriteTransaction) throws
-
-    /// Marks all ready rows as ineligible (no filtering applied).
-    func markAllReadyIneligible(tx: DBWriteTransaction) throws
-
-    /// Remove all done rows (effectively resetting the total byte count).
-    func deleteAllDone(tx: DBWriteTransaction) throws
-
-    /// Returns nil, NOT 0, if there are no rows.
-    func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64?
-
-    /// Returns nil, NOT 0, if there are no rows.
-    func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64?
-
-    // MARK: Banner state
-
-    func getDownloadCompleteBannerByteCount(tx: DBReadTransaction) -> UInt64?
-
-    /// Whether the banner for downloads being complete was dismissed. Reset when new downloads
-    /// are scheduled (when `setTotalPendingDownloadByteCount` is set.)
-    func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool
-
-    func setDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
-
-    func resetDidDismissDownloadCompleteBanner(tx: DBWriteTransaction)
-}
-
-public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
-
-    private let kvStore: KeyValueStore
-
-    public init() {
-        self.kvStore = KeyValueStore(collection: "BackupAttachmentDownloadStoreImpl")
-    }
-
     public func enqueue(
         _ referencedAttachment: ReferencedAttachment,
         thumbnail: Bool,
         canDownloadFromMediaTier: Bool,
         state: QueuedBackupAttachmentDownload.State,
         currentTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
+        file: StaticString? = #file,
+        function: StaticString? = #function,
+        line: UInt? = #line
     ) throws {
+        if let file, let function, let line {
+            Logger.info("Enqueuing \(referencedAttachment.attachment.id) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
+        }
+
         if thumbnail {
             owsPrecondition(canDownloadFromMediaTier, "All thumbnails are media tier")
         }
@@ -208,6 +119,8 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .fetchOne(tx.database)
     }
 
+    /// Read the next highest priority downloads off the queue, up to count.
+    /// Returns an empty array if nothing is left to download.
     public func peek(
         count: UInt,
         isThumbnail: Bool,
@@ -226,6 +139,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .fetchAll(tx.database)
     }
 
+    /// Returns true if there are any rows in the ready state.
     public func hasAnyReadyDownloads(
         isThumbnail: Bool,
         tx: DBReadTransaction
@@ -237,6 +151,9 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .negated
     }
 
+    /// Mark a download as done.
+    /// If we mark a fullsize as done, the thumbnail is marked done too
+    /// (since we never need a thumbnail once we have a fullsize).
     public func markDone(
         attachmentId: Attachment.IDType,
         thumbnail: Bool,
@@ -258,6 +175,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         )
     }
 
+    /// Mark a download as ineligible.
     public func markIneligible(
         attachmentId: Attachment.IDType,
         thumbnail: Bool,
@@ -274,21 +192,33 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             )
     }
 
+    /// Delete a download.
+    /// WARNING: typically when a download finishes, we want to mark it done
+    /// rather than deleting, so that it still contributes to the total byte count.
+    /// Deleting is appropriate if we learn the upload is gone from the CDN,
+    /// the attachment is deleted, etc; things that mean we will never download.
     public func remove(
         attachmentId: Attachment.IDType,
         thumbnail: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
+        file: StaticString? = #file,
+        function: StaticString? = #function,
+        line: UInt? = #line
     ) throws {
+        if let file, let function, let line {
+            Logger.info("Deleting \(attachmentId) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
+        }
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId) == attachmentId)
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == thumbnail)
             .deleteAll(tx.database)
     }
 
-    public func removeAll(tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentDownload.deleteAll(tx.database)
-    }
-
+    /// Mark all enqueued & ready media tier fullsize downloads from the table for attachments
+    /// older than the provided timestamp as ineligible.
+    /// Applies independently of whether that download is also eligible to download from the
+    /// transit tier; its assumed that anything on the media tier is stable and if its offloaded to
+    /// there we don't need to worry about downloading from transit tier before it expires.
     public func markAllMediaTierFullsizeDownloadsIneligible(
         olderThan timestamp: UInt64,
         tx: DBWriteTransaction
@@ -307,6 +237,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             )
     }
 
+    /// Marks all ineligible rows as ready (no filtering applied).
     public func markAllIneligibleReady(tx: DBWriteTransaction) throws {
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
@@ -319,6 +250,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             )
     }
 
+    /// Marks all ready rows as ineligible (no filtering applied).
     public func markAllReadyIneligible(tx: DBWriteTransaction) throws {
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
@@ -331,7 +263,16 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             )
     }
 
-    public func deleteAllDone(tx: DBWriteTransaction) throws {
+    /// Remove all done rows (effectively resetting the total byte count).
+    public func deleteAllDone(
+        tx: DBWriteTransaction,
+        file: StaticString? = #file,
+        function: StaticString? = #function,
+        line: UInt? = #line
+    ) throws {
+        if let file, let function, let line {
+            Logger.info("Deleting all done rows from \(file) \(line): \(function)")
+        }
         if let byteCountSnapshot = try computeEstimatedFinishedFullsizeByteCount(tx: tx) {
             kvStore.setUInt64(byteCountSnapshot, key: self.downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
         }
@@ -342,6 +283,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
             .deleteAll(tx.database)
     }
 
+    /// Returns nil, NOT 0, if there are no rows.
     public func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64? {
         try UInt64.fetchOne(tx.database, sql: """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
@@ -353,6 +295,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         )
     }
 
+    /// Returns nil, NOT 0, if there are no rows.
     public func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) throws -> UInt64? {
         try UInt64.fetchOne(tx.database, sql: """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
@@ -374,6 +317,8 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         return try? self.computeEstimatedFinishedFullsizeByteCount(tx: tx)
     }
 
+    /// Whether the banner for downloads being complete was dismissed. Reset when new downloads
+    /// are scheduled (when `setTotalPendingDownloadByteCount` is set.)
     public func getDidDismissDownloadCompleteBanner(tx: DBReadTransaction) -> Bool {
         return kvStore.getBool(didDismissDownloadCompleteBannerKey, defaultValue: false, transaction: tx)
     }

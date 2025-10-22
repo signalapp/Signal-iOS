@@ -122,12 +122,14 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
 
         switch await statusManager.beginObservingIfNecessary(for: mode) {
         case .running:
-            break
+            logger.info("Starting \(logString) backup attachment downloads")
         case .suspended:
             // The queue will stop on its own if suspended
+            logger.info("Skipping \(logString) backup attachment downloads while suspended")
             return
         case .empty:
             // The queue will stop on its own if empty.
+            logger.info("\(logString) backup attachment download queue empty!")
             return
         case .notRegisteredAndReady:
             try await taskQueue.stop()
@@ -179,6 +181,8 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
         defer { backgroundTask.end() }
 
         try await taskQueue.loadAndRunTasks()
+
+        logger.info("Finished \(logString) backup attachment downloads")
     }
 
     // MARK: - TaskRecordRunner
@@ -354,6 +358,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                 // got here but mark it ineligible in the queue now and return
                 // a a "retryable" error so we don't wipe this row from the queue.
                 // Since its now ineligible it will be skipped going forward.
+                Logger.info("Marking \(attachment.id) ineligible and skipping download")
                 try? await db.awaitableWrite { tx in
                     try backupAttachmentDownloadStore.markIneligible(
                         attachmentId: attachment.id,

@@ -6,7 +6,9 @@
 import Foundation
 import GRDB
 
-public protocol BackupAttachmentUploadStore {
+public class BackupAttachmentUploadStore {
+
+    public init() {}
 
     /// "Enqueue" an attachment from a backup for upload.
     ///
@@ -16,56 +18,19 @@ public protocol BackupAttachmentUploadStore {
     /// both the fullsize and thumbnail as needed, and then call `markUploadDone` once finished.
     /// Note that the upload operation can (and will) be separately durably enqueued in AttachmentUploadQueue,
     /// that's fine and doesn't change how this queue works.
-    func enqueue(
-        _ attachment: AttachmentStream,
-        owner: QueuedBackupAttachmentUpload.OwnerType,
-        fullsize: Bool,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Read the next highest priority uploads off the queue, up to count.
-    /// Returns an empty array if nothing is left to upload.
-    /// Does NOT take into account minRetryTimestamp; callers are expected
-    /// to handle results with timestamps greater than the current time.
-    func fetchNextUploads(
-        count: UInt,
-        isFullsize: Bool,
-        tx: DBReadTransaction
-    ) throws -> [QueuedBackupAttachmentUpload]
-
-    func getEnqueuedUpload(
-        for attachmentId: Attachment.IDType,
-        fullsize: Bool,
-        tx: DBReadTransaction
-    ) throws -> QueuedBackupAttachmentUpload?
-
-    /// Remove the upload from the queue. Should be called once uploaded (or permanently failed).
-    ///
-    /// - Important
-    /// Once all `QueuedBackupAttachmentUpload` records are marked done, a SQL
-    /// trigger (`__BackupAttachmentUploadQueue_au`) will wipe them all. This
-    /// mitigates potential issues around long-completed upload records being
-    /// counted towards future progress.
-    ///
-    /// - returns the removed record, if any.
-    @discardableResult
-    func markUploadDone(
-        for attachmentId: Attachment.IDType,
-        fullsize: Bool,
-        tx: DBWriteTransaction
-    ) throws -> QueuedBackupAttachmentUpload?
-}
-
-public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
-
-    public init() {}
-
     public func enqueue(
         _ attachment: AttachmentStream,
         owner: QueuedBackupAttachmentUpload.OwnerType,
         fullsize: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
+        file: StaticString? = #file,
+        function: StaticString? = #function,
+        line: UInt? = #line
     ) throws {
+        if let file, let function, let line {
+            Logger.info("Enqueuing \(attachment.id) fullsize? \(fullsize) from \(file) \(line): \(function)")
+        }
+
         let db = tx.database
 
         let unencryptedSize: UInt32
@@ -109,6 +74,10 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         }
     }
 
+    /// Read the next highest priority uploads off the queue, up to count.
+    /// Returns an empty array if nothing is left to upload.
+    /// Does NOT take into account minRetryTimestamp; callers are expected
+    /// to handle results with timestamps greater than the current time.
     public func fetchNextUploads(
         count: UInt,
         isFullsize: Bool,
@@ -144,12 +113,27 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
             .fetchOne(tx.database)
     }
 
+    /// Remove the upload from the queue. Should be called once uploaded (or permanently failed).
+    ///
+    /// - Important
+    /// Once all `QueuedBackupAttachmentUpload` records are marked done, a SQL
+    /// trigger (`__BackupAttachmentUploadQueue_au`) will wipe them all. This
+    /// mitigates potential issues around long-completed upload records being
+    /// counted towards future progress.
+    ///
+    /// - returns the removed record, if any.
     @discardableResult
     public func markUploadDone(
         for attachmentId: Attachment.IDType,
         fullsize: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
+        file: StaticString? = #file,
+        function: StaticString? = #function,
+        line: UInt? = #line
     ) throws -> QueuedBackupAttachmentUpload? {
+        if let file, let function, let line {
+            Logger.info("Marking \(attachmentId) done. fullsize? \(fullsize) from \(file) \(line): \(function)")
+        }
         var record = try QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == fullsize)

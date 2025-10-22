@@ -154,12 +154,14 @@ class BackupPlanManagerImpl: BackupPlanManager {
             // While in free tier, we may have been continuing downloads
             // from when you were previously paid tier. But that was nice
             // to have; now that we're disabling backups cancel them all.
+            Logger.info("Configuring downloads for disabling free backups")
             try backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
             try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
         case
             let (.paid(optimizeLocalStorage), .disabling),
             let (.paidExpiringSoon(optimizeLocalStorage), .disabling),
             let (.paidAsTester(optimizeLocalStorage), .disabling):
+            Logger.info("Configuring downloads for disabling paid backups")
             try backupAttachmentDownloadStore.deleteAllDone(tx: tx)
             // Unsuspend; this is the user opt-in to trigger downloads.
             backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
@@ -240,6 +242,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDisablingBackups(tx: DBWriteTransaction) throws {
+        Logger.info("Configuring downloads for disabled backups")
         // When we disable, we mark everything ineligible and delete all
         // done rows. If we ever re-enable, we will mark those rows
         // ready again.
@@ -251,6 +254,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDidEnableOptimizeStorage(tx: DBWriteTransaction) throws {
+        Logger.info("Configuring downloads for optimize enabled")
         // When we turn on optimization, make all media tier fullsize downloads
         // from the queue that are past the optimization threshold ineligible.
         // If we downloaded them we'd offload them immediately anyway.
@@ -270,6 +274,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDidDisableOptimizeStorage(tx: DBWriteTransaction) throws {
+        Logger.info("Configuring downloads for optimize disabled")
         // When we turn _off_ optimization, we want to make ready all the media tier downloads,
         // but suspend the queue so we don't immediately start downloading.
         try backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)

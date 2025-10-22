@@ -59,7 +59,11 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
                 canDownloadFromMediaTier: true,
                 state: state,
                 currentTimestamp: restoreStartTimestampMs,
-                tx: tx
+                tx: tx,
+                // Don't trigger per-item logs from backups; too noisy
+                file: nil,
+                function: nil,
+                line: nil
             )
         }
         if
@@ -72,7 +76,11 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
                 canDownloadFromMediaTier: eligibility.canDownloadMediaTierFullsize,
                 state: state,
                 currentTimestamp: restoreStartTimestampMs,
-                tx: tx
+                tx: tx,
+                // Don't trigger per-item logs from backups; too noisy
+                file: nil,
+                function: nil,
+                line: nil
             )
         }
     }
