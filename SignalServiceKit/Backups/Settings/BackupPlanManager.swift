@@ -115,6 +115,17 @@ class BackupPlanManagerImpl: BackupPlanManager {
             tx: tx
         )
 
+        switch newBackupPlan {
+        case .disabled, .disabling, .free:
+            // Media tier capacity is only a paid tier concept; reset our local
+            // knowledge of having run out of space when we become non-paid tier.
+            // If we become paid tier again, we will rediscover that we are out
+            // of space when we try and upload and get an error from the server.
+            backupSettingsStore.setHasConsumedMediaTierCapacity(false, tx: tx)
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            break
+        }
+
         if oldBackupPlan != newBackupPlan {
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
