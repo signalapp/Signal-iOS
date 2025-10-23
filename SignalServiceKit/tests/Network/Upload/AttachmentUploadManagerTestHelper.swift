@@ -6,9 +6,9 @@
 import Foundation
 @testable import SignalServiceKit
 
-typealias PerformTSRequestBlock = ((TSRequest) async throws -> any HTTPResponse)
-typealias PerformRequestBlock = ((URLRequest) async throws -> any HTTPResponse)
-typealias PerformUploadBlock = ((URLRequest, Data, OWSProgressSource?) async throws -> any HTTPResponse)
+typealias PerformTSRequestBlock = ((TSRequest) async throws -> HTTPResponse)
+typealias PerformRequestBlock = ((URLRequest) async throws -> HTTPResponse)
+typealias PerformUploadBlock = ((URLRequest, Data, OWSProgressSource?) async throws -> HTTPResponse)
 
 enum MockRequestType {
     case uploadForm(PerformTSRequestBlock)
@@ -200,7 +200,7 @@ class AttachmentUploadManagerMockHelper {
         )
         authFormRequestBlock.append(.uploadForm({ request in
             self.activeUploadRequestMocks = self.authToUploadRequestMockMap[authString] ?? .init()
-            return HTTPResponseImpl(
+            return HTTPResponse(
                 requestUrl: request.url,
                 status: statusCode,
                 headers: HttpHeaders(),
@@ -230,7 +230,7 @@ class AttachmentUploadManagerMockHelper {
                 let fetchedUploadLocation = "https://upload/fetchedUploadLocation/\(UUID().uuidString)"
                 enqueue(auth: auth, request: .uploadLocation({ request in
                     let headers = [ "Location": fetchedUploadLocation ]
-                    return HTTPResponseImpl(
+                    return HTTPResponse(
                         requestUrl: request.url!,
                         status: statusCode,
                         headers: HttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
@@ -279,7 +279,7 @@ class AttachmentUploadManagerMockHelper {
                     statusCode = 201 // This could also be a 200
                 }
 
-                return HTTPResponseImpl(
+                return HTTPResponse(
                     requestUrl: request.url!,
                     status: statusCode,
                     headers: HttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
@@ -306,7 +306,7 @@ class AttachmentUploadManagerMockHelper {
                     statusCode = 403
                 }
 
-                return HTTPResponseImpl(
+                return HTTPResponse(
                     requestUrl: request.url!,
                     status: statusCode,
                     headers: HttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
@@ -341,7 +341,7 @@ class AttachmentUploadManagerMockHelper {
                     responseData: nil
                 ))
             case .success:
-                return HTTPResponseImpl(
+                return HTTPResponse(
                     requestUrl: request.url!,
                     status: 200,
                     headers: HttpHeaders(),

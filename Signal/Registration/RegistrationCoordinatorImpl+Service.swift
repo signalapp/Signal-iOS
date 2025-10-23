@@ -339,7 +339,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         private static func makeRequest<ResponseType>(
-            _ makeRequest: () async throws -> any HTTPResponse,
+            _ makeRequest: () async throws -> HTTPResponse,
             handler: (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
             fallbackError: ResponseType,
             networkFailureError: ResponseType

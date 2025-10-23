@@ -405,7 +405,7 @@ public class OWSChatConnection {
         }
     }
 
-    fileprivate func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
+    fileprivate func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> HTTPResponse {
         owsFail("must be using a concrete subclass")
     }
 
@@ -416,7 +416,7 @@ public class OWSChatConnection {
         responseData: Data?
     ) async throws(OWSHTTPError) -> HTTPResponse {
         if (200...299).contains(responseStatus) {
-            let response = HTTPResponseImpl(
+            let response = HTTPResponse(
                 requestUrl: requestUrl,
                 status: responseStatus,
                 headers: responseHeaders,
@@ -671,7 +671,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
 
     fileprivate let authOverride = AtomicValue<ChatServiceAuth>(.implicit(), lock: .init())
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> any HTTPResponse {
+    fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> HTTPResponse {
         var httpHeaders = request.headers
         try request.applyAuth(to: &httpHeaders, socketAuth: authOverride.get())
 

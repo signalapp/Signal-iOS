@@ -374,7 +374,7 @@ public class RegistrationCoordinatorTest {
             networkManagerMock.asyncRequestHandlers.append({ request, _ in
                 if request.url == expectedReglockRequest.url {
                     #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
-                    return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                    return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
                 }
                 throw OWSAssertionError("")
             })
@@ -425,7 +425,7 @@ public class RegistrationCoordinatorTest {
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -554,7 +554,7 @@ public class RegistrationCoordinatorTest {
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 #expect(finalMasterKey.regRecoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -941,7 +941,7 @@ public class RegistrationCoordinatorTest {
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 self.testRun.addObservedStep(.updateAccountAttribute)
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -1248,7 +1248,7 @@ public class RegistrationCoordinatorTest {
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedReglockRequest.url {
                 #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -1301,7 +1301,7 @@ public class RegistrationCoordinatorTest {
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -1623,7 +1623,7 @@ public class RegistrationCoordinatorTest {
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
                 self.testRun.addObservedStep(.updateAccountAttribute)
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -1916,7 +1916,7 @@ public class RegistrationCoordinatorTest {
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -2925,7 +2925,7 @@ public class RegistrationCoordinatorTest {
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })
@@ -3065,7 +3065,7 @@ public class RegistrationCoordinatorTest {
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: nil)
             }
             throw OWSAssertionError("")
         })

@@ -195,7 +195,7 @@ public extension OWSURLSessionProtocol {
         headers: HttpHeaders = HttpHeaders(),
         requestData: Data,
         progress: OWSProgressSource? = nil
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: requestData)
         return try await self.performUpload(request: request, requestData: requestData, progress: progress)
     }
@@ -206,7 +206,7 @@ public extension OWSURLSessionProtocol {
         headers: HttpHeaders = HttpHeaders(),
         fileUrl: URL,
         progress: OWSProgressSource? = nil
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers)
         return try await self.performUpload(
             request: request,
@@ -224,7 +224,7 @@ public extension OWSURLSessionProtocol {
         headers: HttpHeaders = HttpHeaders(),
         body: Data? = nil,
         ignoreAppExpiry: Bool = false
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: body)
         return try await self.performRequest(request: request, ignoreAppExpiry: ignoreAppExpiry)
     }
@@ -256,7 +256,7 @@ extension OWSURLSessionProtocol {
         textParts textPartsDictionary: OrderedDictionary<String, String>,
         ignoreAppExpiry: Bool = false,
         progress: OWSProgressSource? = nil
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         defer {
             do {

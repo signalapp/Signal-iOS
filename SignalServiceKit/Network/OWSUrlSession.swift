@@ -156,7 +156,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         request: URLRequest,
         requestData: Data,
         progress: OWSProgressSource?
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         return try await performUpload(
             request: request,
             ignoreAppExpiry: false,
@@ -179,7 +179,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         )
     }
 
-    public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
+    public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
         if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
             throw AppExpiredError()
         }
@@ -298,7 +298,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     private func handleDataResult(urlResponse: URLResponse?, responseData: Data, originalRequest: URLRequest?, requestConfig: RequestConfig) async throws -> HTTPResponse {
         let httpUrlResponse = try await handleResult(urlResponse: urlResponse, responseData: responseData, originalRequest: originalRequest, requestConfig: requestConfig)
-        return HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl, httpUrlResponse: httpUrlResponse, bodyData: responseData)
+        return HTTPResponse(requestUrl: requestConfig.requestUrl, httpUrlResponse: httpUrlResponse, bodyData: responseData)
     }
 
     private func handleDownloadResult(urlResponse: URLResponse?, downloadUrl: URL, originalRequest: URLRequest?, requestConfig: RequestConfig) async throws -> OWSUrlDownloadResponse {
@@ -401,7 +401,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     // MARK: - Issuing Requests
 
-    public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
+    public func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
         let appExpiry = DependenciesBridge.shared.appExpiry
         guard !appExpiry.isExpired(now: Date()) else {
             throw AppExpiredError()

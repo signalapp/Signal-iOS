@@ -142,7 +142,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url.absoluteString.hasSuffix("v1/devices/capabilities") {
-                return HTTPResponseImpl(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: Data())
+                return HTTPResponse(requestUrl: request.url, status: 200, headers: HttpHeaders(), bodyData: Data())
             }
             throw OWSAssertionError("")
         })
@@ -199,9 +199,9 @@ extension ProvisioningCoordinatorTest {
 
         var responder: ((TSRequest) -> Data)?
 
-        override func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
+        override func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
             let responseBody = responder!(rawRequest)
-            return HTTPResponseImpl(
+            return HTTPResponse(
                 requestUrl: rawRequest.url,
                 status: 200,
                 headers: HttpHeaders(),

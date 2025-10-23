@@ -54,7 +54,7 @@ class SystemStoryManagerTest: SSKBaseTest {
                     throw OWSAssertionError("")
                 }
                 if url.path.hasSuffix(SystemStoryManager.Constants.manifestPath) {
-                    return HTTPResponseImpl(
+                    return HTTPResponse(
                         requestUrl: url,
                         status: 200,
                         headers: .init(),
@@ -119,7 +119,7 @@ class SystemStoryManagerTest: SSKBaseTest {
                     }
                 }
                 if url.path.hasSuffix(SystemStoryManager.Constants.manifestPath) {
-                    return HTTPResponseImpl(
+                    return HTTPResponse(
                         requestUrl: url,
                         status: 200,
                         headers: .init(),
@@ -195,7 +195,7 @@ class SystemStoryManagerTest: SSKBaseTest {
                     throw OWSAssertionError("")
                 }
                 if url.path.hasSuffix(SystemStoryManager.Constants.manifestPath) {
-                    return HTTPResponseImpl(
+                    return HTTPResponse(
                         requestUrl: url,
                         status: 200,
                         headers: .init(),
@@ -324,7 +324,7 @@ class SystemStoryManagerTest: SSKBaseTest {
                     throw OWSAssertionError("")
                 }
                 if url.path.hasSuffix(SystemStoryManager.Constants.manifestPath) {
-                    return HTTPResponseImpl(
+                    return HTTPResponse(
                         requestUrl: url,
                         status: 200,
                         headers: .init(),
@@ -427,9 +427,9 @@ class SystemStoryManagerTest: SSKBaseTest {
 
 private class MockDownloadSession: BaseOWSURLSessionMock {
 
-    var performRequestSource: ((URL) async throws -> any HTTPResponse)?
+    var performRequestSource: ((URL) async throws -> HTTPResponse)?
 
-    override func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
+    override func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
         return try await performRequestSource!(request.url!)
     }
 

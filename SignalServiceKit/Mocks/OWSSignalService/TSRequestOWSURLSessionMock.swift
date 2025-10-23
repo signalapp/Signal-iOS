@@ -150,7 +150,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         }
     }
 
-    public override func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
+    public override func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
         guard let responseIndex = responses.firstIndex(where: { $0.0.matcher(rawRequest) }) else {
             fatalError("Got a request with no response set up!")
         }
@@ -158,7 +158,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         if let error = response.error {
             throw error
         }
-        return HTTPResponseImpl(
+        return HTTPResponse(
             requestUrl: rawRequest.url,
             status: response.statusCode,
             headers: response.headers,

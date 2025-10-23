@@ -305,7 +305,7 @@ public class ProfileFetcherJob {
         )
     }
 
-    private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
+    private func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
         let networkManager = SSKEnvironment.shared.networkManagerRef
         return try await networkManager.asyncRequest(request)
     }

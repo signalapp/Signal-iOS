@@ -3,27 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
-// This file contains common interfaces for dealing with
-// HTTP request responses, failures and errors in a consistent
-// way without concern for whether the request is made via
-//
-// * REST (e.g. AFNetworking, OWSURLSession, URLSession, etc.).
-// * a Websocket (e.g. OWSChatConnection).
-
-// A common protocol for responses from OWSUrlSession, NetworkManager, ChatConnectionManager, etc.
-public protocol HTTPResponse {
-    var requestUrl: URL { get }
-    var responseStatusCode: Int { get }
-    var headers: HttpHeaders { get }
-    var responseBodyData: Data? { get }
-    var responseBodyJson: Any? { get }
-    var responseBodyString: String? { get }
-}
-
-// MARK: -
-
 public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvider, UserErrorDescriptionProvider {
     case invalidRequest
     case wrappedFailure(any Error)
@@ -144,11 +123,9 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             return serviceResponse.is5xx
         }
     }
-}
 
-// MARK: -
+    // MARK: -
 
-extension OWSHTTPError {
     public var responseStatusCode: Int {
         switch self {
         case .invalidRequest, .wrappedFailure, .networkFailure:
@@ -210,108 +187,5 @@ extension OWSHTTPError {
         case .serviceResponse(_):
             return false
         }
-    }
-}
-
-// MARK: -
-
-public class HTTPResponseImpl {
-
-    public let requestUrl: URL
-
-    public let status: Int
-
-    public let headers: HttpHeaders
-
-    public let bodyData: Data?
-
-    public let stringEncoding: String.Encoding
-
-    private struct JSONValue {
-        let json: Any?
-    }
-
-    // This property should only be accessed with unfairLock acquired.
-    private var jsonValue: JSONValue?
-
-    private static let unfairLock = UnfairLock()
-
-    public init(requestUrl: URL,
-                status: Int,
-                headers: HttpHeaders,
-                bodyData: Data?,
-                stringEncoding: String.Encoding = .utf8) {
-        self.requestUrl = requestUrl
-        self.status = status
-        self.headers = headers
-        self.bodyData = bodyData
-        self.stringEncoding = stringEncoding
-    }
-
-    public static func build(requestUrl: URL,
-                             httpUrlResponse: HTTPURLResponse,
-                             bodyData: Data?) -> HTTPResponse {
-        let headers = HttpHeaders(response: httpUrlResponse)
-        let stringEncoding: String.Encoding = httpUrlResponse.parseStringEncoding() ?? .utf8
-        return HTTPResponseImpl(requestUrl: requestUrl,
-                                status: httpUrlResponse.statusCode,
-                                headers: headers,
-                                bodyData: bodyData,
-                                stringEncoding: stringEncoding)
-    }
-
-    public var bodyJson: Any? {
-        Self.unfairLock.withLock {
-            if let jsonValue = self.jsonValue {
-                return jsonValue.json
-            }
-            let jsonValue = Self.parseJSON(data: bodyData)
-            self.jsonValue = jsonValue
-            return jsonValue.json
-        }
-    }
-
-    private static func parseJSON(data: Data?) -> JSONValue {
-        guard let data = data,
-              !data.isEmpty else {
-                  return JSONValue(json: nil)
-              }
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            return JSONValue(json: json)
-        } catch {
-            owsFailDebug("Could not parse JSON: \(error).")
-            return JSONValue(json: nil)
-        }
-    }
-}
-
-// MARK: -
-
-extension HTTPResponseImpl: HTTPResponse {
-    public var responseStatusCode: Int { Int(status) }
-    public var responseBodyData: Data? { bodyData }
-    public var responseBodyJson: Any? { bodyJson }
-    public var responseBodyString: String? {
-        guard let data = bodyData,
-              let string = String(data: data, encoding: stringEncoding) else {
-                  return nil
-              }
-        return string
-    }
-}
-
-// MARK: -
-
-extension HTTPURLResponse {
-    fileprivate func parseStringEncoding() -> String.Encoding? {
-        guard let encodingName = textEncodingName else {
-            return nil
-        }
-        let encoding = CFStringConvertIANACharSetNameToEncoding(encodingName as CFString)
-        guard encoding != kCFStringEncodingInvalidId else {
-            return nil
-        }
-        return String.Encoding(rawValue: CFStringConvertEncodingToNSStringEncoding(encoding))
     }
 }

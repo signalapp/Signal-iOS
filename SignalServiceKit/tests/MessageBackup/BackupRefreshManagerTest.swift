@@ -34,7 +34,7 @@ struct BackupRefreshManagerTest {
 
     var refreshSuccessResponse: (TSRequest, NetworkManager.RetryPolicy) async throws -> HTTPResponse = { request, _ in
         if request.url.absoluteString.hasSuffix("v1/archives") {
-            return HTTPResponseImpl(requestUrl: request.url, status: 204, headers: HttpHeaders(), bodyData: Data())
+            return HTTPResponse(requestUrl: request.url, status: 204, headers: HttpHeaders(), bodyData: Data())
         }
         throw OWSAssertionError("")
     }

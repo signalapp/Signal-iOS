@@ -14,7 +14,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
     private func performRequest(
         request: TSRequest,
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         try await networkManager.asyncRequest(request)
     }
 

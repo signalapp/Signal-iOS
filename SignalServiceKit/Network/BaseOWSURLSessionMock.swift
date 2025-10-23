@@ -84,9 +84,9 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return URLRequest(url: URL(string: urlString)!)
     }
 
-    public func performRequest(_ rawRequest: TSRequest) async throws -> any HTTPResponse {
+    public func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return HTTPResponseImpl(
+        return HTTPResponse(
             requestUrl: rawRequest.url,
             status: 200,
             headers: HttpHeaders(),
@@ -100,9 +100,9 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         request: URLRequest,
         requestData: Data,
         progress: OWSProgressSource?
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return HTTPResponseImpl(
+        return HTTPResponse(
             requestUrl: request.url!,
             status: 200,
             headers: HttpHeaders(),
@@ -115,9 +115,9 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         fileUrl: URL,
         ignoreAppExpiry: Bool,
         progress: OWSProgressSource?
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return HTTPResponseImpl(
+        return HTTPResponse(
             requestUrl: request.url!,
             status: 200,
             headers: HttpHeaders(),
@@ -125,9 +125,9 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         )
     }
 
-    public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> any HTTPResponse {
+    public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
         // Want different behavior? Write a custom mock class
-        return HTTPResponseImpl(
+        return HTTPResponse(
             requestUrl: request.url!,
             status: 200,
             headers: HttpHeaders(),

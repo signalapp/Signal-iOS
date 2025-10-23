@@ -157,7 +157,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         case string(url: URL, contents: String)
         case image(url: URL, contents: Data)
 
-        static func dataForImage(_ response: any HTTPResponse) -> Data? {
+        static func dataForImage(_ response: HTTPResponse) -> Data? {
             guard let rawData = response.responseBodyData, rawData.count < maxFetchedContentSize else {
                 return nil
             }
@@ -166,7 +166,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     func fetchStringOrImageResource(from url: URL) async throws -> StringOrImageResource {
-        let response: any HTTPResponse
+        let response: HTTPResponse
         do {
             response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
         } catch {
@@ -198,7 +198,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     private func fetchImageResource(from url: URL) async throws -> Data {
-        let response: any HTTPResponse
+        let response: HTTPResponse
         do {
             response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
         } catch {

@@ -138,7 +138,7 @@ public class NetworkManager: NetworkManagerProtocol {
     public func asyncRequestImpl(
         _ request: TSRequest,
         retryPolicy: RetryPolicy,
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         return try await Retry.performWithBackoff(
             maxAttempts: retryPolicy.maxAttempts,
             isRetryable: { error -> Bool in
@@ -251,10 +251,10 @@ public class OWSFakeNetworkManager: NetworkManager {
     public override func asyncRequestImpl(
         _ request: TSRequest,
         retryPolicy: RetryPolicy,
-    ) async throws -> any HTTPResponse {
+    ) async throws -> HTTPResponse {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
-        return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
+        return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<HTTPResponse, any Error>) -> Void in }
     }
 }
 
