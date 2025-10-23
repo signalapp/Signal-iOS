@@ -330,6 +330,8 @@ extension ConversationViewController: CVComponentDelegate {
         self.present(sheet, animated: true)
     }
 
+    // MARK: -
+
     public func didTapUndownloadableMedia() {
         let toast = ToastController(text: OWSLocalizedString(
             "UNAVAILABLE_MEDIA_TAP_TOAST",
@@ -345,9 +347,12 @@ extension ConversationViewController: CVComponentDelegate {
                 "FILE_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a document/file that has expired and is unavailable for download"
             ),
-            message: OWSLocalizedString(
-                "FILE_UNAVAILABLE_SHEET_MESSAGE",
-                comment: "Message for sheet shown when tapping a document/file that has expired and is unavailable for download"
+            message: String(
+                format: OWSLocalizedString(
+                    "FILE_UNAVAILABLE_SHEET_MESSAGE",
+                    comment: "Message for sheet shown when tapping a document/file that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                ),
+                RemoteConfig.current.messageQueueDays,
             )
         )
         actionSheet.addAction(.okay)
@@ -361,9 +366,12 @@ extension ConversationViewController: CVComponentDelegate {
                 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping oversized text that has expired and is unavailable for download"
             ),
-            message: OWSLocalizedString(
-                "OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE",
-                comment: "Message for sheet shown when tapping oversized text that has expired and is unavailable for download"
+            message: String(
+                format: OWSLocalizedString(
+                    "OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE",
+                    comment: "Message for sheet shown when tapping oversized text that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                ),
+                RemoteConfig.current.messageQueueDays,
             )
         )
         actionSheet.addAction(.okay)
@@ -377,9 +385,12 @@ extension ConversationViewController: CVComponentDelegate {
                 "AUDIO_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a voice message that has expired and is unavailable for download"
             ),
-            message: OWSLocalizedString(
-                "AUDIO_UNAVAILABLE_SHEET_MESSAGE",
-                comment: "Message for sheet shown when tapping a voice message that has expired and is unavailable for download"
+            message: String(
+                format: OWSLocalizedString(
+                    "AUDIO_UNAVAILABLE_SHEET_MESSAGE",
+                    comment: "Message for sheet shown when tapping a voice message that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                ),
+                RemoteConfig.current.messageQueueDays,
             )
         )
         actionSheet.addAction(.okay)
@@ -393,9 +404,12 @@ extension ConversationViewController: CVComponentDelegate {
                 "STICKER_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a sticker that has expired and is unavailable for download"
             ),
-            message: OWSLocalizedString(
-                "STICKER_UNAVAILABLE_SHEET_MESSAGE",
-                comment: "Message for sheet shown when tapping a sticker that has expired and is unavailable for download"
+            message: String(
+                format: OWSLocalizedString(
+                    "STICKER_UNAVAILABLE_SHEET_MESSAGE",
+                    comment: "Message for sheet shown when tapping a sticker that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                ),
+                RemoteConfig.current.messageQueueDays,
             )
         )
         actionSheet.addAction(.okay)

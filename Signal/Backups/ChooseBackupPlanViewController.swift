@@ -27,6 +27,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
     private let tsAccountManager: TSAccountManager
 
     private let initialPlanSelection: PlanSelection?
+    private let mediaTTLDays: Int
     private let onConfirmPlanSelectionBlock: OnConfirmPlanSelectionBlock
     private let viewModel: ChooseBackupPlanViewModel
 
@@ -36,6 +37,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         backupKeyService: BackupKeyService,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
+        remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) {
@@ -45,9 +47,11 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         self.tsAccountManager = tsAccountManager
 
         self.initialPlanSelection = initialPlanSelection
+        self.mediaTTLDays = remoteConfigManager.currentConfig().messageQueueDays
         self.onConfirmPlanSelectionBlock = onConfirmPlanSelectionBlock
         self.viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: initialPlanSelection,
+            mediaTTLDays: mediaTTLDays,
             storeKitAvailability: storeKitAvailability,
         )
 
@@ -86,6 +90,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupSettingsStore: BackupSettingsStore(),
             db: DependenciesBridge.shared.db,
+            remoteConfigManager: SSKEnvironment.shared.remoteConfigManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             onConfirmPlanSelectionBlock: onConfirmPlanSelectionBlock,
         )
@@ -107,9 +112,12 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE",
                     comment: "Title for an action sheet confirming the user wants to downgrade their Backup plan."
                 ),
-                message: OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE",
-                    comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan."
+                message: String(
+                    format: OWSLocalizedString(
+                        "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE",
+                        comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                    ),
+                    mediaTTLDays,
                 ),
                 proceedTitle: OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON",
@@ -136,17 +144,20 @@ private class ChooseBackupPlanViewModel: ObservableObject {
     @Published var planSelection: PlanSelection
 
     let initialPlanSelection: PlanSelection?
+    let mediaTTLDays: Int
     let storeKitAvailability: StoreKitAvailability
 
     weak var actionsDelegate: ActionsDelegate?
 
     init(
         initialPlanSelection: PlanSelection?,
+        mediaTTLDays: Int,
         storeKitAvailability: StoreKitAvailability,
     ) {
         self.planSelection = initialPlanSelection ?? .free
 
         self.initialPlanSelection = initialPlanSelection
+        self.mediaTTLDays = mediaTTLDays
         self.storeKitAvailability = storeKitAvailability
     }
 
@@ -200,18 +211,24 @@ struct ChooseBackupPlanView: View {
                         "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE",
                         comment: "Title for the free plan option, when choosing a Backup plan."
                     ),
-                    subtitle: OWSLocalizedString(
-                        "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE",
-                        comment: "Subtitle for the free plan option, when choosing a Backup plan."
+                    subtitle: String(
+                        format: OWSLocalizedString(
+                            "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE",
+                            comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                        ),
+                        viewModel.mediaTTLDays,
                     ),
                     bullets: [
                         PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included."
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that recent media is included."
+                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: String(
+                            format: OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP",
+                                comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                            ),
+                            viewModel.mediaTTLDays,
                         )),
                     ],
                     isCurrentPlan: viewModel.initialPlanSelection == .free,
@@ -428,6 +445,7 @@ private extension ChooseBackupPlanViewModel {
 
         let viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: .free,
+            mediaTTLDays: 45,
             storeKitAvailability: storeKitAvailability
         )
         let actionsDelegate = ChoosePlanActionsDelegate()

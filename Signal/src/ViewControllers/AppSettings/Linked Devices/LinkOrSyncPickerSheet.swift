@@ -86,9 +86,12 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                     "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
                     comment: "title for choosing to send message history when linking a new device"
                 ),
-                subtitleText: OWSLocalizedString(
-                    "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE",
-                    comment: "subtitle for choosing to send message history when linking a new device"
+                subtitleText: String(
+                    format: OWSLocalizedString(
+                        "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE",
+                        comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                    ),
+                    RemoteConfig.current.messageQueueDays,
                 )
             ) { [weak self] in
                 guard let self else { return }

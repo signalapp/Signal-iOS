@@ -100,6 +100,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl)
 
+    // MARK: -
+
     func didTapUndownloadableMedia()
 
     func didTapUndownloadableGenericFile()
