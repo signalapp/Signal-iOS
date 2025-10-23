@@ -100,8 +100,8 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         }()
 
         private func updateText() {
-            self.label.text = String(
-                format: OWSLocalizedString(
+            self.label.text = String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "CALL_LINK_REQUEST_HEADER_COUNT_%d",
                     tableName: "PluralAware",
                     comment: "Header for a table section which lists users requesting to join a call. Embeds {{ number of requests }}"
@@ -237,16 +237,16 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     private func didTapDenyAll() {
         let requestsAtTimeOfPrompt = self.viewModel.requests
         self.performWithActionSheetConfirmation(
-            title: String(
-                format: OWSLocalizedString(
+            title: String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld",
                     tableName: "PluralAware",
                     comment: "Title for confirmation sheet when denying all requests to join a call."
                 ),
                 requestsAtTimeOfPrompt.count
             ),
-            message: String(
-                format: OWSLocalizedString(
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld",
                     tableName: "PluralAware",
                     comment: "Body for confirmation sheet when denying all requests to join a call."
@@ -266,16 +266,16 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         }
 
         self.performWithActionSheetConfirmation(
-            title: String(
-                format: OWSLocalizedString(
+            title: String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld",
                     tableName: "PluralAware",
                     comment: "Title for confirmation sheet when approving all requests to join a call."
                 ),
                 requestsAtTimeOfPrompt.count
             ),
-            message: String(
-                format: OWSLocalizedString(
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld",
                     tableName: "PluralAware",
                     comment: "Body for confirmation sheet when approving all requests to join a call."

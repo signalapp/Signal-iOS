@@ -1021,7 +1021,7 @@ extension CVComponentThreadDetails {
             let firstThreeMembers = Array(arguments.prefix(3))
             let remainingMembersCount = sortedMemberNames.count + (localUserIsAMember ? 1 : 0) - firstThreeMembers.count
 
-            let otherMembersString = String(format: otherMembersFormat, remainingMembersCount)
+            let otherMembersString = String.localizedStringWithFormat(otherMembersFormat, remainingMembersCount)
 
             underlinedPortion = otherMembersString
             arguments = firstThreeMembers + [otherMembersString]
@@ -1106,9 +1106,6 @@ extension CVComponentThreadDetails {
         let groupThreads = TSGroupThread.groupThreads(with: contactThread.contactAddress, transaction: tx)
         let mutualGroupNames = groupThreads.filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }.map { $0.groupNameOrDefault }
 
-        let formatString: String
-        var args: [CVarArg] = mutualGroupNames
-
         let isMessageRequest = contactThread.hasPendingMessageRequest(transaction: tx)
 
         let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustContact(
@@ -1116,40 +1113,54 @@ extension CVComponentThreadDetails {
             tx: tx
         )
 
+        let formattedString: String
         switch mutualGroupNames.count {
         case 0:
-            formatString = OWSLocalizedString(
-                "THREAD_DETAILS_ZERO_MUTUAL_GROUPS",
-                comment: "A string indicating there are no mutual groups the user shares with this contact"
+            formattedString = String(
+                format: OWSLocalizedString(
+                    "THREAD_DETAILS_ZERO_MUTUAL_GROUPS",
+                    comment: "A string indicating there are no mutual groups the user shares with this contact"
+                ),
+                mutualGroupNames,
             )
         case 1:
-            formatString = OWSLocalizedString(
-                "THREAD_DETAILS_ONE_MUTUAL_GROUP",
-                comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
+            formattedString = String(
+                format: OWSLocalizedString(
+                    "THREAD_DETAILS_ONE_MUTUAL_GROUP",
+                    comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
+                ),
+                mutualGroupNames,
             )
         case 2:
-            formatString = OWSLocalizedString(
-                "THREAD_DETAILS_TWO_MUTUAL_GROUP",
-                comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+            formattedString = String(
+                format: OWSLocalizedString(
+                    "THREAD_DETAILS_TWO_MUTUAL_GROUP",
+                    comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+                ),
+                mutualGroupNames,
             )
         case 3:
-            formatString = OWSLocalizedString(
-                "THREAD_DETAILS_THREE_MUTUAL_GROUP",
-                comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+            formattedString = String(
+                format: OWSLocalizedString(
+                    "THREAD_DETAILS_THREE_MUTUAL_GROUP",
+                    comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+                ),
+                mutualGroupNames,
             )
         default:
-            formatString = OWSLocalizedString(
-                "THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld",
-                tableName: "PluralAware",
-                comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}"
-            )
-
             // For this string, we want to use the first two groups' names
             // and add a final format arg for the number of remaining
             // groups.
-            let firstTwoGroups = Array(args[0..<2])
+            let firstTwoGroups = Array(mutualGroupNames[0..<2])
             let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
-            args = firstTwoGroups + [remainingGroupsCount]
+            formattedString = String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld",
+                    tableName: "PluralAware",
+                    comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}"
+                ),
+                firstTwoGroups + [remainingGroupsCount],
+            )
         }
 
         // In order for the phone number to appear in the same box as the
@@ -1189,7 +1200,7 @@ extension CVComponentThreadDetails {
                     font: Self.mutualGroupsFont
                 ),
                 "  ",
-                String(format: formatString, arguments: args),
+                formattedString,
             ]),
             threadType: .contact,
             shouldShowSafetyTipsButton: isMessageRequest

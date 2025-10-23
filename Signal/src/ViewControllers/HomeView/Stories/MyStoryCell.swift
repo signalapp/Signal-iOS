@@ -178,7 +178,7 @@ class MyStoryCell: UITableViewCell {
 
         if model.sendingCount > 0 {
             let format = OWSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
-            subtitleLabel.text = .localizedStringWithFormat(format, model.sendingCount)
+            subtitleLabel.text = String.localizedStringWithFormat(format, model.sendingCount)
             failedIconView.isHiddenInStackView = model.failureState == .none
         } else if model.failureState != .none {
             switch model.failureState {

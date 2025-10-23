@@ -75,8 +75,8 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
             let string: String
             switch pill {
             case .emoji(let emoji, let count, _):
-                string = String(
-                    format: OWSLocalizedString(
+                string = String.localizedStringWithFormat(
+                    OWSLocalizedString(
                         "MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d",
                         tableName: "PluralAware",
                         comment: "Accessibility label reading out a reaction to a message and its count. Embeds {{ count }} and {{ emoji name }}."
@@ -85,8 +85,8 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
                     emoji
                 )
             case .moreCount(let count, _):
-                string = String(
-                    format: OWSLocalizedString(
+                string = String.localizedStringWithFormat(
+                    OWSLocalizedString(
                         "OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d",
                         tableName: "PluralAware",
                         comment: "Accessibility label stating that there are additional reactions to a message that couldn't be displayed. Embeds {{ count of additional reactions }}"

@@ -119,8 +119,8 @@ struct PollDetailsView: View {
                             Spacer()
                             if option.acis.count > 0 {
                                 Text(
-                                    String(
-                                        format: OWSLocalizedString(
+                                    String.localizedStringWithFormat(
+                                        OWSLocalizedString(
                                             "POLL_VOTE_COUNT",
                                             tableName: "PluralAware",
                                             comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"

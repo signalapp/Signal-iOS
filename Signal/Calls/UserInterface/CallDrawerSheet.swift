@@ -1209,8 +1209,8 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
                 comment: "Label for an unknown member in the group call member list when they are the only member of the call."
             )
         } else {
-            bodyLabel.text = String(
-                format: OWSLocalizedString(
+            bodyLabel.text = String.localizedStringWithFormat(
+                OWSLocalizedString(
                     "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld",
                     tableName: "PluralAware",
                     comment: "Label for one or more unknown members in the group call member list when there is at least one known member in the call. Embeds {{ count }}"

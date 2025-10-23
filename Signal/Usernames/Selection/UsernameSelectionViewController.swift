@@ -508,8 +508,8 @@ private extension UsernameSelectionViewController {
             case .reservationFailed:
                 return CommonStrings.somethingWentWrongTryAgainLaterError
             case .tooShort:
-                return String(
-                    format: OWSLocalizedString(
+                return String.localizedStringWithFormat(
+                    OWSLocalizedString(
                         "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d",
                         tableName: "PluralAware",
                         comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %d the minimum character count }}."
