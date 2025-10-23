@@ -44,7 +44,7 @@ public struct HTTPResponse {
     }
 
     public var responseBodyString: String? {
-        responseBodyData.flatMap { String(data: $0, encoding: stringEncoding) }
+        responseBodyData.flatMap { String(data: $0, encoding: responseStringEncoding) }
     }
 }
 
