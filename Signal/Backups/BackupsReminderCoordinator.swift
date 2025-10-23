@@ -75,7 +75,7 @@ class BackupsReminderCoordinator {
         backupKeyReminderNavController.pushViewController(
             BackupConfirmKeyViewController(
                 aep: aep,
-                onContinue: { [weak self] in
+                onContinue: { [weak self] _ in
                     self?.dismissHandler(false)
                     backupKeyReminderNavController.dismiss(animated: true)
                 },

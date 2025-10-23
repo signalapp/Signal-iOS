@@ -11,7 +11,7 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
 
     init(
         aep: AccountEntropyPool,
-        onContinue: @escaping () -> Void,
+        onContinue: @escaping (BackupConfirmKeyViewController) -> Void,
         onSeeKeyAgain: @escaping () -> Void,
     ) {
         self.aep = aep
@@ -47,7 +47,7 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
 
                 present(
                     BackupKeepKeySafeSheet(
-                        onContinue: onContinue,
+                        onContinue: { onContinue(self) },
                         onSeeKeyAgain: onSeeKeyAgain
                     ),
                     animated: true
@@ -77,7 +77,7 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
     return UINavigationController(
         rootViewController: BackupConfirmKeyViewController(
             aep: aep,
-            onContinue: { print("Continuing...!") },
+            onContinue: { _ in print("Continuing...!") },
             onSeeKeyAgain: { print("Seeing key again...!") }
         )
     )

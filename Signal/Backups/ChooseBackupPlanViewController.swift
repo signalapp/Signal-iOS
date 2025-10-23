@@ -21,23 +21,44 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         case paid
     }
 
+    struct DisplayableError: Error {
+        let localizedActionSheetMessage: String
+
+        init(_ localizedActionSheetMessage: String) {
+            self.localizedActionSheetMessage = localizedActionSheetMessage
+        }
+
+        static let networkError = DisplayableError(OWSLocalizedString(
+            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
+            comment: "Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a network error."
+        ))
+
+        static let genericError = DisplayableError(OWSLocalizedString(
+            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
+            comment: "Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a generic error."
+        ))
+    }
+
+    // MARK: -
+
     private let backupKeyService: BackupKeyService
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
     private let tsAccountManager: TSAccountManager
 
+    private let freeMediaTierDays: UInt64
     private let initialPlanSelection: PlanSelection?
-    private let mediaTTLDays: Int
     private let onConfirmPlanSelectionBlock: OnConfirmPlanSelectionBlock
     private let viewModel: ChooseBackupPlanViewModel
 
     init(
+        freeMediaTierDays: UInt64,
         initialPlanSelection: PlanSelection?,
         storeKitAvailability: StoreKitAvailability,
+        storageAllowanceBytes: UInt64,
         backupKeyService: BackupKeyService,
         backupSettingsStore: BackupSettingsStore,
         db: DB,
-        remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) {
@@ -47,11 +68,12 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         self.tsAccountManager = tsAccountManager
 
         self.initialPlanSelection = initialPlanSelection
-        self.mediaTTLDays = remoteConfigManager.currentConfig().messageQueueDays
+        self.freeMediaTierDays = freeMediaTierDays
         self.onConfirmPlanSelectionBlock = onConfirmPlanSelectionBlock
         self.viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: initialPlanSelection,
-            mediaTTLDays: mediaTTLDays,
+            freeMediaTierDays: freeMediaTierDays,
+            storageAllowanceBytes: storageAllowanceBytes,
             storeKitAvailability: storeKitAvailability,
         )
 
@@ -64,33 +86,52 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         fromViewController: UIViewController,
         initialPlanSelection: PlanSelection?,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
-    ) async throws(OWSAssertionError) -> ChooseBackupPlanViewController {
-        let storeKitAvailability: StoreKitAvailability
-        if FeatureFlags.Backups.avoidStoreKitForTesters {
-            storeKitAvailability = .unavailableForTesters
-        } else {
-            let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+    ) async throws(DisplayableError) -> ChooseBackupPlanViewController {
+        let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+        let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
 
-            let paidPlanDisplayPrice: String
-            do {
-                paidPlanDisplayPrice = try await ModalActivityIndicatorViewController
-                    .presentAndPropagateResult(from: fromViewController) {
-                        try await backupSubscriptionManager.subscriptionDisplayPrice()
-                    }
-            } catch {
-                throw OWSAssertionError("Failed to get paidPlanDisplayPrice!")
+        let (
+            storeKitAvailability,
+            backupSubscriptionConfiguration,
+        ) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+            from: fromViewController,
+        ) { () throws(DisplayableError) in
+            let storeKitAvailability: StoreKitAvailability
+            if FeatureFlags.Backups.avoidStoreKitForTesters {
+                storeKitAvailability = .unavailableForTesters
+            } else {
+                do {
+                    storeKitAvailability = .available(
+                        paidPlanDisplayPrice: try await backupSubscriptionManager.subscriptionDisplayPrice()
+                    )
+                } catch StoreKitError.networkError {
+                    throw .networkError
+                } catch {
+                    owsFailDebug("Failed to get paidPlanDisplayPrice!")
+                    throw .genericError
+                }
             }
 
-            storeKitAvailability = .available(paidPlanDisplayPrice: paidPlanDisplayPrice)
+            let backupSubscriptionConfig: BackupSubscriptionConfiguration
+            do {
+                backupSubscriptionConfig = try await subscriptionConfigManager.backupConfiguration()
+            } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
+                throw .networkError
+            } catch {
+                throw .genericError
+            }
+
+            return (storeKitAvailability, backupSubscriptionConfig)
         }
 
         return ChooseBackupPlanViewController(
+            freeMediaTierDays: backupSubscriptionConfiguration.freeTierMediaDays,
             initialPlanSelection: initialPlanSelection,
             storeKitAvailability: storeKitAvailability,
+            storageAllowanceBytes: backupSubscriptionConfiguration.storageAllowanceBytes,
             backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupSettingsStore: BackupSettingsStore(),
             db: DependenciesBridge.shared.db,
-            remoteConfigManager: SSKEnvironment.shared.remoteConfigManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             onConfirmPlanSelectionBlock: onConfirmPlanSelectionBlock,
         )
@@ -117,7 +158,7 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
                         "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE",
                         comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
                     ),
-                    mediaTTLDays,
+                    freeMediaTierDays,
                 ),
                 proceedTitle: OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON",
@@ -144,20 +185,23 @@ private class ChooseBackupPlanViewModel: ObservableObject {
     @Published var planSelection: PlanSelection
 
     let initialPlanSelection: PlanSelection?
-    let mediaTTLDays: Int
+    let freeMediaTierDays: UInt64
+    let storageAllowanceBytes: UInt64
     let storeKitAvailability: StoreKitAvailability
 
     weak var actionsDelegate: ActionsDelegate?
 
     init(
         initialPlanSelection: PlanSelection?,
-        mediaTTLDays: Int,
+        freeMediaTierDays: UInt64,
+        storageAllowanceBytes: UInt64,
         storeKitAvailability: StoreKitAvailability,
     ) {
         self.planSelection = initialPlanSelection ?? .free
 
         self.initialPlanSelection = initialPlanSelection
-        self.mediaTTLDays = mediaTTLDays
+        self.freeMediaTierDays = freeMediaTierDays
+        self.storageAllowanceBytes = storageAllowanceBytes
         self.storeKitAvailability = storeKitAvailability
     }
 
@@ -216,7 +260,7 @@ struct ChooseBackupPlanView: View {
                             "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE",
                             comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
                         ),
-                        viewModel.mediaTTLDays,
+                        viewModel.freeMediaTierDays,
                     ),
                     bullets: [
                         PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
@@ -228,7 +272,7 @@ struct ChooseBackupPlanView: View {
                                 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP",
                                 comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}."
                             ),
-                            viewModel.mediaTTLDays,
+                            viewModel.freeMediaTierDays,
                         )),
                     ],
                     isCurrentPlan: viewModel.initialPlanSelection == .free,
@@ -271,9 +315,12 @@ struct ChooseBackupPlanView: View {
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all media is included."
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "data", text: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
-                            comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage."
+                        PlanOptionView.BulletPoint(iconKey: "data", text: String(
+                            format: OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
+                                comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}."
+                            ),
+                            viewModel.storageAllowanceBytes.formatted(.owsByteCount),
                         )),
                     ],
                     isCurrentPlan: viewModel.initialPlanSelection == .paid,
@@ -445,7 +492,8 @@ private extension ChooseBackupPlanViewModel {
 
         let viewModel = ChooseBackupPlanViewModel(
             initialPlanSelection: .free,
-            mediaTTLDays: 45,
+            freeMediaTierDays: 45,
+            storageAllowanceBytes: 100_000_000_000,
             storeKitAvailability: storeKitAvailability
         )
         let actionsDelegate = ChoosePlanActionsDelegate()

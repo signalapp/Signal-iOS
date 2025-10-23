@@ -29,7 +29,7 @@ class BackupSettingsViewController:
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let deviceSleepManager: DeviceSleepManager
-    private let remoteConfigManager: RemoteConfigManager
+    private let subscriptionConfigManager: SubscriptionConfigManager
     private let tsAccountManager: TSAccountManager
 
     private var onAppearAction: OnAppearAction?
@@ -60,7 +60,7 @@ class BackupSettingsViewController:
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
-            remoteConfigManager: SSKEnvironment.shared.remoteConfigManagerRef,
+            subscriptionConfigManager: DependenciesBridge.shared.subscriptionConfigManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
     }
@@ -81,7 +81,7 @@ class BackupSettingsViewController:
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
-        remoteConfigManager: RemoteConfigManager,
+        subscriptionConfigManager: SubscriptionConfigManager,
         tsAccountManager: TSAccountManager,
     ) {
         owsPrecondition(
@@ -107,12 +107,13 @@ class BackupSettingsViewController:
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.deviceSleepManager = deviceSleepManager
-        self.remoteConfigManager = remoteConfigManager
+        self.subscriptionConfigManager = subscriptionConfigManager
         self.tsAccountManager = tsAccountManager
 
         self.onAppearAction = onAppearAction
         self.viewModel = db.read { tx in
             let viewModel = BackupSettingsViewModel(
+                backupSubscriptionConfiguration: subscriptionConfigManager.backupConfigurationOrDefault(tx: tx),
                 backupSubscriptionLoadingState: .loading,
                 backupPlan: backupPlanManager.backupPlan(tx: tx),
                 failedToDisableBackupsRemotely: backupDisablingManager.disableRemotelyFailed(tx: tx),
@@ -137,6 +138,14 @@ class BackupSettingsViewController:
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         viewModel.actionsDelegate = self
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        Task {
+            await refreshBackupSubscriptionConfig()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -167,6 +176,36 @@ class BackupSettingsViewController:
     }
 
     // MARK: -
+
+    /// Refresh the `BackupSubscriptionConfig` we loaded during `init`.
+    ///
+    /// Covers the niche case in which we hadn't successfully fetched the config
+    /// before init, prompting to contact support if we fail here as well (maybe
+    /// we're having parsing issues or something).
+    private func refreshBackupSubscriptionConfig() async {
+        do {
+            let backupSubscriptionConfig = try await subscriptionConfigManager.backupConfiguration()
+
+            // If we loaded a different BackupSubscriptionConfig than what we
+            // got during init, swap it in.
+            if viewModel.backupSubscriptionConfiguration != backupSubscriptionConfig {
+                viewModel.backupSubscriptionConfiguration = backupSubscriptionConfig
+            }
+        } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
+            // Ignore network failures.
+        } catch {
+            owsFailDebug("Failed to fetch Backup subscription config!")
+
+            OWSActionSheets.showContactSupportActionSheet(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_SUB_CONFIG_LOAD_FAILED_MESSAGE",
+                    comment: "Message shown in an action sheet when we failed to load configuration parameters for Backups subscriptions.",
+                ),
+                emailFilter: .custom("SubscriptionConfigLoadFailed"),
+                fromViewController: self,
+            )
+        }
+    }
 
     private func startExternalEventObservation() {
         guard externalEventObservationTasks.isEmpty else {
@@ -352,9 +391,8 @@ class BackupSettingsViewController:
     private func showChooseBackupPlan(
         initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?
     ) async {
-        let chooseBackupPlanViewController: ChooseBackupPlanViewController
-        do throws(OWSAssertionError) {
-            chooseBackupPlanViewController = try await .load(
+        do throws(ChooseBackupPlanViewController.DisplayableError) {
+            let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
                 fromViewController: self,
                 initialPlanSelection: initialPlanSelection,
                 onConfirmPlanSelectionBlock: { [weak self] chooseBackupPlanViewController, planSelection in
@@ -368,14 +406,17 @@ class BackupSettingsViewController:
                     }
                 }
             )
-        } catch {
-            return
-        }
 
-        navigationController?.pushViewController(
-            chooseBackupPlanViewController,
-            animated: true
-        )
+            navigationController?.pushViewController(
+                chooseBackupPlanViewController,
+                animated: true
+            )
+        } catch {
+            OWSActionSheets.showActionSheet(
+                message: error.localizedActionSheetMessage,
+                fromViewController: self,
+            )
+        }
     }
 
     @MainActor
@@ -596,11 +637,10 @@ class BackupSettingsViewController:
 
     private func _loadBackupSubscription() async throws -> BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription {
         var currentBackupPlan = db.read { backupPlanManager.backupPlan(tx: $0) }
-        let messageQueueDays = remoteConfigManager.currentConfig().messageQueueDays
 
         switch currentBackupPlan {
         case .free:
-            return .free(mediaTTLDays: messageQueueDays)
+            return .free
         case .paidAsTester:
             return .paidButFreeForTesters
         case .disabling, .disabled, .paid, .paidExpiringSoon:
@@ -611,7 +651,7 @@ class BackupSettingsViewController:
             let backupSubscription = try await backupSubscriptionManager
                 .fetchAndMaybeDowngradeSubscription()
         else {
-            return .free(mediaTTLDays: messageQueueDays)
+            return .free
         }
 
         // The subscription fetch may have updated our local Backup plan.
@@ -619,7 +659,7 @@ class BackupSettingsViewController:
 
         switch currentBackupPlan {
         case .free:
-            return .free(mediaTTLDays: messageQueueDays)
+            return .free
         case .disabling, .disabled, .paid, .paidExpiringSoon, .paidAsTester:
             break
         }
@@ -1039,7 +1079,7 @@ class BackupSettingsViewController:
     private func showConfirmNewRecoveryKey(newCandidateAEP: AccountEntropyPool) {
         let confirmKeyViewController = BackupConfirmKeyViewController(
             aep: newCandidateAEP,
-            onContinue: { [weak self] in
+            onContinue: { [weak self] _ in
                 guard let self else { return }
 
                 self.finalizeNewRecoveryKey(newCandidateAEP: newCandidateAEP)
@@ -1114,7 +1154,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
     enum BackupSubscriptionLoadingState {
         enum LoadedBackupSubscription {
-            case free(mediaTTLDays: Int)
+            case free
             case paidButFreeForTesters
             case paid(price: FiatMoney, renewalDate: Date)
             case paidButExpiring(expirationDate: Date)
@@ -1126,6 +1166,8 @@ private class BackupSettingsViewModel: ObservableObject {
         case networkError
         case genericError
     }
+
+    @Published var backupSubscriptionConfiguration: BackupSubscriptionConfiguration
 
     @Published var backupSubscriptionLoadingState: BackupSubscriptionLoadingState
     @Published var backupPlan: BackupPlan
@@ -1143,6 +1185,7 @@ private class BackupSettingsViewModel: ObservableObject {
     weak var actionsDelegate: ActionsDelegate?
 
     init(
+        backupSubscriptionConfiguration: BackupSubscriptionConfiguration,
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool,
@@ -1154,6 +1197,8 @@ private class BackupSettingsViewModel: ObservableObject {
         shouldAllowBackupUploadsOnCellular: Bool,
         hasBackupFailed: Bool,
     ) {
+        self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
+
         self.backupSubscriptionLoadingState = backupSubscriptionLoadingState
         self.backupPlan = backupPlan
         self.failedToDisableBackupsRemotely = failedToDisableBackupsRemotely
@@ -1328,6 +1373,7 @@ struct BackupSettingsView: View {
 
             SignalSection {
                 BackupSubscriptionView(
+                    backupSubscriptionConfiguration: viewModel.backupSubscriptionConfiguration,
                     loadingState: viewModel.backupSubscriptionLoadingState,
                     viewModel: viewModel
                 )
@@ -2052,6 +2098,7 @@ private struct BackupAttachmentUploadProgressView: View {
 // MARK: -
 
 private struct BackupSubscriptionView: View {
+    let backupSubscriptionConfiguration: BackupSubscriptionConfiguration
     let loadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
     let viewModel: BackupSettingsViewModel
 
@@ -2071,6 +2118,7 @@ private struct BackupSubscriptionView: View {
             .frame(height: 140)
         case .loaded(let loadedBackupSubscription):
             loadedView(
+                backupSubscriptionConfiguration: backupSubscriptionConfiguration,
                 loadedBackupSubscription: loadedBackupSubscription,
                 viewModel: viewModel
             )
@@ -2130,6 +2178,7 @@ private struct BackupSubscriptionView: View {
     }
 
     private func loadedView(
+        backupSubscriptionConfiguration: BackupSubscriptionConfiguration,
         loadedBackupSubscription: BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription,
         viewModel: BackupSettingsViewModel
     ) -> some View {
@@ -2137,13 +2186,13 @@ private struct BackupSubscriptionView: View {
             VStack(alignment: .leading) {
                 Group {
                     switch loadedBackupSubscription {
-                    case .free(let mediaTTLDays):
+                    case .free:
                         Text(String(
                             format: OWSLocalizedString(
                                 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
                                 comment: "Header describing what the free backup plan includes. Embeds {{ the number of days that files are available, e.g. '45' }}."
                             ),
-                            mediaTTLDays,
+                            backupSubscriptionConfiguration.freeTierMediaDays,
                         ))
                     case .paid, .paidButExpiring, .paidButExpired, .paidButFreeForTesters:
                         Text(OWSLocalizedString(
@@ -2405,6 +2454,10 @@ private extension BackupSettingsViewModel {
         }
 
         let viewModel = BackupSettingsViewModel(
+            backupSubscriptionConfiguration: BackupSubscriptionConfiguration(
+                storageAllowanceBytes: 100_000_000_000,
+                freeTierMediaDays: 45,
+            ),
             backupSubscriptionLoadingState: backupSubscriptionLoadingState,
             backupPlan: backupPlan,
             failedToDisableBackupsRemotely: failedToDisableBackupsRemotely,
@@ -2449,7 +2502,7 @@ private extension BackupSettingsViewModel {
 #Preview("Plan: Free") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2516,7 +2569,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.backupExport, 0.33),
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2524,7 +2577,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.listMedia, 0.50),
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2596,7 +2649,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .suspended,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2604,7 +2657,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .running,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2612,7 +2665,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowBattery,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2620,7 +2673,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowPowerMode,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2628,7 +2681,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsWifi,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2636,7 +2689,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2644,7 +2697,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .outOfDiskSpace(bytesRequired: 200_000_000),
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2652,7 +2705,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .running,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2660,7 +2713,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
@@ -2668,21 +2721,21 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45))
+        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Disabling: Success") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .disabled,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45)),
+        backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
 
 #Preview("Disabling: Remotely") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .disabling,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45)),
+        backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
 
@@ -2690,7 +2743,7 @@ extension OWSSequentialProgress<BackupExportJobStep> {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .disabled,
         failedToDisableBackupsRemotely: true,
-        backupSubscriptionLoadingState: .loaded(.free(mediaTTLDays: 45)),
+        backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
 

@@ -9,23 +9,7 @@ import StoreKit
 import UIKit
 
 final class BackupEnablingManager {
-    struct DisplayableError: Error {
-        let localizedActionSheetMessage: String
-
-        init(_ localizedActionSheetMessage: String) {
-            self.localizedActionSheetMessage = localizedActionSheetMessage
-        }
-
-        fileprivate static let networkError = DisplayableError(OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
-            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error."
-        ))
-
-        fileprivate static let genericError = DisplayableError(OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
-            comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error."
-        ))
-    }
+    typealias DisplayableError = ChooseBackupPlanViewController.DisplayableError
 
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupDisablingManager: BackupDisablingManager

@@ -66,13 +66,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
     // MARK: - Donations
 
-    func testDonationConfiguration() {
-        let request = OWSRequestFactory.donationConfiguration()
-
-        XCTAssertEqual(request.url.path, "v1/subscription/configuration")
-        XCTAssertEqual(request.method, "GET")
-    }
-
     func testBoostStripeCreatePaymentIntentWithAmount() {
         let testCases: [(paymentMethod: OWSRequestFactory.StripePaymentMethod, expectedValue: String)] = [
             (.card, "CARD"),

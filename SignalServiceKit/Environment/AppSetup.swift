@@ -414,6 +414,12 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager
         )
 
+        let subscriptionConfigManager = SubscriptionConfigManager(
+            dateProvider: dateProvider,
+            db: db,
+            networkManager: networkManager,
+        )
+
         let svr = SecureValueRecovery2Impl(
             appContext: SVR2.Wrappers.AppContext(),
             appReadiness: appReadiness,
@@ -1721,6 +1727,7 @@ extension AppSetup.GlobalsContinuation {
             storageServiceRecordIkmMigrator: storageServiceRecordIkmMigrator,
             storyRecipientManager: storyRecipientManager,
             storyRecipientStore: storyRecipientStore,
+            subscriptionConfigManager: subscriptionConfigManager,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
             svrLocalStorage: svrLocalStorage,

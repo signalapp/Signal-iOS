@@ -951,6 +951,11 @@ extension DonationSubscriptionManager {
 
         return matchingLevel.badge
     }
+
+    public static func fetchDonationConfiguration() async throws -> DonationSubscriptionConfiguration {
+        let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
+        return try await subscriptionConfigManager.donationConfiguration()
+    }
 }
 
 // MARK: -

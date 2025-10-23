@@ -26,6 +26,8 @@ public protocol BackupSubscriptionManager {
     typealias PurchaseResult = BackupSubscription.PurchaseResult
     typealias IAPSubscriberData = BackupSubscription.IAPSubscriberData
 
+    // MARK: Fetch remote state
+
     /// Fetch the user's Backups subscription, if it exists. May downgrade the
     /// local `BackupPlan`, depending on the remote state of the subscription.
     func fetchAndMaybeDowngradeSubscription() async throws -> Subscription?
@@ -301,7 +303,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         store.setIAPSubscriberData(iapSubscriberData, tx: tx)
     }
 
-    // MARK: - Fetch current subscription
+    // MARK: -
 
     func fetchAndMaybeDowngradeSubscription() async throws -> Subscription? {
         guard let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }) else {

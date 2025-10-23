@@ -727,6 +727,9 @@
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
 
+/* Message shown in an action sheet when we failed to load configuration parameters for Backups subscriptions. */
+"BACKUP_SETTINGS_BACKUP_SUB_CONFIG_LOAD_FAILED_MESSAGE" = "Failed to load Backups configuration. Your Backup is not affected. Please contact support.";
+
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
 
@@ -1633,13 +1636,13 @@
 /* Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP" = "Last %1$d days of media";
 
-/* Text for a bullet point in a list of Backup features, describing the amount of included storage. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "100GB of storage";
+/* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
 
-/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a generic error. */
+/* Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a generic error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
 
-/* Message shown in an action sheet when the user tries to confirm a plan selection, but encountered a network error. */
+/* Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a network error. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */

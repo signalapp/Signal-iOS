@@ -41,7 +41,7 @@ enum ContactSupportActionSheet {
         fromViewController: UIViewController,
         completion: (() -> Void)? = nil
     ) {
-        Logger.warn("Presenting contact-support action sheet!")
+        Logger.warn("Presenting contact-support action sheet! \(emailFilter)")
 
         let submitWithLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITH_LOG", comment: "Button text")
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in

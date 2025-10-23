@@ -228,7 +228,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
 
     func testParseValidDonationConfig() throws {
         let config = try DonationConfiguration.from(
-            configurationServiceResponse: DonationConfigurationFixtures.withDefaultValues()
+            responseBodyJson: DonationConfigurationFixtures.withDefaultValues()
         )
 
         XCTAssertEqual(config.boost.level, LevelFixtures.boostLevel)
@@ -285,23 +285,23 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         )
 
         expect(
-            try DonationConfiguration.from(configurationServiceResponse: missingBoost),
+            try DonationConfiguration.from(responseBodyJson: missingBoost),
             throwsParseError: .missingBoostBadge
         )
         expect(
-            try DonationConfiguration.from(configurationServiceResponse: missingGift),
+            try DonationConfiguration.from(responseBodyJson: missingGift),
             throwsParseError: .missingGiftBadge
         )
         expect(
-            try DonationConfiguration.from(configurationServiceResponse: missingBoostLevel),
+            try DonationConfiguration.from(responseBodyJson: missingBoostLevel),
             throwsParseError: .missingBoostPresetAmounts
         )
         expect(
-            try DonationConfiguration.from(configurationServiceResponse: missingGiftLevel),
+            try DonationConfiguration.from(responseBodyJson: missingGiftLevel),
             throwsParseError: .missingGiftPresetAmount
         )
         expect(
-            try DonationConfiguration.from(configurationServiceResponse: missingSubscriptionLevel),
+            try DonationConfiguration.from(responseBodyJson: missingSubscriptionLevel),
             throwsParseError: .missingAmountForLevel(LevelFixtures.levelOne)
         )
     }
@@ -313,7 +313,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
             )
         )
 
-        _ = try DonationConfiguration.from(configurationServiceResponse: unexpectedPaymentMethod)
+        _ = try DonationConfiguration.from(responseBodyJson: unexpectedPaymentMethod)
     }
 
     // MARK: Utilities

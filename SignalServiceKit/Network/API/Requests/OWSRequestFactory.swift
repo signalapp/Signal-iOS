@@ -238,16 +238,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Donations
 
-    static func donationConfiguration() -> TSRequest {
-        var result = TSRequest(
-            url: .init(string: "v1/subscription/configuration")!,
-            method: "GET",
-            parameters: nil
-        )
-        result.auth = .anonymous
-        return result
-    }
-
     static func setSubscriberID(_ subscriberID: Data) -> TSRequest {
         var result = TSRequest(
             url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,

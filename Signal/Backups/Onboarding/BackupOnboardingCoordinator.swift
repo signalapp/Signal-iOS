@@ -130,58 +130,71 @@ class BackupOnboardingCoordinator {
     private func showConfirmRecoveryKey(aep: AccountEntropyPool) {
         guard let onboardingNavController else { return }
 
-        onboardingNavController.pushViewController(
-            BackupConfirmKeyViewController(
-                aep: aep,
-                onContinue: { [self] in
-                    Task {
-                        await showChooseBackupPlan()
+        let confirmKeyViewController = BackupConfirmKeyViewController(
+            aep: aep,
+            onContinue: { [self] confirmKeyViewController in
+                Task {
+                    do throws(ChooseBackupPlanViewController.DisplayableError) {
+                        try await showChooseBackupPlan()
+                    } catch {
+                        OWSActionSheets.showActionSheet(
+                            message: error.localizedActionSheetMessage,
+                            fromViewController: confirmKeyViewController,
+                        )
                     }
-                },
-                onSeeKeyAgain: {
-                    onboardingNavController.popViewController(animated: true)
                 }
-            ),
-            animated: true
+            },
+            onSeeKeyAgain: {
+                onboardingNavController.popViewController(animated: true)
+            },
+        )
+
+        onboardingNavController.pushViewController(
+            confirmKeyViewController,
+            animated: true,
         )
     }
 
     // MARK: -
 
-    private func showChooseBackupPlan() async {
+    private func showChooseBackupPlan() async throws(ChooseBackupPlanViewController.DisplayableError) {
         guard let onboardingNavController else { return }
 
-        let chooseBackupPlanViewController: ChooseBackupPlanViewController
-        do throws(OWSAssertionError) {
-            chooseBackupPlanViewController = try await .load(
-                fromViewController: onboardingNavController,
-                initialPlanSelection: nil,
-            ) { [self] chooseBackupPlanViewController, planSelection in
-                Task {
-                    do throws(BackupEnablingManager.DisplayableError) {
-                        try await backupEnablingManager.enableBackups(
-                            fromViewController: chooseBackupPlanViewController,
-                            planSelection: planSelection
-                        )
-                    } catch {
-                        OWSActionSheets.showActionSheet(
-                            message: error.localizedActionSheetMessage,
-                            fromViewController: chooseBackupPlanViewController,
-                        )
-                        return
-                    }
-
-                    completeOnboarding()
-                }
+        let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
+            fromViewController: onboardingNavController,
+            initialPlanSelection: nil,
+        ) { [self] chooseBackupPlanViewController, planSelection in
+            Task {
+                await enableBackups(
+                    planSelection: planSelection,
+                    fromViewController: chooseBackupPlanViewController
+                )
             }
-        } catch {
-            return
         }
 
         onboardingNavController.pushViewController(
             chooseBackupPlanViewController,
             animated: true
         )
+    }
+
+    private func enableBackups(
+        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        fromViewController: UIViewController,
+    ) async {
+        do throws(BackupEnablingManager.DisplayableError) {
+            try await backupEnablingManager.enableBackups(
+                fromViewController: fromViewController,
+                planSelection: planSelection
+            )
+
+            completeOnboarding()
+        } catch {
+            OWSActionSheets.showActionSheet(
+                message: error.localizedActionSheetMessage,
+                fromViewController: fromViewController,
+            )
+        }
     }
 
     private func completeOnboarding() {

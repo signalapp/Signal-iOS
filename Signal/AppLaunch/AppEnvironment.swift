@@ -150,6 +150,7 @@ public class AppEnvironment: NSObject {
             let threadStore = DependenciesBridge.shared.threadStore
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let storageServiceRecordIkmMigrator = DependenciesBridge.shared.storageServiceRecordIkmMigrator
+            let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
 
             let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
                 db: db,
@@ -266,6 +267,14 @@ public class AppEnvironment: NSObject {
 
             Task {
                 await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+            }
+
+            Task {
+                do {
+                    try await subscriptionConfigManager.refreshIfNeeded()
+                } catch {
+                    owsFailDebug("Failed to fetch subscription configuration in launch job! \(error)")
+                }
             }
 
             Task {

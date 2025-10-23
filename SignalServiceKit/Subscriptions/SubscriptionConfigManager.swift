@@ -3,12 +3,195 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-extension DonationSubscriptionManager {
-    /// Fetch donation configuration from the service.
-    public static func fetchDonationConfiguration() async throws -> DonationSubscriptionConfiguration {
-        let request = OWSRequestFactory.donationConfiguration()
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-        return try .from(configurationServiceResponse: response.responseBodyJson)
+public class SubscriptionConfigManager {
+    private struct SubscriptionConfig {
+        let donation: DonationSubscriptionConfiguration
+        let backup: BackupSubscriptionConfiguration
+    }
+
+    private enum StoreKeys {
+        static let lastFetchedResponseBody = "lastFetchedResponseBody"
+        static let lastFetchDate = "lastFetchDate"
+    }
+
+    private let dateProvider: DateProvider
+    private let db: DB
+    private let kvStore: NewKeyValueStore
+    private let networkManager: NetworkManager
+
+    init(
+        dateProvider: @escaping DateProvider,
+        db: DB,
+        networkManager: NetworkManager,
+    ) {
+        self.dateProvider = dateProvider
+        self.db = db
+        self.kvStore = NewKeyValueStore(collection: "SubscriptionConfiguration")
+        self.networkManager = networkManager
+    }
+
+    public func refreshIfNeeded() async throws {
+        if
+            let lastFetchDate = db.read(block: {
+                kvStore.fetchValue(Date.self, forKey: StoreKeys.lastFetchDate, tx: $0)
+            }),
+            dateProvider().timeIntervalSince(lastFetchDate) < .day
+        {
+            // Refresh daily, although we'll use a cached value for longer.
+            return
+        }
+
+        _ = try await refresh()
+    }
+
+    private func refresh() async throws -> SubscriptionConfig {
+        var request = TSRequest(
+            url: URL(string: "v1/subscription/configuration")!,
+            method: "GET",
+            parameters: nil,
+        )
+        request.auth = .anonymous
+
+        let response: HTTPResponse = try await Retry.performWithBackoff(
+            maxAttempts: 3,
+            isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse },
+            block: { try await networkManager.asyncRequest(request) },
+        )
+
+        guard let responseBodyData = response.responseBodyData else {
+            throw OWSAssertionError("Missing response body!")
+        }
+
+        let donationConfig: DonationSubscriptionConfiguration = try .from(responseBodyData: responseBodyData)
+        let backupConfig: BackupSubscriptionConfiguration = try .from(responseBodyData: responseBodyData)
+
+        await db.awaitableWrite { tx in
+            kvStore.writeValue(dateProvider(), forKey: StoreKeys.lastFetchDate, tx: tx)
+            kvStore.writeValue(responseBodyData, forKey: StoreKeys.lastFetchedResponseBody, tx: tx)
+        }
+
+        return SubscriptionConfig(
+            donation: donationConfig,
+            backup: backupConfig,
+        )
+    }
+
+    // MARK: Donations
+
+    /// Returns a `DonationSubscriptionConfiguration` either fetched live from
+    /// the service or cached on disk from a recent fetch.
+    public func donationConfiguration() async throws -> DonationSubscriptionConfiguration {
+        if
+            let cachedResponseBody = db.read(block: { _cachedResponseBody(tx: $0) }),
+            let donationConfig: DonationSubscriptionConfiguration = try? .from(responseBodyData: cachedResponseBody)
+        {
+            return donationConfig
+        }
+
+        return try await refresh().donation
+    }
+
+    // MARK: Backups
+
+    /// Returns a `BackupSubscriptionConfiguration` either fetched live from
+    /// the service or cached on disk from a recent fetch.
+    public func backupConfiguration() async throws -> BackupSubscriptionConfiguration {
+        if
+            let cachedResponseBody = db.read(block: { _cachedResponseBody(tx: $0) }),
+            let backupConfig: BackupSubscriptionConfiguration = try? .from(responseBodyData: cachedResponseBody)
+        {
+            return backupConfig
+        }
+
+        return try await refresh().backup
+    }
+
+    /// Returns a recently-fetched-and-cached `BackupSubscriptionConfiguration`
+    /// if available, and default values otherwise.
+    ///
+    /// Useful for callers who need a synchronous, non-optional value. Callers
+    /// may also call ``backupConfiguration()`` once out of the critical
+    /// synchronous region, preferring that returned value if different.
+    public func backupConfigurationOrDefault(tx: DBReadTransaction) -> BackupSubscriptionConfiguration {
+        // It's always better to fall back on our last-fetched value than the
+        // defaults, so check the cache ignoring TTL.
+        if
+            let cachedResponseBody = _cachedResponseBody(ttl: nil, tx: tx),
+            let backupConfig: BackupSubscriptionConfiguration = try? .from(responseBodyData: cachedResponseBody)
+        {
+            return backupConfig
+        }
+
+        return BackupSubscriptionConfiguration(
+            storageAllowanceBytes: 100_000_000_000,
+            freeTierMediaDays: 45,
+        )
+    }
+
+    /// The cached result of a previous configuration fetch.
+    /// - Parameter ttl
+    /// An optional "max age" of the cached value, after which it is ignored.
+    private func _cachedResponseBody(
+        ttl: TimeInterval? = .week,
+        tx: DBReadTransaction,
+    ) -> Data? {
+        if
+            let ttl,
+            let lastFetchDate = kvStore.fetchValue(Date.self, forKey: StoreKeys.lastFetchDate, tx: tx),
+            dateProvider().timeIntervalSince(lastFetchDate) > ttl
+        {
+            return nil
+        }
+
+        return kvStore.fetchValue(Data.self, forKey: StoreKeys.lastFetchedResponseBody, tx: tx)
+    }
+}
+
+// MARK: -
+
+/// Represents Backup subscription configuration fetched from the service.
+public struct BackupSubscriptionConfiguration: Equatable {
+    public let storageAllowanceBytes: UInt64
+    public let freeTierMediaDays: UInt64
+
+    public init(storageAllowanceBytes: UInt64, freeTierMediaDays: UInt64) {
+        self.storageAllowanceBytes = storageAllowanceBytes
+        self.freeTierMediaDays = freeTierMediaDays
+    }
+
+    static func from(responseBodyData: Data) throws -> BackupSubscriptionConfiguration {
+        struct TopLevelObject: Decodable {
+            struct BackupObject: Decodable {
+                struct BackupLevelObject: Decodable {
+                    let storageAllowanceBytes: Int64
+                }
+
+                let freeTierMediaDays: Int64
+                let levels: [String: BackupLevelObject]
+            }
+
+            let backup: BackupObject
+        }
+
+        let topLevelObject = try JSONDecoder().decode(TopLevelObject.self, from: responseBodyData)
+        let backupObject = topLevelObject.backup
+
+        guard let backupLevelObject = backupObject.levels["201"] else {
+            throw OWSAssertionError("Missing Backup config for level 201!")
+        }
+
+        guard let storageAllowanceBytes = UInt64(exactly: backupLevelObject.storageAllowanceBytes) else {
+            throw OWSAssertionError("storageAllowanceBytes was not a valid UInt64!")
+        }
+
+        guard let freeTierMediaDays = UInt64(exactly: backupObject.freeTierMediaDays) else {
+            throw OWSAssertionError("freeTierMediaDays was not a valid UInt64!")
+        }
+
+        return BackupSubscriptionConfiguration(
+            storageAllowanceBytes: storageAllowanceBytes,
+            freeTierMediaDays: freeTierMediaDays,
+        )
     }
 }
 
@@ -83,11 +266,20 @@ public struct DonationSubscriptionConfiguration {
         case invalidPaymentMethodString(string: String)
     }
 
-    /// Parse a service configuration from a response body.
-    static func from(configurationServiceResponse responseBody: Any?) throws -> Self {
-        guard let parser = ParamParser(responseObject: responseBody) else {
-            throw OWSAssertionError("Missing or invalid response!")
+    static func from(responseBodyData: Data) throws -> Self {
+        guard
+            let responseBodyJson = try? JSONSerialization
+                .jsonObject(with: responseBodyData) as? [String: Any]
+        else {
+            throw OWSAssertionError("Failed to get dictionary from body data!")
         }
+
+        return try .from(responseBodyJson: responseBodyJson)
+    }
+
+    /// Parse a service configuration from a response body.
+    static func from(responseBodyJson: [String: Any]) throws -> Self {
+        let parser = ParamParser(dictionary: responseBodyJson)
 
         let levels: BadgedLevels = try parseLevels(fromParser: parser)
         let presetsByCurrency: PresetsByCurrency = try parsePresets(fromParser: parser, forLevels: levels)
