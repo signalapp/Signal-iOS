@@ -114,7 +114,7 @@ class BadgeIdsTest: XCTestCase {
 
 class SubscriptionManagerDonationConfigurationTest: XCTestCase {
     private typealias JSON = [String: Any]
-    private typealias DonationConfiguration = DonationSubscriptionManager.DonationConfiguration
+    private typealias DonationConfiguration = DonationSubscriptionConfiguration
 
     private enum CurrencyFixtures {
         static let minimumAmount: Int = 5
@@ -250,7 +250,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         XCTAssertEqual(secondSubscriptionLevel.badge, LevelFixtures.badge)
         XCTAssertEqual(secondSubscriptionLevel.amounts.usd, CurrencyFixtures.levelTwoAmount.asUsd)
 
-        XCTAssertEqual(config.paymentMethods.supportedPaymentMethods(forCurrencyCode: "USD"), [.paypal, .applePay, .creditOrDebitCard])
+        XCTAssertEqual(config.paymentMethods.supportedPaymentMethodsByCurrency["USD"], [.paypal, .applePay, .creditOrDebitCard])
     }
 
     func testParseConfigMissingThings() {

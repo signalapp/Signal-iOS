@@ -760,7 +760,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     /// Requests one-time and monthly badges and preset amounts from the
     /// service, prepares badge assets, and loads local state as appropriate.
     private func loadState(currentState: State) async -> State {
-        typealias DonationConfiguration = DonationSubscriptionManager.DonationConfiguration
+        typealias DonationConfiguration = DonationSubscriptionConfiguration
 
         let (
             subscriberID,

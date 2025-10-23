@@ -4,70 +4,62 @@
 //
 
 extension DonationSubscriptionManager {
-    /// Represents donation configuration information fetched from the service,
-    /// such as preset donation levels and badge information.
-    public struct DonationConfiguration {
-        public struct BoostConfiguration {
-            public let level: UInt
-            public let badge: ProfileBadge
-            public let presetAmounts: [Currency.Code: DonationUtilities.Preset]
-            public let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
-
-            /// The maximum donation amount allowed for SEPA debit transfers.
-            public let maximumAmountViaSepa: FiatMoney
-        }
-
-        public struct GiftConfiguration {
-            public let level: UInt
-            public let badge: ProfileBadge
-            public let presetAmount: [Currency.Code: FiatMoney]
-        }
-
-        public struct SubscriptionConfiguration {
-            public let levels: [DonationSubscriptionLevel]
-        }
-
-        public struct PaymentMethodsConfiguration: Equatable {
-            private let supportedPaymentMethodsByCurrency: [Currency.Code: Set<DonationPaymentMethod>]
-
-            init(supportedPaymentMethodsByCurrency: [Currency.Code: Set<DonationPaymentMethod>]) {
-                self.supportedPaymentMethodsByCurrency = supportedPaymentMethodsByCurrency
-            }
-
-            public func supportedPaymentMethods(
-                forCurrencyCode code: Currency.Code
-            ) -> Set<DonationPaymentMethod> {
-                supportedPaymentMethodsByCurrency[code] ?? []
-            }
-        }
-
-        public let boost: BoostConfiguration
-        public let gift: GiftConfiguration
-        public let subscription: SubscriptionConfiguration
-        public let paymentMethods: PaymentMethodsConfiguration
-
-        fileprivate init(
-            boost: BoostConfiguration,
-            gift: GiftConfiguration,
-            subscription: SubscriptionConfiguration,
-            paymentMethods: PaymentMethodsConfiguration
-        ) {
-            self.boost = boost
-            self.gift = gift
-            self.subscription = subscription
-            self.paymentMethods = paymentMethods
-        }
-    }
-
     /// Fetch donation configuration from the service.
-    public static func fetchDonationConfiguration() async throws -> DonationConfiguration {
+    public static func fetchDonationConfiguration() async throws -> DonationSubscriptionConfiguration {
         let request = OWSRequestFactory.donationConfiguration()
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-        return try DonationConfiguration.from(configurationServiceResponse: response.responseBodyJson)
+        return try .from(configurationServiceResponse: response.responseBodyJson)
     }
 }
 
-extension DonationSubscriptionManager.DonationConfiguration {
+// MARK: -
+
+/// Represents donation configuration information fetched from the service,
+/// such as preset donation levels and badge information.
+public struct DonationSubscriptionConfiguration {
+    public struct BoostConfiguration {
+        public let level: UInt
+        public let badge: ProfileBadge
+        public let presetAmounts: [Currency.Code: DonationUtilities.Preset]
+        public let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
+
+        /// The maximum donation amount allowed for SEPA debit transfers.
+        public let maximumAmountViaSepa: FiatMoney
+    }
+
+    public struct GiftConfiguration {
+        public let level: UInt
+        public let badge: ProfileBadge
+        public let presetAmount: [Currency.Code: FiatMoney]
+    }
+
+    public struct SubscriptionConfiguration {
+        public let levels: [DonationSubscriptionLevel]
+    }
+
+    public struct PaymentMethodsConfiguration: Equatable {
+        public let supportedPaymentMethodsByCurrency: [Currency.Code: Set<DonationPaymentMethod>]
+    }
+
+    public let boost: BoostConfiguration
+    public let gift: GiftConfiguration
+    public let subscription: SubscriptionConfiguration
+    public let paymentMethods: PaymentMethodsConfiguration
+
+    private init(
+        boost: BoostConfiguration,
+        gift: GiftConfiguration,
+        subscription: SubscriptionConfiguration,
+        paymentMethods: PaymentMethodsConfiguration
+    ) {
+        self.boost = boost
+        self.gift = gift
+        self.subscription = subscription
+        self.paymentMethods = paymentMethods
+    }
+
+    // MARK: -
+
     enum ParseError: Error, Equatable {
         /// Missing a preset amount for a donation level.
         case missingAmountForLevel(_ level: UInt)
@@ -92,7 +84,7 @@ extension DonationSubscriptionManager.DonationConfiguration {
     }
 
     /// Parse a service configuration from a response body.
-    static func from(configurationServiceResponse responseBody: Any?) throws -> DonationSubscriptionManager.DonationConfiguration {
+    static func from(configurationServiceResponse responseBody: Any?) throws -> Self {
         guard let parser = ParamParser(responseObject: responseBody) else {
             throw OWSAssertionError("Missing or invalid response!")
         }
@@ -169,24 +161,22 @@ extension DonationSubscriptionManager.DonationConfiguration {
             return PaymentMethodsConfiguration(supportedPaymentMethodsByCurrency: supportedPaymentMethodsByCurrency)
         }()
 
-        return DonationSubscriptionManager.DonationConfiguration(
+        return Self(
             boost: boostConfig,
             gift: giftConfig,
             subscription: subscriptionConfig,
             paymentMethods: paymentMethodsConfig
         )
     }
-}
 
-// MARK: - Parse levels
+    // MARK: - Parse levels
 
-private extension DonationSubscriptionManager.DonationConfiguration {
-    struct BadgedLevel {
+    private struct BadgedLevel {
         let value: UInt
         let badge: ProfileBadge
     }
 
-    struct BadgedLevels {
+    private struct BadgedLevels {
         let boost: BadgedLevel
         let gift: BadgedLevel
         let subscription: [BadgedLevel]
@@ -210,7 +200,7 @@ private extension DonationSubscriptionManager.DonationConfiguration {
     ///
     /// Boost and gift one-time donations have well-known levels and are
     /// expected. Any other levels are interpreted as subscription levels.
-    static func parseLevels(fromParser parser: ParamParser) throws -> BadgedLevels {
+    private static func parseLevels(fromParser parser: ParamParser) throws -> BadgedLevels {
         let levelsJson: [String: [String: Any]] = try parser.required(key: "levels")
         var badgesByLevel: [UInt: BadgedLevel] = try levelsJson.reduce(into: [:]) { partialResult, kv in
             let (levelString, json) = kv
@@ -246,47 +236,39 @@ private extension DonationSubscriptionManager.DonationConfiguration {
             subscription: Array(subscriptionLevels.values)
         )
     }
-}
 
-// MARK: - SEPA maximum boost
+    // MARK: - SEPA maximum boost
 
-private extension DonationSubscriptionManager.DonationConfiguration {
-    static func parseSepaBoostMaximum(
+    private static func parseSepaBoostMaximum(
         fromParser parser: ParamParser
     ) throws -> FiatMoney {
         let sepaMaxEurosInt: Int = try parser.required(key: "sepaMaximumEuros")
-        return FiatMoney(currencyCode: .euro, value: Decimal(sepaMaxEurosInt))
+        return FiatMoney(currencyCode: "EUR", value: Decimal(sepaMaxEurosInt))
     }
-}
 
-private extension Currency.Code {
-    static let euro: Currency.Code = "EUR"
-}
+    // MARK: - Parse presets
 
-// MARK: - Parse presets
-
-private extension DonationSubscriptionManager.DonationConfiguration {
-    struct BoostPresets {
+    private struct BoostPresets {
         let minimum: FiatMoney
         let presets: [FiatMoney]
     }
 
-    struct GiftPreset {
+    private struct GiftPreset {
         let preset: FiatMoney
     }
 
-    struct SubscriptionPresets {
+    private struct SubscriptionPresets {
         let presetsByLevel: [UInt: FiatMoney]
     }
 
-    struct Presets {
+    private struct Presets {
         let boost: BoostPresets
         let gift: GiftPreset
         let subscription: SubscriptionPresets
         let supportedPaymentMethods: Set<DonationPaymentMethod>
     }
 
-    typealias PresetsByCurrency = [Currency.Code: Presets]
+    private typealias PresetsByCurrency = [Currency.Code: Presets]
 
     /// Parse amounts, grouped by currency, from the given parser.
     ///
@@ -300,7 +282,7 @@ private extension DonationSubscriptionManager.DonationConfiguration {
     ///     }
     /// }
     /// ```
-    static func parsePresets(
+    private static func parsePresets(
         fromParser parser: ParamParser,
         forLevels levels: BadgedLevels
     ) throws -> PresetsByCurrency {

@@ -333,7 +333,7 @@ public final class DonationViewsUtil {
         }
     }
 
-    public static func loadSubscriptionLevels(donationConfiguration: DonationSubscriptionManager.DonationConfiguration, badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
+    public static func loadSubscriptionLevels(donationConfiguration: DonationSubscriptionConfiguration, badgeStore: BadgeStore) async throws -> [DonationSubscriptionLevel] {
         let levels = donationConfiguration.subscription.levels
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for level in levels {

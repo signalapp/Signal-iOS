@@ -223,7 +223,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func loadProfileBadgeLookup(donationConfiguration: DonationSubscriptionManager.DonationConfiguration?) async -> ProfileBadgeLookup {
+    private func loadProfileBadgeLookup(donationConfiguration: DonationSubscriptionConfiguration?) async -> ProfileBadgeLookup {
         if let donationConfiguration {
             let result = ProfileBadgeLookup(
                 boostBadge: donationConfiguration.boost.badge,

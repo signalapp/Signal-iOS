@@ -14,7 +14,7 @@ public class DonationUtilities {
     public static func supportedDonationPaymentMethods(
         forDonationMode donationMode: DonationMode,
         usingCurrency currencyCode: Currency.Code,
-        withConfiguration configuration: DonationSubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration,
+        withConfiguration configuration: DonationSubscriptionConfiguration.PaymentMethodsConfiguration,
         localNumber: String?
     ) -> Set<DonationPaymentMethod> {
         let generallySupportedMethods = supportedDonationPaymentMethods(
@@ -22,9 +22,8 @@ public class DonationUtilities {
             localNumber: localNumber
         )
 
-        let currencySupportedMethods = configuration.supportedPaymentMethods(
-            forCurrencyCode: currencyCode
-        )
+        let currencySupportedMethods = configuration
+            .supportedPaymentMethodsByCurrency[currencyCode, default: []]
 
         return generallySupportedMethods.intersection(currencySupportedMethods)
     }
