@@ -92,9 +92,10 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                     "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
                     comment: "title for choosing to send message history when linking a new device"
                 ),
-                subtitleText: String(
-                    format: OWSLocalizedString(
-                        "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE",
+                subtitleText: String.localizedStringWithFormat(
+                    OWSLocalizedString(
+                        "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d",
+                        tableName: "PluralAware",
                         comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
                     ),
                     freeTierMediaDays,

@@ -347,9 +347,10 @@ extension ConversationViewController: CVComponentDelegate {
                 "FILE_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a document/file that has expired and is unavailable for download"
             ),
-            message: String(
-                format: OWSLocalizedString(
-                    "FILE_UNAVAILABLE_SHEET_MESSAGE",
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d",
+                    tableName: "PluralAware",
                     comment: "Message for sheet shown when tapping a document/file that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
                 _freeTierMediaDays(),
@@ -366,9 +367,10 @@ extension ConversationViewController: CVComponentDelegate {
                 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping oversized text that has expired and is unavailable for download"
             ),
-            message: String(
-                format: OWSLocalizedString(
-                    "OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE",
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d",
+                    tableName: "PluralAware",
                     comment: "Message for sheet shown when tapping oversized text that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
                 _freeTierMediaDays(),
@@ -385,9 +387,10 @@ extension ConversationViewController: CVComponentDelegate {
                 "AUDIO_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a voice message that has expired and is unavailable for download"
             ),
-            message: String(
-                format: OWSLocalizedString(
-                    "AUDIO_UNAVAILABLE_SHEET_MESSAGE",
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "UNAVAILABLE_ATTACHMENT_AUDIO_SHEET_MESSAGE_%d",
+                    tableName: "PluralAware",
                     comment: "Message for sheet shown when tapping a voice message that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
                 _freeTierMediaDays(),
@@ -404,9 +407,10 @@ extension ConversationViewController: CVComponentDelegate {
                 "STICKER_UNAVAILABLE_SHEET_TITLE",
                 comment: "Title for sheet shown when tapping a sticker that has expired and is unavailable for download"
             ),
-            message: String(
-                format: OWSLocalizedString(
-                    "STICKER_UNAVAILABLE_SHEET_MESSAGE",
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d",
+                    tableName: "PluralAware",
                     comment: "Message for sheet shown when tapping a sticker that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
                 _freeTierMediaDays(),

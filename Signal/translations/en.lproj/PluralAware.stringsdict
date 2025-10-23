@@ -93,6 +93,22 @@
 			<string>Add New Members</string>
 		</dict>
 	</dict>
+	<key>BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Text + %d day of media backup</string>
+			<key>other</key>
+			<string>Text + %d days of media backup</string>
+		</dict>
+	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -299,6 +315,54 @@
 			<string>This color is used in %d chat. Do you want to save changes for all chats?</string>
 			<key>other</key>
 			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+		</dict>
+	</dict>
+	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Last %d day of media</string>
+			<key>other</key>
+			<string>Last %d days of media</string>
+		</dict>
+	</dict>
+	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All of your text messages and last %d day of media will be included in your backup if you change your plan.</string>
+			<key>other</key>
+			<string>All of your text messages and last %d days of media will be included in your backup if you change your plan.</string>
+		</dict>
+	</dict>
+	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Text + %d day of media</string>
+			<key>other</key>
+			<string>Text + %d days of media</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -952,6 +1016,22 @@
 			<string>To keep "%2$@" linked, open Signal on that device within %d days.</string>
 		</dict>
 	</dict>
+	<key>LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Transfer your text messages and your last %d day of media</string>
+			<key>other</key>
+			<string>Transfer your text messages and your last %d days of media</string>
+		</dict>
+	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1526,6 +1606,70 @@
 			<string>%ld other</string>
 			<key>other</key>
 			<string>%ld others</string>
+		</dict>
+	</dict>
+	<key>UNAVAILABLE_ATTACHMENT_AUDIO_SHEET_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %d day at the time of device linking cannot be synced.</string>
+			<key>other</key>
+			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %d days at the time of device linking cannot be synced.</string>
+		</dict>
+	</dict>
+	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>This file was not transferred from your phone when this device was linked. Media and files older than %d day at the time of device linking cannot be synced.</string>
+			<key>other</key>
+			<string>This file was not transferred from your phone when this device was linked. Media and files older than %d days at the time of device linking cannot be synced.</string>
+		</dict>
+	</dict>
+	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %d day at the time of device linking cannot be synced.</string>
+			<key>other</key>
+			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %d days at the time of device linking cannot be synced.</string>
+		</dict>
+	</dict>
+	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %d day at the time of device linking cannot be synced.</string>
+			<key>other</key>
+			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %d days at the time of device linking cannot be synced.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

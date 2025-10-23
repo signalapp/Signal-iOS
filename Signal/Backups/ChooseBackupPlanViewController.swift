@@ -153,9 +153,10 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE",
                     comment: "Title for an action sheet confirming the user wants to downgrade their Backup plan."
                 ),
-                message: String(
-                    format: OWSLocalizedString(
-                        "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE",
+                message: String.localizedStringWithFormat(
+                    OWSLocalizedString(
+                        "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d",
+                        tableName: "PluralAware",
                         comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
                     ),
                     freeMediaTierDays,
@@ -255,9 +256,10 @@ struct ChooseBackupPlanView: View {
                         "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE",
                         comment: "Title for the free plan option, when choosing a Backup plan."
                     ),
-                    subtitle: String(
-                        format: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE",
+                    subtitle: String.localizedStringWithFormat(
+                        OWSLocalizedString(
+                            "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d",
+                            tableName: "PluralAware",
                             comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
                         ),
                         viewModel.freeMediaTierDays,
@@ -267,9 +269,10 @@ struct ChooseBackupPlanView: View {
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included."
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: String(
-                            format: OWSLocalizedString(
-                                "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP",
+                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: String.localizedStringWithFormat(
+                            OWSLocalizedString(
+                                "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d",
+                                tableName: "PluralAware",
                                 comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}."
                             ),
                             viewModel.freeMediaTierDays,

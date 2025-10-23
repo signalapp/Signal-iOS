@@ -2187,9 +2187,10 @@ private struct BackupSubscriptionView: View {
                 Group {
                     switch loadedBackupSubscription {
                     case .free:
-                        Text(String(
-                            format: OWSLocalizedString(
-                                "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER",
+                        Text(String.localizedStringWithFormat(
+                            OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKUP_PLAN_FREE_HEADER_%d",
+                                tableName: "PluralAware",
                                 comment: "Header describing what the free backup plan includes. Embeds {{ the number of days that files are available, e.g. '45' }}."
                             ),
                             backupSubscriptionConfiguration.freeTierMediaDays,
