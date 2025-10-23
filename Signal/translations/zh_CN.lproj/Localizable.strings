@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "恢复密钥";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Your backup subscription has expired because it couldn’t be renewed with your payment method.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "您的备份套餐已过期，因为它无法通过您的付款方式续订。\n\n要继续备份媒体，您可以重新订阅。您仍然可以继续使用免费版 Signal 备份套餐。";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Your backup subscription has expired because you're no longer using TestFlight.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "您的备份套餐已过期，因为您已不再使用 TestFlight。\n\n要继续备份媒体，您可以重新订阅。您仍然可以继续使用免费版 Signal 备份套餐。";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Manage Backups";
+"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "管理备份";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Your Backups Subscription Expired";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "您的备份套餐已过期";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "复制到剪贴板";
@@ -800,13 +800,13 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "您必须注册才能禁用备份。";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Manage Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "管理套餐";
 
 /* Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "If you would like to cancel your subscription tap Manage Subscription > Signal > Cancel Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "要取消备份套餐，请点击“管理套餐 > Signal > 取消套餐”";
 
 /* Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "You’re still subscribed to a paid backup plan";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "您仍在订阅一个付费备份套餐";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "取消下载";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "欢迎使用 Signal 安全备份。现在开始备份吧。";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "请将调试日志发送给我们，帮助我们解决此问题！";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "备份您的媒体时遇到错误";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "安全备份";
@@ -6539,7 +6539,10 @@
 "POLL_DETAILS_TITLE" = "投票详情";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
-"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ended the poll: %2$@";
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ 结束了投票：%2$@";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@结束了投票“%2$@”";
@@ -6569,7 +6572,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "提出一个问题";
 
 /* Title of poll details pane when poll is ended */
-"POLL_RESULTS_TITLE" = "Poll Results";
+"POLL_RESULTS_TITLE" = "投票结果";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "选择一个或多个选项";
@@ -6578,7 +6581,7 @@
 "POLL_SELECT_LABEL_SINGULAR" = "选择一个选项";
 
 /* Notification that {{contact}} voted in a poll with question {{poll question}} */
-"POLL_VOTED_NOTIFICATION" = "%1$@ voted in the poll “%2$@”";
+"POLL_VOTED_NOTIFICATION" = "%1$@ 参与了投票“%2$@”";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "已验证";
@@ -6920,7 +6923,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "您的尝试过于频繁。请等待一分钟后再重试。";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "There is no backup associated with this recovery key. Please ensure the key is correct and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "此恢复密钥没有关联的备份。请确保密钥正确无误，然后再试一次。";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "未找到备份";

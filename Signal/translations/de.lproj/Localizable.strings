@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Wiederherstellungsschlüssel";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Your backup subscription has expired because it couldn’t be renewed with your payment method.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Dein Backup-Abo ist abgelaufen, weil es nicht mit deiner Zahlungsmethode verlängert werden konnte.\n\nUm mit dem Backup deiner Medien fortzufahren, kannst du ein neues Abo abschließen. Außerdem kannst du den kostenlosen Signal Backup-Plan weiterhin nutzen.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Your backup subscription has expired because you're no longer using TestFlight.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Dein Backup-Abo ist abgelaufen, weil du TestFlight nicht mehr nutzt.\n\nUm mit dem Backup deiner Medien fortzufahren, kannst du ein neues Abo abschließen. Außerdem kannst du den kostenlosen Signal Backup-Plan weiterhin nutzen.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Manage Backups";
+"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Backups verwalten";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Your Backups Subscription Expired";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Dein Backup-Abo ist abgelaufen";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "In Zwischenablage kopieren";
@@ -800,13 +800,13 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Du musst registriert sein, um Backups deaktivieren zu können.";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Manage Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Abo verwalten";
 
 /* Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "If you would like to cancel your subscription tap Manage Subscription > Signal > Cancel Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "Wenn du dein Abo kündigen möchtest, tippe auf Abo verwalten > Signal > Abo kündigen";
 
 /* Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "You’re still subscribed to a paid backup plan";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "Du hast immer noch ein kostenpflichtiges Backup-Abo";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Download abbrechen";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Willkommen zu Signal Secure Backups. Starte jetzt dein Backup.";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Bitte sende uns Diagnoseprotokolle, um uns bei der Behebung des Problems zu helfen!";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Beim Backup deiner Medien ist ein Fehler aufgetreten";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Secure Backups";
@@ -6539,7 +6539,10 @@
 "POLL_DETAILS_TITLE" = "Umfragedetails";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
-"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ended the poll: %2$@";
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ hat die Umfrage »%2$@« beendet";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ hat die Umfrage »%2$@» beendet";
@@ -6569,7 +6572,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "Eine Frage stellen";
 
 /* Title of poll details pane when poll is ended */
-"POLL_RESULTS_TITLE" = "Poll Results";
+"POLL_RESULTS_TITLE" = "Umfrageergebnisse";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Wähle eine oder mehrere Optionen aus";
@@ -6578,7 +6581,7 @@
 "POLL_SELECT_LABEL_SINGULAR" = "Wähle eine Option aus";
 
 /* Notification that {{contact}} voted in a poll with question {{poll question}} */
-"POLL_VOTED_NOTIFICATION" = "%1$@ voted in the poll “%2$@”";
+"POLL_VOTED_NOTIFICATION" = "%1$@ hat die Umfrage »%2$@« beantwortet";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verifiziert";
@@ -6920,7 +6923,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zu viele Versuche. Bitte warte eine Minute vor einem erneuten Versuch.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "There is no backup associated with this recovery key. Please ensure the key is correct and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Diesem Wiederherstellungsschlüssel ist kein Backup zugeordnet. Bitte stelle sicher, dass der Schlüssel stimmt und versuche es dann erneut.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup nicht gefunden";

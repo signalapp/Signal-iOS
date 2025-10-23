@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Cod de recuperare";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Your backup subscription has expired because it couldn’t be renewed with your payment method.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Abonamentul de backup-uri a expirat pentru că nu a putut fi reînnoit cu metoda de plată.\n\nCa să continui să faci backup la fișiere, abonează-te din nou. Vei continua să ai acces la planul gratuit Backup-uri Signal.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Your backup subscription has expired because you're no longer using TestFlight.\n\nTo continue backing up media you can re-subscribe. You’ll continue to have access to the free Signal Backups plan.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Abonamentul de backup-uri a expirat pentru că nu mai folosești TestFlight.\n\nCa să continui să faci backup la fișiere, abonează-te din nou. Vei continua să ai acces la planul gratuit Backup-uri Signal.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Manage Backups";
+"BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Gestionează copiile de rezervă";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Your Backups Subscription Expired";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Abonamentul pentru backup-uri a expirat";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copiere în clipboard";
@@ -800,13 +800,13 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Trebuie să fii înregistrat/ă pentru a dezactiva backup-urile.";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Manage Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Gestionare abonament";
 
 /* Message for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "If you would like to cancel your subscription tap Manage Subscription > Signal > Cancel Subscription";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MESSAGE" = "Dacă dorești să îți anulezi abonamentul, atinge Gestionare abonament > Signal > Anulare abonament";
 
 /* Title for an action sheet shown when the user disables Backups, but is still subscribed to the paid plan. */
-"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "You’re still subscribed to a paid backup plan";
+"BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_TITLE" = "Încă ești abonat/ă la un plan de backup plătit";
 
 /* Title for a button shown in Backup Settings that lets a user cancel an in-progress download. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_ACTION_BUTTON_CANCEL_DOWNLOAD" = "Anulează descărcarea";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Bun venit la Backup-uri securizate Signal. Începe backup-ul acum.";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Trimiteți-ne jurnalele de depanare ca să rezolvăm situația!";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Experienced an error backing up your media";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "S-a petrecut o eroare la backup-ul fișierelor tale";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Backup-uri securizate";
@@ -6539,7 +6539,10 @@
 "POLL_DETAILS_TITLE" = "Detaliile sondajului";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
-"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ended the poll: %2$@";
+"POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ a încheiat sondajul %2$@";
+
+/* Shown when the local user ends a poll. Embeds {{ poll question }}. */
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ a încheiat sondajul \"%2$@\"";
@@ -6569,7 +6572,7 @@
 "POLL_QUESTION_PLACEHOLDER_TEXT" = "Pune o întrebare";
 
 /* Title of poll details pane when poll is ended */
-"POLL_RESULTS_TITLE" = "Poll Results";
+"POLL_RESULTS_TITLE" = "Rezultatele sondajului";
 
 /* Label specifying the user can select more than one option */
 "POLL_SELECT_LABEL_MULTIPLE" = "Selectează unul sau mai multe";
@@ -6578,7 +6581,7 @@
 "POLL_SELECT_LABEL_SINGULAR" = "Selectează unul";
 
 /* Notification that {{contact}} voted in a poll with question {{poll question}} */
-"POLL_VOTED_NOTIFICATION" = "%1$@ voted in the poll “%2$@”";
+"POLL_VOTED_NOTIFICATION" = "%1$@ a votat în sondajul: „%2$@”";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificat";
@@ -6920,7 +6923,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Ai încercat de prea multe ori. Te rugăm să aștepți un minut înainte să încerci din nou.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "There is no backup associated with this recovery key. Please ensure the key is correct and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Nu există backup asociat cu acest cod de recuperare. Asigură-te că e corect codul și încearcă din nou.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Backup-ul nu a fost găsit";
