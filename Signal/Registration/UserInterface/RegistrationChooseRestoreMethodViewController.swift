@@ -280,7 +280,27 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     }
 
     private func didSkipRestore() {
-        presenter?.didChooseRestoreMethod(method: .declined)
+        // Add a bit of friction by having the user confirm they want to skip restoring.
+        var actions = [ActionSheetAction]()
+        let title = OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE",
+            comment: "Title for a sheet warning users about skipping restore."
+        )
+        let message = OWSLocalizedString(
+            "ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY",
+            comment: "Body for a sheet warning users about skipping restore."
+        )
+        let actionTitle = OWSLocalizedString(
+            "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION",
+            comment: "Skip restore action label for backup restore error recovery."
+        )
+        actions.append(ActionSheetAction(title: actionTitle) { [weak self] _ in
+            self?.presenter?.didChooseRestoreMethod(method: .declined)
+        })
+        actions.append(ActionSheetAction.cancel)
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actions.forEach { actionSheet.addAction($0) }
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     private func didTapCancel() {

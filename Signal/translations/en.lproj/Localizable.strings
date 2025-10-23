@@ -5590,6 +5590,12 @@
 /* The title for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restore Signal Secure Backup";
 
+/* Body for a sheet warning users about skipping restore. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+
+/* Title for a sheet warning users about skipping restore. */
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Choose how you'd like to restore your message history and account data.";
 
