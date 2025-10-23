@@ -269,17 +269,10 @@ public class RemoteConfig {
         ))
     }
 
-    /// The TTL of the message queue, as a rounded number of days.
-    public var messageQueueDays: Int {
-        return Int(messageQueueTime / .day)
-    }
-
-    /// The TTL of the message queue, as a TimeInterval.
     public var messageQueueTime: TimeInterval {
         return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * .day)
     }
 
-    /// The TTL of the message queue, in milliseconds.
     public var messageQueueTimeMs: UInt64 {
         return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
     }

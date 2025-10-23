@@ -352,7 +352,7 @@ extension ConversationViewController: CVComponentDelegate {
                     "FILE_UNAVAILABLE_SHEET_MESSAGE",
                     comment: "Message for sheet shown when tapping a document/file that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
-                RemoteConfig.current.messageQueueDays,
+                _freeTierMediaDays(),
             )
         )
         actionSheet.addAction(.okay)
@@ -371,7 +371,7 @@ extension ConversationViewController: CVComponentDelegate {
                     "OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE",
                     comment: "Message for sheet shown when tapping oversized text that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
-                RemoteConfig.current.messageQueueDays,
+                _freeTierMediaDays(),
             )
         )
         actionSheet.addAction(.okay)
@@ -390,7 +390,7 @@ extension ConversationViewController: CVComponentDelegate {
                     "AUDIO_UNAVAILABLE_SHEET_MESSAGE",
                     comment: "Message for sheet shown when tapping a voice message that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
-                RemoteConfig.current.messageQueueDays,
+                _freeTierMediaDays(),
             )
         )
         actionSheet.addAction(.okay)
@@ -409,7 +409,7 @@ extension ConversationViewController: CVComponentDelegate {
                     "STICKER_UNAVAILABLE_SHEET_MESSAGE",
                     comment: "Message for sheet shown when tapping a sticker that has expired and is unavailable for download. Embeds {{ the number of days that files are available, e.g. '45' }}."
                 ),
-                RemoteConfig.current.messageQueueDays,
+                _freeTierMediaDays(),
             )
         )
         actionSheet.addAction(.okay)
@@ -421,6 +421,15 @@ extension ConversationViewController: CVComponentDelegate {
         let toastText = OWSLocalizedString("VIDEO_BROKEN",
                                            comment: "Toast alert text shown when tapping on a video that cannot be played.")
         presentToastCVC(toastText)
+    }
+
+    private func _freeTierMediaDays() -> UInt64 {
+        let db = DependenciesBridge.shared.db
+        let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
+
+        return db.read { tx in
+            subscriptionConfigManager.backupConfigurationOrDefault(tx: tx).freeTierMediaDays
+        }
     }
 
     // MARK: - Messages

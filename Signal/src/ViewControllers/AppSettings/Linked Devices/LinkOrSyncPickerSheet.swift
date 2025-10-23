@@ -39,6 +39,12 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let db = DependenciesBridge.shared.db
+        let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
+        let freeTierMediaDays = db.read { tx in
+            subscriptionConfigManager.backupConfigurationOrDefault(tx: tx).freeTierMediaDays
+        }
+
         self.stackView.alignment = .fill
         self.stackView.spacing = 16
 
@@ -91,7 +97,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                         "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE",
                         comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
                     ),
-                    RemoteConfig.current.messageQueueDays,
+                    freeTierMediaDays,
                 )
             ) { [weak self] in
                 guard let self else { return }
