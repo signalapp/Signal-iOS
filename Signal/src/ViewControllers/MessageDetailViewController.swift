@@ -1358,14 +1358,7 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
         bottomView.addSubview(bottomViewOverlay)
         bottomViewOverlay.frame = bottomView.bounds
 
-        let animationOptions: UIView.AnimationOptions
-        if percentDrivenTransition != nil {
-            animationOptions = .curveLinear
-        } else {
-            animationOptions = .curveEaseInOut
-        }
-
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: animationOptions) {
+        let animations: () -> Void = {
             if isPushing {
                 topView.transform = topViewHiddenTransform
                 bottomView.transform = .identity
@@ -1375,7 +1368,9 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
                 bottomView.transform = bottomViewHiddenTransform
                 bottomViewOverlay.alpha = 1
             }
-        } completion: { _ in
+        }
+
+        let completion: () -> Void = {
             bottomView.transform = .identity
             topView.transform = .identity
             bottomViewOverlay.removeFromSuperview()
@@ -1394,6 +1389,25 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
             }
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        }
+
+        let isInteractive = percentDrivenTransition != nil
+
+        if #available(iOS 18.0, *), !isInteractive {
+            UIView.animate(
+                .spring(duration: transitionDuration(using: transitionContext)),
+                changes: animations,
+                completion: completion
+            )
+        } else {
+            UIView.animate(
+                withDuration: transitionDuration(using: transitionContext),
+                delay: 0,
+                options: isInteractive ? .curveLinear : .curveEaseInOut,
+                animations: animations,
+            ) { _ in
+                completion()
+            }
         }
     }
 }
