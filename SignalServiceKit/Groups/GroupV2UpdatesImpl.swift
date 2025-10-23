@@ -162,7 +162,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         // The prior method throws if the revisions don't match.
         owsAssertDebug(changedGroupModel.newGroupModel.revision == changedGroupModel.oldGroupModel.revision + 1)
 
-        try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             groupThread: groupThread,
             newGroupModel: changedGroupModel.newGroupModel,
             newDisappearingMessageToken: changedGroupModel.newDisappearingMessageToken,
@@ -593,7 +593,7 @@ private extension GroupV2UpdatesImpl {
             localIdentifiers: localIdentifiers
         )
 
-        let groupThread = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -690,7 +690,7 @@ private extension GroupV2UpdatesImpl {
             throw GroupsV2Error.groupChangeProtoForIncompatibleRevision
         }
 
-        try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             groupThread: groupThread,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
@@ -767,7 +767,7 @@ private extension GroupV2UpdatesImpl {
             // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
-            let groupThread = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots

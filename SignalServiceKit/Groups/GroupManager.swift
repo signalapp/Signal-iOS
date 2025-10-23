@@ -241,7 +241,7 @@ public class GroupManager: NSObject {
         let groupModel = try builder.buildAsV2()
 
         // Just create it in the database, don't create it on the service.
-        return try remoteUpsertExistingGroupForTests(
+        return remoteUpsertExistingGroupForTests(
             groupModel: groupModel,
             disappearingMessageToken: nil,
             groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
@@ -259,8 +259,8 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .insert,
         localIdentifiers: LocalIdentifiers,
         transaction: DBWriteTransaction
-    ) throws -> TSGroupThread {
-        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+    ) -> TSGroupThread {
+        return self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: groupModel,
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -687,7 +687,7 @@ public class GroupManager: NSObject {
                 //
                 // newDisappearingMessageToken is nil because we don't want to change DM
                 // state.
-                try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                     groupThread: groupThread,
                     newGroupModel: newGroupModel,
                     newDisappearingMessageToken: nil,
@@ -855,14 +855,14 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
-    ) throws -> TSGroupThread {
+    ) -> TSGroupThread {
         if DebugFlags.internalLogging {
             let groupId = try? newGroupModel.secretParams().getPublicParams().getGroupIdentifier()
             Logger.info("Upserting thread for \(groupId as Optional); didAddLocalUser? \(didAddLocalUserToV2Group); groupUpdateSource: \(groupUpdateSource)")
         }
 
         if let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) {
-            try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 groupThread: groupThread,
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
@@ -930,7 +930,7 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: DBWriteTransaction
-    ) throws {
+    ) {
         guard
             let newGroupModel = newGroupModel as? TSGroupModelV2,
             let oldGroupModel = groupThread.groupModel as? TSGroupModelV2
