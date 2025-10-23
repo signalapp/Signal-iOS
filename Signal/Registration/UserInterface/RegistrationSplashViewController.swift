@@ -208,6 +208,8 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
 
 private class RestoreOrTransferPickerController: StackSheetViewController {
 
+    override var placeOnGlassIfAvailable: Bool { false }
+
     private let setHasOldDeviceBlock: ((Bool) -> Void)
     init(setHasOldDeviceBlock: @escaping (Bool) -> Void) {
         self.setHasOldDeviceBlock = setHasOldDeviceBlock

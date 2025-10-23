@@ -14,8 +14,9 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         UIColor.Signal.groupedBackground
     }
 
+    private let hMargin: CGFloat = 20
     override var stackViewInsets: UIEdgeInsets {
-        UIEdgeInsets(top: 0, leading: 20, bottom: 24, trailing: 20)
+        UIEdgeInsets(top: 0, leading: hMargin, bottom: 24, trailing: hMargin)
     }
 
     private let didDismiss: () -> Void
@@ -73,8 +74,8 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
             }
         )
 
-        view.addSubview(closeButton)
-        closeButton.autoPinEdge(toSuperviewMargin: .trailing)
+        contentView.addSubview(closeButton)
+        closeButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: hMargin)
         closeButton.autoAlignAxis(.horizontal, toSameAxisOf: titleLabel)
         closeButton.autoSetDimensions(to: .square(28))
 

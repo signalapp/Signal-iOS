@@ -19,6 +19,8 @@ open class StackSheetViewController: InteractiveSheetViewController {
         UIColor.Signal.groupedBackground
     }
 
+    open override var placeOnGlassIfAvailable: Bool { true }
+
     private lazy var preferredHeight: CGFloat = self.maximumAllowedHeight()
     open override func maximumPreferredHeight() -> CGFloat {
         min(self.preferredHeight, self.maximumAllowedHeight())
