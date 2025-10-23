@@ -585,3 +585,45 @@ extension String {
         return "\(displayName.prefix(maxLength))…"
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+private func buildPreview(
+    title: String?,
+    message: String?,
+    cancelButton: String?,
+    destructiveButton: String?,
+    customButtons: [String],
+) -> UIViewController {
+    let actionSheet = ActionSheetController(title: title, message: message)
+    if let cancelButton {
+        actionSheet.addAction(ActionSheetAction(title: cancelButton, style: .cancel))
+    }
+    if let destructiveButton {
+        actionSheet.addAction(ActionSheetAction(title: destructiveButton, style: .destructive))
+    }
+    for customButton in customButtons {
+        actionSheet.addAction(ActionSheetAction(title: customButton))
+    }
+
+    // Wrap in a nav controller for better contrast in the preview.
+    let navController = UINavigationController(rootViewController: actionSheet)
+    navController.view.backgroundColor = .Signal.groupedBackground
+
+    return navController
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    buildPreview(
+        title: "Action Sheet Title",
+        message: "This is an action sheet message.",
+        cancelButton: "Cancel",
+        destructiveButton: "Delete",
+        customButtons: ["Action1", "Action2"],
+    )
+}
+
+#endif

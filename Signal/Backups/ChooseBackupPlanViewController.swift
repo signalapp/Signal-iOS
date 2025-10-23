@@ -21,24 +21,6 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         case paid
     }
 
-    struct DisplayableError: Error {
-        let localizedActionSheetMessage: String
-
-        init(_ localizedActionSheetMessage: String) {
-            self.localizedActionSheetMessage = localizedActionSheetMessage
-        }
-
-        static let networkError = DisplayableError(OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR",
-            comment: "Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a network error."
-        ))
-
-        static let genericError = DisplayableError(OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR",
-            comment: "Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a generic error."
-        ))
-    }
-
     // MARK: -
 
     private let backupKeyService: BackupKeyService
@@ -86,7 +68,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         fromViewController: UIViewController,
         initialPlanSelection: PlanSelection?,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
-    ) async throws(DisplayableError) -> ChooseBackupPlanViewController {
+    ) async throws(ActionSheetDisplayableError) -> ChooseBackupPlanViewController {
         let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
 
@@ -95,7 +77,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             backupSubscriptionConfiguration,
         ) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController,
-        ) { () throws(DisplayableError) in
+        ) { () throws(ActionSheetDisplayableError) in
             let storeKitAvailability: StoreKitAvailability
             if FeatureFlags.Backups.avoidStoreKitForTesters {
                 storeKitAvailability = .unavailableForTesters

@@ -134,13 +134,10 @@ class BackupOnboardingCoordinator {
             aep: aep,
             onContinue: { [self] confirmKeyViewController in
                 Task {
-                    do throws(ChooseBackupPlanViewController.DisplayableError) {
+                    do throws(ActionSheetDisplayableError) {
                         try await showChooseBackupPlan()
                     } catch {
-                        OWSActionSheets.showActionSheet(
-                            message: error.localizedActionSheetMessage,
-                            fromViewController: confirmKeyViewController,
-                        )
+                        error.showActionSheet(from: confirmKeyViewController)
                     }
                 }
             },
@@ -157,7 +154,7 @@ class BackupOnboardingCoordinator {
 
     // MARK: -
 
-    private func showChooseBackupPlan() async throws(ChooseBackupPlanViewController.DisplayableError) {
+    private func showChooseBackupPlan() async throws(ActionSheetDisplayableError) {
         guard let onboardingNavController else { return }
 
         let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
@@ -182,7 +179,7 @@ class BackupOnboardingCoordinator {
         planSelection: ChooseBackupPlanViewController.PlanSelection,
         fromViewController: UIViewController,
     ) async {
-        do throws(BackupEnablingManager.DisplayableError) {
+        do throws(ActionSheetDisplayableError) {
             try await backupEnablingManager.enableBackups(
                 fromViewController: fromViewController,
                 planSelection: planSelection
@@ -190,10 +187,7 @@ class BackupOnboardingCoordinator {
 
             completeOnboarding()
         } catch {
-            OWSActionSheets.showActionSheet(
-                message: error.localizedActionSheetMessage,
-                fromViewController: fromViewController,
-            )
+            error.showActionSheet(from: fromViewController)
         }
     }
 

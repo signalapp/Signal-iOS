@@ -195,15 +195,7 @@ class BackupSettingsViewController:
             // Ignore network failures.
         } catch {
             owsFailDebug("Failed to fetch Backup subscription config!")
-
-            OWSActionSheets.showContactSupportActionSheet(
-                message: OWSLocalizedString(
-                    "BACKUP_SETTINGS_BACKUP_SUB_CONFIG_LOAD_FAILED_MESSAGE",
-                    comment: "Message shown in an action sheet when we failed to load configuration parameters for Backups subscriptions.",
-                ),
-                emailFilter: .custom("SubscriptionConfigLoadFailed"),
-                fromViewController: self,
-            )
+            ActionSheetDisplayableError.genericError.showActionSheet(from: self)
         }
     }
 
@@ -391,7 +383,7 @@ class BackupSettingsViewController:
     private func showChooseBackupPlan(
         initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?
     ) async {
-        do throws(ChooseBackupPlanViewController.DisplayableError) {
+        do throws(ActionSheetDisplayableError) {
             let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
                 fromViewController: self,
                 initialPlanSelection: initialPlanSelection,
@@ -412,10 +404,7 @@ class BackupSettingsViewController:
                 animated: true
             )
         } catch {
-            OWSActionSheets.showActionSheet(
-                message: error.localizedActionSheetMessage,
-                fromViewController: self,
-            )
+            error.showActionSheet(from: self)
         }
     }
 
@@ -424,21 +413,17 @@ class BackupSettingsViewController:
         fromViewController: UIViewController,
         planSelection: ChooseBackupPlanViewController.PlanSelection
     ) async {
-        do throws(BackupEnablingManager.DisplayableError) {
+        do throws(ActionSheetDisplayableError) {
             try await backupEnablingManager.enableBackups(
                 fromViewController: fromViewController,
                 planSelection: planSelection
             )
-        } catch {
-            OWSActionSheets.showActionSheet(
-                message: error.localizedActionSheetMessage,
-                fromViewController: fromViewController,
-            )
-            return
-        }
 
-        navigationController?.popToViewController(self, animated: true) { [self] in
-            presentWelcomeToBackupsSheet()
+            navigationController?.popToViewController(self, animated: true) { [self] in
+                presentWelcomeToBackupsSheet()
+            }
+        } catch {
+            error.showActionSheet(from: fromViewController)
         }
     }
 

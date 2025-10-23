@@ -70,6 +70,12 @@
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Send Message";
 
+/* Message shown in an action sheet when a generic error occurs. */
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+
+/* Message shown in an action sheet when a network error occurs. */
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
 
@@ -720,9 +726,6 @@
 
 /* Text explaining when the user's paid backup plan renews. Embeds {{ the formatted renewal date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "Renews %1$@";
-
-/* Message shown in an action sheet when we failed to load configuration parameters for Backups subscriptions. */
-"BACKUP_SETTINGS_BACKUP_SUB_CONFIG_LOAD_FAILED_MESSAGE" = "Failed to load Backups configuration. Your Backup is not affected. Please contact support.";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
@@ -1629,12 +1632,6 @@
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
-
-/* Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a generic error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
-
-/* Message shown in an action sheet when the user tries to choose a Backup plan, but encounters a network error. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "You must be registered to enable Backups.";

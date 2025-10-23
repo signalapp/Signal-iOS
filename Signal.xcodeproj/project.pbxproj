@@ -2698,6 +2698,7 @@
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
 		D9791BC42EAADF010016AA5A /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */; };
+		D9791BB92EAA84830016AA5A /* ActionSheetDisplayableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */; };
 		D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */; };
 		D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
@@ -6675,6 +6676,7 @@
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
 		D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
+		D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetDisplayableError.swift; sourceTree = "<group>"; };
 		D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTest.swift; sourceTree = "<group>"; };
 		D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
@@ -8358,6 +8360,7 @@
 		34A954A9271A471200B05242 /* SignalUI */ = {
 			isa = PBXGroup;
 			children = (
+				D9791BB72EAA84210016AA5A /* ActionSheets */,
 				34A954D2271B4F3E00B05242 /* Appearance */,
 				3402A9D8271D953A0084CBAE /* AppLaunch */,
 				34A95596271B510500B05242 /* AttachmentApproval */,
@@ -8474,7 +8477,6 @@
 				34A9550C271B510400B05242 /* ManualStackView.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
 				76A2EB0F28B578B800A29C24 /* MediaTextView.swift */,
-				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
 				34A95535271B510400B05242 /* OWSBubbleShapeView.swift */,
 				34A95530271B510400B05242 /* OWSButton.swift */,
 				34A95511271B510400B05242 /* OWSFlatButton.swift */,
@@ -8599,7 +8601,6 @@
 		34A95566271B510500B05242 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				34A95569271B510500B05242 /* ActionSheetController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
 				B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
@@ -12619,6 +12620,16 @@
 			path = SyncMessages;
 			sourceTree = "<group>";
 		};
+		D9791BB72EAA84210016AA5A /* ActionSheets */ = {
+			isa = PBXGroup;
+			children = (
+				34A95569271B510500B05242 /* ActionSheetController.swift */,
+				D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */,
+				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
+			);
+			path = ActionSheets;
+			sourceTree = "<group>";
+		};
 		D97992A42D9E58E00080A4F5 /* Currencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -16440,6 +16451,7 @@
 			files = (
 				05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */,
 				3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */,
+				D9791BB92EAA84830016AA5A /* ActionSheetDisplayableError.swift in Sources */,
 				887F898228FF32A600D3B78E /* AllSignalConnectionsViewController.swift in Sources */,
 				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */,
