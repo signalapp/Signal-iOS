@@ -428,7 +428,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                     credential: receivedCredential
                 )
             } catch {
-                owsFailDebug("Error creating credential! \(error)")
+                Logger.warn("Error creating credential! \(error)")
                 throw error
             }
         }

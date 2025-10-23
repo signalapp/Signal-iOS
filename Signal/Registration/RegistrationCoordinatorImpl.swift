@@ -702,6 +702,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .restartQuickRestore, .none:
                 owsFailDebug("Invalid option returned from handlinge of registration error.")
                 fallthrough
+            case .rateLimited:
+                // Can't currently restore, so show an error and return to the restore confirm screen
+                inMemoryState.restoreFromBackupProgressSink = nil
+                return
             case .incorrectRecoveryKey, .skipRestore:
                 // By this point, it's really too late to do anything but skip the backup and continue
                 await db.awaitableWrite { tx in
@@ -1496,7 +1500,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
 
             switch step {
-            case .incorrectRecoveryKey:
+            case .incorrectRecoveryKey, .rateLimited:
                 return .enterRecoveryKey(
                     RegistrationEnterAccountEntropyPoolState(
                         canShowBackButton: persistedState.accountIdentity == nil
@@ -2051,7 +2055,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // prompt them to correct the key.  If they want to change the restore method,
                     // they should be able to hit 'back' here to return to the restore method selection.
                     return .enterRecoveryKey(.init(canShowBackButton: true))
-                case .restartQuickRestore:
+                case .restartQuickRestore, .rateLimited:
                     // If restarting the QuickRestore flow, allow the user a chance to
                     // to choose the restore method again.
                     db.write { tx in
