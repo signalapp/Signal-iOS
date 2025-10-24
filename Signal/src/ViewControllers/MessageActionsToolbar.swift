@@ -214,14 +214,33 @@ public class MessageActionsToolbar: UIToolbar {
 
         let selectedCount: Int = actionDelegate?.messageActionsToolbarSelectedInteractionCount ?? 0
         let labelFormat = OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware",
-                                            comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.")
+                                             comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.")
         let labelTitle = String.localizedStringWithFormat(labelFormat, selectedCount)
         let label = UILabel()
         label.text = labelTitle
-        label.font = UIFont.dynamicTypeBodyClamped
-        label.textColor = Theme.primaryTextColor
+        label.font = if #available(iOS 26, *) { UIFont.dynamicTypeHeadlineClamped } else { UIFont.dynamicTypeBodyClamped }
+        label.textColor = .Signal.label
+        label.textAlignment = .center
         label.sizeToFit()
-        let labelItem = UIBarButtonItem(customView: label)
+        let labelView: UIView = {
+            // Add horizontal padding around text on iOS 26 because the item is displayed in a glass bubble.
+            if #available(iOS 26, *) {
+                let container = UIView()
+                container.addSubview(label)
+                label.translatesAutoresizingMaskIntoConstraints = false
+                container.addConstraints([
+                    label.topAnchor.constraint(equalTo: container.topAnchor),
+                    label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+                    label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+                    label.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+                ])
+                return container
+            } else {
+                return label
+            }
+        }()
+        let labelItem = UIBarButtonItem(customView: labelView)
+        labelItem.isEnabled = false
 
         var newItems = [UIBarButtonItem]()
         newItems.append(deleteItem)
