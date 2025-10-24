@@ -904,7 +904,6 @@ extension GroupsV2Error: IsRetryableProvider {
                 .timeout:
             return true
         case
-                .shouldDiscard,
                 .localUserNotInGroup,
                 .cannotBuildGroupChangeProto_conflictingChange,
                 .cannotBuildGroupChangeProto_lastAdminCantLeaveGroup,

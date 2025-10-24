@@ -200,10 +200,6 @@ class GroupsV2ProfileKeyUpdater {
         } catch {
             Logger.warn("\(error)")
             switch error {
-            case GroupsV2Error.shouldDiscard:
-                // If a non-recoverable error occurs (e.g. we've deleted the thread from the
-                // database), give up.
-                break
             case GroupsV2Error.localUserNotInGroup:
                 // If the update is no longer necessary, skip it.
                 break
@@ -222,7 +218,7 @@ class GroupsV2ProfileKeyUpdater {
             default:
                 // This should never occur. If it does, we don't want to get stuck in a
                 // retry loop.
-                owsFailDebug("Unexpected error: \(error)")
+                owsFailDebug("unexpected error: \(error)")
             }
         }
         await markAsComplete(groupIdKey: groupIdKey)
@@ -237,8 +233,7 @@ class GroupsV2ProfileKeyUpdater {
     private func tryToUpdate(groupId: Data) async throws {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            owsFailDebug("missing local address")
-            throw GroupsV2Error.shouldDiscard
+            throw OWSGenericError("missing local address")
         }
 
         try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
@@ -247,7 +242,7 @@ class GroupsV2ProfileKeyUpdater {
             return TSGroupThread.fetch(groupId: groupId, transaction: tx)?.groupModel as? TSGroupModelV2
         }
         guard let groupModel, let secretParams = try? groupModel.secretParams() else {
-            throw GroupsV2Error.shouldDiscard
+            throw OWSGenericError("missing secret params")
         }
 
         // Get latest group state from service and verify that this update is still necessary.
@@ -266,8 +261,7 @@ class GroupsV2ProfileKeyUpdater {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let profileKey = databaseStorage.read(block: profileManager.localUserProfile(tx:))?.profileKey
         guard let profileKey else {
-            owsFailDebug("missing local profile key")
-            throw GroupsV2Error.shouldDiscard
+            throw OWSGenericError("missing local profile key")
         }
         guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKey.keyData else {
             // Group state already has our current key.

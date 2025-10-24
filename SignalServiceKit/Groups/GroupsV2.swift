@@ -9,7 +9,6 @@ public import LibSignalClient
 public enum GroupsV2Error: Error {
     /// The change we attempted conflicts with what is on the service.
     case conflictingChangeOnService
-    case shouldDiscard
     case timeout
     case localUserNotInGroup
     case cannotBuildGroupChangeProto_conflictingChange
