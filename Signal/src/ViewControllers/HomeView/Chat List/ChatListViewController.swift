@@ -484,7 +484,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                         ])
                     )
                 } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
-                    let image = Theme.iconImage(.backup).withBadge(color: UIColor.Signal.red)
+                    let image = Theme.iconImage(.backup).withBadge(
+                        color: UIColor.Signal.red,
+                        badgeSize: .square(8.5)
+                    )
                     contextMenuActions.append(
                         UIMenu(options: [.displayInline], children: [
                             UIAction(
