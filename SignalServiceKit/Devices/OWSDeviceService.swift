@@ -154,7 +154,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         identityKeyPair: IdentityKeyPair,
     ) throws(OWSAssertionError) -> OWSDevice {
         let name: String?
-        if let nameCiphertext = fetchedDevice.nameCiphertext {
+        if let nameCiphertext = fetchedDevice.nameCiphertext?.strippedOrNil {
             do {
                 name = try OWSDeviceNames.decryptDeviceName(
                     base64String: nameCiphertext,
