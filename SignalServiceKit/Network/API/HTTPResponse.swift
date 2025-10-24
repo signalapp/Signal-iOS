@@ -39,6 +39,14 @@ public struct HTTPResponse {
         )
     }
 
+    public var responseBodyParamParser: ParamParser? {
+        responseBodyDict.map { ParamParser($0) }
+    }
+
+    public var responseBodyDict: [String: Any]? {
+        responseBodyJson as? [String: Any]
+    }
+
     public var responseBodyJson: Any? {
         responseBodyData.flatMap { try? JSONSerialization.jsonObject(with: $0) }
     }

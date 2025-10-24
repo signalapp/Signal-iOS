@@ -198,19 +198,6 @@ public extension Error {
         return error.responseHeaders
     }
 
-    var httpResponseJson: Any? {
-        guard let data = httpResponseData else {
-            return nil
-        }
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            return json
-        } catch {
-            owsFailDebug("Could not parse JSON: \(error).")
-            return nil
-        }
-    }
-
     /// Does this error represent a transient networking issue?
     ///
     /// a.k.a. "the internet gave up" (see also `isTimeout`)

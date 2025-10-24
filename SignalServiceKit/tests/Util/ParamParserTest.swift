@@ -10,7 +10,7 @@ import SignalServiceKit
 class ParamParserTest: XCTestCase {
     let dict: [String: Any] = ["some_int": 11, "some_string": "asdf", "large_int": Int64.max, "negative_int": -10]
     var parser: ParamParser {
-        return ParamParser(dictionary: dict)
+        return ParamParser(dict)
     }
 
     func testExample() {
@@ -74,7 +74,7 @@ class ParamParserTest: XCTestCase {
 
     func testUUID() {
         let uuid = UUID()
-        let parser = ParamParser(dictionary: ["uuid": uuid.uuidString])
+        let parser = ParamParser(["uuid": uuid.uuidString])
 
         XCTAssertEqual(uuid, try parser.required(key: "uuid"))
         XCTAssertEqual(uuid, try parser.optional(key: "uuid"))
@@ -85,17 +85,17 @@ class ParamParserTest: XCTestCase {
 
     func testUUIDFormatFailure() {
         XCTAssertThrowsError(try {
-            let parser = ParamParser(dictionary: ["uuid": ""])
+            let parser = ParamParser(["uuid": ""])
             let _: UUID = try parser.required(key: "uuid")
         }())
 
         XCTAssertThrowsError(try {
-            let parser = ParamParser(dictionary: ["uuid": "not-a-uuid"])
+            let parser = ParamParser(["uuid": "not-a-uuid"])
             let _: UUID = try parser.required(key: "uuid")
         }())
 
         XCTAssertThrowsError(try {
-            let parser = ParamParser(dictionary: ["uuid": 0])
+            let parser = ParamParser(["uuid": 0])
             let _: UUID = try parser.required(key: "uuid")
         }())
     }
@@ -108,7 +108,7 @@ class ParamParserTest: XCTestCase {
         let base64EncodedString = utf8Data.base64EncodedString()
 
         let dict: [String: Any] = ["some_data": base64EncodedString]
-        let parser = ParamParser(dictionary: dict)
+        let parser = ParamParser(dict)
 
         XCTAssertEqual(utf8Data, try parser.requiredBase64EncodedData(key: "some_data"))
         XCTAssertEqual(utf8Data, try parser.optionalBase64EncodedData(key: "some_data"))
@@ -120,7 +120,7 @@ class ParamParserTest: XCTestCase {
 
     func testBase64Data_EmptyString() {
         let dict: [String: Any] = ["some_data": ""]
-        let parser = ParamParser(dictionary: dict)
+        let parser = ParamParser(dict)
 
         XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
         XCTAssertEqual(nil, try parser.optionalBase64EncodedData(key: "some_data"))
@@ -128,7 +128,7 @@ class ParamParserTest: XCTestCase {
 
     func testBase64Data_NSNull() {
         let dict: [String: Any] = ["some_data": NSNull()]
-        let parser = ParamParser(dictionary: dict)
+        let parser = ParamParser(dict)
 
         XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
         XCTAssertEqual(nil, try parser.optionalBase64EncodedData(key: "some_data"))
@@ -139,7 +139,7 @@ class ParamParserTest: XCTestCase {
         let base64EncodedString = "YXNkZg"
 
         let dict: [String: Any] = ["some_data": base64EncodedString]
-        let parser = ParamParser(dictionary: dict)
+        let parser = ParamParser(dict)
 
         XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
         XCTAssertThrowsError(try parser.optionalBase64EncodedData(key: "some_data"))

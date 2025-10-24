@@ -70,11 +70,7 @@ public class SignalServiceProfile {
         self.capabilities = capabilities
     }
 
-    public static func fromResponse(serviceId: ServiceId, responseObject: Any?) throws -> SignalServiceProfile {
-        guard let params = ParamParser(responseObject: responseObject) else {
-            throw ValidationError(description: "Invalid response JSON!")
-        }
-
+    public static func fromResponse(serviceId: ServiceId, params: ParamParser) throws -> SignalServiceProfile {
         do {
             let identityKey = try IdentityKey(bytes: try params.requiredBase64EncodedData(key: "identityKey"))
             let profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
@@ -112,7 +108,7 @@ public class SignalServiceProfile {
     private static func parseBadges(params: ParamParser) throws -> [(OWSUserProfileBadgeInfo, ProfileBadge)] {
         if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             return try badgeArray.compactMap { badgeDict in
-                let badgeParams = ParamParser(dictionary: badgeDict)
+                let badgeParams = ParamParser(badgeDict)
                 let isVisible: Bool? = try badgeParams.optional(key: "visible")
                 let expiration: TimeInterval? = try badgeParams.optional(key: "expiration")
                 let expirationMills = expiration.flatMap { UInt64($0 * 1000) }
@@ -132,16 +128,13 @@ public class SignalServiceProfile {
     }
 
     private static func parseCapabilities(params: ParamParser) throws -> Capabilities {
-        guard
-            let capabilitiesJson: Any? = try params.required(key: "capabilities"),
-            let capabilitiesParser = ParamParser(responseObject: capabilitiesJson)
-        else {
+        guard let capabilitiesDict: [String: Any] = try params.required(key: "capabilities") else {
             throw ValidationError(description: "Missing or invalid capabilities JSON!")
         }
 
         return Capabilities(
             dummyCapability: parseCapabilityFlag(
-                capabilitiesParser: capabilitiesParser,
+                capabilitiesParser: ParamParser(capabilitiesDict),
                 capabilityKey: Capabilities.dummyCapabilityKey
             ),
         )

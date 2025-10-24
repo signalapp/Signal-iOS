@@ -36,7 +36,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 )
             }
 
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            guard let parser = response.responseBodyParamParser else {
                 throw OWSAssertionError(
                     "Unexpectedly missing JSON response body!"
                 )
@@ -100,7 +100,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
             }
 
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            guard let parser = response.responseBodyParamParser else {
                 throw OWSAssertionError("Unexpectedly missing JSON response body!")
             }
 
@@ -170,7 +170,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
         }
 
-        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+        guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Unexpectedly missing JSON response body!")
         }
 
@@ -187,7 +187,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
             }
 
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            guard let parser = response.responseBodyParamParser else {
                 throw OWSAssertionError("Unexpectedly missing JSON response body!")
             }
 

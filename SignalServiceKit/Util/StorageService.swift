@@ -697,11 +697,8 @@ public struct StorageService {
 
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
-        guard let json = response.responseBodyJson else {
+        guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON.")
-        }
-        guard let parser = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Missing or invalid response.")
         }
 
         let username: String = try parser.required(key: "username")

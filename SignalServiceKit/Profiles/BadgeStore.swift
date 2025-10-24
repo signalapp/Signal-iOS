@@ -35,7 +35,7 @@ public class ProfileBadge: Codable, Equatable {
     }
 
     public init(jsonDictionary: [String: Any]) throws {
-        let params = ParamParser(dictionary: jsonDictionary)
+        let params = ParamParser(jsonDictionary)
 
         id = try params.required(key: "id")
         category = Category(rawValue: try params.required(key: "category"))

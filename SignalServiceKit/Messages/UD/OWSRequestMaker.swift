@@ -25,10 +25,6 @@ public enum RequestMakerUDAuthError: Int, Error, IsRetryableProvider {
 public struct RequestMakerResult {
     public let response: HTTPResponse
     public let wasSentByUD: Bool
-
-    public var responseJson: Any? {
-        response.responseBodyJson
-    }
 }
 
 /// A utility class that handles:

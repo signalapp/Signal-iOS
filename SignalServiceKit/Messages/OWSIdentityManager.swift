@@ -1026,7 +1026,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
             }
 
-            guard let json = response.responseBodyJson, let responseDictionary = json as? [String: AnyObject] else {
+            guard let responseDictionary = response.responseBodyDict else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
 

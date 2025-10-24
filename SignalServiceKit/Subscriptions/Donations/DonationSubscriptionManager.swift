@@ -530,8 +530,7 @@ public enum DonationSubscriptionManager {
         }
 
         guard
-            let json = httpResponse.responseBodyJson,
-            let parser = ParamParser(responseObject: json),
+            let parser = httpResponse.responseBodyParamParser,
             let receiptCredentialResponseData = Data(
                 base64Encoded: (try parser.required(key: "receiptCredentialResponse") as String)
             )
@@ -577,8 +576,9 @@ public enum DonationSubscriptionManager {
 
         if
             case .paymentFailed = errorCode,
-            let parser = ParamParser(responseObject: error.httpResponseJson),
-            let chargeFailureDict: [String: Any] = try? parser.optional(key: "chargeFailure"),
+            let httpResponseData = error.httpResponseData,
+            let httpResponseDict = try? JSONSerialization.jsonObject(with: httpResponseData) as? [String: Any],
+            let chargeFailureDict = httpResponseDict["chargeFailure"] as? [String: Any],
             let chargeFailureCode = chargeFailureDict["code"] as? String
         {
             return KnownReceiptCredentialRequestError(

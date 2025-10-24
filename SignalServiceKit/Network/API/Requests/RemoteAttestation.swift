@@ -44,11 +44,7 @@ public extension RemoteAttestation {
         public let username: String
         public let password: String
 
-        public init(authParams: Any) throws {
-            guard let authParamsDict = authParams as? [String: Any] else {
-                throw attestationError(reason: "Invalid auth response.")
-            }
-
+        public init(authParamsDict: [String: Any]) throws {
             guard let password = authParamsDict["password"] as? String, !password.isEmpty else {
                 throw attestationError(reason: "missing or empty password")
             }
@@ -80,11 +76,11 @@ fileprivate extension RemoteAttestation.Auth {
         HTTPUtils.logCurl(for: request)
         #endif
 
-        guard let json = response.responseBodyJson else {
+        guard let authParamsDict = response.responseBodyDict else {
             throw attestationError(reason: "Missing or invalid JSON")
         }
 
-        return try RemoteAttestation.Auth(authParams: json)
+        return try RemoteAttestation.Auth(authParamsDict: authParamsDict)
     }
 }
 

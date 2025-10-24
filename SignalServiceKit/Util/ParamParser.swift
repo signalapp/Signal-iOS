@@ -27,30 +27,20 @@ import Foundation
 //     }
 //
 public class ParamParser {
-    public typealias Key = String
+    private let dictionary: [String: Any]
 
-    let dictionary: [Key: Any]
-
-    public init(dictionary: [Key: Any]) {
+    public init(_ dictionary: [String: Any]) {
         self.dictionary = dictionary
-    }
-
-    public convenience init?(responseObject: Any?) {
-        guard let responseDict = responseObject as? [String: AnyObject] else {
-            return nil
-        }
-
-        self.init(dictionary: responseDict)
     }
 
     // MARK: Errors
 
     private enum ParseError: Error, CustomStringConvertible {
-        case missingField(Key)
-        case invalidType(Key, expectedType: Any.Type, actualType: Any.Type)
-        case intValueOutOfBounds(Key)
-        case invalidUuidString(Key)
-        case invalidBase64DataString(Key)
+        case missingField(String)
+        case invalidType(String, expectedType: Any.Type, actualType: Any.Type)
+        case intValueOutOfBounds(String)
+        case invalidUuidString(String)
+        case invalidBase64DataString(String)
 
         var description: String {
             switch self {
@@ -68,17 +58,17 @@ public class ParamParser {
         }
     }
 
-    private func badCast<T>(key: Key, expectedType: T.Type, castTarget: Any) -> ParseError {
+    private func badCast<T>(key: String, expectedType: T.Type, castTarget: Any) -> ParseError {
         return .invalidType(key, expectedType: expectedType, actualType: type(of: castTarget))
     }
 
-    private func missing(key: Key) -> ParseError {
+    private func missing(key: String) -> ParseError {
         return ParseError.missingField(key)
     }
 
     // MARK: - Public API
 
-    public func required<T>(key: Key) throws -> T {
+    public func required<T>(key: String) throws -> T {
         guard let value: T = try optional(key: key) else {
             throw missing(key: key)
         }
@@ -86,7 +76,7 @@ public class ParamParser {
         return value
     }
 
-    public func optional<T>(key: Key) throws -> T? {
+    public func optional<T>(key: String) throws -> T? {
         guard let someValue = dictionary[key] else {
             return nil
         }
@@ -102,7 +92,7 @@ public class ParamParser {
         return typedValue
     }
 
-    public func hasKey(_ key: Key) -> Bool {
+    public func hasString(_ key: String) -> Bool {
         return dictionary[key] != nil && !(dictionary[key] is NSNull)
     }
 
@@ -111,7 +101,7 @@ public class ParamParser {
     // You can't blindly cast across Integer types, so we need to specify and validate which Int type we want.
     // In general, you'll find numeric types parsed into a Dictionary as `Int`.
 
-    public func required<T>(key: Key) throws -> T where T: FixedWidthInteger {
+    public func required<T>(key: String) throws -> T where T: FixedWidthInteger {
         guard let value: T = try optional(key: key) else {
             throw missing(key: key)
         }
@@ -119,7 +109,7 @@ public class ParamParser {
         return value
     }
 
-    public func optional<T>(key: Key) throws -> T? where T: FixedWidthInteger {
+    public func optional<T>(key: String) throws -> T? where T: FixedWidthInteger {
         guard let someValue: Any = try optional(key: key) else {
             return nil
         }
@@ -139,7 +129,7 @@ public class ParamParser {
 
     // MARK: UUIDs
 
-    public func required(key: Key) throws -> UUID {
+    public func required(key: String) throws -> UUID {
         guard let value: UUID = try optional(key: key) else {
             throw missing(key: key)
         }
@@ -147,7 +137,7 @@ public class ParamParser {
         return value
     }
 
-    public func optional(key: Key) throws -> UUID? {
+    public func optional(key: String) throws -> UUID? {
         guard let uuidString: String = try optional(key: key) else {
             return nil
         }
@@ -161,7 +151,7 @@ public class ParamParser {
 
     // MARK: Base64 Data
 
-    public func requiredBase64EncodedData(key: Key) throws -> Data {
+    public func requiredBase64EncodedData(key: String) throws -> Data {
         guard let data: Data = try optionalBase64EncodedData(key: key) else {
             throw ParseError.missingField(key)
         }
@@ -169,7 +159,7 @@ public class ParamParser {
         return data
     }
 
-    public func optionalBase64EncodedData(key: Key) throws -> Data? {
+    public func optionalBase64EncodedData(key: String) throws -> Data? {
         guard let encodedData: String = try self.optional(key: key) else {
             return nil
         }

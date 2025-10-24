@@ -171,20 +171,15 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         let request = OWSRequestFactory.currencyConversionRequest()
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
-        guard let json = response.responseBodyJson else {
+        guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON")
-        }
-        guard let parser = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Invalid responseObject.")
         }
         let timestamp: UInt64 = try parser.required(key: "timestamp")
         let serviceDate = Date(millisecondsSince1970: timestamp)
-        let currencyObjects: [Any] = try parser.required(key: "currencies")
+        let currencyObjects: [[String: Any]] = try parser.required(key: "currencies")
         var conversionRateMap = ConversionRateMap()
         for currencyObject in currencyObjects {
-            guard let currencyParser = ParamParser(responseObject: currencyObject) else {
-                throw OWSAssertionError("Invalid currencyObject.")
-            }
+            let currencyParser = ParamParser(currencyObject)
             let base: String = try currencyParser.required(key: "base")
             guard base == PaymentsConstants.mobileCoinCurrencyIdentifier else {
                 continue

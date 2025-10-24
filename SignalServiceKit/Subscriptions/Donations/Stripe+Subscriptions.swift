@@ -23,7 +23,7 @@ extension Stripe {
             throw OWSAssertionError("Got bad response code \(statusCode).")
         }
 
-        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+        guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid response.")
         }
 

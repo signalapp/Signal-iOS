@@ -21,9 +21,9 @@ extension Stripe {
     /// Parse the redirect URL from a Stripe response. See [Stripe's docs][0].
     ///
     /// [0]: https://stripe.com/docs/api/payment_intents/object#payment_intent_object-next_action-redirect_to_url-return_url
-    static func parseNextActionRedirectUrl(from responseBodyJson: Any?) -> URL? {
+    static func parseNextActionRedirectUrl(from responseDict: [String: Any]?) -> URL? {
         if
-            let responseDict = responseBodyJson as? [String: Any?],
+            let responseDict,
             let nextAction = responseDict["next_action"] as? [String: Any?],
             let nextActionType = nextAction["type"] as? String,
             nextActionType == "redirect_to_url",

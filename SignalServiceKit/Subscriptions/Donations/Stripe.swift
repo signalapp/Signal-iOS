@@ -64,11 +64,8 @@ public struct Stripe {
 
         let response = try await SSKEnvironment.shared.networkManagerRef
             .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
-        guard let json = response.responseBodyJson else {
+        guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON")
-        }
-        guard let parser = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Failed to decode JSON response")
         }
         return try PaymentIntent(
             clientSecret: try parser.required(key: "clientSecret")
@@ -81,11 +78,8 @@ public struct Stripe {
     ) async throws -> PaymentMethodID {
         do {
             let response = try await requestPaymentMethod(with: paymentMethod)
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing responseBodyJson")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
+            guard let parser = response.responseBodyParamParser else {
+                throw OWSAssertionError("Missing or invalid JSON!")
             }
             return try parser.required(key: "id")
         } catch {
@@ -204,7 +198,7 @@ public struct Stripe {
             return .init(
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId,
-                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
+                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyDict)
             )
         } catch {
             throw convertToStripeErrorIfPossible(error)
@@ -231,17 +225,14 @@ public struct Stripe {
                 )
             )
 
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing responseBodyJson")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
+            guard let parser = response.responseBodyParamParser else {
+                throw OWSAssertionError("Missing or invalid JSON!")
             }
             let setupIntentId: String = try parser.required(key: "id")
             return .init(
                 setupIntentId: setupIntentId,
                 paymentMethodId: paymentMethodId,
-                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
+                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyDict)
             )
         } catch {
             throw convertToStripeErrorIfPossible(error)
@@ -346,11 +337,8 @@ fileprivate extension Stripe {
         /// Step 3 of the process. Payment source tokenization
         static func createToken(with tokenizationParameters: [String: any StripeQueryParamValue]) async throws -> Token {
             let response = try await postForm(endpoint: "tokens", parameters: tokenizationParameters)
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing responseBodyJson")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
+            guard let parser = response.responseBodyParamParser else {
+                throw OWSAssertionError("Missing or invalid JSON!")
             }
             return try parser.required(key: "id")
         }
@@ -433,8 +421,9 @@ extension Dictionary<String, any StripeQueryParamValue>: StripeQueryParamValue {
 extension Stripe {
     private static func convertToStripeErrorIfPossible(_ error: Error) -> Error {
         guard
-            let responseJson = error.httpResponseJson as? [String: Any],
-            let errorJson = responseJson["error"] as? [String: Any],
+            let responseData = error.httpResponseData,
+            let responseDict = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+            let errorJson = responseDict["error"] as? [String: Any],
             let code = errorJson["code"] as? String,
             !code.isEmpty
         else {

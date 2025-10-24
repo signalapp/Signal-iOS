@@ -356,7 +356,7 @@ extension RemoteMegaphoneModel.Manifest {
         private static let snoozeDurationDaysId: String = "snoozeDurationDays"
 
         public static func parse(fromJson jsonObject: [String: Any]) throws -> Self? {
-            let parser = ParamParser(dictionary: jsonObject)
+            let parser = ParamParser(jsonObject)
 
             if let snoozeDurationDays: [UInt] = try parser.optional(key: snoozeDurationDaysId) {
                 return .snoozeDurationDays(days: snoozeDurationDays)

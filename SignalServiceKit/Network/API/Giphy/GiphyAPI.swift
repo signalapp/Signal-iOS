@@ -61,11 +61,11 @@ public enum GiphyAPI {
                 throw OWSAssertionError("Invalid URL")
             }
             let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: false)
-            guard let json = response.responseBodyJson else {
+            guard let responseDict = response.responseBodyDict else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
             Logger.info("Request succeeded.")
-            guard let imageInfos = self.parseGiphyImages(responseJson: json) else {
+            guard let imageInfos = self.parseGiphyImages(responseDict: responseDict) else {
                 throw OWSAssertionError("unable to parse trending images")
             }
             return imageInfos
@@ -77,15 +77,7 @@ public enum GiphyAPI {
 
     // MARK: Parse API Responses
 
-    private static func parseGiphyImages(responseJson: Any?) -> [GiphyImageInfo]? {
-        guard let responseJson = responseJson else {
-            Logger.error("Missing response.")
-            return nil
-        }
-        guard let responseDict = responseJson as? [String: Any] else {
-            Logger.error("Invalid response.")
-            return nil
-        }
+    private static func parseGiphyImages(responseDict: [String: Any]) -> [GiphyImageInfo]? {
         guard let imageDicts = responseDict["data"] as? [[String: Any]] else {
             Logger.error("Invalid response data.")
             return nil

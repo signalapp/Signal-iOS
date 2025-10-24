@@ -31,11 +31,8 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         let response = try await networkManager.asyncRequest(request)
 
-        guard let json = response.responseBodyJson else {
+        guard let params = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON.")
-        }
-        guard let params = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Missing or invalid response.")
         }
 
         let ecCount: Int = try params.required(key: "count")

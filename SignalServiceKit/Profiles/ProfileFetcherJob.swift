@@ -122,9 +122,12 @@ public class ProfileFetcherJob {
             )
             do {
                 let response = try await makeRequest(versionedProfileRequest.request)
+                guard let params = response.responseBodyParamParser else {
+                    throw OWSAssertionError("Missing or invalid JSON!")
+                }
                 let profile = try SignalServiceProfile.fromResponse(
                     serviceId: serviceId,
-                    responseObject: response.responseBodyJson
+                    params: params,
                 )
 
                 await versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
@@ -171,9 +174,12 @@ public class ProfileFetcherJob {
             )
         }
 
+        guard let params = result.response.responseBodyParamParser else {
+            throw OWSAssertionError("Missing or invalid JSON!")
+        }
         let profile = try SignalServiceProfile.fromResponse(
             serviceId: serviceId,
-            responseObject: result.responseJson
+            params: params,
         )
 
         return FetchedProfile(profile: profile, profileKey: nil)

@@ -268,18 +268,18 @@ public struct DonationSubscriptionConfiguration {
 
     static func from(responseBodyData: Data) throws -> Self {
         guard
-            let responseBodyJson = try? JSONSerialization
+            let responseBodyDict = try? JSONSerialization
                 .jsonObject(with: responseBodyData) as? [String: Any]
         else {
             throw OWSAssertionError("Failed to get dictionary from body data!")
         }
 
-        return try .from(responseBodyJson: responseBodyJson)
+        return try .from(responseBodyDict: responseBodyDict)
     }
 
     /// Parse a service configuration from a response body.
-    static func from(responseBodyJson: [String: Any]) throws -> Self {
-        let parser = ParamParser(dictionary: responseBodyJson)
+    static func from(responseBodyDict: [String: Any]) throws -> Self {
+        let parser = ParamParser(responseBodyDict)
 
         let levels: BadgedLevels = try parseLevels(fromParser: parser)
         let presetsByCurrency: PresetsByCurrency = try parsePresets(fromParser: parser, forLevels: levels)
@@ -401,7 +401,7 @@ public struct DonationSubscriptionConfiguration {
                 throw ParseError.invalidBadgeLevel(levelString: levelString)
             }
 
-            let levelParser = ParamParser(dictionary: json)
+            let levelParser = ParamParser(json)
 
             partialResult[level] = BadgedLevel(
                 value: level,
@@ -500,7 +500,7 @@ public struct DonationSubscriptionConfiguration {
         forCurrency code: Currency.Code,
         withLevels levels: BadgedLevels
     ) throws -> Presets {
-        let parser = ParamParser(dictionary: json)
+        let parser = ParamParser(json)
 
         let (boostPresets, giftPreset) = try parseOneTimePresets(
             fromParser: parser,

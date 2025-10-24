@@ -28,10 +28,7 @@ public struct SubscriptionFetcher {
 
         switch response.responseStatusCode {
         case 200:
-            guard
-                let responseJson = response.responseBodyJson,
-                let parser = ParamParser(responseObject: responseJson)
-            else {
+            guard let parser = response.responseBodyParamParser else {
                 throw OWSAssertionError("Missing or invalid response body!")
             }
 
@@ -78,7 +75,7 @@ public struct Subscription: Equatable {
         public let code: String?
 
         init(jsonDictionary: [String: Any]) {
-            code = try? ParamParser(dictionary: jsonDictionary).optional(key: "code")
+            code = try? ParamParser(jsonDictionary).optional(key: "code")
         }
     }
 
@@ -154,7 +151,7 @@ public struct Subscription: Equatable {
     }
 
     public init(subscriptionDict: [String: Any], chargeFailureDict: [String: Any]?) throws {
-        let params = ParamParser(dictionary: subscriptionDict)
+        let params = ParamParser(subscriptionDict)
         level = try params.required(key: "level")
         let currencyCode: Currency.Code = try {
             let raw: String = try params.required(key: "currency")

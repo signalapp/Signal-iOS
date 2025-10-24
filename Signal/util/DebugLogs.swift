@@ -353,25 +353,22 @@ private enum DebugLogUploader {
     private static func getUploadParameters(fileUrl: URL) async throws -> UploadParameters {
         let url = URL(string: "https://debuglogs.org/")!
         let response = try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
-        guard let responseObject = response.responseBodyJson else {
+        guard let params = response.responseBodyParamParser else {
             throw OWSAssertionError("Invalid response.")
-        }
-        guard let params = ParamParser(responseObject: responseObject) else {
-            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
         }
         let uploadUrl: String = try params.required(key: "url")
         let fieldMap: [String: String] = try params.required(key: "fields")
         guard !fieldMap.isEmpty else {
-            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+            throw OWSAssertionError("Empty fieldMap!")
         }
         for (key, value) in fieldMap {
             guard nil != key.nilIfEmpty,
                   nil != value.nilIfEmpty else {
-                      throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+                      throw OWSAssertionError("Empty key or value in fieldMap!")
                   }
         }
         guard let rawUploadKey = fieldMap["key"]?.nilIfEmpty else {
-            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+            throw OWSAssertionError("Missing rawUploadKey!")
         }
         guard let fileExtension = (fileUrl.lastPathComponent as NSString).pathExtension.nilIfEmpty else {
             throw OWSAssertionError("Invalid fileUrl: \(fileUrl)")

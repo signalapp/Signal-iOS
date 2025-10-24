@@ -515,8 +515,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     ) async throws -> [String] {
         let response = try await urlSession.performRequest(Constants.manifestPath, method: .get)
         guard
-            let json = response.responseBodyJson,
-            let responseDictionary = json as? [String: AnyObject],
+            let responseDictionary = response.responseBodyDict,
             let version = responseDictionary[Constants.manifestVersionKey] as? String,
             let languages = responseDictionary[Constants.manifestLanguagesKey] as? [String: AnyObject]
         else {

@@ -263,11 +263,8 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         let request = OWSRequestFactory.bankMandateRequest(bankTransferType: self.bankTransferType)
         do {
             let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-            guard let json = response.responseBodyJson else {
+            guard let parser = response.responseBodyParamParser else {
                 throw OWSAssertionError("Missing or invalid JSON")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
             }
             let mandateText: String = try parser.required(key: "mandate")
             self.state = .loaded(mandateText: mandateText)

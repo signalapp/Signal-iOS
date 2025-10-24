@@ -387,11 +387,8 @@ public class OWSUDManagerImpl: OWSUDManager {
             .asyncRequest(certificateRequest)
 
         let certificateData: Data = try {
-            guard let json = certificateResponse.responseBodyJson else {
+            guard let parser = certificateResponse.responseBodyParamParser else {
                 throw OWSUDError.invalidData(description: "Missing or invalid JSON")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSUDError.invalidData(description: "Invalid sender certificate response")
             }
 
             return try parser.requiredBase64EncodedData(key: "certificate")

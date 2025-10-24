@@ -180,11 +180,11 @@ private extension RemoteMegaphoneFetcher {
                     method: .get
                 )
 
-                guard let responseJson = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing body JSON for manifest!")
+                guard let parser = response.responseBodyParamParser else {
+                    throw OWSAssertionError("Missing or invalid body JSON for manifest!")
                 }
 
-                return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
+                return try RemoteMegaphoneModel.Manifest.parseFrom(parser: parser)
             }
         )
     }
@@ -233,10 +233,10 @@ private extension RemoteMegaphoneFetcher {
                 }
                 Logger.info("Fetching remote megaphone translation")
                 let response = try await getUrlSession().performRequest(translationUrlPath, method: .get)
-                guard let responseJson = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing body JSON for translation!")
+                guard let parser = response.responseBodyParamParser else {
+                    throw OWSAssertionError("Missing or invalid body JSON for translation!")
                 }
-                return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
+                return try RemoteMegaphoneModel.Translation.parseFrom(parser: parser)
             }
         )
     }
@@ -360,17 +360,11 @@ private extension RemoteMegaphoneModel.Manifest {
     private static let secondaryCtaIdKey = "secondaryCtaId"
     private static let secondaryCtaDataKey = "secondaryCtaData"
 
-    static func parseFrom(responseJson: Any?) throws -> [Self] {
-        guard let megaphonesArrayParser = ParamParser(responseObject: responseJson) else {
-            throw OWSAssertionError("Failed to create parser from response JSON!")
-        }
-
+    static func parseFrom(parser megaphonesArrayParser: ParamParser) throws -> [Self] {
         let individualMegaphones: [[String: Any]] = try megaphonesArrayParser.required(key: Self.megaphonesKey)
 
         return try individualMegaphones.compactMap { megaphoneObject throws -> Self? in
-            guard let megaphoneParser = ParamParser(responseObject: megaphoneObject) else {
-                throw OWSAssertionError("Failed to create parser from individual megaphone JSON!")
-            }
+            let megaphoneParser = ParamParser(megaphoneObject)
 
             guard let iosMinVersion: String = try megaphoneParser.optional(key: Self.iosMinVersionKey) else {
                 return nil
@@ -442,11 +436,7 @@ private extension RemoteMegaphoneModel.Translation {
     private static let primaryCtaTextKey = "primaryCtaText"
     private static let secondaryCtaTextKey = "secondaryCtaText"
 
-    static func parseFrom(responseJson: Any?) throws -> Self {
-        guard let parser = ParamParser(responseObject: responseJson) else {
-            throw OWSAssertionError("Failed to create parser from response JSON!")
-        }
-
+    static func parseFrom(parser: ParamParser) throws -> Self {
         let uuid: String = try parser.required(key: Self.uuidKey)
         let imageUrl: String? = try parser.optional(key: Self.imageUrlKey)
         let title: String = try parser.required(key: Self.titleKey)

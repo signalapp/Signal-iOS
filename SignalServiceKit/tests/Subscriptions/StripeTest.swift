@@ -10,9 +10,8 @@ final class StripeTest: XCTestCase {
     private let unknownCurrency = "ZZZ"
 
     func testParseNextActionRedirectUrl() {
-        let notFoundTestCases: [Any?] = [
+        let notFoundTestCases: [[String: Any]?] = [
             nil,
-            "https://example.com",
             ["next_action": "https://example.com"],
             [
                 "next_action": [

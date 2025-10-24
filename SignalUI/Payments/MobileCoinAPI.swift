@@ -109,10 +109,7 @@ public class MobileCoinAPI {
         try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
     }
 
-    private static func parseAuthorizationResponse(responseObject: Any?) throws -> OWSAuthorization {
-        guard let params = ParamParser(responseObject: responseObject) else {
-            throw OWSAssertionError("Invalid responseObject.")
-        }
+    private static func parseAuthorizationResponse(params: ParamParser) throws -> OWSAuthorization {
         let username: String = try params.required(key: "username")
         let password: String = try params.required(key: "password")
         return OWSAuthorization(username: username, password: password)
@@ -124,10 +121,10 @@ public class MobileCoinAPI {
         }
         let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-        guard let json = response.responseBodyJson else {
+        guard let params = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON")
         }
-        let signalAuthorization = try Self.parseAuthorizationResponse(responseObject: json)
+        let signalAuthorization = try Self.parseAuthorizationResponse(params: params)
         let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
         let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
         return try MobileCoinAPI(paymentsEntropy: paymentsEntropy, localAccount: localAccount, client: client)

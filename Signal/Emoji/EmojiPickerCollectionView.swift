@@ -616,12 +616,8 @@ private class EmojiSearchIndex: NSObject {
                     throw OWSAssertionError("Bad response code for emoji manifest fetch")
                 }
 
-                guard let json = response.responseBodyJson as? [String: Any] else {
+                guard let parser = response.responseBodyParamParser else {
                     throw OWSAssertionError("Unable to generate JSON for emoji manifest from response body.")
-                }
-
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Unable to parse emoji manifest from response body.")
                 }
 
                 let remoteVersion: Int = try parser.required(key: "version")
