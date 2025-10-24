@@ -213,10 +213,9 @@ public class GroupsV2Impl: GroupsV2 {
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
         let isAddingOrInviting = changes.membersToAdd.count > 0
 
-        let messageBehavior: GroupUpdateMessageBehavior
-        let httpResponse: HTTPResponse
+        let groupUpdateResult: GroupUpdateResult?
         do {
-            (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+            groupUpdateResult = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                 groupV2Params: groupV2Params,
                 changes: changes
             )
@@ -229,7 +228,7 @@ public class GroupsV2Impl: GroupsV2 {
 
                 try await refreshGroupWithTimeout(secretParams: groupV2Params.groupSecretParams)
 
-                (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+                groupUpdateResult = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupV2Params: groupV2Params,
                     changes: changes
                 )
@@ -240,7 +239,7 @@ public class GroupsV2Impl: GroupsV2 {
                 // should try again exactly once, forcing a refresh of all the
                 // credentials first.
 
-                (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+                groupUpdateResult = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupV2Params: groupV2Params,
                     changes: changes,
                     shouldForceRefreshProfileKeyCredentials: true,
@@ -251,15 +250,24 @@ public class GroupsV2Impl: GroupsV2 {
             }
         }
 
-        let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: httpResponse.responseBodyData ?? Data())
+        guard let groupUpdateResult else {
+            return
+        }
+
+        let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: groupUpdateResult.httpResponse.responseBodyData ?? Data())
 
         try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
-            messageBehavior: messageBehavior,
+            messageBehavior: groupUpdateResult.messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
             isUrgent: isAddingOrInviting,
             groupV2Params: groupV2Params
         )
+    }
+
+    private struct GroupUpdateResult {
+        var messageBehavior: GroupUpdateMessageBehavior
+        var httpResponse: HTTPResponse
     }
 
     /// Construct a group change proto from the given `changes` for the given
@@ -272,7 +280,7 @@ public class GroupsV2Impl: GroupsV2 {
         changes: GroupsV2OutgoingChanges,
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
-    ) async throws -> (GroupUpdateMessageBehavior, HTTPResponse) {
+    ) async throws -> GroupUpdateResult? {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
         let (groupThread, dmToken) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -295,6 +303,10 @@ public class GroupsV2Impl: GroupsV2 {
             currentDisappearingMessageToken: dmToken,
             forceRefreshProfileKeyCredentials: shouldForceRefreshProfileKeyCredentials
         )
+
+        guard let builtGroupChange else {
+            return nil
+        }
 
         var behavior400: Behavior400 = .fail
         if
@@ -325,7 +337,10 @@ public class GroupsV2Impl: GroupsV2 {
             behavior403: .fetchGroupUpdates,
         )
 
-        return (builtGroupChange.groupUpdateMessageBehavior, response)
+        return GroupUpdateResult(
+            messageBehavior: builtGroupChange.groupUpdateMessageBehavior,
+            httpResponse: response,
+        )
     }
 
     private func handleGroupUpdatedOnService(

@@ -7,8 +7,6 @@ import Foundation
 public import LibSignalClient
 
 public enum GroupsV2Error: Error {
-    /// By the time we tried to apply the change, it was irrelevant.
-    case redundantChange
     /// The change we attempted conflicts with what is on the service.
     case conflictingChangeOnService
     case shouldDiscard

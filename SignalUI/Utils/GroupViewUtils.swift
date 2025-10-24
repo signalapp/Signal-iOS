@@ -33,11 +33,6 @@ public class GroupViewUtils {
                     modalActivityIndicator.dismiss {
                         completion?()
                     }
-                } catch GroupsV2Error.redundantChange {
-                    // Treat GroupsV2Error.redundantChange as a success.
-                    modalActivityIndicator.dismiss {
-                        completion?()
-                    }
                 } catch {
                     owsFailDebugUnlessNetworkFailure(error)
 

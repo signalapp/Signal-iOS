@@ -36,13 +36,7 @@ extension GroupManager {
                     return GroupsV2Error.timeout
                 }.awaitable()
             } catch {
-                switch error {
-                case GroupsV2Error.redundantChange:
-                    // From an operation perspective, this is a success!
-                    break
-                default:
-                    Logger.warn("Group update failed: \(error)")
-                }
+                Logger.warn("Group update failed: \(error)")
                 throw error
             }
         }

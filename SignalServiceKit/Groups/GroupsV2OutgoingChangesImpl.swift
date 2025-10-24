@@ -21,8 +21,8 @@ public import LibSignalClient
 /// responsible for conflict resolution. For example, if we are trying to
 /// add Alice and Bob, and if another user adds Alice before we do, we'll
 /// only add Bob. If our change turns into a no-op (e.g., both Alice and Bob
-/// are added by somebody else), we'll throw GroupsV2Error.redundantChange;
-/// callers should typically interpret this as a successful outcome.
+/// are added by somebody else), we'll return nil; callers should interpret
+/// this as a successful outcome.
 public class GroupsV2OutgoingChanges {
 
     public let groupSecretParams: GroupSecretParams
@@ -199,7 +199,7 @@ public class GroupsV2OutgoingChanges {
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         forceRefreshProfileKeyCredentials: Bool
-    ) async throws -> GroupsV2BuiltGroupChange {
+    ) async throws -> GroupsV2BuiltGroupChange? {
         let groupId = try self.groupSecretParams.getPublicParams().getGroupIdentifier()
         guard groupId.serialize() == currentGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
@@ -257,13 +257,13 @@ public class GroupsV2OutgoingChanges {
     ///   kicked out Alice, we throw GroupsV2Error.conflictingChange.
     ///
     /// Essentially, our strategy is to "apply any changes that still make
-    /// sense". If no changes do, we throw GroupsV2Error.redundantChange.
+    /// sense". If no changes do, we return nil.
     private func buildGroupChangeProto(
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         localIdentifiers: LocalIdentifiers,
         profileKeyCredentials: [Aci: ExpiringProfileKeyCredential],
-    ) throws -> GroupsV2BuiltGroupChange {
+    ) throws -> GroupsV2BuiltGroupChange? {
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
@@ -714,7 +714,7 @@ public class GroupsV2OutgoingChanges {
         // MARK: - Change action insertion point
 
         guard didChange else {
-            throw GroupsV2Error.redundantChange
+            return nil
         }
 
         Logger.info("Updating group.")

@@ -204,9 +204,6 @@ class GroupsV2ProfileKeyUpdater {
                 // If a non-recoverable error occurs (e.g. we've deleted the thread from the
                 // database), give up.
                 break
-            case GroupsV2Error.redundantChange:
-                // If the update is no longer necessary, skip it.
-                break
             case GroupsV2Error.localUserNotInGroup:
                 // If the update is no longer necessary, skip it.
                 break
@@ -263,7 +260,7 @@ class GroupsV2ProfileKeyUpdater {
         )
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
-            throw GroupsV2Error.redundantChange
+            return
         }
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
@@ -274,7 +271,7 @@ class GroupsV2ProfileKeyUpdater {
         }
         guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKey.keyData else {
             // Group state already has our current key.
-            throw GroupsV2Error.redundantChange
+            return
         }
 
         Logger.info("Updating profile key for group.")
