@@ -1184,12 +1184,20 @@ public class MessageSender {
         }
     }
 
+    private let sendQueues = KeyedConcurrentTaskQueue<ServiceId>(concurrentLimitPerKey: 1)
+
     @discardableResult
     func performMessageSend(
         _ messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [SentDeviceMessage] {
-        return try await performMessageSendAttempt(messageSend, recoveryState: InnerRecoveryState(), sealedSenderParameters: sealedSenderParameters)
+        return try await sendQueues.run(forKey: messageSend.serviceId) {
+            return try await performMessageSendAttempt(
+                messageSend,
+                recoveryState: InnerRecoveryState(),
+                sealedSenderParameters: sealedSenderParameters,
+            )
+        }
     }
 
     private func performMessageSendAttempt(

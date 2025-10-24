@@ -655,6 +655,7 @@
 		50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */; };
 		505AB9322DB2B21900592A70 /* AccountChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505AB9312DB2B21900592A70 /* AccountChecker.swift */; };
 		505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */; };
+		505C2BC22E85D72B0009237F /* KeyedConcurrentTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2BC12E85D72B0009237F /* KeyedConcurrentTaskQueue.swift */; };
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
@@ -4619,6 +4620,7 @@
 		50597BBE2B97D629004681E1 /* SearchableNameFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchableNameFinder.swift; sourceTree = "<group>"; };
 		505AB9312DB2B21900592A70 /* AccountChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountChecker.swift; sourceTree = "<group>"; };
 		505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponse.swift; sourceTree = "<group>"; };
+		505C2BC12E85D72B0009237F /* KeyedConcurrentTaskQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyedConcurrentTaskQueue.swift; sourceTree = "<group>"; };
 		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
@@ -8969,6 +8971,7 @@
 				50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */,
 				500AF3AE2C58366700CB9F4F /* CooperativeTimeout.swift */,
 				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
+				505C2BC12E85D72B0009237F /* KeyedConcurrentTaskQueue.swift */,
 				50B0BCA22DFA17BE0076B680 /* Monitor.swift */,
 				50C0203D2CA4A7A500BDC4EF /* Retry.swift */,
 				D96869442E1065F1005451E4 /* SeriallyAccessedState.swift */,
@@ -18062,6 +18065,7 @@
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */,
+				505C2BC22E85D72B0009237F /* KeyedConcurrentTaskQueue.swift in Sources */,
 				F9C5CD2A289453B300548EEE /* KeyValueStore.swift in Sources */,
 				C198FDD62A37C905000BCAC9 /* KyberPreKeyStoreImpl.swift in Sources */,
 				6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */,
