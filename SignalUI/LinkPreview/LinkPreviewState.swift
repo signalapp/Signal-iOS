@@ -55,7 +55,7 @@ public protocol LinkPreviewState: AnyObject {
 
 // MARK: -
 
-extension LinkPreviewState {
+public extension LinkPreviewState {
     var hasLoadedImageOrBlurHash: Bool {
         switch imageState {
         case .loaded:

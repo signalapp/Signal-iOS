@@ -177,7 +177,6 @@ public extension ConversationViewController {
         }
 
         let newInputToolbar = buildInputToolbar(
-            conversationStyle: conversationStyle,
             messageDraft: messageDraft,
             draftReply: replyDraft,
             voiceMemoDraft: voiceMemoDraft,
@@ -235,14 +234,6 @@ public extension ConversationViewController {
         guard let inputToolbar = inputToolbar else {
             owsFailDebug("Missing inputToolbar.")
             return
-        }
-
-        if inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets) {
-            // Ensure that if the toolbar has its insets changed, we trigger a re-layout.
-            // Without this, UIKit does a bad job of picking up the final safe area for
-            // constraints on the toolbar on its own.
-            self.view.setNeedsLayout()
-            self.updateContentInsets()
         }
 
         if initialLayout {

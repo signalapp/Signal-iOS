@@ -366,6 +366,18 @@ public extension UIEdgeInsets {
 
 // MARK: -
 
+public extension NSDirectionalEdgeInsets {
+    var totalWidth: CGFloat {
+        leading + trailing
+    }
+
+    var totalHeight: CGFloat {
+        top + bottom
+    }
+}
+
+// MARK: -
+
 public extension CGFloat {
     var pointsAsPixels: CGFloat {
         self * UIScreen.main.scale

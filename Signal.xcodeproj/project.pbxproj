@@ -514,7 +514,6 @@
 		45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F32C1D205718B000A300D5 /* MediaPageViewController.swift */; };
 		45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */; };
 		46B99B83D9513F2B8641EAB1 /* Pods_SignalNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */; };
-		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
 		4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C0CF6F92386295400C9F818 /* tap_to_focus.json */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
@@ -1408,6 +1407,7 @@
 		7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609818B2936EF22008F8300 /* AudioPlayer.swift */; };
 		7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609819329382EFF008F8300 /* UIGeometry+Signal.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
+		76182F122EA734F3003B3799 /* ConversationInputToolbar+LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */; };
 		7622B3B22A4510D7000E31DA /* MediaGalleryCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -1456,6 +1456,7 @@
 		76896BFC2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */; };
 		768AE8BA280F713C00998C2D /* ImageEditorSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */; };
 		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
+		76A066EA2EA99D1F009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */; };
 		76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB0F28B578B800A29C24 /* MediaTextView.swift */; };
 		76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */; };
 		76AE4D9D2A14611C000D98A4 /* MediaControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */; };
@@ -1603,7 +1604,6 @@
 		88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A43263A2781009C9B30 /* state-change_confirm-up.caf */; };
 		88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */; };
 		88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */; };
-		88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */; };
 		889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA0F264EE76F00D03921 /* GroupNameViewController.swift */; };
 		889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
@@ -4428,7 +4428,6 @@
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaGallery/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
 		46A35218397D9FD1709A675C /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteLock.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		4C0CF6F92386295400C9F818 /* tap_to_focus.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tap_to_focus.json; sourceTree = "<group>"; };
 		4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridViewCell.swift; sourceTree = "<group>"; };
@@ -5296,6 +5295,7 @@
 		7609818B2936EF22008F8300 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		7609819329382EFF008F8300 /* UIGeometry+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIGeometry+Signal.swift"; sourceTree = "<group>"; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationInputToolbar+LinkPreview.swift"; sourceTree = "<group>"; };
 		7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryCellItem.swift; sourceTree = "<group>"; };
 		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
 		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
@@ -5347,6 +5347,7 @@
 		768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorSliderView.swift; sourceTree = "<group>"; };
 		768F720C2A22CEAC002C4E7D /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
+		76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationInputToolbar+VoiceMemo.swift"; sourceTree = "<group>"; };
 		76A2EB0F28B578B800A29C24 /* MediaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextView.swift; sourceTree = "<group>"; };
 		76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerBar.swift; sourceTree = "<group>"; };
 		76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControlPanelView.swift; sourceTree = "<group>"; };
@@ -5538,7 +5539,6 @@
 		88928A5A263F0DEC009C9B30 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+VoiceMessage.swift"; sourceTree = "<group>"; };
 		88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageTooltip.swift; sourceTree = "<group>"; };
-		88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageDraftView.swift; sourceTree = "<group>"; };
 		889DFA0F264EE76F00D03921 /* GroupNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupNameViewController.swift; sourceTree = "<group>"; };
 		889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionViewController.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
@@ -8170,7 +8170,9 @@
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
+				76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */,
 				457F671A20746193000EABCD /* ConversationInputToolbar+QuotedReplyPreview.swift */,
+				76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */,
 				76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */,
 				76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */,
 				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
@@ -10596,9 +10598,7 @@
 				D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
-				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
 				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
-				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
 			);
 			name = Views;
 			path = views;
@@ -16930,7 +16930,9 @@
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
+				76182F122EA734F3003B3799 /* ConversationInputToolbar+LinkPreview.swift in Sources */,
 				457F671B20746193000EABCD /* ConversationInputToolbar+QuotedReplyPreview.swift in Sources */,
+				76A066EA2EA99D1F009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift in Sources */,
 				76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */,
 				34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */,
 				76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */,
@@ -17487,12 +17489,10 @@
 				76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */,
 				66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
-				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				503AECC529B2A4D300642F66 /* VoiceMessageInProgressDraft.swift in Sources */,
 				503AECC629B2AD6700642F66 /* VoiceMessageInterruptedDraft.swift in Sources */,
 				503AECC829B2AEFA00642F66 /* VoiceMessageSendableDraft.swift in Sources */,
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
-				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */,
 				D9E43C2E2CC194140001536E /* WebRTCCallMessageHandler.swift in Sources */,
 				45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */,

@@ -12,8 +12,8 @@ public class CircleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public init() {
-        super.init(frame: .zero)
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
     }
 
     public init(diameter: CGFloat) {

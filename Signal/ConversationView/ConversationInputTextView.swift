@@ -33,6 +33,10 @@ class ConversationInputTextView: BodyRangesTextView {
     var untrimmedText: String { textStorage.string }
     private var textIsChanging = false
 
+    var inFieldButtonsAreaWidth: CGFloat = 0 {
+        didSet { ensurePlaceholderConstraints() }
+    }
+
     override init() {
         super.init()
 
@@ -86,12 +90,7 @@ class ConversationInputTextView: BodyRangesTextView {
         // If the placeholder view is visible, we need to offset
         // the input container to accommodate for the sticker button.
         if !placeholderView.isHidden {
-            let stickerButtonOffset: CGFloat = 30
-            if CurrentAppContext().isRTL {
-                textContainerInset.left += stickerButtonOffset
-            } else {
-                textContainerInset.right += stickerButtonOffset
-            }
+            textContainerInset.right += inFieldButtonsAreaWidth
         }
 
         return textContainerInset
@@ -102,7 +101,7 @@ class ConversationInputTextView: BodyRangesTextView {
         // because placeholderView wasn't added yet.
         guard placeholderView.superview != nil else { return }
 
-        if let placeholderConstraints = placeholderConstraints {
+        if let placeholderConstraints {
             NSLayoutConstraint.deactivate(placeholderConstraints)
         }
 
