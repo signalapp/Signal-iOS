@@ -36,6 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case deregistration
     case newDeviceLinked
     case backupsEnabled
+    case backupsMediaTierQuotaConsumed
     case listMediaIntegrityCheckFailure
     case pollEndNotification
     case pollVoteNotification
@@ -67,7 +68,7 @@ public enum AppNotificationDefaultAction: String {
     case reregister
     case showChatList
     case showLinkedDevices
-    case showBackupsEnabled
+    case showBackupsSettings
     case listMediaIntegrityCheck
 }
 
@@ -197,6 +198,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.newDeviceLinked"
         case .backupsEnabled:
             return "Signal.AppNotificationCategory.backupsEnabled"
+        case .backupsMediaTierQuotaConsumed:
+            return "Signal.AppNotificationCategory.backupsMediaTierQuotaConsumed"
         case .listMediaIntegrityCheckFailure:
             return "Signal.AppNotificationCategory.listMediaIntegrityCheckFailure"
         case .pollEndNotification:
@@ -240,6 +243,8 @@ extension AppNotificationCategory {
         case .newDeviceLinked:
             return []
         case .backupsEnabled:
+            return []
+        case .backupsMediaTierQuotaConsumed:
             return []
         case .listMediaIntegrityCheckFailure:
             return []
@@ -1175,7 +1180,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) {
         var userInfo = AppNotificationUserInfo()
-        userInfo.defaultAction = .showBackupsEnabled
+        userInfo.defaultAction = .showBackupsSettings
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .backupsEnabled,
@@ -1189,6 +1194,27 @@ public class NotificationPresenterImpl: NotificationPresenter {
                         comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}"
                     ),
                     backupsTimestamp.formatted(date: .omitted, time: .shortened)
+                ),
+                threadIdentifier: nil,
+                userInfo: userInfo,
+                soundQuery: .global
+            )
+        }
+    }
+
+    public func notifyUserOfMediaTierQuotaConsumed() {
+        var userInfo = AppNotificationUserInfo()
+        userInfo.defaultAction = .showBackupsSettings
+        enqueueNotificationAction {
+            await self.notifyViaPresenter(
+                category: .backupsMediaTierQuotaConsumed,
+                title: ResolvableValue(resolvedValue: OWSLocalizedString(
+                    "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE",
+                    comment: "Title for a notification telling the user they are out of remote storage space."
+                )),
+                body: OWSLocalizedString(
+                    "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE",
+                    comment: "Subtitle for a notification telling the user they are out of remote storage space."
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,

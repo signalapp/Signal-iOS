@@ -707,6 +707,7 @@ extension AppSetup.GlobalsContinuation {
                 backupSettingsStore: backupSettingsStore,
                 dateProvider: dateProvider,
                 db: db,
+                notificationPresenter: notificationPresenter,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 progress: backupAttachmentUploadProgress,
                 statusManager: backupAttachmentUploadQueueStatusManager,

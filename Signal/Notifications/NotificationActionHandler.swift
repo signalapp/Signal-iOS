@@ -43,8 +43,8 @@ public class NotificationActionHandler {
                 break
             case .showLinkedDevices:
                 showLinkedDevices()
-            case .showBackupsEnabled:
-                showBackupsEnabled()
+            case .showBackupsSettings:
+                showBackupsSettings()
             case .listMediaIntegrityCheck:
                 await submitDebugLogs(supportTag: "BackupsMedia")
             }
@@ -374,7 +374,7 @@ public class NotificationActionHandler {
     }
 
     @MainActor
-    private class func showBackupsEnabled() {
+    private class func showBackupsSettings() {
         SignalApp.shared.showAppSettings(mode: .backups)
     }
 

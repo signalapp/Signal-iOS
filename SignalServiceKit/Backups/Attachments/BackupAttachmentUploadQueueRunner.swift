@@ -55,6 +55,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        notificationPresenter: NotificationPresenter,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         progress: BackupAttachmentUploadProgress,
         statusManager: BackupAttachmentUploadQueueStatusManager,
@@ -88,6 +89,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 db: db,
                 listMediaManager: backupListMediaManager,
                 logger: logger,
+                notificationPresenter: notificationPresenter,
                 orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
                 progress: progress,
                 statusManager: statusManager,
@@ -250,6 +252,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private let db: any DB
         private let listMediaManager: BackupListMediaManager
         private let logger: PrefixedLogger
+        private let notificationPresenter: NotificationPresenter
         private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
         private let progress: BackupAttachmentUploadProgress
         private let statusManager: BackupAttachmentUploadQueueStatusManager
@@ -272,6 +275,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             db: any DB,
             listMediaManager: BackupListMediaManager,
             logger: PrefixedLogger,
+            notificationPresenter: NotificationPresenter,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
             progress: BackupAttachmentUploadProgress,
             statusManager: BackupAttachmentUploadQueueStatusManager,
@@ -289,6 +293,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.db = db
             self.listMediaManager = listMediaManager
             self.logger = logger
+            self.notificationPresenter = notificationPresenter
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
             self.progress = progress
             self.statusManager = statusManager
@@ -541,8 +546,18 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     }
                     fallthrough
                 case .outOfCapacity:
-                    await db.awaitableWrite { tx in
-                        backupSettingsStore.setHasConsumedMediaTierCapacity(true, tx: tx)
+                    let didSetConsumeMediaTierCapacity = await db.awaitableWrite { tx in
+                        if !backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx) {
+                            backupSettingsStore.setHasConsumedMediaTierCapacity(true, tx: tx)
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    if didSetConsumeMediaTierCapacity {
+                        await MainActor.run { [notificationPresenter] in
+                            notificationPresenter.notifyUserOfMediaTierQuotaConsumed()
+                        }
                     }
                     let error = OutOfCapacityError()
                     try? await loader.stop(reason: error)

@@ -223,7 +223,8 @@ public class UserNotificationPresenter {
              .transferRelaunch,
              .deregistration,
              .newDeviceLinked,
-             .backupsEnabled:
+             .backupsEnabled,
+             .backupsMediaTierQuotaConsumed:
             // Always show these notifications
             return true
 

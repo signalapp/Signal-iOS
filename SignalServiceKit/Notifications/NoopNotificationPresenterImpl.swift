@@ -120,6 +120,10 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func notifyUserOfMediaTierQuotaConsumed() {
+        Logger.warn("")
+    }
+
     public func notifyUserOfListMediaIntegrityCheckFailure() {
         Logger.warn("")
     }
