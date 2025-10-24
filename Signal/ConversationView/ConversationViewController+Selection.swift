@@ -50,7 +50,8 @@ public struct CVSelectionItem {
         if let message = interaction as? TSMessage {
             self.isForwardable = (hasRenderableContent &&
                                     !message.isViewOnceMessage &&
-                                    !message.wasRemotelyDeleted)
+                                    !message.wasRemotelyDeleted &&
+                                    !message.isPoll)
         } else {
             self.isForwardable = false
         }

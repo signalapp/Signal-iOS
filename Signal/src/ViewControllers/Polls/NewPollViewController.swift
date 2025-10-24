@@ -123,6 +123,7 @@ struct NewPollView: View {
     @State var allowMultipleVotes: Bool = false
 
     @FocusState private var focusedItemID: UUID?
+    @FocusState private var focusQuestionField: Bool
 
     let characterLimit: Int = 100
 
@@ -177,6 +178,7 @@ struct NewPollView: View {
                         ),
                         text: $pollQuestion
                     )
+                    .focused($focusQuestionField)
                     .onChange(of: pollQuestion) { newText in
                         if newText.count > characterLimit {
                             pollQuestion = String(newText.prefix(characterLimit))
@@ -184,6 +186,9 @@ struct NewPollView: View {
                         if pollQuestion.stripped.isEmpty {
                             pollQuestion = ""
                         }
+                    }
+                    .onAppear {
+                        focusQuestionField = true
                     }
                 } header: {
                     Text(

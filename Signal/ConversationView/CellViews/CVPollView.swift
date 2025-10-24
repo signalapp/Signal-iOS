@@ -271,7 +271,7 @@ public class CVPollView: ManualStackView {
             // In order to make sure they don't overlap with vote count, we need to measure
             // the vote count width and update the option row stack config trailing
             // spacing accordingly.
-            let checkboxSize = poll.isEnded && !hasLocalUserVoted ? 0 : configurator.checkBoxSize.width
+            let checkboxSize = poll.isEnded && !hasLocalUserVoted ? 0 : configurator.checkBoxSize.width + 8
 
             let localizedVotesString = localizedNumber(from: option.acis.count)
             let voteLabelWidth = voteLabelWidthWithPadding(localizedVotes: localizedVotesString)
@@ -658,7 +658,7 @@ public class CVPollView: ManualStackView {
 
             var subviews: [UIView] = []
             if pollIsEnded {
-                checkbox.isUserInteractionEnabled = false
+                self.isUserInteractionEnabled = false
                 subviews = [optionText]
                 if localUserVoteState == .vote {
                     subviews.append(checkbox)
