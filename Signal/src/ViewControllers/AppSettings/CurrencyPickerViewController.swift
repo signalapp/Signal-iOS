@@ -14,24 +14,20 @@ protocol CurrencyPickerDataSource {
     var updateTableContents: (() -> Void)? { get set }
 }
 
-class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OWSTableViewController2, UISearchBarDelegate {
+class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OWSTableViewController2, UISearchResultsUpdating {
 
-    private let searchBar = OWSSearchBar()
     private var dataSource: DataSourceType
     private let completion: (Currency.Code) -> Void
-
-    fileprivate var searchText: String? {
-        searchBar.text?.ows_stripped()
-    }
 
     public init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
         self.dataSource = dataSource
         self.completion = completion
+
         super.init()
 
         self.dataSource.updateTableContents = { [weak self] in self?.updateTableContents() }
 
-        topHeader = OWSTableViewController2.buildTopHeader(forView: searchBar)
+        navigationItem.searchController = searchController
     }
 
     override func viewDidLoad() {
@@ -44,21 +40,15 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
             self?.dismissPicker()
         }
 
-        searchBar.placeholder = CommonStrings.searchBarPlaceholder
-        searchBar.delegate = self
-
-        updateTableContents()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = CommonStrings.searchBarPlaceholder
 
         updateTableContents()
     }
 
     private func updateTableContents() {
-        if let searchText = searchText,
-           !searchText.isEmpty {
+        if searchController.isActive, let searchText, !searchText.isEmpty {
             updateTableContentsForSearch(searchText: searchText)
         } else {
             updateTableContentsDefault()
@@ -112,7 +102,6 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     }
 
     private func updateTableContentsForSearch(searchText: String) {
-
         let searchText = searchText.lowercased()
 
         let contents = OWSTableContents()
@@ -157,13 +146,13 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
             let nameLabel = UILabel()
             nameLabel.text = currencyInfo.name
-            nameLabel.font = UIFont.dynamicTypeBodyClamped
-            nameLabel.textColor = Theme.primaryTextColor
+            nameLabel.font = .dynamicTypeBodyClamped
+            nameLabel.textColor = .Signal.label
 
             let currencyCodeLabel = UILabel()
             currencyCodeLabel.text = currencyCode.uppercased()
-            currencyCodeLabel.font = UIFont.dynamicTypeFootnoteClamped
-            currencyCodeLabel.textColor = Theme.secondaryTextAndIconColor
+            currencyCodeLabel.font = .dynamicTypeFootnoteClamped
+            currencyCodeLabel.textColor = .Signal.secondaryLabel
 
             let stackView = UIStackView(arrangedSubviews: [ nameLabel, currencyCodeLabel ])
             stackView.axis = .vertical
@@ -203,17 +192,15 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         dismissPicker()
     }
 
-    // MARK: -
+    // MARK: - Search
 
-    open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateTableContents()
+    private let searchController = UISearchController()
+
+    fileprivate var searchText: String? {
+        searchController.searchBar.text?.ows_stripped()
     }
 
-    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    public func updateSearchResults(for searchController: UISearchController) {
         updateTableContents()
     }
 }
