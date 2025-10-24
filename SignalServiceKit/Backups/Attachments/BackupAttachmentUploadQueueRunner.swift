@@ -624,7 +624,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         default:
                             // For other errors stop the queue to prevent thundering herd;
                             // when it starts up again (e.g. on app launch) we will retry.
-                            logger.error("Unknown error occurred; stopping the queue")
+                            logger.error("Unknown error occurred; stopping the queue. \(error)")
                             try? await loader.stop()
                             return .retryableError(error)
                         }
