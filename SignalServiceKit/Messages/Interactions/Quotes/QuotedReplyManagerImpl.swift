@@ -45,7 +45,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             owsFailDebug("Invalid timestamp")
             return nil
         }
-        guard let quoteAuthor = Aci.parseFrom(aciString: quote.authorAci) else {
+        guard let quoteAuthor = Aci.parseFrom(serviceIdBinary: quote.authorAciBinary, serviceIdString: quote.authorAci) else {
             owsFailDebug("quoted message missing author")
             return nil
         }
@@ -794,6 +794,9 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             throw OWSAssertionError("It should be impossible to quote a message without a UUID")
         }
         quoteBuilder.setAuthorAci(authorAci.serviceIdString)
+        if FeatureFlags.serviceIdBinaryConstantOverhead {
+            quoteBuilder.setAuthorAciBinary(authorAci.serviceIdBinary)
+        }
 
         var hasQuotedText = false
         var hasQuotedAttachment = false

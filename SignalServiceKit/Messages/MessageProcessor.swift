@@ -172,7 +172,7 @@ public class MessageProcessor {
         }
     }
 
-    private var recentlyProcessedGuids = SetDeque<String>()
+    private var recentlyProcessedGuids = SetDeque<UUID>()
     /// Should ideally match `MESSAGE_SENDER_MAX_CONCURRENCY`.
     private var recentlyProcessedGuidLimit = 256
 
@@ -242,7 +242,7 @@ public class MessageProcessor {
             processedEnvelopesCount += batchEnvelopes.count - remainingEnvelopes.count
         }
         for processedEnvelope in batchEnvelopes.prefix(processedEnvelopesCount) {
-            guard let serverGuid = processedEnvelope.envelope.serverGuid else {
+            guard let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: processedEnvelope.envelope) else {
                 continue
             }
             recentlyProcessedGuids.pushBack(serverGuid)
@@ -555,7 +555,7 @@ private extension MessageProcessor {
         tx: DBWriteTransaction
     ) -> ProcessingRequest {
         assertOnQueue(queueForProcessing)
-        if let serverGuid = envelope.envelope.serverGuid, recentlyProcessedGuids.contains(serverGuid) {
+        if let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope.envelope), recentlyProcessedGuids.contains(serverGuid) {
             return ProcessingRequest(envelope, state: .completed(error: OWSGenericError("Skipping because it was recently processed.")))
         }
         let builder = ProcessingRequestBuilder(

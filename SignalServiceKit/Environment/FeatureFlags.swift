@@ -86,6 +86,21 @@ public enum FeatureFlags {
     // migration. That should happen by 2026-05-27. Then, delete all the code
     // that's now dead because this is false.
     public static let decodeDeprecatedPreKeys = true
+
+    public static let serviceIdBinaryProvisioning = true
+    public static let serviceIdBinaryConstantOverhead = build <= .internal
+    public static let serviceIdBinaryVariableOverhead = build <= .dev
+    public static let serviceIdBinaryOneOf = false
+}
+
+// MARK: -
+@objc
+public class FeatureFlagsObjC: NSObject {
+    @objc
+    public static let serviceIdBinaryConstantOverhead = FeatureFlags.serviceIdBinaryConstantOverhead
+
+    @objc
+    public static let serviceIdBinaryVariableOverhead = FeatureFlags.serviceIdBinaryVariableOverhead
 }
 
 // MARK: -

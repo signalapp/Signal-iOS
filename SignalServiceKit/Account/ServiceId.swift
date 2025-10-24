@@ -52,6 +52,18 @@ extension ServiceId {
     }
 }
 
+extension ServiceId {
+    public static func parseFrom(serviceIdBinary: Data?, serviceIdString: String?) -> Self? {
+        if let serviceIdBinary {
+            return try? Self.parseFrom(serviceIdBinary: serviceIdBinary)
+        }
+        if let serviceIdString {
+            return try? Self.parseFrom(serviceIdString: serviceIdString)
+        }
+        return nil
+    }
+}
+
 extension ProtocolAddress {
     public convenience init(_ serviceId: ServiceId, deviceId: DeviceId) {
         self.init(serviceId, deviceId: deviceId.uint32Value)
@@ -178,6 +190,9 @@ public class ServiceIdObjC: NSObject, NSCopying {
 
     @objc
     public var serviceIdString: String { wrappedValue.serviceIdString }
+
+    @objc
+    public var serviceIdBinary: Data { wrappedValue.serviceIdBinary }
 
     @objc
     public var serviceIdUppercaseString: String { wrappedValue.serviceIdUppercaseString }
@@ -317,15 +332,15 @@ public struct ServiceIdString: Codable, Hashable {
 }
 
 @propertyWrapper
-public struct ServiceIdUppercaseString: Codable, Hashable {
-    public let wrappedValue: ServiceId
+public struct ServiceIdUppercaseString<T: ServiceId>: Codable, Hashable {
+    public let wrappedValue: T
 
-    public init(wrappedValue: ServiceId) {
+    public init(wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
 
     public init(from decoder: Decoder) throws {
-        self.wrappedValue = try ServiceId.parseFrom(
+        self.wrappedValue = try T.parseFrom(
             serviceIdString: try decoder.singleValueContainer().decode(String.self)
         )
     }
@@ -337,7 +352,7 @@ public struct ServiceIdUppercaseString: Codable, Hashable {
 }
 
 extension ServiceId {
-    public var codableUppercaseString: ServiceIdUppercaseString { .init(wrappedValue: self) }
+    public var codableUppercaseString: ServiceIdUppercaseString<ServiceId> { .init(wrappedValue: self) }
 }
 
 // MARK: - Unit Tests

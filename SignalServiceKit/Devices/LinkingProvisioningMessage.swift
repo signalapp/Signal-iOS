@@ -93,23 +93,26 @@ public struct LinkingProvisioningMessage {
         self.phoneNumber = phoneNumber
 
         self.aci = try {
-            guard
-                let aciString = proto.aci,
-                let aci = Aci.parseFrom(aciString: aciString)
-            else {
+            guard let aci = Aci.parseFrom(serviceIdBinary: proto.aciBinary, serviceIdString: proto.aci) else {
                 throw ProvisioningError.invalidProvisionMessage("invalid ACI from provisioning message")
             }
             return aci
         }()
 
         self.pni = try {
-            guard
-                let pniString = proto.pni,
-                let pni = Pni.parseFrom(ambiguousString: pniString)
-            else {
-                throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
+            if let pniBinary = proto.pniBinary {
+                guard let pniUuid = UUID(data: pniBinary) else {
+                    throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
+                }
+                return Pni(fromUUID: pniUuid)
             }
-            return pni
+            if let pniString = proto.pni {
+                guard let pni = Pni.parseFrom(ambiguousString: pniString) else {
+                    throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
+                }
+                return pni
+            }
+            throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
         }()
 
         if
@@ -151,7 +154,13 @@ public struct LinkingProvisioningMessage {
         messageBuilder.setProvisioningVersion(Constants.provisioningVersion)
         messageBuilder.setNumber(phoneNumber)
         messageBuilder.setAci(aci.rawUUID.uuidString.lowercased())
+        if FeatureFlags.serviceIdBinaryProvisioning {
+            messageBuilder.setAciBinary(aci.rawUUID.data)
+        }
         messageBuilder.setPni(pni.rawUUID.uuidString.lowercased())
+        if FeatureFlags.serviceIdBinaryProvisioning {
+            messageBuilder.setPniBinary(pni.rawUUID.data)
+        }
 
         switch rootKey {
         case .accountEntropyPool(let accountEntropyPool):

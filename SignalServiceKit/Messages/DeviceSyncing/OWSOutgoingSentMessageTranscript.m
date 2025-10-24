@@ -93,6 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestinationE164:self.sentRecipientAddress.phoneNumber];
     [sentBuilder setDestinationServiceID:self.sentRecipientAddress.serviceIdString];
+    if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+        [sentBuilder setDestinationServiceIDBinary:self.sentRecipientAddress.serviceIdObjC.serviceIdBinary];
+    }
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
     if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder tx:transaction]) {

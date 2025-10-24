@@ -603,7 +603,7 @@ public class OWSMessageDecrypter {
         }
 
         let envelopeBuilder = validatedEnvelope.envelope.asBuilder()
-        envelopeBuilder.setSourceServiceID(decryptResult.senderAci.serviceIdString)
+        envelopeBuilder.setSourceServiceIDBinary(decryptResult.senderAci.serviceIdBinary)
         envelopeBuilder.setSourceDevice(decryptResult.senderDeviceId.uint32Value)
 
         let decryptedEnvelope = try DecryptedIncomingEnvelope(
@@ -611,7 +611,7 @@ public class OWSMessageDecrypter {
             updatedEnvelope: try envelopeBuilder.build(),
             sourceAci: decryptResult.senderAci,
             sourceDeviceId: decryptResult.senderDeviceId,
-            wasReceivedByUD: validatedEnvelope.envelope.sourceServiceID == nil,
+            wasReceivedByUD: !(validatedEnvelope.envelope.hasSourceServiceID || validatedEnvelope.envelope.hasSourceServiceIDBinary),
             plaintextData: decryptResult.paddedPayload.withoutPadding(),
             isPlaintextCipher: decryptResult.messageType == .plaintext
         )
@@ -798,6 +798,7 @@ public class OWSMessageDecrypter {
     }
 
     static func description(for envelope: SSKProtoEnvelope) -> String {
-        return "<Envelope type: \(descriptionForEnvelopeType(envelope)), source: \(envelope.formattedAddress), timestamp: \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp), serverGuid: \(envelope.serverGuid ?? "(null)"), content.length: \(envelope.content?.count ?? 0) />"
+        let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope)
+        return "<Envelope type: \(descriptionForEnvelopeType(envelope)), source: \(envelope.formattedAddress), timestamp: \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp), serverGuid: \(serverGuid?.uuidString.lowercased() ?? "(null)"), content.length: \(envelope.content?.count ?? 0) />"
     }
 }

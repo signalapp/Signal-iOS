@@ -468,7 +468,10 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             bodyRange.start = bodyRangeParam.start
             bodyRange.length = bodyRangeParam.length
 
-            if let mentionAci = Aci.parseFrom(aciString: bodyRangeParam.mentionAci) {
+            if let mentionAci = Aci.parseFrom(
+                serviceIdBinary: bodyRangeParam.mentionAciBinary,
+                serviceIdString: bodyRangeParam.mentionAci,
+            ) {
                 bodyRange.associatedValue = .mentionAci(
                     mentionAci.serviceIdBinary
                 )

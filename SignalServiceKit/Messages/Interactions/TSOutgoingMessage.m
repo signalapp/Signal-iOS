@@ -474,8 +474,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             SSKProtoDataMessageReactionBuilder *reactionBuilder =
                 [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
                                                     timestamp:self.storyTimestamp.unsignedLongLongValue];
-            // ACI TODO: Use `serviceIdString` to populate this value.
-            [reactionBuilder setTargetAuthorAci:self.storyAuthorUuidString];
+            [reactionBuilder setTargetAuthorAci:self.storyAuthorAci.serviceIdString];
+            if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+                [reactionBuilder setTargetAuthorAciBinary:self.storyAuthorAci.serviceIdBinary];
+            }
 
             NSError *error;
             SSKProtoDataMessageReaction *_Nullable reaction = [reactionBuilder buildAndReturnError:&error];
@@ -491,8 +493,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
 
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
-        // ACI TODO: Use `serviceIdString` to populate this value.
-        [storyContextBuilder setAuthorAci:self.storyAuthorUuidString];
+        [storyContextBuilder setAuthorAci:self.storyAuthorAci.serviceIdString];
+        if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+            [storyContextBuilder setAuthorAciBinary:self.storyAuthorAci.serviceIdBinary];
+        }
         [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];
 
         [builder setStoryContext:[storyContextBuilder buildInfallibly]];

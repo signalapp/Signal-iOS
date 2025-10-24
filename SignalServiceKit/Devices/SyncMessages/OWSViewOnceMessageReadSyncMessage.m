@@ -62,7 +62,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoSyncMessageViewOnceOpenBuilder *readProtoBuilder =
         [SSKProtoSyncMessageViewOnceOpen builderWithTimestamp:self.messageIdTimestamp];
-    readProtoBuilder.senderAci = self.senderAddress.aciString;
+    ServiceIdObjC *senderAci = self.senderAddress.serviceIdObjC;
+    if ([senderAci isKindOfClass:[AciObjC class]]) {
+        readProtoBuilder.senderAci = senderAci.serviceIdString;
+        if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+            readProtoBuilder.senderAciBinary = senderAci.serviceIdBinary;
+        }
+    } else {
+        OWSFailDebug(@"can't send view once open sync for message without an ACI");
+    }
     NSError *error;
     SSKProtoSyncMessageViewOnceOpen *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
     if (error || !readProto) {

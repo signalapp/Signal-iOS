@@ -153,6 +153,46 @@ struct SignalServiceProtos_Envelope: Sendable {
   /// Clears the value of `spamReportingToken`. Subsequent reads from it will return its default value.
   mutating func clearSpamReportingToken() {self._spamReportingToken = nil}
 
+  /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  var sourceServiceIDBinary: Data {
+    get {return _sourceServiceIDBinary ?? Data()}
+    set {_sourceServiceIDBinary = newValue}
+  }
+  /// Returns true if `sourceServiceIDBinary` has been explicitly set.
+  var hasSourceServiceIDBinary: Bool {return self._sourceServiceIDBinary != nil}
+  /// Clears the value of `sourceServiceIDBinary`. Subsequent reads from it will return its default value.
+  mutating func clearSourceServiceIDBinary() {self._sourceServiceIDBinary = nil}
+
+  /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  var destinationServiceIDBinary: Data {
+    get {return _destinationServiceIDBinary ?? Data()}
+    set {_destinationServiceIDBinary = newValue}
+  }
+  /// Returns true if `destinationServiceIDBinary` has been explicitly set.
+  var hasDestinationServiceIDBinary: Bool {return self._destinationServiceIDBinary != nil}
+  /// Clears the value of `destinationServiceIDBinary`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationServiceIDBinary() {self._destinationServiceIDBinary = nil}
+
+  /// 16-byte UUID
+  var serverGuidBinary: Data {
+    get {return _serverGuidBinary ?? Data()}
+    set {_serverGuidBinary = newValue}
+  }
+  /// Returns true if `serverGuidBinary` has been explicitly set.
+  var hasServerGuidBinary: Bool {return self._serverGuidBinary != nil}
+  /// Clears the value of `serverGuidBinary`. Subsequent reads from it will return its default value.
+  mutating func clearServerGuidBinary() {self._serverGuidBinary = nil}
+
+  /// 16-byte UUID
+  var updatedPniBinary: Data {
+    get {return _updatedPniBinary ?? Data()}
+    set {_updatedPniBinary = newValue}
+  }
+  /// Returns true if `updatedPniBinary` has been explicitly set.
+  var hasUpdatedPniBinary: Bool {return self._updatedPniBinary != nil}
+  /// Clears the value of `updatedPniBinary`. Subsequent reads from it will return its default value.
+  mutating func clearUpdatedPniBinary() {self._updatedPniBinary = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -183,6 +223,10 @@ struct SignalServiceProtos_Envelope: Sendable {
   fileprivate var _updatedPni: String? = nil
   fileprivate var _story: Bool? = nil
   fileprivate var _spamReportingToken: Data? = nil
+  fileprivate var _sourceServiceIDBinary: Data? = nil
+  fileprivate var _destinationServiceIDBinary: Data? = nil
+  fileprivate var _serverGuidBinary: Data? = nil
+  fileprivate var _updatedPniBinary: Data? = nil
 }
 
 struct SignalServiceProtos_TypingMessage: Sendable {
@@ -1221,6 +1265,16 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `type`. Subsequent reads from it will return its default value.
     mutating func clearType() {self._type = nil}
 
+    /// 16-byte UUID
+    var authorAciBinary: Data {
+      get {return _authorAciBinary ?? Data()}
+      set {_authorAciBinary = newValue}
+    }
+    /// Returns true if `authorAciBinary` has been explicitly set.
+    var hasAuthorAciBinary: Bool {return self._authorAciBinary != nil}
+    /// Clears the value of `authorAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearAuthorAciBinary() {self._authorAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -1278,6 +1332,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _authorAci: String? = nil
     fileprivate var _text: String? = nil
     fileprivate var _type: SignalServiceProtos_DataMessage.Quote.TypeEnum? = nil
+    fileprivate var _authorAciBinary: Data? = nil
   }
 
   struct Contact: Sendable {
@@ -1740,6 +1795,16 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
     mutating func clearTimestamp() {self._timestamp = nil}
 
+    /// 16-byte UUID
+    var targetAuthorAciBinary: Data {
+      get {return _targetAuthorAciBinary ?? Data()}
+      set {_targetAuthorAciBinary = newValue}
+    }
+    /// Returns true if `targetAuthorAciBinary` has been explicitly set.
+    var hasTargetAuthorAciBinary: Bool {return self._targetAuthorAciBinary != nil}
+    /// Clears the value of `targetAuthorAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearTargetAuthorAciBinary() {self._targetAuthorAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1748,6 +1813,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _remove: Bool? = nil
     fileprivate var _targetAuthorAci: String? = nil
     fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _targetAuthorAciBinary: Data? = nil
   }
 
   struct Delete: Sendable {
@@ -1980,12 +2046,23 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `sentTimestamp`. Subsequent reads from it will return its default value.
     mutating func clearSentTimestamp() {self._sentTimestamp = nil}
 
+    /// 16-byte UUID
+    var authorAciBinary: Data {
+      get {return _authorAciBinary ?? Data()}
+      set {_authorAciBinary = newValue}
+    }
+    /// Returns true if `authorAciBinary` has been explicitly set.
+    var hasAuthorAciBinary: Bool {return self._authorAciBinary != nil}
+    /// Clears the value of `authorAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearAuthorAciBinary() {self._authorAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _authorAci: String? = nil
     fileprivate var _sentTimestamp: UInt64? = nil
+    fileprivate var _authorAciBinary: Data? = nil
   }
 
   struct GiftBadge: Sendable {
@@ -2207,6 +2284,16 @@ struct SignalServiceProtos_Verified: Sendable {
   /// Clears the value of `nullMessage`. Subsequent reads from it will return its default value.
   mutating func clearNullMessage() {self._nullMessage = nil}
 
+  /// 16-byte UUID
+  var destinationAciBinary: Data {
+    get {return _destinationAciBinary ?? Data()}
+    set {_destinationAciBinary = newValue}
+  }
+  /// Returns true if `destinationAciBinary` has been explicitly set.
+  var hasDestinationAciBinary: Bool {return self._destinationAciBinary != nil}
+  /// Clears the value of `destinationAciBinary`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationAciBinary() {self._destinationAciBinary = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum State: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -2226,6 +2313,7 @@ struct SignalServiceProtos_Verified: Sendable {
   fileprivate var _identityKey: Data? = nil
   fileprivate var _state: SignalServiceProtos_Verified.State? = nil
   fileprivate var _nullMessage: Data? = nil
+  fileprivate var _destinationAciBinary: Data? = nil
 }
 
 struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
@@ -2493,6 +2581,16 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `editMessage`. Subsequent reads from it will return its default value.
     mutating func clearEditMessage() {self._editMessage = nil}
 
+    /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+    var destinationServiceIDBinary: Data {
+      get {return _destinationServiceIDBinary ?? Data()}
+      set {_destinationServiceIDBinary = newValue}
+    }
+    /// Returns true if `destinationServiceIDBinary` has been explicitly set.
+    var hasDestinationServiceIDBinary: Bool {return self._destinationServiceIDBinary != nil}
+    /// Clears the value of `destinationServiceIDBinary`. Subsequent reads from it will return its default value.
+    mutating func clearDestinationServiceIDBinary() {self._destinationServiceIDBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct UnidentifiedDeliveryStatus: Sendable {
@@ -2518,12 +2616,23 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       /// Clears the value of `unidentified`. Subsequent reads from it will return its default value.
       mutating func clearUnidentified() {self._unidentified = nil}
 
+      /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+      var destinationServiceIDBinary: Data {
+        get {return _destinationServiceIDBinary ?? Data()}
+        set {_destinationServiceIDBinary = newValue}
+      }
+      /// Returns true if `destinationServiceIDBinary` has been explicitly set.
+      var hasDestinationServiceIDBinary: Bool {return self._destinationServiceIDBinary != nil}
+      /// Clears the value of `destinationServiceIDBinary`. Subsequent reads from it will return its default value.
+      mutating func clearDestinationServiceIDBinary() {self._destinationServiceIDBinary = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
 
       fileprivate var _destinationServiceID: String? = nil
       fileprivate var _unidentified: Bool? = nil
+      fileprivate var _destinationServiceIDBinary: Data? = nil
     }
 
     struct StoryMessageRecipient: Sendable {
@@ -2551,12 +2660,23 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       /// Clears the value of `isAllowedToReply`. Subsequent reads from it will return its default value.
       mutating func clearIsAllowedToReply() {self._isAllowedToReply = nil}
 
+      /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+      var destinationServiceIDBinary: Data {
+        get {return _destinationServiceIDBinary ?? Data()}
+        set {_destinationServiceIDBinary = newValue}
+      }
+      /// Returns true if `destinationServiceIDBinary` has been explicitly set.
+      var hasDestinationServiceIDBinary: Bool {return self._destinationServiceIDBinary != nil}
+      /// Clears the value of `destinationServiceIDBinary`. Subsequent reads from it will return its default value.
+      mutating func clearDestinationServiceIDBinary() {self._destinationServiceIDBinary = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
 
       fileprivate var _destinationServiceID: String? = nil
       fileprivate var _isAllowedToReply: Bool? = nil
+      fileprivate var _destinationServiceIDBinary: Data? = nil
     }
 
     init() {}
@@ -2569,6 +2689,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _isRecipientUpdate: Bool? = nil
     fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
     fileprivate var _editMessage: SignalServiceProtos_EditMessage? = nil
+    fileprivate var _destinationServiceIDBinary: Data? = nil
   }
 
   struct Contacts: @unchecked Sendable {
@@ -2613,6 +2734,9 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     var acis: [String] = []
 
     var groupIds: [Data] = []
+
+    /// 16-byte UUID
+    var acisBinary: [Data] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2677,12 +2801,23 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
     mutating func clearTimestamp() {self._timestamp = nil}
 
+    /// 16-byte UUID
+    var senderAciBinary: Data {
+      get {return _senderAciBinary ?? Data()}
+      set {_senderAciBinary = newValue}
+    }
+    /// Returns true if `senderAciBinary` has been explicitly set.
+    var hasSenderAciBinary: Bool {return self._senderAciBinary != nil}
+    /// Clears the value of `senderAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearSenderAciBinary() {self._senderAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _senderAci: String? = nil
     fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _senderAciBinary: Data? = nil
   }
 
   struct Viewed: Sendable {
@@ -2709,12 +2844,23 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
     mutating func clearTimestamp() {self._timestamp = nil}
 
+    /// 16-byte UUID
+    var senderAciBinary: Data {
+      get {return _senderAciBinary ?? Data()}
+      set {_senderAciBinary = newValue}
+    }
+    /// Returns true if `senderAciBinary` has been explicitly set.
+    var hasSenderAciBinary: Bool {return self._senderAciBinary != nil}
+    /// Clears the value of `senderAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearSenderAciBinary() {self._senderAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _senderAci: String? = nil
     fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _senderAciBinary: Data? = nil
   }
 
   struct Configuration: Sendable {
@@ -2855,12 +3001,23 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
     mutating func clearTimestamp() {self._timestamp = nil}
 
+    /// 16-byte UUID
+    var senderAciBinary: Data {
+      get {return _senderAciBinary ?? Data()}
+      set {_senderAciBinary = newValue}
+    }
+    /// Returns true if `senderAciBinary` has been explicitly set.
+    var hasSenderAciBinary: Bool {return self._senderAciBinary != nil}
+    /// Clears the value of `senderAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearSenderAciBinary() {self._senderAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _senderAci: String? = nil
     fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _senderAciBinary: Data? = nil
   }
 
   struct FetchLatest: Sendable {
@@ -2969,6 +3126,16 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     /// Clears the value of `type`. Subsequent reads from it will return its default value.
     mutating func clearType() {self._type = nil}
 
+    /// 16-byte UUID
+    var threadAciBinary: Data {
+      get {return _threadAciBinary ?? Data()}
+      set {_threadAciBinary = newValue}
+    }
+    /// Returns true if `threadAciBinary` has been explicitly set.
+    var hasThreadAciBinary: Bool {return self._threadAciBinary != nil}
+    /// Clears the value of `threadAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearThreadAciBinary() {self._threadAciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -2991,6 +3158,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _threadAci: String? = nil
     fileprivate var _groupID: Data? = nil
     fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum? = nil
+    fileprivate var _threadAciBinary: Data? = nil
   }
 
   struct OutgoingPayment: Sendable {
@@ -3447,7 +3615,6 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       /// Clears the value of `threadGroupID`. Subsequent reads from it will return its default value.
       mutating func clearThreadGroupID() {self._threadGroupID = nil}
 
-      /// }
       var threadE164: String {
         get {return _threadE164 ?? String()}
         set {_threadE164 = newValue}
@@ -3457,6 +3624,16 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       /// Clears the value of `threadE164`. Subsequent reads from it will return its default value.
       mutating func clearThreadE164() {self._threadE164 = nil}
 
+      /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+      var threadServiceIDBinary: Data {
+        get {return _threadServiceIDBinary ?? Data()}
+        set {_threadServiceIDBinary = newValue}
+      }
+      /// Returns true if `threadServiceIDBinary` has been explicitly set.
+      var hasThreadServiceIDBinary: Bool {return self._threadServiceIDBinary != nil}
+      /// Clears the value of `threadServiceIDBinary`. Subsequent reads from it will return its default value.
+      mutating func clearThreadServiceIDBinary() {self._threadServiceIDBinary = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
@@ -3464,6 +3641,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _threadServiceID: String? = nil
       fileprivate var _threadGroupID: Data? = nil
       fileprivate var _threadE164: String? = nil
+      fileprivate var _threadServiceIDBinary: Data? = nil
     }
 
     struct AddressableMessage: Sendable {
@@ -3490,6 +3668,16 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       /// Clears the value of `authorE164`. Subsequent reads from it will return its default value.
       mutating func clearAuthorE164() {self._authorE164 = nil}
 
+      /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+      var authorServiceIDBinary: Data {
+        get {return _authorServiceIDBinary ?? Data()}
+        set {_authorServiceIDBinary = newValue}
+      }
+      /// Returns true if `authorServiceIDBinary` has been explicitly set.
+      var hasAuthorServiceIDBinary: Bool {return self._authorServiceIDBinary != nil}
+      /// Clears the value of `authorServiceIDBinary`. Subsequent reads from it will return its default value.
+      mutating func clearAuthorServiceIDBinary() {self._authorServiceIDBinary = nil}
+
       /// }
       var sentTimestamp: UInt64 {
         get {return _sentTimestamp ?? 0}
@@ -3506,6 +3694,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
       fileprivate var _authorServiceID: String? = nil
       fileprivate var _authorE164: String? = nil
+      fileprivate var _authorServiceIDBinary: Data? = nil
       fileprivate var _sentTimestamp: UInt64? = nil
     }
 
@@ -3936,6 +4125,16 @@ struct SignalServiceProtos_ContactDetails: Sendable {
   /// Clears the value of `aci`. Subsequent reads from it will return its default value.
   mutating func clearAci() {self._aci = nil}
 
+  /// 16-byte UUID
+  var aciBinary: Data {
+    get {return _aciBinary ?? Data()}
+    set {_aciBinary = newValue}
+  }
+  /// Returns true if `aciBinary` has been explicitly set.
+  var hasAciBinary: Bool {return self._aciBinary != nil}
+  /// Clears the value of `aciBinary`. Subsequent reads from it will return its default value.
+  mutating func clearAciBinary() {self._aciBinary = nil}
+
   var name: String {
     get {return _name ?? String()}
     set {_name = newValue}
@@ -4018,6 +4217,7 @@ struct SignalServiceProtos_ContactDetails: Sendable {
 
   fileprivate var _contactE164: String? = nil
   fileprivate var _aci: String? = nil
+  fileprivate var _aciBinary: Data? = nil
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
   fileprivate var _expireTimer: UInt32? = nil
@@ -4276,7 +4476,6 @@ struct SignalServiceProtos_BodyRange: Sendable {
   /// Clears the value of `mentionAci`. Subsequent reads from it will return its default value.
   mutating func clearMentionAci() {self._mentionAci = nil}
 
-  /// }
   var style: SignalServiceProtos_BodyRange.Style {
     get {return _style ?? .none}
     set {_style = newValue}
@@ -4285,6 +4484,16 @@ struct SignalServiceProtos_BodyRange: Sendable {
   var hasStyle: Bool {return self._style != nil}
   /// Clears the value of `style`. Subsequent reads from it will return its default value.
   mutating func clearStyle() {self._style = nil}
+
+  /// 16-byte UUID
+  var mentionAciBinary: Data {
+    get {return _mentionAciBinary ?? Data()}
+    set {_mentionAciBinary = newValue}
+  }
+  /// Returns true if `mentionAciBinary` has been explicitly set.
+  var hasMentionAciBinary: Bool {return self._mentionAciBinary != nil}
+  /// Clears the value of `mentionAciBinary`. Subsequent reads from it will return its default value.
+  mutating func clearMentionAciBinary() {self._mentionAciBinary = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4308,6 +4517,7 @@ struct SignalServiceProtos_BodyRange: Sendable {
   fileprivate var _length: UInt32? = nil
   fileprivate var _mentionAci: String? = nil
   fileprivate var _style: SignalServiceProtos_BodyRange.Style? = nil
+  fileprivate var _mentionAciBinary: Data? = nil
 }
 
 struct SignalServiceProtos_EditMessage: Sendable {
@@ -4347,7 +4557,7 @@ fileprivate let _protobuf_package = "SignalServiceProtos"
 
 extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Envelope"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{2}\u{4}timestamp\0\u{2}\u{2}sourceDevice\0\u{1}content\0\u{1}serverGuid\0\u{1}serverTimestamp\0\u{1}sourceServiceId\0\u{2}\u{2}destinationServiceId\0\u{1}urgent\0\u{1}updatedPni\0\u{1}story\0\u{1}spamReportingToken\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{6}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{2}\u{4}timestamp\0\u{2}\u{2}sourceDevice\0\u{1}content\0\u{1}serverGuid\0\u{1}serverTimestamp\0\u{1}sourceServiceId\0\u{2}\u{2}destinationServiceId\0\u{1}urgent\0\u{1}updatedPni\0\u{1}story\0\u{1}spamReportingToken\0\u{2}\u{2}sourceServiceIdBinary\0\u{1}destinationServiceIdBinary\0\u{1}serverGuidBinary\0\u{1}updatedPniBinary\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{6}\u{1}\u{c}\u{12}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4367,6 +4577,10 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 15: try { try decoder.decodeSingularStringField(value: &self._updatedPni) }()
       case 16: try { try decoder.decodeSingularBoolField(value: &self._story) }()
       case 17: try { try decoder.decodeSingularBytesField(value: &self._spamReportingToken) }()
+      case 19: try { try decoder.decodeSingularBytesField(value: &self._sourceServiceIDBinary) }()
+      case 20: try { try decoder.decodeSingularBytesField(value: &self._destinationServiceIDBinary) }()
+      case 21: try { try decoder.decodeSingularBytesField(value: &self._serverGuidBinary) }()
+      case 22: try { try decoder.decodeSingularBytesField(value: &self._updatedPniBinary) }()
       default: break
       }
     }
@@ -4413,6 +4627,18 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._spamReportingToken {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 17)
     } }()
+    try { if let v = self._sourceServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 19)
+    } }()
+    try { if let v = self._destinationServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 20)
+    } }()
+    try { if let v = self._serverGuidBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 21)
+    } }()
+    try { if let v = self._updatedPniBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 22)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4429,6 +4655,10 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._updatedPni != rhs._updatedPni {return false}
     if lhs._story != rhs._story {return false}
     if lhs._spamReportingToken != rhs._spamReportingToken {return false}
+    if lhs._sourceServiceIDBinary != rhs._sourceServiceIDBinary {return false}
+    if lhs._destinationServiceIDBinary != rhs._destinationServiceIDBinary {return false}
+    if lhs._serverGuidBinary != rhs._serverGuidBinary {return false}
+    if lhs._updatedPniBinary != rhs._updatedPniBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5512,7 +5742,7 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
 
 extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Quote"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{2}text\0\u{1}attachments\0\u{1}authorAci\0\u{1}bodyRanges\0\u{1}type\0\u{c}\u{2}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{2}text\0\u{1}attachments\0\u{1}authorAci\0\u{1}bodyRanges\0\u{1}type\0\u{1}authorAciBinary\0\u{c}\u{2}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5526,6 +5756,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
       case 5: try { try decoder.decodeSingularStringField(value: &self._authorAci) }()
       case 6: try { try decoder.decodeRepeatedMessageField(value: &self.bodyRanges) }()
       case 7: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self._authorAciBinary) }()
       default: break
       }
     }
@@ -5554,6 +5785,9 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
     } }()
+    try { if let v = self._authorAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5564,6 +5798,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if lhs.attachments != rhs.attachments {return false}
     if lhs.bodyRanges != rhs.bodyRanges {return false}
     if lhs._type != rhs._type {return false}
+    if lhs._authorAciBinary != rhs._authorAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6121,7 +6356,7 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
 
 extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Reaction"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}remove\0\u{2}\u{2}targetAuthorAci\0\u{1}timestamp\0\u{c}\u{3}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}remove\0\u{2}\u{2}targetAuthorAci\0\u{1}timestamp\0\u{1}targetAuthorAciBinary\0\u{c}\u{3}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6133,6 +6368,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
       case 2: try { try decoder.decodeSingularBoolField(value: &self._remove) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._targetAuthorAci) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._targetAuthorAciBinary) }()
       default: break
       }
     }
@@ -6155,6 +6391,9 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._targetAuthorAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6163,6 +6402,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     if lhs._remove != rhs._remove {return false}
     if lhs._targetAuthorAci != rhs._targetAuthorAci {return false}
     if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._targetAuthorAciBinary != rhs._targetAuthorAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6456,7 +6696,7 @@ extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: SwiftProt
 
 extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".StoryContext"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorAci\0\u{1}sentTimestamp\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorAci\0\u{1}sentTimestamp\0\u{1}authorAciBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6466,6 +6706,7 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._authorAci) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._authorAciBinary) }()
       default: break
       }
     }
@@ -6482,12 +6723,16 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
     try { if let v = self._sentTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     } }()
+    try { if let v = self._authorAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.StoryContext, rhs: SignalServiceProtos_DataMessage.StoryContext) -> Bool {
     if lhs._authorAci != rhs._authorAci {return false}
     if lhs._sentTimestamp != rhs._sentTimestamp {return false}
+    if lhs._authorAciBinary != rhs._authorAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6733,7 +6978,7 @@ extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameP
 
 extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Verified"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}identityKey\0\u{1}state\0\u{1}nullMessage\0\u{1}destinationAci\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}identityKey\0\u{1}state\0\u{1}nullMessage\0\u{1}destinationAci\0\u{1}destinationAciBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6745,6 +6990,7 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 3: try { try decoder.decodeSingularEnumField(value: &self._state) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._nullMessage) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._destinationAci) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._destinationAciBinary) }()
       default: break
       }
     }
@@ -6767,6 +7013,9 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._destinationAci {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._destinationAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6775,6 +7024,7 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._identityKey != rhs._identityKey {return false}
     if lhs._state != rhs._state {return false}
     if lhs._nullMessage != rhs._nullMessage {return false}
+    if lhs._destinationAciBinary != rhs._destinationAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6996,7 +7246,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Sent"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationE164\0\u{1}timestamp\0\u{1}message\0\u{1}expirationStartTimestamp\0\u{1}unidentifiedStatus\0\u{1}isRecipientUpdate\0\u{1}destinationServiceId\0\u{1}storyMessage\0\u{1}storyMessageRecipients\0\u{1}editMessage\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationE164\0\u{1}timestamp\0\u{1}message\0\u{1}expirationStartTimestamp\0\u{1}unidentifiedStatus\0\u{1}isRecipientUpdate\0\u{1}destinationServiceId\0\u{1}storyMessage\0\u{1}storyMessageRecipients\0\u{1}editMessage\0\u{2}\u{2}destinationServiceIdBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7014,6 +7264,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       case 8: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.storyMessageRecipients) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._editMessage) }()
+      case 12: try { try decoder.decodeSingularBytesField(value: &self._destinationServiceIDBinary) }()
       default: break
       }
     }
@@ -7054,6 +7305,9 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     try { if let v = self._editMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     } }()
+    try { if let v = self._destinationServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7068,6 +7322,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     if lhs._storyMessage != rhs._storyMessage {return false}
     if lhs.storyMessageRecipients != rhs.storyMessageRecipients {return false}
     if lhs._editMessage != rhs._editMessage {return false}
+    if lhs._destinationServiceIDBinary != rhs._destinationServiceIDBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7075,7 +7330,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}unidentified\0\u{1}destinationServiceId\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}unidentified\0\u{1}destinationServiceId\0\u{2}\u{3}destinationServiceIdBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7085,6 +7340,7 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
       switch fieldNumber {
       case 2: try { try decoder.decodeSingularBoolField(value: &self._unidentified) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._destinationServiceID) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._destinationServiceIDBinary) }()
       default: break
       }
     }
@@ -7101,12 +7357,16 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
     try { if let v = self._destinationServiceID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._destinationServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus, rhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) -> Bool {
     if lhs._destinationServiceID != rhs._destinationServiceID {return false}
     if lhs._unidentified != rhs._unidentified {return false}
+    if lhs._destinationServiceIDBinary != rhs._destinationServiceIDBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7114,7 +7374,7 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
 
 extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".StoryMessageRecipient"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationServiceId\0\u{1}distributionListIds\0\u{1}isAllowedToReply\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationServiceId\0\u{1}distributionListIds\0\u{1}isAllowedToReply\0\u{2}\u{2}destinationServiceIdBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7125,6 +7385,7 @@ extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProto
       case 1: try { try decoder.decodeSingularStringField(value: &self._destinationServiceID) }()
       case 2: try { try decoder.decodeRepeatedStringField(value: &self.distributionListIds) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self._isAllowedToReply) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._destinationServiceIDBinary) }()
       default: break
       }
     }
@@ -7144,6 +7405,9 @@ extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProto
     try { if let v = self._isAllowedToReply {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._destinationServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7151,6 +7415,7 @@ extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProto
     if lhs._destinationServiceID != rhs._destinationServiceID {return false}
     if lhs.distributionListIds != rhs.distributionListIds {return false}
     if lhs._isAllowedToReply != rhs._isAllowedToReply {return false}
+    if lhs._destinationServiceIDBinary != rhs._destinationServiceIDBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7235,7 +7500,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
 
 extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Blocked"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}numbers\0\u{1}groupIds\0\u{1}acis\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}numbers\0\u{1}groupIds\0\u{1}acis\0\u{1}acisBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7246,6 +7511,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
       case 1: try { try decoder.decodeRepeatedStringField(value: &self.numbers) }()
       case 2: try { try decoder.decodeRepeatedBytesField(value: &self.groupIds) }()
       case 3: try { try decoder.decodeRepeatedStringField(value: &self.acis) }()
+      case 4: try { try decoder.decodeRepeatedBytesField(value: &self.acisBinary) }()
       default: break
       }
     }
@@ -7261,6 +7527,9 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
     if !self.acis.isEmpty {
       try visitor.visitRepeatedStringField(value: self.acis, fieldNumber: 3)
     }
+    if !self.acisBinary.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.acisBinary, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7268,6 +7537,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
     if lhs.numbers != rhs.numbers {return false}
     if lhs.acis != rhs.acis {return false}
     if lhs.groupIds != rhs.groupIds {return false}
+    if lhs.acisBinary != rhs.acisBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7313,7 +7583,7 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
 
 extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Read"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7323,6 +7593,7 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
       switch fieldNumber {
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderAci) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._senderAciBinary) }()
       default: break
       }
     }
@@ -7338,6 +7609,9 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
     } }()
     try { if let v = self._senderAci {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._senderAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7345,6 +7619,7 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
   static func ==(lhs: SignalServiceProtos_SyncMessage.Read, rhs: SignalServiceProtos_SyncMessage.Read) -> Bool {
     if lhs._senderAci != rhs._senderAci {return false}
     if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._senderAciBinary != rhs._senderAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7352,7 +7627,7 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Viewed"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7362,6 +7637,7 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
       switch fieldNumber {
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderAci) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._senderAciBinary) }()
       default: break
       }
     }
@@ -7378,12 +7654,16 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
     try { if let v = self._senderAci {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._senderAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Viewed, rhs: SignalServiceProtos_SyncMessage.Viewed) -> Bool {
     if lhs._senderAci != rhs._senderAci {return false}
     if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._senderAciBinary != rhs._senderAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7493,7 +7773,7 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
 
 extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".ViewOnceOpen"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7503,6 +7783,7 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
       switch fieldNumber {
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderAci) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._senderAciBinary) }()
       default: break
       }
     }
@@ -7519,12 +7800,16 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
     try { if let v = self._senderAci {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._senderAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.ViewOnceOpen, rhs: SignalServiceProtos_SyncMessage.ViewOnceOpen) -> Bool {
     if lhs._senderAci != rhs._senderAci {return false}
     if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._senderAciBinary != rhs._senderAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7614,7 +7899,7 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
 
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageRequestResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}threadAci\0\u{1}groupId\0\u{1}type\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}threadAci\0\u{1}groupId\0\u{1}type\0\u{1}threadAciBinary\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7625,6 +7910,7 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
       case 2: try { try decoder.decodeSingularStringField(value: &self._threadAci) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self._groupID) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._threadAciBinary) }()
       default: break
       }
     }
@@ -7644,6 +7930,9 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
     try { if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._threadAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7651,6 +7940,7 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
     if lhs._threadAci != rhs._threadAci {return false}
     if lhs._groupID != rhs._groupID {return false}
     if lhs._type != rhs._type {return false}
+    if lhs._threadAciBinary != rhs._threadAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -8046,7 +8336,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
 
 extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".ConversationIdentifier"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}threadServiceId\0\u{1}threadGroupId\0\u{1}threadE164\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}threadServiceId\0\u{1}threadGroupId\0\u{1}threadE164\0\u{1}threadServiceIdBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8057,6 +8347,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
       case 1: try { try decoder.decodeSingularStringField(value: &self._threadServiceID) }()
       case 2: try { try decoder.decodeSingularBytesField(value: &self._threadGroupID) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._threadE164) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._threadServiceIDBinary) }()
       default: break
       }
     }
@@ -8076,6 +8367,9 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
     try { if let v = self._threadE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._threadServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8083,6 +8377,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
     if lhs._threadServiceID != rhs._threadServiceID {return false}
     if lhs._threadGroupID != rhs._threadGroupID {return false}
     if lhs._threadE164 != rhs._threadE164 {return false}
+    if lhs._threadServiceIDBinary != rhs._threadServiceIDBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -8090,7 +8385,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
 
 extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".AddressableMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorServiceId\0\u{1}authorE164\0\u{1}sentTimestamp\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorServiceId\0\u{1}authorE164\0\u{1}sentTimestamp\0\u{1}authorServiceIdBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8101,6 +8396,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftP
       case 1: try { try decoder.decodeSingularStringField(value: &self._authorServiceID) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._authorE164) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._authorServiceIDBinary) }()
       default: break
       }
     }
@@ -8120,12 +8416,16 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftP
     try { if let v = self._sentTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._authorServiceIDBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage) -> Bool {
     if lhs._authorServiceID != rhs._authorServiceID {return false}
     if lhs._authorE164 != rhs._authorE164 {return false}
+    if lhs._authorServiceIDBinary != rhs._authorServiceIDBinary {return false}
     if lhs._sentTimestamp != rhs._sentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -8501,7 +8801,7 @@ extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtob
 
 extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactDetails"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contactE164\0\u{1}name\0\u{1}avatar\0\u{2}\u{5}expireTimer\0\u{1}aci\0\u{1}inboxPosition\0\u{2}\u{2}expireTimerVersion\0\u{c}\u{4}\u{1}\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}\u{c}\u{7}\u{1}\u{c}\u{b}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contactE164\0\u{1}name\0\u{1}avatar\0\u{2}\u{5}expireTimer\0\u{1}aci\0\u{1}inboxPosition\0\u{2}\u{2}expireTimerVersion\0\u{1}aciBinary\0\u{c}\u{4}\u{1}\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}\u{c}\u{7}\u{1}\u{c}\u{b}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8516,6 +8816,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 9: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self._inboxPosition) }()
       case 12: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimerVersion) }()
+      case 13: try { try decoder.decodeSingularBytesField(value: &self._aciBinary) }()
       default: break
       }
     }
@@ -8547,12 +8848,16 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._expireTimerVersion {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
     } }()
+    try { if let v = self._aciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_ContactDetails, rhs: SignalServiceProtos_ContactDetails) -> Bool {
     if lhs._contactE164 != rhs._contactE164 {return false}
     if lhs._aci != rhs._aci {return false}
+    if lhs._aciBinary != rhs._aciBinary {return false}
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}
@@ -8853,7 +9158,7 @@ extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftP
 
 extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BodyRange"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}start\0\u{1}length\0\u{1}mentionAci\0\u{1}style\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}start\0\u{1}length\0\u{1}mentionAci\0\u{1}style\0\u{1}mentionAciBinary\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8865,6 +9170,7 @@ extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._M
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self._length) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._mentionAci) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self._style) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._mentionAciBinary) }()
       default: break
       }
     }
@@ -8887,6 +9193,9 @@ extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._M
     try { if let v = self._style {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._mentionAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8895,6 +9204,7 @@ extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._M
     if lhs._length != rhs._length {return false}
     if lhs._mentionAci != rhs._mentionAci {return false}
     if lhs._style != rhs._style {return false}
+    if lhs._mentionAciBinary != rhs._mentionAciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

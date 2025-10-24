@@ -4,6 +4,7 @@
 //
 
 import XCTest
+import LibSignalClient
 
 @testable import SignalServiceKit
 import SwiftProtobuf
@@ -59,7 +60,7 @@ class SSKProtoEnvelopeTest: XCTestCase {
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(timestamp: 123)
         builder.setType(SSKProtoEnvelopeType.prekeyBundle)
-        builder.setSourceServiceID("CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
+        builder.setSourceServiceIDBinary(Aci.constantForTesting("CE599F9B-8C64-4C58-B5D0-E8014501C8A3").serviceIdBinary)
         builder.setSourceDevice(1)
 
         let phonyContent = "phony data".data(using: .utf8)!
@@ -84,7 +85,7 @@ class SSKProtoEnvelopeTest: XCTestCase {
 
         XCTAssertEqual(envelope.type, SSKProtoEnvelopeType.prekeyBundle)
         XCTAssertEqual(envelope.timestamp, 123)
-        XCTAssertEqual(envelope.sourceServiceID, "CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
+        XCTAssertEqual(envelope.sourceServiceIDBinary, Aci.constantForTesting("CE599F9B-8C64-4C58-B5D0-E8014501C8A3").serviceIdBinary)
         XCTAssertEqual(envelope.sourceDevice, 1)
         XCTAssertTrue(envelope.hasContent)
         XCTAssertEqual(envelope.content, phonyContent)

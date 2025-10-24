@@ -111,9 +111,9 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.databaseChangeObserver.appendDatabaseWriteDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
+        envelopeBuilder.setSourceServiceIDBinary(bobClient.serviceId.serviceIdBinary)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
+        envelopeBuilder.setServerGuidBinary(UUID().data)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
             envelopeData,
@@ -156,11 +156,11 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setContent(ciphertext.serialize())
         envelopeBuilder.setType(.prekeyBundle)
         envelopeBuilder.setTimestamp(timestamp)
-        envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
+        envelopeBuilder.setSourceServiceIDBinary(bobClient.serviceId.serviceIdBinary)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationServiceID(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdString)
+        envelopeBuilder.setServerGuidBinary(UUID().data)
+        envelopeBuilder.setDestinationServiceIDBinary(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdBinary)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
             envelopeData,
@@ -186,7 +186,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             envelopeBuilder.setType(.receipt)
             envelopeBuilder.setServerTimestamp(103)
             envelopeBuilder.setSourceDevice(2)
-            envelopeBuilder.setSourceServiceID(self.bobClient.serviceId.serviceIdString)
+            envelopeBuilder.setSourceServiceIDBinary(self.bobClient.serviceId.serviceIdBinary)
             let envelopeData = try envelopeBuilder.buildSerializedData()
             await withCheckedContinuation { continuation in
                 SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
@@ -217,11 +217,11 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setContent(ciphertext.serialize())
             envelopeBuilder.setType(.prekeyBundle)
-            envelopeBuilder.setSourceServiceID(self.linkedClient.serviceId.serviceIdString)
+            envelopeBuilder.setSourceServiceIDBinary(self.linkedClient.serviceId.serviceIdBinary)
             envelopeBuilder.setSourceDevice(2)
             envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-            envelopeBuilder.setServerGuid(UUID().uuidString)
-            envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
+            envelopeBuilder.setServerGuidBinary(UUID().data)
+            envelopeBuilder.setDestinationServiceIDBinary(self.localClient.serviceId.serviceIdBinary)
             let envelopeData = try envelopeBuilder.buildSerializedData()
 
             // Process the message
@@ -275,11 +275,11 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: deliveryTimestamp)
             envelopeBuilder.setContent(ciphertextData)
             envelopeBuilder.setType(.ciphertext)
-            envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
+            envelopeBuilder.setSourceServiceIDBinary(bobClient.serviceId.serviceIdBinary)
             envelopeBuilder.setSourceDevice(1)
             envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-            envelopeBuilder.setServerGuid(UUID().uuidString)
-            envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
+            envelopeBuilder.setServerGuidBinary(UUID().data)
+            envelopeBuilder.setDestinationServiceIDBinary(self.localClient.serviceId.serviceIdBinary)
             let envelopeData = try envelopeBuilder.buildSerializedData()
 
             await withCheckedContinuation { continuation in
@@ -310,11 +310,11 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setContent(ciphertext.serialize())
             envelopeBuilder.setType(.ciphertext)
-            envelopeBuilder.setSourceServiceID(self.linkedClient.serviceId.serviceIdString)
+            envelopeBuilder.setSourceServiceIDBinary(self.linkedClient.serviceId.serviceIdBinary)
             envelopeBuilder.setSourceDevice(2)
             envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-            envelopeBuilder.setServerGuid(UUID().uuidString)
-            envelopeBuilder.setDestinationServiceID(self.localClient.serviceId.serviceIdString)
+            envelopeBuilder.setServerGuidBinary(UUID().data)
+            envelopeBuilder.setDestinationServiceIDBinary(self.localClient.serviceId.serviceIdBinary)
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             await withCheckedContinuation { continuation in

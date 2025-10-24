@@ -344,7 +344,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
             let contactThread = thread as? TSContactThread,
             let contactServiceId = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
         {
-            return .threadServiceId(serviceId: contactServiceId.serviceIdUppercaseString)
+            return .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: contactServiceId))
         } else if
             let contactThread = thread as? TSContactThread,
             let contactE164 = contactThread.contactPhoneNumber
@@ -509,7 +509,7 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
 
     public func makeThreadDeletionContext(thread: TSThread, isFullDelete: Bool, localIdentifiers: LocalIdentifiers, tx: DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
         let conversationIdentifier: Outgoing.ConversationIdentifier = if let contactThread = thread as? TSContactThread {
-            .threadServiceId(serviceId: contactThread.contactUUID!)
+            .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: try! ServiceId.parseFrom(serviceIdString: contactThread.contactUUID!)))
         } else if let groupThread = thread as? TSGroupThread {
             .threadGroupId(groupId: groupThread.groupId)
         } else {

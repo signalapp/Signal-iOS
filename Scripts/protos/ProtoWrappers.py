@@ -77,6 +77,8 @@ def supress_adjacent_capital_letters(name):
     result = "".join(chars)
     if result.endswith("Id"):
         result = result[:-2] + "ID"
+    if result.endswith("IdBinary"):
+        result = result[:-8] + "IDBinary"
     if result.endswith("Url"):
         result = result[:-3] + "URL"
     return result

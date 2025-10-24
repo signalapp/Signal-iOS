@@ -4,13 +4,13 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol IncomingPniChangeNumberProcessor {
 
     func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
-        updatedPni updatedPniString: String?,
+        updatedPni: Pni,
         tx: DBWriteTransaction
     )
 }
@@ -48,14 +48,9 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
 
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
-        updatedPni updatedPniString: String?,
+        updatedPni: Pni,
         tx: DBWriteTransaction
     ) {
-        guard let updatedPni = Pni.parseFrom(pniString: updatedPniString) else {
-            owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
-            return
-        }
-
         guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
             return

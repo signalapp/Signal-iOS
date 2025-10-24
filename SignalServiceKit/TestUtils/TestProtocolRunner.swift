@@ -467,7 +467,7 @@ struct FakeService {
         let sentBuilder = SSKProtoSyncMessageSent.builder()
         sentBuilder.setMessage(try dataMessageBuilder.build())
         sentBuilder.setTimestamp(timestamp)
-        sentBuilder.setDestinationServiceID(destinationServiceId.serviceIdString)
+        sentBuilder.setDestinationServiceIDBinary(destinationServiceId.serviceIdBinary)
         let syncMessageBuilder = SSKProtoSyncMessage.builder()
         syncMessageBuilder.setSent(try sentBuilder.build())
 

@@ -88,183 +88,187 @@ struct ProvisioningProtos_ProvisionEnvelope: Sendable {
   fileprivate var _body: Data? = nil
 }
 
-struct ProvisioningProtos_ProvisionMessage: Sendable {
+struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// @required
   var aciIdentityKeyPublic: Data {
-    get {return _aciIdentityKeyPublic ?? Data()}
-    set {_aciIdentityKeyPublic = newValue}
+    get {return _storage._aciIdentityKeyPublic ?? Data()}
+    set {_uniqueStorage()._aciIdentityKeyPublic = newValue}
   }
   /// Returns true if `aciIdentityKeyPublic` has been explicitly set.
-  var hasAciIdentityKeyPublic: Bool {return self._aciIdentityKeyPublic != nil}
+  var hasAciIdentityKeyPublic: Bool {return _storage._aciIdentityKeyPublic != nil}
   /// Clears the value of `aciIdentityKeyPublic`. Subsequent reads from it will return its default value.
-  mutating func clearAciIdentityKeyPublic() {self._aciIdentityKeyPublic = nil}
+  mutating func clearAciIdentityKeyPublic() {_uniqueStorage()._aciIdentityKeyPublic = nil}
 
   /// @required
   var aciIdentityKeyPrivate: Data {
-    get {return _aciIdentityKeyPrivate ?? Data()}
-    set {_aciIdentityKeyPrivate = newValue}
+    get {return _storage._aciIdentityKeyPrivate ?? Data()}
+    set {_uniqueStorage()._aciIdentityKeyPrivate = newValue}
   }
   /// Returns true if `aciIdentityKeyPrivate` has been explicitly set.
-  var hasAciIdentityKeyPrivate: Bool {return self._aciIdentityKeyPrivate != nil}
+  var hasAciIdentityKeyPrivate: Bool {return _storage._aciIdentityKeyPrivate != nil}
   /// Clears the value of `aciIdentityKeyPrivate`. Subsequent reads from it will return its default value.
-  mutating func clearAciIdentityKeyPrivate() {self._aciIdentityKeyPrivate = nil}
+  mutating func clearAciIdentityKeyPrivate() {_uniqueStorage()._aciIdentityKeyPrivate = nil}
 
   /// @required
   var pniIdentityKeyPublic: Data {
-    get {return _pniIdentityKeyPublic ?? Data()}
-    set {_pniIdentityKeyPublic = newValue}
+    get {return _storage._pniIdentityKeyPublic ?? Data()}
+    set {_uniqueStorage()._pniIdentityKeyPublic = newValue}
   }
   /// Returns true if `pniIdentityKeyPublic` has been explicitly set.
-  var hasPniIdentityKeyPublic: Bool {return self._pniIdentityKeyPublic != nil}
+  var hasPniIdentityKeyPublic: Bool {return _storage._pniIdentityKeyPublic != nil}
   /// Clears the value of `pniIdentityKeyPublic`. Subsequent reads from it will return its default value.
-  mutating func clearPniIdentityKeyPublic() {self._pniIdentityKeyPublic = nil}
+  mutating func clearPniIdentityKeyPublic() {_uniqueStorage()._pniIdentityKeyPublic = nil}
 
   /// @required
   var pniIdentityKeyPrivate: Data {
-    get {return _pniIdentityKeyPrivate ?? Data()}
-    set {_pniIdentityKeyPrivate = newValue}
+    get {return _storage._pniIdentityKeyPrivate ?? Data()}
+    set {_uniqueStorage()._pniIdentityKeyPrivate = newValue}
   }
   /// Returns true if `pniIdentityKeyPrivate` has been explicitly set.
-  var hasPniIdentityKeyPrivate: Bool {return self._pniIdentityKeyPrivate != nil}
+  var hasPniIdentityKeyPrivate: Bool {return _storage._pniIdentityKeyPrivate != nil}
   /// Clears the value of `pniIdentityKeyPrivate`. Subsequent reads from it will return its default value.
-  mutating func clearPniIdentityKeyPrivate() {self._pniIdentityKeyPrivate = nil}
+  mutating func clearPniIdentityKeyPrivate() {_uniqueStorage()._pniIdentityKeyPrivate = nil}
 
   var aci: String {
-    get {return _aci ?? String()}
-    set {_aci = newValue}
+    get {return _storage._aci ?? String()}
+    set {_uniqueStorage()._aci = newValue}
   }
   /// Returns true if `aci` has been explicitly set.
-  var hasAci: Bool {return self._aci != nil}
+  var hasAci: Bool {return _storage._aci != nil}
   /// Clears the value of `aci`. Subsequent reads from it will return its default value.
-  mutating func clearAci() {self._aci = nil}
+  mutating func clearAci() {_uniqueStorage()._aci = nil}
 
   var pni: String {
-    get {return _pni ?? String()}
-    set {_pni = newValue}
+    get {return _storage._pni ?? String()}
+    set {_uniqueStorage()._pni = newValue}
   }
   /// Returns true if `pni` has been explicitly set.
-  var hasPni: Bool {return self._pni != nil}
+  var hasPni: Bool {return _storage._pni != nil}
   /// Clears the value of `pni`. Subsequent reads from it will return its default value.
-  mutating func clearPni() {self._pni = nil}
+  mutating func clearPni() {_uniqueStorage()._pni = nil}
 
   var number: String {
-    get {return _number ?? String()}
-    set {_number = newValue}
+    get {return _storage._number ?? String()}
+    set {_uniqueStorage()._number = newValue}
   }
   /// Returns true if `number` has been explicitly set.
-  var hasNumber: Bool {return self._number != nil}
+  var hasNumber: Bool {return _storage._number != nil}
   /// Clears the value of `number`. Subsequent reads from it will return its default value.
-  mutating func clearNumber() {self._number = nil}
+  mutating func clearNumber() {_uniqueStorage()._number = nil}
 
   /// @required
   var provisioningCode: String {
-    get {return _provisioningCode ?? String()}
-    set {_provisioningCode = newValue}
+    get {return _storage._provisioningCode ?? String()}
+    set {_uniqueStorage()._provisioningCode = newValue}
   }
   /// Returns true if `provisioningCode` has been explicitly set.
-  var hasProvisioningCode: Bool {return self._provisioningCode != nil}
+  var hasProvisioningCode: Bool {return _storage._provisioningCode != nil}
   /// Clears the value of `provisioningCode`. Subsequent reads from it will return its default value.
-  mutating func clearProvisioningCode() {self._provisioningCode = nil}
+  mutating func clearProvisioningCode() {_uniqueStorage()._provisioningCode = nil}
 
   var userAgent: String {
-    get {return _userAgent ?? String()}
-    set {_userAgent = newValue}
+    get {return _storage._userAgent ?? String()}
+    set {_uniqueStorage()._userAgent = newValue}
   }
   /// Returns true if `userAgent` has been explicitly set.
-  var hasUserAgent: Bool {return self._userAgent != nil}
+  var hasUserAgent: Bool {return _storage._userAgent != nil}
   /// Clears the value of `userAgent`. Subsequent reads from it will return its default value.
-  mutating func clearUserAgent() {self._userAgent = nil}
+  mutating func clearUserAgent() {_uniqueStorage()._userAgent = nil}
 
   /// @required
   var profileKey: Data {
-    get {return _profileKey ?? Data()}
-    set {_profileKey = newValue}
+    get {return _storage._profileKey ?? Data()}
+    set {_uniqueStorage()._profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return self._profileKey != nil}
+  var hasProfileKey: Bool {return _storage._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {self._profileKey = nil}
+  mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
 
   var readReceipts: Bool {
-    get {return _readReceipts ?? false}
-    set {_readReceipts = newValue}
+    get {return _storage._readReceipts ?? false}
+    set {_uniqueStorage()._readReceipts = newValue}
   }
   /// Returns true if `readReceipts` has been explicitly set.
-  var hasReadReceipts: Bool {return self._readReceipts != nil}
+  var hasReadReceipts: Bool {return _storage._readReceipts != nil}
   /// Clears the value of `readReceipts`. Subsequent reads from it will return its default value.
-  mutating func clearReadReceipts() {self._readReceipts = nil}
+  mutating func clearReadReceipts() {_uniqueStorage()._readReceipts = nil}
 
   var provisioningVersion: UInt32 {
-    get {return _provisioningVersion ?? 0}
-    set {_provisioningVersion = newValue}
+    get {return _storage._provisioningVersion ?? 0}
+    set {_uniqueStorage()._provisioningVersion = newValue}
   }
   /// Returns true if `provisioningVersion` has been explicitly set.
-  var hasProvisioningVersion: Bool {return self._provisioningVersion != nil}
+  var hasProvisioningVersion: Bool {return _storage._provisioningVersion != nil}
   /// Clears the value of `provisioningVersion`. Subsequent reads from it will return its default value.
-  mutating func clearProvisioningVersion() {self._provisioningVersion = nil}
+  mutating func clearProvisioningVersion() {_uniqueStorage()._provisioningVersion = nil}
 
   var masterKey: Data {
-    get {return _masterKey ?? Data()}
-    set {_masterKey = newValue}
+    get {return _storage._masterKey ?? Data()}
+    set {_uniqueStorage()._masterKey = newValue}
   }
   /// Returns true if `masterKey` has been explicitly set.
-  var hasMasterKey: Bool {return self._masterKey != nil}
+  var hasMasterKey: Bool {return _storage._masterKey != nil}
   /// Clears the value of `masterKey`. Subsequent reads from it will return its default value.
-  mutating func clearMasterKey() {self._masterKey = nil}
+  mutating func clearMasterKey() {_uniqueStorage()._masterKey = nil}
 
   /// 32 bytes
   var ephemeralBackupKey: Data {
-    get {return _ephemeralBackupKey ?? Data()}
-    set {_ephemeralBackupKey = newValue}
+    get {return _storage._ephemeralBackupKey ?? Data()}
+    set {_uniqueStorage()._ephemeralBackupKey = newValue}
   }
   /// Returns true if `ephemeralBackupKey` has been explicitly set.
-  var hasEphemeralBackupKey: Bool {return self._ephemeralBackupKey != nil}
+  var hasEphemeralBackupKey: Bool {return _storage._ephemeralBackupKey != nil}
   /// Clears the value of `ephemeralBackupKey`. Subsequent reads from it will return its default value.
-  mutating func clearEphemeralBackupKey() {self._ephemeralBackupKey = nil}
+  mutating func clearEphemeralBackupKey() {_uniqueStorage()._ephemeralBackupKey = nil}
 
   var accountEntropyPool: String {
-    get {return _accountEntropyPool ?? String()}
-    set {_accountEntropyPool = newValue}
+    get {return _storage._accountEntropyPool ?? String()}
+    set {_uniqueStorage()._accountEntropyPool = newValue}
   }
   /// Returns true if `accountEntropyPool` has been explicitly set.
-  var hasAccountEntropyPool: Bool {return self._accountEntropyPool != nil}
+  var hasAccountEntropyPool: Bool {return _storage._accountEntropyPool != nil}
   /// Clears the value of `accountEntropyPool`. Subsequent reads from it will return its default value.
-  mutating func clearAccountEntropyPool() {self._accountEntropyPool = nil}
+  mutating func clearAccountEntropyPool() {_uniqueStorage()._accountEntropyPool = nil}
 
-  /// NEXT ID: 17
   var mediaRootBackupKey: Data {
-    get {return _mediaRootBackupKey ?? Data()}
-    set {_mediaRootBackupKey = newValue}
+    get {return _storage._mediaRootBackupKey ?? Data()}
+    set {_uniqueStorage()._mediaRootBackupKey = newValue}
   }
   /// Returns true if `mediaRootBackupKey` has been explicitly set.
-  var hasMediaRootBackupKey: Bool {return self._mediaRootBackupKey != nil}
+  var hasMediaRootBackupKey: Bool {return _storage._mediaRootBackupKey != nil}
   /// Clears the value of `mediaRootBackupKey`. Subsequent reads from it will return its default value.
-  mutating func clearMediaRootBackupKey() {self._mediaRootBackupKey = nil}
+  mutating func clearMediaRootBackupKey() {_uniqueStorage()._mediaRootBackupKey = nil}
+
+  /// 16-byte UUID
+  var aciBinary: Data {
+    get {return _storage._aciBinary ?? Data()}
+    set {_uniqueStorage()._aciBinary = newValue}
+  }
+  /// Returns true if `aciBinary` has been explicitly set.
+  var hasAciBinary: Bool {return _storage._aciBinary != nil}
+  /// Clears the value of `aciBinary`. Subsequent reads from it will return its default value.
+  mutating func clearAciBinary() {_uniqueStorage()._aciBinary = nil}
+
+  /// 16-byte UUID
+  var pniBinary: Data {
+    get {return _storage._pniBinary ?? Data()}
+    set {_uniqueStorage()._pniBinary = newValue}
+  }
+  /// Returns true if `pniBinary` has been explicitly set.
+  var hasPniBinary: Bool {return _storage._pniBinary != nil}
+  /// Clears the value of `pniBinary`. Subsequent reads from it will return its default value.
+  mutating func clearPniBinary() {_uniqueStorage()._pniBinary = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _aciIdentityKeyPublic: Data? = nil
-  fileprivate var _aciIdentityKeyPrivate: Data? = nil
-  fileprivate var _pniIdentityKeyPublic: Data? = nil
-  fileprivate var _pniIdentityKeyPrivate: Data? = nil
-  fileprivate var _aci: String? = nil
-  fileprivate var _pni: String? = nil
-  fileprivate var _number: String? = nil
-  fileprivate var _provisioningCode: String? = nil
-  fileprivate var _userAgent: String? = nil
-  fileprivate var _profileKey: Data? = nil
-  fileprivate var _readReceipts: Bool? = nil
-  fileprivate var _provisioningVersion: UInt32? = nil
-  fileprivate var _masterKey: Data? = nil
-  fileprivate var _ephemeralBackupKey: Data? = nil
-  fileprivate var _accountEntropyPool: String? = nil
-  fileprivate var _mediaRootBackupKey: Data? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -346,108 +350,188 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
 
 extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{1}aci\0\u{1}provisioningVersion\0\u{1}pni\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{1}masterKey\0\u{1}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{1}aci\0\u{1}provisioningVersion\0\u{1}pni\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{1}masterKey\0\u{1}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0")
+
+  fileprivate class _StorageClass {
+    var _aciIdentityKeyPublic: Data? = nil
+    var _aciIdentityKeyPrivate: Data? = nil
+    var _pniIdentityKeyPublic: Data? = nil
+    var _pniIdentityKeyPrivate: Data? = nil
+    var _aci: String? = nil
+    var _pni: String? = nil
+    var _number: String? = nil
+    var _provisioningCode: String? = nil
+    var _userAgent: String? = nil
+    var _profileKey: Data? = nil
+    var _readReceipts: Bool? = nil
+    var _provisioningVersion: UInt32? = nil
+    var _masterKey: Data? = nil
+    var _ephemeralBackupKey: Data? = nil
+    var _accountEntropyPool: String? = nil
+    var _mediaRootBackupKey: Data? = nil
+    var _aciBinary: Data? = nil
+    var _pniBinary: Data? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _aciIdentityKeyPublic = source._aciIdentityKeyPublic
+      _aciIdentityKeyPrivate = source._aciIdentityKeyPrivate
+      _pniIdentityKeyPublic = source._pniIdentityKeyPublic
+      _pniIdentityKeyPrivate = source._pniIdentityKeyPrivate
+      _aci = source._aci
+      _pni = source._pni
+      _number = source._number
+      _provisioningCode = source._provisioningCode
+      _userAgent = source._userAgent
+      _profileKey = source._profileKey
+      _readReceipts = source._readReceipts
+      _provisioningVersion = source._provisioningVersion
+      _masterKey = source._masterKey
+      _ephemeralBackupKey = source._ephemeralBackupKey
+      _accountEntropyPool = source._accountEntropyPool
+      _mediaRootBackupKey = source._mediaRootBackupKey
+      _aciBinary = source._aciBinary
+      _pniBinary = source._pniBinary
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._aciIdentityKeyPublic) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._aciIdentityKeyPrivate) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._number) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._provisioningCode) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._userAgent) }()
-      case 6: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
-      case 7: try { try decoder.decodeSingularBoolField(value: &self._readReceipts) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self._aci) }()
-      case 9: try { try decoder.decodeSingularUInt32Field(value: &self._provisioningVersion) }()
-      case 10: try { try decoder.decodeSingularStringField(value: &self._pni) }()
-      case 11: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPublic) }()
-      case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
-      case 13: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
-      case 14: try { try decoder.decodeSingularBytesField(value: &self._ephemeralBackupKey) }()
-      case 15: try { try decoder.decodeSingularStringField(value: &self._accountEntropyPool) }()
-      case 16: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._aciIdentityKeyPublic) }()
+        case 2: try { try decoder.decodeSingularBytesField(value: &_storage._aciIdentityKeyPrivate) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._number) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._provisioningCode) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._userAgent) }()
+        case 6: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 7: try { try decoder.decodeSingularBoolField(value: &_storage._readReceipts) }()
+        case 8: try { try decoder.decodeSingularStringField(value: &_storage._aci) }()
+        case 9: try { try decoder.decodeSingularUInt32Field(value: &_storage._provisioningVersion) }()
+        case 10: try { try decoder.decodeSingularStringField(value: &_storage._pni) }()
+        case 11: try { try decoder.decodeSingularBytesField(value: &_storage._pniIdentityKeyPublic) }()
+        case 12: try { try decoder.decodeSingularBytesField(value: &_storage._pniIdentityKeyPrivate) }()
+        case 13: try { try decoder.decodeSingularBytesField(value: &_storage._masterKey) }()
+        case 14: try { try decoder.decodeSingularBytesField(value: &_storage._ephemeralBackupKey) }()
+        case 15: try { try decoder.decodeSingularStringField(value: &_storage._accountEntropyPool) }()
+        case 16: try { try decoder.decodeSingularBytesField(value: &_storage._mediaRootBackupKey) }()
+        case 17: try { try decoder.decodeSingularBytesField(value: &_storage._aciBinary) }()
+        case 18: try { try decoder.decodeSingularBytesField(value: &_storage._pniBinary) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._aciIdentityKeyPublic {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._aciIdentityKeyPrivate {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._number {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._provisioningCode {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._userAgent {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    } }()
-    try { if let v = self._readReceipts {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._aci {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
-    } }()
-    try { if let v = self._provisioningVersion {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
-    } }()
-    try { if let v = self._pni {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 10)
-    } }()
-    try { if let v = self._pniIdentityKeyPublic {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 11)
-    } }()
-    try { if let v = self._pniIdentityKeyPrivate {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
-    } }()
-    try { if let v = self._masterKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
-    } }()
-    try { if let v = self._ephemeralBackupKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
-    } }()
-    try { if let v = self._accountEntropyPool {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
-    } }()
-    try { if let v = self._mediaRootBackupKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 16)
-    } }()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._aciIdentityKeyPublic {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._aciIdentityKeyPrivate {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._number {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._provisioningCode {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._userAgent {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._profileKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+      } }()
+      try { if let v = _storage._readReceipts {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
+      } }()
+      try { if let v = _storage._aci {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+      } }()
+      try { if let v = _storage._provisioningVersion {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+      } }()
+      try { if let v = _storage._pni {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 10)
+      } }()
+      try { if let v = _storage._pniIdentityKeyPublic {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 11)
+      } }()
+      try { if let v = _storage._pniIdentityKeyPrivate {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
+      } }()
+      try { if let v = _storage._masterKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
+      } }()
+      try { if let v = _storage._ephemeralBackupKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
+      } }()
+      try { if let v = _storage._accountEntropyPool {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._mediaRootBackupKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 16)
+      } }()
+      try { if let v = _storage._aciBinary {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 17)
+      } }()
+      try { if let v = _storage._pniBinary {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 18)
+      } }()
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: ProvisioningProtos_ProvisionMessage, rhs: ProvisioningProtos_ProvisionMessage) -> Bool {
-    if lhs._aciIdentityKeyPublic != rhs._aciIdentityKeyPublic {return false}
-    if lhs._aciIdentityKeyPrivate != rhs._aciIdentityKeyPrivate {return false}
-    if lhs._pniIdentityKeyPublic != rhs._pniIdentityKeyPublic {return false}
-    if lhs._pniIdentityKeyPrivate != rhs._pniIdentityKeyPrivate {return false}
-    if lhs._aci != rhs._aci {return false}
-    if lhs._pni != rhs._pni {return false}
-    if lhs._number != rhs._number {return false}
-    if lhs._provisioningCode != rhs._provisioningCode {return false}
-    if lhs._userAgent != rhs._userAgent {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
-    if lhs._readReceipts != rhs._readReceipts {return false}
-    if lhs._provisioningVersion != rhs._provisioningVersion {return false}
-    if lhs._masterKey != rhs._masterKey {return false}
-    if lhs._ephemeralBackupKey != rhs._ephemeralBackupKey {return false}
-    if lhs._accountEntropyPool != rhs._accountEntropyPool {return false}
-    if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._aciIdentityKeyPublic != rhs_storage._aciIdentityKeyPublic {return false}
+        if _storage._aciIdentityKeyPrivate != rhs_storage._aciIdentityKeyPrivate {return false}
+        if _storage._pniIdentityKeyPublic != rhs_storage._pniIdentityKeyPublic {return false}
+        if _storage._pniIdentityKeyPrivate != rhs_storage._pniIdentityKeyPrivate {return false}
+        if _storage._aci != rhs_storage._aci {return false}
+        if _storage._pni != rhs_storage._pni {return false}
+        if _storage._number != rhs_storage._number {return false}
+        if _storage._provisioningCode != rhs_storage._provisioningCode {return false}
+        if _storage._userAgent != rhs_storage._userAgent {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._readReceipts != rhs_storage._readReceipts {return false}
+        if _storage._provisioningVersion != rhs_storage._provisioningVersion {return false}
+        if _storage._masterKey != rhs_storage._masterKey {return false}
+        if _storage._ephemeralBackupKey != rhs_storage._ephemeralBackupKey {return false}
+        if _storage._accountEntropyPool != rhs_storage._accountEntropyPool {return false}
+        if _storage._mediaRootBackupKey != rhs_storage._mediaRootBackupKey {return false}
+        if _storage._aciBinary != rhs_storage._aciBinary {return false}
+        if _storage._pniBinary != rhs_storage._pniBinary {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

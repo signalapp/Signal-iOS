@@ -31,6 +31,9 @@ extension OWSOutgoingReactionMessage {
             return nil
         }
         reactionBuilder.setTargetAuthorAci(messageAuthor.serviceIdString)
+        if FeatureFlags.serviceIdBinaryConstantOverhead {
+            reactionBuilder.setTargetAuthorAciBinary(messageAuthor.serviceIdBinary)
+        }
 
         do {
             return try reactionBuilder.build()

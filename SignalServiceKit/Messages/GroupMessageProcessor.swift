@@ -234,7 +234,10 @@ internal class SpecificGroupMessageProcessor {
         hasGroupBeenUpdated: Bool,
         tx: DBReadTransaction
     ) -> GroupMessageProcessorManager.DiscardMode {
-        guard let sourceAci = Aci.parseFrom(aciString: jobInfo.envelope.sourceServiceID) else {
+        guard let sourceAci = Aci.parseFrom(
+            serviceIdBinary: jobInfo.envelope.sourceServiceIDBinary,
+            serviceIdString: jobInfo.envelope.sourceServiceID,
+        ) else {
             owsFailDebug("Invalid source address.")
             return .discard
         }
@@ -458,8 +461,10 @@ internal class SpecificGroupMessageProcessor {
 
         do {
             let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
-                guard let serverGuid = jobInfo.envelope.serverGuid else { return .unreportable }
-                return .reportable(serverGuid: serverGuid)
+                guard let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: jobInfo.envelope) else {
+                    return .unreportable
+                }
+                return .reportable(serverGuid: serverGuid.uuidString.lowercased())
             }()
             try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
                 spamReportingMetadata: spamReportingMetadata,
@@ -483,8 +488,10 @@ internal class SpecificGroupMessageProcessor {
 
     private func tryToUpdateUsingService(jobInfo: IncomingGroupsV2MessageJobInfo) async throws(RetryableError) -> Bool {
         let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
-            guard let serverGuid = jobInfo.envelope.serverGuid else { return .unreportable }
-            return .reportable(serverGuid: serverGuid)
+            guard let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: jobInfo.envelope) else {
+                return .unreportable
+            }
+            return .reportable(serverGuid: serverGuid.uuidString.lowercased())
         }()
         do {
             try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(

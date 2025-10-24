@@ -81,6 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
         messageRequestResponseBuilder.groupID = self.groupId;
     } else if (self.threadAci != nil) {
         messageRequestResponseBuilder.threadAci = self.threadAci;
+        if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+            messageRequestResponseBuilder.threadAciBinary =
+                [[AciObjC alloc] initWithAciString:self.threadAci].serviceIdBinary;
+        }
     } else if (self.version < 2) {
         // Fallback behavior. Messages of this version are no longer created.
         // Eventually, all enqueued messages of this type should be resolved
@@ -98,7 +102,13 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
             TSContactThread *contactThread = (TSContactThread *)thread;
-            messageRequestResponseBuilder.threadAci = contactThread.contactAddress.aciString;
+            ServiceIdObjC *threadAci = contactThread.contactAddress.serviceIdObjC;
+            if ([threadAci isKindOfClass:[AciObjC class]]) {
+                messageRequestResponseBuilder.threadAci = threadAci.serviceIdString;
+                if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+                    messageRequestResponseBuilder.threadAciBinary = threadAci.serviceIdBinary;
+                }
+            }
         }
     }
 

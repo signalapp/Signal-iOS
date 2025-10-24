@@ -27,6 +27,9 @@ final class ContactOutputStream {
         }
         if let aci {
             contactBuilder.setAci(aci.serviceIdString)
+            if FeatureFlags.serviceIdBinaryVariableOverhead {
+                contactBuilder.setAciBinary(aci.serviceIdBinary)
+            }
         }
 
         // TODO: this should be removed after a 90-day timer from when Desktop stops

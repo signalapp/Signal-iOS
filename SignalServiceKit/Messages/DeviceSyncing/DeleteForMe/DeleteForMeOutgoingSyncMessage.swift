@@ -120,14 +120,19 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
 
 extension DeleteForMeSyncMessage.Outgoing {
     enum ConversationIdentifier: Codable, Equatable {
-        case threadServiceId(serviceId: String)
+        case threadServiceId(serviceId: ServiceIdUppercaseString<ServiceId>)
         case threadE164(e164: String)
         case threadGroupId(groupId: Data)
 
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMeConversationIdentifier {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeConversationIdentifier.builder()
             switch self {
-            case .threadServiceId(let serviceId): protoBuilder.setThreadServiceID(serviceId)
+            case .threadServiceId(let serviceId):
+                if FeatureFlags.serviceIdBinaryOneOf {
+                    protoBuilder.setThreadServiceIDBinary(serviceId.wrappedValue.serviceIdBinary)
+                } else {
+                    protoBuilder.setThreadServiceID(serviceId.wrappedValue.serviceIdString)
+                }
             case .threadE164(let e164): protoBuilder.setThreadE164(e164)
             case .threadGroupId(let groupId): protoBuilder.setThreadGroupID(groupId)
             }
@@ -139,7 +144,7 @@ extension DeleteForMeSyncMessage.Outgoing {
         enum Author: Codable, Equatable {
             /// The author's ACI. Note that the author of a message must be an
             /// ACI, never a PNI.
-            case aci(aci: String)
+            case aci(aci: ServiceIdUppercaseString<Aci>)
             /// The author's E164, if their ACI is absent. This should only be
             /// relevant for old (pre-ACI) messages.
             case e164(e164: String)
@@ -177,7 +182,7 @@ extension DeleteForMeSyncMessage.Outgoing {
 
         private init?(incomingMessage: TSIncomingMessage) {
             if let authorAci = incomingMessage.authorAddress.aci {
-                author = .aci(aci: authorAci.serviceIdUppercaseString)
+                author = .aci(aci: ServiceIdUppercaseString(wrappedValue: authorAci))
             } else if let authorE164 = incomingMessage.authorAddress.e164 {
                 author = .e164(e164: authorE164.stringValue)
             } else {
@@ -188,7 +193,7 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
 
         private init(outgoingMessage: TSOutgoingMessage, localIdentifiers: LocalIdentifiers) {
-            author = .aci(aci: localIdentifiers.aci.serviceIdUppercaseString)
+            author = .aci(aci: ServiceIdUppercaseString(wrappedValue: localIdentifiers.aci))
             sentTimestamp = outgoingMessage.timestamp
         }
 
@@ -196,7 +201,12 @@ extension DeleteForMeSyncMessage.Outgoing {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeAddressableMessage.builder()
             protoBuilder.setSentTimestamp(sentTimestamp)
             switch author {
-            case .aci(let aci): protoBuilder.setAuthorServiceID(aci)
+            case .aci(let aci):
+                if FeatureFlags.serviceIdBinaryOneOf {
+                    protoBuilder.setAuthorServiceIDBinary(aci.wrappedValue.serviceIdBinary)
+                } else {
+                    protoBuilder.setAuthorServiceID(aci.wrappedValue.serviceIdString)
+                }
             case .e164(let e164): protoBuilder.setAuthorE164(e164)
             }
             return protoBuilder.buildInfallibly()

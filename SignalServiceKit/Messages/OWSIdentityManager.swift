@@ -834,7 +834,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Verified
 
     public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, tx: DBWriteTransaction) throws {
-        guard let aci = Aci.parseFrom(aciString: verified.destinationAci) else {
+        guard let aci = Aci.parseFrom(serviceIdBinary: verified.destinationAciBinary, serviceIdString: verified.destinationAci) else {
             return owsFailDebug("Verification state sync message missing destination.")
         }
         Logger.info("Received verification state message for \(aci)")

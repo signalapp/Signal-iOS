@@ -12,15 +12,3 @@ public extension SSKProtoSyncMessageSent {
         storyMessage != nil || !storyMessageRecipients.isEmpty
     }
 }
-
-public extension SSKProtoEnvelope {
-    @objc
-    var sourceAddress: SignalServiceAddress? {
-        return sourceServiceID.flatMap { (serviceIdString) -> SignalServiceAddress? in
-            guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
-                return nil
-            }
-            return SignalServiceAddress(serviceId)
-        }
-    }
-}

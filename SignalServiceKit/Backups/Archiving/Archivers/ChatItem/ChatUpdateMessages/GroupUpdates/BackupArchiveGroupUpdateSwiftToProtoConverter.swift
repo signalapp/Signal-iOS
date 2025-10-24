@@ -36,7 +36,7 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
         func pniData(_ pni: Pni) -> Data {
             return pni.rawUUID.data
         }
-        func serviceIdData(_ serviceId: ServiceIdUppercaseString) -> Data {
+        func serviceIdData(_ serviceId: ServiceIdUppercaseString<ServiceId>) -> Data {
             return serviceId.wrappedValue.serviceIdBinary
         }
 

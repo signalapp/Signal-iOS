@@ -45,6 +45,11 @@ message Envelope {
   optional string updatedPni = 15;
   optional bool story = 16;
   optional bytes spamReportingToken = 17;
+  reserved 18;  // internal server use
+  optional bytes sourceServiceIdBinary = 19; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  optional bytes destinationServiceIdBinary = 20; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  optional bytes serverGuidBinary = 21; // 16-byte UUID
+  optional bytes updatedPniBinary = 22; // 16-byte UUID
 }
 
 message TypingMessage {
@@ -221,6 +226,7 @@ message DataMessage {
     repeated QuotedAttachment attachments = 4;
     repeated BodyRange bodyRanges = 6;
     optional Type type = 7;
+    optional bytes authorAciBinary = 8; // 16-byte UUID
   }
 
   message Contact {
@@ -310,6 +316,7 @@ message DataMessage {
     optional string targetAuthorAci = 4;
     // @required
     optional uint64 timestamp = 5;
+    optional bytes targetAuthorAciBinary = 6; // 16-byte UUID
   }
 
   message Delete {
@@ -370,6 +377,7 @@ message DataMessage {
   message StoryContext {
     optional string authorAci = 1;
     optional uint64 sentTimestamp = 2;
+    optional bytes authorAciBinary = 3; // 16-byte UUID
   }
 
   enum ProtocolVersion {
@@ -463,6 +471,7 @@ message Verified {
   optional bytes identityKey = 2;
   optional State state = 3;
   optional bytes nullMessage = 4;
+  optional bytes destinationAciBinary = 6; // 16-byte UUID
 }
 
 message SyncMessage {
@@ -471,12 +480,14 @@ message SyncMessage {
       reserved /*destinationE164*/ 1;
       optional string destinationServiceId = 3;
       optional bool unidentified = 2;
+      optional bytes destinationServiceIdBinary = 6; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
     }
 
     message StoryMessageRecipient {
       optional string destinationServiceId = 1;
       repeated string distributionListIds = 2;
       optional bool isAllowedToReply = 3;
+      optional bytes destinationServiceIdBinary = 5; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
     }
 
     optional string destinationE164 = 1;
@@ -489,6 +500,7 @@ message SyncMessage {
     optional StoryMessage storyMessage = 8;
     repeated StoryMessageRecipient storyMessageRecipients = 9;
     optional EditMessage editMessage = 10;
+    optional bytes destinationServiceIdBinary = 12; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
   }
 
   message Contacts {
@@ -502,6 +514,7 @@ message SyncMessage {
     repeated string numbers = 1;
     repeated string acis = 3;
     repeated bytes groupIds = 2;
+    repeated bytes acisBinary = 4; // 16-byte UUID
   }
 
   message Request {
@@ -523,6 +536,7 @@ message SyncMessage {
     optional string senderAci = 3;
     // @required
     optional uint64 timestamp = 2;
+    optional bytes senderAciBinary = 4; // 16-byte UUID
   }
 
   message Viewed {
@@ -530,6 +544,7 @@ message SyncMessage {
     optional string senderAci = 3;
     // @required
     optional uint64 timestamp = 2;
+    optional bytes senderAciBinary = 4; // 16-byte UUID
   }
 
   message Configuration {
@@ -554,10 +569,11 @@ message SyncMessage {
   }
 
   message ViewOnceOpen {
-      reserved /*senderE164*/ 1;
-      optional string senderAci = 3;
-      // @required
-      optional uint64 timestamp = 2;
+    reserved /*senderE164*/ 1;
+    optional string senderAci = 3;
+    // @required
+    optional uint64 timestamp = 2;
+    optional bytes senderAciBinary = 4; // 16-byte UUID
   }
 
   message FetchLatest {
@@ -593,6 +609,7 @@ message SyncMessage {
     optional string threadAci = 2;
     optional bytes groupId = 3;
     optional Type type = 4;
+    optional bytes threadAciBinary = 5; // 16-byte UUID
   }
 
   message OutgoingPayment {
@@ -695,6 +712,7 @@ message SyncMessage {
         optional string threadServiceId = 1;
         optional bytes threadGroupId = 2;
         optional string threadE164 = 3;
+        optional bytes threadServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
       // }
     }
 
@@ -702,6 +720,7 @@ message SyncMessage {
       // oneof author {
         optional string authorServiceId = 1;
         optional string authorE164 = 2;
+        optional bytes authorServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
       // }
       optional uint64 sentTimestamp = 3;
     }
@@ -819,6 +838,7 @@ message ContactDetails {
 
   optional string contactE164 = 1;
   optional string aci = 9;
+  optional bytes aciBinary = 13; // 16-byte UUID
   optional string name = 2;
   optional Avatar avatar = 3;
   reserved /* color */ 4;
@@ -829,7 +849,7 @@ message ContactDetails {
   optional uint32 expireTimerVersion = 12;
   optional uint32 inboxPosition = 10;
   reserved /* archived */ 11;
-  // NEXT ID: 13
+  // NEXT ID: 14
 }
 
 message Pack {
@@ -892,6 +912,7 @@ message BodyRange {
   // oneof associatedValue {
     optional string mentionAci = 3;
     optional Style style = 4;
+    optional bytes mentionAciBinary = 5; // 16-byte UUID
   // }
 }
 

@@ -19,10 +19,10 @@ struct ValidatedIncomingEnvelopeTest {
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 1234)
         envelopeBuilder.setServerTimestamp(2345)
         envelopeBuilder.setType(.ciphertext)
-        envelopeBuilder.setSourceServiceID(sourceAci.serviceIdString)
+        envelopeBuilder.setSourceServiceIDBinary(sourceAci.serviceIdBinary)
         envelopeBuilder.setSourceDevice(1)
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationServiceID(destinationAci.serviceIdString)
+        envelopeBuilder.setServerGuidBinary(UUID().data)
+        envelopeBuilder.setDestinationServiceIDBinary(destinationAci.serviceIdBinary)
         let envelopeProto = try envelopeBuilder.build()
         #expect(throws: MessageProcessingError.wrongDestinationUuid, performing: {
             try ValidatedIncomingEnvelope(envelopeProto, localIdentifiers: localIdentifiers)

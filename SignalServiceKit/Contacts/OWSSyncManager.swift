@@ -292,11 +292,14 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
         transaction: DBWriteTransaction
     ) {
-        guard let thread: TSThread = {
+        guard let thread = { () -> TSThread? in
             if let groupId = syncMessage.groupID {
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }
-            if let threadAci = Aci.parseFrom(aciString: syncMessage.threadAci) {
+            if let threadAci = Aci.parseFrom(
+                serviceIdBinary: syncMessage.threadAciBinary,
+                serviceIdString: syncMessage.threadAci,
+            ) {
                 return TSContactThread.getWithContactAddress(SignalServiceAddress(threadAci), transaction: transaction)
             }
             return nil

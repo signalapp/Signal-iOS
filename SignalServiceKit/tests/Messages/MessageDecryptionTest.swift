@@ -111,7 +111,7 @@ class MessageDecryptionTest: SSKBaseTest {
 
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setType(type)
-            envelopeBuilder.setDestinationServiceID((destinationServiceId ?? localDestinationServiceId).serviceIdString)
+            envelopeBuilder.setDestinationServiceIDBinary((destinationServiceId ?? localDestinationServiceId).serviceIdBinary)
             envelopeBuilder.setServerTimestamp(Date.ows_millisecondTimestamp())
 
             if type == .unidentifiedSender {
@@ -136,7 +136,7 @@ class MessageDecryptionTest: SSKBaseTest {
                 ))
                 envelopeBuilder.setServerTimestamp(13336)
             } else {
-                envelopeBuilder.setSourceServiceID(remoteClient.serviceId.serviceIdString)
+                envelopeBuilder.setSourceServiceIDBinary(remoteClient.serviceId.serviceIdBinary)
                 envelopeBuilder.setSourceDevice(remoteClient.deviceId)
                 envelopeBuilder.setContent(ciphertext.serialize())
             }

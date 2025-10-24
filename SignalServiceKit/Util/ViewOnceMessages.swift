@@ -171,7 +171,10 @@ public class ViewOnceMessages: NSObject {
         envelope: SSKProtoEnvelope,
         transaction: DBWriteTransaction
     ) -> ViewOnceSyncMessageProcessingResult {
-        guard let messageSender = Aci.parseFrom(aciString: message.senderAci) else {
+        guard let messageSender = Aci.parseFrom(
+            serviceIdBinary: message.senderAciBinary,
+            serviceIdString: message.senderAci,
+        ) else {
             owsFailDebug("Invalid messageSender.")
             return .invalidSyncMessage
         }

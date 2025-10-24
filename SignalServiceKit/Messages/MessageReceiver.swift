@@ -410,11 +410,16 @@ public final class MessageReceiver {
                             toProfileWhitelist: groupId.serialize(), userProfileWriter: .localUser, transaction: tx
                         )
                     } else {
+                        let serviceId = ServiceId.parseFrom(
+                            serviceIdBinary: sent.destinationServiceIDBinary,
+                            serviceIdString: sent.destinationServiceID,
+                        )
                         // If we observe a linked device sending our profile key to another user,
                         // we can infer that that user belongs in our profile whitelist.
-                        let destinationAddress = SignalServiceAddress.legacyAddress(
-                            serviceIdString: sent.destinationServiceID,
-                            phoneNumber: sent.destinationE164?.nilIfEmpty
+                        let destinationAddress = SignalServiceAddress(
+                            serviceId: serviceId,
+                            legacyPhoneNumber: sent.destinationE164?.nilIfEmpty,
+                            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
                         )
                         if destinationAddress.isValid {
                             SSKEnvironment.shared.profileManagerRef.addUser(
@@ -444,7 +449,10 @@ public final class MessageReceiver {
                     case .success, .invalidReaction:
                         break
                     case .associatedMessageMissing:
-                        let messageAuthor = Aci.parseFrom(aciString: reaction.targetAuthorAci)
+                        let messageAuthor = Aci.parseFrom(
+                            serviceIdBinary: reaction.targetAuthorAciBinary,
+                            serviceIdString: reaction.targetAuthorAci,
+                        )
                         SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
                             envelope,
                             plainTextData: request.plaintextData,
@@ -582,7 +590,10 @@ public final class MessageReceiver {
                 syncMessage.read, readTimestamp: decryptedEnvelope.timestamp, tx: tx
             )
             for readReceiptProto in earlyReceipts {
-                let messageAuthor = Aci.parseFrom(aciString: readReceiptProto.senderAci)
+                let messageAuthor = Aci.parseFrom(
+                    serviceIdBinary: readReceiptProto.senderAciBinary,
+                    serviceIdString: readReceiptProto.senderAci,
+                )
                 SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyReadReceiptFromLinkedDevice(
                     timestamp: decryptedEnvelope.timestamp,
                     associatedMessageTimestamp: readReceiptProto.timestamp,
@@ -595,7 +606,10 @@ public final class MessageReceiver {
                 syncMessage.viewed, viewedTimestamp: decryptedEnvelope.timestamp, tx: tx
             )
             for viewedReceiptProto in earlyReceipts {
-                let messageAuthor = Aci.parseFrom(aciString: viewedReceiptProto.senderAci)
+                let messageAuthor = Aci.parseFrom(
+                    serviceIdBinary: viewedReceiptProto.senderAciBinary,
+                    serviceIdString: viewedReceiptProto.senderAci,
+                )
                 SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyViewedReceiptFromLinkedDevice(
                     timestamp: decryptedEnvelope.timestamp,
                     associatedMessageTimestamp: viewedReceiptProto.timestamp,
@@ -650,9 +664,26 @@ public final class MessageReceiver {
             )
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
             let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
+            let updatedPni: Pni
+            if let updatedPniBinary = envelope.updatedPniBinary {
+                guard let _updatedPni = UUID(data: updatedPniBinary) else {
+                    owsFailDebug("Couldn't parse updated PNI")
+                    return
+                }
+                updatedPni = Pni(fromUUID: _updatedPni)
+            } else if let updatedPniString = envelope.updatedPni {
+                guard let _updatedPni = Pni.parseFrom(pniString: updatedPniString) else {
+                    owsFailDebug("Couldn't parse updated PNI")
+                    return
+                }
+                updatedPni = _updatedPni
+            } else {
+                owsFailDebug("Can't change number without PNI")
+                return
+            }
             pniProcessor.processIncomingPniChangePhoneNumber(
                 proto: pniChangeNumber,
-                updatedPni: envelope.updatedPni,
+                updatedPni: updatedPni,
                 tx: tx
             )
         } else if let callEvent = syncMessage.callEvent {
@@ -760,12 +791,22 @@ public final class MessageReceiver {
 
     private func handleSyncedBlocklist(_ blocked: SSKProtoSyncMessageBlocked, tx: DBWriteTransaction) {
         var blockedAcis = Set<Aci>()
-        for aciString in blocked.acis {
-            guard let aci = Aci.parseFrom(aciString: aciString) else {
-                owsFailDebug("Blocked ACI was nil.")
-                continue
+        if !blocked.acisBinary.isEmpty {
+            for aciBinary in blocked.acisBinary {
+                guard let aci = try? Aci.parseFrom(serviceIdBinary: aciBinary) else {
+                    owsFailDebug("Blocked ACI binary was nil")
+                    continue
+                }
+                blockedAcis.insert(aci)
             }
-            blockedAcis.insert(aci)
+        } else {
+            for aciString in blocked.acis {
+                guard let aci = Aci.parseFrom(aciString: aciString) else {
+                    owsFailDebug("Blocked ACI was nil.")
+                    continue
+                }
+                blockedAcis.insert(aci)
+            }
         }
         SSKEnvironment.shared.blockingManagerRef.processIncomingSync(
             blockedPhoneNumbers: Set(blocked.numbers),
@@ -958,7 +999,10 @@ public final class MessageReceiver {
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                     associatedMessageTimestamp: reaction.timestamp,
-                    associatedMessageAuthor: Aci.parseFrom(aciString: reaction.targetAuthorAci),
+                    associatedMessageAuthor: Aci.parseFrom(
+                        serviceIdBinary: reaction.targetAuthorAciBinary,
+                        serviceIdString: reaction.targetAuthorAci,
+                    ),
                     transaction: tx
                 )
             }
@@ -1034,7 +1078,7 @@ public final class MessageReceiver {
                 tx: tx
             )
         }
-        let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }
+        let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope.envelope)
         let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
             for: dataMessage,
             thread: thread,
@@ -1121,9 +1165,9 @@ public final class MessageReceiver {
 
         var storyTimestamp: UInt64?
         var storyAuthorAci: Aci?
-        if let storyContext = dataMessage.storyContext, storyContext.hasSentTimestamp, storyContext.hasAuthorAci {
+        if let storyContext = dataMessage.storyContext, storyContext.hasSentTimestamp, (storyContext.hasAuthorAci || storyContext.hasAuthorAciBinary) {
             storyTimestamp = storyContext.sentTimestamp
-            storyAuthorAci = Aci.parseFrom(aciString: storyContext.authorAci)
+            storyAuthorAci = Aci.parseFrom(serviceIdBinary: storyContext.authorAciBinary, serviceIdString: storyContext.authorAci)
             Logger.info("Processing storyContext for message w/ts \(envelope.timestamp), storyTimestamp: \(String(describing: storyTimestamp)), authorAci: \(String(describing: storyAuthorAci))")
             guard let storyAuthorAci else {
                 owsFailDebug("Discarding story reply with invalid ACI")
@@ -1931,7 +1975,7 @@ public final class MessageReceiver {
         let message = try DependenciesBridge.shared.editManager.processIncomingEditMessage(
             dataMessage,
             serverTimestamp: envelope.serverTimestamp,
-            serverGuid: envelope.envelope.serverGuid,
+            serverGuid: ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope.envelope)?.uuidString.lowercased(),
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             thread: thread,
             editTarget: editTarget,
@@ -2000,7 +2044,11 @@ public final class MessageReceiver {
 extension SSKProtoEnvelope {
     @objc
     var formattedAddress: String {
-        return "\(String(describing: sourceServiceID)).\(sourceDevice)"
+        let serviceId = ServiceId.parseFrom(
+            serviceIdBinary: self.sourceServiceIDBinary,
+            serviceIdString: self.sourceServiceID,
+        )
+        return "\(serviceId as Optional).\(sourceDevice)"
     }
 }
 

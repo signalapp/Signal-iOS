@@ -47,13 +47,15 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
 
             groupId = contextInfo.groupId
             recipientAddress = nil
-        } else if
-            sentProto.destinationServiceID != nil
-            || sentProto.destinationE164 != nil
-        {
-            let destinationAddress = SignalServiceAddress.legacyAddress(
+        } else if sentProto.hasDestinationServiceID || sentProto.hasDestinationServiceIDBinary || sentProto.destinationE164 != nil {
+            let serviceId = ServiceId.parseFrom(
+                serviceIdBinary: sentProto.destinationServiceIDBinary,
                 serviceIdString: sentProto.destinationServiceID,
-                phoneNumber: sentProto.destinationE164?.nilIfEmpty
+            )
+            let destinationAddress = SignalServiceAddress(
+                serviceId: serviceId,
+                legacyPhoneNumber: sentProto.destinationE164?.nilIfEmpty,
+                cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
             )
             guard destinationAddress.isValid else {
                 owsFailDebug("Invalid destinationAddress.")
@@ -151,8 +153,10 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         var recipientStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]()
         for statusProto in sentProto.unidentifiedStatus {
             guard
-                let serviceIdString = statusProto.destinationServiceID,
-                let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString),
+                let serviceId = ServiceId.parseFrom(
+                    serviceIdBinary: statusProto.destinationServiceIDBinary,
+                    serviceIdString: statusProto.destinationServiceID,
+                ),
                 statusProto.hasUnidentified
             else {
                 owsFailDebug("Delivery status proto is missing value.")
@@ -303,10 +307,13 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         if
             let storyContext = dataMessage.storyContext,
             storyContext.hasSentTimestamp,
-            let authorAci = storyContext.authorAci
+            storyContext.hasAuthorAci || storyContext.hasAuthorAciBinary
         {
             storyTimestamp = storyContext.sentTimestamp
-            storyAuthorAci = try Aci.parseFrom(serviceIdString: authorAci)
+            storyAuthorAci = Aci.parseFrom(serviceIdBinary: storyContext.authorAciBinary, serviceIdString: storyContext.authorAci)
+            guard storyAuthorAci != nil else {
+                throw OWSAssertionError("Couldn't parse story author")
+            }
         } else {
             storyTimestamp = nil
             storyAuthorAci = nil

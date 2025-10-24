@@ -43,7 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoSyncMessageReadBuilder *readProtoBuilder =
             [SSKProtoSyncMessageRead builderWithTimestamp:readReceipt.messageIdTimestamp];
 
-        [readProtoBuilder setSenderAci:readReceipt.senderAddress.aciString];
+        ServiceIdObjC *aciObj = readReceipt.senderAddress.serviceIdObjC;
+        if ([aciObj isKindOfClass:[AciObjC class]]) {
+            [readProtoBuilder setSenderAci:aciObj.serviceIdString];
+            if (FeatureFlagsObjC.serviceIdBinaryVariableOverhead) {
+                [readProtoBuilder setSenderAciBinary:aciObj.serviceIdBinary];
+            }
+        } else {
+            OWSFailDebug(@"can't send read receipt for message without an ACI");
+        }
 
         NSError *error;
         SSKProtoSyncMessageRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];

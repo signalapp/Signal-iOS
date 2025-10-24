@@ -42,7 +42,10 @@ class ContactsInputStream {
             _ = try inputStream.decodeData(count: Int(contactDetails.avatar.length))
         }
 
-        let aci = Aci.parseFrom(aciString: contactDetails.hasAci ? contactDetails.aci : nil)
+        let aci = Aci.parseFrom(
+            serviceIdBinary: contactDetails.hasAciBinary ? contactDetails.aciBinary : nil,
+            serviceIdString: contactDetails.hasAci ? contactDetails.aci : nil,
+        )
         let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.hasContactE164 ? contactDetails.contactE164 : nil)
 
         return ContactDetails(

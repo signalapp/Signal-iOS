@@ -488,6 +488,30 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
         return proto.hasMediaRootBackupKey
     }
 
+    @objc
+    public var aciBinary: Data? {
+        guard hasAciBinary else {
+            return nil
+        }
+        return proto.aciBinary
+    }
+    @objc
+    public var hasAciBinary: Bool {
+        return proto.hasAciBinary
+    }
+
+    @objc
+    public var pniBinary: Data? {
+        guard hasPniBinary else {
+            return nil
+        }
+        return proto.pniBinary
+    }
+    @objc
+    public var hasPniBinary: Bool {
+        return proto.hasPniBinary
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -638,6 +662,12 @@ extension ProvisioningProtoProvisionMessage {
         }
         if let _value = mediaRootBackupKey {
             builder.setMediaRootBackupKey(_value)
+        }
+        if let _value = aciBinary {
+            builder.setAciBinary(_value)
+        }
+        if let _value = pniBinary {
+            builder.setPniBinary(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -828,6 +858,28 @@ public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
     public func setMediaRootBackupKey(_ valueParam: Data) {
         proto.mediaRootBackupKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciBinary = valueParam
+    }
+
+    public func setAciBinary(_ valueParam: Data) {
+        proto.aciBinary = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPniBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pniBinary = valueParam
+    }
+
+    public func setPniBinary(_ valueParam: Data) {
+        proto.pniBinary = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

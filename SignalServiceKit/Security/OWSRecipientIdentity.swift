@@ -255,6 +255,9 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
 
         let verifiedBuilder = SSKProtoVerified.builder()
         verifiedBuilder.setDestinationAci(destinationAci.wrappedAciValue.serviceIdString)
+        if FeatureFlags.serviceIdBinaryConstantOverhead {
+            verifiedBuilder.setDestinationAciBinary(destinationAci.wrappedAciValue.serviceIdBinary)
+        }
         verifiedBuilder.setIdentityKey(identityKey)
         verifiedBuilder.setState(verificationState.protoState)
         if paddingBytesLength > 0 {

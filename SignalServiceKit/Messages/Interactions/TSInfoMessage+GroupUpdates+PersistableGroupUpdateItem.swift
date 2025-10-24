@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 extension TSInfoMessage {
     @objc(TSInfoMessageUpdateMessages)
@@ -131,7 +131,7 @@ extension TSInfoMessage {
 
         case sequenceOfInviteLinkRequestAndCancels(count: UInt, isTail: Bool)
         case invitedPniPromotedToFullMemberAci(pni: PniUuid, aci: AciUuid)
-        case inviteRemoved(invitee: ServiceIdUppercaseString, wasLocalUser: Bool)
+        case inviteRemoved(invitee: ServiceIdUppercaseString<ServiceId>, wasLocalUser: Bool)
 
         func toNewItem(
             updater: GroupUpdateSource,
@@ -490,7 +490,7 @@ extension TSInfoMessage {
         case localUserWasInvitedByOtherUser(updaterAci: AciUuid)
         case localUserWasInvitedByUnknownUser
 
-        case otherUserWasInvitedByLocalUser(inviteeServiceId: ServiceIdUppercaseString)
+        case otherUserWasInvitedByLocalUser(inviteeServiceId: ServiceIdUppercaseString<ServiceId>)
 
         case unnamedUsersWereInvitedByLocalUser(count: UInt)
         case unnamedUsersWereInvitedByOtherUser(updaterAci: AciUuid, count: UInt)
@@ -515,9 +515,9 @@ extension TSInfoMessage {
 
         case localUserDeclinedInviteFromInviter(inviterAci: AciUuid)
         case localUserDeclinedInviteFromUnknownUser
-        case otherUserDeclinedInviteFromLocalUser(invitee: ServiceIdUppercaseString)
-        case otherUserDeclinedInviteFromInviter(invitee: ServiceIdUppercaseString, inviterAci: AciUuid)
-        case otherUserDeclinedInviteFromUnknownUser(invitee: ServiceIdUppercaseString)
+        case otherUserDeclinedInviteFromLocalUser(invitee: ServiceIdUppercaseString<ServiceId>)
+        case otherUserDeclinedInviteFromInviter(invitee: ServiceIdUppercaseString<ServiceId>, inviterAci: AciUuid)
+        case otherUserDeclinedInviteFromUnknownUser(invitee: ServiceIdUppercaseString<ServiceId>)
         case unnamedUserDeclinedInviteFromInviter(inviterAci: AciUuid)
         case unnamedUserDeclinedInviteFromUnknownUser
 
@@ -525,7 +525,7 @@ extension TSInfoMessage {
         case localUserInviteRevokedByUnknownUser
         // For a single invite we revoked we keep the invitee.
         // For many, or if someone else revoked, we just keep the number.
-        case otherUserInviteRevokedByLocalUser(invitee: ServiceIdUppercaseString)
+        case otherUserInviteRevokedByLocalUser(invitee: ServiceIdUppercaseString<ServiceId>)
         case unnamedUserInvitesWereRevokedByLocalUser(count: UInt)
         case unnamedUserInvitesWereRevokedByOtherUser(updaterAci: AciUuid, count: UInt)
         case unnamedUserInvitesWereRevokedByUnknownUser(count: UInt)

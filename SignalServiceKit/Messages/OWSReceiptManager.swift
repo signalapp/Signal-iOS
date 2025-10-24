@@ -510,6 +510,7 @@ extension OWSReceiptManager {
     private func processReceiptsFromLinkedDevice<T>(
         _ receiptProtos: [T],
         senderAci: KeyPath<T, String?>,
+        senderAciBinary: KeyPath<T, Data?>,
         messageTimestamp: KeyPath<T, UInt64>,
         tx: DBWriteTransaction,
         markMessage: (TSMessage) -> Void,
@@ -519,7 +520,10 @@ extension OWSReceiptManager {
         let messageTimestamps = receiptProtos.map { $0[keyPath: messageTimestamp] }
         Logger.info("Handling \(receiptProtos.count) \(T.self)(s) w/timestamps: \(messageTimestamps)")
         for receiptProto in receiptProtos {
-            guard let senderAci = Aci.parseFrom(aciString: receiptProto[keyPath: senderAci]) else {
+            guard let senderAci = Aci.parseFrom(
+                serviceIdBinary: receiptProto[keyPath: senderAciBinary],
+                serviceIdString: receiptProto[keyPath: senderAci],
+            ) else {
                 owsFailDebug("Missing ACI.")
                 continue
             }
@@ -575,6 +579,7 @@ extension OWSReceiptManager {
         return processReceiptsFromLinkedDevice(
             readReceiptProtos,
             senderAci: \.senderAci,
+            senderAciBinary: \.senderAciBinary,
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {
@@ -594,6 +599,7 @@ extension OWSReceiptManager {
         return processReceiptsFromLinkedDevice(
             viewedReceiptProtos,
             senderAci: \.senderAci,
+            senderAciBinary: \.senderAciBinary,
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {

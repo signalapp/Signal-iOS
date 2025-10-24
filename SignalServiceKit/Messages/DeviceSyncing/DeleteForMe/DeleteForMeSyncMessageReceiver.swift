@@ -167,9 +167,10 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
     ) -> Conversation? {
         guard let proto else { return nil }
 
-        if
-            let threadServiceId = proto.threadServiceID.flatMap({ try? ServiceId.parseFrom(serviceIdString: $0) })
-        {
+        if let threadServiceId = ServiceId.parseFrom(
+            serviceIdBinary: proto.threadServiceIDBinary,
+            serviceIdString: proto.threadServiceID,
+        ) {
             if
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                 localIdentifiers.contains(serviceId: threadServiceId),
@@ -226,7 +227,10 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             let sentTimestamp = proto.sentTimestamp
             var author: AddressableMessage.Author?
 
-            if let authorServiceId = proto.authorServiceID.flatMap({ try? ServiceId.parseFrom(serviceIdString: $0) }) {
+            if let authorServiceId = ServiceId.parseFrom(
+                serviceIdBinary: proto.authorServiceIDBinary,
+                serviceIdString: proto.authorServiceID,
+            ) {
                 if
                     let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                     localIdentifiers.contains(serviceId: authorServiceId)

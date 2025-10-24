@@ -46,6 +46,17 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlocked builder];
     [blockedBuilder setNumbers:_phoneNumbers];
     [blockedBuilder setAcis:_uuids];
+
+    NSMutableArray<NSData *> *aciBinaries = [NSMutableArray array];
+    for (NSString *aciString in _uuids) {
+        AciObjC *aciObj = [[AciObjC alloc] initWithAciString:aciString];
+        if (aciObj != nil) {
+            [aciBinaries addObject:aciObj.serviceIdBinary];
+        }
+    }
+    if (FeatureFlagsObjC.serviceIdBinaryVariableOverhead) {
+        [blockedBuilder setAcisBinary:aciBinaries];
+    }
     [blockedBuilder setGroupIds:_groupIds];
 
     SSKProtoSyncMessageBlocked *blockedProto = [blockedBuilder buildInfallibly];

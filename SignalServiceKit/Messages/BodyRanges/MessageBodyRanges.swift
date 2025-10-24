@@ -74,7 +74,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 continue
             }
             let range = NSRange(location: Int(proto.start), length: Int(proto.length))
-            if let mentionAciString = proto.mentionAci, let mentionAci = Aci.parseFrom(aciString: mentionAciString) {
+            if let mentionAci = Aci.parseFrom(serviceIdBinary: proto.mentionAciBinary, serviceIdString: proto.mentionAci) {
                 mentions[range] = mentionAci
             } else if
                 let protoStyle = proto.style,
@@ -422,7 +422,11 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
                 return
             }
-            builder.setMentionAci(mention.value.serviceIdString)
+            if FeatureFlags.serviceIdBinaryOneOf {
+                builder.setMentionAciBinary(mention.value.serviceIdBinary)
+            } else {
+                builder.setMentionAci(mention.value.serviceIdString)
+            }
             protos.append(builder.buildInfallibly())
         }
 

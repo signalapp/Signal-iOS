@@ -81,6 +81,9 @@ extension OWSOutgoingSentMessageTranscript {
 
             let statusBuilder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.builder()
             statusBuilder.setDestinationServiceID(recipientServiceId.serviceIdString)
+            if FeatureFlags.serviceIdBinaryVariableOverhead {
+                statusBuilder.setDestinationServiceIDBinary(recipientServiceId.serviceIdBinary)
+            }
             statusBuilder.setUnidentified(recipientState.wasSentByUD)
 
             sentBuilder.addUnidentifiedStatus(statusBuilder.buildInfallibly())
