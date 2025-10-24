@@ -78,7 +78,7 @@ open class InteractiveSheetViewController: OWSViewController {
     public weak var externalBackdropView: UIView?
     private lazy var _internalBackdropView = UIView()
     public var backdropView: UIView? { externalBackdropView ?? _internalBackdropView }
-    public var backdropColor = Theme.backdropColor
+    public var backdropColor = UIColor.Signal.backdrop
 
     public var maxWidth: CGFloat { 512 }
 
@@ -791,7 +791,7 @@ private class InteractiveSheetAnimationController: UIPresentationController {
         return vc.externalBackdropView != nil
     }
 
-    init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, backdropColor: UIColor? = Theme.backdropColor) {
+    init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, backdropColor: UIColor? = .Signal.backdrop) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         backdropView?.backgroundColor = backdropColor
     }

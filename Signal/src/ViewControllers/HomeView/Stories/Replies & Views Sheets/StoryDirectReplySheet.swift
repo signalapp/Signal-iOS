@@ -26,8 +26,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
 
-    let backdropView: UIView? = UIView()
-
     let spoilerState: SpoilerRenderState
 
     private var inputToolbarBottomConstraint: NSLayoutConstraint?

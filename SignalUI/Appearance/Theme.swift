@@ -359,8 +359,6 @@ final public class Theme: NSObject {
         hairlineColor
     }
 
-    public class var backdropColor: UIColor { .ows_blackAlpha40 }
-
     public class var navbarBackgroundColor: UIColor {
         backgroundColor
     }

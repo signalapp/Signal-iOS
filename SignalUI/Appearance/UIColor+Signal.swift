@@ -219,6 +219,16 @@ extension UIColor.Signal {
         UIColor(rgbHex: 0xC7DDFB)
     }
 
+    public static var backdrop: UIColor {
+        UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                UIColor(white: 0, alpha: 0.48)
+            } else {
+                UIColor(white: 0, alpha: 0.2)
+            }
+        }
+    }
+
     // MARK: Grouped Background
 
     public static var groupedBackground: UIColor {

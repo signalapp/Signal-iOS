@@ -394,9 +394,7 @@ private class PinReminderPresentationController: UIPresentationController {
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.6
-        backdropView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+        backdropView.backgroundColor = .Signal.backdrop
     }
 
     override func presentationTransitionWillBegin() {

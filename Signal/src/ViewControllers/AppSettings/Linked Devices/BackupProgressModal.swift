@@ -174,7 +174,7 @@ class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncPro
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = Theme.backdropColor
+        self.view.backgroundColor = .Signal.backdrop
     }
 
     @MainActor

@@ -502,7 +502,7 @@ private class ActionSheetPresentationController: UIPresentationController {
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView.backgroundColor = UIColor.black.withAlphaComponent(0.16)
+        backdropView.backgroundColor = .Signal.backdrop
     }
 
     override func presentationTransitionWillBegin() {

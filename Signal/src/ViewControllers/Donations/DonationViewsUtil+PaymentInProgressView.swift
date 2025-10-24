@@ -13,7 +13,7 @@ extension DonationViewsUtil {
         operation: () async throws(E) -> T,
     ) async throws(E) -> T {
         let backdropView = UIView()
-        backdropView.backgroundColor = Theme.backdropColor
+        backdropView.backgroundColor = .Signal.backdrop
         backdropView.alpha = 0
         viewController.view.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()

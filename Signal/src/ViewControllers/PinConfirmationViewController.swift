@@ -342,8 +342,7 @@ private class PinConfirmationPresentationController: UIPresentationController {
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        backdropView.backgroundColor = UIColor(white: 0, alpha: 0.16)
+        backdropView.backgroundColor = .Signal.backdrop
     }
 
     override func presentationTransitionWillBegin() {

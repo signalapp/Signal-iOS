@@ -79,8 +79,7 @@ open class SheetViewController: UIViewController {
 
         let backgroundDuration: TimeInterval = 0.1
         UIView.animate(withDuration: backgroundDuration) {
-            let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.6
-            self.view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+            self.view.backgroundColor = .Signal.backdrop
         }
 
         self.sheetView.superview?.layoutIfNeeded()

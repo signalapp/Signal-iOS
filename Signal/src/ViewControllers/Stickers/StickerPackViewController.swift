@@ -420,7 +420,7 @@ private class StickerPackViewControllerAnimationController: UIPresentationContro
 
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView.backgroundColor = Theme.backdropColor
+        backdropView.backgroundColor = .Signal.backdrop
     }
 
     override func presentationTransitionWillBegin() {

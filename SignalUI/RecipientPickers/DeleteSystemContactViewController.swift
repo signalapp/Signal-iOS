@@ -60,7 +60,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let view = UIView()
         self.view.addSubview(view)
         view.autoPinEdgesToSuperviewEdges()
-        view.backgroundColor = .black.withAlphaComponent(0.15)
+        view.backgroundColor = .Signal.backdrop
         view.addSubview(spinnerView)
         spinnerView.autoCenterInSuperview()
         view.isHidden = true
