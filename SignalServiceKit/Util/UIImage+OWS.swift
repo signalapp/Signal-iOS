@@ -223,10 +223,11 @@ extension UIImage {
 
     public func withBadge(
         color: UIColor,
+        badgeSize: CGSize,
         borderColor: UIColor = .white
     ) -> UIImage {
-        let render = UIGraphicsImageRenderer(size: size)
-        let badgeSize = CGSize(width: 8, height: 8)
+        let newSize = CGSize(width: size.width + (badgeSize.width / 2.0), height: size.height + (badgeSize.height / 2.0))
+        let render = UIGraphicsImageRenderer(size: newSize)
         return render.image { _ in
             let iconTintedImage = withRenderingMode(.alwaysTemplate)
             iconTintedImage.draw(at: .zero)
@@ -258,12 +259,16 @@ extension UIImage {
 
     private static func renderBadge(
         size: CGSize,
-        origin: CGPoint,
+        origin: CGPoint = CGPoint.zero,
         color: UIColor,
         borderColor: UIColor = .white
     ) {
-        let badgeSize = size
-        let badgeOrigin = CGPoint(x: 0, y: 0)
+        let borderWidth = 1.0
+        let badgeSize = CGSize(
+            width: max(0, size.width - (borderWidth * 2.0)),
+            height: max(0, size.height - (borderWidth * 2.0))
+        )
+        let badgeOrigin = CGPoint(x: origin.x + borderWidth, y: origin.y + borderWidth)
         let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
         let badgePath = UIBezierPath(ovalIn: badgeRect)
 

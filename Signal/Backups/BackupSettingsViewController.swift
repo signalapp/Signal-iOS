@@ -1426,7 +1426,7 @@ struct BackupSettingsView: View {
                         } icon: {
                             Image(
                                 uiImage: UIImage.buildBadgeImage(
-                                    size: .square(8),
+                                    size: .square(10),
                                     color: UIColor.Signal.yellow
                                 )
                             )

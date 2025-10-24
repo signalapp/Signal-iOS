@@ -454,9 +454,12 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 var contextMenuActions: [UIMenuElement] = []
 
                 if viewState.settingsButtonCreator.hasBackupError {
-                    var image = Theme.iconImage(.backup)
+                    var image = Theme.iconImage(.backup).withTintColor(UIColor.Signal.label)
                     if viewState.settingsButtonCreator.showMenuBackupBadge {
-                        image = image.withBadge(color: UIColor.Signal.yellow)
+                        image = image.withBadge(
+                            color: UIColor.Signal.yellow,
+                            badgeSize: .square(8.5)
+                        )
                     }
 
                     contextMenuActions.append(
