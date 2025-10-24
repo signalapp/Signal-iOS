@@ -1449,6 +1449,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         await deps.registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: true)
 
+        do {
+            // releaseRestrictedWebSocket needs to be called before this happens.
+            try await deps.remoteConfigManager.refreshIfNeeded()
+        } catch {
+            Logger.warn("Failed to fetch remote config: \(error)")
+        }
+
         // Start syncing system contacts now that we have set up tsAccountManager.
         deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 

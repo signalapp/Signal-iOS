@@ -37,6 +37,7 @@ public struct RegistrationCoordinatorDependencies {
     public let registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenter
     public let registrationStateChangeManager: RegistrationStateChangeManager
     let registrationWebSocketManager: any RegistrationWebSocketManager
+    public let remoteConfigManager: any RemoteConfigManager
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
@@ -84,6 +85,7 @@ public struct RegistrationCoordinatorDependencies {
                 messagePipelineSupervisor: SSKEnvironment.shared.messagePipelineSupervisorRef,
                 messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             ),
+            remoteConfigManager: SSKEnvironment.shared.remoteConfigManagerRef,
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: SSKEnvironment.shared.signalServiceRef,
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
