@@ -88,6 +88,12 @@ class CLVViewState {
         }
     }
 
+    var hasConsumedMediaTierCapacity: Bool? {
+        didSet {
+            settingsButtonCreator.updateState(hasConsumedMediaTierCapacity: hasConsumedMediaTierCapacity)
+        }
+    }
+
     let backupDownloadProgressViewState = CLVBackupDownloadProgressView.State()
 
     // MARK: - Initializer

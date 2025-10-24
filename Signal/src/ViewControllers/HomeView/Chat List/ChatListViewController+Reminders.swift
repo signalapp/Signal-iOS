@@ -210,6 +210,11 @@ extension ChatListViewController {
         set { viewState.hasBackupFailure = newValue }
     }
 
+    var hasConsumedMediaTierCapacity: Bool? {
+        get { viewState.hasConsumedMediaTierCapacity }
+        set { viewState.hasConsumedMediaTierCapacity = newValue }
+    }
+
     public var reminderViewCell: UITableViewCell { reminderViews.reminderViewCell }
 
     fileprivate var reminderStackView: UIStackView { reminderViews.reminderStackView }
@@ -282,6 +287,13 @@ extension ChatListViewController {
         }
 
         self.hasBackupFailureState = result
+    }
+
+    public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
+        let backupSettingsStore = BackupSettingsStore()
+        self.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
+        }
     }
 
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {

@@ -17,6 +17,7 @@ extension HomeTabViewController {
         databaseStorage: SDSDatabaseStorage,
         shouldShowUnreadPaymentBadge: Bool = false,
         shouldShowBackupFailureBadge: Bool = false,
+        shouldShowOutOfMediaTierCapacityBadge: Bool = false,
         delegate: ContextMenuButtonDelegate? = nil,
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void
@@ -78,6 +79,12 @@ extension HomeTabViewController {
             wrapper.addSubview(contextButton)
             contextButton.autoPinEdgesToSuperviewEdges()
             PaymentsViewUtils.addUnreadBadge(toView: wrapper)
+            barButtonView = wrapper
+        } else if shouldShowOutOfMediaTierCapacityBadge {
+            let wrapper = UIView.container()
+            wrapper.addSubview(contextButton)
+            contextButton.autoPinEdgesToSuperviewEdges()
+            wrapper.addCircleBadge(color: UIColor.Signal.red)
             barButtonView = wrapper
         } else {
             barButtonView = contextButton

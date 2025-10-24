@@ -147,6 +147,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         // Update Backup error state
         updateBackupErrorStateWithSneakyTransaction()
+        updateHasConsumedMediaTierCapacityWithSneakyTransaction()
 
         // During main app launch, the chat list becomes visible _before_
         // app is foreground and active.  Therefore we need to make an
@@ -447,6 +448,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             databaseStorage: db,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
             shouldShowBackupFailureBadge: viewState.settingsButtonCreator.showAvatarBackupBadge,
+            shouldShowOutOfMediaTierCapacityBadge: viewState.settingsButtonCreator.hasConsumedMediaTierCapacity,
             delegate: self,
             buildActions: { settingsAction -> [UIMenuElement] in
                 var contextMenuActions: [UIMenuElement] = []
@@ -474,6 +476,22 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                         )
                                     }
                                     self?.updateBackupErrorStateWithSneakyTransaction()
+                                }
+                            )
+                        ])
+                    )
+                } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
+                    let image = Theme.iconImage(.backup).withBadge(color: UIColor.Signal.red)
+                    contextMenuActions.append(
+                        UIMenu(options: [.displayInline], children: [
+                            UIAction(
+                                title: OWSLocalizedString(
+                                    "HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA",
+                                    comment: "Title for the conversation list's backup storage full context menu action."
+                                ),
+                                image: image,
+                                handler: { _ in
+                                    SignalApp.shared.showAppSettings(mode: .backups)
                                 }
                             )
                         ])

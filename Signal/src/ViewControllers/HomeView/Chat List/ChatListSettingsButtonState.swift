@@ -16,6 +16,7 @@ final class ChatListSettingsButtonState {
     var hasArchivedChats: Bool = false
     var hasUnreadPaymentNotification: Bool = false
     var hasBackupError: Bool = false
+    var hasConsumedMediaTierCapacity: Bool = false
     var showAvatarBackupBadge: Bool = false
     var showMenuBackupBadge: Bool = false
 
@@ -26,6 +27,7 @@ final class ChatListSettingsButtonState {
         hasArchivedChats: Bool? = nil,
         hasUnreadPaymentNotification: Bool? = nil,
         hasBackupError: Bool? = nil,
+        hasConsumedMediaTierCapacity: Bool? = nil,
         showAvatarBackupBadge: Bool? = nil,
         showMenuBackupBadge: Bool? = nil,
     ) {
@@ -45,6 +47,10 @@ final class ChatListSettingsButtonState {
         if let hasBackupError {
             didUpdate = didUpdate || self.hasBackupError != hasBackupError
             self.hasBackupError = hasBackupError
+        }
+        if let hasConsumedMediaTierCapacity {
+            didUpdate = didUpdate || self.hasConsumedMediaTierCapacity != hasConsumedMediaTierCapacity
+            self.hasConsumedMediaTierCapacity = hasConsumedMediaTierCapacity
         }
         if let showAvatarBackupBadge {
             didUpdate = didUpdate || self.showAvatarBackupBadge != showAvatarBackupBadge

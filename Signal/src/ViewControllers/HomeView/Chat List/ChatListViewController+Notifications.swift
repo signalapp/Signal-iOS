@@ -103,6 +103,12 @@ extension ChatListViewController {
             name: .backupExportJobDidRun,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(hasConsumedMediaTierCapacityStateDidChange),
+            name: .hasConsumedMediaTierCapacityStatusDidChange,
+            object: nil
+        )
 
         viewState.backupDownloadProgressViewState.downloadQueueStatus =
             DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
@@ -142,6 +148,12 @@ extension ChatListViewController {
     private func backupDidRun(_ notification: NSNotification) {
         AssertIsOnMainThread()
         updateBackupErrorStateWithSneakyTransaction()
+    }
+
+    @objc
+    private func hasConsumedMediaTierCapacityStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        updateHasConsumedMediaTierCapacityWithSneakyTransaction()
     }
 
     @objc
