@@ -328,6 +328,7 @@ public class GRDBSchemaMigrator {
         case migrateTSAccountManagerKeyValueStore
         case populateBackupAttachmentUploadProgressKVStore
         case addPollVoteState
+        case addPreKey
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -443,7 +444,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 131
+    public static let grdbSchemaVersionLatest: UInt = 132
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4216,6 +4217,15 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addPreKey) { tx in
+            try createPreKey(tx: tx)
+            if FeatureFlags.decodeDeprecatedPreKeys {
+                try migratePreKeys(tx: tx)
+            }
+            try dropOldPreKeys(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6273,6 +6283,161 @@ public class GRDBSchemaMigrator {
             let validDeviceIds = (deviceIds ?? []).compactMap(UInt8.init(exactly:)).filter({ 1 <= $0 && $0 <= 127 })
             let newEncodedValue = Data(validDeviceIds.sorted())
             try tx.database.execute(sql: "UPDATE model_SignalRecipient SET devices = ? WHERE id = ?", arguments: [newEncodedValue, rowId])
+        }
+    }
+
+    static func createPreKey(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "PreKey") {
+            $0.column("rowId", .integer).primaryKey().notNull()
+            $0.column("identity", .integer).notNull()
+            $0.column("namespace", .integer).notNull()
+            $0.column("keyId", .integer).notNull()
+            $0.column("isOneTime", .boolean).notNull()
+            $0.column("replacedAt", .date)
+            $0.column("serializedRecord", .blob)
+            $0.check(sql: #"CASE "namespace" WHEN 0 THEN "isOneTime"=1 WHEN 2 THEN "isOneTime"=0 ELSE TRUE END"#)
+        }
+        // For fetching keys when asked by LibSignal.
+        try tx.database.create(
+            index: "PreKey_Unique",
+            on: "PreKey",
+            columns: ["identity", "namespace", "keyId"],
+            options: [.unique],
+        )
+        // For deleting keys that have been replaced and expired.
+        try tx.database.create(
+            index: "PreKey_Obsolete",
+            on: "PreKey",
+            columns: ["replacedAt"],
+            condition: Column("replacedAt") != nil,
+        )
+        // For marking keys that have been replaced.
+        try tx.database.create(
+            index: "PreKey_Replaced",
+            on: "PreKey",
+            columns: ["identity", "namespace", "isOneTime", "keyId"],
+            condition: Column("replacedAt") == nil,
+        )
+    }
+
+    static func migratePreKeys(tx: DBWriteTransaction) throws {
+        // If these ever change, you'll need to add a new migration to update the
+        // PreKey table and replace the old constants with the new constants.
+        assert(PreKey.Namespace.oneTime.rawValue == 0)
+        assert(PreKey.Namespace.kyber.rawValue == 1)
+        assert(PreKey.Namespace.signed.rawValue == 2)
+
+        try migratePreKeys(
+            in: (aci: "TSStorageManagerPreKeyStoreCollection", pni: "TSStorageManagerPNIPreKeyStoreCollection"),
+            namespace: 0,
+            tx: tx,
+        ) { encodedValue in
+            guard let decodedValue = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.PreKeyRecord.self, from: encodedValue) else {
+                throw OWSGenericError("missing decoded value")
+            }
+            let keyId = UInt32(bitPattern: decodedValue.id)
+            return (
+                keyId: keyId,
+                isOneTime: true,
+                replacedAt: decodedValue.replacedAt,
+                serializedRecord: try LibSignalClient.PreKeyRecord(
+                    id: keyId,
+                    privateKey: decodedValue.keyPair.keyPair.privateKey,
+                ).serialize(),
+            )
+        }
+
+        try migratePreKeys(
+            in: (aci: "TSStorageManagerSignedPreKeyStoreCollection", pni: "TSStorageManagerPNISignedPreKeyStoreCollection"),
+            namespace: 2,
+            tx: tx,
+        ) { encodedValue in
+            guard let decodedValue = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.SignedPreKeyRecord.self, from: encodedValue) else {
+                throw OWSGenericError("missing decoded value")
+            }
+            let keyId = UInt32(bitPattern: decodedValue.id)
+            return (
+                keyId: keyId,
+                isOneTime: false,
+                replacedAt: decodedValue.replacedAt,
+                serializedRecord: try LibSignalClient.SignedPreKeyRecord(
+                    id: keyId,
+                    timestamp: decodedValue.createdAt?.ows_millisecondsSince1970 ?? 0,
+                    privateKey: decodedValue.keyPair.keyPair.privateKey,
+                    signature: decodedValue.signature,
+                ).serialize(),
+            )
+        }
+
+        try migratePreKeys(
+            in: (aci: "SSKKyberPreKeyStoreACIKeyStore", pni: "SSKKyberPreKeyStorePNIKeyStore"),
+            namespace: 1,
+            tx: tx,
+        ) { encodedValue in
+            let decodedValue = try JSONDecoder().decode(SignalServiceKit.KyberPreKeyRecord.self, from: encodedValue)
+            return (
+                keyId: decodedValue.libSignalRecord.id,
+                isOneTime: !decodedValue.isLastResort,
+                replacedAt: decodedValue.replacedAt,
+                serializedRecord: decodedValue.libSignalRecord.serialize(),
+            )
+        }
+    }
+
+    static func migratePreKeys(
+        in collections: (aci: String, pni: String),
+        namespace: Int64,
+        tx: DBWriteTransaction,
+        decodeValue: (Data) throws -> (keyId: UInt32, isOneTime: Bool, replacedAt: Date?, serializedRecord: Data),
+    ) throws {
+        // If these ever change, you'll need to add a new migration to update the
+        // PreKey table and replace the old constants with the new constants.
+        assert(OWSIdentity.aci.rawValue == 0)
+        assert(OWSIdentity.pni.rawValue == 1)
+        for (collection, identity) in [(collections.aci, 0), (collections.pni, 1)] {
+            let keys = try String.fetchAll(
+                tx.database,
+                sql: "SELECT key FROM keyvalue WHERE collection = ?",
+                arguments: [collection],
+            )
+            for key in keys { try autoreleasepool {
+                let dataValue = try Data.fetchOne(
+                    tx.database,
+                    sql: "SELECT value FROM keyvalue WHERE collection = ? AND key = ?",
+                    arguments: [collection, key],
+                )!
+                guard let decodedValue = try? decodeValue(dataValue) else {
+                    // We don't expect any failures, but if there are failures, it's safe to
+                    // throw away the malformed values. We'll eventually recover organically.
+                    Logger.warn("Skipping \(key) in \(collection) that couldn't be decoded")
+                    return
+                }
+                try tx.database.execute(
+                    sql: "INSERT INTO PreKey (identity, namespace, keyId, isOneTime, replacedAt, serializedRecord) VALUES (?, ?, ?, ?, ?, ?)",
+                    arguments: [
+                        identity,
+                        namespace,
+                        decodedValue.keyId,
+                        decodedValue.isOneTime,
+                        decodedValue.replacedAt.map { Int64($0.timeIntervalSince1970) },
+                        decodedValue.serializedRecord,
+                    ],
+                )
+            }}
+        }
+    }
+
+    static func dropOldPreKeys(tx: DBWriteTransaction) throws {
+        let collections = [
+            "TSStorageManagerPreKeyStoreCollection",
+            "TSStorageManagerPNIPreKeyStoreCollection",
+            "TSStorageManagerSignedPreKeyStoreCollection",
+            "TSStorageManagerPNISignedPreKeyStoreCollection",
+            "SSKKyberPreKeyStoreACIKeyStore",
+            "SSKKyberPreKeyStorePNIKeyStore",
+        ]
+        for collection in collections {
+            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
         }
     }
 }

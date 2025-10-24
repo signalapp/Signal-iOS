@@ -275,9 +275,12 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager
         )
 
+        let preKeyStore = PreKeyStore()
+
         let aciProtocolStore = SignalProtocolStore.build(
             dateProvider: dateProvider,
             identity: .aci,
+            preKeyStore: preKeyStore,
             recipientIdFinder: recipientIdFinder,
         )
         let blockedRecipientStore = BlockedRecipientStore()
@@ -301,6 +304,7 @@ extension AppSetup.GlobalsContinuation {
         let pniProtocolStore = SignalProtocolStore.build(
             dateProvider: dateProvider,
             identity: .pni,
+            preKeyStore: preKeyStore,
             recipientIdFinder: recipientIdFinder,
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
@@ -315,7 +319,8 @@ extension AppSetup.GlobalsContinuation {
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManager(
             aciProtocolStore: aciProtocolStore,
-            pniProtocolStore: pniProtocolStore
+            pniProtocolStore: pniProtocolStore,
+            preKeyStore: preKeyStore,
         )
         let signalService = testDependencies.signalService ?? OWSSignalService(libsignalNet: libsignalNet)
         let signalServiceAddressCache = SignalServiceAddressCache()

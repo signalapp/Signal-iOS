@@ -5,7 +5,7 @@
 
 import Foundation
 
-class PreKeyId {
+enum PreKeyId {
     private enum Constants {
         static let upperBound: UInt32 = 0x1000000
     }
@@ -14,12 +14,22 @@ class PreKeyId {
         return UInt32.random(in: 1..<Constants.upperBound)
     }
 
-    static func nextPreKeyId(lastPreKeyId: UInt32, minimumCapacity: UInt32) -> UInt32 {
-        guard (1..<Constants.upperBound).contains(lastPreKeyId) else {
-            return UInt32.random(in: 1...(Constants.upperBound - minimumCapacity))
+    static func randomSigned() -> UInt32 {
+        return UInt32.random(in: 1..<UInt32(Int32.max))
+    }
+
+    static func nextPreKeyIds(lastPreKeyId: UInt32?, count: Int) -> ClosedRange<UInt32> {
+        owsPrecondition(count >= 1)
+        let result = nextPreKeyId(lastPreKeyId: lastPreKeyId, count: count)
+        return result...(result.advanced(by: count - 1))
+    }
+
+    private static func nextPreKeyId(lastPreKeyId: UInt32?, count: Int) -> UInt32 {
+        guard let lastPreKeyId, (1..<Constants.upperBound).contains(lastPreKeyId) else {
+            return UInt32.random(in: 1...(Constants.upperBound - UInt32(count)))
         }
         // We need `minimumCapacity` *after* `lastPreKeyId`.
-        if lastPreKeyId + minimumCapacity < Constants.upperBound {
+        if lastPreKeyId + UInt32(count) < Constants.upperBound {
             return lastPreKeyId + 1
         }
         return 1

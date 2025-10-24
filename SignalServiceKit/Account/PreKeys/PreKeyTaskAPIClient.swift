@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 protocol PreKeyTaskAPIClient {
     func getAvailablePreKeys(
         for identity: OWSIdentity
@@ -10,10 +12,10 @@ protocol PreKeyTaskAPIClient {
 
     func registerPreKeys(
         for identity: OWSIdentity,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
-        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
-        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
-        pqPreKeyRecords: [KyberPreKeyRecord]?,
+        signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord?,
+        preKeyRecords: [LibSignalClient.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) async throws
 }
@@ -43,10 +45,10 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
 
     func registerPreKeys(
         for identity: OWSIdentity,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
-        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
-        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
-        pqPreKeyRecords: [KyberPreKeyRecord]?,
+        signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord?,
+        preKeyRecords: [LibSignalClient.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) async throws {
         let request = OWSRequestFactory.registerPrekeysRequest(

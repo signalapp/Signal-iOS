@@ -11,16 +11,17 @@ public struct SignalProtocolStore {
     public let signedPreKeyStore: SignedPreKeyStoreImpl
     public let kyberPreKeyStore: KyberPreKeyStoreImpl
 
-    public static func build(
+    static func build(
         dateProvider: @escaping DateProvider,
         identity: OWSIdentity,
+        preKeyStore: PreKeyStore,
         recipientIdFinder: RecipientIdFinder,
     ) -> Self {
         return Self(
             sessionStore: SSKSessionStore(for: identity, recipientIdFinder: recipientIdFinder),
-            preKeyStore: PreKeyStoreImpl(for: identity),
-            signedPreKeyStore: SignedPreKeyStoreImpl(for: identity),
-            kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: dateProvider),
+            preKeyStore: PreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
+            signedPreKeyStore: SignedPreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
+            kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: dateProvider, preKeyStore: preKeyStore),
         )
     }
 }
@@ -29,6 +30,7 @@ public struct SignalProtocolStore {
 public struct SignalProtocolStoreManager {
     let aciProtocolStore: SignalProtocolStore
     let pniProtocolStore: SignalProtocolStore
+    let preKeyStore: PreKeyStore
 
     public func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
         switch identity {
@@ -42,9 +44,10 @@ public struct SignalProtocolStoreManager {
     public func removeAllKeys(tx: DBWriteTransaction) {
         for signalProtocolStore in [aciProtocolStore, pniProtocolStore] {
             signalProtocolStore.sessionStore.removeAll(tx: tx)
-            signalProtocolStore.preKeyStore.removeAll(tx: tx)
-            signalProtocolStore.signedPreKeyStore.removeAll(tx: tx)
-            signalProtocolStore.kyberPreKeyStore.removeAll(tx: tx)
+            signalProtocolStore.preKeyStore.removeMetadata(tx: tx)
+            signalProtocolStore.signedPreKeyStore.removeMetadata(tx: tx)
+            signalProtocolStore.kyberPreKeyStore.removeMetadata(tx: tx)
         }
+        self.preKeyStore.removeAll(tx: tx)
     }
 }

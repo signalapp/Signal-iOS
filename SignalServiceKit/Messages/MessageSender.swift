@@ -1787,15 +1787,17 @@ public class MessageSender {
         let messageType: SSKProtoEnvelopeType
 
         let identityManager = DependenciesBridge.shared.identityManager
-        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
+        let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+        let signalProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
+        let preKeyStore = signalProtocolStoreManager.preKeyStore.forIdentity(.aci)
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         if let sealedSenderParameters {
             let secretCipher = SMKSecretSessionCipher(
                 sessionStore: signalProtocolStore.sessionStore,
-                preKeyStore: signalProtocolStore.preKeyStore,
-                signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-                kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
+                preKeyStore: preKeyStore,
+                signedPreKeyStore: preKeyStore,
+                kyberPreKeyStore: preKeyStore,
                 identityStore: try identityManager.libSignalStore(for: .aci, tx: transaction),
                 senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
             )

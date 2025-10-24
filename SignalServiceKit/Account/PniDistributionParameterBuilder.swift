@@ -9,8 +9,8 @@ public enum PniDistribution {
     /// Parameters for distributing PNI information to linked devices.
     public struct Parameters {
         let pniIdentityKey: IdentityKey
-        private(set) var devicePniSignedPreKeys: [String: SignalServiceKit.SignedPreKeyRecord] = [:]
-        private(set) var devicePniPqLastResortPreKeys: [String: KyberPreKeyRecord] = [:]
+        private(set) var devicePniSignedPreKeys: [String: LibSignalClient.SignedPreKeyRecord] = [:]
+        private(set) var devicePniPqLastResortPreKeys: [String: LibSignalClient.KyberPreKeyRecord] = [:]
         private(set) var pniRegistrationIds: [String: UInt32] = [:]
         private(set) var deviceMessages: [DeviceMessage] = []
 
@@ -20,11 +20,11 @@ public enum PniDistribution {
 
         #if TESTABLE_BUILD
 
-        public static func mock(
+        static func mock(
             pniIdentityKeyPair: ECKeyPair,
             localDeviceId: DeviceId,
-            localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
-            localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
+            localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
+            localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) -> Parameters {
             var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.keyPair.identityKey)
@@ -41,8 +41,8 @@ public enum PniDistribution {
 
         fileprivate mutating func addLocalDevice(
             localDeviceId: DeviceId,
-            signedPreKey: SignalServiceKit.SignedPreKeyRecord,
-            pqLastResortPreKey: KyberPreKeyRecord,
+            signedPreKey: LibSignalClient.SignedPreKeyRecord,
+            pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
             registrationId: UInt32
         ) {
             devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
@@ -52,8 +52,8 @@ public enum PniDistribution {
 
         fileprivate mutating func addLinkedDevice(
             deviceId: DeviceId,
-            signedPreKey: SignalServiceKit.SignedPreKeyRecord,
-            pqLastResortPreKey: KyberPreKeyRecord,
+            signedPreKey: LibSignalClient.SignedPreKeyRecord,
+            pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
             registrationId: UInt32,
             deviceMessage: DeviceMessage
         ) {
@@ -92,8 +92,8 @@ protocol PniDistributionParamaterBuilder {
         localDeviceId: LocalDeviceId,
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
-        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
-        localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
+        localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) async throws -> PniDistribution.Parameters
 }
@@ -123,8 +123,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localDeviceId: LocalDeviceId,
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
-        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
-        localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
+        localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) async throws -> PniDistribution.Parameters {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.keyPair.identityKey)
@@ -167,8 +167,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// generation.
     private struct LinkedDevicePniGenerationParams {
         let deviceId: DeviceId
-        let signedPreKey: SignalServiceKit.SignedPreKeyRecord
-        let pqLastResortPreKey: KyberPreKeyRecord
+        let signedPreKey: LibSignalClient.SignedPreKeyRecord
+        let pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord
         let registrationId: UInt32
         let deviceMessage: DeviceMessage
     }
@@ -181,13 +181,14 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     ) async throws -> [LinkedDevicePniGenerationParams] {
         var syncMessages = [DeviceId: PniDistributionSyncMessage]()
 
+        let identityKey = pniIdentityKeyPair.identityKeyPair.privateKey
         let deviceMessages = try await self.messageSender.buildDeviceMessages(
             serviceId: localAci,
             isSelfSend: true,
             encryptionStyle: .whisper,
             buildPlaintextContent: { deviceId, _ in
-                let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniIdentityKeyPair)
-                let pqLastResortPreKey = pniKyberPreKeyStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: pniIdentityKeyPair)
+                let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKey)
+                let pqLastResortPreKey = pniKyberPreKeyStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: identityKey)
                 let registrationId = registrationIdGenerator.generate()
 
                 let syncMessage = PniDistributionSyncMessage(

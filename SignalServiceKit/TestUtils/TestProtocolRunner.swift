@@ -6,20 +6,28 @@
 #if TESTABLE_BUILD
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
+
+extension InMemorySignalProtocolStore: WritablePreKeyStore {}
+extension InMemorySignalProtocolStore: WritableSignedPreKeyStore {}
+extension InMemorySignalProtocolStore: WritableKyberPreKeyStore {}
 
 /// A helper for tests which can initializes Signal Protocol sessions
 /// and then encrypt and decrypt messages for those sessions.
-public struct TestProtocolRunner {
+struct TestProtocolRunner {
 
-    public init() { }
+    init() { }
 
     /// Sets up a session for `senderClient` to send to `recipientClient`, but not vice versa.
     ///
     /// Messages from `senderClient` will be PreKey messages.
-    public func initializePreKeys(senderClient: TestSignalClient,
-                                  recipientClient: TestSignalClient,
-                                  transaction: DBWriteTransaction) throws {
+    func initializePreKeys(
+        senderClient: TestSignalClient,
+        recipientClient: TestSignalClient,
+        hasSignedPreKey: Bool = true,
+        hasOneTimePreKey: Bool = true,
+        transaction: DBWriteTransaction,
+    ) throws {
         senderClient.ensureRecipientId(tx: transaction)
         recipientClient.ensureRecipientId(tx: transaction)
 
@@ -63,52 +71,57 @@ public struct TestProtocolRunner {
         )
 
         // Bob does the same:
-        try recipientClient.preKeyStore.storePreKey(LibSignalClient.PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
-                                                    id: prekeyId,
-                                                    context: transaction)
-
-        try recipientClient.signedPreKeyStore.storeSignedPreKey(
-            LibSignalClient.SignedPreKeyRecord(
-                id: signedPrekeyId,
-                timestamp: 42000,
-                privateKey: bobSignedPreKey,
-                signature: bobSignedPreKeySignature
-            ),
-            id: signedPrekeyId,
-            context: transaction)
-
-        if let kyberPreKeyStore = recipientClient.kyberPreKeyStore as? KyberPreKeyStoreImpl {
-            // libsignal's storeKyberPreKey(...) is incomplete, use KyberPreKeyStoreImpl's version instead.
-            try kyberPreKeyStore.storeKyberPreKeyRecords(
-                records: [SignalServiceKit.KyberPreKeyRecord(
-                    kyberPrekeyId,
-                    keyPair: bobKyberPreKey,
-                    signature: Data(bobKyberPreKeySignature),
-                    generatedAt: Date(millisecondsSince1970: 42000),
-                    replacedAt: nil,
-                    isLastResort: false)],
-                tx: transaction)
-        } else {
-            try recipientClient.kyberPreKeyStore.storeKyberPreKey(
-                LibSignalClient.KyberPreKeyRecord(
-                    id: kyberPrekeyId,
-                    timestamp: 42000,
-                    keyPair: bobKyberPreKey,
-                    signature: bobKyberPreKeySignature
-                ),
-                id: kyberPrekeyId,
-                context: transaction)
+        if hasOneTimePreKey {
+            try recipientClient.preKeyStore.storePreKey(
+                LibSignalClient.PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
+                replacedAt: nil,
+                context: transaction,
+            )
         }
+
+        if hasSignedPreKey {
+            try recipientClient.signedPreKeyStore.storeSignedPreKey(
+                LibSignalClient.SignedPreKeyRecord(
+                    id: signedPrekeyId,
+                    timestamp: 42000,
+                    privateKey: bobSignedPreKey,
+                    signature: bobSignedPreKeySignature
+                ),
+                replacedAt: nil,
+                context: transaction,
+            )
+        }
+
+        try recipientClient.kyberPreKeyStore.storeKyberPreKey(
+            LibSignalClient.KyberPreKeyRecord(
+                id: kyberPrekeyId,
+                timestamp: 42000,
+                keyPair: bobKyberPreKey,
+                signature: bobKyberPreKeySignature,
+            ),
+            isOneTime: true,
+            replacedAt: nil,
+            context: transaction,
+        )
     }
 
     /// Sets up a session between `senderClient` and `recipientClient`, so that either can talk to the other.
     ///
     /// Messages between both clients will be "Whisper" / "ciphertext" / "Signal" messages.
-    public func initialize(senderClient: TestSignalClient,
-                           recipientClient: TestSignalClient,
-                           transaction: DBWriteTransaction) throws {
-
-        try initializePreKeys(senderClient: senderClient, recipientClient: recipientClient, transaction: transaction)
+    public func initialize(
+        senderClient: TestSignalClient,
+        recipientClient: TestSignalClient,
+        hasSignedPreKey: Bool = true,
+        hasOneTimePreKey: Bool = true,
+        transaction: DBWriteTransaction,
+    ) throws {
+        try initializePreKeys(
+            senderClient: senderClient,
+            recipientClient: recipientClient,
+            hasSignedPreKey: hasSignedPreKey,
+            hasOneTimePreKey: hasOneTimePreKey,
+            transaction: transaction,
+        )
 
         // Then Alice sends a message to Bob so he gets her pre-key as well.
         let aliceMessage = try encrypt(Data(),
@@ -170,7 +183,7 @@ public typealias SignalAccountIdentifier = String
 
 /// Represents a Signal installation, it can represent the local client or
 /// a remote client.
-public protocol TestSignalClient {
+protocol TestSignalClient {
     var identityKeyPair: ECKeyPair { get }
     var identityKey: Data { get }
     var e164Identifier: SignalE164Identifier? { get }
@@ -179,14 +192,14 @@ public protocol TestSignalClient {
     var address: SignalServiceAddress { get }
     var protocolAddress: ProtocolAddress { get }
 
-    var sessionStore: SessionStore { get }
-    var preKeyStore: PreKeyStore { get }
-    var signedPreKeyStore: SignedPreKeyStore { get }
-    var kyberPreKeyStore: KyberPreKeyStore { get }
-    var identityKeyStore: IdentityKeyStore { get }
+    var sessionStore: LibSignalClient.SessionStore { get }
+    var preKeyStore: LibSignalClient.PreKeyStore & WritablePreKeyStore { get }
+    var signedPreKeyStore: LibSignalClient.SignedPreKeyStore & WritableSignedPreKeyStore { get }
+    var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore & WritableKyberPreKeyStore { get }
+    var identityKeyStore: LibSignalClient.IdentityKeyStore { get }
 }
 
-public extension TestSignalClient {
+extension TestSignalClient {
     var identityKey: Data {
         return identityKeyPair.publicKey
     }
@@ -206,24 +219,24 @@ public extension TestSignalClient {
 
 /// Can be used to represent the protocol state held by a remote client.
 /// i.e. someone who's sending messages to the local client.
-public struct FakeSignalClient: TestSignalClient {
+struct FakeSignalClient: TestSignalClient {
 
-    public var sessionStore: SessionStore { return protocolStore }
-    public var preKeyStore: PreKeyStore { return protocolStore }
-    public var signedPreKeyStore: SignedPreKeyStore { return protocolStore }
-    public var identityKeyStore: IdentityKeyStore { return protocolStore }
-    public var kyberPreKeyStore: KyberPreKeyStore { return protocolStore }
+    var sessionStore: LibSignalClient.SessionStore { return protocolStore }
+    var preKeyStore: LibSignalClient.PreKeyStore & WritablePreKeyStore { return protocolStore }
+    var signedPreKeyStore: LibSignalClient.SignedPreKeyStore & WritableSignedPreKeyStore { return protocolStore }
+    var identityKeyStore: LibSignalClient.IdentityKeyStore { return protocolStore }
+    var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore & WritableKyberPreKeyStore { return protocolStore }
 
-    public let e164Identifier: SignalE164Identifier?
-    public let serviceId: ServiceId
-    public let protocolStore: InMemorySignalProtocolStore
+    let e164Identifier: SignalE164Identifier?
+    let serviceId: ServiceId
+    let protocolStore: InMemorySignalProtocolStore
 
-    public var deviceId = UInt32(1)
-    public var identityKeyPair: ECKeyPair {
+    var deviceId = UInt32(1)
+    var identityKeyPair: ECKeyPair {
         return ECKeyPair(try! protocolStore.identityKeyPair(context: NullContext()))
     }
 
-    public static func generate() -> FakeSignalClient {
+    static func generate() -> FakeSignalClient {
         return FakeSignalClient(
             e164Identifier: CommonGenerator.e164(),
             serviceId: Aci.randomForTesting(),
@@ -231,7 +244,7 @@ public struct FakeSignalClient: TestSignalClient {
         )
     }
 
-    public static func generate(
+    static func generate(
         e164Identifier: SignalE164Identifier? = nil,
         aci: Aci? = nil,
         deviceID: UInt32? = nil
@@ -250,30 +263,28 @@ public struct FakeSignalClient: TestSignalClient {
 
 /// Represents the local user, backed by the same protocol stores, etc.
 /// used in the app.
-public struct LocalSignalClient: TestSignalClient {
-    public let identity: OWSIdentity
-    public let protocolStore: SignalProtocolStore
+struct LocalSignalClient: TestSignalClient {
+    let identity: OWSIdentity
+    let _preKeyStore: PreKeyStore
+    let _sessionStore: SSKSessionStore
 
-    public init(identity: OWSIdentity = .aci) {
+    init(identity: OWSIdentity = .aci) {
         self.identity = identity
-        self.protocolStore = SignalProtocolStore.build(
-            dateProvider: Date.provider,
-            identity: identity,
-            recipientIdFinder: DependenciesBridge.shared.recipientIdFinder,
-        )
+        self._preKeyStore = PreKeyStore()
+        self._sessionStore = SSKSessionStore(for: identity, recipientIdFinder: DependenciesBridge.shared.recipientIdFinder)
     }
 
-    public var identityKeyPair: ECKeyPair {
+    var identityKeyPair: ECKeyPair {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: tx)!
         }
     }
 
-    public var e164Identifier: SignalE164Identifier? {
+    var e164Identifier: SignalE164Identifier? {
         return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
     }
 
-    public var serviceId: ServiceId {
+    var serviceId: ServiceId {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         switch identity {
         case .aci: return localIdentifiers.aci
@@ -281,22 +292,22 @@ public struct LocalSignalClient: TestSignalClient {
         }
     }
 
-    public let deviceId: UInt32 = 1
+    let deviceId: UInt32 = 1
 
-    public var sessionStore: SessionStore {
-        return protocolStore.sessionStore
+    var sessionStore: LibSignalClient.SessionStore {
+        return _sessionStore
     }
 
-    public var preKeyStore: PreKeyStore {
-        return protocolStore.preKeyStore
+    var preKeyStore: LibSignalClient.PreKeyStore & WritablePreKeyStore {
+        return self._preKeyStore.forIdentity(self.identity)
     }
 
-    public var signedPreKeyStore: SignedPreKeyStore {
-        return protocolStore.signedPreKeyStore
+    var signedPreKeyStore: LibSignalClient.SignedPreKeyStore & WritableSignedPreKeyStore {
+        return self._preKeyStore.forIdentity(self.identity)
     }
 
-    public var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
-        return protocolStore.kyberPreKeyStore
+    var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore & WritableKyberPreKeyStore {
+        return self._preKeyStore.forIdentity(self.identity)
     }
 
     public var identityKeyStore: IdentityKeyStore {
@@ -317,16 +328,16 @@ public struct LocalSignalClient: TestSignalClient {
 
 var envelopeId: UInt64 = 0
 
-public struct FakeService {
-    public let localClient: LocalSignalClient
-    public let runner: TestProtocolRunner
+struct FakeService {
+    let localClient: LocalSignalClient
+    let runner: TestProtocolRunner
 
-    public init(localClient: LocalSignalClient, runner: TestProtocolRunner) {
+    init(localClient: LocalSignalClient, runner: TestProtocolRunner) {
         self.localClient = localClient
         self.runner = runner
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelopeBuilder {
+    func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
@@ -344,7 +355,7 @@ public struct FakeService {
         return builder
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> SSKProtoEnvelopeBuilder {
+    func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
@@ -359,7 +370,7 @@ public struct FakeService {
         return builder
     }
 
-    public func envelopeBuilderForServerGeneratedDeliveryReceipt(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
+    func envelopeBuilderForServerGeneratedDeliveryReceipt(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.receipt)
@@ -368,7 +379,7 @@ public struct FakeService {
         return builder
     }
 
-    public func envelopeBuilderForInvalidEnvelope(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
+    func envelopeBuilderForInvalidEnvelope(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.unknown)
@@ -378,8 +389,7 @@ public struct FakeService {
         return builder
     }
 
-    public func envelopeBuilderForUDDeliveryReceipt(fromSenderClient senderClient: TestSignalClient,
-                                                    timestamp: UInt64) -> SSKProtoEnvelopeBuilder {
+    func envelopeBuilderForUDDeliveryReceipt(fromSenderClient senderClient: TestSignalClient, timestamp: UInt64) -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
@@ -391,7 +401,7 @@ public struct FakeService {
         return builder
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, timestamp: UInt64, bodyText: String?) throws -> Data {
+    func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, timestamp: UInt64, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(timestamp: timestamp, bodyText: bodyText)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
@@ -404,7 +414,7 @@ public struct FakeService {
         return cipherMessage.serialize()
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
+    func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
         let plaintext = try buildContentData(groupV2Context: groupV2Context)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
@@ -417,8 +427,7 @@ public struct FakeService {
         return cipherMessage.serialize()
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient,
-                                          deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
+    func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
         let plaintext = try buildContentData(deliveryReceiptForMessage: timestamp)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
@@ -431,7 +440,7 @@ public struct FakeService {
         return cipherMessage.serialize()
     }
 
-    public func buildContentData(timestamp: UInt64, bodyText: String?) throws -> Data {
+    func buildContentData(timestamp: UInt64, bodyText: String?) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
         dataMessageBuilder.setTimestamp(timestamp)
         if let bodyText = bodyText {
@@ -446,9 +455,7 @@ public struct FakeService {
         return try contentBuilder.buildSerializedData()
     }
 
-    public func buildSyncSentMessage(bodyText: String,
-                                     recipient: SignalServiceAddress,
-                                     timestamp: UInt64) throws -> Data {
+    func buildSyncSentMessage(bodyText: String, recipient: SignalServiceAddress, timestamp: UInt64) throws -> Data {
         guard let destinationServiceId = recipient.serviceId else {
             owsFail("Cannot build sync message without a recipient UUID. Test is not set up correctly")
         }
@@ -470,7 +477,7 @@ public struct FakeService {
         return try contentBuilder.buildSerializedData()
     }
 
-    public func buildContentData(groupV2Context: SSKProtoGroupContextV2) throws -> Data {
+    func buildContentData(groupV2Context: SSKProtoGroupContextV2) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
         dataMessageBuilder.setGroupV2(groupV2Context)
 
@@ -480,7 +487,7 @@ public struct FakeService {
         return try contentBuilder.buildSerializedData()
     }
 
-    public func buildContentData(deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
+    func buildContentData(deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
         let receiptMessageBuilder = SSKProtoReceiptMessage.builder()
         receiptMessageBuilder.setType(.delivery)
         receiptMessageBuilder.setTimestamp([timestamp])

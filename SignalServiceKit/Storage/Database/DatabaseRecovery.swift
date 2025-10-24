@@ -370,6 +370,7 @@ public extension DatabaseRecovery {
             BlockedRecipient.databaseTableName,
             BlockedGroup.databaseTableName,
             StoryRecipient.databaseTableName,
+            PreKey.databaseTableName,
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.

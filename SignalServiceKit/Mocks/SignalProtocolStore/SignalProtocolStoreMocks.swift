@@ -9,12 +9,12 @@ import Foundation
 import LibSignalClient
 
 extension SignalProtocolStore {
-    static func mock(identity: OWSIdentity) -> Self {
+    static func mock(identity: OWSIdentity, preKeyStore: PreKeyStore) -> Self {
         return SignalProtocolStore(
             sessionStore: MockSessionStore(),
-            preKeyStore: PreKeyStoreImpl(for: identity),
-            signedPreKeyStore: SignedPreKeyStoreImpl(for: identity),
-            kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: Date.provider),
+            preKeyStore: PreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
+            signedPreKeyStore: SignedPreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
+            kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: Date.provider, preKeyStore: preKeyStore),
         )
     }
 }

@@ -81,6 +81,11 @@ public enum FeatureFlags {
     public static let pollKeepProtoVersion = build <= .internal
 
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
+
+    // Turn this off after all still-registered clients have run this
+    // migration. That should happen by 2026-05-27. Then, delete all the code
+    // that's now dead because this is false.
+    public static let decodeDeprecatedPreKeys = true
 }
 
 // MARK: -

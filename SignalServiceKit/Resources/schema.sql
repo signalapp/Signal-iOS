@@ -2493,3 +2493,51 @@ CREATE
     ,"voteCount"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "PreKey" (
+            "rowId" INTEGER PRIMARY KEY NOT NULL
+            ,"identity" INTEGER NOT NULL
+            ,"namespace" INTEGER NOT NULL
+            ,"keyId" INTEGER NOT NULL
+            ,"isOneTime" BOOLEAN NOT NULL
+            ,"replacedAt" DATE
+            ,"serializedRecord" BLOB
+            ,CHECK (
+                CASE
+                    "namespace" WHEN 0
+                    THEN "isOneTime" = 1 WHEN 2
+                    THEN "isOneTime" = 0
+                    ELSE TRUE
+                END
+            )
+        )
+;
+
+CREATE
+    UNIQUE INDEX "PreKey_Unique"
+        ON "PreKey"("identity"
+    ,"namespace"
+    ,"keyId"
+)
+;
+
+CREATE
+    INDEX "PreKey_Obsolete"
+        ON "PreKey"("replacedAt"
+)
+WHERE
+"replacedAt" IS NOT NULL
+;
+
+CREATE
+    INDEX "PreKey_Replaced"
+        ON "PreKey"("identity"
+    ,"namespace"
+    ,"isOneTime"
+    ,"keyId"
+)
+WHERE
+"replacedAt" IS NULL
+;

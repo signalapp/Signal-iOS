@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Represents a message sent to linked devices during a PNI distribution event
 /// informing those devices of the new PNI identity.
@@ -13,15 +14,15 @@ import Foundation
 /// PNI distribution request (and thereafter distributed by the service).
 final class PniDistributionSyncMessage {
     let pniIdentityKeyPair: ECKeyPair
-    let signedPreKey: SignedPreKeyRecord
-    let pqLastResortPreKey: KyberPreKeyRecord
+    let signedPreKey: LibSignalClient.SignedPreKeyRecord
+    let pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord
     let registrationId: UInt32
     let e164: E164
 
     init(
         pniIdentityKeyPair: ECKeyPair,
-        signedPreKey: SignedPreKeyRecord,
-        pqLastResortPreKey: KyberPreKeyRecord,
+        signedPreKey: LibSignalClient.SignedPreKeyRecord,
+        pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         registrationId: UInt32,
         e164: E164
     ) {
@@ -36,8 +37,8 @@ final class PniDistributionSyncMessage {
     func buildSerializedMessageProto() throws -> Data {
         let changeNumberBuilder = SSKProtoSyncMessagePniChangeNumber.builder()
         changeNumberBuilder.setIdentityKeyPair(pniIdentityKeyPair.identityKeyPair.serialize())
-        changeNumberBuilder.setSignedPreKey(try signedPreKey.asLSCRecord().serialize())
-        changeNumberBuilder.setLastResortKyberPreKey(try pqLastResortPreKey.asLSCRecord().serialize())
+        changeNumberBuilder.setSignedPreKey(signedPreKey.serialize())
+        changeNumberBuilder.setLastResortKyberPreKey(pqLastResortPreKey.serialize())
         changeNumberBuilder.setRegistrationID(registrationId)
         changeNumberBuilder.setNewE164(e164.stringValue)
 

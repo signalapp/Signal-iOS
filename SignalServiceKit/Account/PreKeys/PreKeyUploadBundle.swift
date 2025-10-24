@@ -4,13 +4,14 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 public protocol PreKeyUploadBundle {
     var identity: OWSIdentity { get }
-    func getSignedPreKey() -> SignedPreKeyRecord?
-    func getPreKeyRecords() -> [PreKeyRecord]?
-    func getLastResortPreKey() -> KyberPreKeyRecord?
-    func getPqPreKeyRecords() -> [KyberPreKeyRecord]?
+    func getSignedPreKey() -> LibSignalClient.SignedPreKeyRecord?
+    func getPreKeyRecords() -> [LibSignalClient.PreKeyRecord]?
+    func getLastResortPreKey() -> LibSignalClient.KyberPreKeyRecord?
+    func getPqPreKeyRecords() -> [LibSignalClient.KyberPreKeyRecord]?
 }
 
 extension PreKeyUploadBundle {
@@ -29,17 +30,17 @@ extension PreKeyUploadBundle {
 
 public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
     public let identity: OWSIdentity
-    public let signedPreKey: SignedPreKeyRecord?
-    public let preKeyRecords: [PreKeyRecord]?
-    public let lastResortPreKey: KyberPreKeyRecord?
-    public let pqPreKeyRecords: [KyberPreKeyRecord]?
+    public let signedPreKey: LibSignalClient.SignedPreKeyRecord?
+    public let preKeyRecords: [LibSignalClient.PreKeyRecord]?
+    public let lastResortPreKey: LibSignalClient.KyberPreKeyRecord?
+    public let pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?
 
     internal init(
         identity: OWSIdentity,
-        signedPreKey: SignedPreKeyRecord? = nil,
-        preKeyRecords: [PreKeyRecord]? = nil,
-        lastResortPreKey: KyberPreKeyRecord? = nil,
-        pqPreKeyRecords: [KyberPreKeyRecord]? = nil
+        signedPreKey: LibSignalClient.SignedPreKeyRecord? = nil,
+        preKeyRecords: [LibSignalClient.PreKeyRecord]? = nil,
+        lastResortPreKey: LibSignalClient.KyberPreKeyRecord? = nil,
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]? = nil
     ) {
         self.identity = identity
         self.signedPreKey = signedPreKey
@@ -48,23 +49,23 @@ public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
         self.pqPreKeyRecords = pqPreKeyRecords
     }
 
-    public func getSignedPreKey() -> SignedPreKeyRecord? { signedPreKey }
-    public func getPreKeyRecords() -> [PreKeyRecord]? { preKeyRecords }
-    public func getLastResortPreKey() -> KyberPreKeyRecord? { lastResortPreKey }
-    public func getPqPreKeyRecords() -> [KyberPreKeyRecord]? { pqPreKeyRecords }
+    public func getSignedPreKey() -> LibSignalClient.SignedPreKeyRecord? { signedPreKey }
+    public func getPreKeyRecords() -> [LibSignalClient.PreKeyRecord]? { preKeyRecords }
+    public func getLastResortPreKey() -> LibSignalClient.KyberPreKeyRecord? { lastResortPreKey }
+    public func getPqPreKeyRecords() -> [LibSignalClient.KyberPreKeyRecord]? { pqPreKeyRecords }
 }
 
 public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
     public let identity: OWSIdentity
     public let identityKeyPair: ECKeyPair
-    public let signedPreKey: SignedPreKeyRecord
-    public let lastResortPreKey: KyberPreKeyRecord
+    public let signedPreKey: LibSignalClient.SignedPreKeyRecord
+    public let lastResortPreKey: LibSignalClient.KyberPreKeyRecord
 
     public init(
         identity: OWSIdentity,
         identityKeyPair: ECKeyPair,
-        signedPreKey: SignedPreKeyRecord,
-        lastResortPreKey: KyberPreKeyRecord
+        signedPreKey: LibSignalClient.SignedPreKeyRecord,
+        lastResortPreKey: LibSignalClient.KyberPreKeyRecord
     ) {
         self.identity = identity
         self.identityKeyPair = identityKeyPair
@@ -72,10 +73,10 @@ public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
         self.lastResortPreKey = lastResortPreKey
     }
 
-    public func getSignedPreKey() -> SignedPreKeyRecord? { signedPreKey }
-    public func getPreKeyRecords() -> [PreKeyRecord]? { nil }
-    public func getLastResortPreKey() -> KyberPreKeyRecord? { lastResortPreKey }
-    public func getPqPreKeyRecords() -> [KyberPreKeyRecord]? { nil }
+    public func getSignedPreKey() -> LibSignalClient.SignedPreKeyRecord? { signedPreKey }
+    public func getPreKeyRecords() -> [LibSignalClient.PreKeyRecord]? { nil }
+    public func getLastResortPreKey() -> LibSignalClient.KyberPreKeyRecord? { lastResortPreKey }
+    public func getPqPreKeyRecords() -> [LibSignalClient.KyberPreKeyRecord]? { nil }
 }
 
 public struct RegistrationPreKeyUploadBundles {

@@ -11,7 +11,7 @@
 /// And yes, that means the full enumerator names mean "account identifier identity" and
 /// "phone number identifier identity".
 @objc
-public enum OWSIdentity: UInt8 {
-    case aci
-    case pni
+public enum OWSIdentity: UInt8, Codable {
+    case aci = 0
+    case pni = 1
 }

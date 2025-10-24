@@ -606,12 +606,13 @@ extension MessageSender {
 
         let identityManager = DependenciesBridge.shared.identityManager
         let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+        let preKeyStore = signalProtocolStoreManager.preKeyStore.forIdentity(.aci)
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
             sessionStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
-            preKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).preKeyStore,
-            signedPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).signedPreKeyStore,
-            kyberPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).kyberPreKeyStore,
+            preKeyStore: preKeyStore,
+            signedPreKeyStore: preKeyStore,
+            kyberPreKeyStore: preKeyStore,
             identityStore: identityManager.libSignalStore(for: .aci, tx: writeTx),
             senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef)
 

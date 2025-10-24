@@ -922,6 +922,89 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual([UInt8](signalRecipients[2]["devices"] as Data), [1, 2, 3])
         }
     }
+
+    func testMigratePreKeys() throws {
+        let now = Date()
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE keyvalue (collection TEXT NOT NULL, key TEXT NOT NULL, value BLOB NOT NULL);
+            """)
+
+            let preKey = SignalServiceKit.PreKeyRecord(
+                id: 123,
+                keyPair: .generateKeyPair(),
+                createdAt: now - 1,
+                replacedAt: now,
+            )
+            let signedKeyPair = ECKeyPair.generateKeyPair()
+            let signedPreKey = SignalServiceKit.SignedPreKeyRecord(
+                id: 234,
+                keyPair: signedKeyPair,
+                signature: PrivateKey.generate().generateSignature(message: signedKeyPair.keyPair.publicKey.serialize()),
+                generatedAt: now - 1,
+                replacedAt: now,
+            )
+            let kyberKeyPair = KEMKeyPair.generate()
+            let kyberPreKeyRecord = try LibSignalClient.KyberPreKeyRecord(
+                id: 345,
+                timestamp: (now - 1).ows_millisecondsSince1970,
+                keyPair: kyberKeyPair,
+                signature: PrivateKey.generate().generateSignature(message: kyberKeyPair.publicKey.serialize()),
+            )
+            let kyberPreKey = SignalServiceKit.KyberPreKeyRecord(
+                replacedAt: now,
+                libSignalRecord: kyberPreKeyRecord,
+                isLastResort: false,
+            )
+
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerPreKeyStoreCollection", "123", keyedArchiverData(rootObject: preKey)],
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerPNISignedPreKeyStoreCollection", "234", keyedArchiverData(rootObject: signedPreKey)],
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["SSKKyberPreKeyStoreACIKeyStore", "345", try JSONEncoder().encode(kyberPreKey)],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.createPreKey(tx: tx)
+                try GRDBSchemaMigrator.migratePreKeys(tx: tx)
+                try GRDBSchemaMigrator.dropOldPreKeys(tx: tx)
+            }
+
+            let preKeys = try Row.fetchAll(db, sql: "SELECT * FROM PreKey")
+
+            XCTAssertEqual(preKeys.count, 3)
+
+            XCTAssertEqual(preKeys[0]["identity"] as Int64, 0)
+            XCTAssertEqual(preKeys[0]["namespace"] as Int64, 0)
+            XCTAssertEqual(preKeys[0]["keyId"] as UInt32, 123)
+            XCTAssertEqual(preKeys[0]["isOneTime"] as Bool, true)
+            XCTAssertEqual(preKeys[0]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
+            XCTAssertNotNil(preKeys[0]["serializedRecord"] as Data?)
+
+            XCTAssertEqual(preKeys[1]["identity"] as Int64, 1)
+            XCTAssertEqual(preKeys[1]["namespace"] as Int64, 2)
+            XCTAssertEqual(preKeys[1]["keyId"] as UInt32, 234)
+            XCTAssertEqual(preKeys[1]["isOneTime"] as Bool, false)
+            XCTAssertEqual(preKeys[1]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
+            XCTAssertNotNil(preKeys[1]["serializedRecord"] as Data?)
+
+            XCTAssertEqual(preKeys[2]["identity"] as Int64, 0)
+            XCTAssertEqual(preKeys[2]["namespace"] as Int64, 1)
+            XCTAssertEqual(preKeys[2]["keyId"] as UInt32, 345)
+            XCTAssertEqual(preKeys[2]["isOneTime"] as Bool, true)
+            XCTAssertEqual(preKeys[2]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
+            XCTAssertNotNil(preKeys[2]["serializedRecord"] as Data?)
+        }
+    }
 }
 
 // MARK: -

@@ -23,21 +23,21 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         let keyPair = ECKeyPair.generateKeyPair()
         let registrationId = UInt32.random(in: 1...0x3fff)
 
-        let localPqKey1 = self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
-        let localPqKey2 = self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
+        let localPqKey1 = self.mockKyberStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: keyPair.keyPair.privateKey)
+        let localPqKey2 = self.mockKyberStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: keyPair.keyPair.privateKey)
 
         return .success(
             parameters: PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: keyPair,
                 localDeviceId: localDeviceId,
-                localDevicePniSignedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: keyPair),
+                localDevicePniSignedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: keyPair.keyPair.privateKey),
                 localDevicePniPqLastResortPreKey: localPqKey1,
                 localDevicePniRegistrationId: registrationId
             ),
             pendingState: ChangePhoneNumberPni.PendingState(
                 newE164: newE164,
                 pniIdentityKeyPair: keyPair,
-                localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: keyPair),
+                localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: keyPair.keyPair.privateKey),
                 localDevicePniPqLastResortPreKeyRecord: localPqKey2,
                 localDevicePniRegistrationId: registrationId
             )
@@ -45,8 +45,11 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
     }
 
     public func finalizePniIdentity(
-        withPendingState pendingState: ChangePhoneNumberPni.PendingState,
-        transaction: DBWriteTransaction
+        identityKey: ECKeyPair,
+        signedPreKey: Result<LibSignalClient.SignedPreKeyRecord, DecodingError>,
+        lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
+        registrationId: UInt32,
+        tx: DBWriteTransaction,
     ) throws {
         // do nothing
     }

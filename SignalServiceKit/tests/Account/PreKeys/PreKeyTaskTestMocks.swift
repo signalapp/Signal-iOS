@@ -78,10 +78,10 @@ class _PreKeyTaskManager_APIClientMock: PreKeyTaskAPIClient {
 
     var setPreKeysResult: ConsumableMockPromise<Void> = .unset
     var identity: OWSIdentity?
-    var signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
-    var preKeyRecords: [SignalServiceKit.PreKeyRecord]?
-    var pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?
-    var pqPreKeyRecords: [SignalServiceKit.KyberPreKeyRecord]?
+    var signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord?
+    var preKeyRecords: [LibSignalClient.PreKeyRecord]?
+    var pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?
+    var pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?
     var auth: ChatServiceAuth?
 
     func getAvailablePreKeys(for identity: OWSIdentity) async throws -> (ecCount: Int, pqCount: Int) {
@@ -90,10 +90,10 @@ class _PreKeyTaskManager_APIClientMock: PreKeyTaskAPIClient {
 
     func registerPreKeys(
         for identity: OWSIdentity,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
-        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
-        pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?,
-        pqPreKeyRecords: [SignalServiceKit.KyberPreKeyRecord]?,
+        signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord?,
+        preKeyRecords: [LibSignalClient.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) async throws {
         try await setPreKeysResult.consumeIntoPromise().awaitable()

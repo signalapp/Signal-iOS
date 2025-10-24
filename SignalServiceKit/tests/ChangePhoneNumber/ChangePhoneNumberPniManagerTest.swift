@@ -12,6 +12,7 @@ import XCTest
 class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var identityManagerMock: IdentityManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
+    private var preKeyStoreMock: SignalServiceKit.PreKeyStore!
     private var preKeyManagerMock: PreKeyManagerMock!
     private var signedPreKeyStoreMock: SignedPreKeyStoreImpl!
     private var kyberPreKeyStoreMock: KyberPreKeyStoreImpl!
@@ -26,8 +27,9 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         identityManagerMock = .init()
         pniDistributionParameterBuilderMock = .init()
         preKeyManagerMock = .init()
-        kyberPreKeyStoreMock = .init(for: .pni, dateProvider: Date.provider)
-        signedPreKeyStoreMock = .init(for: .pni)
+        preKeyStoreMock = .init()
+        kyberPreKeyStoreMock = .init(for: .pni, dateProvider: Date.provider, preKeyStore: preKeyStoreMock)
+        signedPreKeyStoreMock = .init(for: .pni, preKeyStore: preKeyStoreMock)
         registrationIdGeneratorMock = .init()
         tsAccountManagerMock = .init()
 
@@ -92,8 +94,11 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         db.write { transaction in
             try! changeNumberPniManager.finalizePniIdentity(
-                withPendingState: pendingState,
-                transaction: transaction
+                identityKey: pendingState.pniIdentityKeyPair,
+                signedPreKey: .success(pendingState.localDevicePniSignedPreKeyRecord),
+                lastResortPreKey: .success(pendingState.localDevicePniPqLastResortPreKeyRecord),
+                registrationId: pendingState.localDevicePniRegistrationId,
+                tx: transaction,
             )
         }
 
@@ -103,7 +108,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         )
 
         db.read { tx in
-            XCTAssertNotNil(signedPreKeyStoreMock.loadSignedPreKey(pendingState.localDevicePniSignedPreKeyRecord.id, transaction: tx))
+            XCTAssertNotNil(preKeyStoreMock.pniStore.fetchPreKey(in: .signed, for: pendingState.localDevicePniSignedPreKeyRecord.id, tx: tx))
         }
 
         XCTAssertEqual(
@@ -202,8 +207,8 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         localDeviceId: LocalDeviceId,
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
-        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
-        localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord,
+        localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) async throws -> PniDistribution.Parameters {
         let buildOutcome = buildOutcomes.first!

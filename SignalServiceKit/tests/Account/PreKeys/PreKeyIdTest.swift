@@ -10,21 +10,21 @@ import XCTest
 final class PreKeyIdTest: XCTestCase {
     func testMaximumRandomValue() {
         XCTAssertEqual(
-            PreKeyId.nextPreKeyId(lastPreKeyId: 0, minimumCapacity: 0xFFFFFF),
+            PreKeyId.nextPreKeyIds(lastPreKeyId: 0, count: 0xFFFFFF).lowerBound,
             1
         )
     }
 
     func testMaximumNextValue() {
         XCTAssertEqual(
-            PreKeyId.nextPreKeyId(lastPreKeyId: 0xFFFFFC, minimumCapacity: 3),
+            PreKeyId.nextPreKeyIds(lastPreKeyId: 0xFFFFFC, count: 3).lowerBound,
             0xFFFFFD
         )
     }
 
     func testWrapping() {
         XCTAssertEqual(
-            PreKeyId.nextPreKeyId(lastPreKeyId: 0xFFFFFC, minimumCapacity: 4),
+            PreKeyId.nextPreKeyIds(lastPreKeyId: 0xFFFFFC, count: 4).lowerBound,
             1
         )
     }

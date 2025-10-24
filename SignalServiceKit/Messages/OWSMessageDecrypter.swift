@@ -396,7 +396,9 @@ public class OWSMessageDecrypter {
 
             let identityManager = DependenciesBridge.shared.identityManager
             let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
-            let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: validatedEnvelope.localIdentity)
+            let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+            let signalProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: validatedEnvelope.localIdentity)
+            let preKeyStore = signalProtocolStoreManager.preKeyStore.forIdentity(validatedEnvelope.localIdentity)
 
             let plaintext: Data
             switch cipherType {
@@ -420,9 +422,9 @@ public class OWSMessageDecrypter {
                     from: protocolAddress,
                     sessionStore: signalProtocolStore.sessionStore,
                     identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction),
-                    preKeyStore: signalProtocolStore.preKeyStore,
-                    signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-                    kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
+                    preKeyStore: preKeyStore,
+                    signedPreKeyStore: preKeyStore,
+                    kyberPreKeyStore: preKeyStore,
                     context: transaction,
                 )
             case .senderKey:
@@ -547,13 +549,15 @@ public class OWSMessageDecrypter {
             throw OWSAssertionError("UD Envelope is missing content.")
         }
         let identityManager = DependenciesBridge.shared.identityManager
-        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
+        let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+        let signalProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
+        let preKeyStore = signalProtocolStoreManager.preKeyStore.forIdentity(localIdentity)
 
         let cipher = try SMKSecretSessionCipher(
             sessionStore: signalProtocolStore.sessionStore,
-            preKeyStore: signalProtocolStore.preKeyStore,
-            signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-            kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
+            preKeyStore: preKeyStore,
+            signedPreKeyStore: preKeyStore,
+            kyberPreKeyStore: preKeyStore,
             identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction),
             senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
         )
@@ -639,10 +643,7 @@ public class OWSMessageDecrypter {
         case SMKSecretSessionCipherError.selfSentMessage:
             // Self-sent messages can be safely discarded. Return as-is.
             return error
-        case is SignalError,
-            PreKeyStoreImpl.Error.noPreKeyWithId(_),
-            SignedPreKeyStoreImpl.Error.noPreKeyWithId(_),
-            KyberPreKeyStoreImpl.Error.noKyberPreKeyWithId(_):
+        case is SignalError, PreKeyStore.Error.noPreKeyWithId(_):
             return processError(
                 error,
                 validatedEnvelope: validatedEnvelope,

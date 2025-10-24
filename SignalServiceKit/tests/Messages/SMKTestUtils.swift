@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import SignalServiceKit
 import LibSignalClient
+
+@testable import SignalServiceKit
 
 class MockClient {
     var protocolAddress: ProtocolAddress { ProtocolAddress(aci, deviceId: deviceId) }

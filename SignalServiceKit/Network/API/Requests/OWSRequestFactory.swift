@@ -447,25 +447,25 @@ public enum OWSRequestFactory {
 
     // MARK: - Keys
 
-    static func preKeyRequestParameters(_ preKeyRecord: SignalServiceKit.PreKeyRecord) -> [String: Any] {
+    static func preKeyRequestParameters(_ preKeyRecord: LibSignalClient.PreKeyRecord) -> [String: Any] {
         [
             "keyId": preKeyRecord.id,
-            "publicKey": preKeyRecord.keyPair.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding()
+            "publicKey": try! preKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding()
         ]
     }
 
-    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord) -> [String: Any] {
+    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord) -> [String: Any] {
         [
             "keyId": signedPreKeyRecord.id,
-            "publicKey": signedPreKeyRecord.keyPair.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding(),
+            "publicKey": try! signedPreKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding(),
             "signature": signedPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
 
-    static func pqPreKeyRequestParameters(_ pqPreKeyRecord: KyberPreKeyRecord) -> [String: Any] {
+    static func pqPreKeyRequestParameters(_ pqPreKeyRecord: LibSignalClient.KyberPreKeyRecord) -> [String: Any] {
         [
             "keyId": pqPreKeyRecord.id,
-            "publicKey": pqPreKeyRecord.keyPair.publicKey.serialize().base64EncodedStringWithoutPadding(),
+            "publicKey": try! pqPreKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding(),
             "signature": pqPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
@@ -493,10 +493,10 @@ public enum OWSRequestFactory {
     /// TSAccountManager).
     static func registerPrekeysRequest(
         identity: OWSIdentity,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
-        prekeyRecords: [SignalServiceKit.PreKeyRecord]?,
-        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
-        pqPreKeyRecords: [KyberPreKeyRecord]?,
+        signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord?,
+        prekeyRecords: [LibSignalClient.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> TSRequest {
         var path = textSecureKeysAPI

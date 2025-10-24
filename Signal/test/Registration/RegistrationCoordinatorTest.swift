@@ -63,8 +63,9 @@ public class RegistrationCoordinatorTest {
 
         appExpiry = .forUnitTests()
         accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
+        let preKeyStore = PreKeyStore()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
-            mockKyberStore: KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider)
+            mockKyberStore: KyberPreKeyStoreImpl(for: .pni, dateProvider: dateProvider, preKeyStore: preKeyStore)
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
@@ -3422,21 +3423,8 @@ public class RegistrationCoordinatorTest {
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
-                lastResortPreKey: {
-                    let keyPair = KEMKeyPair.generate()
-                    let signature = identityKeyPair.keyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
-
-                    let record = SignalServiceKit.KyberPreKeyRecord(
-                        0,
-                        keyPair: keyPair,
-                        signature: signature,
-                        generatedAt: Date(),
-                        replacedAt: nil,
-                        isLastResort: true
-                    )
-                    return record
-                }()
+                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                lastResortPreKey: KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: 0, now: Date(), signedBy: identityKeyPair.keyPair.privateKey),
             )
         }
 

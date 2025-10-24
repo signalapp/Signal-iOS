@@ -8,6 +8,7 @@ private let kCoderPreKeyPair = "kCoderPreKeyPair"
 private let kCoderCreatedAt = "kCoderCreatedAt"
 private let kCoderReplacedAt = "kCoderReplacedAt"
 
+// deprecated (see decodeDeprecatedPreKeys)
 @objc(PreKeyRecord)
 public class PreKeyRecord: NSObject, NSSecureCoding {
     public class var supportsSecureCoding: Bool { true }
@@ -43,13 +44,5 @@ public class PreKeyRecord: NSObject, NSSecureCoding {
         if let replacedAt {
             coder.encode(replacedAt, forKey: kCoderReplacedAt)
         }
-    }
-
-    public func setCreatedAtToNow() {
-        createdAt = Date()
-    }
-
-    public func setReplacedAtToNow() {
-        replacedAt = Date()
     }
 }

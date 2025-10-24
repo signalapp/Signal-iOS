@@ -45,8 +45,11 @@ public protocol ChangePhoneNumberPniManager {
     /// server has committed a new PNI identity, with the state from a prior
     /// call to ``generatePniIdentity``.
     func finalizePniIdentity(
-        withPendingState pendingState: ChangePhoneNumberPni.PendingState,
-        transaction: DBWriteTransaction
+        identityKey: ECKeyPair,
+        signedPreKey: Result<LibSignalClient.SignedPreKeyRecord, DecodingError>,
+        lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
+        registrationId: UInt32,
+        tx: DBWriteTransaction
     ) throws
 }
 
@@ -59,16 +62,15 @@ public enum ChangePhoneNumberPni {
     public struct PendingState {
         public let newE164: E164
         public let pniIdentityKeyPair: ECKeyPair
-        public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord
-        // TODO (PQXDH): 8/14/2023 - This should me made non-optional after 90 days
-        public let localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?
+        public let localDevicePniSignedPreKeyRecord: LibSignalClient.SignedPreKeyRecord
+        public let localDevicePniPqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord
         public let localDevicePniRegistrationId: UInt32
 
         public init(
             newE164: E164,
             pniIdentityKeyPair: ECKeyPair,
-            localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-            localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?,
+            localDevicePniSignedPreKeyRecord: LibSignalClient.SignedPreKeyRecord,
+            localDevicePniPqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) {
             self.newE164 = newE164
@@ -136,14 +138,13 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
-        let localDevicePniPqLastResortPreKeyRecord = await db.awaitableWrite { tx in
-            pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: pniIdentityKeyPair, tx: tx)
-        }
+        let localDevicePniSignedPreKeyRecord = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: pniIdentityKeyPair.keyPair.privateKey)
+        let localDevicePniPqLastResortPreKeyRecord = pniKyberPreKeyStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: pniIdentityKeyPair.keyPair.privateKey)
 
         let pendingState = ChangePhoneNumberPni.PendingState(
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
-            localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: pniIdentityKeyPair),
+            localDevicePniSignedPreKeyRecord: localDevicePniSignedPreKeyRecord,
             localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
             localDevicePniRegistrationId: registrationIdGenerator.generate()
         )
@@ -154,7 +155,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 localDeviceId: .valid(localDeviceId),
                 localPniIdentityKeyPair: pniIdentityKeyPair,
                 localE164: newE164,
-                localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
+                localDevicePniSignedPreKey: localDevicePniSignedPreKeyRecord,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
                 localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
             )
@@ -167,48 +168,49 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     // MARK: - Saving the New Identity
 
     func finalizePniIdentity(
-        withPendingState pendingState: ChangePhoneNumberPni.PendingState,
-        transaction: DBWriteTransaction
+        identityKey: ECKeyPair,
+        signedPreKey: Result<LibSignalClient.SignedPreKeyRecord, DecodingError>,
+        lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
+        registrationId: UInt32,
+        tx: DBWriteTransaction
     ) throws {
         logger.info("Finalizing PNI identity.")
 
         // Store pending state in the right places
 
-        identityManager.setIdentityKeyPair(
-            pendingState.pniIdentityKeyPair,
-            for: .pni,
-            tx: transaction
-        )
+        identityManager.setIdentityKeyPair(identityKey, for: .pni, tx: tx)
 
-        if let newPqLastResortPreKeyRecord = pendingState.localDevicePniPqLastResortPreKeyRecord {
-            try pniKyberPreKeyStore.storeLastResortPreKey(
-                record: newPqLastResortPreKeyRecord,
-                tx: transaction
-            )
+        var refreshSignedPreKey = false
+
+        do throws(DecodingError) {
+            pniKyberPreKeyStore.storeLastResortPreKeyFromChangeNumber(try lastResortPreKey.get(), tx: tx)
+        } catch {
+            logger.warn("couldn't save last resort kyber key: \(error)")
+            // We expect to be deregistered, but if we're not, we'll recover when we
+            // upload a new last resort Kyber pre key.
+            refreshSignedPreKey = true
         }
 
-        let newSignedPreKeyRecord = pendingState.localDevicePniSignedPreKeyRecord
-        pniSignedPreKeyStore.storeSignedPreKey(
-            newSignedPreKeyRecord.id,
-            signedPreKeyRecord: newSignedPreKeyRecord,
-            tx: transaction
-        )
+        do throws(DecodingError) {
+            pniSignedPreKeyStore.storeSignedPreKey(try signedPreKey.get(), tx: tx)
+        } catch {
+            logger.warn("couldn't save signed pre key: \(error)")
+            // We expect to be deregistered, but if we're not, we'll recover when we
+            // upload a new signed pre key.
+            refreshSignedPreKey = true
+        }
 
-        tsAccountManager.setRegistrationId(
-            pendingState.localDevicePniRegistrationId,
-            for: .pni,
-            tx: transaction
-        )
+        tsAccountManager.setRegistrationId(registrationId, for: .pni, tx: tx)
 
         // Followup tasks
 
-        transaction.addSyncCompletion { [preKeyManager] in
+        tx.addSyncCompletion { [preKeyManager] in
             // Since we rotated the identity key, we need new one-time pre-keys.
             // However, no need to update the signed pre-key, which we also just
             // rotated.
             preKeyManager.refreshOneTimePreKeys(
                 forIdentity: .pni,
-                alsoRefreshSignedPreKey: false
+                alsoRefreshSignedPreKey: refreshSignedPreKey,
             )
         }
     }

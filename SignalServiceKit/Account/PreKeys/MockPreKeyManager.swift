@@ -21,14 +21,14 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
-                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
-                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 )
             )
         }
@@ -44,14 +44,14 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
-                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: identityKeyPair),
-                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 )
             )
         }
@@ -74,20 +74,8 @@ internal class MockPreKeyManager: PreKeyManager {
     func rotateSignedPreKeysIfNeeded() -> Task<Void, Error> { Task {} }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
 
-    func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {
-
-        let keyPair = KEMKeyPair.generate()
-        let signature = signingKeyPair.keyPair.privateKey.generateSignature(message: keyPair.publicKey.serialize())
-
-        let record = SignalServiceKit.KyberPreKeyRecord(
-            0,
-            keyPair: keyPair,
-            signature: signature,
-            generatedAt: Date(),
-            replacedAt: nil,
-            isLastResort: true
-        )
-        return record
+    func generateLastResortKyberPreKey(signedBy identityKey: PrivateKey) -> LibSignalClient.KyberPreKeyRecord {
+        return KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: PreKeyId.random(), now: Date(), signedBy: identityKey)
     }
 
     func setIsChangingNumber(_ isChangingNumber: Bool) {

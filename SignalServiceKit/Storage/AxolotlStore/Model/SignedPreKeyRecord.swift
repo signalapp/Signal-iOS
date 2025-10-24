@@ -9,6 +9,7 @@ private let kCoderPreKeyDate = "kCoderPreKeyDate"
 private let kCoderPreKeySignature = "kCoderPreKeySignature"
 private let kCoderPreKeyReplacedAt = "kCoderReplacedAt"
 
+// deprecated (see decodeDeprecatedPreKeys)
 @objc(SignedPreKeyRecord)
 public class SignedPreKeyRecord: PreKeyRecord {
     public class override var supportsSecureCoding: Bool { true }

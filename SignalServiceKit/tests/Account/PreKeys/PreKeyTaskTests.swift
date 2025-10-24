@@ -22,6 +22,7 @@ final class PreKeyTaskTests: SSKBaseTest {
     private var mockAciProtocolStore: SignalProtocolStore!
     private var mockPniProtocolStore: SignalProtocolStore!
     private var mockProtocolStoreManager: SignalProtocolStoreManager!
+    private var mockPreKeyStore: SignalServiceKit.PreKeyStore!
 
     override func setUp() {
         super.setUp()
@@ -36,11 +37,13 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockDateProvider = .init()
         mockDb = InMemoryDB()
 
-        mockAciProtocolStore = .mock(identity: .aci)
-        mockPniProtocolStore = .mock(identity: .pni)
+        mockPreKeyStore = PreKeyStore()
+        mockAciProtocolStore = .mock(identity: .aci, preKeyStore: mockPreKeyStore)
+        mockPniProtocolStore = .mock(identity: .pni, preKeyStore: mockPreKeyStore)
         mockProtocolStoreManager = SignalProtocolStoreManager(
             aciProtocolStore: mockAciProtocolStore,
-            pniProtocolStore: mockPniProtocolStore
+            pniProtocolStore: mockPniProtocolStore,
+            preKeyStore: mockPreKeyStore,
         )
 
         taskManager = PreKeyTaskManager(
@@ -63,25 +66,25 @@ final class PreKeyTaskTests: SSKBaseTest {
 
     private func aciPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.preKeyStore.count(tx: tx)
+            return try! mockPreKeyStore.aciStore.fetchCount(in: .oneTime, isOneTime: true, tx: tx)
         }
     }
 
     private func aciSignedPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.signedPreKeyStore.count(tx: tx)
+            return try! mockPreKeyStore.aciStore.fetchCount(in: .signed, isOneTime: false, tx: tx)
         }
     }
 
     private func aciKyberOneTimePreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.kyberPreKeyStore.count(isLastResort: false, tx: tx)
+            return try! mockPreKeyStore.aciStore.fetchCount(in: .kyber, isOneTime: true, tx: tx)
         }
     }
 
     private func aciKyberLastResortPreKeyCount() -> Int {
         return mockDb.read { tx in
-            return mockAciProtocolStore.kyberPreKeyStore.count(isLastResort: true, tx: tx)
+            return try! mockPreKeyStore.aciStore.fetchCount(in: .kyber, isOneTime: false, tx: tx)
         }
     }
 
@@ -214,13 +217,9 @@ final class PreKeyTaskTests: SSKBaseTest {
         let aciKeyPair = ECKeyPair.generateKeyPair()
         mockIdentityManager.aciKeyPair = aciKeyPair
 
-        let originalSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(signedBy: aciKeyPair)
+        let originalSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: aciKeyPair.keyPair.privateKey)
         mockDb.write { tx in
-            mockAciProtocolStore.signedPreKeyStore.storeSignedPreKey(
-                originalSignedPreKey.id,
-                signedPreKeyRecord: originalSignedPreKey,
-                tx: tx
-            )
+            mockAciProtocolStore.signedPreKeyStore.storeSignedPreKey(originalSignedPreKey, tx: tx)
         }
 
         mockAPIClient.setPreKeysResult = .value(())
@@ -240,7 +239,8 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient.setPreKeysResult = .value(())
 
         let records = mockDb.write { tx in
-            let records = mockAciProtocolStore.preKeyStore.generatePreKeyRecords(tx: tx)
+            let preKeyIds = mockAciProtocolStore.preKeyStore.allocatePreKeyIds(tx: tx)
+            let records = PreKeyStoreImpl.generatePreKeyRecords(forPreKeyIds: preKeyIds)
             mockAciProtocolStore.preKeyStore.storePreKeyRecords(records, tx: tx)
             return records
         }
@@ -254,7 +254,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         XCTAssertEqual(aciPreKeyCount(), 100)
         mockDb.read { tx in
             for record in records {
-                XCTAssertNotNil(mockAciProtocolStore.preKeyStore.loadPreKey(record.id, transaction: tx))
+                XCTAssertNotNil(mockPreKeyStore.aciStore.fetchPreKey(in: .oneTime, for: record.id, tx: tx))
             }
         }
         XCTAssertNil(mockAPIClient.preKeyRecords)

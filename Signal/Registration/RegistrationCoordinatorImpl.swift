@@ -4141,8 +4141,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         do {
             try await self.db.awaitableWrite { tx in
                 try self.deps.changeNumberPniManager.finalizePniIdentity(
-                    withPendingState: pniState.asPniState(),
-                    transaction: tx
+                    identityKey: pniState.pniIdentityKeyPair,
+                    signedPreKey: pniState.localDevicePniSignedPreKeyRecord,
+                    lastResortPreKey: pniState.localDevicePniPqLastResortPreKeyRecord,
+                    registrationId: pniState.localDevicePniRegistrationId,
+                    tx: tx,
                 )
                 self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
                     oldState: changeNumberState,

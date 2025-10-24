@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Boradly speaking, this class does not perform PreKey operations. It just manages scheduling
+/// Broadly speaking, this class does not perform PreKey operations. It just manages scheduling
 /// them (they must occur in serial), including deciding which need to happen in the first place.
 /// Actual execution is handed off to ``PreKeyTaskManager``.
 public class PreKeyManagerImpl: PreKeyManager {
