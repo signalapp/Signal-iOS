@@ -1819,7 +1819,6 @@
 		C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */; };
 		C1CF83D62B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */; };
 		C1D51D8A2E746FB300685A0C /* BackupFailureStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D51D892E746FB300685A0C /* BackupFailureStateManager.swift */; };
-		C1D51D8E2E7472F600685A0C /* BackupFailureStateManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D51D8B2E7472B300685A0C /* BackupFailureStateManagerTests.swift */; };
 		C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
 		C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */; };
 		C1DAA7582C13C1E00078AE84 /* ArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */; };
@@ -2697,8 +2696,8 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
-		D9791BC42EAADF010016AA5A /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */; };
 		D9791BB92EAA84830016AA5A /* ActionSheetDisplayableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */; };
+		D9791BC42EAADF010016AA5A /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */; };
 		D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */; };
 		D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
@@ -5788,7 +5787,6 @@
 		C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingOutputStream.swift; sourceTree = "<group>"; };
 		C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C1D51D892E746FB300685A0C /* BackupFailureStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFailureStateManager.swift; sourceTree = "<group>"; };
-		C1D51D8B2E7472B300685A0C /* BackupFailureStateManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFailureStateManagerTests.swift; sourceTree = "<group>"; };
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
 		C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingUIUtils.swift; sourceTree = "<group>"; };
 		C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsViewController.swift; sourceTree = "<group>"; };
@@ -6675,8 +6673,8 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
-		D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
 		D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetDisplayableError.swift; sourceTree = "<group>"; };
+		D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
 		D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTest.swift; sourceTree = "<group>"; };
 		D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
@@ -12510,7 +12508,6 @@
 			children = (
 				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				C1D51D892E746FB300685A0C /* BackupFailureStateManager.swift */,
-				C1D51D8B2E7472B300685A0C /* BackupFailureStateManagerTests.swift */,
 				D923DF9B2DC135A000CDAFC3 /* BackupIdService.swift */,
 				D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */,
 				D98ACAA82E0DA71700FA497F /* BackupPlanManager.swift */,
@@ -18840,7 +18837,6 @@
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
 				D9DF21EE2E21C12E00A962B2 /* BackupDisablingManagerTest.swift in Sources */,
 				04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */,
-				C1D51D8E2E7472F600685A0C /* BackupFailureStateManagerTests.swift in Sources */,
 				047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */,
 				66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */,
 				04B975482E43BFE600E20364 /* BackupRefreshManagerTest.swift in Sources */,

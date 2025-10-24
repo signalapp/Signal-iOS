@@ -20,42 +20,6 @@ public class BackupFailureStateManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public func shouldShowBackupFailurePrompt(tx: DBReadTransaction) -> Bool {
-        guard shouldBackupsBeRunning(tx: tx) else {
-            return false
-        }
-
-        if lastBackupWasRecent(tx: tx) {
-            return false
-        }
-
-        let promptCount = backupSettingsStore.getBackupErrorPromptCount(tx: tx)
-        let lastPromptDate = backupSettingsStore.getBackupErrorLastPromptDate(tx: tx)
-
-        // If we've shown the prompt recently, don't show it again.
-        let promptBackoff: TimeInterval = switch promptCount {
-        case 0: 0
-        case 1: 48 * .hour
-        default: 72 * .hour
-        }
-
-        if
-            let lastPromptDate,
-            abs(lastPromptDate.timeIntervalSince(dateProvider())) < promptBackoff
-        {
-            // Snooze
-            return false
-        }
-
-        return true
-    }
-
-    public func snoozeBackupFailurePrompt(tx: DBWriteTransaction) {
-        let promptCount = backupSettingsStore.getBackupErrorPromptCount(tx: tx)
-        backupSettingsStore.setBackupErrorPromptCount(promptCount + 1, tx: tx)
-        backupSettingsStore.setBackupErrorLastPromptDate(dateProvider(), tx: tx)
-    }
-
     // MARK: -
 
     /// Allow for managing backup badge state from arbitrary points.

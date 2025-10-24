@@ -27,8 +27,6 @@ class ChatListFYISheetCoordinator {
             let probablyHasCurrentSubscription: Bool
         }
 
-        struct BackupFailed {}
-
         struct BackupSubscriptionExpired {
             enum SubscriptionType {
                 case iap
@@ -41,7 +39,6 @@ class ChatListFYISheetCoordinator {
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
-        case backupFailed(BackupFailed)
         case backupSubscriptionExpired(BackupSubscriptionExpired)
     }
 
@@ -110,8 +107,6 @@ class ChatListFYISheetCoordinator {
                 mostRecentSubscriptionPaymentMethod: donationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: tx),
                 probablyHasCurrentSubscription: donationSubscriptionManager.probablyHasCurrentSubscription(tx: tx),
             ))
-        } else if backupFailureStateManager.shouldShowBackupFailurePrompt(tx: tx) {
-            return .backupFailed(FYISheet.BackupFailed())
         } else if backupSubscriptionIssueStore.shouldWarnIAPSubscriptionExpired(tx: tx) {
             return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .iap))
         } else if backupSubscriptionIssueStore.shouldWarnTestFlightSubscriptionExpired(tx: tx) {
@@ -226,8 +221,6 @@ class ChatListFYISheetCoordinator {
             await _present(badgeIssue: badgeIssue, from: chatListViewController)
         case .badgeExpiration(let badgeExpiration):
             await _present(badgeExpiration: badgeExpiration, from: chatListViewController)
-        case .backupFailed(let backupFailed):
-            await _present(backupFailed: backupFailed, from: chatListViewController)
         case .backupSubscriptionExpired(let backupSubscriptionExpired):
             await _present(backupSubscriptionExpired: backupSubscriptionExpired, from: chatListViewController)
         }
@@ -395,29 +388,6 @@ class ChatListFYISheetCoordinator {
     }
 
     private func _present(
-        backupFailed: FYISheet.BackupFailed,
-        from chatListViewController: ChatListViewController
-    ) async {
-        let logger = PrefixedLogger(prefix: "[Backups]")
-        logger.info("Showing BackupFailed FYI sheet.")
-
-        let sheet = BackupFailedHeroSheet(
-            onBackUpNow: {
-                SignalApp.shared.showAppSettings(mode: .backups) { [self] in
-                    backupExportJobRunner.startIfNecessary()
-                }
-            },
-            onTryLater: { [self] in
-                // Snooze
-                db.write { tx in
-                    backupFailureStateManager.snoozeBackupFailurePrompt(tx: tx)
-                }
-            },
-        )
-        chatListViewController.present(sheet, animated: true)
-    }
-
-    private func _present(
         backupSubscriptionExpired: FYISheet.BackupSubscriptionExpired,
         from chatListViewController: ChatListViewController
     ) async {
@@ -457,55 +427,6 @@ extension ChatListViewController: BadgeIssueSheetDelegate {
         case .openDonationView:
             showAppSettings(mode: .donate(donateMode: .oneTime))
         }
-    }
-}
-
-// MARK: -
-
-private class BackupFailedHeroSheet: HeroSheetViewController {
-    init(
-        onBackUpNow: @escaping () -> Void,
-        onTryLater: @escaping () -> Void,
-    ) {
-        super.init(
-            hero: .circleIcon(
-                icon: .backupErrorDisplayBold.withRenderingMode(.alwaysTemplate),
-                iconSize: 40,
-                tintColor: UIColor.Signal.orange,
-                backgroundColor: UIColor.color(rgbHex: 0xF9E4B6)
-            ),
-            title: OWSLocalizedString(
-                "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_TITLE",
-                comment: "Title for error prompt shown when backups haven't succeeded in 7 days"
-            ),
-            body: OWSLocalizedString(
-                "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_PROMPT_BODY",
-                comment: "Body for error prompt shown when backups haven't succeeded in 7 days"
-            ),
-            primaryButton: HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_BACKUP_NOW_ACTION",
-                    comment: "Title for action from backups error prompt to try again now."
-                ),
-                action: .custom { sheet in
-                    sheet.dismiss(animated: true) {
-                        onBackUpNow()
-                    }
-                }
-            ),
-            secondaryButton: HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "BACKUP_ERROR_COULD_NOT_COMPLETE_BACKUP_TRY_LATER_ACTION",
-                    comment: "Title for action from backups error prompt to try again later."
-                ),
-                style: .secondary,
-                action: .custom { sheet in
-                    sheet.dismiss(animated: true) {
-                        onTryLater()
-                    }
-                }
-            )
-        )
     }
 }
 
