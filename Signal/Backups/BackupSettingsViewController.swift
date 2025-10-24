@@ -20,6 +20,7 @@ class BackupSettingsViewController:
     private let accountEntropyPoolManager: AccountEntropyPoolManager
     private let accountKeyStore: AccountKeyStore
     private let backupAttachmentDownloadTracker: BackupSettingsAttachmentDownloadTracker
+    private let backupAttachmentUploadStore: BackupAttachmentUploadStore
     private let backupAttachmentUploadTracker: BackupSettingsAttachmentUploadTracker
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
@@ -52,6 +53,7 @@ class BackupSettingsViewController:
             backupAttachmentDownloadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentDownloadQueueStatusReporter,
             backupAttachmentUploadProgress: DependenciesBridge.shared.backupAttachmentUploadProgress,
             backupAttachmentUploadQueueStatusReporter: DependenciesBridge.shared.backupAttachmentUploadQueueStatusReporter,
+            backupAttachmentUploadStore: DependenciesBridge.shared.backupAttachmentUploadStore,
             backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
@@ -73,6 +75,7 @@ class BackupSettingsViewController:
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
+        backupAttachmentUploadStore: BackupAttachmentUploadStore,
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupExportJobRunner: BackupExportJobRunner,
@@ -99,6 +102,7 @@ class BackupSettingsViewController:
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusReporter,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress
         )
+        self.backupAttachmentUploadStore = backupAttachmentUploadStore
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
         self.backupExportJobRunner = backupExportJobRunner
@@ -123,6 +127,11 @@ class BackupSettingsViewController:
                 lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
                 lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
                 shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
+                mediaTierCapacityOverflow: Self.getMediaTierCapacityOverflow(
+                    backupAttachmentUploadStore: backupAttachmentUploadStore,
+                    backupSettingsStore: backupSettingsStore,
+                    tx: tx
+                ),
                 hasBackupFailed: backupSettingsStore.getLastBackupFailed(tx: tx)
             )
 
@@ -280,6 +289,16 @@ class BackupSettingsViewController:
                     }
                 }
             },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: .hasConsumedMediaTierCapacityStatusDidChange
+                ) {
+                    await MainActor.run { [weak self] in
+                        guard let self else { return }
+                        _hasConsumedMediaTierCapacityDidChange()
+                    }
+                }
+            }
         ]
     }
 
@@ -357,6 +376,29 @@ class BackupSettingsViewController:
     private func _shouldAllowBackupUploadsOnCellularDidChange() {
         db.read { tx in
             viewModel.shouldAllowBackupUploadsOnCellular = backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
+        }
+    }
+
+    private func _hasConsumedMediaTierCapacityDidChange() {
+        db.read { tx in
+            viewModel.mediaTierCapacityOverflow = Self.getMediaTierCapacityOverflow(
+                backupAttachmentUploadStore: backupAttachmentUploadStore,
+                backupSettingsStore: backupSettingsStore,
+                tx: tx
+            )
+        }
+    }
+
+    private static func getMediaTierCapacityOverflow(
+        backupAttachmentUploadStore: BackupAttachmentUploadStore,
+        backupSettingsStore: BackupSettingsStore,
+        tx: DBReadTransaction
+    ) -> UInt64? {
+        let hasConsumedMediaTierCapacity = backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
+        if hasConsumedMediaTierCapacity {
+            return (try? backupAttachmentUploadStore.totalEstimatedFullsizeBytesToUpload(tx: tx)) ?? 0
+        } else {
+            return nil
         }
     }
 
@@ -1165,6 +1207,10 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
     @Published var shouldAllowBackupUploadsOnCellular: Bool
+    /// Nil means has not consumed capacity; non-nil value represents the total byte count over
+    /// the server side capacity all local attachments consume (meaning that's how many bytes
+    /// the user has to delete to go back under storage quota).
+    @Published var mediaTierCapacityOverflow: UInt64?
     @Published var hasBackupFailed: Bool
 
     weak var actionsDelegate: ActionsDelegate?
@@ -1180,6 +1226,7 @@ private class BackupSettingsViewModel: ObservableObject {
         lastBackupDate: Date?,
         lastBackupSizeBytes: UInt64?,
         shouldAllowBackupUploadsOnCellular: Bool,
+        mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
     ) {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
@@ -1195,6 +1242,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
         self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
+        self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
         self.hasBackupFailed = hasBackupFailed
     }
 
@@ -1394,11 +1442,48 @@ struct BackupSettingsView: View {
                         CancelManualBackupButton {
                             viewModel.cancelManualBackup()
                         }
+                    } else if let mediaTierCapacityOverflow = viewModel.mediaTierCapacityOverflow {
+                        VStack(alignment: .leading) {
+                            Label {
+                                Text(
+                                    String(
+                                        format: OWSLocalizedString(
+                                            "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT",
+                                            comment: "Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}."
+                                        ),
+                                        viewModel.backupSubscriptionConfiguration.storageAllowanceBytes.formatted(.owsByteCount),
+                                        max(
+                                            // Always display at least 5 MB
+                                            1000 * 1000 * 5,
+                                            Int64(clamping: mediaTierCapacityOverflow)
+                                        ).formatted(.owsByteCount)
+                                    )
+                                )
+                                .appendLink(CommonStrings.learnMore, useBold: true, tint: .Signal.label) {
+                                    CurrentAppContext().open(
+                                        URL.Support.backups,
+                                        completion: nil
+                                    )
+                                }
+                                .font(.subheadline)
+                                .foregroundStyle(Color.Signal.label)
+                                .monospacedDigit()
+                                .multilineTextAlignment(.leading)
+                            } icon: {
+                                Image(
+                                    uiImage: UIImage(named: "error-circle-fill-compact")!
+                                )
+                            }
+                        }
+                        VStack(alignment: .leading) {
+                            PerformManualBackupButton {
+                                viewModel.performManualBackup()
+                            }
+                        }
                     } else if let latestBackupAttachmentUploadUpdate = viewModel.latestBackupAttachmentUploadUpdate {
                         BackupAttachmentUploadProgressView(
                             latestUploadUpdate: latestBackupAttachmentUploadUpdate
                         )
-
                         CancelManualBackupButton {
                             viewModel.suspendUploads()
                         }
@@ -1417,21 +1502,9 @@ struct BackupSettingsView: View {
                             }
                         }
 
-                        Button {
+                        PerformManualBackupButton {
                             viewModel.performManualBackup()
-                        } label: {
-                            Label {
-                                Text(OWSLocalizedString(
-                                    "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
-                                    comment: "Title for a button allowing users to trigger a manual backup."
-                                ))
-                            } icon: {
-                                Image(uiImage: .backup)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            }
                         }
-                        .foregroundStyle(Color.Signal.label)
                     }
                 } header: {
                     Text(OWSLocalizedString(
@@ -1723,6 +1796,28 @@ private struct CancelManualBackupButton: View {
                 "BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON",
                 comment: "Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup."
             ))
+        }
+        .foregroundStyle(Color.Signal.label)
+    }
+}
+
+private struct PerformManualBackupButton: View {
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            Label {
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE",
+                    comment: "Title for a button allowing users to trigger a manual backup."
+                ))
+            } icon: {
+                Image(uiImage: .backup)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+            }
         }
         .foregroundStyle(Color.Signal.label)
     }
@@ -2465,6 +2560,7 @@ private extension BackupSettingsViewModel {
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
             shouldAllowBackupUploadsOnCellular: false,
+            mediaTierCapacityOverflow: nil,
             hasBackupFailed: false
         )
         let actionsDelegate = PreviewActionsDelegate()

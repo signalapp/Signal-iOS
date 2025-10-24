@@ -9,10 +9,15 @@ import SignalServiceKit
 extension Text {
     /// Appends a tappable link with a custom action to the end of a `Text`.
     /// Includes a leading space.
-    public func appendLink(_ title: String, action: @escaping () -> Void) -> some View {
+    public func appendLink(
+        _ title: String,
+        useBold: Bool = false,
+        tint: Color = Color.Signal.accent,
+        action: @escaping () -> Void
+    ) -> some View {
         // Placeholder URL is needed for the link, but it's thrown away in the OpenURLAction
-        (self + Text(" [\(title)](https://support.signal.org/)"))
-            .tint(.Signal.accent)
+        (self + Text(" [\(title)](https://support.signal.org/)").fontWeight(useBold ? .bold : nil))
+            .tint(tint)
             .environment(\.openURL, OpenURLAction { _ in
                 action()
                 return .handled

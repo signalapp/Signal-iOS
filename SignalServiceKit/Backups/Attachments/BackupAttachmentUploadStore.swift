@@ -142,6 +142,22 @@ public class BackupAttachmentUploadStore {
         try record?.update(tx.database)
         return record
     }
+
+    public func totalEstimatedFullsizeBytesToUpload(tx: DBReadTransaction) throws -> UInt64 {
+        return try UInt64
+            .fetchOne(
+                tx.database,
+                sql: """
+                    SELECT SUM(\(QueuedBackupAttachmentUpload.CodingKeys.estimatedByteCount.rawValue))
+                    FROM \(QueuedBackupAttachmentUpload.databaseTableName)
+                    WHERE
+                      \(QueuedBackupAttachmentUpload.CodingKeys.state.rawValue) = ?
+                      AND \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
+                    """,
+                arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, true]
+            )
+            ?? 0
+    }
 }
 
 extension QueuedBackupAttachmentUpload.OwnerType {

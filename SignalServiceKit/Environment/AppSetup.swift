@@ -1635,6 +1635,7 @@ extension AppSetup.GlobalsContinuation {
             backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusManager,
+            backupAttachmentUploadStore: backupAttachmentUploadStore,
             backupDisablingManager: backupDisablingManager,
             backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,

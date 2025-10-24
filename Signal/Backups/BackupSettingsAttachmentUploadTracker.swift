@@ -228,7 +228,8 @@ private class Tracker {
             case .lowPowerMode:
                 return .pausedLowPowerMode
             case .hasConsumedMediaTierCapacity:
-                // TODO: [MediaTierCapacity] build UI for this state
+                // This gets bubbled up via other mechanisms; to the UI
+                // this upload state doesn't show a bar so its nil.
                 return nil
             }
         }()
