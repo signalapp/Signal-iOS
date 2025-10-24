@@ -111,6 +111,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+
         updateBarButtonItems()
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -126,6 +128,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = .zero
+        tableView.backgroundColor = .Signal.background
         tableView.register(CreateCallLinkCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
@@ -136,8 +139,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         view.addSubview(noSearchResultsView)
         noSearchResultsView.autoPinWidthToSuperviewMargins()
         noSearchResultsView.autoPinEdge(toSuperviewMargin: .top, withInset: 80)
-
-        applyTheme()
 
         initializeLoadedViewModels()
         attachSelfAsObservers()
@@ -158,12 +159,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         isPeekingEnabled = false
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        applyTheme()
-        reloadAllRows()
-    }
-
     func updateBarButtonItems() {
         if tableView.isEditing {
             navigationItem.leftBarButtonItem = cancelMultiselectButton()
@@ -178,11 +173,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         } else {
             navigationItem.titleView = filterPicker
         }
-    }
-
-    private func applyTheme() {
-        view.backgroundColor = Theme.backdropColor
-        tableView.backgroundColor = Theme.backgroundColor
     }
 
     // MARK: Profile button
@@ -2257,14 +2247,20 @@ private extension CallsListViewController {
         private lazy var titleLabel: UILabel = {
             let label = UILabel()
             label.font = .dynamicTypeHeadline
+            label.textColor = .Signal.label
             return label
         }()
 
-        private lazy var subtitleLabel = UILabel()
+        private lazy var subtitleLabel: UILabel = {
+            let label = UILabel()
+            label.textColor = .Signal.secondaryLabel
+            return label
+        }()
 
         private lazy var timestampLabel: UILabel = {
             let label = UILabel()
             label.font = .dynamicTypeSubheadline
+            label.textColor = .Signal.secondaryLabel
             return label
         }()
 
@@ -2337,14 +2333,19 @@ private extension CallsListViewController {
 
         // MARK: Init
 
-        private let trailingHStack: UIStackView
+        private let trailingHStack = UIStackView()
         private var trailingButton: UIButton?
 
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            self.trailingHStack = UIStackView()
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+            tintColor = .Signal.accent
+            backgroundColor = .Signal.background
+
+            selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+
             multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
+            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
 
             let bodyVStack = UIStackView(arrangedSubviews: [
                 titleLabel,
@@ -2376,8 +2377,6 @@ private extension CallsListViewController {
             contentView.addSubview(outerHStack)
             outerHStack.autoPinWidthToSuperviewMargins()
             outerHStack.autoPinHeightToSuperview(withMargin: 14)
-
-            tintColor = .ows_accentBlue
         }
 
         required init?(coder: NSCoder) {
@@ -2437,8 +2436,6 @@ private extension CallsListViewController {
         // MARK: Updates
 
         private func updateContents() {
-            applyTheme()
-
             guard let viewModel else {
                 return owsFailDebug("Missing view model")
             }
@@ -2461,13 +2458,13 @@ private extension CallsListViewController {
                     return String(format: Strings.coalescedCallsTitleFormat, viewModel.title, "\(viewModel.callRecords.count)")
                 }
             }()
-            self.titleLabel.text = titleText
+            titleLabel.text = titleText
 
             switch viewModel.direction {
             case .incoming, .outgoing, .callLink:
-                titleLabel.textColor = Theme.primaryTextColor
+                titleLabel.textColor = .Signal.label
             case .missed:
-                titleLabel.textColor = .ows_accentRed
+                titleLabel.textColor = .Signal.red
             }
 
             self.subtitleLabel.attributedText = .composed(of: [
@@ -2478,25 +2475,15 @@ private extension CallsListViewController {
 
             let button = switch viewModel.state {
             case .active, .participating:
-                self.makeJoinButton(viewModel: viewModel)
+                makeJoinButton(viewModel: viewModel)
             case .inactive:
-                self.makeStartCallButton(viewModel: viewModel)
+                makeStartCallButton(viewModel: viewModel)
             }
-            self.trailingButton?.removeFromSuperview()
-            self.trailingButton = button
+            trailingButton?.removeFromSuperview()
+            trailingButton = button
             trailingHStack.addArrangedSubview(button)
 
             updateDisplayedDateAndScheduleRefresh()
-        }
-
-        private func applyTheme() {
-            backgroundColor = Theme.backgroundColor
-            selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-
-            titleLabel.textColor = Theme.primaryTextColor
-            subtitleLabel.textColor = Theme.snippetColor
-            timestampLabel.textColor = Theme.snippetColor
         }
 
         // MARK: Actions
@@ -2527,7 +2514,7 @@ private extension CallsListViewController {
 
         private lazy var iconView: UIImageView = {
             let imageView = UIImageView(image: UIImage(named: "link"))
-            imageView.tintColor = Theme.primaryIconColor
+            imageView.tintColor = .Signal.label
             imageView.autoSetDimensions(to: CGSize(square: Constants.iconDimension))
             return imageView
         }()
@@ -2535,7 +2522,7 @@ private extension CallsListViewController {
         private lazy var label: UILabel = {
             let label = UILabel()
             label.font = .dynamicTypeHeadline
-            label.textColor = Theme.primaryTextColor
+            label.textColor = .Signal.label
             label.numberOfLines = 3
             label.lineBreakMode = .byTruncatingTail
             label.text = OWSLocalizedString(
@@ -2561,11 +2548,6 @@ private extension CallsListViewController {
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
-        }
-
-        override func prepareForReuse() {
-            iconView.tintColor = Theme.primaryIconColor
-            label.textColor = Theme.primaryTextColor
         }
     }
 }
