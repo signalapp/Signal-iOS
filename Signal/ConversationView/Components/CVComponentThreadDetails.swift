@@ -1113,6 +1113,8 @@ extension CVComponentThreadDetails {
             tx: tx
         )
 
+        // We need these to be CVarArgs for them to format appropriately.
+        let groupNamesFormatArg: [CVarArg] = mutualGroupNames
         let formattedString: String
         switch mutualGroupNames.count {
         case 0:
@@ -1121,7 +1123,7 @@ extension CVComponentThreadDetails {
                     "THREAD_DETAILS_ZERO_MUTUAL_GROUPS",
                     comment: "A string indicating there are no mutual groups the user shares with this contact"
                 ),
-                mutualGroupNames,
+                groupNamesFormatArg,
             )
         case 1:
             formattedString = String(
@@ -1129,7 +1131,7 @@ extension CVComponentThreadDetails {
                     "THREAD_DETAILS_ONE_MUTUAL_GROUP",
                     comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
                 ),
-                mutualGroupNames,
+                groupNamesFormatArg,
             )
         case 2:
             formattedString = String(
@@ -1137,7 +1139,7 @@ extension CVComponentThreadDetails {
                     "THREAD_DETAILS_TWO_MUTUAL_GROUP",
                     comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
                 ),
-                mutualGroupNames,
+                groupNamesFormatArg,
             )
         case 3:
             formattedString = String(
@@ -1145,7 +1147,7 @@ extension CVComponentThreadDetails {
                     "THREAD_DETAILS_THREE_MUTUAL_GROUP",
                     comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
                 ),
-                mutualGroupNames,
+                groupNamesFormatArg,
             )
         default:
             // For this string, we want to use the first two groups' names
@@ -1153,13 +1155,14 @@ extension CVComponentThreadDetails {
             // groups.
             let firstTwoGroups = Array(mutualGroupNames[0..<2])
             let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
+            let formatArgs: [CVarArg] = firstTwoGroups + [remainingGroupsCount]
             formattedString = String.localizedStringWithFormat(
                 OWSLocalizedString(
                     "THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld",
                     tableName: "PluralAware",
                     comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}"
                 ),
-                firstTwoGroups + [remainingGroupsCount],
+                formatArgs,
             )
         }
 
