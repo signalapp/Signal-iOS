@@ -16,8 +16,6 @@ class HiddenStoryHeaderCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundView = UIView()
-        backgroundView?.backgroundColor = .clear
         selectionStyle = .none
 
         contentView.addSubview(label)
@@ -27,10 +25,12 @@ class HiddenStoryHeaderCell: UITableViewCell {
             "STORIES_HIDDEN_SECTION_HEADER",
             comment: "Header for the hidden stories section of the stories list"
         )
+        label.textColor = .Signal.label
         label.font = UIFont.dynamicTypeHeadline
         label.autoPinEdge(toSuperviewMargin: .leading)
         label.autoVCenterInSuperview()
 
+        iconView.tintColor = .Signal.label
         iconView.autoPinEdge(toSuperviewMargin: .trailing)
         iconView.autoVCenterInSuperview()
     }
@@ -43,12 +43,6 @@ class HiddenStoryHeaderCell: UITableViewCell {
     private var isCollapsed: Bool = true
 
     func configure(isCollapsed: Bool, animated: Bool = true) {
-
-        self.backgroundColor = .clear
-
-        label.textColor = Theme.primaryTextColor
-        iconView.tintColor = Theme.primaryIconColor
-
         iconView.image = UIImage(imageLiteralResourceName: "chevron-right-20")
 
         // Rotate the chevron down when not collapsed

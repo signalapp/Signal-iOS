@@ -15,9 +15,9 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
     var enabled = true {
         didSet {
             if enabled {
-                label.textColor = Theme.primaryTextColor
+                label.textColor = .Signal.label
             } else {
-                label.textColor = Theme.secondaryTextAndIconColor
+                label.textColor = .Signal.secondaryLabel
             }
             disclosureImageView.tintColor = label.textColor
         }
@@ -36,39 +36,37 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
     }
 
     private func commonInit() {
-        self.selectionStyle = .none
+        selectionStyle = .none
 
-        disclosureImageView.tintColor = Theme.primaryTextColor
+        disclosureImageView.tintColor = .Signal.label
         disclosureImageView.setContentHuggingHigh()
         disclosureImageView.setCompressionResistanceHigh()
 
         label.text = OWSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
                                        comment: "Label for 'archived conversations' button.")
         label.textAlignment = .center
+        label.font = .dynamicTypeBody
 
-        let stackView = UIStackView()
+        let stackView = UIStackView(arrangedSubviews: [ label, disclosureImageView ])
         stackView.axis = .horizontal
         stackView.spacing = 5
         // If alignment isn't set, UIStackView uses the height of
         // disclosureImageView, even if label has a higher desired height.
         stackView.alignment = .center
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(disclosureImageView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(stackView)
-        stackView.autoCenterInSuperview()
-        // Constrain to cell margins.
-        stackView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .top)
-        stackView.autoPinEdge(toSuperviewMargin: .bottom)
+        contentView.addConstraints([
+            stackView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
+        ])
 
         accessibilityIdentifier = "archived_conversations"
         enabled = true
     }
 
     func configure(enabled: Bool) {
-        OWSTableItem.configureCell(self)
-        label.font = .dynamicTypeBody
         self.enabled = enabled
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,

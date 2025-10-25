@@ -11,59 +11,96 @@ import SignalUI
 class StoryCell: UITableViewCell {
     static let reuseIdentifier = "StoryCell"
 
-    let nameLabel = UILabel()
-    let nameIconView = UIImageView()
-    let subtitleLabel = UILabel()
-    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
-    let attachmentThumbnail = UIView()
-    let replyImageView = UIImageView()
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 2
+        label.font = .dynamicTypeHeadline
+        label.textColor = .Signal.label
+        return label
+    }()
 
-    let failedIconView = UIImageView()
+    private let nameIconView: UIImageView = {
+        let imageView = UIImageView(image: Theme.iconImage(.official))
+        imageView.contentMode = .center
+        return imageView
+    }()
 
-    let contentHStackView = UIStackView()
-    let subtitleStack = UIStackView()
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadline
+        label.textColor = .Signal.secondaryLabel
+        return label
+    }()
+
+    private let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
+
+    let attachmentThumbnail: UIView = {
+        let view = UIView()
+        view.autoSetDimensions(to: CGSize(width: 56, height: 84))
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
+        return view
+    }()
+
+    private let replyImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .Signal.secondaryLabel
+        imageView.contentMode = .scaleAspectFit
+        imageView.autoSetDimensions(to: CGSize(square: 20))
+        return imageView
+    }()
+
+    private let failedIconView: UIImageView = {
+        let imageView = UIImageView(image: Theme.iconImage(.error16))
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .Signal.red
+        imageView.autoSetDimension(.width, toSize: 16)
+        return imageView
+    }()
+
+    private lazy var subtitleStack: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [failedIconView, subtitleLabel])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 6
+        return stackView
+    }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
-
-        replyImageView.autoSetDimensions(to: CGSize(square: 20))
-        replyImageView.contentMode = .scaleAspectFit
+        automaticallyUpdatesBackgroundConfiguration = false
 
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, nameIconView])
         nameStack.axis = .horizontal
         nameStack.alignment = .center
         nameStack.spacing = 3
 
-        failedIconView.autoSetDimension(.width, toSize: 16)
-        failedIconView.contentMode = .scaleAspectFit
-        failedIconView.tintColor = .ows_accentRed
-
-        subtitleStack.addArrangedSubviews([failedIconView, subtitleLabel])
-        subtitleStack.axis = .horizontal
-        subtitleStack.alignment = .center
-        subtitleStack.spacing = 6
-
         let vStack = UIStackView(arrangedSubviews: [nameStack, subtitleStack, replyImageView])
         vStack.axis = .vertical
         vStack.alignment = .leading
 
-        contentHStackView.addArrangedSubviews([avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
+        let contentHStackView = UIStackView(arrangedSubviews: [avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
         contentHStackView.axis = .horizontal
         contentHStackView.alignment = .center
         contentHStackView.spacing = 16
-
         contentView.addSubview(contentHStackView)
         contentHStackView.autoPinEdgesToSuperviewMargins()
-
-        attachmentThumbnail.autoSetDimensions(to: CGSize(width: 56, height: 84))
-        attachmentThumbnail.layer.cornerRadius = 12
-        attachmentThumbnail.clipsToBounds = true
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        var configuration = UIBackgroundConfiguration.clear()
+        if state.isSelected || state.isHighlighted {
+            configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            if traitCollection.userInterfaceIdiom == .pad {
+                configuration.cornerRadius = 24
+            }
+        }
+        backgroundConfiguration = configuration
     }
 
     private var attachment: StoryThumbnailView.Attachment?
@@ -84,15 +121,7 @@ class StoryCell: UITableViewCell {
         }
 
         replyImageView.isHidden = !model.hasReplies
-        replyImageView.tintColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
-
-        nameLabel.numberOfLines = 2
-        nameLabel.font = .dynamicTypeHeadline
-        nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
-
-        nameIconView.contentMode = .center
-        nameIconView.image = Theme.iconImage(.official)
         nameIconView.isHiddenInStackView = !model.isSystemStory
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
@@ -119,16 +148,10 @@ class StoryCell: UITableViewCell {
         }
 
         contentView.alpha = model.isHidden ? 0.27 : 1
-
-        let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-        self.selectedBackgroundView = selectedBackgroundView
     }
 
     func configureSubtitle(with model: StoryViewModel) {
         subtitleStack.isHidden = model.isSystemStory
-        subtitleLabel.font = .dynamicTypeSubheadline
-        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch model.latestMessageSendingState {
         case .sent:
@@ -141,7 +164,6 @@ class StoryCell: UITableViewCell {
             subtitleLabel.text = model.latestMessage.hasSentToAnyRecipients
                 ? OWSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
                 : OWSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
-            failedIconView.image = Theme.iconImage(.error16)
             failedIconView.isHiddenInStackView = false
         case .sent_OBSOLETE, .delivered_OBSOLETE:
             owsFailDebug("Unexpected legacy sending state")

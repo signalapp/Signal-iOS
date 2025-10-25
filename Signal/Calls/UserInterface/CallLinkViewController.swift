@@ -431,7 +431,7 @@ private class CallLinkCardView: UIView {
         linkLabel.lineBreakMode = .byTruncatingTail
         linkLabel.numberOfLines = 2
 
-        linkLabel.textColor = Theme.snippetColor
+        linkLabel.textColor = .Signal.secondaryLabel
         linkLabel.font = .dynamicTypeSubheadline
 
         stackView.addArrangedSubviews([nameLabel, linkLabel])

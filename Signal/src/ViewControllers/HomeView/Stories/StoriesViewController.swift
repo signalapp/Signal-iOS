@@ -16,7 +16,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -52,6 +52,9 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.backgroundColor = .Signal.background
+        tableView.backgroundColor = .Signal.background
 
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
@@ -147,14 +150,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         }
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        applyTheme()
-    }
-
     private func applyTheme() {
-        emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
         for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
             switch Section(rawValue: indexPath.section) {
             case .myStory:
@@ -181,9 +177,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
                 owsFailDebug("Unexpected story type")
             }
         }
-
-        view.backgroundColor = Theme.backgroundColor
-        tableView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
     }

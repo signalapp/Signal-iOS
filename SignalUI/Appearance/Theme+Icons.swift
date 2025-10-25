@@ -364,7 +364,7 @@ public extension Theme {
         case .spam:
             return "spam"
         case .official:
-            return isDarkThemeEnabled ? "official-dark" : "official"
+            return "official"
         case .qrCode:
             return "qr_code"
         case .qrCodeLight:

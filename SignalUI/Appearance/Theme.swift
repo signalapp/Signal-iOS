@@ -347,10 +347,6 @@ final public class Theme: NSObject {
         UIColor.Signal.tertiaryLabel.resolvedColor(with: currentThemeTraitCollection)
     }
 
-    public class var snippetColor: UIColor {
-        isDarkThemeEnabled ? darkThemeSnippetColor : lightThemeSnippetColor
-    }
-
     public class var hairlineColor: UIColor {
         UIColor.Signal.opaqueSeparator.resolvedColor(with: currentThemeTraitCollection)
     }
@@ -406,9 +402,9 @@ final public class Theme: NSObject {
     public class var tableCell2SelectedBackgroundColor: UIColor {
         UIColor(
             light: UIColor(rgbHex: 0xD4D4D6),
-            lightHighContrast: UIColor(rgbHex: 0xD4D4D6), // TBD
+            lightHighContrast: UIColor(rgbHex: 0xC6C6CA),
             dark: UIColor(rgbHex: 0x3A3A3D),
-            darkHighContrast: UIColor(rgbHex: 0x3A3A3D)   // TBD
+            darkHighContrast: UIColor(rgbHex: 0x525257)
         )
     }
 
@@ -442,8 +438,6 @@ final public class Theme: NSObject {
         UIColor.Signal.secondaryLabel.resolvedColor(with: lightTraitCollection)
     }
 
-    public class var lightThemeSnippetColor: UIColor { .ows_gray45 }
-
     // MARK: - Dark Theme Colors
 
     public class var darkThemeBackgroundColor: UIColor {
@@ -457,8 +451,6 @@ final public class Theme: NSObject {
     public class var darkThemeSecondaryTextAndIconColor: UIColor {
         UIColor.Signal.secondaryLabel.resolvedColor(with: darkTraitCollection)
      }
-
-    public class var darkThemeSnippetColor: UIColor { .ows_gray25 }
 
     public class var darkThemeWashColor: UIColor { .ows_gray75 }
 

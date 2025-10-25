@@ -16,7 +16,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
     }
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -47,12 +47,15 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+
         title = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
         tableView.register(SentStoryCell.self, forCellReuseIdentifier: SentStoryCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
+        tableView.backgroundColor = .Signal.background
 
         reloadStories()
 
@@ -62,21 +65,6 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
             target: self,
             action: #selector(showPrivacySettings)
         )
-
-        applyTheme()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        applyTheme()
-    }
-
-    private func applyTheme() {
-        emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
-        tableView.reloadData()
-
-        view.backgroundColor = Theme.backgroundColor
     }
 
     @objc
@@ -332,80 +320,109 @@ private struct OutgoingStoryItem {
 class SentStoryCell: UITableViewCell {
     static let reuseIdentifier = "SentStoryCell"
 
-    private class ContextButtonContainer: UIView {
-        func setContextButton(_ contextButton: ContextMenuButton) {
-            removeAllSubviews()
-
-            addSubview(contextButton)
-            contextButton.autoPinEdgesToSuperviewEdges()
-            contextButton.layer.cornerRadius = 16
-            contextButton.clipsToBounds = true
-        }
-    }
-
     let attachmentThumbnail = UIView()
 
-    fileprivate let contentHStackView = UIStackView()
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.label
+        label.font = .dynamicTypeHeadline
+        return label
+    }()
 
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let saveButton = OWSButton()
-    private let contextButtonContainer = ContextButtonContainer()
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.secondaryLabel
+        label.font = .dynamicTypeSubheadline
+        return label
+    }()
 
-    private let failedIconContainer = UIView()
-    private let failedIconView = UIImageView()
+    private lazy var saveButton: UIButton = {
+        let button = UIButton(
+            configuration: .gray(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.saveAttachmentBlock()
+            }
+        )
+        button.configuration?.image = UIImage(imageLiteralResourceName: "save-20")
+        button.configuration?.contentInsets = .init(margin: 6)
+        button.configuration?.baseForegroundColor = .Signal.label
+        button.configuration?.baseBackgroundColor = .Signal.secondaryBackground
+        button.configuration?.cornerStyle = .capsule
+        return button
+    }()
+
+    private let contextButton: ContextMenuButton = {
+        let button = ContextMenuButton(empty: ())
+        button.configuration = .gray()
+        button.configuration?.image = UIImage(imageLiteralResourceName: "more-compact")
+        button.configuration?.contentInsets = .init(margin: 8)
+        button.configuration?.baseForegroundColor = .Signal.label
+        button.configuration?.baseBackgroundColor = .Signal.secondaryBackground
+        button.configuration?.cornerStyle = .capsule
+        // ContextMenuButton overrides `intrinsicContentSize` so manually specify size.
+        button.addConstraints([
+            button.widthAnchor.constraint(equalToConstant: 32),
+            button.heightAnchor.constraint(equalToConstant: 32),
+        ])
+        return button
+    }()
+
+    private lazy var failedIconContainer: UIView = {
+        let imageView = UIImageView(image: Theme.iconImage(.error16))
+        imageView.tintColor = .Signal.red
+        imageView.contentMode = .scaleAspectFit
+
+        let view = UIView()
+        view.addSubview(imageView)
+        imageView.autoPinHeightToSuperview()
+        imageView.autoPinEdge(toSuperviewEdge: .leading)
+        imageView.autoSetDimension(.width, toSize: 16)
+        view.autoSetDimension(.width, toSize: 28)
+        return view
+    }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
+        automaticallyUpdatesBackgroundConfiguration = false
 
+        let vStackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        vStackView.axis = .vertical
+        vStackView.alignment = .leading
+
+        let contentHStackView = UIStackView(
+            arrangedSubviews: [
+                attachmentThumbnail,
+                .spacer(withWidth: 16),
+                failedIconContainer,
+                vStackView,
+                .hStretchingSpacer(),
+                saveButton,
+                .spacer(withWidth: 20),
+                contextButton,
+            ]
+        )
         contentHStackView.axis = .horizontal
         contentHStackView.alignment = .center
         contentView.addSubview(contentHStackView)
         contentHStackView.autoPinEdgesToSuperviewMargins()
 
         attachmentThumbnail.autoSetDimensions(to: CGSize(width: 56, height: 84))
-        contentHStackView.addArrangedSubview(attachmentThumbnail)
-
-        contentHStackView.addArrangedSubview(.spacer(withWidth: 16))
-
-        contentHStackView.addArrangedSubview(failedIconContainer)
-        failedIconContainer.autoSetDimension(.width, toSize: 28)
-        failedIconContainer.addSubview(failedIconView)
-        failedIconView.autoPinHeightToSuperview()
-        failedIconView.autoPinEdge(toSuperviewEdge: .leading)
-        failedIconView.autoSetDimension(.width, toSize: 16)
-        failedIconView.contentMode = .scaleAspectFit
-        failedIconView.tintColor = .ows_accentRed
-
-        let vStackView = UIStackView()
-        vStackView.axis = .vertical
-        vStackView.alignment = .leading
-        contentHStackView.addArrangedSubview(vStackView)
-
-        titleLabel.font = .dynamicTypeHeadline
-
-        vStackView.addArrangedSubview(titleLabel)
-
-        subtitleLabel.font = .dynamicTypeSubheadline
-        vStackView.addArrangedSubview(subtitleLabel)
-
-        contentHStackView.addArrangedSubview(.hStretchingSpacer())
-
-        saveButton.autoSetDimensions(to: CGSize(square: 32))
-        saveButton.layer.cornerRadius = 16
-        saveButton.clipsToBounds = true
-        contentHStackView.addArrangedSubview(saveButton)
-
-        contentHStackView.addArrangedSubview(.spacer(withWidth: 20))
-
-        contextButtonContainer.autoSetDimensions(to: CGSize(square: 32))
-        contentHStackView.addArrangedSubview(contextButtonContainer)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        var configuration = UIBackgroundConfiguration.clear()
+        if state.isSelected || state.isHighlighted {
+            configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            if traitCollection.userInterfaceIdiom == .pad {
+                configuration.cornerRadius = 24
+            }
+        }
+        backgroundConfiguration = configuration
     }
 
     private var attachment: StoryThumbnailView.Attachment?
@@ -428,16 +445,12 @@ class SentStoryCell: UITableViewCell {
             thumbnailView.autoPinEdgesToSuperviewEdges()
         }
 
-        titleLabel.textColor = Theme.primaryTextColor
-        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
-
         switch item.message.sendingState {
         case .pending, .sending:
             titleLabel.text = OWSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
             subtitleLabel.text = ""
             failedIconContainer.isHiddenInStackView = true
         case .failed:
-            failedIconView.image = Theme.iconImage(.error16)
             failedIconContainer.isHiddenInStackView = false
             titleLabel.text = item.message.hasSentToAnyRecipients
                 ? OWSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
@@ -462,29 +475,20 @@ class SentStoryCell: UITableViewCell {
             owsFailDebug("Unexpected legacy sending state")
         }
 
-        saveButton.tintColor = Theme.primaryIconColor
-        saveButton.setImage(UIImage(imageLiteralResourceName: "save-20"), for: .normal)
-        saveButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
-
         if item.attachment.isSaveable {
             saveButton.isHiddenInStackView = false
-            saveButton.block = { item.attachment.save(
+            saveAttachmentBlock = { item.attachment.save(
                 interactionIdentifier: .fromStoryMessage(item.message),
                 spoilerState: spoilerState
             ) }
         } else {
             saveButton.isHiddenInStackView = true
-            saveButton.block = {}
+            saveAttachmentBlock = {}
         }
 
-        let contextButton = ContextMenuButton(actions: contextMenuActions)
-        contextButton.tintColor = Theme.primaryIconColor
-        contextButton.setImage(UIImage(imageLiteralResourceName: "more-compact"), for: .normal)
-        contextButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
-        contextButtonContainer.setContextButton(contextButton)
+        contextButton.setActions(actions: contextMenuActions)
 
-        let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-        self.selectedBackgroundView = selectedBackgroundView
     }
+
+    private var saveAttachmentBlock: () -> Void = {}
 }

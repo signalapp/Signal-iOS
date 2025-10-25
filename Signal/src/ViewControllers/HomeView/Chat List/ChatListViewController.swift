@@ -42,6 +42,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+        tableView.backgroundColor = .Signal.background
+
         switch viewState.chatListMode {
         case .inbox:
             title = NSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode.")
@@ -93,7 +96,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updateExpirationReminderView()
         updatePaymentReminderView()
         updateUsernameReminderView()
-        applyTheme()
         observeNotifications()
         DependenciesBridge.shared.db.read { tx in
             self.viewState.backupDownloadProgressViewState.refetchDBState(tx: tx)
@@ -217,13 +219,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {})
         }
 
-        // Whether or not the theme has changed, always ensure
-        // the right theme is applied. The initial collapsed
-        // state of the split view controller is determined between
-        // `viewWillAppear` and `viewDidAppear`, so this is the soonest
-        // we can know the right thing to display.
-        applyTheme()
-
         requestReviewIfAppropriate()
 
         viewState.searchResultsController.viewDidAppear(animated)
@@ -298,14 +293,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func themeDidChange() {
         super.themeDidChange()
 
-        applyTheme()
         reloadTableDataAndResetCellContentCache()
         applyThemeToContextMenuAndToolbar()
-    }
-
-    private func applyTheme() {
-        view.backgroundColor = Theme.backgroundColor
-        tableView.backgroundColor = Theme.backgroundColor
     }
 
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -329,8 +318,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         coordinator.animate { context in
-            self.applyTheme()
-
             if !UIDevice.current.isIPad {
                 self.reloadTableDataAndResetCellContentCache()
             }

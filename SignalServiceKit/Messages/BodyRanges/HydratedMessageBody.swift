@@ -345,7 +345,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
     }
 
-    /// If baseFont or baseTextColor are not provided, the values in the style display configuation are used.
+    /// If baseFont or baseTextColor are not provided, the values in the style display configuration are used.
     public func asAttributedStringForDisplay(
         config: DisplayConfiguration,
         baseFont: UIFont? = nil,

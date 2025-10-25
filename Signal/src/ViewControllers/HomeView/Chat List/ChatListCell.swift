@@ -144,6 +144,10 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         .dynamicTypeSubheadlineClamped
     }
 
+    private static var snippetColor: UIColor {
+        .Signal.secondaryLabel
+    }
+
     private static var nameFont: UIFont {
         UIFont.dynamicTypeHeadlineClamped
     }
@@ -170,14 +174,29 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     }
 
     private func commonInit() {
-        multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
-        outerHStack.autoPinEdge(toSuperviewEdge: .leading)
-        outerHStack.autoPinEdge(toSuperviewEdge: .trailing)
-        outerHStack.autoPinHeightToSuperview()
+        outerHStack.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addConstraints([
+            outerHStack.topAnchor.constraint(equalTo: contentView.topAnchor),
+            outerHStack.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            outerHStack.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            outerHStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
 
-        self.selectionStyle = .default
+        selectionStyle = .default
+        automaticallyUpdatesBackgroundConfiguration = false
+    }
+
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        var configuration = UIBackgroundConfiguration.clear()
+        if state.isSelected || state.isHighlighted {
+            configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            if traitCollection.userInterfaceIdiom == .pad {
+                configuration.cornerRadius = 24
+            }
+        }
+        backgroundConfiguration = configuration
     }
 
     // This method can be invoked from any thread.
@@ -322,10 +341,6 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     ) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCell(self)
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-
         self.cellContentToken = cellContentToken
 
         let configuration = cellContentToken.configuration
@@ -394,13 +409,13 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
 
         if configuration.shouldShowVerifiedBadge {
             badgeView.image = Theme.iconImage(.official)
-            badgeView.tintColor = .ows_signalBlue
+            badgeView.tintColor = .Signal.accent
             topRowStackSubviews.append(badgeView)
         }
 
         if configuration.shouldShowMuteIndicator {
             muteIconView.image = UIImage(imageLiteralResourceName: "bell-slash")
-            muteIconView.tintColor = Theme.snippetColor
+            muteIconView.tintColor = ChatListCell.snippetColor
             topRowStackSubviews.append(muteIconView)
         }
 
@@ -556,7 +571,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .horizontal,
             alignment: .center,
             spacing: 12,
-            layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0)
+            layoutMargins: .zero
         )
     }
 
@@ -587,7 +602,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         }
 
         var statusIndicatorImage: UIImage?
-        var messageStatusViewTintColor = Theme.snippetColor
+        var messageStatusViewTintColor = snippetColor
         var shouldAnimateStatusIcon = false
 
         switch messageStatus {
@@ -611,7 +626,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             statusIndicatorImage = UIImage(named: "message_status_read")
         case .failed:
             statusIndicatorImage = UIImage(named: "error-circle-extra-small")
-            messageStatusViewTintColor = .ows_accentRed
+            messageStatusViewTintColor = .Signal.red
         case .pending:
             statusIndicatorImage = UIImage(named: "error-circle-extra-small")
             messageStatusViewTintColor = .ows_gray60
@@ -701,7 +716,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         let unreadLabelSize = unreadBadgeMeasurements.unreadLabelSize
 
         let unreadBadge = self.unreadBadge
-        unreadBadge.backgroundColor = .ows_accentBlue
+        unreadBadge.backgroundColor = .Signal.accent
         unreadBadge.addSubview(unreadLabel) { view in
             // Center within badge.
             unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5, size: unreadLabelSize)
@@ -728,7 +743,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                     ),
                     attributes: [
                         .font: snippetFont,
-                        .foregroundColor: Theme.snippetColor
+                        .foregroundColor: snippetColor
                     ]
                 )
             )
@@ -746,7 +761,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                         string: String(format: addedToGroupFormat, addedToGroupByName),
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: Theme.snippetColor
+                            .foregroundColor: snippetColor
                         ]
                     )
                 )
@@ -761,7 +776,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                         string: text,
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: Theme.snippetColor
+                            .foregroundColor: snippetColor
                         ]
                     )
                 )
@@ -785,21 +800,21 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                 ),
                 attributes: [
                     .font: snippetFont.italic(),
-                    .foregroundColor: Theme.snippetColor
+                    .foregroundColor: snippetColor
                 ]
             )
             snippetText.append(
                 "🎤",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: Theme.snippetColor
+                    .foregroundColor: snippetColor
                 ]
             )
             snippetText.append(
                 " ",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: Theme.snippetColor
+                    .foregroundColor: snippetColor
                 ]
             )
             snippetText.append(
@@ -809,7 +824,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                 ),
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: Theme.snippetColor
+                    .foregroundColor: snippetColor
                 ]
             )
             return .attributedText(snippetText)
@@ -839,7 +854,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         return CVLabelConfig.unstyledText(
             text,
             font: dateTimeFont,
-            textColor: Theme.snippetColor,
+            textColor: snippetColor,
             textAlignment: .trailing
         )
     }
@@ -864,13 +879,12 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         return CVLabelConfig.unstyledText(
             text,
             font: nameFont,
-            textColor: Theme.primaryTextColor,
+            textColor: .Signal.label,
             lineBreakMode: .byTruncatingTail
         )
     }
 
     private static func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
-        let textColor = Theme.snippetColor
         let text: CVTextValue
         let displayConfig: HydratedMessageBody.DisplayConfiguration
         if let overrideSnippet = configuration.overrideSnippet {
@@ -878,13 +892,19 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             displayConfig = overrideSnippet.config
         } else {
             text = self.cvTextSnippet(configuration: configuration)
-            displayConfig = .conversationListSnippet(font: snippetFont, textColor: ThemedColor(light: Theme.lightThemeSnippetColor, dark: Theme.darkThemeSnippetColor))
+            displayConfig = .conversationListSnippet(
+                font: snippetFont,
+                textColor: ThemedColor(
+                    light: Theme.lightThemeSecondaryTextAndIconColor,
+                    dark: Theme.darkThemeSecondaryTextAndIconColor
+                )
+            )
         }
         return CVLabelConfig(
             text: text,
             displayConfig: displayConfig,
             font: snippetFont,
-            textColor: textColor,
+            textColor: snippetColor,
             numberOfLines: 2,
             lineBreakMode: .byTruncatingTail
         )

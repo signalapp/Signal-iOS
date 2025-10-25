@@ -1591,8 +1591,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 format: Strings.searchNoResultsFoundLabelFormat,
                 arguments: [searchTerm]
             )
-            noSearchResultsView.layer.opacity = 1
-            emptyStateMessageView.layer.opacity = 0
+            noSearchResultsView.alpha = 1
+            emptyStateMessageView.alpha = 0
         case (true, _):
             emptyStateMessageView.attributedText = NSAttributedString.composed(of: {
                 switch currentFilterMode {
@@ -1612,12 +1612,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             .styled(
                 with: .font(.dynamicTypeSubheadline.semibold())
             )
-            noSearchResultsView.layer.opacity = 0
-            emptyStateMessageView.layer.opacity = 1
+            noSearchResultsView.alpha = 0
+            emptyStateMessageView.alpha = 1
         case (_, _):
             // Hide empty state message
-            noSearchResultsView.layer.opacity = 0
-            emptyStateMessageView.layer.opacity = 0
+            noSearchResultsView.alpha = 0
+            emptyStateMessageView.alpha = 0
         }
     }
 }
@@ -2340,12 +2340,7 @@ private extension CallsListViewController {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
             tintColor = .Signal.accent
-            backgroundColor = .Signal.background
-
-            selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-
-            multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
-            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            automaticallyUpdatesBackgroundConfiguration = false
 
             let bodyVStack = UIStackView(arrangedSubviews: [
                 titleLabel,
@@ -2484,6 +2479,17 @@ private extension CallsListViewController {
             trailingHStack.addArrangedSubview(button)
 
             updateDisplayedDateAndScheduleRefresh()
+        }
+
+        override func updateConfiguration(using state: UICellConfigurationState) {
+            var configuration = UIBackgroundConfiguration.clear()
+            if state.isSelected || state.isHighlighted {
+                configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+                if traitCollection.userInterfaceIdiom == .pad {
+                    configuration.cornerRadius = 36
+                }
+            }
+            backgroundConfiguration = configuration
         }
 
         // MARK: Actions
