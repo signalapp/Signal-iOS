@@ -32,26 +32,17 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
     // MARK: - Rendering
 
-    private lazy var exportButton: UIView = {
-        let title = OWSLocalizedString(
+    private lazy var exportButton = UIButton(
+        configuration: .largePrimary(title: OWSLocalizedString(
             "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON",
             comment: "Users can request a report of their account data. Users tap this button to export their data."
-        )
-        let result = OWSButton(title: title) { [weak self] in self?.didTapExport() }
-        result.dimsWhenHighlighted = true
-        result.layer.cornerRadius = 8
-        result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.dynamicTypeHeadline
-        result.autoSetDimension(.height, toSize: 48)
-        return result
-    }()
+        )),
+        primaryAction: UIAction { [weak self] _ in
+            self?.didTapExport()
+        }
+    )
 
     private func updateTableContents() {
         self.contents = OWSTableContents(sections: [
@@ -68,15 +59,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                 let iconView = UIImageView(image: .init(named: "account_data_report"))
                 iconView.autoSetDimensions(to: .square(88))
 
-                let titleLabel = UILabel()
-                titleLabel.textAlignment = .center
-                titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-                titleLabel.text = OWSLocalizedString(
+                let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
                     "ACCOUNT_DATA_REPORT_TITLE",
                     comment: "Users can request a report of their account data. This is the title on the screen where they do this."
-                )
-                titleLabel.numberOfLines = 0
-                titleLabel.lineBreakMode = .byWordWrapping
+                ))
 
                 let descriptionTextView = LinkingTextView()
                 descriptionTextView.attributedText = .composed(
@@ -87,11 +73,11 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                         ),
                         CommonStrings.learnMore.styled(with: .link(URL.Support.requestingAccountData))
                     ],
-                    baseStyle: .init(.color(Theme.primaryTextColor), .font(.dynamicTypeBody)),
+                    baseStyle: .init(.color(.Signal.secondaryLabel), .font(.dynamicTypeSubheadline)),
                     separator: " "
                 )
                 descriptionTextView.linkTextAttributes = [
-                    .foregroundColor: Theme.accentBlueColor,
+                    .foregroundColor: UIColor.Signal.accent,
                     .underlineColor: UIColor.clear,
                     .underlineStyle: NSUnderlineStyle.single.rawValue
                 ]
@@ -167,7 +153,8 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             guard let self else { return cell }
 
             cell.contentView.addSubview(self.exportButton)
-            self.exportButton.autoPinEdgesToSuperviewMargins()
+            self.exportButton.autoPinHeightToSuperviewMargins()
+            self.exportButton.autoPinWidthToSuperview(withMargin: 12)
 
             return cell
         })])
