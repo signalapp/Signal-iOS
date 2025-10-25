@@ -140,12 +140,11 @@ public class LongTextViewController: OWSViewController {
             messageTextView.text = ""
         }
 
-        let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
-            NSAttributedString.Key.underlineColor: Theme.primaryTextColor,
-            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        messageTextView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+            .underlineColor: Theme.primaryTextColor,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
-        messageTextView.linkTextAttributes = linkTextAttributes
     }
 
     // MARK: -

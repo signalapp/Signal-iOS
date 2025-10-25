@@ -12,7 +12,7 @@ extension Text {
     public func appendLink(
         _ title: String,
         useBold: Bool = false,
-        tint: Color = Color.Signal.accent,
+        tint: Color = Color.Signal.link,
         action: @escaping () -> Void
     ) -> some View {
         // Placeholder URL is needed for the link, but it's thrown away in the OpenURLAction

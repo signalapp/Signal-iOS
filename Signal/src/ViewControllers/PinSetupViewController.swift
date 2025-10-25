@@ -51,7 +51,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 linkColor = .Signal.label
             } else {
                 linkFont = font
-                linkColor = UIColor.Signal.accent
+                linkColor = UIColor.Signal.link
             }
             explanationLabel.isUserInteractionEnabled = true
             attributedString.append("  ")

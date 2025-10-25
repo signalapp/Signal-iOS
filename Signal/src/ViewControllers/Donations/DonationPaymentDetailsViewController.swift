@@ -170,11 +170,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
             ).styled(with: linkPart)
         ]).styled(with: .color(.Signal.secondaryLabel), .font(.dynamicTypeFootnoteClamped))
-        subheaderTextView.linkTextAttributes = [
-            .foregroundColor: UIColor.Signal.label,
-            .underlineColor: UIColor.clear,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
+        subheaderTextView.linkTextAttributes = [ .foregroundColor: UIColor.Signal.label ]
 
         // Only change the placeholder when enough digits are entered.
         // Helps avoid a jittery UI as you type/delete.

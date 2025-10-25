@@ -167,12 +167,8 @@ public class PaymentsViewUtils {
                                                    learnMoreUrl: URL) -> UITextView {
         let textView = LinkingTextView()
         textView.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-        textView.textColor = (Theme.isDarkThemeEnabled
-                                ? UIColor.ows_gray05
-                                : UIColor.ows_gray90)
+        textView.textColor = .Signal.label
         textView.font = UIFont.dynamicTypeHeadlineClamped
-        textView.textContainerInset = .zero
-
         textView.attributedText = NSAttributedString.composed(of: [
             text,
             " ",
@@ -183,11 +179,7 @@ public class PaymentsViewUtils {
             with: .font(font),
             .color(Theme.secondaryTextAndIconColor)
         )
-        textView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
-            NSAttributedString.Key.underlineColor: UIColor.clear,
-            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
+        textView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
         return textView
     }
 }

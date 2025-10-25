@@ -57,11 +57,6 @@ class DonationHeroView: UIStackView {
             " ",
             readMoreText
         ]).styled(with: .color(UIColor.Signal.secondaryLabel), .font(.dynamicTypeBody))
-        descriptionTextView.linkTextAttributes = [
-            .foregroundColor: UIColor.Signal.accent,
-            .underlineColor: UIColor.clear,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
         descriptionTextView.textAlignment = .center
     }
 

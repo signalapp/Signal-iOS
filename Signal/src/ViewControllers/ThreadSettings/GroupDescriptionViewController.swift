@@ -69,7 +69,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         updateNavigation()
         updateTableContents()
         helper.descriptionTextView.linkTextAttributes = [
-            .foregroundColor: UIColor.link,
+            .foregroundColor: UIColor.Signal.link,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
     }

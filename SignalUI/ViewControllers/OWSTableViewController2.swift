@@ -670,14 +670,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
         textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         textView.font = footerFont
-
-        let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
-            NSAttributedString.Key.font: footerFont,
-            NSAttributedString.Key.underlineStyle: 0
+        textView.linkTextAttributes = [
+            .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
         ]
-        textView.linkTextAttributes = linkTextAttributes
-
         textView.textContainerInset = footerTextContainerInsets(useDeepInsets: withDeepInsets)
 
         return textView

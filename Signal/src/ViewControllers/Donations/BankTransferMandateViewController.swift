@@ -118,9 +118,6 @@ class BankTransferMandateViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL))
         ]).styled(with: .color(.Signal.secondaryLabel), .font(.dynamicTypeSubheadline))
-        subtitleTextView.linkTextAttributes = [
-            .foregroundColor: UIColor.Signal.accent,
-        ]
         subtitleTextView.textAlignment = .center
 
         let stackView = UIStackView(arrangedSubviews: [

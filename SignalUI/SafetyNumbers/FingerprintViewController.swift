@@ -160,11 +160,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             .color(Theme.secondaryTextAndIconColor),
             .alignment(.center)
         )
-        instructionsTextView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
-            .underlineColor: UIColor.clear,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
+        instructionsTextView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
     }
 
     private lazy var verifyUnverifyButtonLabel = UILabel()

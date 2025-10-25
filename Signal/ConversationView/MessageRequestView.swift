@@ -517,18 +517,7 @@ class MessageRequestView: UIStackView {
     }
 
     private func prepareTextView(attributedString: NSAttributedString, appendLearnMoreLink: Bool) -> UITextView {
-        let textView = UITextView()
-        textView.disableAiWritingTools()
-        textView.isOpaque = false
-        textView.isEditable = false
-        textView.contentInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.isScrollEnabled = false
-        textView.backgroundColor = .clear
-        textView.linkTextAttributes = [
-            .foregroundColor: Theme.accentBlueColor
-        ]
-
+        let textView = LinkingTextView()
         if appendLearnMoreLink {
             textView.attributedText = .composed(of: [
                 attributedString,
@@ -541,7 +530,6 @@ class MessageRequestView: UIStackView {
         } else {
             textView.attributedText = attributedString
         }
-
         return textView
     }
 

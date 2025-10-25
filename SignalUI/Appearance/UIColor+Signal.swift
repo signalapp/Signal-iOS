@@ -124,6 +124,8 @@ extension UIColor.Signal {
 
     public static var accent: UIColor { ultramarine }
 
+    public static var link: UIColor { ultramarine }
+
     // MARK: Label
 
     public static var label: UIColor {
@@ -376,6 +378,8 @@ extension Color.Signal {
     }
 
     public static var accent: Color { ultramarine }
+
+    public static var link: Color { ultramarine }
 
     // MARK: Label
 

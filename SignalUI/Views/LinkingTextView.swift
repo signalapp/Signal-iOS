@@ -40,6 +40,7 @@ public class LinkingTextView: UITextView {
         self.textContainer.lineFragmentPadding = 0
         isScrollEnabled = false
         delegate = self
+        linkTextAttributes = [ .foregroundColor: UIColor.Signal.link ]
     }
 
     @available(*, unavailable)

@@ -76,11 +76,6 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                     baseStyle: .init(.color(.Signal.secondaryLabel), .font(.dynamicTypeSubheadline)),
                     separator: " "
                 )
-                descriptionTextView.linkTextAttributes = [
-                    .foregroundColor: UIColor.Signal.accent,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
                 descriptionTextView.textAlignment = .center
 
                 let stackView = UIStackView(arrangedSubviews: [

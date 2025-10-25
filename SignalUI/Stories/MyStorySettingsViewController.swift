@@ -405,11 +405,7 @@ private class MyStorySettingsDataSource: NSObject {
             .color(Theme.secondaryTextAndIconColor),
             .alignment(textAlignment)
         )
-        textView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
-            .underlineColor: UIColor.clear,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
+        textView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
 
         textView.delegate = self
 

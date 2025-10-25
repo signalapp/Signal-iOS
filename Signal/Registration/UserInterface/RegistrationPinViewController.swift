@@ -231,10 +231,6 @@ class RegistrationPinViewController: OWSViewController {
         )
         result.font = .dynamicTypeBody
         result.textColor = .Signal.secondaryLabel
-        result.linkTextAttributes = [
-            .foregroundColor: UIColor.Signal.accent,
-            .underlineColor: UIColor.clear
-        ]
         result.textAlignment = .center
         result.delegate = self
         result.accessibilityIdentifier = "registration.pin.explanationLabel"

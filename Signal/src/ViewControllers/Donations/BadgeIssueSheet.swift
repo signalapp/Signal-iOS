@@ -339,11 +339,6 @@ class BadgeIssueSheet: OWSTableSheetViewController {
                 label.attributedText = .composed(of: [self.state.body.text, " ", learnMore])
                     .styled(with: .color(.Signal.secondaryLabel), .font(.dynamicTypeSubheadlineClamped))
                 label.textAlignment = .center
-                label.linkTextAttributes = [
-                    .foregroundColor: UIColor.Signal.accent,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
                 bodyLabel = label
             } else {
                 let label = UILabel()
