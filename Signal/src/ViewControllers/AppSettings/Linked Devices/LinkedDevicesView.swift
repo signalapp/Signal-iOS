@@ -780,17 +780,8 @@ struct LinkedDevicesView: View {
                             "LINK_NEW_DEVICE_TITLE",
                             comment: "Navigation title when scanning QR code to add new device."
                         ))
-                        .padding(.vertical, 14)
-                        .padding(.horizontal, 16)
-                        .frame(maxWidth: .infinity)
                     }
-                    .font(.headline)
-                    .buttonStyle(.borderless)
-                    .foregroundStyle(isEditing ? Color.Signal.tertiaryLabel : .white)
-                    .background(
-                        isEditing ? Color.Signal.tertiaryFill : Color.Signal.ultramarine,
-                        in: .rect(cornerRadius: 12)
-                    )
+                    .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
                     .disabled(isEditing)
                 }
                 .padding(.horizontal, 8)
