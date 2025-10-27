@@ -6542,7 +6542,7 @@
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@が「%2$@」の投票を締め切りました";
 
 /* Shown when the local user ends a poll. Embeds {{ poll question }}. */
-"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "あなたが「%1$@」の投票を締め切りました";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@は「%2$@」へ投票済です";

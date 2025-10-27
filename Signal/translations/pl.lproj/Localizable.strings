@@ -617,16 +617,16 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "Kod odzyskiwania";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Subskrypcja kopii zapasowej wygasła, ponieważ nie można było jej odnowić przy użyciu wybranej metody płatności.\n\nAby dalej tworzyć kopie zapasowe multimediów, musisz ponownie wykupić subskrypcję. W dalszym ciągu możesz korzystać z bezpłatnej usługi tworzenia kopii zapasowych Signal.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "Subskrypcja kopii zapasowych wygasła, ponieważ nie można było jej odnowić przy użyciu wybranej metody płatności.\n\nAby dalej tworzyć kopie zapasowe multimediów, możesz ponownie wykupić subskrypcję. Tymczasem korzystasz z bezpłatnej usługi tworzenia kopii zapasowych Signal.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Subskrypcja kopii zapasowej wygasła, ponieważ nie używasz już TestFlight.\n\nAby dalej tworzyć kopie zapasowe multimediów, musisz ponownie wykupić subskrypcję. W dalszym ciągu możesz korzystać z bezpłatnej usługi tworzenia kopii zapasowych Signal.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "Subskrypcja kopii zapasowych wygasła, ponieważ nie używasz już TestFlight.\n\nAby dalej tworzyć kopie zapasowe multimediów, możesz wykupić subskrypcję. Tymczasem korzystasz z bezpłatnej usługi tworzenia kopii zapasowych Signal.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
 "BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "Zarządzaj usługą";
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Twoja usługa tworzenia kopii zapasowych wygasła";
+"BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Twoja subskrypcja kopii zapasowych wygasła";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Skopiuj do schowka";
@@ -932,10 +932,10 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Wszystko gotowe. Możesz już utworzyć bezpieczną kopię zapasową";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Prześlij dzienniki debugowania, aby ułatwić nam rozwiązanie problemu!";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Jeśli prześlesz dzienniki debugowania, ułatwi nam to rozwiązanie problemu.";
 
 /* Title for system notification when we detect paid backup media uploads have encountered a problem */
-"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Wystąpił błąd podczas tworzenia kopii zapasowej multimediów";
+"BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE" = "Podczas tworzenia kopii zapasowej multimediów wystąpił błąd";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Bezpieczne kopie zapasowe";
@@ -1067,7 +1067,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokować grupę?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokować grupę %1$@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokować ten czat: %1$@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Zablokuj";
@@ -3137,7 +3137,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Możesz przyznać dostęp w ustawieniach swojego urządzenia z iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Aby edytować informacje o kontakcie, Signal potrzebuje dostępu do kontaktów";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Aby umożliwić edycję informacji o kontakcie, Signal potrzebuje dostępu do kontaktów";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edytuj grupę";
@@ -3164,7 +3164,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Skopiuj";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Zmiany można wprowadzić tylko w ciągu 24 godzin od wysłania wiadomości.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Wiadomość można edytować tylko w ciągu 24 godzin od jej wysłania.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -3428,7 +3428,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Dodaj wiadomość";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Przekaż dalej";
+"FORWARD_MESSAGE_TITLE" = "Przekaż";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ładowanie nowszych multimediów…";
@@ -4850,7 +4850,7 @@
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Spowoduje to trwałe usunięcie wybranych plików. Wszystkie wiadomości powiązane z tymi plikami również zostaną usunięte.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
 "MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Wiadomości głosowe i pliki audio, które wyślesz lub otrzymasz, pojawią się tutaj";
@@ -6170,7 +6170,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wysłać tej osobie prośbę o aktywację płatności?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ nie ma aktywnych płatności";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ nie ma aktywowanych płatności";
 
 /* Payments Preview Text shown in chat list for payments. */
 "PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Płatność";
@@ -6827,7 +6827,7 @@
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ podnosi rękę";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Ty +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Ty + %1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Podnosisz rękę";
@@ -6923,7 +6923,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zbyt wiele prób. Odczekaj chwilę, zanim spróbujesz ponownie.";
 
 /* Body for a sheet warning users about a missing backup. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Z tym kodem odzyskiwania nie jest powiązana żadna kopia zapasowa. Sprawdź, czy klucz jest poprawny, i spróbuj ponownie.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Z tym kodem odzyskiwania nie jest powiązana żadna kopia zapasowa. Sprawdź, czy kod jest poprawny, i spróbuj ponownie.";
 
 /* Title for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_TITLE" = "Nie udało się znaleźć kopii zapasowej";
@@ -7685,7 +7685,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nic nie znaleziono";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Zablokowane kontakty";
+"SETTINGS_BLOCK_LIST_TITLE" = "Zablokowane osoby";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Zawsze pośrednicz w połączeniach";
@@ -9125,7 +9125,7 @@
 "TEXT_MENU_TRANSLATE" = "Przetłumacz";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Ta wiadomość została usunięta.";
+"THIS_MESSAGE_WAS_DELETED" = "Wiadomość została usunięta.";
 
 /* Label for a group you are not in which has four members, listing their names */
 "THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@ i %4$@";
@@ -9143,7 +9143,7 @@
 "THREAD_DETAILS_NO_MEMBERS" = "W grupie nie ma jeszcze innych osób";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "W tym czacie możesz robić notatki dla siebie. Jeśli z Twoim kontem są połączone jakieś inne urządzenia, nowe notatki będą synchronizowane.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "W tym czacie możesz robić notatki dla siebie. Jeśli z Twoim kontem są połączone inne urządzenia, nowe notatki będą na nich synchronizowane.";
 
 /* Label for a group with one member (not counting yourself), displaying their name */
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";

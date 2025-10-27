@@ -228,13 +228,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld prośba</string>
+			<string>+ %1$ld prośba</string>
 			<key>few</key>
-			<string>+%1$ld prośby</string>
+			<string>+ %1$ld prośby</string>
 			<key>many</key>
-			<string>+%1$ld próśb</string>
+			<string>+ %1$ld próśb</string>
 			<key>other</key>
-			<string>+%1$ld prośby</string>
+			<string>+ %1$ld prośby</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_MULTI_SUCCESS</key>
@@ -609,7 +609,7 @@
 			<key>many</key>
 			<string>Tę wiadomość można edytować tylko %1$d razy.</string>
 			<key>other</key>
-			<string>Tę wiadomość można edytować tylko %1$d razy.</string>
+			<string>Tę wiadomość można edytować tylko %1$d raza.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -723,13 +723,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>+%1$ld osoba</string>
+			<string>+ %1$ld osoba</string>
 			<key>few</key>
-			<string>+%1$ld osoby</string>
+			<string>+ %1$ld osoby</string>
 			<key>many</key>
-			<string>+%1$ld osób</string>
+			<string>+ %1$ld osób</string>
 			<key>other</key>
-			<string>+%1$ld osoby</string>
+			<string>+ %1$ld osoby</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>

@@ -6542,7 +6542,7 @@
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ने पोल समाप्त केला : %2$@";
 
 /* Shown when the local user ends a poll. Embeds {{ poll question }}. */
-"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "तुम्ही पोल समाप्त केलात : %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ ने \"%2$@\" पोल समाप्त केला";

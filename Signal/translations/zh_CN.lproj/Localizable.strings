@@ -6542,7 +6542,7 @@
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ 结束了投票：%2$@";
 
 /* Shown when the local user ends a poll. Embeds {{ poll question }}. */
-"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "您结束了投票：%1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@结束了投票“%2$@”";

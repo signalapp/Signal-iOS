@@ -6542,7 +6542,7 @@
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "Používateľ %1$@ ukončil anketu: %2$@";
 
 /* Shown when the local user ends a poll. Embeds {{ poll question }}. */
-"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "Ukončili ste anketu: %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "Používateľ %1$@ ukončil anketu „%2$@“";

@@ -6038,7 +6038,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "भुगतान लॉक प्रमाणीकरण विफल।";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "भुगतान पूरा नहीं कर सके। अपना कनेक्शन जाँचें और दोबारा प्रयास करें।";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "पेमेंट नहीं हो सका। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "नेटवर्क शुल्क";
@@ -6047,7 +6047,7 @@
 "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "अनुमानित %1$@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "अमान्य राशि";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "राशि अमान्य है";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
@@ -6056,7 +6056,7 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "नोट";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "भुगतान करें";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "पेमेंट करें";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "कुल राशि";
@@ -6068,13 +6068,13 @@
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%1$@ को";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 नई भुगतान अधिसूचना";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "पेमेंट से जुड़ा 1 नया नोटिफ़िकेशन";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ ने आपको %2$@ भेजे हैं";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ नई भुगतान अधिसूचनाएँ";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "पेमेंट से जुड़े %1$@ नए नोटिफ़िकेशन";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "%1$@ को भुगतान";
@@ -6089,64 +6089,64 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "आपने %1$@ को भेजे";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "भुगतान पूर्ण";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "पेमेंट हो गया है";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "असत्यापित";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "वेरिफ़ाइड नहीं है";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "सत्यापित";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "वेरिफ़ाइड है";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "भुगतान पूर्ण";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "पेमेंट हो गया है";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "भेजा जा रहा है…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "भेज दिया गया";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "भेजा गया";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "तैयार कर रहे हैं";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "तैयार हो रहा है";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "असत्यापित";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "वेरिफ़ाइड नहीं है";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "सत्यापित";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "वेरिफ़ाइड है";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "अज्ञात विफलता";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "कोई अनजानी गड़बड़ी हुई";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "पूरा हुआ";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "हो गया";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "असत्यापित";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "वेरिफ़ाइड नहीं है";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "सत्यापित";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "वेरिफ़ाइड है";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "पूरा हुआ";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "हो गया";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "भेजा जा रहा है…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "भेज दिया गया";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "भेजा गया";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "तैयार कर रहे हैं";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "तैयार हो रहा है";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "असत्यापित";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "वेरिफ़ाइड नहीं है";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "सत्यापित";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "वेरिफ़ाइड है";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "अज्ञात विफलता";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "कोई अनजानी गड़बड़ी हुई";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
 "PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "भुगतान: %1$@ %2$@";
@@ -6155,13 +6155,13 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "अज्ञात भुगतान";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "इस यूज़र को भुगतान भेजने के लिए उन्हें आपकी ओर से भेजी गई संदेश रिक्वेस्ट स्वीकार करनी होगी।";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "इस यूज़र को पेमेंट भेजने के लिए ज़रूरी है कि वे पहले आपके मैसेज का अनुरोध स्वीकार करें।";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "इस यूज़र को भुगतान भेजने के लिए उन्हें आपकी ओर से भेजी गई संदेश रिक्वेस्ट स्वीकार करनी होगी। उन्हें संदेश रिक्वेस्ट बनाने के लिए एक संदेश भेजें।";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "इस यूज़र को पेमेंट भेजने के लिए ज़रूरी है कि वे पहले आपके मैसेज का अनुरोध स्वीकार करें। मैसेज का अनुरोध भेजने के लिए उन्हें मैसेज भेजें।";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "भुगतान नहीं भेज पा रहे हैं";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "पेमेंट नहीं भेजा जा सका";
 
 /* The label for the 'send request' button in alerts and action sheets. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "अनुरोध भेजें";
@@ -6176,22 +6176,22 @@
 "PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 भुगतान";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "पूरा ट्रांसफ़र कर दें";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "भेजा गया पेमेंट";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "प्राप्त किए गए भुगतान";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "मिला पेमेंट";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "भेजे गए भुगतान";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "भेजा गया पेमेंट";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "अमान्य भुगतान";
+"PAYMENTS_UNKNOWN_PAYMENT" = "अमान्य पेमेंट";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "क्या आप इन बदलावों को छोङना चाहते हैं?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "क्या आपको ये बदलाव रद्द करने हैं?";
 
 /* The alert title if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_TITLE" = "ना सेव किये गये बदलाव";
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "सेव नहीं किए गए बदलाव";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "ग्रुप में जोड़ें";
@@ -6200,16 +6200,16 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%1$@” को ग्रुप में शामिल करना है?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "निवेदन को अस्वीकार करें";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "अनुरोध खारिज करें";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%1$@\" का अनुरोध अस्वीकार करें? वे फिर से ग्रुप लिंक के माध्यम से शामिल होने के लिए अनुरोध नहीं कर पाएंगे।";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%1$@\" का अनुरोध खारिज करना है? ऐसा करने से ग्रुप लिंक की मदद से वे दोबारा ग्रुप में शामिल होने का अनुरोध नहीं भेज पाएंगे।";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "कोई भी मेंबर के निवेदन लंबित नहीं हैं।";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "किसी भी सदस्य का अनुरोध पेंडिंग नहीं है।";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "कोई आमंत्रण नहीं हैं।";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "कोई इनवाइट नहीं है।";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%1$@“ को शामिल किया गया।";
@@ -6221,43 +6221,43 @@
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%1$@\" को नामंज़ूर किया गया।";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "आमंत्रण वापस लें";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "इनवाइट वापस लें";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%1$@\" का इनवाइट वापस लें?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ग्रुप के अन्य सदस्यों द्वारा आमंत्रित लोगों की जानकारी नहीं दिखाई गई है। अगर आमंत्रित व्यक्ति आमंत्रण स्वीकार करते हैं तो उनकी जानकारी ग्रुप के साथ उस वक़्त साझा की जाएगी। वे जुड़ने से पहले ग्रुप के कोई भी संदेश नहीं देख पाएँगे।";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ग्रुप के अन्य सदस्यों की ओर से जिन्हें इनवाइट भेजा गया है उनकी जानकारी यहां नहीं दिखाई गई है। अगर वे लोग शामिल होने का मन बनाते हैं, तो उस समय उनकी जानकारी ग्रुप में शेयर की जाएगी। ग्रुप में शामिल होने से पहले वे कोई भी मैसेज देख नहीं पाएंगे।";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "इस सूची के लोग ग्रुप लिंक के माध्यम से \"%1$@\" में शामिल होने का प्रयास कर रहे हैं।";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "इस सूची के लोग ग्रुप लिंक के ज़रिए \"%1$@\" में शामिल होने की कोशिश कर रहे हैं।";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "अवैध आमंत्रण";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "इनवाइट अमान्य हैं";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "अन्य लोगों द्वारा आमंत्रित";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ग्रुप के अन्य लोगों की ओर से भेजे गए इनवाइट";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "आपके द्वारा आमंत्रित";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "आपकी ओर से भेजे गए इनवाइट";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
 "PER_MESSAGE_EXPIRATION_EXPIRED" = "समाप्त हो गया";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "आने वाले मेसेज को संभालने में त्रुटि";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "आने वाले मैसेज में कोई गड़बड़ी हुई";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "देखें-एक बार मीडिया";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "सिर्फ़ एक बार देखे जा सकने वाला मीडिया";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "मीडिया";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "देखें-एक बार फोटो";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "सिर्फ़ एक बार देखी जा सकने वाली फ़ोटो";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "देखें-एक बार वीडियो";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "सिर्फ़ एक बार देखा जा सकने वाला वीडियो";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "फ़ोटो देखें";
@@ -6302,7 +6302,7 @@
 "PHONE_NUMBER_TYPE_HOME" = "घर";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "घर फैक्स";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "घर का फ़ैक्स";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
@@ -6317,25 +6317,25 @@
 "PHONE_NUMBER_TYPE_OTHER" = "अन्य";
 
 /* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "अन्य फैक्स";
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "अन्य फ़ैक्स";
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "पेजर";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "कार्यालय";
+"PHONE_NUMBER_TYPE_WORK" = "ऑफ़िस";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "कार्यालय फैक्स";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "ऑफ़िस का फ़ैक्स";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "तस्वीर खीचने में विफल";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "तस्वीर नहीं खींची जा सकी।";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "तस्वीर खीचने में विफल";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "तस्वीर नहीं खींची जा सकी।";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "कैमरा कॉन्फ़िगर करने में असफल।";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "कैमरा कॉन्फ़िगर नहीं हुआ।";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "चैट पर जाएँ";
@@ -6353,13 +6353,13 @@
 "PIN_ACTION" = "पिन";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "आपका पिन नहीं बनाया जा सका। आपका मौजूदा पिन अक्षम कर दिया गया है। अपना कनेक्शन जाँचें और फिर से प्रयास करें।";
+"PIN_CHANGE_ERROR_MESSAGE" = "आपका पिन नहीं बनाया जा सका। आपका मौजूदा पिन बंद कर दिया गया है। इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "पिन नहीं बदला जा सका";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "पिन कम से कम 4 अक्षर का होना चाहिए";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "पिन में कम से कम 4 कैरेक्टर होने चाहिए";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "अपना पिन बदलें";
@@ -6368,7 +6368,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "अपने पिन की पुष्टि करें";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "अभी बनाए हुए पिन को दर्ज़ करें।";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "ताज़ा पिन डालें।";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "अल्फ़ान्यूमेरिक पिन बनाएं";
@@ -6377,16 +6377,16 @@
 "PIN_CREATION_CREATE_NUMERIC" = "न्यूमेरिक पिन बनाएं";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "पिन को डिसेबल करें";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "पिन की सुविधा बंद करें";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "यदि आप पिन को डिसेबल कर देते हैं, तो आप Signal के साथ दोबारा रजिस्टर करने पर अपना सारा डेटा खो बैठेंगे यदि आप किसी अन्य iOS डिवाइस से इसे ट्रांसफर नहीं करते हैं। आप पिन के डिसेबल होते हुए रजिस्ट्रेशन लॉक को चालू नहीं कर सकते।";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "अगर आपने पिन हटा दिया है, तो Signal पर दोबारा रजिस्टर करने पर आपका सारा डेटा मिट जाएगा। हालांकि, अगर आपने मैन्युअल तरीके से डेटा का बैकअप लिया है, तो आपके पास रीस्टोर करने का विकल्प रहेगा। पिन बंद रहने पर रजिस्ट्रेशन लॉक चालू नहीं किया जा सकता।";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "चेतावनी";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "पिन Signal द्वारा संग्रहीत जानकारी को एन्क्रिप्ट रखता है, ताकी सिर्फ़ आप उसे देख पाएँ। आपका प्रोफ़ाइल, सेटिंग्स, और संपर्क, अपके Signal इंस्टाॅल के बाद, पुनः स्थापित हो जाऐंगे। ऐप को खोलने के लिए आपको पिन की ज़रूरत नहीं होगी।";
+"PIN_CREATION_EXPLANATION" = "पिन की मदद से Signal पर आपकी जानकारी एन्क्रिप्टेड रूप में स्टोर की जाती है, ताकि सिर्फ़ आप ही उसे देख सकें। Signal दोबारा इंस्टॉल करने पर आपकी प्रोफ़ाइल, सेटिंग, और कॉन्टैक्ट रीस्टोर हो जाएगा। ऐप खोलने के लिए पिन की ज़रूरत नहीं होगी।";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "पिन के बारे में अधिक";
@@ -6398,34 +6398,34 @@
 "PIN_CREATION_LEARN_MORE_TITLE" = "Signal पिन के बारे में";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "पिन मेल नहीं खा रहा। फिर कोशिश करें।";
+"PIN_CREATION_MISMATCH_ERROR" = "पिन मेल नहीं खा रहा। फिर से कोशिश करें।";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "अपना कनेक्शन जाँचें और फिर से प्रयास करें।";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "कोई नेटवर्क कनेक्शन नहीं";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "इंटरनेट कनेक्शन मौजूद नहीं है";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "पिन कम से कम 4 अंको का होना चाहिये";
+"PIN_CREATION_NUMERIC_HINT" = "पिन में कम से कम 4 डिजिट होने चाहिए";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "पिन फिेरसे डालें";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "फिर से पिन डालें";
 
 /* Indicates the work we are doing while creating the user's pin */
 "PIN_CREATION_PIN_PROGRESS" = "नया पिन बन रहा है़…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "जब तक आपका डिवाइस पंजीकृत है, आप अपना पिन कभी भी बदल सकते हैं।";
+"PIN_CREATION_RECREATION_EXPLANATION" = "जब तक आपका यह डिवाइस रजिस्टर है, आपके पास कभी भी पिन बदलने की सुविधा मौजूद है।";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "पिन को डिसेबल करें";
+"PIN_CREATION_SKIP" = "पिन की सुविधा बंद करें";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "अपना पिन बनाएँ";
+"PIN_CREATION_TITLE" = "अपना पिन बनाएं";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "औेर कठिन पिन चुनें";
+"PIN_CREATION_WEAK_ERROR" = "और ज़्यादा मज़बूत पिन चुनें";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "पिन Signal एन्क्रिप्टेड के साथ संग्रहीत रखते हैं, ताकि केवल आप ही उसे एक्सेस कर सकें। अपने अकाउंट की सुरक्षा के लिए एक मजबूत पिन चुनें।";
@@ -6542,7 +6542,7 @@
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ने यह पोल समाप्त कर दिया है: %2$@";
 
 /* Shown when the local user ends a poll. Embeds {{ poll question }}. */
-"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "You ended the poll: %1$@";
+"POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE" = "आपने यह पोल खत्म कर दिया है: %1$@";
 
 /* Notification that {{contact}} ended a poll with question {{poll question}} */
 "POLL_ENDED_NOTIFICATION" = "%1$@ ने “%2$@” पोल समाप्त कर दिया है";
