@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import BonMot
 import SignalServiceKit
 
 public protocol OWSTableViewControllerDelegate: AnyObject {
@@ -591,8 +592,31 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         UITableView.automaticDimension
     }
 
-    private var headerFont: UIFont { .dynamicTypeHeadlineClamped }
-    private var footerFont: UIFont { .dynamicTypeCaption1Clamped }
+    public static var defaultHeaderFont: UIFont { .dynamicTypeHeadlineClamped }
+
+    public var defaultHeaderTextColor: UIColor {
+        forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+    }
+
+    public var defaultHeaderTextStyle: BonMot.StringStyle {
+        return BonMot.StringStyle([
+            .font(Self.defaultHeaderFont),
+            .color(defaultHeaderTextColor)
+        ])
+    }
+
+    public static var defaultFooterFont: UIFont { .dynamicTypeFootnoteClamped }
+
+    public var defaultFooterTextColor: UIColor {
+        forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+    }
+
+    public var defaultFooterTextStyle: BonMot.StringStyle {
+        return BonMot.StringStyle([
+            .font(Self.defaultFooterFont),
+            .color(defaultFooterTextColor)
+        ])
+    }
 
     private func headerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {
         headerTextContainerInsets(useDeepInsets: section.hasBackground)
@@ -652,8 +676,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     public func buildHeaderTextView(withDeepInsets: Bool) -> UITextView {
         let textView = buildHeaderOrFooterTextView()
 
-        textView.textColor = (Theme.isDarkThemeEnabled || forceDarkMode) ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = headerFont
+        textView.textColor = defaultHeaderTextColor
+        textView.font = Self.defaultHeaderFont
         textView.textContainerInset = headerTextContainerInsets(useDeepInsets: withDeepInsets)
 
         return textView
@@ -668,8 +692,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     public func buildFooterTextView(withDeepInsets: Bool) -> UITextView {
         let textView = buildHeaderOrFooterTextView()
 
-        textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-        textView.font = footerFont
+        textView.textColor = defaultFooterTextColor
+        textView.font = Self.defaultFooterFont
         textView.linkTextAttributes = [
             .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
         ]
@@ -767,7 +791,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let height = CVText.measureLabel(
                 config: CVLabelConfig.unstyledText(
                     headerTitle,
-                    font: headerFont,
+                    font: Self.defaultHeaderFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
                     lineBreakMode: .byWordWrapping,
@@ -784,8 +808,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
                     text: .attributedText(headerTitle),
-                    displayConfig: .forMeasurement(font: headerFont),
-                    font: headerFont,
+                    displayConfig: .forMeasurement(font: Self.defaultHeaderFont),
+                    font: Self.defaultHeaderFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
                     lineBreakMode: .byWordWrapping,
@@ -818,7 +842,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let height = CVText.measureLabel(
                 config: CVLabelConfig.unstyledText(
                     footerTitle,
-                    font: footerFont,
+                    font: Self.defaultFooterFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
                     lineBreakMode: .byWordWrapping,
@@ -835,8 +859,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
                     text: .attributedText(footerTitle),
-                    displayConfig: .forMeasurement(font: footerFont),
-                    font: footerFont,
+                    displayConfig: .forMeasurement(font: Self.defaultFooterFont),
+                    font: Self.defaultFooterFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
                     lineBreakMode: .byWordWrapping,

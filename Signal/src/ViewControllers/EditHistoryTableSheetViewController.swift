@@ -143,10 +143,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         )
 
         let section = OWSTableSection()
-        section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
-            .font: UIFont.dynamicTypeHeadlineClamped,
-            .foregroundColor: Theme.primaryTextColor
-        ])
+        section.headerTitle = header
         section.hasBackground = true
         section.hasSeparators = false
         section.add(createMessageListTableItem(items: renderItems))

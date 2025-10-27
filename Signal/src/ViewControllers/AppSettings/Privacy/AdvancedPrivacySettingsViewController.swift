@@ -124,10 +124,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
             CommonStrings.learnMore.styled(with: .link(URL.Support.proxies))
-        ]).styled(
-            with: .font(.dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
+        ])
+        .styled(with: defaultFooterTextStyle)
+
         proxySection.add(.disclosureItem(
             withText: OWSLocalizedString(
                 "PROXY_SETTINGS_TITLE",
@@ -227,10 +226,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 CommonStrings.learnMore.styled(
                     with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!)
                 )
-            ]).styled(
-                with: .font(.dynamicTypeCaption1Clamped),
-                .color(Theme.secondaryTextAndIconColor)
-            )
+            ])
+            .styled(with: defaultFooterTextStyle)
+
         }
 
         contents.add(sealedSenderSection)

@@ -52,10 +52,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 ),
                 " ",
                 CommonStrings.learnMore.styled(with: .link(URL.Support.pin))
-            ]).styled(
-                with: .font(.dynamicTypeCaption1Clamped),
-                .color(Theme.secondaryTextAndIconColor)
-            )
+            ])
+            .styled(with: defaultFooterTextStyle)
 
             pinSection.add(.disclosureItem(
                 withText: isPinEnabled

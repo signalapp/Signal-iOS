@@ -31,7 +31,7 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         )
         .styled(
             with: .font(.dynamicTypeSubheadlineClamped),
-            .color(Theme.secondaryTextAndIconColor)
+            .color(defaultFooterTextColor)
         )
         topSection.add(.init(customCellBlock: { [weak self] in
             let homescreenImageName = UIDevice.current.isIPad ? "homescreen_ipados" : "homescreen_ios"
@@ -51,7 +51,7 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         )
         .styled(
             with: .font(.dynamicTypeSubheadlineClamped),
-            .color(Theme.secondaryTextAndIconColor)
+            .color(defaultFooterTextColor)
         )
         bottomSection.add(.init(customCellBlock: { [weak self] in
             let dockImageName = UIDevice.current.isIPad ? "dock_ipados" : "dock_ios"

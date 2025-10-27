@@ -153,12 +153,10 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
-        let header = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
-                                       comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
-        section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
-            .font: UIFont.dynamicTypeHeadlineClamped,
-            .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
-            ])
+        section.headerTitle = OWSLocalizedString(
+            "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
+            comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group."
+        )
         contents.add(section)
         for address in addresses {
             section.add(OWSTableItem(

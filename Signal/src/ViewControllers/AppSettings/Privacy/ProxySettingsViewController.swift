@@ -82,10 +82,9 @@ class ProxySettingsViewController: OWSTableViewController2 {
             OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
             CommonStrings.learnMore.styled(with: .link(URL.Support.proxies))
-        ]).styled(
-            with: .font(.dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
+        ])
+        .styled(with: defaultFooterTextStyle)
+
         useProxySection.add(.switch(
             withText: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
             isOn: { [weak self] in
@@ -97,10 +96,11 @@ class ProxySettingsViewController: OWSTableViewController2 {
         contents.add(useProxySection)
 
         let proxyAddressSection = OWSTableSection()
-        proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
-            with: .color((Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90).withAlphaComponent(useProxy ? 1 : 0.25)),
-            .font(UIFont.dynamicTypeHeadlineClamped)
-        )
+        proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
+            .styled(
+                with: .color(defaultHeaderTextColor.withAlphaComponent(useProxy ? 1 : 0.25)),
+                .font(Self.defaultHeaderFont)
+            )
         proxyAddressSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
