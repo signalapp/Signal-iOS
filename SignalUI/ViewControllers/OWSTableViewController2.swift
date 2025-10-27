@@ -81,18 +81,15 @@ open class OWSTableViewController2: OWSViewController {
     }
     public var selectionBehavior: SelectionBehavior = .actionWithAutoDeselect
 
-    public var defaultHeaderHeight: CGFloat? = 0
-    public var defaultFooterHeight: CGFloat? = 0
     public var defaultSpacingBetweenSections: CGFloat? = 20
-    public var defaultLastSectionFooter: CGFloat = 20
 
-    public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
+    private var defaultLastSectionFooter: CGFloat = 20
 
-    public var defaultSeparatorInsetTrailing: CGFloat = 0
+    public var defaultSeparatorInsetLeading: CGFloat = OWSTableViewController2.cellHInnerMargin
 
     public var defaultCellHeight: CGFloat = 50
 
-    public var isUsingPresentedStyle: Bool {
+    private var isUsingPresentedStyle: Bool {
         presentingViewController != nil || traitCollection.userInterfaceLevel == .elevated
     }
 
@@ -169,7 +166,7 @@ open class OWSTableViewController2: OWSViewController {
         applyContents()
     }
 
-    open var tableBackgroundColor: UIColor {
+    public var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
         return Self.tableBackgroundColor(
@@ -328,8 +325,8 @@ open class OWSTableViewController2: OWSViewController {
     public func updateTableMargins() {
         tableView.insetsLayoutMarginsFromSafeArea = false
         let hMargin = Self.cellOuterInset(in: view)
-        tableView.layoutMargins.left = hMargin + view.safeAreaInsets.left
-        tableView.layoutMargins.right = hMargin + view.safeAreaInsets.right
+        tableView.directionalLayoutMargins.leading = hMargin + view.safeAreaInsets.leading
+        tableView.directionalLayoutMargins.trailing = hMargin + view.safeAreaInsets.trailing
     }
 
     private func applyContents(shouldReload: Bool = true) {
@@ -479,7 +476,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         separatorLayer: CAShapeLayer,
         view: UIView,
         sectionSeparatorInsetLeading: CGFloat?,
-        sectionSeparatorInsetTrailing: CGFloat?,
         separatorColor: UIColor
     ) {
         separatorLayer.frame = view.bounds
@@ -492,10 +488,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         separatorFrame.size.height = separatorThickness
 
         let separatorInsetLeading = sectionSeparatorInsetLeading ?? self.defaultSeparatorInsetLeading
-        let separatorInsetTrailing = sectionSeparatorInsetTrailing ?? self.defaultSeparatorInsetTrailing
 
         separatorFrame.x += separatorInsetLeading
-        separatorFrame.size.width -= (separatorInsetLeading + separatorInsetTrailing)
+        separatorFrame.size.width -= separatorInsetLeading
         separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
     }
 
@@ -516,7 +511,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                     separatorLayer: separatorLayer,
                     view: view,
                     sectionSeparatorInsetLeading: section.separatorInsetLeading,
-                    sectionSeparatorInsetTrailing: section.separatorInsetTrailing,
                     separatorColor: self.separatorColor
                 )
             }
@@ -631,8 +625,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         )
 
         if useDeepInsets {
-            textContainerInset.left += Self.cellHInnerMargin * 0.5
-            textContainerInset.right += Self.cellHInnerMargin * 0.5
+            textContainerInset.leading += Self.cellHInnerMargin * 0.5
+            textContainerInset.trailing += Self.cellHInnerMargin * 0.5
         }
 
         return textContainerInset
@@ -647,8 +641,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         textContainerInset.top = 12
 
         if useDeepInsets {
-            textContainerInset.left += Self.cellHInnerMargin
-            textContainerInset.right += Self.cellHInnerMargin
+            textContainerInset.leading += Self.cellHInnerMargin
+            textContainerInset.trailing += Self.cellHInnerMargin
         }
 
         return textContainerInset
@@ -725,9 +719,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         } else if let customHeaderHeight = section.customHeaderHeight,
                   customHeaderHeight > 0 {
             return buildDefaultHeaderOrFooter(height: customHeaderHeight)
-        } else if let defaultHeaderHeight = defaultHeaderHeight,
-                  defaultHeaderHeight > 0 {
-            return buildDefaultHeaderOrFooter(height: defaultHeaderHeight)
         } else if let defaultSpacingBetweenSections = defaultSpacingBetweenSections,
                   defaultSpacingBetweenSections > 0, !section.items.isEmpty {
             return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
@@ -759,9 +750,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         } else if let customFooterHeight = section.customFooterHeight,
                   customFooterHeight > 0 {
             return buildDefaultHeaderOrFooter(height: customFooterHeight)
-        } else if let defaultFooterHeight = defaultFooterHeight,
-                  defaultFooterHeight > 0 {
-            return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
         } else if isLastSection(tableView, sectionIndex: sectionIndex),
                   defaultLastSectionFooter > 0 {
             return buildDefaultHeaderOrFooter(height: defaultLastSectionFooter)

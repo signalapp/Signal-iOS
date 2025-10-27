@@ -1563,9 +1563,8 @@ extension ContactAccessDeniedReminderTableViewCell: CustomBackgroundColorCell {
 
 // MARK: - ContactAccessLimitedReminderTableViewCell
 
-class ContactAccessLimitedReminderTableViewCell: UITableViewCell {}
+class ContactAccessLimitedReminderTableViewCell: UITableViewCell, CustomBackgroundColorCell {
 
-extension ContactAccessLimitedReminderTableViewCell: CustomBackgroundColorCell {
     func customBackgroundColor(forceDarkMode: Bool) -> UIColor {
         Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
     }
