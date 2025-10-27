@@ -125,10 +125,19 @@ struct StorageServiceContact {
         } else {
             unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
         }
+        let pni: Pni?
+        if let pniBinary = contactRecord.pniBinary {
+            pni = UUID(data: pniBinary).map(Pni.init(fromUUID:))
+        } else {
+            pni = Pni.parseFrom(pniString: contactRecord.pni)
+        }
         self.init(
-            aci: contactRecord.aci.flatMap { Aci.parseFrom(aciString: $0) },
+            aci: Aci.parseFrom(
+                serviceIdBinary: contactRecord.aciBinary,
+                serviceIdString: contactRecord.aci,
+            ),
             phoneNumber: E164.expectNilOrValid(stringValue: contactRecord.e164),
-            pni: contactRecord.pni.flatMap { Pni.parseFrom(pniString: $0) },
+            pni: pni,
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
@@ -261,6 +270,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         if let aci = contact.aci {
             builder.setAci(aci.serviceIdString)
+            if FeatureFlags.serviceIdBinaryConstantOverhead {
+                builder.setAciBinary(aci.serviceIdBinary)
+            }
         }
         if let phoneNumber = contact.phoneNumber {
             builder.setE164(phoneNumber.stringValue)
@@ -268,6 +280,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
         if let pni = contact.pni {
             builder.setPni(pni.rawUUID.uuidString.lowercased())
+            if FeatureFlags.serviceIdBinaryConstantOverhead {
+                builder.setPniBinary(pni.rawUUID.data)
+            }
         }
 
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
@@ -423,7 +438,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<RecipientUniqueId> {
         guard let contact = StorageServiceContact(record) else {
-            owsFailDebug("Can't merge record with invalid identifiers: hasAci? \(record.hasAci) hasPni? \(record.hasPni) hasPhoneNumber? \(record.hasE164)")
+            owsFailDebug("Can't merge record with invalid identifiers: hasAci? \(record.hasAci) hasAciBinary? \(record.hasAciBinary) hasPni? \(record.hasPni) hasPniBinary? \(record.hasPniBinary) hasPhoneNumber? \(record.hasE164)")
             return .invalid
         }
 
@@ -1857,7 +1872,10 @@ extension StorageServiceAccountRecordUpdater {
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
                 let address = SignalServiceAddress.legacyAddress(
-                    serviceIdString: contact.serviceID,
+                    serviceId: ServiceId.parseFrom(
+                        serviceIdBinary: contact.serviceIDBinary,
+                        serviceIdString: contact.serviceID,
+                    ),
                     phoneNumber: contact.e164
                 )
                 guard address.isValid else {
@@ -1907,8 +1925,11 @@ extension StorageServiceAccountRecordUpdater {
 
             } else if let contactThread = pinnedThread as? TSContactThread {
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
-                if let serviceIdString = contactThread.contactAddress.serviceIdString {
-                    contactBuilder.setServiceID(serviceIdString)
+                if let serviceId = contactThread.contactAddress.serviceId {
+                    contactBuilder.setServiceID(serviceId.serviceIdString)
+                    if FeatureFlags.serviceIdBinaryConstantOverhead {
+                        contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
+                    }
                 } else if let e164 = contactThread.contactAddress.phoneNumber {
                     contactBuilder.setE164(e164)
                 } else {
@@ -1982,11 +2003,12 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             transaction: transaction
         ) {
             builder.setName(story.name)
-            builder.setRecipientServiceIds(
-                (try? storyRecipientManager
-                    .fetchRecipients(forStoryThread: story, tx: transaction)
-                    .compactMap { ($0.aci ?? $0.pni)?.serviceIdString }) ?? []
-            )
+            let recipients = (try? storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)) ?? []
+            let serviceIds = recipients.compactMap { ($0.aci ?? $0.pni) }
+            builder.setRecipientServiceIds(serviceIds.map(\.serviceIdString))
+            if FeatureFlags.serviceIdBinaryVariableOverhead {
+                builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
+            }
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
         } else {
@@ -2032,12 +2054,13 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
         var needsUpdate = false
 
-        let remoteRecipientServiceIds = record.recipientServiceIds.compactMap { (serviceIdString) -> ServiceId? in
-            guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
-                return nil
-            }
-            return serviceId
+        let remoteRecipientServiceIds: [ServiceId]
+        if !record.recipientServiceIdsBinary.isEmpty {
+            remoteRecipientServiceIds = record.recipientServiceIdsBinary.compactMap { try? ServiceId.parseFrom(serviceIdBinary: $0) }
+        } else {
+            remoteRecipientServiceIds = record.recipientServiceIds.compactMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         }
+
         let remoteRecipientIds = remoteRecipientServiceIds.map {
             return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id!
         }

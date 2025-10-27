@@ -139,6 +139,8 @@ message ContactRecord {
   Name nickname = 22;
   string note = 23;
   optional AvatarColor avatarColor = 24;
+  bytes aciBinary = 25; // 16-byte UUID
+  bytes pniBinary = 26; // 16-byte UUID
 }
 
 message GroupV1Record {
@@ -182,6 +184,7 @@ message AccountRecord {
     message Contact {
       string serviceId = 1;
       string e164 = 2;
+      bytes serviceIdBinary = 3; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
     }
 
     oneof identifier {
@@ -276,6 +279,7 @@ message StoryDistributionListRecord {
   uint64 deletedAtTimestamp = 4;
   bool allowsReplies = 5;
   bool isBlockList = 6;
+  repeated bytes recipientServiceIdsBinary = 7; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
 }
 
 message CallLinkRecord {

@@ -1675,6 +1675,26 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return proto.hasAvatarColor
     }
 
+    public var aciBinary: Data? {
+        guard hasAciBinary else {
+            return nil
+        }
+        return proto.aciBinary
+    }
+    public var hasAciBinary: Bool {
+        return !proto.aciBinary.isEmpty
+    }
+
+    public var pniBinary: Data? {
+        guard hasPniBinary else {
+            return nil
+        }
+        return proto.pniBinary
+    }
+    public var hasPniBinary: Bool {
+        return !proto.pniBinary.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1781,6 +1801,12 @@ extension StorageServiceProtoContactRecord {
         }
         if let _value = avatarColor {
             builder.setAvatarColor(_value)
+        }
+        if let _value = aciBinary {
+            builder.setAciBinary(_value)
+        }
+        if let _value = pniBinary {
+            builder.setPniBinary(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1963,6 +1989,26 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setAvatarColor(_ valueParam: StorageServiceProtoAvatarColor) {
         proto.avatarColor = StorageServiceProtoAvatarColorUnwrap(valueParam)
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciBinary = valueParam
+    }
+
+    public mutating func setAciBinary(_ valueParam: Data) {
+        proto.aciBinary = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPniBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pniBinary = valueParam
+    }
+
+    public mutating func setPniBinary(_ valueParam: Data) {
+        proto.pniBinary = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2395,6 +2441,16 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContact: Codable
         return !proto.e164.isEmpty
     }
 
+    public var serviceIDBinary: Data? {
+        guard hasServiceIDBinary else {
+            return nil
+        }
+        return proto.serviceIDBinary
+    }
+    public var hasServiceIDBinary: Bool {
+        return !proto.serviceIDBinary.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2449,6 +2505,9 @@ extension StorageServiceProtoAccountRecordPinnedConversationContact {
         if let _value = e164 {
             builder.setE164(_value)
         }
+        if let _value = serviceIDBinary {
+            builder.setServiceIDBinary(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2480,6 +2539,16 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
 
     public mutating func setE164(_ valueParam: String) {
         proto.e164 = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setServiceIDBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceIDBinary = valueParam
+    }
+
+    public mutating func setServiceIDBinary(_ valueParam: Data) {
+        proto.serviceIDBinary = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -3836,6 +3905,10 @@ public struct StorageServiceProtoStoryDistributionListRecord: Codable, CustomDeb
     public var isBlockList: Bool {
         return proto.isBlockList
     }
+    public var recipientServiceIdsBinary: [Data] {
+        return proto.recipientServiceIdsBinary
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3894,6 +3967,7 @@ extension StorageServiceProtoStoryDistributionListRecord {
         builder.setDeletedAtTimestamp(deletedAtTimestamp)
         builder.setAllowsReplies(allowsReplies)
         builder.setIsBlockList(isBlockList)
+        builder.setRecipientServiceIdsBinary(recipientServiceIdsBinary)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3945,6 +4019,14 @@ public struct StorageServiceProtoStoryDistributionListRecordBuilder {
 
     public mutating func setIsBlockList(_ valueParam: Bool) {
         proto.isBlockList = valueParam
+    }
+
+    public mutating func addRecipientServiceIdsBinary(_ valueParam: Data) {
+        proto.recipientServiceIdsBinary.append(valueParam)
+    }
+
+    public mutating func setRecipientServiceIdsBinary(_ wrappedItems: [Data]) {
+        proto.recipientServiceIdsBinary = wrappedItems
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
