@@ -668,7 +668,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
-                category: .pollVoteNotification,
+                category: .pollEndNotification,
                 title: notificationTitle,
                 body: notificationBody,
                 threadIdentifier: threadUniqueId,
@@ -728,6 +728,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let threadUniqueId = thread.uniqueId
         userInfo.threadId = threadUniqueId
 
+        let intent = thread.generateSendMessageIntent(context: .senderAddress(SignalServiceAddress(voteAuthor)), transaction: transaction)
+
         enqueueNotificationAction(afterCommitting: transaction) {
             await self.notifyViaPresenter(
                 category: .pollVoteNotification,
@@ -735,7 +737,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
-                intent: nil,
+                intent: intent.map { ($0, .incoming) },
                 soundQuery: .thread(threadUniqueId)
             )
         }
