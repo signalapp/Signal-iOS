@@ -56,13 +56,17 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         let result = OWSTableSection(items: [
             .init(customCellBlock: {
                 let cell = UITableViewCell()
-                let iconView = UIImageView(image: .init(named: "account_data_report"))
-                iconView.autoSetDimensions(to: .square(88))
 
-                let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
-                    "ACCOUNT_DATA_REPORT_TITLE",
-                    comment: "Users can request a report of their account data. This is the title on the screen where they do this."
-                ))
+                let iconView = UIImageView(image: .init(named: "account_data_report"))
+                iconView.translatesAutoresizingMaskIntoConstraints = false
+                let iconViewContainer = UIView.container()
+                iconViewContainer.addSubview(iconView)
+                iconViewContainer.addConstraints([
+                    iconView.topAnchor.constraint(equalTo: iconViewContainer.topAnchor),
+                    iconView.leadingAnchor.constraint(greaterThanOrEqualTo: iconViewContainer.leadingAnchor),
+                    iconView.centerXAnchor.constraint(equalTo: iconViewContainer.centerXAnchor),
+                    iconView.bottomAnchor.constraint(equalTo: iconViewContainer.bottomAnchor, constant: -12),
+                ])
 
                 let descriptionTextView = LinkingTextView()
                 descriptionTextView.attributedText = .composed(
@@ -79,17 +83,11 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                 descriptionTextView.textAlignment = .center
 
                 let stackView = UIStackView(arrangedSubviews: [
-                    iconView,
-                    titleLabel,
+                    iconViewContainer,
                     descriptionTextView
                 ])
                 stackView.axis = .vertical
-                stackView.alignment = .center
                 stackView.spacing = 12
-                stackView.setCustomSpacing(24, after: iconView)
-
-                cell.contentView.backgroundColor = .cyan
-
                 cell.contentView.addSubview(stackView)
                 stackView.autoPinEdgesToSuperviewMargins()
 
