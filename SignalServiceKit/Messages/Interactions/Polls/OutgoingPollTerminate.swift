@@ -56,7 +56,7 @@ class OutgoingPollTerminateMessage: TSOutgoingMessage {
             pollTerminateBuilder.buildInfallibly()
         )
 
-        if !FeatureFlags.pollKeepProtoVersion {
+        if !BuildFlags.pollKeepProtoVersion {
             dataMessageBuilder.setRequiredProtocolVersion(UInt32(SSKProtoDataMessageProtocolVersion.polls.rawValue))
         }
 

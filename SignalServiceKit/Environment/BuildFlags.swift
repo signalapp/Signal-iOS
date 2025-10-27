@@ -23,7 +23,7 @@ private let build = FeatureBuild.current
 
 /// By centralizing feature flags here and documenting their rollout plan,
 /// it's easier to review which feature flags are in play.
-public enum FeatureFlags {
+public enum BuildFlags {
 
     public static let choochoo = build <= .internal
 
@@ -95,17 +95,17 @@ public enum FeatureFlags {
 
 // MARK: -
 @objc
-public class FeatureFlagsObjC: NSObject {
+public class BuildFlagsObjC: NSObject {
     @objc
-    public static let serviceIdBinaryConstantOverhead = FeatureFlags.serviceIdBinaryConstantOverhead
+    public static let serviceIdBinaryConstantOverhead = BuildFlags.serviceIdBinaryConstantOverhead
 
     @objc
-    public static let serviceIdBinaryVariableOverhead = FeatureFlags.serviceIdBinaryVariableOverhead
+    public static let serviceIdBinaryVariableOverhead = BuildFlags.serviceIdBinaryVariableOverhead
 }
 
 // MARK: -
 
-extension FeatureFlags {
+extension BuildFlags {
     public static var buildVariantString: String? {
         // Leaving this internal only for now. If we ever move this to
         // HelpSettings we need to localize these strings
@@ -114,17 +114,17 @@ extension FeatureFlags {
             return nil
         }
 
-        let featureFlagString: String?
+        let buildFlagString: String?
         switch build {
         case .dev:
-            featureFlagString = LocalizationNotNeeded("Dev")
+            buildFlagString = LocalizationNotNeeded("Dev")
         case .internal:
-            featureFlagString = LocalizationNotNeeded("Internal")
+            buildFlagString = LocalizationNotNeeded("Internal")
         case .beta:
-            featureFlagString = LocalizationNotNeeded("Beta")
+            buildFlagString = LocalizationNotNeeded("Beta")
         case .production:
             // Production can be inferred from the lack of flag
-            featureFlagString = nil
+            buildFlagString = nil
         }
 
         let configuration: String? = {
@@ -133,13 +133,12 @@ extension FeatureFlags {
             #elseif TESTABLE_BUILD
             LocalizationNotNeeded("Testable")
             #else
-            // RELEASE can be inferred from the lack of configuration. This will only be hit if the outer #if is removed.
+            // RELEASE can be inferred from the lack of configuration.
             nil
             #endif
         }()
 
-        // If we're Production+Release, this will return nil and won't show up in Help Settings
-        return [featureFlagString, configuration]
+        return [buildFlagString, configuration]
             .compactMap { $0 }
             .joined(separator: " — ")
             .nilIfEmpty
@@ -149,7 +148,7 @@ extension FeatureFlags {
 // MARK: -
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
-/// development should go here, rather than cluttering up FeatureFlags.
+/// development should go here, rather than cluttering up BuildFlags.
 public enum DebugFlags {
     public static let internalLogging = build <= .internal
 

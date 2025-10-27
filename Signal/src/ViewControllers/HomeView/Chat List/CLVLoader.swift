@@ -78,7 +78,7 @@ public class CLVLoader {
             .pinnedThreadIds(tx: transaction)
 
         let visibleThreadUniqueIds: [String]
-        if FeatureFlags.moveDraftsUpChatList {
+        if BuildFlags.moveDraftsUpChatList {
             if isViewingArchive {
                 visibleThreadUniqueIds = try threadFinder.internal_visibleArchivedThreadIds(transaction: transaction)
             } else {

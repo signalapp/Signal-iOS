@@ -133,7 +133,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 
     public func offloadAttachmentsIfNeeded() async throws {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return
         }
 

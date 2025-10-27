@@ -270,7 +270,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         if let aci = contact.aci {
             builder.setAci(aci.serviceIdString)
-            if FeatureFlags.serviceIdBinaryConstantOverhead {
+            if BuildFlags.serviceIdBinaryConstantOverhead {
                 builder.setAciBinary(aci.serviceIdBinary)
             }
         }
@@ -280,7 +280,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
         if let pni = contact.pni {
             builder.setPni(pni.rawUUID.uuidString.lowercased())
-            if FeatureFlags.serviceIdBinaryConstantOverhead {
+            if BuildFlags.serviceIdBinaryConstantOverhead {
                 builder.setPniBinary(pni.rawUUID.data)
             }
         }
@@ -1927,7 +1927,7 @@ extension StorageServiceAccountRecordUpdater {
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
                 if let serviceId = contactThread.contactAddress.serviceId {
                     contactBuilder.setServiceID(serviceId.serviceIdString)
-                    if FeatureFlags.serviceIdBinaryConstantOverhead {
+                    if BuildFlags.serviceIdBinaryConstantOverhead {
                         contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
                     }
                 } else if let e164 = contactThread.contactAddress.phoneNumber {
@@ -2006,7 +2006,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             let recipients = (try? storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)) ?? []
             let serviceIds = recipients.compactMap { ($0.aci ?? $0.pni) }
             builder.setRecipientServiceIds(serviceIds.map(\.serviceIdString))
-            if FeatureFlags.serviceIdBinaryVariableOverhead {
+            if BuildFlags.serviceIdBinaryVariableOverhead {
                 builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
             }
             builder.setAllowsReplies(story.allowsReplies)

@@ -716,7 +716,7 @@ extension ExperienceUpgradeManifest {
         transaction: DBReadTransaction
     ) -> Bool {
         guard
-            FeatureFlags.Backups.showMegaphones,
+            BuildFlags.Backups.showMegaphones,
             tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
         else {
             return false
@@ -752,7 +752,7 @@ extension ExperienceUpgradeManifest {
         transaction: DBReadTransaction,
     ) -> Bool {
         guard
-            FeatureFlags.Backups.showMegaphones,
+            BuildFlags.Backups.showMegaphones,
             tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
         else {
             return false

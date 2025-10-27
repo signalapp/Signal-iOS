@@ -135,7 +135,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
 
     private func runInMainAppBackground() async {
         guard
-            FeatureFlags.runTSAttachmentMigrationInMainAppBackground,
+            BuildFlags.runTSAttachmentMigrationInMainAppBackground,
             appContext.isMainAppAndActive,
             isRunningInMainApp.tryToSetFlag()
         else {

@@ -110,7 +110,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
         private let errorCounts = ErrorCounts()
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.Backups.supported else {
+            guard BuildFlags.Backups.supported else {
                 return .cancelled
             }
 

@@ -659,7 +659,7 @@
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
-		505F76332BC45C0700B1B51C /* FeatureFlags+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */; };
+		505F76332BC45C0700B1B51C /* BuildFlags+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505F76322BC45C0700B1B51C /* BuildFlags+Generated.swift */; };
 		5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */; };
 		5063B41E2C5432A30041CA51 /* ResolvableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5063B41D2C5432A30041CA51 /* ResolvableValue.swift */; };
 		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
@@ -3652,7 +3652,7 @@
 		F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB54289453B200548EEE /* UserProfileFinder.swift */; };
 		F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB57289453B200548EEE /* ModelReadCache.swift */; };
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; };
-		F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* FeatureFlags.swift */; };
+		F9C5CE2B289453B400548EEE /* BuildFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* BuildFlags.swift */; };
 		F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
@@ -4625,7 +4625,7 @@
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
-		505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureFlags+Generated.swift"; sourceTree = "<group>"; };
+		505F76322BC45C0700B1B51C /* BuildFlags+Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BuildFlags+Generated.swift"; sourceTree = "<group>"; };
 		5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLinkUpdateMessage.swift; sourceTree = "<group>"; };
 		5063B41D2C5432A30041CA51 /* ResolvableValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolvableValue.swift; sourceTree = "<group>"; };
 		506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMergerTest.swift; sourceTree = "<group>"; };
@@ -7661,7 +7661,7 @@
 		F9C5CB54289453B200548EEE /* UserProfileFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileFinder.swift; sourceTree = "<group>"; };
 		F9C5CB57289453B200548EEE /* ModelReadCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCache.swift; sourceTree = "<group>"; };
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
-		F9C5CB59289453B200548EEE /* FeatureFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		F9C5CB59289453B200548EEE /* BuildFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildFlags.swift; sourceTree = "<group>"; };
 		F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
@@ -10499,9 +10499,9 @@
 			isa = PBXGroup;
 			children = (
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
+				505F76322BC45C0700B1B51C /* BuildFlags+Generated.swift */,
+				F9C5CB59289453B200548EEE /* BuildFlags.swift */,
 				6698FC192980AB45004EFC30 /* DependenciesBridge.swift */,
-				505F76322BC45C0700B1B51C /* FeatureFlags+Generated.swift */,
-				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
 				F9C5CB45289453B200548EEE /* RemoteConfigManager.swift */,
 				50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */,
 				F9C5CB97289453B200548EEE /* TSConstants.swift */,
@@ -17793,6 +17793,8 @@
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
+				505F76332BC45C0700B1B51C /* BuildFlags+Generated.swift in Sources */,
+				F9C5CE2B289453B400548EEE /* BuildFlags.swift in Sources */,
 				D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */,
 				D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
@@ -17969,8 +17971,6 @@
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
 				F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */,
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,
-				505F76332BC45C0700B1B51C /* FeatureFlags+Generated.swift in Sources */,
-				F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */,
 				7254651B2BA00F8D00EABFD2 /* FetchedSystemContacts.swift in Sources */,
 				F97121EA2903244700C0F5F2 /* FiatMoney.swift in Sources */,
 				F9C5CC91289453B300548EEE /* Fingerprint.pb.swift in Sources */,

@@ -478,7 +478,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         let finalContinuation = await dataMigrationContinuation.migrateDatabaseData()
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
-        guard FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch else {
+        guard BuildFlags.runTSAttachmentMigrationBlockingOnLaunch else {
             return (finalContinuation, sleepBlockObject)
         }
 
@@ -1802,7 +1802,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func checkDatabaseIntegrityIfNecessary(
         isRegistered: Bool
     ) {
-        guard isRegistered, FeatureFlags.periodicallyCheckDatabaseIntegrity else { return }
+        guard isRegistered, BuildFlags.periodicallyCheckDatabaseIntegrity else { return }
 
         let appReadiness: AppReadiness = self.appReadiness
         DispatchQueue.sharedUtility.async {

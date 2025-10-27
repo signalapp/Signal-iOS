@@ -96,7 +96,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         for (serviceId, state) in recipientStates {
             let builder = SSKProtoSyncMessageSentStoryMessageRecipient.builder()
             builder.setDestinationServiceID(serviceId.serviceIdString)
-            if FeatureFlags.serviceIdBinaryVariableOverhead {
+            if BuildFlags.serviceIdBinaryVariableOverhead {
                 builder.setDestinationServiceIDBinary(serviceId.serviceIdBinary)
             }
             builder.setDistributionListIds(state.contexts.map { $0.uuidString })

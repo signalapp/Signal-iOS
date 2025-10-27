@@ -11,11 +11,11 @@ public import SignalServiceKit
 extension RegistrationCoordinatorImpl {
 
     public enum Shims {
+        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsShim
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
-        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsShim
         public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerShim
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
@@ -30,11 +30,11 @@ extension RegistrationCoordinatorImpl {
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientShim
     }
     public enum Wrappers {
+        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsWrapper
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
-        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsWrapper
         public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerWrapper
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
@@ -159,18 +159,18 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
     }
 }
 
-// MARK: - FeatureFlags
+// MARK: - BuildFlags
 
-public protocol _RegistrationCoordinator_FeatureFlagsShim {
+public protocol _RegistrationCoordinator_BuildFlagsShim {
 
     var backupSupported: Bool { get }
 }
 
-public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordinator_FeatureFlagsShim {
+public class _RegistrationCoordinator_BuildFlagsWrapper: _RegistrationCoordinator_BuildFlagsShim {
 
     public init() {}
 
-    public var backupSupported: Bool { FeatureFlags.Backups.supported }
+    public var backupSupported: Bool { BuildFlags.Backups.supported }
 }
 
 public protocol _RegistrationCoordinator_IdentityManagerShim {

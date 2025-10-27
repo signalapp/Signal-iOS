@@ -154,11 +154,11 @@ public struct LinkingProvisioningMessage {
         messageBuilder.setProvisioningVersion(Constants.provisioningVersion)
         messageBuilder.setNumber(phoneNumber)
         messageBuilder.setAci(aci.rawUUID.uuidString.lowercased())
-        if FeatureFlags.serviceIdBinaryProvisioning {
+        if BuildFlags.serviceIdBinaryProvisioning {
             messageBuilder.setAciBinary(aci.rawUUID.data)
         }
         messageBuilder.setPni(pni.rawUUID.uuidString.lowercased())
-        if FeatureFlags.serviceIdBinaryProvisioning {
+        if BuildFlags.serviceIdBinaryProvisioning {
             messageBuilder.setPniBinary(pni.rawUUID.data)
         }
 

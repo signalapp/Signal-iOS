@@ -6,7 +6,7 @@ import re
 import subprocess
 import tag_template
 
-FILE_PATH = "SignalServiceKit/Environment/FeatureFlags+Generated.swift"
+FILE_PATH = "SignalServiceKit/Environment/BuildFlags+Generated.swift"
 
 
 def run(args):

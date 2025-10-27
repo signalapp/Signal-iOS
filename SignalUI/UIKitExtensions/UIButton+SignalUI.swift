@@ -463,7 +463,7 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) -> UIBarButtonItem {
-        let systemItem: SystemItem = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        let systemItem: SystemItem = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             .close
         } else {
             .done

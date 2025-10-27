@@ -415,7 +415,7 @@ public class OWSTabBar: UITabBar {
             return
         }
 
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             return
         }
 

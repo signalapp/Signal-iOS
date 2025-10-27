@@ -235,7 +235,7 @@ public class RemoteConfig {
 
     public var backupListMediaDefaultRefreshIntervalMs: UInt64 {
         let defaultValue: UInt64
-        if FeatureFlags.useLowerDefaultListMediaRefreshInterval {
+        if BuildFlags.useLowerDefaultListMediaRefreshInterval {
             defaultValue = .dayInMs
         } else {
             defaultValue = .dayInMs * 30
@@ -286,11 +286,11 @@ public class RemoteConfig {
     }
 
     public var allowBackupSettings: Bool {
-        if FeatureFlags.Backups.alwaysShowSettings {
+        if BuildFlags.Backups.alwaysShowSettings {
             return true
         }
 
-        return FeatureFlags.Backups.supported && isEnabled(.allowBackupSettings)
+        return BuildFlags.Backups.supported && isEnabled(.allowBackupSettings)
     }
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -908,7 +908,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         await checkClientExpiration(valueFlag: mergedConfig.value(.clientExpiration))
 
-        net.setRemoteConfig(mergedConfig.netConfig(), buildVariant: FeatureFlags.netBuildVariant)
+        net.setRemoteConfig(mergedConfig.netConfig(), buildVariant: BuildFlags.netBuildVariant)
 
         mergedConfig.logFlags()
     }

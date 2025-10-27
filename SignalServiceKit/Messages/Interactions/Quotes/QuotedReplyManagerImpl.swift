@@ -816,7 +816,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             throw OWSAssertionError("It should be impossible to quote a message without a UUID")
         }
         quoteBuilder.setAuthorAci(authorAci.serviceIdString)
-        if FeatureFlags.serviceIdBinaryConstantOverhead {
+        if BuildFlags.serviceIdBinaryConstantOverhead {
             quoteBuilder.setAuthorAciBinary(authorAci.serviceIdBinary)
         }
 

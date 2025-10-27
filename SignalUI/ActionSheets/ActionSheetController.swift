@@ -182,7 +182,7 @@ open class ActionSheetController: OWSViewController {
 
         let insetFromScreenEdge: CGFloat = if
             #available(iOS 26, *),
-            FeatureFlags.iOS26SDKIsAvailable,
+            BuildFlags.iOS26SDKIsAvailable,
             UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad
         {
             8
@@ -241,7 +241,7 @@ open class ActionSheetController: OWSViewController {
         // We can't mask the content view because the backdrop intentionally extends outside of the content
         // view's bounds. But its two subviews are pinned at same top edge. We can just apply corner
         // radii to each layer individually to get a similar effect.
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             // Background container sets corner radius itself
         } else {
             let cornerRadius: CGFloat = 24
@@ -259,7 +259,7 @@ open class ActionSheetController: OWSViewController {
 
     private func createBackgroundView() -> UIView {
 #if compiler(>=6.2)
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2/3)
             let background = UIVisualEffectView(effect: glassEffect)
@@ -278,7 +278,7 @@ open class ActionSheetController: OWSViewController {
             pinWidthConstraints?.forEach { $0.isActive = false }
             widthLimitConstraint?.isActive = true
 #if compiler(>=6.2)
-            if #available(iOS 26.0, *), FeatureFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
                 backgroundView?.cornerConfiguration = .corners(radius: .fixed(24))
             }
 #endif
@@ -286,7 +286,7 @@ open class ActionSheetController: OWSViewController {
             widthLimitConstraint?.isActive = false
             pinWidthConstraints?.forEach { $0.isActive = true }
 #if compiler(>=6.2)
-            if #available(iOS 26.0, *), FeatureFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
                 backgroundView?.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
             }
 #endif

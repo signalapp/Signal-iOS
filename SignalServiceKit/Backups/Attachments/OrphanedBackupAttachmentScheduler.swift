@@ -53,7 +53,7 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return
         }
         try! OrphanedBackupAttachment

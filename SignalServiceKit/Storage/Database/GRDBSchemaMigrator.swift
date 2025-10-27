@@ -4219,7 +4219,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addPreKey) { tx in
             try createPreKey(tx: tx)
-            if FeatureFlags.decodeDeprecatedPreKeys {
+            if BuildFlags.decodeDeprecatedPreKeys {
                 try migratePreKeys(tx: tx)
             }
             try dropOldPreKeys(tx: tx)

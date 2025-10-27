@@ -67,7 +67,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     }
 
     public func startCondition() -> BGProcessingTaskStartCondition {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return .never
         }
 

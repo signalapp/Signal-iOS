@@ -137,7 +137,7 @@ public class Preferences {
     // MARK: Logging
 
     public static var isFailDebugEnabled: Bool {
-        return FeatureFlags.failDebug && CurrentAppContext().appUserDefaults().bool(forKey: UserDefaultsKeys.isFailDebugEnabled)
+        return BuildFlags.failDebug && CurrentAppContext().appUserDefaults().bool(forKey: UserDefaultsKeys.isFailDebugEnabled)
     }
 
     public static func setIsFailDebugEnabled(_ value: Bool) {
@@ -145,7 +145,7 @@ public class Preferences {
     }
 
     public static var isAudibleErrorLoggingEnabled: Bool {
-        CurrentAppContext().appUserDefaults().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && FeatureFlags.choochoo
+        CurrentAppContext().appUserDefaults().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && BuildFlags.choochoo
     }
 
     public static func setIsAudibleErrorLoggingEnabled(_ value: Bool) {

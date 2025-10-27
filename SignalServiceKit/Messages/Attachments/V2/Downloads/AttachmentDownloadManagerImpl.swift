@@ -262,7 +262,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) {
         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
         let isEligibleToDownloadFromMediaTier: Bool
-        if FeatureFlags.Backups.supported {
+        if BuildFlags.Backups.supported {
             switch backupPlan {
             case .disabled, .disabling:
                 isEligibleToDownloadFromMediaTier = false

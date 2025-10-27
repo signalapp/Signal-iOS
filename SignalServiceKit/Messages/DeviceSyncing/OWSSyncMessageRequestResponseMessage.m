@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         messageRequestResponseBuilder.groupID = self.groupId;
     } else if (self.threadAci != nil) {
         messageRequestResponseBuilder.threadAci = self.threadAci;
-        if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+        if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
             messageRequestResponseBuilder.threadAciBinary =
                 [[AciObjC alloc] initWithAciString:self.threadAci].serviceIdBinary;
         }
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
             ServiceIdObjC *threadAci = contactThread.contactAddress.serviceIdObjC;
             if ([threadAci isKindOfClass:[AciObjC class]]) {
                 messageRequestResponseBuilder.threadAci = threadAci.serviceIdString;
-                if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+                if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
                     messageRequestResponseBuilder.threadAciBinary = threadAci.serviceIdBinary;
                 }
             }

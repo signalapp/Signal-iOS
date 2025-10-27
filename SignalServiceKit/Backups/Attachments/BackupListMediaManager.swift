@@ -189,7 +189,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     }
 
     private func _queryListMediaIfNeeded() async throws -> ListMediaIntegrityCheckResult? {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return nil
         }
         let (
@@ -304,7 +304,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         let integrityChecker: ListMediaIntegrityChecker
         if
-            FeatureFlags.Backups.performListMediaIntegrityChecks,
+            BuildFlags.Backups.performListMediaIntegrityChecks,
             isPrimaryDevice,
             // Skip integrity checks if we're in a new upload era, since we
             // expect media to not yet be uploaded.
@@ -1130,7 +1130,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         remoteConfig: RemoteConfig,
         tx: DBReadTransaction
     ) -> Bool {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return false
         }
 

@@ -223,7 +223,7 @@ extension AppSetup.GlobalsContinuation {
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
             userAgent: HttpHeaders.userAgentHeaderValueSignalIos,
-            buildVariant: FeatureFlags.netBuildVariant,
+            buildVariant: BuildFlags.netBuildVariant,
             remoteConfig: remoteConfig.netConfig(),
         )
 
@@ -2023,7 +2023,7 @@ extension AppSetup.FinalContinuation {
                 dependenciesBridge.tsAccountManager.warmCaches(tx: tx)
                 return sskEnvironment.remoteConfigManagerRef.warmCaches(tx: tx)
             }
-            libsignalNet.setRemoteConfig(remoteConfig.netConfig(), buildVariant: FeatureFlags.netBuildVariant)
+            libsignalNet.setRemoteConfig(remoteConfig.netConfig(), buildVariant: BuildFlags.netBuildVariant)
         }
 
         // Warm (or re-warm) all of the caches. In theory, every cache is

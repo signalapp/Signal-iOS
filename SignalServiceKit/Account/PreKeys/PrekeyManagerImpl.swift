@@ -19,7 +19,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
         static let SignedPreKeyMaxRotationDuration: TimeInterval = (
-            FeatureFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day)
+            BuildFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day)
         )
 
         /// Maximum amount of time a pre key can be used before a new one will be

@@ -40,7 +40,7 @@ extension HomeTabViewController {
         contextButton.delegate = delegate
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             sizeClass = isInFloatingSidebar ? .thirtyTwo : .forty
         } else {
             sizeClass = .twentyEight

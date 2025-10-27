@@ -1201,7 +1201,7 @@ public class InteractionFinder: NSObject {
         )
 
         let indexedBy: String
-        if FeatureFlags.useNewConversationLoadIndex {
+        if BuildFlags.useNewConversationLoadIndex {
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         } else {
             indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")
@@ -1356,7 +1356,7 @@ public class InteractionFinder: NSObject {
 
         let indexedBy: String
         switch additionalFiltering {
-        case .filterForConversationView where FeatureFlags.useNewConversationLoadIndex:
+        case .filterForConversationView where BuildFlags.useNewConversationLoadIndex:
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         case .filterForConversationView:
             indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")

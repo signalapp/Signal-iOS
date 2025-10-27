@@ -38,7 +38,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         view.backgroundColor = .Signal.background
 
         // Buttons in the top right corner.
-        let canSwitchModes = UIDevice.current.isIPad || FeatureFlags.linkedPhones
+        let canSwitchModes = UIDevice.current.isIPad || BuildFlags.linkedPhones
         var transferButtonTrailingAnchor: NSLayoutAnchor<NSLayoutXAxisAnchor> = contentLayoutGuide.trailingAnchor
         if canSwitchModes {
             let modeSwitchButton = UIButton(
@@ -63,7 +63,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
             transferButtonTrailingAnchor = modeSwitchButton.leadingAnchor
         }
 
-        if FeatureFlags.preRegDeviceTransfer {
+        if BuildFlags.preRegDeviceTransfer {
             let transferButton = UIButton(
                 configuration: .plain(),
                 primaryAction: UIAction { [weak self] _ in
@@ -140,7 +140,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         continueButton.accessibilityIdentifier = "registration.splash.continueButton"
 
         let largeButtonsContainer: UIView
-        if FeatureFlags.Backups.supported {
+        if BuildFlags.Backups.supported {
             let restoreOrTransferButton = UIButton(
                 configuration: .largeSecondary(title: OWSLocalizedString(
                     "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",

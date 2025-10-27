@@ -26,7 +26,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         public static let supportedBackupVersion: UInt64 = 1
 
         /// The ratio of frames processed for which to sample memory.
-        fileprivate static let memorySamplerFrameRatio: Float = FeatureFlags.Backups.detailedBenchLogging ? 0.001 : 0
+        fileprivate static let memorySamplerFrameRatio: Float = BuildFlags.Backups.detailedBenchLogging ? 0.001 : 0
     }
 
     private class NotImplementedError: Error {}
@@ -341,7 +341,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
     ) async throws -> URL {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -798,7 +798,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
     ) async throws {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
@@ -1128,7 +1128,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     case .protoDeserializationError(let error):
                         // fail the whole thing if we fail to deserialize one frame
                         owsFailDebug("Failed to deserialize proto frame!")
-                        if FeatureFlags.Backups.restoreFailOnAnyError {
+                        if BuildFlags.Backups.restoreFailOnAnyError {
                             throw error
                         } else {
                             return
@@ -1211,7 +1211,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: recipient) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: recipient) })
-                                if FeatureFlags.Backups.restoreFailOnAnyError {
+                                if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1230,7 +1230,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chat) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chat) })
-                                if FeatureFlags.Backups.restoreFailOnAnyError {
+                                if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1249,7 +1249,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chatItem) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chatItem) })
-                                if FeatureFlags.Backups.restoreFailOnAnyError {
+                                if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1288,7 +1288,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoStickerPack) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoStickerPack) })
-                                if FeatureFlags.Backups.restoreFailOnAnyError {
+                                if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1307,7 +1307,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAdHocCall) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAdHocCall) })
-                                if FeatureFlags.Backups.restoreFailOnAnyError {
+                                if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }

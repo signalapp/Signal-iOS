@@ -14,6 +14,7 @@ public struct RegistrationCoordinatorDependencies {
     public let backupIdService: BackupIdService
     public let backupNonceStore: BackupNonceMetadataStore
     public let backupRequestManager: BackupRequestManager
+    public let buildFlags: RegistrationCoordinatorImpl.Shims.BuildFlags
     public let changeNumberPniManager: ChangePhoneNumberPniManager
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
@@ -21,7 +22,6 @@ public struct RegistrationCoordinatorDependencies {
     public let db: any DB
     let deviceTransferService: RegistrationCoordinatorImpl.Shims.DeviceTransferService
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
-    public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
     public let identityManager: RegistrationCoordinatorImpl.Shims.IdentityManager
     public let localUsernameManager: LocalUsernameManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
@@ -58,6 +58,7 @@ public struct RegistrationCoordinatorDependencies {
             backupIdService: DependenciesBridge.shared.backupIdService,
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: DependenciesBridge.shared.backupRequestManager,
+            buildFlags: RegistrationCoordinatorImpl.Wrappers.BuildFlags(),
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(SSKEnvironment.shared.contactManagerImplRef),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
@@ -65,7 +66,6 @@ public struct RegistrationCoordinatorDependencies {
             db: DependenciesBridge.shared.db,
             deviceTransferService: RegistrationCoordinatorImpl.Wrappers.DeviceTransferService(AppEnvironment.shared.deviceTransferServiceRef),
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
-            featureFlags: RegistrationCoordinatorImpl.Wrappers.FeatureFlags(),
             identityManager: RegistrationCoordinatorImpl.Wrappers.IdentityManager(DependenciesBridge.shared.identityManager),
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(SSKEnvironment.shared.messagePipelineSupervisorRef),

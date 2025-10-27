@@ -272,7 +272,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
         if let modernValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniPqLastResortPreKeyRecordData) {
             self.localDevicePniPqLastResortPreKeyRecord = .success(try LibSignalClient.KyberPreKeyRecord(bytes: modernValue))
         } else if
-            FeatureFlags.decodeDeprecatedPreKeys,
+            BuildFlags.decodeDeprecatedPreKeys,
             let deprecatedValue = try container.decodeIfPresent(KyberRecordKeyData.self, forKey: .localDevicePniPqLastResortPreKeyRecord)
         {
             self.localDevicePniPqLastResortPreKeyRecord = .success(try LibSignalClient.KyberPreKeyRecord(bytes: deprecatedValue.keyData))
@@ -290,7 +290,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
         if let modernValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniSignedPreKeyRecordData) {
             self.localDevicePniSignedPreKeyRecord = .success(try LibSignalClient.SignedPreKeyRecord(bytes: modernValue))
         } else if
-            FeatureFlags.decodeDeprecatedPreKeys,
+            BuildFlags.decodeDeprecatedPreKeys,
             let deprecatedValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniSignedPreKeyRecord)
         {
             guard let signedPreKeyRecord = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.SignedPreKeyRecord.self, from: deprecatedValue) else {

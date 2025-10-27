@@ -422,7 +422,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
                 return
             }
-            if FeatureFlags.serviceIdBinaryOneOf {
+            if BuildFlags.serviceIdBinaryOneOf {
                 builder.setMentionAciBinary(mention.value.serviceIdBinary)
             } else {
                 builder.setMentionAci(mention.value.serviceIdString)

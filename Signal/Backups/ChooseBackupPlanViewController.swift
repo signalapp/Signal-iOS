@@ -79,7 +79,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             from: fromViewController,
         ) { () throws(ActionSheetDisplayableError) in
             let storeKitAvailability: StoreKitAvailability
-            if FeatureFlags.Backups.avoidStoreKitForTesters {
+            if BuildFlags.Backups.avoidStoreKitForTesters {
                 storeKitAvailability = .unavailableForTesters
             } else {
                 do {

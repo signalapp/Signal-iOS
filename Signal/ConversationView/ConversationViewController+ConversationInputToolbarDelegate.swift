@@ -525,7 +525,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func pollButtonPressed() {
         AssertIsOnMainThread()
 
-        if !FeatureFlags.pollSend {
+        if !BuildFlags.pollSend {
             return
         }
 

@@ -68,7 +68,7 @@ open class InteractiveSheetViewController: OWSViewController {
     /// but still be sure to set it for devices running iOS 18 and older.
     open var placeOnGlassIfAvailable: Bool { false }
     private var isOnGlass: Bool {
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             placeOnGlassIfAvailable
         } else {
             false

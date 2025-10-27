@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
         ServiceIdObjC *aciObj = viewedReceipt.senderAddress.serviceIdObjC;
         if ([aciObj isKindOfClass:[AciObjC class]]) {
             [viewedProtoBuilder setSenderAci:aciObj.serviceIdString];
-            if (FeatureFlagsObjC.serviceIdBinaryVariableOverhead) {
+            if (BuildFlagsObjC.serviceIdBinaryVariableOverhead) {
                 [viewedProtoBuilder setSenderAciBinary:aciObj.serviceIdBinary];
             }
         } else {

@@ -97,7 +97,7 @@ extension BackupArchive {
             dbFileSizeProvider: any DBFileSizeProvider,
             memorySampler: any MemorySampler
         ) {
-            self.dbFileSizeBencher = if FeatureFlags.Backups.detailedBenchLogging {
+            self.dbFileSizeBencher = if BuildFlags.Backups.detailedBenchLogging {
                 DBFileSizeBencher(dateProvider: dateProviderMonotonic, dbFileSizeProvider: dbFileSizeProvider)
             } else {
                 nil
@@ -338,7 +338,7 @@ extension BackupArchive {
         }
 
         private func loggableCountString(_ number: UInt64) -> String {
-            if FeatureFlags.Backups.detailedBenchLogging {
+            if BuildFlags.Backups.detailedBenchLogging {
                 return "\(number)"
             }
 

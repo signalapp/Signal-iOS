@@ -195,7 +195,7 @@ class AttachmentFormatPickerView: UIView {
         }
 
         private static var groupCases: [AttachmentType] {
-            if !FeatureFlags.pollSend {
+            if !BuildFlags.pollSend {
                 return cases(except: [.payment, .poll])
             }
             return cases(except: [.payment])
@@ -251,7 +251,7 @@ class AttachmentFormatPickerView: UIView {
 
         let button: UIButton = {
             let button: UIButton
-            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
                 button = UIButton(configuration: .glass())
 #else

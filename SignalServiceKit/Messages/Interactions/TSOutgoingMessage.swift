@@ -623,7 +623,7 @@ extension TSOutgoingMessage {
 
     @objc
     func shouldBumpProtoForPolls() -> Bool {
-        return !FeatureFlags.pollKeepProtoVersion
+        return !BuildFlags.pollKeepProtoVersion
     }
 }
 

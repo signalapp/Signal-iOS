@@ -143,7 +143,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 }
             })
         }
-        if FeatureFlags.Backups.showOptimizeMedia {
+        if BuildFlags.Backups.showOptimizeMedia {
             backupsSection.add(.switch(
                 withText: "Offload all attachments",
                 subtitle: "If on and \"Optimize Storage\" enabled, offload all attachments instead of only those >30d old",
@@ -267,7 +267,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let buildSection = OWSTableSection(title: "Build")
         buildSection.add(.copyableItem(label: "Environment", value: TSConstants.isUsingProductionService ? "Production" : "Staging"))
-        buildSection.add(.copyableItem(label: "Variant", value: FeatureFlags.buildVariantString))
+        buildSection.add(.copyableItem(label: "Variant", value: BuildFlags.buildVariantString))
         buildSection.add(.copyableItem(label: "Current Version", value: AppVersionImpl.shared.currentAppVersion))
         buildSection.add(.copyableItem(label: "First Version", value: AppVersionImpl.shared.firstAppVersion))
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {

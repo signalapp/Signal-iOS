@@ -443,13 +443,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     // MARK: - Purchase new subscription
 
     func subscriptionDisplayPrice() async throws -> String {
-        owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
+        owsPrecondition(!BuildFlags.Backups.avoidStoreKitForTesters)
 
         return try await getPaidTierProduct().displayPrice
     }
 
     func purchaseNewSubscription() async throws -> PurchaseResult {
-        owsPrecondition(!FeatureFlags.Backups.avoidStoreKitForTesters)
+        owsPrecondition(!BuildFlags.Backups.avoidStoreKitForTesters)
 
         switch try await getPaidTierProduct().purchase() {
         case .success(let purchaseResult):

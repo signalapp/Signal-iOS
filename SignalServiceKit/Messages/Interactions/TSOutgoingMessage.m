@@ -475,7 +475,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
                                                     timestamp:self.storyTimestamp.unsignedLongLongValue];
             [reactionBuilder setTargetAuthorAci:self.storyAuthorAci.serviceIdString];
-            if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+            if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
                 [reactionBuilder setTargetAuthorAciBinary:self.storyAuthorAci.serviceIdBinary];
             }
 
@@ -494,7 +494,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
         [storyContextBuilder setAuthorAci:self.storyAuthorAci.serviceIdString];
-        if (FeatureFlagsObjC.serviceIdBinaryConstantOverhead) {
+        if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
             [storyContextBuilder setAuthorAciBinary:self.storyAuthorAci.serviceIdBinary];
         }
         [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];

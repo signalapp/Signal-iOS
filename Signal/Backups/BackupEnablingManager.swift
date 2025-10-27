@@ -114,7 +114,7 @@ final class BackupEnablingManager {
         case .free:
             try await setBackupPlan { _ in .free }
         case .paid:
-            if FeatureFlags.Backups.avoidStoreKitForTesters {
+            if BuildFlags.Backups.avoidStoreKitForTesters {
                 try await enablePaidPlanWithoutStoreKit()
             } else {
                 try await enablePaidPlanWithStoreKit()

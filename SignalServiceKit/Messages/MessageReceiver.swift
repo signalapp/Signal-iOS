@@ -398,7 +398,7 @@ public final class MessageReceiver {
                 }
 
                 if dataMessage.pollCreate != nil || dataMessage.pollTerminate != nil || dataMessage.pollVote != nil {
-                    guard FeatureFlags.pollReceive else {
+                    guard BuildFlags.pollReceive else {
                         Logger.warn("Polls not supported on this device")
                         return
                     }
@@ -1205,7 +1205,7 @@ public final class MessageReceiver {
         }
 
         if dataMessage.pollCreate != nil || dataMessage.pollTerminate != nil || dataMessage.pollVote != nil {
-            guard FeatureFlags.pollReceive else {
+            guard BuildFlags.pollReceive else {
                 Logger.warn("Polls not supported on this device")
                 return nil
             }

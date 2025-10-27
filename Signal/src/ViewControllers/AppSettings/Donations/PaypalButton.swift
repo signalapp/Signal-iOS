@@ -30,7 +30,7 @@ class PaypalButton: UIButton {
         setImage(UIImage(named: "paypal-logo"), for: .normal)
         ows_adjustsImageWhenDisabled = false
         ows_adjustsImageWhenHighlighted = false
-        if #available(iOS 26.0, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
             configuration = .prominentGlass()
             tintColor = UIColor(rgbHex: 0xF6C757)

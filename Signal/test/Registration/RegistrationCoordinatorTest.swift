@@ -19,12 +19,12 @@ public class RegistrationCoordinatorTest {
     private var date: Date { self.stubs.date }
 
     private var appExpiry: AppExpiry!
+    private var buildFlags: RegistrationCoordinatorImpl.TestMocks.BuildFlags!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var dateProvider: DateProvider!
     private var db: (any DB)!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
-    private var featureFlags: RegistrationCoordinatorImpl.TestMocks.FeatureFlags!
     private var accountKeyStore: AccountKeyStore!
     private var localUsernameManagerMock: MockLocalUsernameManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
@@ -62,6 +62,7 @@ public class RegistrationCoordinatorTest {
         db = InMemoryDB()
 
         appExpiry = .forUnitTests()
+        buildFlags = RegistrationCoordinatorImpl.TestMocks.BuildFlags()
         accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         let preKeyStore = PreKeyStore()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -69,7 +70,6 @@ public class RegistrationCoordinatorTest {
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
-        featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()
             // This should result in no username reclamation. Tests that want to
@@ -112,6 +112,7 @@ public class RegistrationCoordinatorTest {
             backupIdService: MockBackupIdService(),
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: BackupRequestManagerMock(),
+            buildFlags: buildFlags,
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,
@@ -119,7 +120,6 @@ public class RegistrationCoordinatorTest {
             db: db,
             deviceTransferService: RegistrationCoordinatorImpl.TestMocks.DeviceTransferService(),
             experienceManager: experienceManager,
-            featureFlags: featureFlags,
             identityManager: RegistrationCoordinatorImpl.TestMocks.IdentityManager(),
             localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,

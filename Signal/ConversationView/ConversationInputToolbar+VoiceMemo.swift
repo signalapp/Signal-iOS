@@ -46,7 +46,7 @@ extension ConversationInputToolbar {
             visualEffectView.frame = bounds
 
             var cantUseCornerConfiguration = true
-            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
                 cantUseCornerConfiguration = false
             }
             if cantUseCornerConfiguration {

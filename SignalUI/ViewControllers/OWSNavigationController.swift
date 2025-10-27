@@ -75,7 +75,7 @@ open class OWSNavigationController: UINavigationController {
     }
 
     public init() {
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             super.init(nibName: nil, bundle: nil)
         } else {
             super.init(navigationBarClass: OWSNavigationBar.self, toolbarClass: nil)

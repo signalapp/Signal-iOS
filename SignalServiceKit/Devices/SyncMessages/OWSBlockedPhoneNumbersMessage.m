@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
             [aciBinaries addObject:aciObj.serviceIdBinary];
         }
     }
-    if (FeatureFlagsObjC.serviceIdBinaryVariableOverhead) {
+    if (BuildFlagsObjC.serviceIdBinaryVariableOverhead) {
         [blockedBuilder setAcisBinary:aciBinaries];
     }
     [blockedBuilder setGroupIds:_groupIds];

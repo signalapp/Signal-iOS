@@ -27,7 +27,7 @@ final class ContactOutputStream {
         }
         if let aci {
             contactBuilder.setAci(aci.serviceIdString)
-            if FeatureFlags.serviceIdBinaryVariableOverhead {
+            if BuildFlags.serviceIdBinaryVariableOverhead {
                 contactBuilder.setAciBinary(aci.serviceIdBinary)
             }
         }

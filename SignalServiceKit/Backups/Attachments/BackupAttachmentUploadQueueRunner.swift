@@ -126,7 +126,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             logString = "thumbnail"
         }
 
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return
         }
         let (isRegisteredPrimary, localAci, backupPlan, backupKey) = db.read { tx in
@@ -307,7 +307,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard FeatureFlags.Backups.supported else {
+            guard BuildFlags.Backups.supported else {
                 return .cancelled
             }
 

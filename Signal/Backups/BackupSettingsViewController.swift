@@ -1521,7 +1521,7 @@ struct BackupSettingsView: View {
                         viewModel: viewModel,
                     )
 
-                    if FeatureFlags.Backups.showOptimizeMedia {
+                    if BuildFlags.Backups.showOptimizeMedia {
                         Toggle(
                             OWSLocalizedString(
                                 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
@@ -1534,7 +1534,7 @@ struct BackupSettingsView: View {
                         ).disabled(!viewModel.optimizeLocalStorageAvailable)
                     }
                 } footer: {
-                    if FeatureFlags.Backups.showOptimizeMedia {
+                    if BuildFlags.Backups.showOptimizeMedia {
                         let footerText: String = if
                             viewModel.optimizeLocalStorageAvailable,
                             viewModel.isPaidPlanTester

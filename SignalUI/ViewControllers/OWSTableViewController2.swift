@@ -549,7 +549,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     /// Approximate cell corner rounding. Now that we use native inset grouped
     /// tables, this is only an approximation and its use should be avoided.
-    public static let cellRounding: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+    public static let cellRounding: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
         22
     } else {
         10
@@ -1017,7 +1017,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     public static func removeBackButtonText(viewController: UIViewController) {
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable { return }
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { return }
         // We never want to show titles on back buttons, so we replace it with
         // blank spaces. We pad it out slightly so that it's more tappable.
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)

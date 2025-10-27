@@ -69,7 +69,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     }
 
     private func _acquireEntitlement() async throws {
-        owsPrecondition(FeatureFlags.Backups.avoidStoreKitForTesters)
+        owsPrecondition(BuildFlags.Backups.avoidStoreKitForTesters)
 
         guard TSConstants.isUsingProductionService else {
             // If we're on Staging, no need to do anything – all accounts on
@@ -78,7 +78,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             return
         }
 
-        guard !FeatureFlags.Backups.avoidAppAttestForDevs else {
+        guard !BuildFlags.Backups.avoidAppAttestForDevs else {
             // If we're on a dev build, we can't use AppAttest. If you're a dev
             // who needs the entitlement (i.e., paid-tier Backup auth
             // credentials), make sure you've gotten it for your account via
@@ -112,7 +112,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
         ) = db.read { tx in
             (
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                FeatureFlags.Backups.avoidStoreKitForTesters,
+                BuildFlags.Backups.avoidStoreKitForTesters,
                 backupPlanManager.backupPlan(tx: tx),
                 kvStore.getDate(StoreKeys.lastEntitlementRenewalDate, transaction: tx)
             )
@@ -205,7 +205,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 ///
 /// However, to prevent abuse we need to restrict these requests to first-party
 /// TestFlight builds. We do this by gating the request with `AppAttest`, and
-/// then limit the requests to TestFlight-flavored builds using a `FeatureFlag`.
+/// then limit the requests to TestFlight-flavored builds using a BuildFlag.
 private struct AppAttestManager {
 
     /// Actions that require `DeviceCheck` attestation.

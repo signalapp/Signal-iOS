@@ -13,7 +13,7 @@ public func owsFailBeta(
     function: String = #function,
     line: Int = #line
 ) {
-    if FeatureFlags.isPrerelease {
+    if BuildFlags.isPrerelease {
         owsFail(logMessage, file: file, function: function, line: line)
     } else {
         owsFailDebug(logMessage, file: file, function: function, line: line)

@@ -11,11 +11,11 @@ import LibSignalClient
 extension RegistrationCoordinatorImpl {
 
     public enum TestMocks {
+        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsMock
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
-        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsMock
         public typealias IdentityManager = _RegistrationCoordinator_IdentityManagerMock
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorMock
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorMock
@@ -101,7 +101,7 @@ public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordi
     }
 }
 
-public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator_FeatureFlagsShim {
+public class _RegistrationCoordinator_BuildFlagsMock: _RegistrationCoordinator_BuildFlagsShim {
 
     public init() {}
 

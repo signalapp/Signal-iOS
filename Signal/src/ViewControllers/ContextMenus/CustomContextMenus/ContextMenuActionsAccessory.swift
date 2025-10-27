@@ -162,7 +162,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                         if highlightedView == nil {
                             let view = UIView()
 
-                            if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+                            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
                                 view.frame = bounds.insetBy(dx: 12, dy: 4)
                                 view.cornerConfiguration = .capsule()
@@ -189,14 +189,14 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         var maxWidth: CGFloat = 250
-        let margin: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        let margin: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             24
         } else {
             16
         }
         let iconSpacing: CGFloat = 12
         let verticalPadding: CGFloat = 23
-        let iconSize: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        let iconSize: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             24
         } else {
             20
@@ -303,7 +303,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             }
             titleFrame.width = titleWidth
 
-            let iconIsToTheRightOfText = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+            let iconIsToTheRightOfText = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
                 isRTL
             } else {
                 !isRTL
@@ -357,13 +357,13 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
     }
 
-    let cornerRadius: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+    let cornerRadius: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
         33
     } else {
         12
     }
 
-    let vMargin: CGFloat = if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+    let vMargin: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
         10
     } else {
         0
@@ -380,13 +380,13 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         scrollView.verticalScrollIndicatorInsets = .init(hMargin: 0, vMargin: cornerRadius)
 
         let blurEffect: UIBlurEffect?
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
             let effect = UIGlassEffect(style: .clear)
             effect.isInteractive = true
             backdropView = UIVisualEffectView(effect: effect)
 #else
-            // will never execute because of the FeatureFlags.iOS26SDKIsAvailable check above, but needed for the Xcode 16 compiler to not get mad. Remove when CI is all Xcode 26
+            // will never execute because of the BuildFlags.iOS26SDKIsAvailable check above, but needed for the Xcode 16 compiler to not get mad. Remove when CI is all Xcode 26
             backdropView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
 #endif
             blurEffect = nil
@@ -427,7 +427,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         addGestureRecognizer(highlightHoverGestureRecognizer)
         self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
 
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
         } else {
             layer.cornerRadius = cornerRadius
             layer.shadowRadius = 64

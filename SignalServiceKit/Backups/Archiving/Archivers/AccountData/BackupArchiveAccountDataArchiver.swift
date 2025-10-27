@@ -412,7 +412,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
 
             let optimizeLocalStorage = accountData.accountSettings.optimizeOnDeviceStorage
-            if FeatureFlags.Backups.avoidStoreKitForTesters {
+            if BuildFlags.Backups.avoidStoreKitForTesters {
                 // If we're importing into a build that can't make purchases,
                 // opt ourselves into "paid as tester" mode. We'll manage IAP
                 // data, if there is any, separately.

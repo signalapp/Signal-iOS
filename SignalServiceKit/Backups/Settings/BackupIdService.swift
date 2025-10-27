@@ -66,7 +66,7 @@ final class BackupIdServiceImpl: BackupIdService {
         localAci: Aci,
         auth: ChatServiceAuth
     ) async throws {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return
         }
 
@@ -110,7 +110,7 @@ final class BackupIdServiceImpl: BackupIdService {
         key: MessageRootBackupKey,
         auth: ChatServiceAuth
     ) async throws {
-        guard FeatureFlags.Backups.supported else {
+        guard BuildFlags.Backups.supported else {
             return
         }
 

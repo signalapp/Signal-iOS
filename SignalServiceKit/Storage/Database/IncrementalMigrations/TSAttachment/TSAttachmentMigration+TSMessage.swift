@@ -47,7 +47,7 @@ extension TSAttachmentMigration {
     /// Phases 1/2 must be a separate transaction from phase 3, which must be different from phase 4.
     ///
     /// Phase 1: "prepare" TSMessages for migration, starting with the newest first.
-    /// This will be enabled at the same time that we enable the FeatureFlag to use v2 attachments for
+    /// This will be enabled at the same time that we enable the BuildFlag to use v2 attachments for
     /// _new_ messages, so the start point marks the cutoff between legacy and v2 attachments.
     /// We work backwards, newest first, to migrate the legacy attachments.
     /// We "prepare" a TSMessage by inserting a row into the TSAttachmentMigration table.
