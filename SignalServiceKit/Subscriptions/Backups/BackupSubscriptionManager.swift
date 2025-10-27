@@ -336,8 +336,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     /// fetch that remote state could be the moment we learn that something
     /// has changed, such that we should "downgrade" our local `BackupPlan`.
     ///
-    /// For example, our subscription may be expiring soon, or our Backup
-    /// entitlement may have expired completely.
+    /// For example, something may have changed with our subscription, or our
+    /// Backup entitlement may have expired.
     ///
     /// - Note
     /// Upgrading requires redeeming a subscription that has renewed, which can
@@ -348,21 +348,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         fetchedSubscription subscription: Subscription?,
         backupEntitlement: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements.BackupEntitlement?,
     ) async throws {
-        let isSubscriptionCanceled: Bool
-        if let subscription {
-            isSubscriptionCanceled = subscription.cancelAtEndOfPeriod
-        } else {
-            isSubscriptionCanceled = true
-        }
-
-        let isEntitlementExpired: Bool
-        if let backupEntitlement {
-            let expirationDate = Date(timeIntervalSince1970: backupEntitlement.expirationSeconds)
-            isEntitlementExpired = expirationDate < dateProvider()
-        } else {
-            isEntitlementExpired = true
-        }
-
         try await db.awaitableWriteWithRollbackIfThrows { tx in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
@@ -371,37 +356,71 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 case toPaidExpiringSoon(optimizeLocalStorage: Bool)
             }
             let downgrade: Downgrade? = {
+                /// The value of optimizeLocalStorage, if the current BackupPlan
+                /// is .paid. nil otherwise.
+                let paidTierOptimizeLocalStorage: Bool?
                 switch currentBackupPlan {
-                case
-                        .paid where isEntitlementExpired,
-                        .paidExpiringSoon where isEntitlementExpired:
-                    logger.warn("Entitlement expired: downgrading.")
-                    return .toFreeTier
-
-                case .paid(let optimizeLocalStorage) where isSubscriptionCanceled:
-                    logger.warn("Subscription canceled: downgrading.")
-                    return .toPaidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
-
-                case .paid, .paidExpiringSoon:
-                    // No reason to downgrade.
-                    return nil
-
-                case .disabled, .disabling, .free:
-                    // No downgrading possible!
-                    return nil
-
                 case .paidAsTester:
                     // Handled by `BackupTestFlightEntitlementManager`.
                     return nil
+                case .disabled, .disabling, .free:
+                    // Nothing to downgrade.
+                    return nil
+                case .paid(let optimizeLocalStorage):
+                    paidTierOptimizeLocalStorage = optimizeLocalStorage
+                case .paidExpiringSoon:
+                    paidTierOptimizeLocalStorage = nil
                 }
+
+                guard let subscription else {
+                    // The subscription will be missing if it's "expired", which
+                    // is the trigger for Chat Service to wipe its knowledge of
+                    // the subscriber ID.
+                    //
+                    // This happens in two ways:
+                    // - The user manually canceled, and their last-subscribed
+                    //   period has now elapsed.
+                    // - A renewal failed, and Apple's given up trying to get
+                    //   the user to resolve the issue. (Note that Apple will
+                    //   try for 60d, so our Backup entitlement will have
+                    //   generally have expired before this happens.)
+                    //
+                    // If the subscription is expired, downgrade to free.
+                    return .toFreeTier
+                }
+
+                guard
+                    let backupEntitlement,
+                    Date(timeIntervalSince1970: backupEntitlement.expirationSeconds) > dateProvider()
+                else {
+                    // Our entitlement has expired, so we must downgrade to the
+                    // free tier. (Paid-tier operations will no longer work!)
+                    //
+                    // This likely means the subscription failed to renew, and
+                    // the "grace period" during which the entitlement persists
+                    // after the subscription period ends has now elapsed
+                    // without the user fixing the renewal issue.
+                    return .toFreeTier
+                }
+
+                // At this point we have a subscription, and we have a Backup
+                // entitlement, so things are generally good.
+
+                if
+                    let paidTierOptimizeLocalStorage,
+                    subscription.cancelAtEndOfPeriod
+                {
+                    // We're on the paid tier, but our subscription won't renew.
+                    return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)
+                }
+
+                return nil
             }()
 
             if let downgrade {
                 let downgradedBackupPlan: BackupPlan = switch downgrade {
-                case .toFreeTier:
-                    .free
-                case .toPaidExpiringSoon(let optimizeLocalStorage):
-                    .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+                case .toFreeTier: .free
+                case .toPaidExpiringSoon(let optimizeLocalStorage): .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
                 }
 
                 do {
