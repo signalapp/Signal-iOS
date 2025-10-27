@@ -190,6 +190,11 @@ struct NewPollView: View {
                     .onAppear {
                         focusQuestionField = true
                     }
+                    .onSubmit {
+                        if let nextBlankRow = findFirstBlankRow() {
+                            focusedItemID = nextBlankRow.id
+                        }
+                    }
                 } header: {
                     Text(
                         OWSLocalizedString(
@@ -210,6 +215,11 @@ struct NewPollView: View {
                                 }
                                 if option.text.stripped.isEmpty {
                                     option.text = ""
+                                }
+                            }
+                            .onSubmit {
+                                if let nextBlankRow = findFirstBlankRow() {
+                                    focusedItemID = nextBlankRow.id
                                 }
                             }
                             .focused($focusedItemID, equals: option.id)
@@ -254,9 +264,10 @@ struct NewPollView: View {
                     Button(action: {
                         viewModel.onDismiss()
                     }) {
-                        Image(Theme.iconName(.xBold))
+                        Image(Theme.iconName(.x26))
                     }
                     .accessibilityLabel(CommonStrings.cancelButton)
+                    .foregroundColor(Color.Signal.label)
                 } else {
                     Button(CommonStrings.cancelButton, action: {
                         viewModel.onDismiss()
@@ -273,7 +284,8 @@ struct NewPollView: View {
                     Button(action: {
                         sendButtonPressed(sendButtonEnabled: sendButtonEnabled)
                     }) {
-                        Image(Theme.iconName(.arrowUp))
+                        Image(Theme.iconName(.arrowUp30))
+                            .foregroundColor(.white)
                     }
                     .accessibilityLabel(MessageStrings.sendButton)
                     .tint(Color.Signal.ultramarine)
@@ -290,6 +302,15 @@ struct NewPollView: View {
                 }
             }
         }
+    }
+
+    private func findFirstBlankRow() -> NewOption? {
+        for option in pollOptions {
+            if option.text.isEmpty {
+                return option
+            }
+        }
+        return nil
     }
 
     private func sendButtonPressed(sendButtonEnabled: Bool) {

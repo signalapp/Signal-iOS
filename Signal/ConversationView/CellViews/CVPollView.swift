@@ -607,11 +607,10 @@ public class CVPollView: ManualStackView {
                 let checkMark = UIImageView(image: UIImage(named: Theme.iconName(.checkmark)))
                 checkbox.addSubview(spinningEllipse, withLayoutBlock: { [weak self] _ in
                     guard let self else { return }
-                    spinningEllipse.frame = checkbox.bounds
                     spinView(view: spinningEllipse)
                     checkMark.frame = CGRect(
-                        x: (checkbox.bounds.width - 15) / 2,
-                        y: (checkbox.bounds.height - 15) / 2,
+                        x: (spinningEllipse.frame.width - 15) / 2,
+                        y: (spinningEllipse.frame.height - 15) / 2,
                         width: 15,
                         height: 15
                     )
@@ -638,7 +637,9 @@ public class CVPollView: ManualStackView {
 
             switch localUserVoteState {
             case .vote:
-                checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill))))
+                let checkMarkCircle = UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill)))
+                checkbox.addSubview(checkMarkCircle)
+
                 checkbox.tintColor = configurator.colorConfigurator.checkboxSelectedColor
             case .pendingVote, .pendingUnvote:
                 displayPendingUI(type: localUserVoteState)

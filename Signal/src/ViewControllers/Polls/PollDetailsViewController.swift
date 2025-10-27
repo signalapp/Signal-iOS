@@ -76,6 +76,13 @@ struct PollDetailsView: View {
                     Text(poll.question)
                         .font(.body)
                         .foregroundColor(Color.Signal.label)
+                } header: {
+                    Text(
+                        OWSLocalizedString(
+                            "POLL_QUESTION_LABEL",
+                            comment: "Header for the poll question text box when making a new poll"
+                        )
+                    )
                 }
 
                 if !poll.isEnded, poll.ownerIsLocalUser {
@@ -137,14 +144,15 @@ struct PollDetailsView: View {
         }
         .navigationTitle(titleString)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 if #available(iOS 26.0, *) {
                     Button(action: {
                         viewModel.onDismiss()
                     }) {
-                        Image(Theme.iconName(.xBold))
+                        Image(Theme.iconName(.x26))
                     }
                     .accessibilityLabel(CommonStrings.doneButton)
+                    .foregroundColor(Color.Signal.label)
                 } else {
                     Button(CommonStrings.doneButton, action: {
                         viewModel.onDismiss()
