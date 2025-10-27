@@ -729,7 +729,6 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
             completion(emojiString)
         }
-        picker.externalBackdropView = blurView
         emojiPickerSheet = picker
         present(picker, animated: true)
     }

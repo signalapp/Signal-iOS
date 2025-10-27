@@ -72,14 +72,7 @@ class EmojiPickerCollectionView: UICollectionView {
 
     lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
 
-    private let forceDarkTheme: Bool
-
-    init(
-        message: TSMessage?,
-        forceDarkTheme: Bool = false
-    ) {
-        self.forceDarkTheme = forceDarkTheme
-
+    init(message: TSMessage?) {
         layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(square: EmojiPickerCollectionView.emojiWidth)
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
@@ -129,7 +122,7 @@ class EmojiPickerCollectionView: UICollectionView {
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
         )
 
-        backgroundColor = (Theme.isDarkThemeEnabled || self.forceDarkTheme) ? .ows_gray80 : .ows_white
+        backgroundColor = nil
 
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         panGestureRecognizer.require(toFail: longPressGesture)
@@ -512,7 +505,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
             return CGSize.zero
         }
 
-        let measureCell = EmojiSectionHeader(forceDarkTheme: self.forceDarkTheme)
+        let measureCell = EmojiSectionHeader()
         measureCell.label.text = nameForSection(section)
         return measureCell.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
     }
@@ -564,14 +557,10 @@ private class EmojiSectionHeader: UICollectionReusableView {
         )
 
         label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
+        label.textColor = UIColor.Signal.secondaryLabel
         addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
         label.setCompressionResistanceHigh()
-    }
-
-    convenience init(forceDarkTheme: Bool = false) {
-        self.init(frame: .zero)
-        label.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
     }
 
     required init?(coder: NSCoder) {
