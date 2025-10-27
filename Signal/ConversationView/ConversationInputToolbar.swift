@@ -532,25 +532,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // "Suggested Stickers" horizontal list view will be placed in a wrapper view to allow for slide in / slide out animation.
         updateSuggestedStickersPanelConstraints()
 
-        // On iOS 26 embed eveything into a `glass container effect` view.
-        var outerVStackSuperview: UIView = self
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
-            let glassContainerView = UIVisualEffectView(effect: UIGlassContainerEffect())
-            addSubview(glassContainerView)
-            glassContainerView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                glassContainerView.topAnchor.constraint(equalTo: topAnchor),
-                glassContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
-                glassContainerView.trailingAnchor.constraint(equalTo: trailingAnchor),
-                glassContainerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            ])
-
-            outerVStackSuperview = glassContainerView.contentView
-
             iOS26Layout = true
         }
-#endif
 
         let contentViewWrapperView = UIView.container()
 
@@ -559,7 +543,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // [ Message Creation Input Box and Buttons ]
         let outerVStack = UIStackView(arrangedSubviews: [ suggestedStickersPanel, contentViewWrapperView ] )
         outerVStack.axis = .vertical
-        outerVStackSuperview.addSubview(outerVStack)
+        addSubview(outerVStack)
         outerVStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             outerVStack.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
