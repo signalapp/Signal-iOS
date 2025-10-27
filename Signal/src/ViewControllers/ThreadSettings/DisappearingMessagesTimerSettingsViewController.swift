@@ -273,16 +273,19 @@ struct DisappearingMessagesTimerSettingsView: View {
                     } label: {
                         Label {
                             Text(preset.localizedDescription)
+                                .padding(.leading, -8)
                         } icon: {
                             switch viewModel.selection {
                             case .preset(let selectedPreset) where selectedPreset == preset:
                                 Image(.check)
                             case .preset, .custom:
-                                Spacer()
+                                Color.clear
+                                    .frame(width: 24)
                             }
                         }
                         .foregroundStyle(Color.Signal.label)
                     }
+                    .padding(.leading, -8)
                 }
 
                 Button {
@@ -294,12 +297,14 @@ struct DisappearingMessagesTimerSettingsView: View {
                                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
                                 comment: "Disappearing message option to define a custom time"
                             ))
+                            .padding(.leading, -8)
                         } icon: {
                             switch viewModel.selection {
                             case .custom:
                                 Image(.check)
                             case .preset:
-                                Spacer()
+                                Color.clear
+                                    .frame(width: 24)
                             }
                         }
                         .foregroundStyle(Color.Signal.label)
@@ -321,6 +326,7 @@ struct DisappearingMessagesTimerSettingsView: View {
                             .foregroundStyle(Color.Signal.secondaryLabel)
                     }
                 }
+                .padding(.leading, -8)
             } header: {
                 let headerText = switch viewModel.settingsMode {
                 case .chat, .newGroup:
