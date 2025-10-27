@@ -69,7 +69,7 @@ class EmojiPickerSheet: OWSViewController {
             self.overrideUserInterfaceStyle = .dark
         }
 
-        if #available(iOS 26, *), FeatureFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             view.backgroundColor = nil
         } else {
             view.backgroundColor = .tertiarySystemBackground
