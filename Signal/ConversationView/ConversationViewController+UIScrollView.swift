@@ -283,7 +283,7 @@ extension ConversationViewController {
         view.addSubview(scrollDownButton)
         scrollDownButton.accessibilityIdentifier = "scrollDownButton"
 
-        scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBar, withOffset: -24)
+        scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBarContainer, withOffset: -24)
         scrollDownButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
 
         scrollToNextMentionButton.addTarget(self, action: #selector(scrollToNextMentionButtonTapped), for: .touchUpInside)

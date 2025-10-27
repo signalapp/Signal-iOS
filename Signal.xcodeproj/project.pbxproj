@@ -1467,6 +1467,7 @@
 		76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB06F929AD84DB00978856 /* MediaItemViewController.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */; };
+		76CDEB192EAD982000ADCCD6 /* ConversationBottomPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CDEB182EAD980F00ADCCD6 /* ConversationBottomPanelView.swift */; };
 		76DFBF8C29AE6B80004A771D /* MediaTransitionImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */; };
 		76E02C1A2A0A1931008BC372 /* DebugUISessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C192A0A1931008BC372 /* DebugUISessionState.swift */; };
 		76E02C1E2A0A1ADD008BC372 /* DebugUIPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */; };
@@ -5358,6 +5359,7 @@
 		76BB06F929AD84DB00978856 /* MediaItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItemViewController.swift; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewAttachmentViewController.swift; sourceTree = "<group>"; };
+		76CDEB182EAD980F00ADCCD6 /* ConversationBottomPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationBottomPanelView.swift; sourceTree = "<group>"; };
 		76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTransitionImageView.swift; sourceTree = "<group>"; };
 		76E02C192A0A1931008BC372 /* DebugUISessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUISessionState.swift; sourceTree = "<group>"; };
 		76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPage.swift; sourceTree = "<group>"; };
@@ -8167,6 +8169,7 @@
 				45A1684C2A1C308800C2432D /* AudioPresentation.swift */,
 				3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */,
 				347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */,
+				76CDEB182EAD980F00ADCCD6 /* ConversationBottomPanelView.swift */,
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
@@ -16926,6 +16929,7 @@
 				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
 				F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */,
 				B94E922D2E381478007BA81B /* ContextualActionBuilder.swift in Sources */,
+				76CDEB192EAD982000ADCCD6 /* ConversationBottomPanelView.swift in Sources */,
 				3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,

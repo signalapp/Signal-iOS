@@ -120,7 +120,7 @@ public protocol MessageActionsToolbarDelegate: AnyObject {
     var messageActionsToolbarSelectedInteractionCount: Int { get }
 }
 
-public class MessageActionsToolbar: UIToolbar {
+public class MessageActionsToolbar: UIView {
 
     weak var actionDelegate: MessageActionsToolbarDelegate?
 
@@ -131,22 +131,34 @@ public class MessageActionsToolbar: UIToolbar {
     }
     private let mode: Mode
 
+    private let toolbar = UIToolbar()
+
     init(mode: Mode) {
         self.mode = mode
 
         super.init(frame: .zero)
 
-        isTranslucent = false
-        isOpaque = true
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(toolbar)
+        addConstraints([
+            toolbar.topAnchor.constraint(equalTo: topAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: trailingAnchor),
+            toolbar.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+        ])
 
-        autoresizingMask = .flexibleHeight
-        translatesAutoresizingMaskIntoConstraints = false
-        setShadowImage(UIImage(), forToolbarPosition: .any)
+        if #unavailable(iOS 26) {
+            toolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
 
-        buildItems()
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(themeDidChange),
+                name: .themeDidChange,
+                object: nil
+            )
+        }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
-        applyTheme()
+        updateContent()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -156,15 +168,16 @@ public class MessageActionsToolbar: UIToolbar {
     // MARK: -
 
     @objc
-    private func applyTheme() {
+    @available(iOS, deprecated: 26)
+    private func themeDidChange() {
+        guard #unavailable(iOS 26) else { return }
+
         AssertIsOnMainThread()
-
-        barTintColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
-
-        buildItems()
+        updateContent()
     }
 
     public func updateContent() {
+        actionItems.removeAll()
         buildItems()
     }
 
@@ -178,22 +191,34 @@ public class MessageActionsToolbar: UIToolbar {
         }
     }
 
-    var actionItems = [MessageActionsToolbarButton]()
+    private var actionItems = [MessageAction.MessageActionType: UIBarButtonItem]()
+
+    private func barButtonItem(for messageAction: MessageAction) -> UIBarButtonItem {
+        let barButtonItem = UIBarButtonItem(
+            image: messageAction.barButtonImage,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.actionDelegate?.messageActionsToolbar(self, executedAction: messageAction)
+            }
+        )
+        if #unavailable(iOS 26) {
+            barButtonItem.tintColor = Theme.primaryIconColor
+        }
+        barButtonItem.accessibilityLabel = messageAction.accessibilityLabel
+        return barButtonItem
+    }
 
     private func buildNormalItems(messagesActions: [MessageAction]) {
         var newItems = [UIBarButtonItem]()
 
-        var actionItems = [MessageActionsToolbarButton]()
-        for action in messagesActions {
+        for messageAction in messagesActions {
             if !newItems.isEmpty {
                 newItems.append(.flexibleSpace())
             }
 
-            let actionItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: action)
-            actionItem.tintColor = Theme.primaryIconColor
-            actionItem.accessibilityLabel = action.accessibilityLabel
+            let actionItem = barButtonItem(for: messageAction)
             newItems.append(actionItem)
-            actionItems.append(actionItem)
+            actionItems[messageAction.actionType] = actionItem
         }
 
         // If we only have a single button, center it.
@@ -202,15 +227,17 @@ public class MessageActionsToolbar: UIToolbar {
             newItems.append(.flexibleSpace())
         }
 
-        items = newItems
-        self.actionItems = actionItems
+        toolbar.items = newItems
     }
 
     private func buildSelectionItems(deleteMessagesAction: MessageAction,
                                      forwardMessagesAction: MessageAction) {
 
-        let deleteItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: deleteMessagesAction)
-        let forwardItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: forwardMessagesAction)
+        let deleteItem = barButtonItem(for: deleteMessagesAction)
+        actionItems[deleteMessagesAction.actionType] = deleteItem
+
+        let forwardItem = barButtonItem(for: forwardMessagesAction)
+        actionItems[forwardMessagesAction.actionType] = forwardItem
 
         let selectedCount: Int = actionDelegate?.messageActionsToolbarSelectedInteractionCount ?? 0
         let labelFormat = OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware",
@@ -242,62 +269,20 @@ public class MessageActionsToolbar: UIToolbar {
         let labelItem = UIBarButtonItem(customView: labelView)
         labelItem.isEnabled = false
 
-        var newItems = [UIBarButtonItem]()
-        newItems.append(deleteItem)
-        newItems.append(.flexibleSpace())
-        newItems.append(labelItem)
-        newItems.append(.flexibleSpace())
-        newItems.append(forwardItem)
-
-        items = newItems
-        self.actionItems = [ deleteItem, forwardItem ]
+        toolbar.items = [
+            deleteItem,
+            .flexibleSpace(),
+            labelItem,
+            .flexibleSpace(),
+            forwardItem,
+        ]
     }
 
     public func buttonItem(for actionType: MessageAction.MessageActionType) -> UIBarButtonItem? {
-        for actionItem in actionItems {
-            if let messageAction = actionItem.messageAction,
-               messageAction.actionType == actionType {
-                return actionItem
-            }
+        guard let buttonItem = actionItems[actionType] else {
+            owsFailDebug("Missing action item: \(actionType).")
+            return nil
         }
-        owsFailDebug("Missing action item: \(actionType).")
-        return nil
-    }
-}
-
-// MARK: -
-
-class MessageActionsToolbarButton: UIBarButtonItem {
-    private weak var actionsToolbar: MessageActionsToolbar?
-    fileprivate var messageAction: MessageAction?
-
-    init(actionsToolbar: MessageActionsToolbar, messageAction: MessageAction) {
-        self.actionsToolbar = actionsToolbar
-        self.messageAction = messageAction
-
-        super.init()
-
-        self.image = messageAction.barButtonImage
-        self.style = .plain
-        self.target = self
-        self.action = #selector(didTapItem(_:))
-        self.tintColor = Theme.primaryIconColor
-        self.accessibilityLabel = messageAction.accessibilityLabel
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    @objc
-    private func didTapItem(_ item: UIBarButtonItem) {
-        AssertIsOnMainThread()
-
-        guard let messageAction = messageAction,
-              let actionsToolbar = actionsToolbar,
-              let actionDelegate = actionsToolbar.actionDelegate else {
-            return
-        }
-        actionDelegate.messageActionsToolbar(actionsToolbar, executedAction: messageAction)
+        return buttonItem
     }
 }

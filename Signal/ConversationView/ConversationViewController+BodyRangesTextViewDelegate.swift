@@ -18,7 +18,7 @@ extension ConversationViewController: BodyRangesTextViewDelegate {
     }
 
     public func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
-        bottomBar
+        bottomBarContainer
     }
 
     public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {

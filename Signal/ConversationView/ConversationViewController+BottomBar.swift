@@ -128,16 +128,21 @@ public extension ConversationViewController {
             bottomView = announcementOnlyView
         }
 
-        bottomBar.removeAllSubviews()
+        bottomBarContainer.removeAllSubviews()
 
         if let bottomView {
-            bottomBar.addSubview(bottomView)
-            bottomView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-            if bottomView is UIToolbar {
-                // UIToolbar will extend its background to cover bottom safe area. 
-                bottomView.autoPinEdge(toSuperviewSafeArea: .bottom)
-            } else {
-                bottomView.autoPinEdge(toSuperviewEdge: .bottom)
+            bottomView.translatesAutoresizingMaskIntoConstraints = false
+            bottomBarContainer.addSubview(bottomView)
+            bottomBarContainer.addConstraints([
+                bottomView.topAnchor.constraint(equalTo: bottomBarContainer.topAnchor),
+                bottomView.leadingAnchor.constraint(equalTo: bottomBarContainer.leadingAnchor),
+                bottomView.trailingAnchor.constraint(equalTo: bottomBarContainer.trailingAnchor),
+                bottomView.bottomAnchor.constraint(equalTo: bottomBarContainer.bottomAnchor),
+            ])
+            if let viewWithContentLayoutGuide = bottomView as? ConversationInputPanelWithContentLayoutGuide {
+                NSLayoutConstraint.activate([
+                    viewWithContentLayoutGuide.contentLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
+                ])
             }
         }
 

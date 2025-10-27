@@ -23,7 +23,7 @@ public class CVViewState: NSObject {
     public var inputToolbar: ConversationInputToolbar?
     public let headerView = ConversationHeaderView()
 
-    public var bottomBar = UIView.container()
+    public var bottomBarContainer = UIView.container()
     public var requestView: UIView?
     public var bannerView: UIView?
     public var groupNameCollisionFinder: GroupMembershipNameCollisionFinder?
@@ -195,8 +195,8 @@ extension ConversationViewController {
         set { viewState.inputToolbar = newValue }
     }
 
-    var bottomBar: UIView {
-        viewState.bottomBar
+    var bottomBarContainer: UIView {
+        viewState.bottomBarContainer
     }
 
     var requestView: UIView? {

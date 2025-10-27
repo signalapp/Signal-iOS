@@ -262,11 +262,18 @@ public final class ConversationViewController: OWSViewController {
         backgroundContainer.autoPinEdgesToSuperviewEdges()
         setUpWallpaper()
 
-        self.view.addSubview(bottomBar)
-        bottomBar.autoPinWidthToSuperview()
-        NSLayoutConstraint.activate([
-            bottomBar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
-        ])
+        self.view.addSubview(bottomBarContainer)
+        bottomBarContainer.autoPinWidthToSuperview()
+        bottomBarContainer.autoPinEdge(toSuperviewEdge: .bottom)
+#if compiler(>=6.2)
+        // Obscures content underneath bottom bar to improve legibility.
+        if #available(iOS 26, *) {
+            let scrollInteraction = UIScrollEdgeElementContainerInteraction()
+            scrollInteraction.scrollView = collectionView
+            scrollInteraction.edge = .bottom
+            bottomBarContainer.addInteraction(scrollInteraction)
+        }
+#endif
 
         self.selectionToolbar = self.buildSelectionToolbar()
 

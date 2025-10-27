@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BlockingLegacyGroupView: UIStackView {
+class BlockingLegacyGroupView: ConversationBottomPanelView {
 
     private weak var fromViewController: UIViewController?
 
@@ -14,28 +14,6 @@ class BlockingLegacyGroupView: UIStackView {
         self.fromViewController = fromViewController
 
         super.init(frame: .zero)
-
-        createContents()
-    }
-
-    private func createContents() {
-        // We want the background to extend to the bottom of the screen
-        // behind the safe area, so we add that inset to our bottom inset
-        // instead of pinning this view to the safe area
-        let safeAreaInset = safeAreaInsets.bottom
-
-        autoresizingMask = .flexibleHeight
-
-        axis = .vertical
-        spacing = 11
-        layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
-        isLayoutMarginsRelativeArrangement = true
-        alignment = .fill
-
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = Theme.backgroundColor
-        addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
 
         let format = OWSLocalizedString(
             "LEGACY_GROUP_UNSUPPORTED_MESSAGE",
@@ -45,28 +23,32 @@ class BlockingLegacyGroupView: UIStackView {
 
         let attributedString = NSMutableAttributedString(string: String(format: format, learnMoreText))
         attributedString.setAttributes(
-            [.foregroundColor: Theme.accentBlueColor],
+            [.foregroundColor: UIColor.Signal.link],
             forSubstring: learnMoreText
         )
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.attributedText = attributedString
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLearnMore)))
-        addArrangedSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(label)
+
+        addConstraints([
+            label.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            label.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+        ])
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return .zero
     }
 
     @objc

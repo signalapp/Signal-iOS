@@ -37,7 +37,7 @@ public struct MessageRequestType: Equatable {
 
 // MARK: -
 
-class MessageRequestView: UIStackView {
+class MessageRequestView: ConversationBottomPanelView {
 
     enum LocalizedStrings {
         static let block = OWSLocalizedString(
@@ -109,32 +109,32 @@ class MessageRequestView: UIStackView {
 
         super.init(frame: .zero)
 
-        // We want the background to extend to the bottom of the screen
-        // behind the safe area, so we add that inset to our bottom inset
-        // instead of pinning this view to the safe area
-        let safeAreaInset = safeAreaInsets.bottom
+        let arrangedSubviews: [UIView] = {
+            switch mode {
+            case .none:
+                owsFailDebug("Invalid mode.")
+                return []
+            case .contactOrGroupRequest:
+                return [ prepareMessageRequestPrompt(),
+                         prepareMessageRequestButtons() ]
+            case .groupInviteRequest:
+                return [ prepareGroupV2InvitePrompt(),
+                         prepareGroupV2InviteButtons() ]
+            }
+        }()
 
-        autoresizingMask = .flexibleHeight
+        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(stackView)
 
-        axis = .vertical
-        spacing = 11
-        layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
-        isLayoutMarginsRelativeArrangement = true
-
-        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
-        addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
-
-        switch mode {
-        case .none:
-            owsFailDebug("Invalid mode.")
-        case .contactOrGroupRequest:
-            addArrangedSubview(prepareMessageRequestPrompt())
-            addArrangedSubview(prepareMessageRequestButtons())
-        case .groupInviteRequest:
-            addArrangedSubview(prepareGroupV2InvitePrompt())
-            addArrangedSubview(prepareGroupV2InviteButtons())
-        }
+        addConstraints([
+            stackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+        ])
     }
 
     public static func messageRequestType(forThread thread: TSThread,
@@ -171,10 +171,6 @@ class MessageRequestView: UIStackView {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return .zero
     }
 
     // MARK: - Message Request
@@ -280,100 +276,67 @@ class MessageRequestView: UIStackView {
 
         if isThreadBlocked {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.delete,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.delete, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapDelete()
                 }
             )
             if !hasReportedSpam {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.report,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.report, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapReport()
                     }
                 )
             }
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.unblock,
-                    titleColor: Theme.primaryTextColor
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.unblock) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 }
             )
         } else if isThreadFromHiddenRecipient {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.block,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.block, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 }
             )
             if !hasReportedSpam {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.report,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.report, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapReport()
                     }
                 )
             } else {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.delete,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.delete, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapDelete()
                     }
                 )
             }
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.accept,
-                    titleColor: Theme.primaryTextColor
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.accept) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
                 }
             )
         } else if hasSentMessages {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.block,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.block, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 }
             )
             if !hasReportedSpam {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.report,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.report, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapReport()
                     }
                 )
             } else {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.delete,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.delete, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapDelete()
                     }
                 )
             }
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.continue,
-                    titleColor: Theme.primaryTextColor
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.continue) { [weak self] in
                     // This is the same action as accepting the message request, but displays
                     // with slightly different visuals if the user has already been messaging
                     // this user in the past but didn't share their profile.
@@ -382,37 +345,25 @@ class MessageRequestView: UIStackView {
             )
         } else {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.block,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.block, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 }
             )
             if !hasReportedSpam {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.report,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.report, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapReport()
                     }
                 )
             } else {
                 buttons.append(
-                    prepareButton(
-                        title: LocalizedStrings.delete,
-                        titleColor: .ows_accentRed
-                    ) { [weak self] in
+                    prepareButton(title: LocalizedStrings.delete, destructive: true) { [weak self] in
                         self?.delegate?.messageRequestViewDidTapDelete()
                     }
                 )
             }
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.accept,
-                    titleColor: Theme.primaryTextColor
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.accept) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
                 }
             )
@@ -443,39 +394,27 @@ class MessageRequestView: UIStackView {
         var buttons = [UIView]()
 
         buttons.append(
-            prepareButton(
-                title: LocalizedStrings.block,
-                titleColor: .ows_accentRed
-            ) { [weak self] in
+            prepareButton(title: LocalizedStrings.block, destructive: true) { [weak self] in
                 self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
             }
         )
 
         if !hasReportedSpam {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.report,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.report, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapReport()
                 }
             )
         } else {
             buttons.append(
-                prepareButton(
-                    title: LocalizedStrings.delete,
-                    titleColor: .ows_accentRed
-                ) { [weak self] in
+                prepareButton(title: LocalizedStrings.delete, destructive: true) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapDelete()
                 }
             )
         }
 
         buttons.append(
-            prepareButton(
-                title: LocalizedStrings.accept,
-                titleColor: Theme.primaryTextColor
-            ) { [weak self] in
+            prepareButton(title: LocalizedStrings.accept) { [weak self] in
                 self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
             }
         )
@@ -484,12 +423,20 @@ class MessageRequestView: UIStackView {
 
     // MARK: -
 
-    private func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSRoundedButton {
-        let button = OWSRoundedButton(title: title, block: touchHandler)
-        button.setTitleColor(titleColor, for: .normal)
-        button.titleLabel?.font = .dynamicTypeHeadlineClamped
-        button.dimsWhenHighlighted = true
-        button.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
+    private func prepareButton(
+        title: String,
+        destructive: Bool = false,
+        actionBlock: @escaping () -> Void
+    ) -> UIButton {
+        let button = UIButton(
+            configuration: .mediumSecondary(title: title),
+            primaryAction: UIAction { _ in
+                actionBlock()
+            }
+        )
+        if destructive {
+            button.configuration?.baseForegroundColor = .Signal.red
+        }
         return button
     }
 
@@ -527,8 +474,9 @@ class MessageRequestView: UIStackView {
                     .font(.dynamicTypeSubheadlineClamped)
                 )
             ])
+            .styled(with: .alignment(.center))
         } else {
-            textView.attributedText = attributedString
+            textView.attributedText = attributedString.styled(with: .alignment(.center))
         }
         return textView
     }

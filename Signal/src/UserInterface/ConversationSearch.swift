@@ -149,7 +149,7 @@ protocol SearchResultsBarDelegate: AnyObject {
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public class SearchResultsBar: UIView {
+public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGuide {
 
     weak var resultsBarDelegate: SearchResultsBarDelegate?
 
@@ -158,43 +158,58 @@ public class SearchResultsBar: UIView {
 
     let labelItem = UIBarButtonItem(title: nil, style: .plain, target: nil, action: nil)
     let toolbar = UIToolbar.clear()
+    let contentLayoutGuide = UILayoutGuide()
 
     var resultSet: ConversationScreenSearchResultSet?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.layoutMargins = .zero
+        layoutMargins = .zero
 
-        // When presenting or dismissing the keyboard, there may be a slight
-        // gap between the keyboard and the bottom of the input bar during
-        // the animation. Extend the background below the toolbar's bounds
-        // by this much to mask that extra space.
-        let backgroundExtension: CGFloat = 100
+        let isLegacyLayout: Bool = if #unavailable(iOS 26) { true } else { false }
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            self.backgroundColor = Theme.toolbarBackgroundColor
+        addLayoutGuide(contentLayoutGuide)
+        addConstraints([
+            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            contentLayoutGuide.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            contentLayoutGuide.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            {
+                let c = contentLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+                c.priority = .defaultLow
+                return c
+            }()
+        ])
 
-            let extendedBackground = UIView()
-            extendedBackground.backgroundColor = Theme.toolbarBackgroundColor
-            addSubview(extendedBackground)
-            extendedBackground.autoPinWidthToSuperview()
-            extendedBackground.autoPinEdge(.top, to: .bottom, of: self)
-            extendedBackground.autoSetDimension(.height, toSize: backgroundExtension)
-        } else {
-            let alpha: CGFloat = OWSNavigationBar.backgroundBlurMutingFactor
-            backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(alpha)
+        if isLegacyLayout {
+            if UIAccessibility.isReduceTransparencyEnabled {
+                backgroundColor = Theme.toolbarBackgroundColor
 
-            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-            blurEffectView.layer.zPosition = -1
-            addSubview(blurEffectView)
-            blurEffectView.autoPinWidthToSuperview()
-            blurEffectView.autoPinEdge(toSuperviewEdge: .top)
-            blurEffectView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -backgroundExtension)
+                let extendedBackground = UIView()
+                extendedBackground.backgroundColor = Theme.toolbarBackgroundColor
+                addSubview(extendedBackground)
+                extendedBackground.autoPinEdgesToSuperviewEdges()
+            } else {
+                let alpha: CGFloat = OWSNavigationBar.backgroundBlurMutingFactor
+                backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(alpha)
+
+                let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
+                blurEffectView.layer.zPosition = -1
+                addSubview(blurEffectView)
+                blurEffectView.autoPinEdgesToSuperviewEdges()
+            }
         }
 
         addSubview(toolbar)
-        toolbar.autoPinEdgesToSuperviewMargins()
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        let vMargin: CGFloat = isLegacyLayout ? 0 : 6
+        let hMargin: CGFloat = 0
+        addConstraints([
+            toolbar.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor, constant: vMargin),
+            toolbar.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor, constant: hMargin),
+            toolbar.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor, constant: -hMargin),
+            toolbar.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -vMargin),
+        ])
 
         let leftExteriorChevronMargin: CGFloat
         let leftInteriorChevronMargin: CGFloat
@@ -206,18 +221,28 @@ public class SearchResultsBar: UIView {
             leftInteriorChevronMargin = 8
         }
 
-        showLessRecentButton = UIBarButtonItem(image: Theme.iconImage(.chevronUp), style: .plain, target: self, action: #selector(didTapShowLessRecent))
+        showLessRecentButton = UIBarButtonItem(
+            image: Theme.iconImage(.chevronUp),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapShowLessRecent()
+            }
+        )
         showLessRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftExteriorChevronMargin, bottom: 2, right: leftInteriorChevronMargin)
-        showLessRecentButton.tintColor = Theme.accentBlueColor
 
-        showMoreRecentButton = UIBarButtonItem(image: Theme.iconImage(.chevronDown), style: .plain, target: self, action: #selector(didTapShowMoreRecent))
+        showMoreRecentButton = UIBarButtonItem(
+            image: Theme.iconImage(.chevronDown),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapShowMoreRecent()
+            }
+        )
         showMoreRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftInteriorChevronMargin, bottom: 2, right: leftExteriorChevronMargin)
-        showMoreRecentButton.tintColor = Theme.accentBlueColor
+
+        if isLegacyLayout {
+            showLessRecentButton.tintColor = .Signal.accent
+            showMoreRecentButton.tintColor = .Signal.accent
+        }
 
         toolbar.items = [showLessRecentButton, showMoreRecentButton, .flexibleSpace(), labelItem, .flexibleSpace()]
-
-        self.autoresizingMask = .flexibleHeight
-        self.translatesAutoresizingMaskIntoConstraints = false
 
         updateBarItems()
     }
@@ -226,7 +251,6 @@ public class SearchResultsBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     private func didTapShowLessRecent() {
         Logger.debug("")
         guard let resultSet = resultSet else {
@@ -250,7 +274,6 @@ public class SearchResultsBar: UIView {
         resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, resultSet: resultSet)
     }
 
-    @objc
     private func didTapShowMoreRecent() {
         Logger.debug("")
         guard let resultSet = resultSet else {
@@ -296,7 +319,7 @@ public class SearchResultsBar: UIView {
     }
 
     func updateBarItems() {
-        guard let resultSet = resultSet else {
+        guard let resultSet else {
             labelItem.title = nil
             showMoreRecentButton.isEnabled = false
             showLessRecentButton.isEnabled = false
@@ -309,7 +332,7 @@ public class SearchResultsBar: UIView {
             let format = OWSLocalizedString("CONVERSATION_SEARCH_RESULTS_%d_%d", tableName: "PluralAware",
                                            comment: "keyboard toolbar label when more than one or more messages matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
 
-            guard let currentIndex = currentIndex else {
+            guard let currentIndex else {
                 owsFailDebug("currentIndex was unexpectedly nil")
                 return
             }

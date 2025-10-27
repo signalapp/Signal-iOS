@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class BlockingAnnouncementOnlyView: UIStackView {
+class BlockingAnnouncementOnlyView: ConversationBottomPanelView {
 
     private let thread: TSThread
     private let forceDarkMode: Bool
@@ -25,26 +25,9 @@ class BlockingAnnouncementOnlyView: UIStackView {
 
         super.init(frame: .zero)
 
-        createDefaultContents()
-    }
-
-    private func createDefaultContents() {
-        // We want the background to extend to the bottom of the screen
-        // behind the safe area, so we add that inset to our bottom inset
-        // instead of pinning this view to the safe area
-        let safeAreaInset = safeAreaInsets.bottom
-
-        autoresizingMask = .flexibleHeight
-
-        axis = .vertical
-        spacing = 11
-        layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
-        isLayoutMarginsRelativeArrangement = true
-        alignment = .fill
-
-        let blurView = UIVisualEffectView(effect: forceDarkMode ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect)
-        addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
+        if forceDarkMode {
+            overrideUserInterfaceStyle = .dark
+        }
 
         let format = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT",
                                        comment: "Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}.")
@@ -52,28 +35,26 @@ class BlockingAnnouncementOnlyView: UIStackView {
                                            comment: "Label for group administrators in the 'announcement-only' group UI.")
         let text = String(format: format, adminsText)
         let attributedString = NSMutableAttributedString(string: text)
-        attributedString.setAttributes([
-            .foregroundColor: forceDarkMode ? .ows_accentBlueDark : Theme.accentBlueColor
-        ],
-        forSubstring: adminsText)
+        attributedString.setAttributes([ .foregroundColor: UIColor.Signal.link ], forSubstring: adminsText)
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.attributedText = attributedString
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapContactAdmins)))
-        addArrangedSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(label)
 
-        let lineView = UIView()
-        lineView.backgroundColor = forceDarkMode ? .ows_gray75 : Theme.hairlineColor
-        addSubview(lineView)
-        lineView.autoSetDimension(.height, toSize: 1)
-        lineView.autoPinWidthToSuperview()
-        lineView.autoPinEdge(toSuperviewEdge: .top)
+        addConstraints([
+            label.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            label.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+        ])
     }
 
     private func fetchGroupAdminAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
@@ -93,10 +74,6 @@ class BlockingAnnouncementOnlyView: UIStackView {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return .zero
     }
 
     // MARK: -

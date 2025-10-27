@@ -78,7 +78,7 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         // Don't update the content insets if an interactive pop is in progress
-        guard let navigationController = self.navigationController else {
+        guard let navigationController else {
             return
         }
         if let interactivePopGestureRecognizer = navigationController.interactivePopGestureRecognizer {
@@ -95,7 +95,7 @@ extension ConversationViewController {
         let oldInsets = collectionView.contentInset
         var newInsets = oldInsets
 
-        newInsets.bottom = keyboardLayoutGuide.layoutFrame.height - view.safeAreaInsets.bottom + (bottomBar.frame.height - bottomBar.safeAreaInsets.bottom)
+        newInsets.bottom = bottomBarContainer.frame.height - bottomBarContainer.safeAreaInsets.bottom
         newInsets.top = (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom
@@ -115,12 +115,15 @@ extension ConversationViewController {
             self.collectionView.scrollIndicatorInsets = newInsets
         }
 
+        // If content inset didn't change, no need to update content offset.
+        guard didChangeInsets else { return }
+
+        // UIKit updates collection view's scroll position when user drags with the keyboard
+        // We don't need to do anything.
+        guard !collectionView.isDragging else { return }
+
         // Adjust content offset to prevent the presented keyboard from obscuring content.
-        if !didChangeInsets {
-            // Do nothing.
-            //
-            // If content inset didn't change, no need to update content offset.
-        } else if !hasAppearedAndHasAppliedFirstLoad {
+        if !hasAppearedAndHasAppliedFirstLoad {
             // Do nothing.
         } else if isPresentingContextMenu {
             // Do nothing

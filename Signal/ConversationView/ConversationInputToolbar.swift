@@ -62,13 +62,20 @@ protocol ConversationInputToolbarDelegate: AnyObject {
     func showUnblockConversationUI(completion: ((Bool) -> Void)?)
 }
 
-public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
+protocol ConversationInputPanelWithContentLayoutGuide {
+    /// View controller should use this layout guide to position content above the keyboard.
+    var contentLayoutGuide: UILayoutGuide { get }
+}
+
+public class ConversationInputToolbar: UIView, ConversationInputPanelWithContentLayoutGuide, QuotedReplyPreviewDelegate {
 
     private let spoilerState: SpoilerRenderState
 
     private let mediaCache: CVMediaCache
 
     private weak var inputToolbarDelegate: ConversationInputToolbarDelegate?
+
+    public let contentLayoutGuide = UILayoutGuide()
 
     init(
         spoilerState: SpoilerRenderState,
@@ -116,12 +123,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }
 
     // MARK: Layout
-
-    public override var intrinsicContentSize: CGSize {
-        // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
-        // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
-        .zero
-    }
 
     public override var frame: CGRect {
         didSet {
@@ -515,7 +516,18 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // to ensure horizontal stack views layout left-to-right.
         semanticContentAttribute = .forceLeftToRight
 
-        autoresizingMask = .flexibleHeight
+        // `contentLayoutGuide` defines area where all the content lives.
+        addLayoutGuide(contentLayoutGuide)
+        addConstraints([
+            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
+            {
+                let c = contentLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+                c.priority = .defaultLow
+                return c
+            }()
+        ])
 
         // "Suggested Stickers" horizontal list view will be placed in a wrapper view to allow for slide in / slide out animation.
         updateSuggestedStickersPanelConstraints()
@@ -550,24 +562,21 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         outerVStackSuperview.addSubview(outerVStack)
         outerVStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            outerVStack.topAnchor.constraint(equalTo: outerVStackSuperview.topAnchor),
-            outerVStack.leadingAnchor.constraint(equalTo: outerVStackSuperview.leadingAnchor),
-            outerVStack.trailingAnchor.constraint(equalTo: outerVStackSuperview.trailingAnchor),
-            outerVStack.bottomAnchor.constraint(equalTo: outerVStackSuperview.safeAreaLayoutGuide.bottomAnchor),
+            outerVStack.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            outerVStack.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            outerVStack.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            outerVStack.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
         ])
 
         // Background needed on pre-iOS 26 devices.
+        // Background is constrained to `contentViewWrapperView` on all edges except for bottom.
+        // Background is constrained to `self.bottom` to cover any safe area gaps.
         if !iOS26Layout {
-            // When presenting or dismissing the keyboard, there may be a slight
-            // gap between the keyboard and the bottom of the input bar during
-            // the animation. Extend the background below the toolbar's bounds
-            // by this much to mask that extra space.
-            let backgroundExtension: CGFloat = 500
-            let extendedBackgroundView = UIView()
+            let backgroundView = UIView()
             if UIAccessibility.isReduceTransparencyEnabled {
-                extendedBackgroundView.backgroundColor = Theme.toolbarBackgroundColor
+                backgroundView.backgroundColor = Theme.toolbarBackgroundColor
             } else {
-                extendedBackgroundView.backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+                backgroundView.backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
                 let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
                 // Alter the visual effect view's tint to match our background color
@@ -577,24 +586,25 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 if let tintingView = blurEffectView.subviews.first(where: {
                     String(describing: type(of: $0)) == "_UIVisualEffectSubview"
                 }) {
-                    tintingView.backgroundColor = extendedBackgroundView.backgroundColor
+                    tintingView.backgroundColor = backgroundView.backgroundColor
                 }
-                extendedBackgroundView.addSubview(blurEffectView)
+                backgroundView.addSubview(blurEffectView)
                 blurEffectView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    blurEffectView.topAnchor.constraint(equalTo: extendedBackgroundView.topAnchor),
-                    blurEffectView.leadingAnchor.constraint(equalTo: extendedBackgroundView.leadingAnchor),
-                    blurEffectView.trailingAnchor.constraint(equalTo: extendedBackgroundView.trailingAnchor),
-                    blurEffectView.bottomAnchor.constraint(equalTo: extendedBackgroundView.bottomAnchor),
+                    blurEffectView.topAnchor.constraint(equalTo: backgroundView.topAnchor),
+                    blurEffectView.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor),
+                    blurEffectView.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor),
+                    blurEffectView.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor),
                 ])
             }
-            contentViewWrapperView.addSubview(extendedBackgroundView)
-            extendedBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+            contentViewWrapperView.addSubview(backgroundView)
+            backgroundView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                extendedBackgroundView.topAnchor.constraint(equalTo: contentViewWrapperView.topAnchor),
-                extendedBackgroundView.leadingAnchor.constraint(equalTo: contentViewWrapperView.leadingAnchor),
-                extendedBackgroundView.trailingAnchor.constraint(equalTo: contentViewWrapperView.trailingAnchor),
-                extendedBackgroundView.bottomAnchor.constraint(equalTo: contentViewWrapperView.bottomAnchor, constant: backgroundExtension)
+                backgroundView.topAnchor.constraint(equalTo: contentViewWrapperView.topAnchor),
+                backgroundView.leadingAnchor.constraint(equalTo: contentViewWrapperView.leadingAnchor),
+                backgroundView.trailingAnchor.constraint(equalTo: contentViewWrapperView.trailingAnchor),
+                // Note different anchor here.
+                backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
         }
 
