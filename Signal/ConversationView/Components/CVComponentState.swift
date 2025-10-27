@@ -1769,7 +1769,7 @@ fileprivate extension CVComponentState.Builder {
 
         self.poll = Poll(state: state)
 
-        if poll.totalVotes() > 0 {
+        if poll.totalVoters() > 0 {
             let title = poll.isEnded ? OWSLocalizedString(
                 "POLL_BUTTON_VIEW_RESULTS",
                 comment: "Button to view poll results"

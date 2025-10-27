@@ -413,7 +413,7 @@ public class CVPollView: ManualStackView {
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
                 pollOption: option,
-                totalVotes: poll.totalVotes(),
+                totalVoters: poll.totalVoters(),
                 localUserVoteState: localUserVoteState(localAci: state.localAci, option: option),
                 pollVoteHandler: { [weak self, weak componentDelegate] voteType in
                     self?.handleVote(
@@ -497,7 +497,7 @@ public class CVPollView: ManualStackView {
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
             pollOption: OWSPollOption,
-            totalVotes: Int,
+            totalVoters: Int,
             localUserVoteState: VoteState,
             pollVoteHandler: @escaping (VoteType) -> Void,
             pollIsEnded: Bool
@@ -513,7 +513,7 @@ public class CVPollView: ManualStackView {
                 option: pollOption.text,
                 index: pollOption.optionIndex,
                 votes: pollOption.acis.count,
-                totalVotes: totalVotes,
+                totalVoters: totalVoters,
                 pollIsEnded: pollIsEnded
             )
         }
@@ -536,7 +536,7 @@ public class CVPollView: ManualStackView {
 
         private func buildProgressBar(
             votes: Int,
-            totalVotes: Int,
+            totalVoters: Int,
             foregroundColor: UIColor,
             backgroundColor: UIColor,
         ) {
@@ -572,7 +572,7 @@ public class CVPollView: ManualStackView {
                     return
                 }
 
-                let percent = Float(votes) / Float(totalVotes)
+                let percent = Float(votes) / Float(totalVoters)
 
                 // The progress bar should start under the text, not the checkbox, so we need to shift it
                 // over to be under the optionText, and remove that offset from the total size.
@@ -630,7 +630,7 @@ public class CVPollView: ManualStackView {
             option: String,
             index: UInt32,
             votes: Int,
-            totalVotes: Int,
+            totalVoters: Int,
             pollIsEnded: Bool
         ) {
             checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.circle))))
@@ -693,7 +693,7 @@ public class CVPollView: ManualStackView {
 
             buildProgressBar(
                 votes: votes,
-                totalVotes: totalVotes,
+                totalVoters: totalVoters,
                 foregroundColor: configurator.colorConfigurator.voteProgressForegroundColor,
                 backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor
             )

@@ -213,7 +213,7 @@ struct PollManagerTest {
             #expect(owsPoll!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll!.allowsMultiSelect == false)
             #expect(owsPoll!.isEnded == true)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
         }
     }
 
@@ -270,7 +270,7 @@ struct PollManagerTest {
             #expect(owsPoll!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll!.allowsMultiSelect == false)
             #expect(owsPoll!.isEnded == true)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
         }
     }
 
@@ -328,7 +328,7 @@ struct PollManagerTest {
             #expect(owsPoll!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll!.allowsMultiSelect == false)
             #expect(owsPoll!.isEnded == false)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
             #expect(wafflesOption!.acis.contains(voterAci))
@@ -457,7 +457,7 @@ struct PollManagerTest {
             #expect(owsPoll!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll!.allowsMultiSelect == false)
             #expect(owsPoll!.isEnded == false)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 2)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.contains(pancakeVoterAci))
@@ -570,7 +570,7 @@ struct PollManagerTest {
             #expect(owsPoll!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll!.allowsMultiSelect == true)
             #expect(owsPoll!.isEnded == false)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.contains(voterAci))
@@ -597,7 +597,7 @@ struct PollManagerTest {
 
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.contains(voterAci))
@@ -669,7 +669,7 @@ struct PollManagerTest {
 
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.contains(voterAci))
@@ -741,7 +741,7 @@ struct PollManagerTest {
 
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.isEmpty)
@@ -768,7 +768,7 @@ struct PollManagerTest {
 
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
 
             let pancakesOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.isEmpty)
@@ -895,7 +895,7 @@ struct PollManagerTest {
             #expect(owsPoll1!.sortedOptions()[1].text == "waffles")
             #expect(owsPoll1!.allowsMultiSelect == false)
             #expect(owsPoll1!.isEnded == false)
-            #expect(owsPoll1!.totalVotes() == 2)
+            #expect(owsPoll1!.totalVoters() == 2)
 
             let pancakesOption = owsPoll1!.optionForIndex(optionIndex: 0)
             #expect(pancakesOption!.acis.contains(user1Aci))
@@ -910,7 +910,7 @@ struct PollManagerTest {
             #expect(owsPoll2!.sortedOptions()[1].text == "cat")
             #expect(owsPoll2!.allowsMultiSelect == false)
             #expect(owsPoll2!.isEnded == false)
-            #expect(owsPoll2!.totalVotes() == 2)
+            #expect(owsPoll2!.totalVoters() == 2)
 
             let dogOption = owsPoll2!.optionForIndex(optionIndex: 0)
             #expect(dogOption!.acis == [user1Aci, user2Aci])
@@ -966,7 +966,7 @@ struct PollManagerTest {
             let owsPoll = try pollMessageManager.buildPoll(message: incomingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
             #expect(owsPoll!.isEnded == true)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
         }
     }
 
@@ -1013,7 +1013,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
         }
 
         _ = try db.write { tx in
@@ -1029,7 +1029,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1050,7 +1050,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1070,7 +1070,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
         }
     }
 
@@ -1126,7 +1126,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1147,7 +1147,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1170,7 +1170,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1203,7 +1203,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis.isEmpty)
@@ -1265,7 +1265,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
         }
 
         _ = try db.write { tx in
@@ -1291,7 +1291,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1353,7 +1353,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 0)
+            #expect(owsPoll!.totalVoters() == 0)
         }
 
         // Send vote count 2 first, state should be updated
@@ -1370,7 +1370,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1393,7 +1393,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [pollAuthorAci])
@@ -1478,7 +1478,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: message, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [voteAuthorAci])
@@ -1532,7 +1532,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: message, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis.isEmpty)
@@ -1617,7 +1617,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: message, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [voteAuthorAci])
@@ -1671,7 +1671,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: message, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 2)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [voteAuthorAci])
@@ -1756,7 +1756,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis.isEmpty)
@@ -1860,7 +1860,7 @@ struct PollManagerTest {
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             #expect(owsPoll!.question == question)
-            #expect(owsPoll!.totalVotes() == 1)
+            #expect(owsPoll!.totalVoters() == 1)
 
             let pancakeOption = owsPoll!.optionForIndex(optionIndex: 0)
             #expect(pancakeOption!.acis == [voteAuthorAci])

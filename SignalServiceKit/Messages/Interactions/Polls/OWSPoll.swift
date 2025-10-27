@@ -87,8 +87,8 @@ public struct OWSPoll: Equatable {
             && lhs.options == rhs.options
     }
 
-    public func totalVotes() -> Int {
-        return options.values.reduce(0) { $0 + $1.acis.count }
+    public func totalVoters() -> Int {
+        return Set(options.values.flatMap { $0.acis }).count
     }
 
     public func sortedOptions() -> [OWSPollOption] {
