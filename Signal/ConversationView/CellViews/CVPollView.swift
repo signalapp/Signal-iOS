@@ -415,6 +415,8 @@ public class CVPollView: ManualStackView {
                 pollOption: option,
                 totalVoters: poll.totalVoters(),
                 localUserVoteState: localUserVoteState(localAci: state.localAci, option: option),
+                pollIsEnded: poll.isEnded,
+                pendingVotesCount: poll.pendingVotesCount(),
                 pollVoteHandler: { [weak self, weak componentDelegate] voteType in
                     self?.handleVote(
                         for: option,
@@ -422,8 +424,7 @@ public class CVPollView: ManualStackView {
                         voteType: voteType,
                         delegate: componentDelegate
                     )
-                },
-                pollIsEnded: poll.isEnded
+                }
             )
             optionSubviews.append(row)
         }
@@ -464,8 +465,6 @@ public class CVPollView: ManualStackView {
         pollLabel.text = nil
         chooseLabel.text = nil
         subtitleStack.reset()
-
-        // TODO: reset everything else
     }
 
     // MARK: - PollOptionView
@@ -478,6 +477,8 @@ public class CVPollView: ManualStackView {
 
     class PollOptionView: ManualStackView {
         typealias OWSPollOption = OWSPoll.OWSPollOption
+
+        static let pendingDelay: TimeInterval = 0.3
 
         let pollVoteHandler: (VoteType) -> Void
 
@@ -499,8 +500,9 @@ public class CVPollView: ManualStackView {
             pollOption: OWSPollOption,
             totalVoters: Int,
             localUserVoteState: VoteState,
+            pollIsEnded: Bool,
+            pendingVotesCount: Int,
             pollVoteHandler: @escaping (VoteType) -> Void,
-            pollIsEnded: Bool
         ) {
             self.pollVoteHandler = pollVoteHandler
             self.localUserVoteState = localUserVoteState
@@ -514,7 +516,8 @@ public class CVPollView: ManualStackView {
                 index: pollOption.optionIndex,
                 votes: pollOption.acis.count,
                 totalVoters: totalVoters,
-                pollIsEnded: pollIsEnded
+                pollIsEnded: pollIsEnded,
+                pendingVotesCount: pendingVotesCount
             )
         }
 
@@ -630,7 +633,8 @@ public class CVPollView: ManualStackView {
             index: UInt32,
             votes: Int,
             totalVoters: Int,
-            pollIsEnded: Bool
+            pollIsEnded: Bool,
+            pendingVotesCount: Int
         ) {
             checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.circle))))
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapOption)))
@@ -642,7 +646,17 @@ public class CVPollView: ManualStackView {
 
                 checkbox.tintColor = configurator.colorConfigurator.checkboxSelectedColor
             case .pendingVote, .pendingUnvote:
-                displayPendingUI(type: localUserVoteState)
+                // If there's multiple votes pending, don't delay the pending UI because it will pause the
+                // existing animations and restart them after the delay.
+                if pendingVotesCount > 1 {
+                    self.displayPendingUI(type: self.localUserVoteState)
+                    checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
+                    break
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + Self.pendingDelay) { [weak self] in
+                    guard let self else { return }
+                    self.displayPendingUI(type: self.localUserVoteState)
+                }
                 checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
             case .unvote:
                 checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor

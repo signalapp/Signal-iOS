@@ -2065,7 +2065,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 archivedPaymentView,
                 contactShareView,
                 bottomButtonsView,
-                bottomLabelView
+                bottomLabelView,
+                pollView
             ].compactMap { $0 }
         }
 

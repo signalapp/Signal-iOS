@@ -98,4 +98,8 @@ public struct OWSPoll: Equatable {
     public func optionForIndex(optionIndex: OptionIndex) -> OWSPollOption? {
         return options[optionIndex]
     }
+
+    public func pendingVotesCount() -> Int {
+        return options.count { $0.value.latestPendingState != nil }
+    }
 }
