@@ -515,6 +515,23 @@ public final class MessageReceiver {
 
                         if let targetMessage {
                             SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                            guard let groupThread = targetMessage.thread(tx: tx) as? TSGroupThread else {
+                                throw OWSAssertionError("Message thread is not a group thread")
+                            }
+
+                            guard let pollQuestion = targetMessage.body?.nilIfEmpty else {
+                                throw OWSAssertionError("Missing poll question")
+                            }
+
+                            DependenciesBridge.shared.pollMessageManager.insertInfoMessageForEndPoll(
+                                timestamp: Date().ows_millisecondsSince1970,
+                                groupThread: groupThread,
+                                targetPollTimestamp: targetMessage.timestamp,
+                                pollQuestion: pollQuestion,
+                                terminateAuthor: localIdentifiers.aci,
+                                tx: tx
+                            )
                         }
                     } catch {
                         Logger.error("Failed to terminate poll \(error)")
