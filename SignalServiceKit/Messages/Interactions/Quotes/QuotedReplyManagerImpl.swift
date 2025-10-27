@@ -108,7 +108,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodySource: .remote,
                 receivedQuotedAttachmentInfo: nil,
                 isGiftBadge: true,
-                isTargetMessageViewOnce: false
+                isTargetMessageViewOnce: false,
+                isPoll: false
             ))
         }
 
@@ -168,7 +169,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodySource: .remote,
                 receivedQuotedAttachmentInfo: attachmentInfo?.info,
                 isGiftBadge: false,
-                isTargetMessageViewOnce: false
+                isTargetMessageViewOnce: false,
+                isPoll: false
             )
         }
 
@@ -214,13 +216,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodySource: .local,
                 receivedQuotedAttachmentInfo: nil,
                 isGiftBadge: false,
-                isTargetMessageViewOnce: true
+                isTargetMessageViewOnce: true,
+                isPoll: false
             ))
         }
 
         let body: String?
         let bodyRanges: MessageBodyRanges?
         var isGiftBadge: Bool
+        var isPoll: Bool
 
         if originalMessage is OWSPaymentMessage {
             // This really should recalculate the string from payment metadata.
@@ -228,16 +232,19 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             body = quoteProto.text
             bodyRanges = nil
             isGiftBadge = false
+            isPoll = false
         } else if let messageBody = originalMessage.body?.nilIfEmpty {
             body = messageBody
             bodyRanges = originalMessage.bodyRanges
             isGiftBadge = false
+            isPoll = originalMessage.isPoll
         } else if let contactName = originalMessage.contactShare?.name.displayName.nilIfEmpty {
             // Contact share bodies are special-cased in OWSQuotedReplyModel
             // We need to account for that here.
             body = "👤 " + contactName
             bodyRanges = nil
             isGiftBadge = false
+            isPoll = false
         } else if let storyReactionEmoji = originalMessage.storyReactionEmoji?.nilIfEmpty  {
             let formatString: String = {
                 if (authorAddress.isLocalAddress) {
@@ -255,10 +262,12 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             body = String(format: formatString, storyReactionEmoji)
             bodyRanges = nil
             isGiftBadge = false
+            isPoll = false
         } else {
             isGiftBadge = originalMessage.giftBadge != nil
             body = nil
             bodyRanges = nil
+            isPoll = false
         }
 
         let attachmentBuilder = self.attachmentBuilder(
@@ -285,7 +294,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodySource: .local,
                 receivedQuotedAttachmentInfo: attachmentInfo?.info,
                 isGiftBadge: isGiftBadge,
-                isTargetMessageViewOnce: false
+                isTargetMessageViewOnce: false,
+                isPoll: isPoll
             )
         }
 
@@ -536,6 +546,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return createDraftReply(content: .storyReactionEmoji(storyReactionEmoji))
         }
 
+        if originalMessage.isPoll {
+            guard let body = originalMessage.body else {
+                owsFailDebug("Poll message has no question body.")
+                return nil
+            }
+            return createDraftReply(content: .poll(body))
+        }
+
         return createTextDraftReplyOrNil()
     }
 
@@ -627,6 +645,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
                 originalMessageIsGiftBadge: draft.content.isGiftBadge,
                 originalMessageIsViewOnce: draft.content.isViewOnce,
+                originalMessageIsPoll: draft.content.isPoll,
                 threadUniqueId: draft.threadUniqueId,
                 quoteBody: draft.bodyForSending,
                 attachment: nil,
@@ -692,6 +711,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
             originalMessageIsGiftBadge: draft.content.isGiftBadge,
             originalMessageIsViewOnce: draft.content.isViewOnce,
+            originalMessageIsPoll: draft.content.isPoll,
             threadUniqueId: draft.threadUniqueId,
             quoteBody: draft.bodyForSending,
             attachment: quoteAttachment,
@@ -728,7 +748,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodySource: .remote,
                 receivedQuotedAttachmentInfo: nil,
                 isGiftBadge: false,
-                isTargetMessageViewOnce: false
+                isTargetMessageViewOnce: false,
+                isPoll: false
             ))
         }
 
@@ -742,7 +763,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 bodyRanges: body?.ranges,
                 quotedAttachmentForSending: attachmentInfo?.info,
                 isGiftBadge: draft.originalMessageIsGiftBadge,
-                isTargetMessageViewOnce: draft.originalMessageIsViewOnce
+                isTargetMessageViewOnce: draft.originalMessageIsViewOnce,
+                isPoll: draft.originalMessageIsPoll
             )
         }
 

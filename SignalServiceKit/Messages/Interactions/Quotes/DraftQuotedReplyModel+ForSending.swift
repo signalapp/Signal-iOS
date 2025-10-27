@@ -12,6 +12,7 @@ extension DraftQuotedReplyModel {
         public let originalMessageAuthorAddress: SignalServiceAddress
         public let originalMessageIsGiftBadge: Bool
         public let originalMessageIsViewOnce: Bool
+        public let originalMessageIsPoll: Bool
         public let threadUniqueId: String
 
         public let quoteBody: MessageBody?

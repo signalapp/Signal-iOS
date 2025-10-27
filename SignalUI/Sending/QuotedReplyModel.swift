@@ -68,6 +68,8 @@ public class QuotedReplyModel {
         /// Used if the story has expired; we do not retain a copy.
         case expiredStory
 
+        case poll(String)
+
         // MARK: - Convenience
 
         public var isGiftBadge: Bool {
@@ -82,6 +84,15 @@ public class QuotedReplyModel {
         public var isStory: Bool {
             switch self {
             case .mediaStory, .textStory, .expiredStory:
+                return true
+            default:
+                return false
+            }
+        }
+
+        public var isPoll: Bool {
+            switch self {
+            case .poll:
                 return true
             default:
                 return false
@@ -106,6 +117,8 @@ public class QuotedReplyModel {
                 return nil
             case .expiredStory:
                 return nil
+            case .poll:
+                return nil
             }
         }
 
@@ -126,6 +139,8 @@ public class QuotedReplyModel {
             case .textStory(_):
                 return nil
             case .expiredStory:
+                return nil
+            case .poll:
                 return nil
             }
         }
@@ -164,6 +179,8 @@ public class QuotedReplyModel {
                 ),
                 ranges: .empty
             )
+        case .poll(let pollQuestion):
+            return MessageBody(text: pollQuestion, ranges: .empty)
         }
     }
 
@@ -184,6 +201,8 @@ public class QuotedReplyModel {
         case .textStory(_):
             return nil
         case .expiredStory:
+            return nil
+        case .poll:
             return nil
         }
     }
@@ -206,6 +225,8 @@ public class QuotedReplyModel {
         case .textStory(_):
             return true
         case .expiredStory:
+            return false
+        case .poll:
             return false
         }
     }
@@ -344,6 +365,14 @@ public class QuotedReplyModel {
             return buildQuotedReplyModel(originalContent: .giftBadge)
         }
 
+        if quotedMessage.isPoll {
+            guard let pollQuestion = originalMessageBody?.text else {
+                owsFailDebug("Quoted message is poll but no question found")
+                return buildQuotedReplyModel(originalContent: .text(originalMessageBody))
+            }
+            return buildQuotedReplyModel(originalContent: .poll(pollQuestion))
+        }
+
         if quotedMessage.isTargetMessageViewOnce {
             return buildQuotedReplyModel(originalContent: .text(.init(
                 text: OWSLocalizedString(
@@ -480,7 +509,8 @@ extension QuotedReplyModel.OriginalContent: Equatable {
             return false
         case (.expiredStory, .expiredStory):
             return true
-
+        case (.poll, .poll):
+            return true
         case
             (.text, _),
             (.giftBadge, _),
@@ -489,7 +519,8 @@ extension QuotedReplyModel.OriginalContent: Equatable {
             (.attachment, _),
             (.mediaStory, _),
             (.textStory, _),
-            (.expiredStory, _):
+            (.expiredStory, _),
+            (.poll, _):
             return false
         }
     }

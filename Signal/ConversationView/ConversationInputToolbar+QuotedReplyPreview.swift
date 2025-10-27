@@ -222,7 +222,10 @@ private class QuotedMessageSnippetView: UIView {
         let label = UILabel()
 
         let attributedText: NSAttributedString
-        if let displayableQuotedText, !displayableQuotedText.displayTextValue.isEmpty {
+        if let displayableQuotedText,
+           !displayableQuotedText.displayTextValue.isEmpty,
+           !quotedMessage.content.isPoll
+        {
             let config = HydratedMessageBody.DisplayConfiguration.quotedReply(
                 font: Layout.quotedTextFont,
                 textColor: .fixed(.Signal.label)
@@ -271,6 +274,35 @@ private class QuotedMessageSnippetView: UIView {
                     .foregroundColor: UIColor.Signal.secondaryLabel
                 ]
             )
+        } else if quotedMessage.content.isPoll {
+            switch quotedMessage.content {
+            case .poll(let pollQuestion):
+                let pollIcon = SignalSymbol.poll.attributedString(dynamicTypeBaseSize: Layout.fileTypeFont.pointSize) + " "
+                let pollPrefix = OWSLocalizedString(
+                    "POLL_LABEL",
+                    comment: "Label specifying the message type as a poll"
+                ) + ": "
+
+                attributedText = pollIcon + NSAttributedString(
+                    string: pollPrefix + pollQuestion,
+                    attributes: [
+                        .font: Layout.fileTypeFont,
+                        .foregroundColor: UIColor.Signal.secondaryLabel
+                    ]
+                )
+            default:
+                owsFailDebug("Quoted message is poll but there's no poll")
+                attributedText = NSAttributedString(
+                    string: NSLocalizedString(
+                        "QUOTED_REPLY_TYPE_ATTACHMENT",
+                        comment: "Indicates this message is a quoted reply to an attachment of unknown type."
+                    ),
+                    attributes: [
+                        .font: Layout.fileTypeFont,
+                        .foregroundColor: UIColor.Signal.secondaryLabel
+                    ]
+                )
+            }
         } else {
             attributedText = NSAttributedString(
                 string: NSLocalizedString(
@@ -479,7 +511,7 @@ private class QuotedMessageSnippetView: UIView {
             imageView.contentMode = .scaleAspectFit
             thumbnailView = imageView
 
-        case .payment, .text, .viewOnce, .contactShare, .storyReactionEmoji:
+        case .payment, .text, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
             break
         }
 
@@ -581,7 +613,7 @@ private class QuotedMessageSnippetView: UIView {
             return (attachment.mimeType, reference.renderingFlag == .shouldLoop)
         case .edit(_, _, let innerContent):
             return mimeTypeAndIsLooping(innerContent)
-        case .giftBadge, .text, .payment, .attachmentStub, .viewOnce, .contactShare, .storyReactionEmoji:
+        case .giftBadge, .text, .payment, .attachmentStub, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
             return nil
         }
     }
@@ -635,7 +667,7 @@ private class QuotedMessageSnippetView: UIView {
             return reference.sourceFilename
         case .edit(_, _, let innerContent):
             return sourceFilenameForSnippet(innerContent)
-        case .giftBadge, .text, .payment, .contactShare, .viewOnce, .storyReactionEmoji:
+        case .giftBadge, .text, .payment, .contactShare, .viewOnce, .storyReactionEmoji, .poll:
             return nil
         }
     }

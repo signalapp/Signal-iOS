@@ -43,6 +43,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
             originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
             originalMessageIsGiftBadge: draft.content.isGiftBadge,
             originalMessageIsViewOnce: draft.content.isViewOnce,
+            originalMessageIsPoll: draft.content.isPoll,
             threadUniqueId: draft.threadUniqueId,
             quoteBody: draft.bodyForSending,
             attachment: nil,

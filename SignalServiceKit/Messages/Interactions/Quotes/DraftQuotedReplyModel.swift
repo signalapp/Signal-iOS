@@ -34,6 +34,8 @@ public class DraftQuotedReplyModel {
         /// The original message is a story reaction emoji
         case storyReactionEmoji(String)
 
+        case poll(String)
+
         // MARK: - Attachment types
 
         /// The original message had an attachment, but it could not
@@ -78,6 +80,15 @@ public class DraftQuotedReplyModel {
         public var isViewOnce: Bool {
             switch self {
             case .viewOnce:
+                return true
+            default:
+                return false
+            }
+        }
+
+        public var isPoll: Bool {
+            switch self {
+            case .poll:
                 return true
             default:
                 return false
@@ -231,6 +242,9 @@ public class DraftQuotedReplyModel {
                 emoji
             )
             return MessageBody(text: text, ranges: .empty)
+        case .poll(let pollQuestion):
+            // Poll question should be the message body of the draft reply.
+            return MessageBody(text: pollQuestion, ranges: .empty)
         }
     }
 }
@@ -248,7 +262,7 @@ extension DraftQuotedReplyModel: Equatable {
 extension DraftQuotedReplyModel.Content: Equatable {
     public static func == (lhs: DraftQuotedReplyModel.Content, rhs: DraftQuotedReplyModel.Content) -> Bool {
         switch (lhs, rhs) {
-        case (.giftBadge, .giftBadge), (.viewOnce, .viewOnce):
+        case (.giftBadge, .giftBadge), (.viewOnce, .viewOnce), (.poll, .poll):
             return true
         case let (.payment(lhsBody), .payment(rhsBody)):
             return lhsBody == rhsBody
@@ -281,6 +295,7 @@ extension DraftQuotedReplyModel.Content: Equatable {
             (.attachment, _),
             (.edit, _),
             (.storyReactionEmoji, _),
+            (.poll, _),
             (_, .giftBadge),
             (_, .payment),
             (_, .text),
@@ -289,7 +304,8 @@ extension DraftQuotedReplyModel.Content: Equatable {
             (_, .attachmentStub),
             (_, .attachment),
             (_, .edit),
-            (_, .storyReactionEmoji):
+            (_, .storyReactionEmoji),
+            (_, .poll):
             return false
         }
     }

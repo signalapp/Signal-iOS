@@ -120,7 +120,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
        quotedAttachmentForSending:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
-          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
+                           isPoll:(BOOL)isPoll;
 
 // used when receiving quoted messages. Do not call directly outside AttachmentManager.
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -130,7 +131,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
                        bodySource:(TSQuotedMessageContentSource)bodySource
      receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
-          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
+          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
+                           isPoll:(BOOL)isPoll;
 
 // used when restoring quoted messages from backups
 + (instancetype)quotedMessageFromBackupWithTargetMessageTimestamp:(nullable NSNumber *)timestamp

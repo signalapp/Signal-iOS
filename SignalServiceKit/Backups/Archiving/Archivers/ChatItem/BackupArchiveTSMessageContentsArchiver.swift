@@ -598,6 +598,8 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             quote.type = .giftBadge
         } else if quotedMessage.isTargetMessageViewOnce {
             quote.type = .viewOnce
+        } else if quotedMessage.isPoll {
+            quote.type = .poll
         } else {
             guard didArchiveText || didArchiveAttachments else {
                 // NORMAL-type quotes must have either text or attachments, lest

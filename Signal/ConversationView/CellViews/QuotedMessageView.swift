@@ -285,7 +285,19 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
             switch displayTextValue {
             case .text(let text):
-                labelText = .text(text)
+                if state.quotedReplyModel.originalContent.isPoll {
+                    let pollIcon = SignalSymbol.poll.attributedString(
+                        dynamicTypeBaseSize: quotedTextFont.pointSize
+                    ) + " "
+                    let pollPrefix = OWSLocalizedString(
+                        "POLL_LABEL",
+                        comment: "Label specifying the message type as a poll"
+                    ) + ": "
+
+                    labelText = .attributedText(pollIcon + NSAttributedString(string: pollPrefix + text))
+                } else {
+                    labelText = .text(text)
+                }
                 textAlignment = text.naturalTextAlignment
             case .attributedText(let attributedText):
                 let mutableText = NSMutableAttributedString(attributedString: attributedText)

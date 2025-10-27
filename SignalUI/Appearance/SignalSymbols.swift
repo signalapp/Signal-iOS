@@ -90,6 +90,7 @@ public enum SignalSymbol: Character {
     case play = "\u{E067}"
     case playSquare = "\u{E068}"
     case playRectangle = "\u{E069}"
+    case poll = "\u{E082}"
     case reply = "\u{E06D}"
     case safetyNumber = "\u{E06F}"
     case timer = "\u{E073}"
@@ -147,6 +148,8 @@ public enum SignalSymbol: Character {
         case light
         case regular
         case bold
+        case medium
+        case thin
 
         fileprivate var fontName: String {
             switch self {
@@ -156,6 +159,10 @@ public enum SignalSymbol: Character {
                 return "SignalSymbols-Regular"
             case .bold:
                 return "SignalSymbols-Bold"
+            case .medium:
+                return "SignalSymbols-Medium"
+            case .thin:
+                return "SignalSymbols-Thin"
             }
         }
 
