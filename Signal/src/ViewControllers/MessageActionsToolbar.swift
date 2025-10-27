@@ -245,7 +245,11 @@ public class MessageActionsToolbar: UIView {
         let labelTitle = String.localizedStringWithFormat(labelFormat, selectedCount)
         let label = UILabel()
         label.text = labelTitle
-        label.font = if #available(iOS 26, *) { UIFont.dynamicTypeHeadlineClamped } else { UIFont.dynamicTypeBodyClamped }
+        if #available(iOS 26, *) {
+            label.font = UIFont.dynamicTypeHeadlineClamped.monospaced()
+        } else {
+            label.font = UIFont.dynamicTypeBodyClamped.monospaced()
+        }
         label.textColor = .Signal.label
         label.textAlignment = .center
         label.sizeToFit()
