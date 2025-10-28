@@ -265,17 +265,21 @@ public final class ConversationViewController: OWSViewController {
         self.view.addSubview(bottomBarContainer)
         bottomBarContainer.autoPinWidthToSuperview()
         bottomBarContainer.autoPinEdge(toSuperviewEdge: .bottom)
+
+        selectionToolbar = self.buildSelectionToolbar()
+
 #if compiler(>=6.2)
         // Obscures content underneath bottom bar to improve legibility.
         if #available(iOS 26, *) {
             let scrollInteraction = UIScrollEdgeElementContainerInteraction()
             scrollInteraction.scrollView = collectionView
             scrollInteraction.edge = .bottom
-            bottomBarContainer.addInteraction(scrollInteraction)
+            if let selectionToolbar {
+                selectionToolbar.addInteraction(scrollInteraction)
+            }
+            searchController.resultsBar.addInteraction(scrollInteraction)
         }
 #endif
-
-        self.selectionToolbar = self.buildSelectionToolbar()
 
         // This should kick off the first load.
         owsAssertDebug(!self.hasRenderState)

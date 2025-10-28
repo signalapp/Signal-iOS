@@ -191,6 +191,16 @@ public extension ConversationViewController {
         let hadFocus = self.inputToolbar?.isInputViewFirstResponder ?? false
         self.inputToolbar = newInputToolbar
 
+#if compiler(>=6.2)
+        // Obscures content underneath bottom bar to improve legibility.
+        if #available(iOS 26, *) {
+            let scrollInteraction = UIScrollEdgeElementContainerInteraction()
+            scrollInteraction.scrollView = collectionView
+            scrollInteraction.edge = .bottom
+            newInputToolbar.addInteraction(scrollInteraction)
+        }
+#endif
+
         if hadFocus {
             self.inputToolbar?.beginEditingMessage()
         }

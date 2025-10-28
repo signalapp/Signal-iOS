@@ -164,7 +164,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             )
             button.configuration?.image = buttonImage
             if #available(iOS 26, *) {
-                button.configuration?.baseForegroundColor = .Signal.label
+                button.configuration?.baseForegroundColor = Theme.primaryTextColor
             } else {
                 button.configuration?.baseForegroundColor = Theme.primaryIconColor
             }
