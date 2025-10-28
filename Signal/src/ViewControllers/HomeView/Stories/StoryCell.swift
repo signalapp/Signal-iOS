@@ -99,6 +99,8 @@ class StoryCell: UITableViewCell {
             if traitCollection.userInterfaceIdiom == .pad {
                 configuration.cornerRadius = 24
             }
+        } else {
+            configuration.backgroundColor = .Signal.background
         }
         backgroundConfiguration = configuration
     }

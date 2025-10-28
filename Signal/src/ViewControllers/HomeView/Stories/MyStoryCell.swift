@@ -89,18 +89,18 @@ class MyStoryCell: UITableViewCell {
 
     override func updateConfiguration(using state: UICellConfigurationState) {
         var configuration = UIBackgroundConfiguration.clear()
-        var visibleBackgroundColor = UIColor.Signal.background
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            visibleBackgroundColor = Theme.tableCell2SelectedBackgroundColor
             if traitCollection.userInterfaceIdiom == .pad {
                 configuration.cornerRadius = 24
             }
-        }
+        } else {
+            configuration.backgroundColor = .Signal.background
+       }
         backgroundConfiguration = configuration
 
-        attachmentThumbnailDividerView?.backgroundColor = visibleBackgroundColor
-        plusIcon.borderColor = visibleBackgroundColor
+        attachmentThumbnailDividerView?.backgroundColor = configuration.backgroundColor
+        plusIcon.borderColor = configuration.backgroundColor
     }
 
     private var attachmentThumbnailDividerView: UIView?

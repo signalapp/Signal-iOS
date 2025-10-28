@@ -2488,6 +2488,8 @@ private extension CallsListViewController {
                 if traitCollection.userInterfaceIdiom == .pad {
                     configuration.cornerRadius = 36
                 }
+            } else {
+                configuration.backgroundColor = .Signal.background
             }
             backgroundConfiguration = configuration
         }
