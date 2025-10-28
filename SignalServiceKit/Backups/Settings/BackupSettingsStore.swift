@@ -335,7 +335,7 @@ public struct BackupSettingsStore {
         kvStore.setBool(hasConsumedMediaTierCapacity, key: Keys.hasConsumedMediaTierCapacity, transaction: tx)
 
         tx.addSyncCompletion {
-            NotificationCenter.default.post(name: .hasConsumedMediaTierCapacityStatusDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: .hasConsumedMediaTierCapacityStatusDidChange, object: nil)
         }
     }
 
