@@ -14,16 +14,141 @@ public class GroupLinkPromotionActionSheet: UIView {
 
     weak var actionSheetController: ActionSheetController?
 
-    private let stackView = UIStackView()
-
-    init(groupThread: TSGroupThread,
-         conversationViewController: ConversationViewController) {
+    init(groupThread: TSGroupThread, conversationViewController: ConversationViewController) {
         self.groupThread = groupThread
         self.conversationViewController = conversationViewController
 
         super.init(frame: .zero)
 
-        configure()
+        let titleLabel = UILabel()
+        titleLabel.text = OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_TITLE",
+                                             comment: "Title for the 'group link promotion' alert view.")
+        titleLabel.textColor = .Signal.label
+        titleLabel.font = .dynamicTypeHeadline
+        titleLabel.textAlignment = .natural
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SUBTITLE",
+                                                comment: "Subtitle for the 'group link promotion' alert view.")
+        subtitleLabel.textColor = .Signal.label
+        subtitleLabel.font = .dynamicTypeBody
+        subtitleLabel.textAlignment = .natural
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.lineBreakMode = .byWordWrapping
+
+        let topStack = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        topStack.axis = .vertical
+        topStack.spacing = 4
+        topStack.isLayoutMarginsRelativeArrangement = true
+        topStack.directionalLayoutMargins = .init(top: 14, leading: 14, bottom: 20, trailing: 14)
+        topStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(topStack)
+        addConstraints([
+            topStack.topAnchor.constraint(equalTo: topAnchor),
+            topStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            topStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
+
+        let buttonStackTopAnchor: NSLayoutYAxisAnchor
+        if isGroupLinkEnabled {
+            buttonStackTopAnchor = topStack.bottomAnchor
+        } else {
+            let switchLabel = UILabel()
+            switchLabel.text = OWSLocalizedString(
+                "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH",
+                comment: "Label for the 'approve new group members' switch."
+            )
+            switchLabel.setCompressionResistanceHorizontalHigh()
+
+            memberApprovalSwitch.setCompressionResistanceHorizontalHigh()
+
+            let memberApprovalStack = UIStackView(arrangedSubviews: [
+                switchLabel,
+                .hStretchingSpacer(),
+                memberApprovalSwitch,
+            ])
+            memberApprovalStack.axis = .horizontal
+            memberApprovalStack.alignment = .center
+            memberApprovalStack.distribution = .fill
+            memberApprovalStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
+            memberApprovalStack.isLayoutMarginsRelativeArrangement = true
+            memberApprovalStack.addBackgroundView(
+                withBackgroundColor: .Signal.secondaryGroupedBackground,
+                cornerRadius: OWSTableViewController2.cellRounding
+            )
+
+            let captionLabel = UILabel()
+            captionLabel.text = OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION",
+                                         comment: "Explanation of the 'approve new group members' switch.")
+            captionLabel.textColor = .Signal.secondaryLabel
+            captionLabel.font = .dynamicTypeFootnote
+            captionLabel.numberOfLines = 0
+            captionLabel.lineBreakMode = .byWordWrapping
+            captionLabel.translatesAutoresizingMaskIntoConstraints = false
+
+            let captionContainer = UIView()
+            captionContainer.directionalLayoutMargins = .init(top: 12, leading: 16, bottom: 12, trailing: 16)
+            captionContainer.addSubview(captionLabel)
+            captionContainer.addConstraints([
+                captionLabel.topAnchor.constraint(equalTo: captionContainer.layoutMarginsGuide.topAnchor),
+                captionLabel.leadingAnchor.constraint(equalTo: captionContainer.layoutMarginsGuide.leadingAnchor),
+                captionLabel.trailingAnchor.constraint(equalTo: captionContainer.layoutMarginsGuide.trailingAnchor),
+                captionLabel.bottomAnchor.constraint(equalTo: captionContainer.layoutMarginsGuide.bottomAnchor),
+            ])
+
+            let middleStack = UIStackView(arrangedSubviews: [memberApprovalStack, captionContainer])
+            middleStack.axis = .vertical
+            middleStack.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(middleStack)
+            addConstraints([
+                middleStack.topAnchor.constraint(equalTo: topStack.bottomAnchor),
+                middleStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+                middleStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            ])
+
+            buttonStackTopAnchor = middleStack.bottomAnchor
+        }
+
+        // Two buttons at the bottom
+        let topButton: UIButton
+        if isGroupLinkEnabled {
+            topButton = UIButton(
+                configuration: .largePrimary(title: OWSLocalizedString(
+                    "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK",
+                    comment: "Label for the 'share link' button in the 'group link promotion' alert view."
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.dismissAndShareLink()
+                }
+            )
+        } else {
+            topButton = UIButton(
+                configuration: .largePrimary(title: OWSLocalizedString(
+                    "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK",
+                    comment: "Label for the 'enable and share link' button in the 'group link promotion' alert view."
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.enableAndShareLink()
+                }
+            )
+        }
+        let cancelButton = UIButton(
+            configuration: .largeSecondary(title: CommonStrings.cancelButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismissAlert()
+            }
+        )
+
+        let buttonStack = UIStackView.verticalButtonStack(buttons: [ topButton, cancelButton], isFullWidthButtons: true)
+        buttonStack.directionalLayoutMargins = .zero
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(buttonStack)
+        addConstraints([
+            buttonStack.topAnchor.constraint(equalTo: buttonStackTopAnchor, constant: 12),
+            buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            buttonStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
     }
 
     required init(coder: NSCoder) {
@@ -36,21 +161,6 @@ public class GroupLinkPromotionActionSheet: UIView {
         actionSheetController.isCancelable = true
         fromViewController.presentActionSheet(actionSheetController)
         self.actionSheetController = actionSheetController
-    }
-
-    public func configure() {
-        let subviews = buildContents()
-
-        let stackView = UIStackView(arrangedSubviews: subviews)
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 24, leading: 24, bottom: 8, trailing: 24)
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        layoutMargins = .zero
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-        stackView.setContentHuggingHorizontalLow()
     }
 
     private var isGroupLinkEnabled: Bool {
@@ -68,101 +178,13 @@ public class GroupLinkPromotionActionSheet: UIView {
 
     private let memberApprovalSwitch = UISwitch()
 
-    private func buildContents() -> [UIView] {
-        let builder = ActionSheetContentBuilder()
-
-        builder.add(builder.buildTitleLabel(text: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_TITLE",
-                                                                    comment: "Title for the 'group link promotion' alert view.")))
-
-        builder.addVerticalSpacer(height: 2)
-
-        builder.add(builder.buildLabel(text: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SUBTITLE",
-                                                               comment: "Subtitle for the 'group link promotion' alert view."),
-                                       textAlignment: .center))
-
-        let isGroupLinkEnabled = self.isGroupLinkEnabled
-
-        if isGroupLinkEnabled {
-            builder.addVerticalSpacer(height: 88)
-
-            builder.addBottomButton(title: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SHARE_LINK",
-                                                             comment: "Label for the 'share link' button in the 'group link promotion' alert view."),
-                                    titleColor: .white,
-                                    backgroundColor: .ows_accentBlue,
-                                    target: self,
-                                    selector: #selector(dismissAndShareLink))
-        } else {
-            builder.addVerticalSpacer(height: 32)
-
-            let memberApprovalStack = UIStackView()
-            memberApprovalStack.axis = .horizontal
-            memberApprovalStack.alignment = .center
-            memberApprovalStack.distribution = .fill
-            memberApprovalStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
-            memberApprovalStack.isLayoutMarginsRelativeArrangement = true
-
-            memberApprovalStack.addBackgroundView(withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02, cornerRadius: 8)
-
-            let switchLabel = builder.buildLabel(text: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH",
-                                                                         comment: "Label for the 'approve new group members' switch."))
-            memberApprovalStack.addArrangedSubview(switchLabel)
-            switchLabel.setCompressionResistanceHorizontalHigh()
-
-            memberApprovalStack.addArrangedSubview(UIView.hStretchingSpacer())
-
-            memberApprovalStack.addArrangedSubview(memberApprovalSwitch)
-            memberApprovalSwitch.setCompressionResistanceHorizontalHigh()
-
-            builder.add(memberApprovalStack)
-
-            builder.addVerticalSpacer(height: 8)
-
-            let captionLabel = builder.buildLabel(text: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION",
-                                                                     comment: "Explanation of the 'approve new group members' switch."),
-                                             textColor: Theme.secondaryTextAndIconColor,
-                                             font: .dynamicTypeCaption1)
-
-            let captionContainer = UIView()
-            captionContainer.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)
-            captionContainer.addSubview(captionLabel)
-            captionLabel.autoPinEdgesToSuperviewMargins()
-
-            builder.add(captionContainer)
-
-            builder.addVerticalSpacer(height: 44)
-
-            builder.addBottomButton(title: OWSLocalizedString("GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK",
-                                                             comment: "Label for the 'enable and share link' button in the 'group link promotion' alert view."),
-                                    titleColor: .white,
-                                    backgroundColor: .ows_accentBlue,
-                                    target: self,
-                                    selector: #selector(enableAndShareLink))
-        }
-
-        builder.addVerticalSpacer(height: 5)
-        builder.addBottomButton(title: CommonStrings.cancelButton,
-                                titleColor: Theme.secondaryTextAndIconColor,
-                                backgroundColor: .clear,
-                                target: self,
-                                selector: #selector(dismissAlert))
-
-        return builder.subviews
-    }
-
     // MARK: - Events
 
-    @objc
     private func dismissAlert() {
         actionSheetController?.dismiss(animated: true)
     }
-}
 
-// MARK: -
-
-private extension GroupLinkPromotionActionSheet {
-
-    @objc
-    func enableAndShareLink() {
+    private func enableAndShareLink() {
         guard let actionSheetController = actionSheetController else {
             owsFailDebug("Missing actionSheetController.")
             return
@@ -192,8 +214,7 @@ private extension GroupLinkPromotionActionSheet {
         )
     }
 
-    @objc
-    func dismissAndShareLink() {
+    private func dismissAndShareLink() {
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             owsFailDebug("Invalid groupModel.")
             return

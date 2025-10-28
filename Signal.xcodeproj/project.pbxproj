@@ -348,7 +348,6 @@
 		348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28C25B897BF00814FC2 /* CVMediaCache.swift */; };
 		348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */; };
 		3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */; };
-		3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */; };
 		3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */; };
 		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
 		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
@@ -4144,7 +4143,6 @@
 		348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReusableMediaView.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkPromotionActionSheet.swift; sourceTree = "<group>"; };
-		3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionSheetContentBuilder.swift; sourceTree = "<group>"; };
 		3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingAnnouncementOnlyView.swift; sourceTree = "<group>"; };
 		349439D524360C30001045F7 /* AddGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGroupMembersViewController.swift; sourceTree = "<group>"; };
 		349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGroupMemberViewController.swift; sourceTree = "<group>"; };
@@ -8718,7 +8716,6 @@
 				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88A51B9825BA079500CDB45C /* Wallpapers */,
-				3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */,
 				4C46361022EB98EC00185951 /* CameraFirstCaptureSendFlow.swift */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
@@ -16750,7 +16747,6 @@
 			files = (
 				D91174562E8F35C1009EB756 /* AccountEntropyPoolTextView.swift in Sources */,
 				88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */,
-				3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */,
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,

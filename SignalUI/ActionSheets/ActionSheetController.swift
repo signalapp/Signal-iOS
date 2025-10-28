@@ -170,9 +170,8 @@ open class ActionSheetController: OWSViewController {
     /// strange when there's only slightly more space on the sides than below.
     let maxWidthWiggleRoom: CGFloat = 40
 
-    override public func loadView() {
-        view = UIView()
-        view.backgroundColor = .clear
+    override open func viewDidLoad() {
+        super.viewDidLoad()
 
         // Depending on the number of actions, the sheet may need
         // to scroll to allow access to all options.
