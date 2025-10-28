@@ -316,6 +316,10 @@ struct ChooseBackupPlanView: View {
                 )
             }
             .padding(.horizontal, 16)
+
+            Spacer().frame(height: 16)
+
+            termsAndConditionsLink()
         } pinnedFooter: {
             Button {
                 viewModel.confirmSelection()
@@ -355,6 +359,24 @@ struct ChooseBackupPlanView: View {
         .padding(.horizontal)
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
+    }
+
+    private func termsAndConditionsLink() -> some View {
+        let label = OWSLocalizedString(
+            "CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT",
+            comment: "Title for a label allowing users to view Signal's Terms & Conditions."
+        )
+        return Text(" [\(label)](https://support.signal.org/)")
+        .font(.subheadline.weight(.bold))
+        .environment(\.openURL, OpenURLAction { _ in
+            CurrentAppContext().open(
+                TSConstants.legalTermsUrl,
+                completion: nil
+            )
+            return .handled
+        })
+        .foregroundStyle(Color.Signal.secondaryLabel)
+        .tint(Color.Signal.secondaryLabel)
     }
 }
 
