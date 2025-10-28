@@ -181,8 +181,7 @@ open class ActionSheetController: OWSViewController {
 
         let insetFromScreenEdge: CGFloat = if
             #available(iOS 26, *),
-            BuildFlags.iOS26SDKIsAvailable,
-            UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad
+            BuildFlags.iOS26SDKIsAvailable
         {
             8
         } else {
@@ -262,7 +261,6 @@ open class ActionSheetController: OWSViewController {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2/3)
             let background = UIVisualEffectView(effect: glassEffect)
-            background.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
             return background
         } else {
             return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
@@ -286,7 +284,15 @@ open class ActionSheetController: OWSViewController {
             pinWidthConstraints?.forEach { $0.isActive = true }
 #if compiler(>=6.2)
             if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
-                backgroundView?.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
+                let topRadius: CGFloat = if UIDevice.current.hasIPhoneXNotch {
+                    40
+                } else {
+                    20
+                }
+                backgroundView?.cornerConfiguration = .uniformEdges(
+                    topRadius: .fixed(topRadius),
+                    bottomRadius: .containerConcentric(minimum: 20)
+                )
             }
 #endif
         }

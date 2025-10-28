@@ -212,7 +212,15 @@ open class InteractiveSheetViewController: OWSViewController {
             let glassBackground = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
             sheetContainerView.insertSubview(glassBackground, at: 0)
             glassBackground.autoPinEdges(toEdgesOf: sheetStackView)
-            glassBackground.cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 20))
+            let topRadius: CGFloat = if UIDevice.current.hasIPhoneXNotch {
+                40
+            } else {
+                20
+            }
+            glassBackground.cornerConfiguration = .uniformEdges(
+                topRadius: .fixed(topRadius),
+                bottomRadius: .containerConcentric(minimum: 20)
+            )
 #endif
         } else {
             sheetContainerView.backgroundColor = sheetBackgroundColor
