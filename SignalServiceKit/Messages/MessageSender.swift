@@ -1019,7 +1019,11 @@ public class MessageSender {
     }
 
     static func isRetryableError(_ error: any Error) -> Bool {
-        return error.isRetryable || error.httpStatusCode == 429
+        switch error.httpStatusCode {
+        case 429: true
+        case 508: false
+        default: error.isRetryable
+        }
     }
 
     private func normalizeRecipientStatesIfNeeded(
