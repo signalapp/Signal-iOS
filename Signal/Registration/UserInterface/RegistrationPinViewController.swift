@@ -88,6 +88,8 @@ protocol RegistrationPinPresenter: AnyObject {
     func submitWithCreateNewPinInstead()
 
     func exitRegistration()
+
+    func enterRecoveryKey()
 }
 
 // MARK: - RegistrationPinViewController
@@ -464,23 +466,38 @@ class RegistrationPinViewController: OWSViewController {
         skippability: RegistrationPinState.Skippability,
         remainingAttempts: UInt?
     ) {
+        navigationItem.leftBarButtonItem = moreBarButton
+        var actions = [UIMenuElement]()
+
         if skippability.canSkip {
-            navigationItem.leftBarButtonItem = moreBarButton
-            moreButton.setActions(actions: [
-                UIAction(
-                    title: OWSLocalizedString(
-                        "PIN_ENTER_EXISTING_SKIP",
-                        comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
-                    ),
-                    handler: { [weak self] _ in
-                        self?.didRequestToSkipEnteringExistingPin()
-                    }
+            actions.append(UIAction(
+                title: OWSLocalizedString(
+                    "PIN_ENTER_EXISTING_SKIP",
+                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
                 ),
-                exitAction()
-            ].compacted())
-        } else {
-            navigationItem.leftBarButtonItem = nil
+                handler: { [weak self] _ in
+                    self?.didRequestToSkipEnteringExistingPin()
+                }
+            ))
         }
+
+        actions.append(
+            UIAction(
+                title: OWSLocalizedString(
+                    "PIN_ENTER_EXISTING_USE_RECOVERY_KEY",
+                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN."
+                ),
+                handler: { [weak self] _ in
+                    self?.presenter?.enterRecoveryKey()
+                }
+            )
+        )
+
+        if let exitAction = exitAction() {
+            actions.append(exitAction)
+        }
+
+        moreButton.setActions(actions: actions)
 
         showAttemptWarningIfNecessary(
             remainingAttempts: remainingAttempts,
@@ -691,6 +708,15 @@ class RegistrationPinViewController: OWSViewController {
                 })
             }
         }
+
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY",
+                comment: "Label for action to use Recovery Key instead of PIN for registration."
+            )
+        ) { [weak self] _ in
+            self?.presenter?.enterRecoveryKey()
+        })
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in
             guard let self else { return }

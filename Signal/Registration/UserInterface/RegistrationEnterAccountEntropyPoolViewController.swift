@@ -16,6 +16,7 @@ protocol RegistrationEnterAccountEntropyPoolPresenter: AnyObject {
 
 public struct RegistrationEnterAccountEntropyPoolState: Equatable {
     let canShowBackButton: Bool
+    let canShowNoKeyHelpButton: Bool
 }
 
 class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPoolViewController, OWSNavigationChildController {
@@ -32,15 +33,18 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
 
         super.init()
 
-        var footerButtonConfig = FooterButtonConfig(
-            title: OWSLocalizedString(
-                "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE",
-                comment: "Title of button to tap if you do not have a recovery key during registration."
-            ),
-            action: { [weak self] in
-                self?.didTapNoKeyButton()
-            },
-        )
+        var footerButtonConfig: FooterButtonConfig?
+        if state.canShowNoKeyHelpButton {
+            footerButtonConfig = FooterButtonConfig(
+                title: OWSLocalizedString(
+                    "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE",
+                    comment: "Title of button to tap if you do not have a recovery key during registration."
+                ),
+                action: { [weak self] in
+                    self?.didTapNoKeyButton()
+                },
+            )
+        }
 
         switch(aepValidationPolicy) {
         case .acceptAnyWellFormed:
@@ -151,11 +155,28 @@ private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationE
 }
 
 @available(iOS 17, *)
-#Preview {
+#Preview("Default") {
     let presenter = PreviewRegistrationEnterAccountEntropyPoolPresenter()
     return UINavigationController(
         rootViewController: RegistrationEnterAccountEntropyPoolViewController(
-            state: RegistrationEnterAccountEntropyPoolState(canShowBackButton: true),
+            state: RegistrationEnterAccountEntropyPoolState(
+                canShowBackButton: true,
+                canShowNoKeyHelpButton: true,
+            ),
+            presenter: presenter
+        )
+    )
+}
+
+@available(iOS 17, *)
+#Preview("No Help") {
+    let presenter = PreviewRegistrationEnterAccountEntropyPoolPresenter()
+    return UINavigationController(
+        rootViewController: RegistrationEnterAccountEntropyPoolViewController(
+            state: RegistrationEnterAccountEntropyPoolState(
+                canShowBackButton: true,
+                canShowNoKeyHelpButton: false,
+            ),
             presenter: presenter
         )
     )

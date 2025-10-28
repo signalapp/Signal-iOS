@@ -30,7 +30,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
 
     private var aepValidationPolicy: AEPValidationPolicy!
     private var colorConfig: ColorConfig!
-    private var footerButtonConfig: FooterButtonConfig!
+    private var footerButtonConfig: FooterButtonConfig?
     private var headerStrings: HeaderStrings!
     private var onEntryConfirmed: ((AccountEntropyPool) -> Void)!
 
@@ -38,7 +38,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         aepValidationPolicy: AEPValidationPolicy,
         colorConfig: ColorConfig,
         headerStrings: HeaderStrings,
-        footerButtonConfig: FooterButtonConfig,
+        footerButtonConfig: FooterButtonConfig?,
         onEntryConfirmed: @escaping (AccountEntropyPool) -> Void,
     ) {
         self.aepValidationPolicy = aepValidationPolicy
@@ -71,12 +71,17 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
 
         let titleLabel = UILabel.titleLabelForRegistration(text: headerStrings.title)
         let subtitleLabel = UILabel.explanationLabelForRegistration(text: headerStrings.subtitle)
-        let footerButton = UIButton(
-            configuration: .mediumSecondary(title: footerButtonConfig.title),
-            primaryAction: UIAction { [weak self] _ in
-                self?.footerButtonConfig.action()
-            }
-        )
+        let footerButton: UIButton?
+        if let footerButtonConfig {
+            footerButton = UIButton(
+                configuration: .mediumSecondary(title: footerButtonConfig.title),
+                primaryAction: UIAction { _ in
+                    footerButtonConfig.action()
+                }
+            )
+        } else {
+            footerButton = nil
+        }
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -84,9 +89,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
                 subtitleLabel,
                 aepTextView,
                 aepIssueLabel,
-                footerButton.enclosedInVerticalStackView(isFullWidthButton: false),
+                footerButton?.enclosedInVerticalStackView(isFullWidthButton: false),
                 .vStretchingSpacer(),
-            ],
+            ].compacted(),
             isScrollable: true,
             shouldAvoidKeyboard: true
         )

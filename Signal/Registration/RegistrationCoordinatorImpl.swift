@@ -1510,7 +1510,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .incorrectRecoveryKey, .rateLimited:
                 return .enterRecoveryKey(
                     RegistrationEnterAccountEntropyPoolState(
-                        canShowBackButton: persistedState.accountIdentity == nil
+                        canShowBackButton: persistedState.accountIdentity == nil,
+                        canShowNoKeyHelpButton: true
                     ))
             case .skipRestore:
                 return await updateRestoreMethod(method: .declined).awaitable()
@@ -1850,7 +1851,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return .enterRecoveryKey(
             RegistrationEnterAccountEntropyPoolState(
-                canShowBackButton: persistedState.accountIdentity == nil
+                canShowBackButton: persistedState.accountIdentity == nil,
+                canShowNoKeyHelpButton: true
             ))
     }
 
@@ -1901,7 +1903,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // for the AEP before continuing with registration
             return .enterRecoveryKey(
                 RegistrationEnterAccountEntropyPoolState(
-                    canShowBackButton: persistedState.accountIdentity == nil
+                    canShowBackButton: persistedState.accountIdentity == nil,
+                    canShowNoKeyHelpButton: true
                 ))
         }
 
@@ -2061,7 +2064,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // If the user entered an incorrect key, remember the restore method and only
                     // prompt them to correct the key.  If they want to change the restore method,
                     // they should be able to hit 'back' here to return to the restore method selection.
-                    return .enterRecoveryKey(.init(canShowBackButton: true))
+                    return .enterRecoveryKey(.init(canShowBackButton: true, canShowNoKeyHelpButton: true))
                 case .restartQuickRestore, .rateLimited:
                     // If restarting the QuickRestore flow, allow the user a chance to
                     // to choose the restore method again.
@@ -2384,7 +2387,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 return await nextStep()
             }
-            if let pinFromUser = inMemoryState.pinFromUser {
+
+            // If the user has already supplied an AEP, this should be possible to use
+            if let aep = inMemoryState.accountEntropyPool {
+                self.db.write { tx in
+                    let masterKey = aep.getMasterKey()
+                    self.updatePersistedState(tx) {
+                        $0.recoveredSVRMasterKey = masterKey
+                        $0.hasGivenUpTryingToRestoreWithSVR = true
+                    }
+                    self.updatePersistedSessionState(session: session, tx) {
+                        // Now we have the state we need to get past reglock.
+                        $0.reglockState = .none
+                    }
+                }
+                return await nextStep()
+            } else if let pinFromUser = inMemoryState.pinFromUser {
+                // Otherwise, if the user has a PIN, restore the master key from SVR
                 return await restoreSVRMasterSecretForSessionPathReglock(
                     session: session,
                     pin: pinFromUser,
@@ -2392,6 +2411,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     reglockExpirationDate: reglockExpirationDate
                 )
             } else {
+                // And, if none of the above is true, go ahead and prompt for the users PIN
                 return .pinEntry(RegistrationPinState(
                     operation: .enteringExistingPin(
                         skippability: .unskippable,
@@ -3473,7 +3493,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             if isBackup {
                 // If the user want's to restore from backup, ask for the key
-                return .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(canShowBackButton: false))
+                return .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(
+                    canShowBackButton: false,
+                    canShowNoKeyHelpButton: true
+                ))
             } else {
                 // If the AccountEntropyPool doesn't exist yet, create one.
                 accountEntropyPool = getOrGenerateAccountEntropyPool()
