@@ -175,15 +175,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
             let backupSettingsStore = BackupSettingsStore()
             let db = DependenciesBridge.shared.db
 
-            do throws(OWSAssertionError) {
-                try db.write { tx throws(OWSAssertionError) in
-                    try backupSettingsStore.wipeHaveBackupsEverBeenEnabled(tx: tx)
-                }
-
-                self?.presentToast(text: "Backups onboarding enabled!")
-            } catch {
-                self?.presentToast(text: "Backups must be disabled to reenable onboarding!")
+            db.write { tx in
+                backupSettingsStore.wipeHaveBackupsEverBeenEnabled(tx: tx)
             }
+
+            self?.presentToast(text: "Backups onboarding enabled!")
         })
         backupsSection.add(.actionItem(withText: "Backup media integrity check") { [weak self] in
             let vc = InternalListMediaViewController()
