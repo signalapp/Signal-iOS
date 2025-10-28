@@ -217,8 +217,8 @@ public enum OWSMediaUtils {
      *
      * https://github.com/signalapp/Signal-Android/blob/c4bc2162f23e0fd6bc25941af8fb7454d91a4a35/app/src/main/java/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
-    public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
-    public static let kMaxFileSizeImage = UInt(8 * 1024 * 1024)
+    public static let kMaxFileSizeAnimatedImage = UInt(95 * 1000 * 1000)
+    public static let kMaxFileSizeImage = UInt(95 * 1000 * 1000)
     // Cloudflare limits uploads to 100 MB. To avoid hitting those limits,
     // we use limits that are 5% lower for the unencrypted content.
     public static let kMaxFileSizeVideo = UInt(95 * 1000 * 1000)

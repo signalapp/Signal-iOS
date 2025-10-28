@@ -300,7 +300,7 @@ extension TSAttachmentMigration {
                     videoStillFrameFile: nil
                 )
             case .image:
-                guard byteSize < 8 * 1024 * 1024 /* SignalAttachment.kMaxFileSizeImage */ else {
+                guard byteSize < SignalServiceKit.OWSMediaUtils.kMaxFileSizeImage else {
                     throw AttachmentTooLargeError()
                 }
                 return try validateImageContentType(
@@ -308,7 +308,7 @@ extension TSAttachmentMigration {
                     mimeType: &mimeType
                 ) ?? invalidResult
             case .animatedImage:
-                guard byteSize < 25 * 1024 * 1024 /* SignalAttachment.kMaxFileSizeAnimatedImage */ else {
+                guard byteSize < SignalServiceKit.OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                     throw AttachmentTooLargeError()
                 }
                 return try validateImageContentType(
@@ -316,7 +316,7 @@ extension TSAttachmentMigration {
                     mimeType: &mimeType
                 ) ?? invalidResult
             case .video:
-                guard byteSize < 95 * 1000 * 1000 /* SignalAttachment.kMaxFileSizeVideo */ else {
+                guard byteSize < SignalServiceKit.OWSMediaUtils.kMaxFileSizeVideo else {
                     throw AttachmentTooLargeError()
                 }
                 return try validateVideoContentType(
@@ -326,7 +326,7 @@ extension TSAttachmentMigration {
                     attachmentKey: attachmentKey,
                 ) ?? invalidResult
             case .audio:
-                guard byteSize < 95 * 1000 * 1000 /* SignalAttachment.kMaxFileSizeAudio */ else {
+                guard byteSize < SignalServiceKit.OWSMediaUtils.kMaxFileSizeAudio else {
                     throw AttachmentTooLargeError()
                 }
                 return try validateAudioContentType(
