@@ -691,20 +691,19 @@ class BackupSettingsViewController:
             break
         }
 
-        let endOfCurrentPeriod = Date(timeIntervalSince1970: backupSubscription.endOfCurrentPeriod)
-
+        let endOfCurrentPeriod = backupSubscription.endOfCurrentPeriod
         if backupSubscription.cancelAtEndOfPeriod {
             if endOfCurrentPeriod.isAfterNow {
                 return .paidButExpiring(expirationDate: endOfCurrentPeriod)
             } else {
                 return .paidButExpired(expirationDate: endOfCurrentPeriod)
             }
+        } else {
+            return .paid(
+                price: backupSubscription.amount,
+                renewalDate: endOfCurrentPeriod
+            )
         }
-
-        return .paid(
-            price: backupSubscription.amount,
-            renewalDate: endOfCurrentPeriod
-        )
     }
 
     // MARK: -

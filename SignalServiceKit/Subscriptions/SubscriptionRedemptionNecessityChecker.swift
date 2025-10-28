@@ -156,7 +156,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
                 subscription
             )
 
-            if let currentEntitlementExpiration {
+            if let expiration = currentEntitlementExpiration.map({ Date(timeIntervalSince1970: $0) }) {
                 /// If the subscription expiration is after the entitlement
                 /// expiration, we know it's renewed since we last redeemed.
                 /// (The entitlement will last till the subscription expiration
@@ -168,7 +168,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
                 /// previous one expired; we'll have an entitlement from prior
                 /// redemptions, but the new subscription will definitely expire
                 /// after that entitlement.
-                return currentEntitlementExpiration < subscription.endOfCurrentPeriod
+                return expiration < subscription.endOfCurrentPeriod
             }
 
             /// We have no entitlement, so if we have an active subscription

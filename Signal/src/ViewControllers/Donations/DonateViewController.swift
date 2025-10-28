@@ -1441,7 +1441,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     /// the renewal payment. Give the user a chance to bail out by
                     /// canceling their subscription, which will stop the retries.
                     didTapToCancelSubscription()
-                case .unknown, .canceled, .incomplete, .unpaid:
+                case .canceled, .unrecognized:
                     /// It's not clear how this happened, but something is wrong
                     /// and we should let users clear their local state.
                     owsFailDebug("Have a payment processing, but have unexpected subscription status \(currentSubscription.status)")

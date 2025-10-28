@@ -144,10 +144,9 @@ extension DonateViewController {
                         )
                     }
 
-                    let date = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateStyle = .medium
-                    let dateString = dateFormatter.string(from: date)
+                    let dateString = dateFormatter.string(from: currentSubscription.endOfCurrentPeriod)
 
                     return String(format: format, dateString)
                 } else {

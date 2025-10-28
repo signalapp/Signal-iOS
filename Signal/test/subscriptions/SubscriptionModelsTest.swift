@@ -23,14 +23,11 @@ class SubscriptionChargeFailureTest: XCTestCase {
 
 class SubscriptionTest: XCTestCase {
     let subscriptionDict: [String: Any] = {
-        let endOfCurrentPeriodRawValue: Double = 1618881836
-        let billingCycleAnchorRawValue: Double = 1587345836
         return [
             "level": 123,
             "currency": "USD",
             "amount": 500,
-            "endOfCurrentPeriod": endOfCurrentPeriodRawValue,
-            "billingCycleAnchor": billingCycleAnchorRawValue,
+            "endOfCurrentPeriod": TimeInterval(1618881836),
             "active": true,
             "cancelAtPeriodEnd": false,
             "status": "active",
@@ -46,8 +43,7 @@ class SubscriptionTest: XCTestCase {
 
         XCTAssertEqual(subscription.level, 123)
         XCTAssertEqual(subscription.amount, FiatMoney(currencyCode: "USD", value: 5))
-        XCTAssertEqual(subscription.endOfCurrentPeriod, 1618881836)
-        XCTAssertEqual(subscription.billingCycleAnchor, 1587345836)
+        XCTAssertEqual(subscription.endOfCurrentPeriod, Date(timeIntervalSince1970: 1618881836))
         XCTAssertTrue(subscription.active)
         XCTAssertFalse(subscription.cancelAtEndOfPeriod)
         XCTAssertEqual(subscription.status, .active)
@@ -61,7 +57,7 @@ class SubscriptionTest: XCTestCase {
         let subscription = try Subscription(subscriptionDict: subscriptionDictWithUnexpectedStatus,
                                             chargeFailureDict: nil)
 
-        XCTAssertEqual(subscription.status, .unknown)
+        XCTAssertEqual(subscription.status, .unrecognized(rawValue: "unexpected!!"))
         XCTAssertNil(subscription.chargeFailure)
     }
 

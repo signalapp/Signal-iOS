@@ -144,7 +144,6 @@ final class DonateViewControllerTest: SignalBaseTest {
                 "currency": isPaymentProcessing ? "EUR" : "USD",
                 "amount": 12,
                 "endOfCurrentPeriod": TimeInterval(1234),
-                "billingCycleAnchor": TimeInterval(5678),
                 "active": true,
                 "cancelAtPeriodEnd": false,
                 "status": "active",
