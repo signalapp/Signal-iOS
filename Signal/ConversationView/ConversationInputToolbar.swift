@@ -619,7 +619,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // NOTE: Don't set inputTextViewDelegate until configuration is complete.
         inputTextView.bodyRangesDelegate = bodyRangesTextViewDelegate
         inputTextView.inputTextViewDelegate = inputTextViewDelegate
-        textViewHeightConstraint = inputTextView.autoSetDimension(.height, toSize: LayoutMetrics.minTextViewHeight)
 
         editMessageLabelWrapper.isHidden = !shouldShowEditUI
 
@@ -633,10 +632,29 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         inputTextViewContainer.semanticContentAttribute = .forceLeftToRight
         inputTextViewContainer.addSubview(inputTextView)
         inputTextView.translatesAutoresizingMaskIntoConstraints = false
+        textViewHeightConstraint = inputTextView.heightAnchor.constraint(equalToConstant: LayoutMetrics.minTextViewHeight)
         inputTextViewContainer.addConstraints([
+            // This defines height of `inputTextView` which is always set to content size. calculated in `updateHeightWithTextView()`
+            textViewHeightConstraint,
+            // This sets minimum height on visual text view box. This height can exceed height of an empty inputTextView.
+            // We don't want `inputTextView` to grow above it's content size because that causes
+            // incorrect (top) alignment of text when there's just a single line of it.
             inputTextViewContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: LayoutMetrics.initialTextBoxHeight),
+            // This lets `inputTextViewContainer` grow with `inputTextView` when height of the latter increases with text.
+            // Working in conjuction with the next constraint they center `inputTextView` vertically
+            // when it's height is below minimum height of `inputTextViewContainer`.
             inputTextView.topAnchor.constraint(greaterThanOrEqualTo: inputTextViewContainer.topAnchor),
             inputTextView.centerYAnchor.constraint(equalTo: inputTextViewContainer.centerYAnchor),
+            // This constraint doesn't allow `inputTextViewContainer` to grow uncontrollably in height
+            // when mentions picker is placed above, being constrained between VC's root view's top edge
+            // and ConversationInputToolbar's top edge.
+            // Priority is set to not conflict with the constraints above, but still be higher
+            // than vertical hugging priority of the mentions picker.
+            {
+                let c = inputTextView.topAnchor.constraint(equalTo: inputTextViewContainer.topAnchor)
+                c.priority = .defaultHigh
+                return c
+            }(),
             inputTextView.leadingAnchor.constraint(equalTo: inputTextViewContainer.leadingAnchor),
             inputTextView.trailingAnchor.constraint(equalTo: inputTextViewContainer.trailingAnchor),
         ])
@@ -1352,7 +1370,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     private var textViewHeight: CGFloat = 0
 
-    private var textViewHeightConstraint: NSLayoutConstraint?
+    private var textViewHeightConstraint: NSLayoutConstraint!
 
     class var heightChangeAnimationDuration: TimeInterval { 0.25 }
 
