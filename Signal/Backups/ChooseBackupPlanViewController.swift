@@ -316,11 +316,9 @@ struct ChooseBackupPlanView: View {
                 )
             }
             .padding(.horizontal, 16)
-
-            Spacer().frame(height: 16)
-
-            termsAndConditionsLink()
         } pinnedFooter: {
+            termsAndConditionsLink()
+            Spacer().frame(height: 16)
             Button {
                 viewModel.confirmSelection()
             } label: {
