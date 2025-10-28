@@ -70,7 +70,6 @@ extension Registration {
                     HStack {
                         Spacer()
                         configuration.label
-                            .colorScheme(.dark)
                             .font(.headline)
                         Spacer()
                     }
