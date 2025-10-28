@@ -80,6 +80,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
         containerView.addSubview(toView)
+        toView.alpha = 0.0
         toView.autoPinEdgesToSuperviewEdges()
         toView.layoutIfNeeded()
 
@@ -140,7 +141,6 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         // Because toggling `isHidden` causes UIStack view layouts to change, we instead toggle `alpha`
         fromTransitionalOverlayView?.alpha = 1.0
         fromMediaContext.mediaView.alpha = 0.0
-        toView.alpha = 0.0
         toTransitionalOverlayView?.alpha = 0.0
         toMediaContext.mediaView.alpha = 0.0
 
@@ -170,12 +170,14 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
             toContextProvider.mediaDidPresent(toContext: toMediaContext)
 
+            // Show the actual media views first to prevent flash during transition cleanup
+            toMediaContext.mediaView.alpha = 1.0
+            fromMediaContext.mediaView.alpha = 1.0
+
+            // Then remove transition views after media is visible
             clippingView.removeFromSuperview()
             fromTransitionalOverlayView?.removeFromSuperview()
             toTransitionalOverlayView?.removeFromSuperview()
-
-            toMediaContext.mediaView.alpha = 1.0
-            fromMediaContext.mediaView.alpha = 1.0
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
