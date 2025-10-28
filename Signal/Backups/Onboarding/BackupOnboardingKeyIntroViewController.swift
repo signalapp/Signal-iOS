@@ -115,7 +115,7 @@ struct BackupOnboardingKeyIntroView: View {
                     }
                 }
             }
-            .padding(.horizontal, 48)
+            .padding(.horizontal)
         } pinnedFooter: {
             Button {
                 viewModel.onContinue()
@@ -124,17 +124,12 @@ struct BackupOnboardingKeyIntroView: View {
                     "BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE",
                     comment: "Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow."
                 ))
-                .foregroundStyle(.white)
-                .font(.headline)
-                .padding(.vertical, 14)
-                .frame(maxWidth: .infinity)
-                .background(Color.Signal.ultramarine)
             }
-            .buttonStyle(.plain)
-            .cornerRadius(12)
-            .padding(.horizontal, 40)
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+            .padding(.horizontal, 24)
         }
         .multilineTextAlignment(.center)
+        .padding(.horizontal)
         .background(Color.Signal.groupedBackground)
     }
 }

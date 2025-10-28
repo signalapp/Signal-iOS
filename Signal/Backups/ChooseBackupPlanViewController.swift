@@ -315,7 +315,7 @@ struct ChooseBackupPlanView: View {
                     }
                 )
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 16)
         } pinnedFooter: {
             Button {
                 viewModel.confirmSelection()
@@ -347,17 +347,12 @@ struct ChooseBackupPlanView: View {
                 }
 
                 Text(text)
-                    .foregroundStyle(.white)
-                    .font(.headline)
-                    .padding(.vertical, 14)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.Signal.ultramarine)
             }
             .disabled(viewModel.planSelection == viewModel.initialPlanSelection)
-            .buttonStyle(.plain)
-            .cornerRadius(12)
-            .padding(.horizontal, 40)
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+            .padding(.horizontal, 24)
         }
+        .padding(.horizontal)
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
     }

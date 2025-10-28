@@ -73,71 +73,45 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
 
         let heroIconView = UIImageView()
         heroIconView.image = .backupsLock
-        heroIconView.contentMode = .center
-        heroIconView.autoSetDimensions(to: .square(80))
+        heroIconView.contentMode = .scaleAspectFit
 
-        let headlineLabel = UILabel()
-        headlineLabel.text = OWSLocalizedString(
+        let headlineLabel = UILabel.title1Label(text: OWSLocalizedString(
             "BACKUP_RECORD_KEY_TITLE",
             comment: "Title for a view allowing users to record their 'Recovery Key'."
-        )
-        headlineLabel.font = .dynamicTypeTitle1.semibold()
-        headlineLabel.textColor = .Signal.label
-        headlineLabel.numberOfLines = 0
-        headlineLabel.textAlignment = .center
+        ))
 
-        let subheadlineLabel = UILabel()
-        subheadlineLabel.text = OWSLocalizedString(
+        let subheadlineLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
             "BACKUP_RECORD_KEY_SUBTITLE",
             comment: "Subtitle for a view allowing users to record their 'Recovery Key'."
-        )
-        subheadlineLabel.font = .dynamicTypeBody
-        subheadlineLabel.textColor = .Signal.secondaryLabel
-        subheadlineLabel.numberOfLines = 0
-        subheadlineLabel.textAlignment = .center
+        ))
 
         let aepTextView = AccountEntropyPoolTextView(mode: .display(aep: aep))
         aepTextView.backgroundColor = .Signal.secondaryGroupedBackground
 
         let copyToClipboardButton = UIButton(
-            configuration: {
-                var configuration: UIButton.Configuration = .plain()
-                configuration.attributedTitle = AttributedString(
-                    OWSLocalizedString(
-                        "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
-                        comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
-                    ),
-                    attributes: AttributeContainer([
-                        .font: UIFont.dynamicTypeFootnote.medium(),
-                        .foregroundColor: UIColor.Signal.label,
-                    ])
-                )
-                configuration.background.backgroundColor = .Signal.secondaryFill
-                configuration.cornerStyle = .capsule
-                configuration.contentInsets = .init(hMargin: 12, vMargin: 8)
-                return configuration
-            }(),
+            configuration: .compactGray(title: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
+                comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
+            )),
             primaryAction: UIAction { [weak self] _ in
                 self?.copyToClipboard()
             }
         )
+        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
+        let copyButtonContainer = UIView.container()
+        copyButtonContainer.addSubview(copyToClipboardButton)
+        copyButtonContainer.addConstraints([
+            copyToClipboardButton.topAnchor.constraint(equalTo: copyButtonContainer.topAnchor),
+            copyToClipboardButton.leadingAnchor.constraint(greaterThanOrEqualTo: copyToClipboardButton.leadingAnchor),
+            copyToClipboardButton.centerXAnchor.constraint(equalTo: copyButtonContainer.centerXAnchor),
+            copyToClipboardButton.bottomAnchor.constraint(equalTo: copyButtonContainer.bottomAnchor),
+        ])
 
         let createNewKeyButton = UIButton(
-            configuration: {
-                var configuration: UIButton.Configuration = .plain()
-                configuration.attributedTitle = AttributedString(
-                    OWSLocalizedString(
-                        "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
-                        comment: "Title for a button allowing users to create a new 'Recovery Key'."
-                    ),
-                    attributes: AttributeContainer([
-                        .font: UIFont.dynamicTypeHeadline,
-                        .foregroundColor: UIColor.Signal.accent,
-
-                    ])
-                )
-                return configuration
-            }(),
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
+                comment: "Title for a button allowing users to create a new 'Recovery Key'."
+            )),
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
                 onCreateNewKeyPressedBlock(self)
@@ -145,79 +119,37 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         )
 
         let continueButton = UIButton(
-            configuration: {
-                var configuration: UIButton.Configuration = .plain()
-                configuration.attributedTitle = AttributedString(
-                    CommonStrings.continueButton,
-                    attributes: AttributeContainer([
-                        .font: UIFont.dynamicTypeHeadline,
-                        .foregroundColor: UIColor.white,
-                    ])
-                )
-                configuration.contentInsets = .init(hMargin: 60, vMargin: 14)
-                configuration.background.cornerRadius = 12
-                configuration.background.backgroundColor = .Signal.accent
-                return configuration
-            }(),
+            configuration: .largePrimary(title: CommonStrings.continueButton),
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
                 onContinuePressedBlock(self)
             },
         )
 
-        let bottomButtonSpacer = UIView(forAutoLayout: ())
-        bottomButtonSpacer.setContentHuggingPriority(.defaultLow, for: .vertical)
-
-        let scrollView = UIScrollView()
-        self.view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
-
-        let stackView = UIStackView(arrangedSubviews: [
-            heroIconView,
-            headlineLabel,
-            subheadlineLabel,
-            aepTextView,
-            copyToClipboardButton,
-            bottomButtonSpacer,
-        ])
-        if options.contains(.showCreateNewKeyButton) {
-            stackView.addArrangedSubview(createNewKeyButton)
-        }
-        if options.contains(.showContinueButton) {
-            stackView.addArrangedSubview(continueButton)
-        }
-
-        scrollView.addSubview(stackView)
-        stackView.axis = .vertical
-        stackView.alignment = .center
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                heroIconView,
+                headlineLabel,
+                subheadlineLabel,
+                aepTextView,
+                copyButtonContainer,
+                .vStretchingSpacer()
+            ],
+            isScrollable: true
+        )
         stackView.spacing = 24
         stackView.setCustomSpacing(32, after: aepTextView)
 
-        headlineLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
-        headlineLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
-
-        subheadlineLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 24)
-        subheadlineLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 24)
-
-        let topInset: CGFloat = 20
-        let bottomInset: CGFloat = 16
-        stackView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 24)
-        stackView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -24)
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomInset)
-        NSLayoutConstraint.activate([
-            stackView.heightAnchor.constraint(
-                greaterThanOrEqualTo: view.safeAreaLayoutGuide.heightAnchor,
-                constant: -(topInset + bottomInset),
-            )
-        ])
-
-        /*
-        bottomButtonSpacer.backgroundColor = .brown
-        bottomButtonSpacer.widthAnchor.constraint(equalToConstant: 10).isActive = true
-        stackView.backgroundColor = .green
-        scrollView.backgroundColor = .orange
-         */
+        var bottomButtons = [UIButton]()
+        if options.contains(.showCreateNewKeyButton) {
+            bottomButtons.append(createNewKeyButton)
+        }
+        if options.contains(.showContinueButton) {
+            bottomButtons.append(continueButton)
+        }
+        if !bottomButtons.isEmpty {
+            stackView.addArrangedSubview(bottomButtons.enclosedInVerticalStackView(isFullWidthButtons: options.contains(.showContinueButton)))
+        }
     }
 
     private func copyToClipboard() {

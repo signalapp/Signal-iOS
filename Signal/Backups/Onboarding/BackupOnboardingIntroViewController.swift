@@ -73,12 +73,10 @@ struct BackupOnboardingIntroView: View {
                     .multilineTextAlignment(.leading)
                 }
                 .foregroundColor(Color.Signal.label)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 10)
+                .padding(.all, 10)
                 .background(Color.Signal.quaternaryFill)
                 .cornerRadius(12)
             }
-            .padding(.horizontal, 10)
 
             VStack {
                 Spacer().frame(height: 20)
@@ -106,6 +104,7 @@ struct BackupOnboardingIntroView: View {
                         )
                         .foregroundStyle(Color.Signal.label)
                 }
+                .multilineTextAlignment(.center)
 
                 Spacer().frame(height: 12)
 
@@ -115,37 +114,35 @@ struct BackupOnboardingIntroView: View {
                 ))
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
+                .multilineTextAlignment(.center)
 
                 Spacer().frame(height: 32)
 
                 VStack(alignment: .leading, spacing: 24) {
                     ForEach(bulletPoints) { bulletPoint in
-                        Label {
-                            Text(bulletPoint.text)
-                        } icon: {
-                            Image(uiImage: bulletPoint.image)
+                        HStack {
+                            Label {
+                                Text(bulletPoint.text)
+                            } icon: {
+                                Image(uiImage: bulletPoint.image)
+                            }
+
+                            Spacer()
                         }
-                        .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color.Signal.label)
-                        .padding(.horizontal, 20) // Extra inset in case of wrap
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(Color.Signal.label)
+                .padding(.horizontal)
             }
-            .padding(.horizontal, 48)
         } pinnedFooter: {
             Button {
                 onContinue()
             } label: {
                 Text(CommonStrings.continueButton)
-                    .foregroundStyle(.white)
-                    .font(.headline)
-                    .padding(.vertical, 14)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.Signal.ultramarine)
             }
-            .buttonStyle(.plain)
-            .cornerRadius(12)
-            .padding(.horizontal, 40)
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+            .padding(.horizontal, 24)
 
             Spacer().frame(height: 16)
 
@@ -153,15 +150,11 @@ struct BackupOnboardingIntroView: View {
                 onNotNow()
             } label: {
                 Text(CommonStrings.notNowButton)
-                    .foregroundStyle(Color.Signal.ultramarine)
-                    .font(.headline)
-                    .padding(.vertical, 14)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 40)
+            .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
+            .padding(.horizontal, 24)
         }
-        .multilineTextAlignment(.center)
+        .padding(.horizontal)
         .background(Color.Signal.groupedBackground)
     }
 }

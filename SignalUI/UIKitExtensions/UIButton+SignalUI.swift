@@ -250,6 +250,17 @@ public extension UIButton.Configuration {
         configuration.baseBackgroundColor = .clear
         return configuration
     }
+
+    static func compactGray(title: String) -> Self {
+        var configuration = UIButton.Configuration.gray()
+        configuration.title = title
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeFootnoteClamped.medium())
+        configuration.contentInsets = .smallButtonContentInsets
+        configuration.baseForegroundColor = .Signal.label
+        configuration.background.backgroundColor = .Signal.secondaryFill
+        return configuration
+    }
 }
 
 // MARK: - UIBarButtonItem
