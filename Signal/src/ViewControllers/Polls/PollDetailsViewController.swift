@@ -49,7 +49,20 @@ private class PollDetailsViewModel {
     }
 
     func pollTerminate() {
-        actionsDelegate?.pollTerminate()
+        OWSActionSheets.showConfirmationAlert(
+            title: OWSLocalizedString(
+                "POLL_END_CONFIRMATION",
+                comment: "Title for an action sheet confirming the user wants end a poll."
+            ),
+            message: OWSLocalizedString(
+                "POLL_END_CONFIRMATION_MESSAGE",
+                comment: "Message for an action sheet confirming the user wants to end a poll."
+            ),
+            proceedTitle: CommonStrings.okButton,
+            proceedAction: { [weak self] _ in
+                self?.actionsDelegate?.pollTerminate()
+            }
+        )
     }
 }
 
@@ -84,20 +97,21 @@ struct PollDetailsView: View {
                         )
                     )
                 }
-
-                if !poll.isEnded, poll.ownerIsLocalUser {
-                    SignalSection {
-                        Button {
-                            viewModel.pollTerminate()
-                        } label: {
-                            Label {
-                                Text(OWSLocalizedString("POLL_DETAILS_END_POLL", comment: "Label for button to end a poll"))
-                                    .font(.body)
-                                    .foregroundColor(Color.Signal.label)
-                            } icon: {
-                                Image(uiImage: Theme.iconImage(.pollStop))
+                if #unavailable(iOS 26) {
+                    if !poll.isEnded, poll.ownerIsLocalUser {
+                        SignalSection {
+                            Button {
+                                viewModel.pollTerminate()
+                            } label: {
+                                Label {
+                                    Text(OWSLocalizedString("POLL_DETAILS_END_POLL", comment: "Label for button to end a poll"))
+                                        .font(.body)
+                                        .foregroundColor(Color.Signal.label)
+                                } icon: {
+                                    Image(uiImage: Theme.iconImage(.pollStop))
+                                }
+                                .foregroundColor(Color.Signal.label)
                             }
-                            .foregroundColor(Color.Signal.label)
                         }
                     }
                 }
@@ -139,6 +153,19 @@ struct PollDetailsView: View {
                             }
                         }
                     }
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if #available(iOS 26.0, *) {
+                if !poll.isEnded, poll.ownerIsLocalUser {
+                    Button {
+                        viewModel.pollTerminate()
+                    } label: {
+                        Text(OWSLocalizedString("POLL_DETAILS_END_POLL", comment: "Label for button to end a poll"))
+                    }
+                    .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+                    .padding()
                 }
             }
         }

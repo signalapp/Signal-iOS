@@ -6520,6 +6520,12 @@
 /* Title of poll details pane */
 "POLL_DETAILS_TITLE" = "Poll Details";
 
+/* Title for an action sheet confirming the user wants end a poll. */
+"POLL_END_CONFIRMATION" = "End poll?";
+
+/* Message for an action sheet confirming the user wants to end a poll. */
+"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%@ ended the poll: %@";
 
