@@ -296,14 +296,13 @@ extension CLVTableDataSource: UITableViewDelegate {
         guard let title = renderState.sections[section].title else { return UIView() }
 
         let container = UIView()
-        container.backgroundColor = Theme.backgroundColor
         container.layoutMargins = UIEdgeInsets(top: 14, leading: 16, bottom: 8, trailing: 16)
 
         let label = UILabel()
         container.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
         label.font = UIFont.dynamicTypeHeadline
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .Signal.label
         label.text = title
 
         return container
