@@ -71,6 +71,8 @@ class MessageReactionPicker: UIStackView {
             false
         }
 
+        var backgroundContentView: UIView?
+
         switch (style, liquidGlassIsAvailable) {
         case (.inline, _):
             break
@@ -85,6 +87,7 @@ class MessageReactionPicker: UIStackView {
             }
             addBackgroundView(visualEffectView)
             backgroundView = visualEffectView
+            backgroundContentView = visualEffectView.contentView
 #else
             fallthrough
 #endif
@@ -107,6 +110,7 @@ class MessageReactionPicker: UIStackView {
             shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
             backgroundView?.addSubview(shadowView)
             shadowView.autoPinEdgesToSuperviewEdges()
+            backgroundContentView = backgroundView
         }
 
         autoSetDimension(.height, toSize: pickerDiameter)
@@ -164,7 +168,7 @@ class MessageReactionPicker: UIStackView {
                 selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme ? .ows_gray60 : .ows_gray05
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
-                backgroundView?.addSubview(selectedBackgroundView)
+                backgroundContentView?.addSubview(selectedBackgroundView)
                 selectedBackgroundView.autoSetDimensions(to: CGSize(square: selectedBackgroundHeight))
                 selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: button)
                 selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: button)
