@@ -14,9 +14,9 @@ protocol MessageReactionPickerDelegate: AnyObject {
 
 class MessageReactionPicker: UIStackView {
     /// A style for a message reaction picker.
-    enum Style {
+    enum Style: Equatable {
         /// An overlay context menu for selecting a saved or default reaction
-        case contextMenu
+        case contextMenu(allowGlass: Bool)
         /// Editor for the saved reactions
         case configure
         /// A horizontally-scrolling picker with both saved/default and recent reactions
@@ -50,7 +50,7 @@ class MessageReactionPicker: UIStackView {
     init(
         selectedEmoji: String?,
         delegate: MessageReactionPickerDelegate?,
-        style: Style = .contextMenu,
+        style: Style,
         forceDarkTheme: Bool = false
     ) {
         if let selectedEmoji = selectedEmoji {
@@ -64,7 +64,31 @@ class MessageReactionPicker: UIStackView {
 
         super.init(frame: .zero)
 
-        if !style.isInline {
+        let liquidGlassIsAvailable: Bool =
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            true
+        } else {
+            false
+        }
+
+        switch (style, liquidGlassIsAvailable) {
+        case (.inline, _):
+            break
+        case (.configure, true), (.contextMenu(allowGlass: true), true):
+            guard #available(iOS 26, *) else { break }
+#if compiler(>=6.2)
+            let glassEffect = UIGlassEffect(style: .regular)
+            let visualEffectView = UIVisualEffectView(effect: glassEffect)
+            visualEffectView.cornerConfiguration = .capsule()
+            if forceDarkTheme {
+                visualEffectView.overrideUserInterfaceStyle = .dark
+            }
+            addBackgroundView(visualEffectView)
+            backgroundView = visualEffectView
+#else
+            fallthrough
+#endif
+        case (.configure, false), (.contextMenu(allowGlass: _), _):
             backgroundView = addBackgroundView(
                 withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
                 cornerRadius: pickerDiameter / 2
@@ -292,7 +316,11 @@ class MessageReactionPicker: UIStackView {
     }
 
     func playDismissalAnimation(duration: TimeInterval, completion: @escaping () -> Void) {
-        UIView.animate(withDuration: duration) { self.alpha = 0 } completion: { _ in
+        UIView.animate(withDuration: duration) {
+            // This allows the glass effect to transition out
+            (self.backgroundView as? UIVisualEffectView)?.effect = nil
+            self.alpha = 0
+        } completion: { _ in
             completion()
         }
     }

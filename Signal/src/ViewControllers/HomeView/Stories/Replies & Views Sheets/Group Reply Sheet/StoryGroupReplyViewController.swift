@@ -50,9 +50,6 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
-    var reactionPickerBackdrop: UIView?
-    var reactionPicker: MessageReactionPicker?
-
     init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState) {
         self.storyMessage = storyMessage
         self.spoilerState = spoilerState

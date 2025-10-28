@@ -12,7 +12,6 @@ let kMaxMessageBodyCharacterCount = 2000
 
 protocol StoryReplyInputToolbarDelegate: MessageReactionPickerDelegate {
     func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar) async throws
-    func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar, tx: DBReadTransaction) -> [SignalServiceAddress]
@@ -288,10 +287,6 @@ class StoryReplyInputToolbar: UIView {
         Task {
             try await delegate?.storyReplyInputToolbarDidTapSend(self)
         }
-    }
-
-    private func didTapReact() {
-        delegate?.storyReplyInputToolbarDidTapReact(self)
     }
 
     // MARK: - Helpers

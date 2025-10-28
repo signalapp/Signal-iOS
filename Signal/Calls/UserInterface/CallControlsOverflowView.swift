@@ -11,7 +11,7 @@ class CallControlsOverflowView: UIView {
         let picker = MessageReactionPicker(
             selectedEmoji: nil,
             delegate: self,
-            style: .contextMenu,
+            style: .contextMenu(allowGlass: false),
             forceDarkTheme: true
         )
         picker.translatesAutoresizingMaskIntoConstraints = false

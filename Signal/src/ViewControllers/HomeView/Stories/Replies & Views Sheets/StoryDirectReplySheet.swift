@@ -23,9 +23,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
-    var reactionPickerBackdrop: UIView?
-    var reactionPicker: MessageReactionPicker?
-
     let spoilerState: SpoilerRenderState
 
     private var inputToolbarBottomConstraint: NSLayoutConstraint?

@@ -21,7 +21,11 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         self.thread = thread
         self.itemViewModel = itemViewModel
 
-        reactionPicker = MessageReactionPicker(selectedEmoji: itemViewModel?.reactionState?.localUserEmoji, delegate: nil)
+        reactionPicker = MessageReactionPicker(
+            selectedEmoji: itemViewModel?.reactionState?.localUserEmoji,
+            delegate: nil,
+            style: .contextMenu(allowGlass: true)
+        )
         let isRTL = CurrentAppContext().isRTL
         let isIncomingMessage = itemViewModel?.interaction.interactionType == .incomingMessage
         let alignmentOffset = isIncomingMessage && thread.isGroupThread ? 22 : 0

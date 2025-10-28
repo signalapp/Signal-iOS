@@ -164,7 +164,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
                             if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
-                                view.frame = bounds.insetBy(dx: 12, dy: 4)
+                                view.frame = bounds.insetBy(dx: 10, dy: 1)
                                 view.cornerConfiguration = .capsule()
 #endif
                             } else {
@@ -382,7 +382,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         let blurEffect: UIBlurEffect?
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
 #if compiler(>=6.2)
-            let effect = UIGlassEffect(style: .clear)
+            let effect = UIGlassEffect(style: .regular)
             effect.isInteractive = true
             backdropView = UIVisualEffectView(effect: effect)
 #else

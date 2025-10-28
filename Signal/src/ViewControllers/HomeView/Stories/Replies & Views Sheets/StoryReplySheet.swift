@@ -14,9 +14,6 @@ protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, Mes
     var storyMessage: StoryMessage { get }
     var thread: TSThread? { get }
 
-    var reactionPickerBackdrop: UIView? { get set }
-    var reactionPicker: MessageReactionPicker? { get set }
-
     func didSendMessage()
 }
 
@@ -125,14 +122,10 @@ extension StoryReplySheet {
 
 extension StoryReplySheet {
     func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int) {
-        dismissReactionPicker()
-
         tryToSendReaction(reaction)
     }
 
     func didSelectAnyEmoji() {
-        dismissReactionPicker()
-
         // nil is intentional, the message is for showing other reactions already
         // on the message, which we don't wanna do for stories.
         let sheet = EmojiPickerSheet(message: nil, forceDarkTheme: true) { [weak self] selectedEmoji in
@@ -176,10 +169,6 @@ extension StoryReplySheet {
         tryToSendMessage(builder, messageBody: messageBody)
     }
 
-    func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-        presentReactionPicker()
-    }
-
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
@@ -198,48 +187,5 @@ extension StoryReplySheet {
 
     func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {
         bottomBar
-    }
-}
-
-// MARK: - Reaction Picker
-
-extension StoryReplySheet {
-    func presentReactionPicker() {
-        guard self.reactionPicker == nil else { return }
-
-        let backdrop = OWSButton { [weak self] in
-            self?.dismissReactionPicker()
-        }
-        backdrop.backgroundColor = .ows_blackAlpha40
-        view.addSubview(backdrop)
-        backdrop.autoPinEdgesToSuperviewEdges()
-        backdrop.alpha = 0
-        self.reactionPickerBackdrop = backdrop
-
-        let reactionPicker = MessageReactionPicker(selectedEmoji: nil, delegate: self, forceDarkTheme: true)
-
-        view.addSubview(reactionPicker)
-        reactionPicker.autoPinEdge(.bottom, to: .top, of: inputToolbar, withOffset: -15)
-        reactionPicker.autoPinEdge(toSuperviewEdge: .trailing, withInset: 12)
-
-        reactionPicker.playPresentationAnimation(duration: 0.2)
-
-        UIView.animate(withDuration: 0.2) { backdrop.alpha = 1 }
-
-        self.reactionPicker = reactionPicker
-    }
-
-    func dismissReactionPicker() {
-        UIView.animate(withDuration: 0.2) {
-            self.reactionPickerBackdrop?.alpha = 0
-        } completion: { _ in
-            self.reactionPickerBackdrop?.removeFromSuperview()
-            self.reactionPickerBackdrop = nil
-        }
-
-        reactionPicker?.playDismissalAnimation(duration: 0.2) {
-            self.reactionPicker?.removeFromSuperview()
-            self.reactionPicker = nil
-        }
     }
 }
