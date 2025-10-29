@@ -21,7 +21,7 @@ class EmojiReactorsTableView: UITableView {
         super.init(frame: .zero, style: .plain)
 
         dataSource = self
-        backgroundColor = Theme.actionSheetBackgroundColor
+        backgroundColor = .clear
         separatorStyle = .none
 
         register(EmojiReactorCell.self, forCellReuseIdentifier: EmojiReactorCell.reuseIdentifier)
@@ -104,8 +104,7 @@ private class EmojiReactorCell: UITableViewCell {
     }
 
     func configure(item: EmojiReactorsTableView.ReactorItem) {
-
-        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.textColor = UIColor.Signal.label
 
         emojiLabel.text = item.emoji
 

@@ -17,6 +17,8 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     override var interactiveScrollViews: [UIScrollView] { emojiReactorsViews }
 
+    override var placeOnGlassIfAvailable: Bool { true }
+
     private var emojiCounts: [InteractionReactionState.EmojiCount] {
         reactionState.emojiCounts
     }
@@ -54,6 +56,14 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         setSelectedEmoji(nil)
     }
 
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        // pageWidth needs to have an accurate value
+        DispatchQueue.main.async {
+            self.updatePageConstraints(ignoreScrollingState: true)
+        }
+    }
+
     private var hasPreparedInitialLayout = false
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -64,7 +74,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         guard !hasPreparedInitialLayout else { return }
         hasPreparedInitialLayout = true
         emojiPagingScrollView.superview?.layoutIfNeeded()
-        updatePageConstraints(ignoreScrollingState: true)
     }
 
     // MARK: -
@@ -162,7 +171,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         return allEmoji[index - 1]
     }
 
-    private var pageWidth: CGFloat { return min(CurrentAppContext().frame.width, maxWidth) }
+    private var pageWidth: CGFloat { return min(contentView.frame.width, maxWidth) }
     private var numberOfPages: CGFloat { return CGFloat(emojiReactorsViews.count) }
 
     // These thresholds indicate the offset at which we update the next / previous page.
