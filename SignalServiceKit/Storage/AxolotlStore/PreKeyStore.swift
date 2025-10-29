@@ -196,13 +196,30 @@ extension PreKeyStoreForIdentity: LibSignalClient.KyberPreKeyStore {
         return try LibSignalClient.KyberPreKeyRecord(bytes: fetchSerializedRecord(in: .kyber, for: id, tx: context.asTransaction))
     }
 
-    func markKyberPreKeyUsed(id keyId: UInt32, context: any StoreContext) throws {
+    func markKyberPreKeyUsed(id keyId: UInt32, signedPreKeyId: UInt32, baseKey: PublicKey, context: any StoreContext) throws {
         let tx = context.asTransaction
         guard let preKey = fetchPreKey(in: .kyber, for: keyId, tx: tx) else {
             throw PreKeyStore.Error.noPreKeyWithId(keyId)
         }
         if preKey.isOneTime {
             removePreKey(in: .kyber, keyId: keyId, tx: tx)
+        } else {
+            do {
+                try KyberPreKeyUseRecord(
+                    kyberRowId: preKey.rowId,
+                    signedPreKeyIdentity: self.identity,
+                    signedPreKeyId: signedPreKeyId,
+                    baseKey: baseKey.serialize(),
+                ).insert(tx.database)
+            } catch {
+                let error = error.grdbErrorForLogging
+                switch error {
+                case DatabaseError.SQLITE_CONSTRAINT:
+                    throw error
+                default:
+                    failIfThrows { throw error }
+                }
+            }
         }
     }
 

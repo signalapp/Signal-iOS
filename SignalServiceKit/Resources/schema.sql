@@ -2541,3 +2541,24 @@ CREATE
 WHERE
 "replacedAt" IS NULL
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "KyberPreKeyUse" (
+            "kyberRowId" INTEGER NOT NULL REFERENCES "PreKey"("rowId"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"signedPreKeyIdentity" INTEGER NOT NULL
+                        ,"signedPreKeyId" INTEGER NOT NULL
+                        ,"baseKey" BLOB NOT NULL
+                        ,PRIMARY KEY (
+                            "kyberRowId"
+                            ,"signedPreKeyIdentity"
+                            ,"signedPreKeyId"
+                            ,"baseKey"
+                        )
+) WITHOUT ROWID
+;

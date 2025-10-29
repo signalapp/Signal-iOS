@@ -371,6 +371,7 @@ public extension DatabaseRecovery {
             BlockedGroup.databaseTableName,
             StoryRecipient.databaseTableName,
             PreKey.databaseTableName,
+            KyberPreKeyUseRecord.databaseTableName,
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.

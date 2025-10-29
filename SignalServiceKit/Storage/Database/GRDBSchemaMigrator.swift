@@ -329,6 +329,7 @@ public class GRDBSchemaMigrator {
         case populateBackupAttachmentUploadProgressKVStore
         case addPollVoteState
         case addPreKey
+        case addKyberPreKeyUse
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -4223,6 +4224,18 @@ public class GRDBSchemaMigrator {
                 try migratePreKeys(tx: tx)
             }
             try dropOldPreKeys(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addKyberPreKeyUse) { tx in
+            try tx.database.create(table: "KyberPreKeyUse", options: [.withoutRowID]) {
+                $0.column("kyberRowId", .integer).notNull()
+                    .references("PreKey", column: "rowId", onDelete: .cascade, onUpdate: .cascade)
+                $0.column("signedPreKeyIdentity", .integer).notNull()
+                $0.column("signedPreKeyId", .integer).notNull()
+                $0.column("baseKey", .blob).notNull()
+                $0.primaryKey(["kyberRowId", "signedPreKeyIdentity", "signedPreKeyId", "baseKey"])
+            }
             return .success(())
         }
 
