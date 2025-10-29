@@ -627,7 +627,6 @@
 		503BD28B2B44DA64009624FC /* OWSFakeProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BD28A2B44DA64009624FC /* OWSFakeProfileManager.swift */; };
 		503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */; };
 		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
-		503CEB642CD17C5F00F50148 /* MessageSenderRecipientErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503CEB632CD17C5F00F50148 /* MessageSenderRecipientErrors.swift */; };
 		50423CA42BBF427900DCB8F5 /* StaleProfileFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50423CA32BBF427900DCB8F5 /* StaleProfileFetcher.swift */; };
 		504271B62BB4C54500E33C01 /* SystemContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504271B52BB4C54500E33C01 /* SystemContact.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
@@ -638,6 +637,7 @@
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */; };
 		504F98B12EAFFAC600DF465B /* KyberPreKeyUseRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F98B02EAFFAC600DF465B /* KyberPreKeyUseRecord.swift */; };
+		504F98B32EB0270A00DF465B /* SendMessageFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F98B22EB0270A00DF465B /* SendMessageFailure.swift */; };
 		5050A8792B76E2E100E9BFA4 /* PreKeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */; };
 		5050A87B2B76EEC500E9BFA4 /* PreKeyIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */; };
 		505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC252AD3933B006AAC49 /* IncomingCallEventSyncMessageParams.swift */; };
@@ -4596,7 +4596,6 @@
 		503BD28A2B44DA64009624FC /* OWSFakeProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFakeProfileManager.swift; sourceTree = "<group>"; };
 		503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactReminderTableViewCell.swift; sourceTree = "<group>"; };
 		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
-		503CEB632CD17C5F00F50148 /* MessageSenderRecipientErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderRecipientErrors.swift; sourceTree = "<group>"; };
 		50423CA32BBF427900DCB8F5 /* StaleProfileFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaleProfileFetcher.swift; sourceTree = "<group>"; };
 		504271B52BB4C54500E33C01 /* SystemContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContact.swift; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
@@ -4605,6 +4604,7 @@
 		5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Operation.swift; sourceTree = "<group>"; };
 		504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		504F98B02EAFFAC600DF465B /* KyberPreKeyUseRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KyberPreKeyUseRecord.swift; sourceTree = "<group>"; };
+		504F98B22EB0270A00DF465B /* SendMessageFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageFailure.swift; sourceTree = "<group>"; };
 		5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyId.swift; sourceTree = "<group>"; };
 		5050A87A2B76EEC500E9BFA4 /* PreKeyIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyIdTest.swift; sourceTree = "<group>"; };
 		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
@@ -13722,7 +13722,6 @@
 				F9C5C99B289453B100548EEE /* MessageSender+Errors.swift */,
 				F9C5C954289453B100548EEE /* MessageSender+SenderKey.swift */,
 				F9C5C8D5289453B100548EEE /* MessageSender.swift */,
-				503CEB632CD17C5F00F50148 /* MessageSenderRecipientErrors.swift */,
 				F9C5C976289453B100548EEE /* MessageSendLog.swift */,
 				500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */,
 				500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */,
@@ -13767,6 +13766,7 @@
 				66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */,
 				E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */,
 				50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */,
+				504F98B22EB0270A00DF465B /* SendMessageFailure.swift */,
 				50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */,
 				F9C5C947289453B100548EEE /* TypingIndicatorMessage.swift */,
 				504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */,
@@ -18125,7 +18125,6 @@
 				F9C5CBCA289453B300548EEE /* MessageSender.swift in Sources */,
 				F9C5CDC8289453B400548EEE /* MessageSenderJobQueue.swift in Sources */,
 				D9AE0AD929187F850063488B /* MessageSenderJobRecord.swift in Sources */,
-				503CEB642CD17C5F00F50148 /* MessageSenderRecipientErrors.swift in Sources */,
 				F9C5CC64289453B300548EEE /* MessageSendLog.swift in Sources */,
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */,
@@ -18515,6 +18514,7 @@
 				F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */,
 				725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */,
+				504F98B32EB0270A00DF465B /* SendMessageFailure.swift in Sources */,
 				6619A1C52B2BA05C004B38FE /* SentMessageTranscript.swift in Sources */,
 				6619A1C12B2A8587004B38FE /* SentMessageTranscriptReceiver+Shims.swift in Sources */,
 				6619A1BA2B2A80B0004B38FE /* SentMessageTranscriptReceiver.swift in Sources */,

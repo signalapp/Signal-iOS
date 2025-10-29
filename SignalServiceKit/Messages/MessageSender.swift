@@ -356,17 +356,44 @@ public class MessageSender {
 
     // MARK: - Constructing Message Sends
 
-    public func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
-        do {
-            Logger.info("Sending \(preparedOutgoingMessage)")
-            try await _sendMessage(preparedOutgoingMessage)
-        } catch {
-            Logger.warn("Couldn't send \(preparedOutgoingMessage); there may also be individual send failures, but the overall failure is: \(error)")
-            throw error
-        }
+    enum SendResult {
+        case success
+
+        /// Something happened before[^1] we branched based on ServiceIds, so the
+        /// same Error applies to the entire attempt to send the message.
+        ///
+        /// [^1]: If we try to send to a group and every group member is
+        /// unregistered, this is treated as an overall failure. There is an
+        /// argument that this shouldn't be an error at all or should be
+        /// per-recipient "recipients don't exist" errors.
+        case overallFailure(any Error)
+
+        /// We reached a point where we may have a different error for every
+        /// recipient. It will often be the case that many recipients encounter the
+        /// "same" error. (For example, we may use the multi-recipient endpoint and
+        /// then copy the same Error object for every recipient, but we also may fan
+        /// out to individual recipients, and they all may encounter their own
+        /// equivalent network failure error.)
+        case recipientsFailure(SendMessageFailure)
     }
 
-    private func _sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws {
+    func sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async -> SendResult {
+        let sendFailure: SendMessageFailure?
+        do {
+            Logger.info("Sending \(preparedOutgoingMessage)")
+            sendFailure = try await _sendMessage(preparedOutgoingMessage)
+        } catch {
+            Logger.warn("Couldn't send \(preparedOutgoingMessage); the overall failure is: \(error)")
+            return .overallFailure(error)
+        }
+        if let sendFailure {
+            Logger.warn("Couldn't send \(preparedOutgoingMessage); up to 3 per-recipient failures: \(sendFailure.recipientErrors.prefix(3))")
+            return .recipientsFailure(sendFailure)
+        }
+        return .success
+    }
+
+    private func _sendMessage(_ preparedOutgoingMessage: PreparedOutgoingMessage) async throws -> SendMessageFailure? {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             preparedOutgoingMessage.updateAllUnsentRecipientsAsSending(tx: tx)
         }
@@ -383,7 +410,7 @@ public class MessageSender {
             try await taskGroup.waitForAll()
         }
 
-        try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
+        return try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
     }
 
     private func waitForPreKeyRotationIfNeeded() async throws {
@@ -565,7 +592,7 @@ public class MessageSender {
         }
     }
 
-    private func sendPreparedMessage(_ message: TSOutgoingMessage) async throws {
+    private func sendPreparedMessage(_ message: TSOutgoingMessage) async throws -> SendMessageFailure? {
         if !areAttachmentsUploadedWithSneakyTransaction(for: message) {
             throw OWSUnretryableMessageSenderError()
         }
@@ -587,24 +614,31 @@ public class MessageSender {
         if DebugFlags.messageSendsFail.get() {
             throw OWSUnretryableMessageSenderError()
         }
-        do {
-            try await waitForPreKeyRotationIfNeeded()
-            let senderCertificates = try await SSKEnvironment.shared.udManagerRef.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
-            try await sendPreparedMessage(
+        try await waitForPreKeyRotationIfNeeded()
+        let udManager = SSKEnvironment.shared.udManagerRef
+        let senderCertificates = try await udManager.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
+        // Send the message.
+        let sendResult = await Result(catching: {
+            return try await sendPreparedMessage(
                 message,
                 recoveryState: OuterRecoveryState(),
                 senderCertificates: senderCertificates
             )
-        } catch {
-            if message.wasSentToAnyRecipient {
-                // Always ignore the sync error...
-                try? await handleMessageSentLocally(message)
-            }
-            // ...so that we can throw the original error for the caller. (Note that we
-            // throw this error even if the sync message is sent successfully.)
-            throw error
+        })
+        // Send the sync message if it succeeded overall or for any recipient.
+        let syncResult: Result<Void, any Error>?
+        if sendResult.isSuccess || message.wasSentToAnyRecipient {
+            syncResult = await Result(catching: { try await handleMessageSentLocally(message) })
+        } else {
+            syncResult = nil
         }
-        try await handleMessageSentLocally(message)
+        // If we encountered an error when sending, return that.
+        if let sendFailure = try sendResult.get() {
+            return sendFailure
+        }
+        // Otherwise, if only the sync message failed, return that.
+        try syncResult?.get()
+        return nil
     }
 
     private enum SendMessageNextAction {
@@ -653,7 +687,7 @@ public class MessageSender {
         _ message: TSOutgoingMessage,
         recoveryState: OuterRecoveryState,
         senderCertificates: SenderCertificates
-    ) async throws {
+    ) async throws -> SendMessageFailure? {
         let nextAction = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> SendMessageNextAction? in
             guard let thread = message.thread(tx: tx) else {
                 throw MessageSenderError.threadMissing
@@ -805,7 +839,7 @@ public class MessageSender {
 
         switch nextAction {
         case .none:
-            return
+            return nil
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             retryRecoveryState = recoveryState.mutated({ $0.canLookUpPhoneNumbers = false })
@@ -836,26 +870,34 @@ public class MessageSender {
                 endorsements: state.endorsements,
                 localIdentifiers: state.localIdentifiers
             )
-            let recipientErrors = MessageSenderRecipientErrors(recipientErrors: perRecipientErrors)
-            if recipientErrors.containsAny(of: .invalidAuthHeader) {
-                retryRecoveryState = recoveryState.mutated({ $0.canUseMultiRecipientSealedSender = false })
-                break
+            let sendMessageFailure: SendMessageFailure?
+            if perRecipientErrors.isEmpty {
+                sendMessageFailure = nil
+            } else {
+                sendMessageFailure = try await handleSendFailure(
+                    message: message,
+                    thread: state.thread,
+                    perRecipientErrors: perRecipientErrors,
+                )
             }
-            if recoveryState.canHandleMultiRecipientMismatchedDevices, recipientErrors.containsAny(of: .deviceUpdate) {
-                retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientMismatchedDevices = false })
-                break
+            if let sendMessageFailure {
+                if sendMessageFailure.containsAny(of: .invalidAuthHeader) {
+                    retryRecoveryState = recoveryState.mutated({ $0.canUseMultiRecipientSealedSender = false })
+                    break
+                }
+                if recoveryState.canHandleMultiRecipientMismatchedDevices, sendMessageFailure.containsAny(of: .deviceUpdate) {
+                    retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientMismatchedDevices = false })
+                    break
+                }
+                if recoveryState.canHandleMultiRecipientStaleDevices, sendMessageFailure.containsAny(of: .staleDevices) {
+                    retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientStaleDevices = false })
+                    break
+                }
             }
-            if recoveryState.canHandleMultiRecipientStaleDevices, recipientErrors.containsAny(of: .staleDevices) {
-                retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientStaleDevices = false })
-                break
-            }
-            if !perRecipientErrors.isEmpty {
-                try await handleSendFailure(message: message, thread: state.thread, perRecipientErrors: perRecipientErrors)
-            }
-            return
+            return sendMessageFailure
         }
 
-        try await sendPreparedMessage(
+        return try await sendPreparedMessage(
             message,
             recoveryState: retryRecoveryState,
             senderCertificates: senderCertificates
@@ -966,7 +1008,7 @@ public class MessageSender {
         message: TSOutgoingMessage,
         thread: TSThread,
         perRecipientErrors allErrors: [(serviceId: ServiceId, error: any Error)]
-    ) async throws {
+    ) async throws -> SendMessageFailure? {
         var skippedRecipients = [ServiceId]()
         var filteredErrors = [(serviceId: ServiceId, error: any Error)]()
 
@@ -993,29 +1035,14 @@ public class MessageSender {
 
         // If we only received errors that we should ignore, consider this send a
         // success, unless the message could not be sent to any recipient.
-        guard let anyError = filteredErrors.first?.error else {
+        guard let sendMessageFailure = SendMessageFailure(recipientErrors: filteredErrors) else {
             if message.sentRecipientAddresses().count == 0 {
                 throw MessageSenderErrorNoValidRecipients()
             }
-            return
+            return nil
         }
 
-        // Some errors should never be retried, in order to avoid hitting rate
-        // limits, for example.  Unfortunately, since group send retry is
-        // all-or-nothing, we need to fail immediately even if some of the other
-        // recipients had retryable errors.
-        if let fatalError = filteredErrors.map({ $0.error }).first(where: { $0.isFatalError }) {
-            throw fatalError
-        }
-
-        // If any of the send errors are retryable, we want to retry. Therefore,
-        // prefer to propagate a retryable error.
-        if let retryableError = filteredErrors.map({ $0.error }).first(where: { Self.isRetryableError($0) }) {
-            throw retryableError
-        }
-
-        // Otherwise, if we have any error at all, propagate it.
-        throw anyError
+        return sendMessageFailure
     }
 
     static func isRetryableError(_ error: any Error) -> Bool {

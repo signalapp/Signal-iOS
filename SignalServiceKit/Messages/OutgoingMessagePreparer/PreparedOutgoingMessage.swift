@@ -242,8 +242,8 @@ public class PreparedOutgoingMessage {
 
     // MARK: - Sending
 
-    public func send(_ sender: (TSOutgoingMessage) async throws -> Void) async throws {
-        try await sender(messageForSending)
+    public func send<T>(_ sender: (TSOutgoingMessage) async throws -> T) async throws -> T {
+        return try await sender(messageForSending)
     }
 
     public func attachmentUploadOperations(tx: DBReadTransaction) -> [() async throws -> Void] {

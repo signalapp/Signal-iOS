@@ -486,18 +486,35 @@ public class MessageSenderJobQueue {
         let maxRetries = 110
         while true {
             assert(!Task.isCancelled, "Cancellation isn't supported.")
-            do {
-                operation.clearExternalRetryTriggers()
-                try await SSKEnvironment.shared.messageSenderRef.sendMessage(operation.message)
+            operation.clearExternalRetryTriggers()
+            let result = await SSKEnvironment.shared.messageSenderRef.sendMessage(operation.message)
+            let errors: [any Error]
+            let arbitraryError: any Error
+            switch result {
+            case .success:
                 return
-            } catch where MessageSender.isRetryableError(error) && !error.isFatalError && attemptCount < maxRetries {
-                attemptCount += 1
-                if !operation.job.isInMemoryOnly {
-                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                        operation.job.record.addFailure(tx: tx)
-                    }
+            case .overallFailure(let error):
+                errors = [error]
+                arbitraryError = error
+            case .recipientsFailure(let failure):
+                errors = failure.recipientErrors.map(\.error)
+                arbitraryError = failure.arbitraryError
+            }
+            var retryableError: (any Error)?
+            var externalRetryTriggers: ExternalRetryTriggers = []
+            var suggestedRetryDelay: TimeInterval = 0
+            for error in errors {
+                // Some errors should never be retried. Because group send is
+                // all-or-nothing, this means we need to fail the entire operation even
+                // when retries may work for other recipients.
+                if error.isFatalError {
+                    throw error
                 }
-                var externalRetryTriggers: ExternalRetryTriggers = []
+                // Keep track of the first retryable error we encounter -- we'd prefer to
+                // throw a retryable error rather than one that's not retryable.
+                if MessageSender.isRetryableError(error) {
+                    retryableError = retryableError ?? error
+                }
                 // If there's a network failure, this is an external error, so we want to
                 // retry as soon as we reconnect.
                 if error.isNetworkFailure {
@@ -511,31 +528,43 @@ public class MessageSenderJobQueue {
                 if error.isTimeout {
                     externalRetryTriggers.insert(.networkBecameReachable)
                 }
-                // Determine the minimum amount of backoff.
-                let maxAverageBackoff: TimeInterval = 14.1 * .minute
-                let exponentialRetryDelay: TimeInterval = OWSOperation.retryIntervalForExponentialBackoff(
-                    failureCount: attemptCount,
-                    maxAverageBackoff: maxAverageBackoff,
-                )
-                // If we have a Retry-After header, use it (within reasonable limits).
-                let suggestedRetryDelay: TimeInterval? = error.httpRetryAfterDate.map {
-                    return min($0.timeIntervalSinceNow, maxAverageBackoff)
+                // If there's a Retry-After header, pick the largest one. That's when we
+                // expect we'll be able to complete the entire send successfully.
+                if let retryAfterDelay = error.httpResponseHeaders?.retryAfterTimeInterval {
+                    suggestedRetryDelay = max(suggestedRetryDelay, retryAfterDelay)
                 }
-                // We pick the larger of the two values -- we don't want Retry-After
-                // headers to be able to trigger tight retry loops on the client, so we
-                // maintain a minimum of exponential backoff.
-                var retryDelay = exponentialRetryDelay
-                var httpBlurb = ""
-                if let suggestedRetryDelay {
-                    retryDelay = max(retryDelay, suggestedRetryDelay)
-                    httpBlurb = " (retry-after: \(String(format: "%.1f", suggestedRetryDelay))s)"
-                }
-                Logger.warn("Resending \(operation.message.description) after \(String(format: "%.1f", retryDelay))s\(httpBlurb)")
-                try? await withCooperativeTimeout(
-                    seconds: retryDelay,
-                    operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
-                )
             }
+            guard let retryableError else {
+                throw arbitraryError
+            }
+            guard attemptCount < maxRetries else {
+                throw retryableError
+            }
+            attemptCount += 1
+            if !operation.job.isInMemoryOnly {
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    operation.job.record.addFailure(tx: tx)
+                }
+            }
+            // Determine the minimum amount of backoff.
+            let maxAverageBackoff: TimeInterval = 14.1 * .minute
+            let exponentialRetryDelay: TimeInterval = OWSOperation.retryIntervalForExponentialBackoff(
+                failureCount: attemptCount,
+                maxAverageBackoff: maxAverageBackoff,
+            )
+            // We pick the larger of the two values -- we don't want Retry-After
+            // headers to be able to trigger tight retry loops on the client, so we
+            // maintain a minimum of exponential backoff.
+            let retryDelay = max(exponentialRetryDelay, min(maxAverageBackoff, suggestedRetryDelay))
+            var httpBlurb = ""
+            if suggestedRetryDelay > 0 {
+                httpBlurb = " (retry-after: \(String(format: "%.1f", suggestedRetryDelay))s)"
+            }
+            Logger.warn("Resending \(operation.message.description) after \(String(format: "%.1f", retryDelay))s\(httpBlurb)")
+            try? await withCooperativeTimeout(
+                seconds: retryDelay,
+                operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
+            )
         }
     }
 
