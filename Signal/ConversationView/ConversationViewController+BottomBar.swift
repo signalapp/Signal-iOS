@@ -194,10 +194,10 @@ public extension ConversationViewController {
 #if compiler(>=6.2)
         // Obscures content underneath bottom bar to improve legibility.
         if #available(iOS 26, *) {
-            let scrollInteraction = UIScrollEdgeElementContainerInteraction()
-            scrollInteraction.scrollView = collectionView
-            scrollInteraction.edge = .bottom
-            newInputToolbar.addInteraction(scrollInteraction)
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.scrollView = collectionView
+            interaction.edge = .bottom
+            newInputToolbar.setScrollEdgeElementContainerInteraction(interaction)
         }
 #endif
 

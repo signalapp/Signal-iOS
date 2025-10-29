@@ -506,6 +506,11 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     // Occupies central part of the `contentView`. That's where text input field, link preview etc live in.
     private let messageContentView = UIView()
 
+    @available(iOS 26, *)
+    func setScrollEdgeElementContainerInteraction(_ interaction: UIInteraction) {
+        contentView.addInteraction(interaction)
+    }
+
     private var isConfigurationComplete = false
 
     private func setupContentView() {
