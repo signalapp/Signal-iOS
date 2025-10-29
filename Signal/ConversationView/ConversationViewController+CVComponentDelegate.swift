@@ -110,10 +110,6 @@ extension ConversationViewController: CVComponentDelegate {
         itemViewModel: CVItemViewModelImpl,
         shouldAllowReply: Bool
     ) {
-        guard BuildFlags.pollSend else {
-            return
-        }
-
         let messageActions = MessageActions.pollActions(
             itemViewModel: itemViewModel,
             shouldAllowReply: shouldAllowReply,

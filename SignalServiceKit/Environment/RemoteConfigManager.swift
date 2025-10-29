@@ -297,6 +297,20 @@ public class RemoteConfig {
         return !isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
     }
 
+    public var pollCreate: Bool {
+        guard BuildFlags.pollSend else {
+            return false
+        }
+        return !isEnabled(.pollCreateKillSwitch)
+    }
+
+    public var pollReceive: Bool {
+        guard BuildFlags.pollReceive else {
+            return false
+        }
+        return !isEnabled(.pollReceiveKillSwitch)
+    }
+
     #if TESTABLE_BUILD
     public var testHotSwappable: Bool? {
         if self.valueFlags[IsEnabledFlag.hotSwappable.rawValue] != nil {
@@ -516,6 +530,8 @@ private enum IsEnabledFlag: String, FlagType {
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
+    case pollCreateKillSwitch = "ios.pollCreateKillSwitch"
+    case pollReceiveKillSwitch = "ios.pollReceiveKillSwitch"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -543,6 +559,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .serviceExtensionFailureKillSwitch: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
+        case .pollCreateKillSwitch: true
+        case .pollReceiveKillSwitch: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true

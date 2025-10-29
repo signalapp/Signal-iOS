@@ -525,10 +525,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func pollButtonPressed() {
         AssertIsOnMainThread()
 
-        if !BuildFlags.pollSend {
-            return
-        }
-
         dismissKeyBoard()
 
         let newPollViewController = NewPollViewController()
