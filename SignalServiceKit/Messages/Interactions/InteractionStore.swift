@@ -11,9 +11,6 @@ public protocol InteractionStore {
 
     // MARK: - 
 
-    /// Whether an interaction exists with the given unique ID.
-    func exists(uniqueId: String, tx: DBReadTransaction) -> Bool
-
     /// Fetch the interaction with the given SQLite row ID, if one exists.
     func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -107,10 +104,6 @@ public class InteractionStoreImpl: InteractionStore {
     public init() {}
 
     // MARK: -
-
-    public func exists(uniqueId: String, tx: DBReadTransaction) -> Bool {
-        return TSInteraction.anyExists(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
-    }
 
     public func fetchInteraction(
         rowId interactionRowId: Int64,
