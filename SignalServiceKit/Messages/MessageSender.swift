@@ -501,6 +501,9 @@ public class MessageSender {
                 currentValidRecipients.formUnion(groupMembership.invitedMembers)
             }
             currentValidRecipients.remove(localIdentifiers.aciAddress)
+            if let localPni = localIdentifiers.pni {
+                currentValidRecipients.remove(SignalServiceAddress(localPni))
+            }
             recipientAddresses.formIntersection(currentValidRecipients)
 
             let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
@@ -541,8 +544,9 @@ public class MessageSender {
             let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
-            if recipientAddresses.contains(localIdentifiers.aciAddress) {
-                owsFailDebug("Message send recipients should not include self.")
+            recipientAddresses.remove(localIdentifiers.aciAddress)
+            if let localPni = localIdentifiers.pni {
+                recipientAddresses.remove(SignalServiceAddress(localPni))
             }
 
             return Array(recipientAddresses)
@@ -1247,7 +1251,7 @@ public class MessageSender {
         let retryRecoveryState: InnerRecoveryState
         do {
             if messageSend.isSelfSend {
-                owsAssertDebug(messageSend.message.canSendToLocalAddress)
+                owsAssertDebug(messageSend.message.canSendToLocalAddress, "Shouldn't send \(type(of: message)) to \(messageSend.serviceId)")
             }
 
             var deviceMessages = try await buildDeviceMessages(
@@ -1258,7 +1262,7 @@ public class MessageSender {
                 if messageSend.isSelfSend {
                     // This emulates the completion logic of an actual successful send (see below).
                     await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                        message.updateWithSkippedRecipients([messageSend.localIdentifiers.aciAddress], tx: tx)
+                        message.updateWithSkippedRecipients([SignalServiceAddress(messageSend.serviceId)], tx: tx)
                     }
                     return []
                 }
