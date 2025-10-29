@@ -277,7 +277,7 @@ public class CVPollView: ManualStackView {
             let voteLabelWidth = voteLabelWidthWithPadding(localizedVotes: localizedVotesString)
             let innerStackConfig = configurator.buildOptionRowInnerStackConfig(voteLabelWidth: voteLabelWidth)
 
-            let maxOptionLabelWidth = (maxLabelWidth - (innerStackConfig.layoutMargins.right +
+            let maxOptionLabelWidth = (maxLabelWidth - (innerStackConfig.layoutMargins.trailing +
                                                         checkboxSize +
                                                         innerStackConfig.spacing))
 
@@ -540,9 +540,13 @@ public class CVPollView: ManualStackView {
         private func buildProgressBar(
             votes: Int,
             totalVoters: Int,
+            pollIsEnded: Bool,
             foregroundColor: UIColor,
             backgroundColor: UIColor,
+            checkboxWidthWithSpacing: CGFloat
         ) {
+            let isRTL = CurrentAppContext().isRTL
+
             progressFill.backgroundColor = foregroundColor
             progressFill.layer.cornerRadius = 5
             progressBarBackground.backgroundColor = backgroundColor
@@ -555,12 +559,21 @@ public class CVPollView: ManualStackView {
                     }
 
                 // The progress bar should start under the text, not the checkbox, so we need to shift it
-                // over to be under the optionText, and remove that offset from the total size.
-                let progressBarOffset = optionText.frame.x
-                let adjustedSize = CGSize(width: superview.bounds.width - progressBarOffset, height: superview.bounds.height)
+                // over the amount of the checkbox width (plus spacing), and remove that offset from the total size.
+                // If the poll is ended, there's no shifting.
+                let checkboxOffset = pollIsEnded ? 0 : checkboxWidthWithSpacing
+                let adjustedContainerSize = CGSize(
+                    width: superview.bounds.width - checkboxOffset,
+                    height: superview.bounds.height
+                )
+
+                // If RTL, the checkbox is on the right, so we don't want to shift the
+                // progress bar origin. It will still have the same adjustedContainerSize.
+                let originX = isRTL ? 0 : superview.bounds.origin.x + checkboxOffset
                 let subviewFrame = CGRect(
-                    origin: CGPoint(x: superview.bounds.origin.x + progressBarOffset, y: superview.bounds.origin.y),
-                    size: adjustedSize)
+                    origin: CGPoint(x: originX, y: superview.bounds.origin.y),
+                    size: adjustedContainerSize)
+
                 Self.setSubviewFrame(subview: progressBarBackground, frame: subviewFrame)
             })
 
@@ -578,11 +591,23 @@ public class CVPollView: ManualStackView {
                 let percent = Float(votes) / Float(totalVoters)
 
                 // The progress bar should start under the text, not the checkbox, so we need to shift it
-                // over to be under the optionText, and remove that offset from the total size.
-                let progressBarOffset = optionText.frame.x
-                let numVotesBarFill = CGFloat(percent) * (superview.bounds.width - progressBarOffset)
+                // over the amount of the checkbox width (plus spacing), and remove that offset from the total size.
+                // If the poll is ended, there's no shifting and adjustedContainerWidth equals the width.
+                let checkboxOffset = pollIsEnded ? 0 : checkboxWidthWithSpacing
+                let adjustedContainerWidth = superview.bounds.width - checkboxOffset
+                let numVotesBarFill = CGFloat(percent) * adjustedContainerWidth
+
+                // Origin references the left. If RTL, we want the origin to be its "finished" point, which is
+                // the total container size minus the fill size.
+                var originX: CGFloat = 0
+                if isRTL {
+                    originX = superview.bounds.origin.x + (adjustedContainerWidth - numVotesBarFill)
+                } else {
+                    originX = superview.bounds.origin.x + checkboxOffset
+                }
+
                 let subviewFrame = CGRect(
-                    origin: CGPoint(x: progressBarOffset, y: superview.bounds.origin.y),
+                    origin: CGPoint(x: originX, y: superview.bounds.origin.y),
                     size: CGSize(width: numVotesBarFill, height: superview.bounds.height)
                 )
                 Self.setSubviewFrame(subview: progressFill, frame: subviewFrame)
@@ -701,7 +726,7 @@ public class CVPollView: ManualStackView {
                 textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping,
-                textAlignment: .right
+                textAlignment: .trailing
             )
             numVotesConfig.applyForRendering(label: numVotesLabel)
             innerStackContainer.addSubviewToFillSuperviewEdges(numVotesLabel)
@@ -709,8 +734,10 @@ public class CVPollView: ManualStackView {
             buildProgressBar(
                 votes: votes,
                 totalVoters: totalVoters,
+                pollIsEnded: pollIsEnded,
                 foregroundColor: configurator.colorConfigurator.voteProgressForegroundColor,
-                backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor
+                backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor,
+                checkboxWidthWithSpacing: configurator.checkBoxSize.width + innerStackConfig.spacing
             )
 
             configure(
