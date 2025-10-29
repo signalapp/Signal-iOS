@@ -1919,7 +1919,7 @@ public class GroupsV2Impl: GroupsV2 {
                     // No need to update database, group state is already acceptable.
                     return
                 }
-                newRevision = max(newRevision, proposedRevision)
+                newRevision = proposedRevision
             }
 
             var builder = oldGroupModel.asBuilder
