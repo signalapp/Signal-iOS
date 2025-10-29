@@ -86,14 +86,6 @@ protocol SDSCodableModelDatabaseInterface {
         batchingPreference: BatchingPreference,
         block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     )
-
-    /// Traverse all records' unique IDs, in no particular order.
-    func enumerateModelUniqueIds<Model: SDSCodableModel>(
-        modelType: Model.Type,
-        transaction: DBReadTransaction,
-        batched: Bool,
-        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    )
 }
 
 /// The implementations of these methods previously existed as extensions on

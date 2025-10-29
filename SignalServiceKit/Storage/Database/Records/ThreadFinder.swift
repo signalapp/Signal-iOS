@@ -35,6 +35,19 @@ public class ThreadFinder {
         return thread
     }
 
+    public func fetchUniqueIds(tx: DBReadTransaction) -> [String] {
+        return failIfThrows {
+            do {
+                return try String.fetchAll(
+                    tx.database,
+                    sql: "SELECT \(threadColumn: .uniqueId) FROM \(ThreadRecord.databaseTableName)",
+                )
+            } catch {
+                throw error.grdbErrorForLogging
+            }
+        }
+    }
+
     /// Enumerates through all story thread (distribution lists)
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if

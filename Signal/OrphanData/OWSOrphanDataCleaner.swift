@@ -316,7 +316,7 @@ enum OWSOrphanDataCleaner {
         var activeStickerFilePaths: Set<String> = []
         var hasOrphanedPacksOrStickers = false
         databaseStorage.read { transaction in
-            let threadIds: Set<String> = Set(TSThread.anyAllUniqueIds(transaction: transaction))
+            let threadIds: Set<String> = Set(ThreadFinder().fetchUniqueIds(tx: transaction))
 
             var allInteractionIds: Set<String> = []
             do {

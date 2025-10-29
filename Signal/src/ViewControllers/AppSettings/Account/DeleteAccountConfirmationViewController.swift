@@ -341,7 +341,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
         var sendUpdatePromises = [Promise<Void>]()
-        for uniqueId in databaseStorage.read(block: TSThread.anyAllUniqueIds(transaction:)) {
+        for uniqueId in databaseStorage.read(block: ThreadFinder().fetchUniqueIds(tx:)) {
             let leavePromise = await databaseStorage.awaitableWrite { (tx) -> Promise<[Promise<Void>]> in
                 guard
                     let thread = TSThread.anyFetch(uniqueId: uniqueId, transaction: tx),

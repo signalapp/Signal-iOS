@@ -245,21 +245,6 @@ public extension SDSCodableModel {
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    static func anyEnumerateUniqueIds(
-        transaction: DBReadTransaction,
-        batched: Bool = false,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        SDSCodableModelDatabaseInterfaceImpl().enumerateModelUniqueIds(
-            modelType: Self.self,
-            transaction: transaction,
-            batched: batched,
-            block: block
-        )
-    }
-
-    /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
-    /// See that class for details.
     static func anyEnumerate(
         transaction: DBReadTransaction,
         sql: String,

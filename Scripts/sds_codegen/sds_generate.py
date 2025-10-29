@@ -2182,64 +2182,12 @@ public extension %(class_name)s {
             (str(clazz.name),) * 4
         )
 
-        swift_body += '''
-    // Traverses all records' unique ids.
-    // Records are not visited in any particular order.
-    class func anyEnumerateUniqueIds(
-        transaction: DBReadTransaction,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
-    }
-
-    // Traverses all records' unique ids.
-    // Records are not visited in any particular order.
-    class func anyEnumerateUniqueIds(
-        transaction: DBReadTransaction,
-        batched: Bool = false,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerateUniqueIds(transaction: transaction, batchSize: batchSize, block: block)
-    }
-
-    // Traverses all records' unique ids.
-    // Records are not visited in any particular order.
-    //
-    // If batchSize > 0, the enumeration is performed in autoreleased batches.
-    class func anyEnumerateUniqueIds(
-        transaction: DBReadTransaction,
-        batchSize: UInt,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        grdbEnumerateUniqueIds(transaction: transaction,
-                                sql: """
-                SELECT \\(%sColumn: .uniqueId)
-                FROM \\(%s.databaseTableName)
-            """,
-            batchSize: batchSize,
-            block: block)
-    }
-''' % (
-            record_identifier(clazz.name),
-            record_name,
-        )
-
         swift_body += """
     // Does not order the results.
     class func anyFetchAll(transaction: DBReadTransaction) -> [%s] {
         var result = [%s]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-        }
-        return result
-    }
-
-    // Does not order the results.
-    class func anyAllUniqueIds(transaction: DBReadTransaction) -> [String] {
-        var result = [String]()
-        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
-            result.append(uniqueId)
         }
         return result
     }
