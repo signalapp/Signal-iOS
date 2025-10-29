@@ -74,7 +74,7 @@ class MemberRequestView: ConversationBottomPanelView {
         showCancelRequestUI()
     }
 
-    func showCancelRequestUI() {
+    private func showCancelRequestUI() {
         guard let fromViewController = fromViewController else {
             owsFailDebug("Missing fromViewController.")
             return
@@ -96,7 +96,7 @@ class MemberRequestView: ConversationBottomPanelView {
         fromViewController.presentActionSheet(actionSheet)
     }
 
-    func cancelRequestToJoin() {
+    private func cancelRequestToJoin() {
         guard let fromViewController = fromViewController,
               let groupThread = thread as? TSGroupThread,
               let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
