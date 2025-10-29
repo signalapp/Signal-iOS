@@ -1878,13 +1878,10 @@ public class GroupsV2Impl: GroupsV2 {
 
         var newRevision: UInt32?
         do {
-            newRevision = try await cancelRequestToJoinUsingPatch(
-                groupV2Params: groupV2Params,
-                inviteLinkPassword: groupModel.inviteLinkPassword
-            )
+            newRevision = try await cancelRequestToJoinUsingPatch(groupV2Params: groupV2Params)
         } catch {
             switch error {
-            case GroupsV2Error.localUserBlockedFromJoining, GroupsV2Error.localUserIsNotARequestingMember:
+            case GroupsV2Error.localUserIsNotARequestingMember:
                 // In both of these cases, our request has already been removed. We can proceed with updating the model.
                 break
             default:
@@ -1950,10 +1947,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    private func cancelRequestToJoinUsingPatch(
-        groupV2Params: GroupV2Params,
-        inviteLinkPassword: Data?
-    ) async throws -> UInt32 {
+    private func cancelRequestToJoinUsingPatch(groupV2Params: GroupV2Params) async throws -> UInt32 {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
         // We re-fetch the GroupInviteLinkPreview before trying in order to get the latest:
@@ -1962,7 +1956,7 @@ public class GroupsV2Impl: GroupsV2 {
         // * addFromInviteLinkAccess
         // * local user's request status.
         let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(
-            inviteLinkPassword: inviteLinkPassword,
+            inviteLinkPassword: nil,
             groupSecretParams: groupV2Params.groupSecretParams
         )
         let oldRevision = groupInviteLinkPreview.revision
@@ -1977,7 +1971,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupChangeProto: groupChangeProto,
                 groupV2Params: groupV2Params,
                 authCredential: authCredential,
-                groupInviteLinkPassword: inviteLinkPassword
+                groupInviteLinkPassword: nil,
             )
         }
 
