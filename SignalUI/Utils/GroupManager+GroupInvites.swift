@@ -26,14 +26,16 @@ public extension GroupManager {
             canCancel: false,
             asyncBlock: { modal in
                 do {
-                    try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                        self.localLeaveGroupOrDeclineInvite(
+                    let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                    let leavePromise = await databaseStorage.awaitableWrite { tx in
+                        return self.localLeaveGroupOrDeclineInvite(
                             groupThread: groupThread,
                             replacementAdminAci: replacementAdminAci,
                             waitForMessageProcessing: true,
-                            tx: transaction
+                            tx: tx,
                         )
-                    }.awaitable()
+                    }
+                    _ = try await leavePromise.awaitable()
                     modal.dismiss { success?() }
                 } catch {
                     owsFailDebug("Leave group failed: \(error)")

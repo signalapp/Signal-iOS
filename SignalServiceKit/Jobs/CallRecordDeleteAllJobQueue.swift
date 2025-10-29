@@ -149,20 +149,18 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
     func runJobAttempt(
         _ jobRecord: CallRecordDeleteAllJobRecord
-    ) async -> JobAttemptResult {
+    ) async -> JobAttemptResult<Void> {
         return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
             db: db,
-            block: {
-                try await _runJobAttempt(jobRecord)
-            }
+            block: { try await _runJobAttempt(jobRecord) },
         )
     }
 
     func didFinishJob(
         _ jobRecordId: JobRecord.RowId,
-        result: JobResult
+        result: JobResult<Void>
     ) async {
         switch result.ranSuccessfullyOrError {
         case .success:

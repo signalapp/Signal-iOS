@@ -9,7 +9,7 @@ public import LibSignalClient
 private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
     func buildRunner() -> LocalUserLeaveGroupJobRunner { buildRunner(future: nil) }
 
-    func buildRunner(future: Future<Void>?) -> LocalUserLeaveGroupJobRunner {
+    func buildRunner(future: Future<[Promise<Void>]>?) -> LocalUserLeaveGroupJobRunner {
         return LocalUserLeaveGroupJobRunner(future: future)
     }
 }
@@ -19,13 +19,13 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         static let maxRetries: UInt = 110
     }
 
-    private let future: Future<Void>?
+    private let future: Future<[Promise<Void>]>?
 
-    init(future: Future<Void>?) {
+    init(future: Future<[Promise<Void>]>?) {
         self.future = future
     }
 
-    func runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async -> JobAttemptResult<[Promise<Void>]> {
         return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
@@ -34,16 +34,16 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         )
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<[Promise<Void>]>) async {
         switch result.ranSuccessfullyOrError {
-        case .success:
-            future?.resolve()
+        case .success(let result):
+            future?.resolve(result)
         case .failure(let error):
             future?.reject(error)
         }
     }
 
-    private func _runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async throws {
+    private func _runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async throws -> [Promise<Void>] {
         if jobRecord.waitForMessageProcessing {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
@@ -69,7 +69,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
             Logger.warn("Tried and failed to refresh credentials; continuing anyways because credentials aren't required; error: \(error)")
         }
 
-        try await GroupManager.updateGroupV2(
+        let sendPromises = try await GroupManager.updateGroupV2(
             groupModel: groupModel,
             description: #fileID
         ) { groupChangeSet in
@@ -84,6 +84,8 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.anyRemove(transaction: tx)
         }
+
+        return sendPromises
     }
 
     private func refreshGroupSendEndorsementsIfNeeded(
@@ -135,12 +137,15 @@ public class LocalUserLeaveGroupJobQueue {
 
     // MARK: - Promises
 
+    /// - Returns: A Promise for leaving the group whose value is a list of
+    /// Promises for sending the group update message(s) about leaving the
+    /// group. (See `updateGroupV2` for details.)
     public func addJob(
         groupThread: TSGroupThread,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) -> Promise<[Promise<Void>]> {
         guard groupThread.isGroupV2Thread else {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
         }
@@ -159,7 +164,7 @@ public class LocalUserLeaveGroupJobQueue {
         threadId: String,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
-        future: Future<Void>,
+        future: Future<[Promise<Void>]>,
         tx: DBWriteTransaction
     ) {
         let jobRecord = LocalUserLeaveGroupJobRecord(

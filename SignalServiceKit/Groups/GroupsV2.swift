@@ -89,10 +89,12 @@ public protocol GroupsV2 {
         justUploadedAvatars: GroupAvatarStateMap?
     ) async throws -> GroupV2SnapshotResponse
 
+    /// - Returns: A list of Promises for sending the group update message(s).
+    /// Each Promise represents sending a message to one or more recipients.
     func updateGroupV2(
         secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws
+    ) async throws -> [Promise<Void>]
 
     func updateGroupWithChangeActions(
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
@@ -492,7 +494,7 @@ public class MockGroupsV2: GroupsV2 {
     public func updateGroupV2(
         secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws {
+    ) async throws -> [Promise<Void>] {
         owsFail("Not implemented.")
     }
 

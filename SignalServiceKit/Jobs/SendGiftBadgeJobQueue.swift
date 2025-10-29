@@ -166,7 +166,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         self.completionFuture = completionFuture
     }
 
-    func runJobAttempt(_ jobRecord: SendGiftBadgeJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: SendGiftBadgeJobRecord) async -> JobAttemptResult<Void> {
         return await .executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
@@ -175,7 +175,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         )
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {
         switch result.ranSuccessfullyOrError {
         case .success:
             Logger.info("[Gifting] Job succeeded!")

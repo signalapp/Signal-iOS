@@ -430,7 +430,7 @@ public class GroupManager: NSObject {
         replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) -> Promise<[Promise<Void>]> {
         return SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.addJob(
             groupThread: groupThread,
             replacementAdminAci: replacementAdminAci,
@@ -452,7 +452,7 @@ public class GroupManager: NSObject {
                     return self.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: tx)
                 }
                 do {
-                    try await leavePromise.awaitable()
+                    _ = try await leavePromise.awaitable()
                 } catch {
                     owsFailDebug("Couldn't leave group: \(error)")
                 }
@@ -706,13 +706,12 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
-    public static func sendGroupUpdateMessage(groupId: GroupIdentifier, isUrgent: Bool = false, groupChangeProtoData: Data? = nil) async {
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+    public static func sendGroupUpdateMessage(groupId: GroupIdentifier, isUrgent: Bool = false, groupChangeProtoData: Data? = nil) async -> Promise<Void> {
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) -> Promise<Void> in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
             guard let thread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
-                owsFailDebug("Couldn't send group update message to missing thread.")
-                return
+                return Promise(error: OWSAssertionError("couldn't send group update message to missing thread"))
             }
 
             let message = OutgoingGroupUpdateMessage(
@@ -730,7 +729,7 @@ public class GroupManager: NSObject {
                 transientMessageWithoutAttachments: message
             )
 
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+            return SSKEnvironment.shared.messageSenderJobQueueRef.add(.promise, message: preparedMessage, transaction: transaction)
         }
     }
 

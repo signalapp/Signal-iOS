@@ -5,10 +5,10 @@
 
 import Foundation
 
-public enum JobAttemptResult {
+public enum JobAttemptResult<Success> {
     /// The Job has succeeded or reached a terminal error. A retryable error may
     /// become terminal if too many failures occur.
-    case finished(Result<Void, Error>)
+    case finished(Result<Success, Error>)
 
     /// The Job encountered a transient, retryable error. If `canRetryEarly` is
     /// true, the job may be attempted again before the time interval has
@@ -26,11 +26,11 @@ public enum JobAttemptResult {
         jobRecord: JobRecord,
         retryLimit: UInt,
         db: any DB,
-        block: () async throws -> Void
+        block: () async throws -> Success
     ) async -> JobAttemptResult {
         do {
-            try await block()
-            return .finished(.success(()))
+            let result = try await block()
+            return .finished(.success(result))
         } catch {
             return await db.awaitableWrite { tx in
                 return performDefaultErrorHandler(error: error, jobRecord: jobRecord, retryLimit: retryLimit, tx: tx)
@@ -63,18 +63,18 @@ public enum JobAttemptResult {
     }
 }
 
-public enum JobResult {
+public enum JobResult<Success> {
     /// The Job ran to completion and returned a Result.
-    case ranJob(Result<Void, Error>)
+    case ranJob(Result<Success, Error>)
     /// The Job couldn't be found, so it wasn't executed.
     case notFound
     /// The Job couldn't be fetched because of an Error.
     case fetchError(Error)
 
-    public var ranSuccessfullyOrError: Result<Void, Error> {
+    public var ranSuccessfullyOrError: Result<Success, Error> {
         switch self {
-        case .ranJob(.success(())):
-            return .success(())
+        case .ranJob(.success(let result)):
+            return .success(result)
         case .ranJob(.failure(let error)), .fetchError(let error):
             return .failure(error)
         case .notFound:
@@ -104,6 +104,7 @@ public enum JobResult {
 /// only handles FIFO ordering.
 public protocol JobRunner<JobRecordType> {
     associatedtype JobRecordType: JobRecord
+    associatedtype JobAttemptResultSuccessType
 
     /// Runs a single attempt of the job.
     ///
@@ -116,7 +117,7 @@ public protocol JobRunner<JobRecordType> {
     /// `runJobAttempt` ensures that removing `jobRecord` can be performed
     /// atomically with other database operations. (In DEBUG builds, the caller
     /// will try to ensure this invariant remains true.)
-    func runJobAttempt(_ jobRecord: JobRecordType) async -> JobAttemptResult
+    func runJobAttempt(_ jobRecord: JobRecordType) async -> JobAttemptResult<JobAttemptResultSuccessType>
 
     /// Invoked when a job reaches a terminal result.
     ///
@@ -128,7 +129,7 @@ public protocol JobRunner<JobRecordType> {
     /// fetching it throws an error), then `runJobAttempt` won't be invoked, but
     /// this method will still be invoked. This method is therefore an excellent
     /// place to invoke "exactly once", in-memory completion handlers.
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<JobAttemptResultSuccessType>) async
 }
 
 /// A `JobRunnerFactory` creates `JobRunner` instances.
@@ -147,6 +148,8 @@ public class JobQueueRunner<
     JobFinderType: JobRecordFinder & Sendable,
     JobRunnerFactoryType: JobRunnerFactory & Sendable,
 > where JobFinderType.JobRecordType == JobRunnerFactoryType.JobRunnerType.JobRecordType {
+    typealias SuccessType = JobRunnerFactoryType.JobRunnerType.JobAttemptResultSuccessType
+
     private let db: any DB
     private let jobFinder: JobFinderType
     private let jobRunnerFactory: JobRunnerFactoryType
@@ -310,7 +313,7 @@ public class JobQueueRunner<
         }
     }
 
-    private func _runJob(_ queuedJob: QueuedJob) async -> JobResult {
+    private func _runJob(_ queuedJob: QueuedJob) async -> JobResult<SuccessType> {
         while true {
             switch await runJobAttempt(queuedJob) {
             case .runAgain:
@@ -328,7 +331,7 @@ public class JobQueueRunner<
 
     private enum JobAttemptResult {
         case runAgain
-        case finished(Result<Void, Error>)
+        case finished(Result<SuccessType, Error>)
         case notFound
         case fetchError(Error)
     }

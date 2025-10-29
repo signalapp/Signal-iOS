@@ -480,7 +480,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
     // MARK: - Running
 
-    func runJobAttempt(_ jobRecord: DonationReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: DonationReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult<Void> {
         do {
             return try await _runJobAttempt(jobRecord)
         } catch {
@@ -500,7 +500,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         }
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {
         switch result.ranSuccessfullyOrError {
         case .success:
             logger.info("Redemption job succeeded")
@@ -512,7 +512,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         }
     }
 
-    private func _runJobAttempt(_ jobRecord: DonationReceiptCredentialRedemptionJobRecord) async throws -> JobAttemptResult {
+    private func _runJobAttempt(_ jobRecord: DonationReceiptCredentialRedemptionJobRecord) async throws -> JobAttemptResult<Void> {
         // First, load a bunch of state that *could* fail. If it does, the
         // operation can't ever succeed, so we throw it away.
         let configuration = try parseJobRecord(jobRecord)

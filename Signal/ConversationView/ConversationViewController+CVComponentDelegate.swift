@@ -829,7 +829,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
         Task {
-            await GroupManager.sendGroupUpdateMessage(groupId: groupId)
+            _ = await GroupManager.sendGroupUpdateMessage(groupId: groupId)
             Logger.info("Group updated, removing group creation error.")
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in

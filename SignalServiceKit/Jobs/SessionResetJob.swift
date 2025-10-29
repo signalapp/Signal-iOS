@@ -39,13 +39,13 @@ private class SessionResetJobRunner: JobRunner {
 
     private var hasArchivedAllSessions = false
 
-    func runJobAttempt(_ jobRecord: SessionResetJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: SessionResetJobRecord) async -> JobAttemptResult<Void> {
         do {
             try await _runJobAttempt(jobRecord)
             return .finished(.success(()))
         } catch {
             return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                let result = JobAttemptResult.performDefaultErrorHandler(
+                let result = JobAttemptResult<Void>.performDefaultErrorHandler(
                     error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx
                 )
                 if case .finished(.failure) = result {
@@ -64,7 +64,7 @@ private class SessionResetJobRunner: JobRunner {
         }
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {}
 
     private func _runJobAttempt(_ jobRecord: SessionResetJobRecord) async throws {
         let endSessionMessagePromise = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in

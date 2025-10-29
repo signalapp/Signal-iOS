@@ -15,10 +15,10 @@ extension GroupManager {
             secretParams: GroupSecretParams,
             updateDescription: String,
             changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-        ) async throws {
+        ) async throws -> [Promise<Void>] {
             do {
-                try await Promise.wrapAsync {
-                    try await self._run(secretParams: secretParams, changesBlock: changesBlock)
+                return try await Promise.wrapAsync {
+                    return try await self._run(secretParams: secretParams, changesBlock: changesBlock)
                 }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: updateDescription) {
                     return GroupsV2Error.timeout
                 }.awaitable()
@@ -31,25 +31,28 @@ extension GroupManager {
         private static func _run(
             secretParams: GroupSecretParams,
             changesBlock: (GroupsV2OutgoingChanges) -> Void
-        ) async throws {
+        ) async throws -> [Promise<Void>] {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
-            try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
+            return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 secretParams: secretParams,
                 changesBlock: changesBlock
             )
         }
     }
 
+    /// - Returns: A list of Promises for sending the group update message(s).
+    /// Each Promise represents sending a message to one or more recipients.
+    @discardableResult
     public static func updateGroupV2(
         groupModel: TSGroupModelV2,
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-    ) async throws {
+    ) async throws -> [Promise<Void>] {
         let secretParams = try groupModel.secretParams()
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-        try await groupUpdateQueues.run(forKey: groupId) {
-            try await GenericGroupUpdateOperation.run(
+        return try await groupUpdateQueues.run(forKey: groupId) {
+            return try await GenericGroupUpdateOperation.run(
                 secretParams: secretParams,
                 updateDescription: description,
                 changesBlock: changesBlock

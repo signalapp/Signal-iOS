@@ -152,7 +152,7 @@ private class MockJobRunnerFactory: JobRunnerFactory {
     }
 
     func buildRunner(
-        completionContinuation: CheckedContinuation<JobResult, Never>? = nil,
+        completionContinuation: CheckedContinuation<JobResult<Void>, Never>? = nil,
         retryInterval: TimeInterval? = nil
     ) -> MockJobRunner {
         return MockJobRunner(
@@ -166,14 +166,14 @@ private class MockJobRunnerFactory: JobRunnerFactory {
 }
 
 private class MockJobRunner: JobRunner {
-    let completionContinuation: CheckedContinuation<JobResult, Never>?
+    let completionContinuation: CheckedContinuation<JobResult<Void>, Never>?
     let executedJobs: AtomicArray<String>
     let jobFinder: MockJobFinder
     let mockDb: InMemoryDB
     var retryInterval: TimeInterval?
 
     init(
-        completionContinuation: CheckedContinuation<JobResult, Never>?,
+        completionContinuation: CheckedContinuation<JobResult<Void>, Never>?,
         executedJobs: AtomicArray<String>,
         jobFinder: MockJobFinder,
         mockDb: InMemoryDB,
@@ -186,7 +186,7 @@ private class MockJobRunner: JobRunner {
         self.retryInterval = retryInterval
     }
 
-    func runJobAttempt(_ jobRecord: SessionResetJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: SessionResetJobRecord) async -> JobAttemptResult<Void> {
         executedJobs.append(jobRecord.contactThreadId)
         if let retryInterval = self.retryInterval {
             self.retryInterval = nil
@@ -197,7 +197,7 @@ private class MockJobRunner: JobRunner {
         }
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {
         completionContinuation?.resume(returning: result)
     }
 }

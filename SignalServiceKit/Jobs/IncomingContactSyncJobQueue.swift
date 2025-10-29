@@ -80,7 +80,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
         self.appReadiness = appReadiness
     }
 
-    func runJobAttempt(_ jobRecord: IncomingContactSyncJobRecord) async -> JobAttemptResult {
+    func runJobAttempt(_ jobRecord: IncomingContactSyncJobRecord) async -> JobAttemptResult<Void> {
         return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
@@ -89,7 +89,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
         )
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {}
 
     private func _runJob(_ jobRecord: IncomingContactSyncJobRecord) async throws {
         let fileUrl: URL

@@ -207,7 +207,7 @@ public class GroupsV2Impl: GroupsV2 {
     //
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
-    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws {
+    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws -> [Promise<Void>] {
 
         let justUploadedAvatars = GroupAvatarStateMap.from(changes: changes)
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
@@ -251,12 +251,12 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         guard let groupUpdateResult else {
-            return
+            return []
         }
 
         let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: groupUpdateResult.httpResponse.responseBodyData ?? Data())
 
-        try await handleGroupUpdatedOnService(
+        return try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
             messageBehavior: groupUpdateResult.messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
@@ -349,7 +349,7 @@ public class GroupsV2Impl: GroupsV2 {
         justUploadedAvatars: GroupAvatarStateMap,
         isUrgent: Bool,
         groupV2Params: GroupV2Params
-    ) async throws {
+    ) async throws -> [Promise<Void>] {
         guard let changeProto = changeResponse.groupChange else {
             throw OWSAssertionError("Missing groupChange.")
         }
@@ -372,7 +372,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         switch messageBehavior {
         case .sendNothing:
-            return
+            return []
         case .sendUpdateToOtherGroupMembers:
             break
         }
@@ -380,17 +380,21 @@ public class GroupsV2Impl: GroupsV2 {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let groupChangeProtoData = try changeProto.serializedData()
 
-        await GroupManager.sendGroupUpdateMessage(
+        var sendPromises = [Promise<Void>]()
+
+        sendPromises.append(await GroupManager.sendGroupUpdateMessage(
             groupId: groupId,
             isUrgent: isUrgent,
             groupChangeProtoData: groupChangeProtoData
-        )
+        ))
 
-        await sendGroupUpdateMessageToRemovedUsers(
+        sendPromises.append(contentsOf: await sendGroupUpdateMessageToRemovedUsers(
             changeActionsProto: changeActionsProto,
             groupChangeProtoData: groupChangeProtoData,
             groupV2Params: groupV2Params
-        )
+        ))
+
+        return sendPromises
     }
 
     private func membersRemovedByChangeActions(
@@ -438,14 +442,14 @@ public class GroupsV2Impl: GroupsV2 {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupChangeProtoData: Data,
         groupV2Params: GroupV2Params
-    ) async {
+    ) async -> [Promise<Void>] {
         let serviceIds = membersRemovedByChangeActions(
             groupChangeActionsProto: changeActionsProto,
             groupV2Params: groupV2Params
         )
 
         if serviceIds.isEmpty {
-            return
+            return []
         }
 
         let plaintextData: Data
@@ -467,19 +471,19 @@ public class GroupsV2Impl: GroupsV2 {
             contentBuilder.setDataMessage(dataProto)
             plaintextData = try contentBuilder.buildSerializedData()
         } catch {
-            owsFailDebug("Error: \(error)")
-            return
+            owsFailDebug("\(error)")
+            return [Promise(error: error)]
         }
 
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            for serviceId in serviceIds {
+        return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            return serviceIds.map { serviceId in
                 let address = SignalServiceAddress(serviceId)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
                 let message = OWSStaticOutgoingMessage(thread: contactThread, timestamp: timestamp, plaintextData: plaintextData, transaction: tx)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: message
                 )
-                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
+                return SSKEnvironment.shared.messageSenderJobQueueRef.add(.promise, message: preparedMessage, transaction: tx)
             }
         }
     }
@@ -992,10 +996,10 @@ public class GroupsV2Impl: GroupsV2 {
     public func updateGroupV2(
         secretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws {
+    ) async throws -> [Promise<Void>] {
         let changes = GroupsV2OutgoingChanges(groupSecretParams: secretParams)
         changesBlock(changes)
-        try await updateExistingGroupOnService(changes: changes)
+        return try await updateExistingGroupOnService(changes: changes)
     }
 
     // MARK: - Rotate Profile Key
@@ -1689,7 +1693,7 @@ public class GroupsV2Impl: GroupsV2 {
                     secretParams: secretParams,
                     options: [.didJustAddSelfViaGroupLink]
                 )
-                await GroupManager.sendGroupUpdateMessage(
+                _ = await GroupManager.sendGroupUpdateMessage(
                     groupId: groupId,
                     groupChangeProtoData: try changeProto.serializedData()
                 )

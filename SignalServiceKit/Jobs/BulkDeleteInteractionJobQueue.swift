@@ -98,7 +98,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
 
     func runJobAttempt(
         _ jobRecord: BulkDeleteInteractionJobRecord
-    ) async -> JobAttemptResult {
+    ) async -> JobAttemptResult<Void> {
         return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
@@ -109,7 +109,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         )
     }
 
-    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult<Void>) async {
         switch result.ranSuccessfullyOrError {
         case .success:
             break
