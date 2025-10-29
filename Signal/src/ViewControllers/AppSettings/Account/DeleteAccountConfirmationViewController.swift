@@ -346,15 +346,25 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 guard
                     let thread = TSThread.anyFetch(uniqueId: uniqueId, transaction: tx),
                     let groupThread = thread as? TSGroupThread,
-                    groupThread.isGroupV2Thread
+                    groupThread.isGroupV2Thread,
+                    let groupModel = groupThread.groupModel as? TSGroupModelV2
                 else {
                     return .value([])
                 }
-                return GroupManager.localLeaveGroupOrDeclineInvite(
-                    groupThread: groupThread,
-                    isDeletingAccount: true,
-                    tx: tx,
-                )
+                if groupThread.isLocalUserRequestingMember {
+                    return Promise.wrapAsync {
+                        try await GroupManager.cancelRequestToJoin(groupModel: groupModel)
+                        // There's no messages to send when canceling a join request because we
+                        // don't know who's in the the group/who needs to be notified.
+                        return []
+                    }
+                } else {
+                    return GroupManager.localLeaveGroupOrDeclineInvite(
+                        groupThread: groupThread,
+                        isDeletingAccount: true,
+                        tx: tx,
+                    )
+                }
             }
             do {
                 sendUpdatePromises.append(contentsOf: try await leavePromise.awaitable())
