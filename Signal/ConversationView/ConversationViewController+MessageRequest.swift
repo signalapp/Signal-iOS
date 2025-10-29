@@ -208,8 +208,7 @@ private extension ConversationViewController {
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }
 
-        guard let groupThread = thread as? TSGroupThread,
-              groupThread.isLocalUserFullOrInvitedMember else {
+        guard let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupMembership.isLocalUserFullOrInvitedMember else {
             // If we don't need to leave the group, finish up immediately.
             return completion()
         }
@@ -469,7 +468,7 @@ extension ConversationViewController {
 
         var isMemberOfGroup = false
         if let groupThread = thread as? TSGroupThread {
-            isMemberOfGroup = groupThread.isLocalUserMemberOfAnyKind
+            isMemberOfGroup = groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind
         }
 
         if isMemberOfGroup {

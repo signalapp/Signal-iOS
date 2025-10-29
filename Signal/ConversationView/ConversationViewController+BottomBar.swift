@@ -323,14 +323,14 @@ public extension ConversationViewController {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return groupThread.isLocalUserRequestingMember
+        return groupThread.groupModel.groupMembership.isLocalUserRequestingMember
     }
 
     var userLeftGroup: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return !groupThread.isLocalUserFullMember
+        return !groupThread.groupModel.groupMembership.isLocalUserFullMember
     }
 
     private var hasBlockingLegacyGroup: Bool {

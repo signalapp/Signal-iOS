@@ -246,7 +246,7 @@ public class ThreadFinder {
         transaction: DBReadTransaction
     ) -> Bool {
         // TODO: Should we consult isRequestingMember() here?
-        if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread, groupThread.isLocalUserInvitedMember {
+        if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread, groupThread.groupModel.groupMembership.isLocalUserInvitedMember {
             return true
         }
 
@@ -262,7 +262,7 @@ public class ThreadFinder {
         }
 
         let isGroupThread = thread is TSGroupThread
-        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.groupModel.groupMembership.isLocalUserFullOrInvitedMember == true
 
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup {

@@ -442,7 +442,7 @@ public class GroupManager: NSObject {
     }
 
     public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread, tx: DBWriteTransaction) {
-        guard groupThread.isLocalUserMemberOfAnyKind else {
+        guard groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }

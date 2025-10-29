@@ -386,7 +386,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         contactItems.append(item)
                     }
                 case let groupThread as TSGroupThread:
-                    guard groupThread.isLocalUserFullMember else {
+                    guard groupThread.groupModel.groupMembership.isLocalUserFullMember else {
                         return
                     }
 

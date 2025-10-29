@@ -108,18 +108,22 @@ class GroupViewHelper {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (!threadViewModel.hasPendingMessageRequest &&
-            groupThread.isGroupV2Thread &&
-            groupThread.isLocalUserFullMemberAndAdministrator)
+        return (
+            !threadViewModel.hasPendingMessageRequest
+            && groupThread.isGroupV2Thread
+            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+        )
     }
 
     var canRevokePendingInvites: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (!threadViewModel.hasPendingMessageRequest &&
-            groupThread.isGroupV2Thread &&
-            groupThread.isLocalUserFullMemberAndAdministrator)
+        return (
+            !threadViewModel.hasPendingMessageRequest
+            && groupThread.isGroupV2Thread
+            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+        )
     }
 
     var canResendInvites: Bool {
@@ -130,23 +134,25 @@ class GroupViewHelper {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (!threadViewModel.hasPendingMessageRequest &&
-            groupThread.isGroupV2Thread &&
-            groupThread.isLocalUserFullMemberAndAdministrator)
+        return (
+            !threadViewModel.hasPendingMessageRequest
+            && groupThread.isGroupV2Thread
+            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+        )
     }
 
     var isLocalUserFullMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true
         }
-        return groupThread.isLocalUserFullMember
+        return groupThread.groupModel.groupMembership.isLocalUserFullMember
     }
 
     var isLocalUserFullOrInvitedMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true
         }
-        return groupThread.isLocalUserFullOrInvitedMember
+        return groupThread.groupModel.groupMembership.isLocalUserFullOrInvitedMember
     }
 
     func isFullOrInvitedMember(_ address: SignalServiceAddress) -> Bool {

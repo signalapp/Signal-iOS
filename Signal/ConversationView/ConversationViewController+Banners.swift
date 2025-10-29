@@ -650,7 +650,7 @@ extension ConversationViewController {
 
     private var canApprovePendingMemberRequests: Bool {
         if let groupThread = thread as? TSGroupThread {
-            return groupThread.isLocalUserFullMemberAndAdministrator
+            return groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
         } else {
             return false
         }

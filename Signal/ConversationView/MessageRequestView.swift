@@ -98,9 +98,8 @@ class MessageRequestView: ConversationBottomPanelView {
             Self.messageRequestType(forThread: thread, transaction: transaction)
         }
 
-        if let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV2Thread {
-            self.mode = (groupThread.isLocalUserInvitedMember
+        if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread {
+            self.mode = (groupThread.groupModel.groupMembership.isLocalUserInvitedMember
                 ? .groupInviteRequest
                 : .contactOrGroupRequest)
         } else {
@@ -154,8 +153,8 @@ class MessageRequestView: ConversationBottomPanelView {
         let hasReportedSpam = finder.hasUserReportedSpam(transaction: transaction)
 
         var isLocalUserInvitedMember = false
-        if let groupThread = thread as? TSGroupThread, groupThread.isLocalUserInvitedMember {
-            isLocalUserInvitedMember = groupThread.isLocalUserInvitedMember
+        if let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupMembership.isLocalUserInvitedMember {
+            isLocalUserInvitedMember = true
         }
 
         return MessageRequestType(

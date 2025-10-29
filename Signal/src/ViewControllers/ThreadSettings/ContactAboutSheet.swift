@@ -365,7 +365,7 @@ class ContactAboutSheet: StackSheetViewController {
             with: self.thread.contactAddress,
             transaction: tx
         )
-        .filter(\.isLocalUserFullMember)
+        .filter(\.groupModel.groupMembership.isLocalUserFullMember)
         .filter(\.shouldThreadBeVisible)
         // We don't want to show "no groups in common",
         // so return nil instead of an empty array.

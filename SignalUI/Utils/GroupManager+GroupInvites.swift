@@ -16,7 +16,7 @@ public extension GroupManager {
         success: (() -> Void)?
     ) {
 
-        guard groupThread.isLocalUserMemberOfAnyKind else {
+        guard groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }

@@ -953,7 +953,7 @@ public final class MessageReceiver {
             owsFailDebug("Group v2 revision larger than \(groupModel.revision) in \(groupContextInfo.groupId)")
             return nil
         }
-        guard groupThread.isLocalUserFullMember else {
+        guard groupThread.groupModel.groupMembership.isLocalUserFullMember else {
             // We don't want to process user-visible messages for groups in which we
             // are a pending member.
             Logger.info("Ignoring messages for invited group or left group.")
@@ -1615,7 +1615,7 @@ public final class MessageReceiver {
                 Logger.warn("Ignoring typingMessage for non-existent thread")
                 return
             }
-            guard groupThread.isLocalUserFullOrInvitedMember else {
+            guard groupThread.groupModel.groupMembership.isLocalUserFullOrInvitedMember else {
                 Logger.info("Ignoring message for left group")
                 return
             }

@@ -351,7 +351,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 else {
                     return .value([])
                 }
-                if groupThread.isLocalUserRequestingMember {
+                if groupModel.groupMembership.isLocalUserRequestingMember {
                     return Promise.wrapAsync {
                         try await GroupManager.cancelRequestToJoin(groupModel: groupModel)
                         // There's no messages to send when canceling a join request because we

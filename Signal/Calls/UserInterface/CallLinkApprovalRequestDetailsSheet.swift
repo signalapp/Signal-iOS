@@ -130,7 +130,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                 with: self.approvalRequest.address,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
-            .filter(\.isLocalUserFullMember)
+            .filter(\.groupModel.groupMembership.isLocalUserFullMember)
             .filter(\.shouldThreadBeVisible)
 
             let contactTitle = ConversationHeaderBuilder.threadAttributedString(

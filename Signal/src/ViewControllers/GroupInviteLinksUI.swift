@@ -44,7 +44,7 @@ public class GroupInviteLinksUI: UIView {
             let existingGroupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 TSGroupThread.fetch(forGroupId: groupV2ContextInfo.groupId, tx: transaction)
             }),
-            existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember
+            existingGroupThread.groupModel.groupMembership.isLocalUserFullMember || existingGroupThread.groupModel.groupMembership.isLocalUserRequestingMember
         {
             SignalApp.shared.presentConversationForThread(
                 threadUniqueId: existingGroupThread.uniqueId,

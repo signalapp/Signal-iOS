@@ -263,8 +263,7 @@ public class BlockingManager {
             // Quit the group if we're a member.
             if
                 blockMode == .localShouldLeaveGroups,
-                groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind,
-                groupThread.isLocalUserMemberOfAnyKind
+                groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind
             {
                 GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(
                     groupThread: groupThread,

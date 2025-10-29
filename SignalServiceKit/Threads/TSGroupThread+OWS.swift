@@ -14,30 +14,6 @@ public extension TSGroupThread {
         groupModel.groupMembership
     }
 
-    var isLocalUserMemberOfAnyKind: Bool {
-        groupMembership.isLocalUserMemberOfAnyKind
-    }
-
-    var isLocalUserFullMember: Bool {
-        groupMembership.isLocalUserFullMember
-    }
-
-    var isLocalUserInvitedMember: Bool {
-        groupMembership.isLocalUserInvitedMember
-    }
-
-    var isLocalUserRequestingMember: Bool {
-        groupMembership.isLocalUserRequestingMember
-    }
-
-    var isLocalUserFullOrInvitedMember: Bool {
-        groupMembership.isLocalUserFullOrInvitedMember
-    }
-
-    var isLocalUserFullMemberAndAdministrator: Bool {
-        groupMembership.isLocalUserFullMemberAndAdministrator
-    }
-
     // MARK: -
 
     static let groupThreadUniqueIdPrefix = "g"
@@ -166,6 +142,6 @@ public extension TSThread {
         guard let groupThread = self as? TSGroupThread else {
             return true
         }
-        return groupThread.groupMembership.isLocalUserFullMember
+        return groupThread.groupModel.groupMembership.isLocalUserFullMember
     }
 }

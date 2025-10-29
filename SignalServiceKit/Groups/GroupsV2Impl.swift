@@ -2026,11 +2026,11 @@ public class GroupsV2Impl: GroupsV2 {
                     // Not a placeholder model; no need to update.
                     return
                 }
-                guard isLocalUserRequestingMember != groupThread.isLocalUserRequestingMember else {
+                let oldGroupMembership = oldGroupModel.groupMembership
+                guard isLocalUserRequestingMember != oldGroupMembership.isLocalUserRequestingMember else {
                     // Nothing to change.
                     return
                 }
-                let oldGroupMembership = oldGroupModel.groupMembership
                 var builder = oldGroupModel.asBuilder
                 builder.isJoinRequestPlaceholder = true
                 if let revision {

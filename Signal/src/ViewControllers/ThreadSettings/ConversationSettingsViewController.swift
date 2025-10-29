@@ -952,7 +952,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             self.mutualGroupThreads = TSGroupThread.groupThreads(
                 with: contactThread.contactAddress,
                 transaction: transaction
-            ).filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }
+            ).filter { $0.groupModel.groupMembership.isLocalUserFullMember && $0.shouldThreadBeVisible }
         }
     }
 
