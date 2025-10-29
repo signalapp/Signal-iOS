@@ -1264,70 +1264,237 @@ public class SignalAttachment: NSObject {
     @MainActor
     public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         Logger.debug("")
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
+
+        guard let videoTrack = asset.tracks(withMediaType: .video).first else {
+            Logger.warn("Video export requested for asset without video track.")
             let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return attachment
         }
 
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
+        let sourceDimensions = videoDimensions(for: videoTrack)
+        let sourceMaxDimension = max(sourceDimensions.width, sourceDimensions.height)
+        let recommendedMaxDimension = recommendedExportDimension(
+            for: asset,
+            videoTrack: videoTrack,
+            sourceDimensions: sourceDimensions
+        )
+        let candidatePresets = exportPresets(
+            for: asset,
+            sourceMaxDimension: sourceMaxDimension,
+            recommendedMaxDimension: recommendedMaxDimension
+        )
 
-        let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+        if candidatePresets.isEmpty {
+            Logger.warn("No compatible export presets found; falling back to failure.")
+            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
+            attachment.error = .couldNotConvertToMpeg4
+            return attachment
+        }
 
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            group.addTask { @MainActor in
-                Logger.debug("Starting video export")
-                try await exportSession.exportAsync(to: exportURL, as: .mp4)
+        let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
-                switch exportSession.status {
-                case .unknown:
-                    throw OWSAssertionError("Unknown export status.")
-                case .waiting:
-                    throw OWSAssertionError("Export status: .waiting.")
-                case .exporting:
-                    throw OWSAssertionError("Export status: .exporting.")
-                case .completed:
-                    break
-                case .failed:
-                    if let error = exportSession.error {
-                        owsFailDebug("Error: \(error)")
-                        throw error
-                    } else {
-                        throw OWSAssertionError("Export failed without error.")
-                    }
-                case .cancelled:
-                    throw CancellationError()
-                @unknown default:
-                    throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
-                }
+        var hadOversizedExport = false
+        var lastExportError: Error?
+
+        for preset in candidatePresets {
+            guard let exportSession = AVAssetExportSession(asset: asset, presetName: preset.name) else {
+                Logger.warn("Failed to create export session for preset: \(preset.name)")
+                continue
             }
+
+            guard exportSession.supportedFileTypes.contains(.mp4) else {
+                Logger.warn("Preset \(preset.name) does not support mp4 output.")
+                continue
+            }
+
+            let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
+            exportSession.fileLengthLimit = Int64(OWSMediaUtils.kMaxFileSizeVideo)
 
             if let sessionCallback {
                 sessionCallback(exportSession)
             }
 
-            try await group.waitForAll()
-        }
+            Logger.debug("Starting video export using preset \(preset.name) (maxDimension: \(preset.maxDimension?.description ?? "nil"))")
 
-        Logger.debug("Completed video export")
-        let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
-
-        do {
-            let dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
-            dataSource.sourceFilename = mp4Filename
-
-            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
-            if dataSource.dataLength > OWSMediaUtils.kMaxFileSizeVideo {
-                attachment.error = .fileSizeTooLarge
+            do {
+                try await exportSession.exportAsync(to: exportURL, as: .mp4)
+            } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                if Self.isMaximumFileSizeError(error) || (exportSession.error.map(Self.isMaximumFileSizeError) ?? false) {
+                    Logger.info("Export aborted by file size limit for preset \(preset.name); trying lower preset.")
+                    hadOversizedExport = true
+                } else {
+                    Logger.warn("Export failed for preset \(preset.name) with error: \(error)")
+                    lastExportError = error
+                }
+                continue
             }
-            return attachment
-        } catch {
-            owsFailDebug("Failed to build data source for exported video URL")
-            let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
-            attachment.error = .couldNotConvertToMpeg4
-            return attachment
+
+            switch exportSession.status {
+            case .completed:
+                break
+            case .cancelled:
+                throw CancellationError()
+            case .failed:
+                if let error = exportSession.error {
+                    if Self.isMaximumFileSizeError(error) {
+                        Logger.info("Export session hit file size limit for preset \(preset.name); trying lower preset.")
+                        hadOversizedExport = true
+                    } else {
+                        Logger.warn("Export session failed for preset \(preset.name): \(error)")
+                        lastExportError = error
+                    }
+                } else {
+                    Logger.warn("Export session failed without error for preset \(preset.name)")
+                }
+                continue
+            case .waiting, .exporting, .unknown:
+                Logger.warn("Unexpected export state \(exportSession.status.rawValue) for preset \(preset.name)")
+                continue
+            @unknown default:
+                Logger.warn("Unknown export status \(exportSession.status.rawValue) for preset \(preset.name)")
+                continue
+            }
+
+            do {
+                let dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
+                dataSource.sourceFilename = mp4Filename
+
+                let fileSize = dataSource.dataLength
+                if fileSize > OWSMediaUtils.kMaxFileSizeVideo {
+                    Logger.info("Export with preset \(preset.name) produced \(fileSize) bytes (> \(OWSMediaUtils.kMaxFileSizeVideo)); trying lower preset.")
+                    hadOversizedExport = true
+                    // Drop this dataSource by allowing it to deallocate (and delete the file).
+                    continue
+                }
+
+                Logger.debug("Completed video export with preset \(preset.name); file size \(fileSize) bytes.")
+                return SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
+            } catch {
+                Logger.warn("Failed to build data source for exported video URL: \(error)")
+                lastExportError = error
+                continue
+            }
         }
+
+        let attachment = SignalAttachment(dataSource: DataSourceValue(), dataUTI: dataUTI)
+        if hadOversizedExport {
+            attachment.error = .fileSizeTooLarge
+        } else {
+            if let lastExportError {
+                Logger.warn("All export attempts failed. Last error: \(lastExportError)")
+            }
+            attachment.error = .couldNotConvertToMpeg4
+        }
+        return attachment
+    }
+
+    private struct VideoExportPresetOption {
+        let name: String
+        let maxDimension: CGFloat?
+    }
+
+    private static func exportPresets(for asset: AVAsset, sourceMaxDimension: CGFloat, recommendedMaxDimension: CGFloat) -> [VideoExportPresetOption] {
+        let availablePresets = Set(AVAssetExportSession.exportPresets(compatibleWith: asset))
+
+        let presetCatalog: [VideoExportPresetOption] = [
+            VideoExportPresetOption(name: AVAssetExportPreset3840x2160, maxDimension: 3840),
+            VideoExportPresetOption(name: AVAssetExportPreset1920x1080, maxDimension: 1920),
+            VideoExportPresetOption(name: AVAssetExportPreset1280x720, maxDimension: 1280),
+            VideoExportPresetOption(name: AVAssetExportPreset960x540, maxDimension: 960),
+            VideoExportPresetOption(name: AVAssetExportPreset640x480, maxDimension: 640),
+            VideoExportPresetOption(name: AVAssetExportPresetMediumQuality, maxDimension: 640),
+            VideoExportPresetOption(name: AVAssetExportPresetLowQuality, maxDimension: 480)
+        ]
+
+        // Avoid upscaling and keep within the recommended dimension with a ~10% cushion for bitrate flexibility.
+        // 352 px roughly matches the low-quality preset floor and prevents producing extremely small frames.
+        let dimensionUpperBound = max(min(sourceMaxDimension, recommendedMaxDimension * 1.1), 352)
+
+        var filteredPresets: [VideoExportPresetOption] = presetCatalog.filter { option in
+            guard availablePresets.contains(option.name) else {
+                return false
+            }
+
+            if let maxDimension = option.maxDimension {
+                if maxDimension > sourceMaxDimension * 1.02 {
+                    // Allow at most a 2% rounding buffer before we consider preset dimensions "upscaling".
+                    return false
+                }
+                if maxDimension > dimensionUpperBound {
+                    return false
+                }
+            }
+            return true
+        }
+
+        if filteredPresets.isEmpty {
+            filteredPresets = presetCatalog.filter { availablePresets.contains($0.name) }
+        }
+
+        return filteredPresets
+    }
+
+    private static func recommendedExportDimension(for asset: AVAsset, videoTrack: AVAssetTrack, sourceDimensions: CGSize) -> CGFloat {
+        let sourceMaxDimension = max(sourceDimensions.width, sourceDimensions.height)
+        let durationSeconds = max(asset.duration.seconds, 0)
+        guard durationSeconds > 0 else {
+            return sourceMaxDimension
+        }
+
+        let targetBitBudget = (Double(OWSMediaUtils.kMaxFileSizeVideo) * 8.0) / durationSeconds
+
+        let nominalFrameRate = videoTrack.nominalFrameRate > 0 ? Double(videoTrack.nominalFrameRate) : 30.0
+        let videoBitrateBudget = max(targetBitBudget * 0.8, targetBitBudget - 128_000.0) // Reserve room for audio and mux overhead.
+        guard videoBitrateBudget > 0 else {
+            return max(sourceMaxDimension * 0.5, 352)
+        }
+
+        let sourcePixelsPerFrame = Double(max(sourceDimensions.width, 1) * max(sourceDimensions.height, 1))
+        guard sourcePixelsPerFrame > 0 else {
+            return sourceMaxDimension
+        }
+
+        let desiredBitsPerPixel: Double = 0.1 // Heuristic BPP target for H.264 that keeps 30 fps video within limit.
+        let allowablePixelsPerFrame = videoBitrateBudget / (nominalFrameRate * desiredBitsPerPixel)
+
+        if allowablePixelsPerFrame >= sourcePixelsPerFrame {
+            return sourceMaxDimension
+        }
+
+        let scale = sqrt(allowablePixelsPerFrame / sourcePixelsPerFrame)
+        let scaledDimension = sourceMaxDimension * CGFloat(scale)
+
+        // Ensure we never shrink below 352 px so that outputs remain within standard low-quality preset bounds.
+        return max(min(scaledDimension, sourceMaxDimension), 352)
+    }
+
+    private static func videoDimensions(for track: AVAssetTrack) -> CGSize {
+        let naturalSize = track.naturalSize
+        let transform = track.preferredTransform
+        let transformedSize = naturalSize.applying(transform)
+
+        let orientedWidth = abs(transformedSize.width)
+        let orientedHeight = abs(transformedSize.height)
+
+        if orientedWidth > 0 && orientedHeight > 0 {
+            return CGSize(width: orientedWidth, height: orientedHeight)
+        }
+
+        let fallbackWidth = max(abs(naturalSize.width), 1)
+        let fallbackHeight = max(abs(naturalSize.height), 1)
+        return CGSize(width: fallbackWidth, height: fallbackHeight)
+    }
+
+    private static func isMaximumFileSizeError(_ error: Error) -> Bool {
+        // Recognize AVFoundation file length limit errors so we can surface `.fileSizeTooLarge`.
+        let nsError = error as NSError
+        return nsError.domain == AVFoundationErrorDomain && nsError.code == AVError.maximumFileSizeReached.rawValue
     }
 
     public func isVideoThatNeedsCompression() -> Bool {
