@@ -1211,7 +1211,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     case mentions = 6
     case payments = 7
     case polls = 8
-    static let current = payments
+    static let current = polls
 
     init() {
       self = .initial
@@ -5737,7 +5737,7 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
 }
 
 extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INITIAL\0\u{1}MESSAGE_TIMERS\0\u{1}VIEW_ONCE\0\u{1}VIEW_ONCE_VIDEO\0\u{1}REACTIONS\0\u{1}CDN_SELECTOR_ATTACHMENTS\0\u{1}MENTIONS\0\u{9}PAYMENTS\0\u{1}CURRENT\0\u{1}POLLS\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INITIAL\0\u{1}MESSAGE_TIMERS\0\u{1}VIEW_ONCE\0\u{1}VIEW_ONCE_VIDEO\0\u{1}REACTIONS\0\u{1}CDN_SELECTOR_ATTACHMENTS\0\u{1}MENTIONS\0\u{1}PAYMENTS\0\u{9}POLLS\0\u{1}CURRENT\0")
 }
 
 extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

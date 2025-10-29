@@ -392,7 +392,7 @@ message DataMessage {
     MENTIONS = 6;
     PAYMENTS = 7;
     POLLS = 8;
-    CURRENT = 7;
+    CURRENT = 8;
   }
 
   message GiftBadge {
