@@ -142,8 +142,8 @@ public class MessageActionsToolbar: UIView {
         addSubview(toolbar)
         addConstraints([
             toolbar.topAnchor.constraint(equalTo: topAnchor),
-            toolbar.leadingAnchor.constraint(equalTo: leadingAnchor),
-            toolbar.trailingAnchor.constraint(equalTo: trailingAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             toolbar.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
         ])
 
