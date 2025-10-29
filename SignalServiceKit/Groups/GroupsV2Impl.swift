@@ -207,7 +207,7 @@ public class GroupsV2Impl: GroupsV2 {
     //
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
-    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws -> [Promise<Void>] {
+    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges, isDeletingAccount: Bool) async throws -> [Promise<Void>] {
 
         let justUploadedAvatars = GroupAvatarStateMap.from(changes: changes)
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
@@ -261,6 +261,7 @@ public class GroupsV2Impl: GroupsV2 {
             messageBehavior: groupUpdateResult.messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
             isUrgent: isAddingOrInviting,
+            isDeletingAccount: isDeletingAccount,
             groupV2Params: groupV2Params
         )
     }
@@ -348,6 +349,7 @@ public class GroupsV2Impl: GroupsV2 {
         messageBehavior: GroupUpdateMessageBehavior,
         justUploadedAvatars: GroupAvatarStateMap,
         isUrgent: Bool,
+        isDeletingAccount: Bool,
         groupV2Params: GroupV2Params
     ) async throws -> [Promise<Void>] {
         guard let changeProto = changeResponse.groupChange else {
@@ -385,6 +387,7 @@ public class GroupsV2Impl: GroupsV2 {
         sendPromises.append(await GroupManager.sendGroupUpdateMessage(
             groupId: groupId,
             isUrgent: isUrgent,
+            isDeletingAccount: isDeletingAccount,
             groupChangeProtoData: groupChangeProtoData
         ))
 
@@ -995,11 +998,12 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func updateGroupV2(
         secretParams: GroupSecretParams,
+        isDeletingAccount: Bool,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> [Promise<Void>] {
         let changes = GroupsV2OutgoingChanges(groupSecretParams: secretParams)
         changesBlock(changes)
-        return try await updateExistingGroupOnService(changes: changes)
+        return try await updateExistingGroupOnService(changes: changes, isDeletingAccount: isDeletingAccount)
     }
 
     // MARK: - Rotate Profile Key

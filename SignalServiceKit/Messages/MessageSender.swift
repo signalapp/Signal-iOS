@@ -1017,9 +1017,16 @@ public class MessageSender {
             // mark them as "Skipped" rather than fail the entire operation.
             if !(thread is TSContactThread), error is MessageSenderNoSuchSignalRecipientError {
                 skippedRecipients.append(serviceId)
-            } else {
-                filteredErrors.append((serviceId, error))
+                continue
             }
+            // If we're deleting our account and run into a rate limit, we mark them as
+            // "Skipped" because the group update is best-effort and this mimics the
+            // behavior of a user-initiated manual retry for the account deletion.
+            if (message as? OutgoingGroupUpdateMessage)?.isDeletingAccount == true, error is AccountChecker.RateLimitError {
+                skippedRecipients.append(serviceId)
+                continue
+            }
+            filteredErrors.append((serviceId, error))
         }
 
         // Record the individual error for each "failed" recipient.

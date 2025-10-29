@@ -93,6 +93,7 @@ public protocol GroupsV2 {
     /// Each Promise represents sending a message to one or more recipients.
     func updateGroupV2(
         secretParams: GroupSecretParams,
+        isDeletingAccount: Bool,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> [Promise<Void>]
 
@@ -493,6 +494,7 @@ public class MockGroupsV2: GroupsV2 {
 
     public func updateGroupV2(
         secretParams: GroupSecretParams,
+        isDeletingAccount: Bool,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> [Promise<Void>] {
         owsFail("Not implemented.")

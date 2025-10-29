@@ -7,10 +7,12 @@ import Foundation
 public import LibSignalClient
 
 private class LocalUserLeaveGroupJobRunnerFactory: JobRunnerFactory {
-    func buildRunner() -> LocalUserLeaveGroupJobRunner { buildRunner(future: nil) }
+    func buildRunner() -> LocalUserLeaveGroupJobRunner {
+        return buildRunner(isDeletingAccount: false, future: nil)
+    }
 
-    func buildRunner(future: Future<[Promise<Void>]>?) -> LocalUserLeaveGroupJobRunner {
-        return LocalUserLeaveGroupJobRunner(future: future)
+    func buildRunner(isDeletingAccount: Bool, future: Future<[Promise<Void>]>?) -> LocalUserLeaveGroupJobRunner {
+        return LocalUserLeaveGroupJobRunner(isDeletingAccount: isDeletingAccount, future: future)
     }
 }
 
@@ -19,9 +21,11 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         static let maxRetries: UInt = 110
     }
 
+    private let isDeletingAccount: Bool
     private let future: Future<[Promise<Void>]>?
 
-    init(future: Future<[Promise<Void>]>?) {
+    init(isDeletingAccount: Bool, future: Future<[Promise<Void>]>?) {
+        self.isDeletingAccount = isDeletingAccount
         self.future = future
     }
 
@@ -144,6 +148,7 @@ public class LocalUserLeaveGroupJobQueue {
         groupThread: TSGroupThread,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
+        isDeletingAccount: Bool,
         tx: DBWriteTransaction
     ) -> Promise<[Promise<Void>]> {
         guard groupThread.isGroupV2Thread else {
@@ -154,6 +159,7 @@ public class LocalUserLeaveGroupJobQueue {
                 threadId: groupThread.uniqueId,
                 replacementAdminAci: replacementAdminAci,
                 waitForMessageProcessing: waitForMessageProcessing,
+                isDeletingAccount: isDeletingAccount,
                 future: future,
                 tx: tx
             )
@@ -164,6 +170,7 @@ public class LocalUserLeaveGroupJobQueue {
         threadId: String,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
+        isDeletingAccount: Bool,
         future: Future<[Promise<Void>]>,
         tx: DBWriteTransaction
     ) {
@@ -174,7 +181,10 @@ public class LocalUserLeaveGroupJobQueue {
         )
         jobRecord.anyInsert(transaction: tx)
         jobSerializer.addOrderedSyncCompletion(tx: tx) {
-            self.jobQueueRunner.addPersistedJob(jobRecord, runner: self.jobRunnerFactory.buildRunner(future: future))
+            self.jobQueueRunner.addPersistedJob(
+                jobRecord,
+                runner: self.jobRunnerFactory.buildRunner(isDeletingAccount: isDeletingAccount, future: future),
+            )
         }
     }
 }

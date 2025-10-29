@@ -14,11 +14,16 @@ extension GroupManager {
         static func run(
             secretParams: GroupSecretParams,
             updateDescription: String,
+            isDeletingAccount: Bool,
             changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
         ) async throws -> [Promise<Void>] {
             do {
                 return try await Promise.wrapAsync {
-                    return try await self._run(secretParams: secretParams, changesBlock: changesBlock)
+                    return try await self._run(
+                        secretParams: secretParams,
+                        isDeletingAccount: isDeletingAccount,
+                        changesBlock: changesBlock,
+                    )
                 }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: updateDescription) {
                     return GroupsV2Error.timeout
                 }.awaitable()
@@ -30,12 +35,14 @@ extension GroupManager {
 
         private static func _run(
             secretParams: GroupSecretParams,
+            isDeletingAccount: Bool,
             changesBlock: (GroupsV2OutgoingChanges) -> Void
         ) async throws -> [Promise<Void>] {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
             return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 secretParams: secretParams,
+                isDeletingAccount: isDeletingAccount,
                 changesBlock: changesBlock
             )
         }
@@ -47,6 +54,7 @@ extension GroupManager {
     public static func updateGroupV2(
         groupModel: TSGroupModelV2,
         description: String,
+        isDeletingAccount: Bool = false,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> [Promise<Void>] {
         let secretParams = try groupModel.secretParams()
@@ -55,6 +63,7 @@ extension GroupManager {
             return try await GenericGroupUpdateOperation.run(
                 secretParams: secretParams,
                 updateDescription: description,
+                isDeletingAccount: isDeletingAccount,
                 changesBlock: changesBlock
             )
         }

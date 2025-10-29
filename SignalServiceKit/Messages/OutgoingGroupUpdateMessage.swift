@@ -11,6 +11,9 @@ class OutgoingGroupUpdateMessage: TSOutgoingMessage {
     @objc
     private var isUpdateUrgent: Bool = false
 
+    @objc
+    private(set) var isDeletingAccount: Bool = false
+
     init(
         in thread: TSGroupThread,
         groupMetaMessage: TSGroupMetaMessage,
@@ -18,6 +21,7 @@ class OutgoingGroupUpdateMessage: TSOutgoingMessage {
         groupChangeProtoData: Data? = nil,
         additionalRecipients: some Sequence<ServiceId>,
         isUrgent: Bool = false,
+        isDeletingAccount: Bool = false,
         transaction: DBReadTransaction
     ) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
@@ -26,8 +30,8 @@ class OutgoingGroupUpdateMessage: TSOutgoingMessage {
             groupMetaMessage: groupMetaMessage,
             groupChangeProtoData: groupChangeProtoData
         )
-
         self.isUpdateUrgent = isUrgent
+        self.isDeletingAccount = isDeletingAccount
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: additionalRecipients.map { ServiceIdObjC.wrapValue($0) },

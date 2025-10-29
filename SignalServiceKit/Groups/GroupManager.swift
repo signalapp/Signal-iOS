@@ -429,12 +429,14 @@ public class GroupManager: NSObject {
         groupThread: TSGroupThread,
         replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
+        isDeletingAccount: Bool = false,
         tx: DBWriteTransaction
     ) -> Promise<[Promise<Void>]> {
         return SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.addJob(
             groupThread: groupThread,
             replacementAdminAci: replacementAdminAci,
             waitForMessageProcessing: waitForMessageProcessing,
+            isDeletingAccount: isDeletingAccount,
             tx: tx
         )
     }
@@ -706,7 +708,12 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
-    public static func sendGroupUpdateMessage(groupId: GroupIdentifier, isUrgent: Bool = false, groupChangeProtoData: Data? = nil) async -> Promise<Void> {
+    public static func sendGroupUpdateMessage(
+        groupId: GroupIdentifier,
+        isUrgent: Bool = false,
+        isDeletingAccount: Bool = false,
+        groupChangeProtoData: Data? = nil,
+    ) async -> Promise<Void> {
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) -> Promise<Void> in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
@@ -721,6 +728,7 @@ public class GroupManager: NSObject {
                 groupChangeProtoData: groupChangeProtoData,
                 additionalRecipients: Self.invitedMembers(in: thread),
                 isUrgent: isUrgent,
+                isDeletingAccount: isDeletingAccount,
                 transaction: transaction
             )
             // "changeActionsProtoData" is _not_ an attachment, it is just put on
