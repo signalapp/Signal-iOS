@@ -700,6 +700,15 @@
 /* Text explaining that a user's paid plan, which has been canceled, expired on a past date. Embeds {{ the formatted expiration date }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expired %1$@";
 
+/* Title for a button allowing users to manage a paid backup plan that failed to renew. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+
+/* Text describing that the user's paid backup plan has been canceled. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+
+/* Text describing that the user's paid backup plan has been canceled. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Manage Plan";
 
@@ -927,6 +936,15 @@
 
 /* Title for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Welcome to Signal Secure Backups. Start your backup now.";
+
+/* Message for a sheet shown when your Backup subscription fails to renew. */
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+
+/* Primary button for a sheet shown when your Backup subscription fails to renew. */
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+
+/* Title for a sheet shown when your Backup subscription fails to renew. */
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Please send us debug logs to help resolve the issue!";

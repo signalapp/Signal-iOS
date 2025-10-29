@@ -687,22 +687,37 @@ class BackupSettingsViewController:
         switch currentBackupPlan {
         case .free:
             return .free
-        case .disabling, .disabled, .paid, .paidExpiringSoon, .paidAsTester:
+        case .paidAsTester:
+            return .paidButFreeForTesters
+        case .disabling, .disabled, .paid, .paidExpiringSoon:
             break
         }
 
-        let endOfCurrentPeriod = backupSubscription.endOfCurrentPeriod
-        if backupSubscription.cancelAtEndOfPeriod {
-            if endOfCurrentPeriod.isAfterNow {
-                return .paidButExpiring(expirationDate: endOfCurrentPeriod)
+        switch backupSubscription.status {
+        case .canceled, .unrecognized:
+            owsFailDebug("Unexpected subscription status for IAP subscription! \(backupSubscription.status)")
+            fallthrough
+        case .active:
+            let endOfCurrentPeriod = backupSubscription.endOfCurrentPeriod
+            if backupSubscription.cancelAtEndOfPeriod {
+                if endOfCurrentPeriod.isAfterNow {
+                    return .paidButExpiring(expirationDate: endOfCurrentPeriod)
+                } else {
+                    return .paidButExpired(expirationDate: endOfCurrentPeriod)
+                }
             } else {
-                return .paidButExpired(expirationDate: endOfCurrentPeriod)
+                return .paid(
+                    price: backupSubscription.amount,
+                    renewalDate: endOfCurrentPeriod
+                )
             }
-        } else {
-            return .paid(
-                price: backupSubscription.amount,
-                renewalDate: endOfCurrentPeriod
-            )
+        case .pastDue:
+            // The .pastDue status is returned if we're in the IAP "billing
+            // retry", period, which indicates something has gone wrong with a
+            // subscription renewal.
+            //
+            // SeeAlso: BackupSubscriptionManager
+            return .paidButFailedToRenew
         }
     }
 
@@ -1185,6 +1200,7 @@ private class BackupSettingsViewModel: ObservableObject {
             case paid(price: FiatMoney, renewalDate: Date)
             case paidButExpiring(expirationDate: Date)
             case paidButExpired(expirationDate: Date)
+            case paidButFailedToRenew
         }
 
         case loading
@@ -1685,7 +1701,7 @@ struct BackupSettingsView: View {
         case .loaded(.paidButFreeForTesters):
             // Let them reenable with anything; there was no purchase.
             implicitPlanSelection = nil
-        case .loaded(.free), .loaded(.paidButExpired), .genericError:
+        case .loaded(.free), .loaded(.paidButExpired), .loaded(.paidButFailedToRenew), .genericError:
             // Let them reenable with anything.
             implicitPlanSelection = nil
         case .loaded(.paid), .loaded(.paidButExpiring):
@@ -2274,7 +2290,7 @@ private struct BackupSubscriptionView: View {
                             ),
                             backupSubscriptionConfiguration.freeTierMediaDays,
                         ))
-                    case .paid, .paidButExpiring, .paidButExpired, .paidButFreeForTesters:
+                    case .paidButFreeForTesters, .paid, .paidButExpiring, .paidButExpired, .paidButFailedToRenew:
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER",
                             comment: "Header describing what the paid backup plan includes."
@@ -2291,6 +2307,11 @@ private struct BackupSubscriptionView: View {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION",
                         comment: "Text describing the user's free backup plan."
+                    ))
+                case .paidButFreeForTesters:
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION",
+                        comment: "Text describing that the user's backup plan is paid, but free for them as a tester."
                     ))
                 case .paid(let price, let renewalDate):
                     let renewalStringFormat = OWSLocalizedString(
@@ -2312,7 +2333,7 @@ private struct BackupSubscriptionView: View {
                     ))
                 case .paidButExpiring(let expirationDate), .paidButExpired(let expirationDate):
                     let expirationDateFormatString = switch loadedBackupSubscription {
-                    case .free, .paid, .paidButFreeForTesters:
+                    case .free, .paidButFreeForTesters, .paid, .paidButFailedToRenew:
                         owsFail("Not possible")
                     case .paidButExpiring:
                         OWSLocalizedString(
@@ -2330,15 +2351,24 @@ private struct BackupSubscriptionView: View {
                         "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_DESCRIPTION",
                         comment: "Text describing that the user's paid backup plan has been canceled."
                     ))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.Signal.red)
                     Text(String(
                         format: expirationDateFormatString,
                         DateFormatter.localizedString(from: expirationDate, dateStyle: .medium, timeStyle: .none)
                     ))
-                case .paidButFreeForTesters:
+                case .paidButFailedToRenew:
                     Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION",
-                        comment: "Text describing that the user's backup plan is paid, but free for them as a tester."
+                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1",
+                        comment: "Text describing that the user's paid backup plan has been canceled."
+                    ))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.Signal.red)
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2",
+                        comment: "Text describing that the user's paid backup plan has been canceled."
                     ))
                 }
 
@@ -2348,10 +2378,10 @@ private struct BackupSubscriptionView: View {
                     switch loadedBackupSubscription {
                     case .free:
                         viewModel.upgradeFromFreeToPaidPlan()
-                    case .paid, .paidButExpiring, .paidButExpired:
-                        viewModel.manageOrCancelPaidPlan()
                     case .paidButFreeForTesters:
                         viewModel.managePaidPlanAsTester()
+                    case .paid, .paidButExpiring, .paidButExpired, .paidButFailedToRenew:
+                        viewModel.manageOrCancelPaidPlan()
                     }
                 } label: {
                     switch loadedBackupSubscription {
@@ -2359,6 +2389,11 @@ private struct BackupSubscriptionView: View {
                         Text(OWSLocalizedString(
                             "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to upgrade from a free to paid backup plan."
+                        ))
+                    case .paidButFreeForTesters:
+                        Text(OWSLocalizedString(
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE",
+                            comment: "Title for a button allowing users to manage their backup plan as a tester."
                         ))
                     case .paid:
                         Text(OWSLocalizedString(
@@ -2370,10 +2405,10 @@ private struct BackupSubscriptionView: View {
                             "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_ACTION_BUTTON_TITLE",
                             comment: "Title for a button allowing users to reenable a paid backup plan that has been canceled."
                         ))
-                    case .paidButFreeForTesters:
+                    case .paidButFailedToRenew:
                         Text(OWSLocalizedString(
-                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE",
-                            comment: "Title for a button allowing users to manage their backup plan as a tester."
+                            "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE",
+                            comment: "Title for a button allowing users to manage a paid backup plan that failed to renew."
                         ))
                     }
                 }
@@ -2570,16 +2605,6 @@ private extension BackupSettingsViewModel {
     }
 }
 
-#Preview("Plan: Paid") {
-    BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .paid(optimizeLocalStorage: false),
-        backupSubscriptionLoadingState: .loaded(.paid(
-            price: FiatMoney(currencyCode: "USD", value: 1.99),
-            renewalDate: Date().addingTimeInterval(.week)
-        )),
-    ))
-}
-
 #Preview("Plan: Free") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .free,
@@ -2591,6 +2616,16 @@ private extension BackupSettingsViewModel {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .paidAsTester(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
+    ))
+}
+
+#Preview("Plan: Paid") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .paid(optimizeLocalStorage: false),
+        backupSubscriptionLoadingState: .loaded(.paid(
+            price: FiatMoney(currencyCode: "USD", value: 1.99),
+            renewalDate: Date().addingTimeInterval(.week)
+        )),
     ))
 }
 
@@ -2609,6 +2644,13 @@ private extension BackupSettingsViewModel {
         backupSubscriptionLoadingState: .loaded(.paidButExpired(
             expirationDate: Date().addingTimeInterval(-1 * .week)
         ))
+    ))
+}
+
+#Preview("Plan: Failed to Renew") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
+        backupSubscriptionLoadingState: .loaded(.paidButFailedToRenew)
     ))
 }
 

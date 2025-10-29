@@ -36,10 +36,13 @@ class ChatListFYISheetCoordinator {
             let subscriptionType: SubscriptionType
         }
 
+        struct BackupSubscriptionFailedToRenew {}
+
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
         case backupSubscriptionExpired(BackupSubscriptionExpired)
+        case backupSubscriptionFailedToRenew(BackupSubscriptionFailedToRenew)
     }
 
     private let backupExportJobRunner: BackupExportJobRunner
@@ -111,6 +114,8 @@ class ChatListFYISheetCoordinator {
             return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .iap))
         } else if backupSubscriptionIssueStore.shouldWarnTestFlightSubscriptionExpired(tx: tx) {
             return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .testFlight))
+        } else if backupSubscriptionIssueStore.shouldWarnIAPSubscriptionFailedToRenew(tx: tx) {
+            return .backupSubscriptionFailedToRenew(FYISheet.BackupSubscriptionFailedToRenew())
         } else {
             return nil
         }
@@ -223,6 +228,8 @@ class ChatListFYISheetCoordinator {
             await _present(badgeExpiration: badgeExpiration, from: chatListViewController)
         case .backupSubscriptionExpired(let backupSubscriptionExpired):
             await _present(backupSubscriptionExpired: backupSubscriptionExpired, from: chatListViewController)
+        case .backupSubscriptionFailedToRenew(let backupSubscriptionFailedToRenew):
+            await _present(backupSubscriptionFailedToRenew: backupSubscriptionFailedToRenew, from: chatListViewController)
         }
     }
 
@@ -415,6 +422,25 @@ class ChatListFYISheetCoordinator {
             }
         }
     }
+
+    private func _present(
+        backupSubscriptionFailedToRenew: FYISheet.BackupSubscriptionFailedToRenew,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        logger.info("Showing BackupSubscriptionFailedToRenew FYI sheet.")
+
+        let sheet = BackupSubscriptionFailedToRenewHeroSheet(
+            onManageSubscription: {
+                SignalApp.shared.showAppSettings(mode: .backups)
+            }
+        )
+        chatListViewController.present(sheet, animated: true) { [self] in
+            db.write { tx in
+                backupSubscriptionIssueStore.setDidWarnIAPSubscriptionFailedToRenew(tx: tx)
+            }
+        }
+    }
 }
 
 // MARK: - ChatListViewController: BadgeIssueSheetDelegate
@@ -465,6 +491,41 @@ private class BackupSubscriptionExpiredHeroSheet: HeroSheetViewController {
                 action: { sheet in
                     sheet.dismiss(animated: true) {
                         onManageBackups()
+                    }
+                },
+            ),
+            secondaryButton: .dismissing(
+                title: CommonStrings.notNowButton,
+                style: .secondary,
+            ),
+        )
+    }
+}
+
+// MARK: -
+
+private class BackupSubscriptionFailedToRenewHeroSheet: HeroSheetViewController {
+    init(
+        onManageSubscription: @escaping () -> Void,
+    ) {
+        super.init(
+            hero: .image(.backupsError),
+            title: OWSLocalizedString(
+                "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE",
+                comment: "Title for a sheet shown when your Backup subscription fails to renew.",
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE",
+                comment: "Message for a sheet shown when your Backup subscription fails to renew.",
+            ),
+            primaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON",
+                    comment: "Primary button for a sheet shown when your Backup subscription fails to renew.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        onManageSubscription()
                     }
                 },
             ),

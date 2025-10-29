@@ -323,12 +323,43 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
         let backupEntitlement = try await whoAmIManager.makeWhoAmIRequest().entitlements.backup
 
-        try await downgradeBackupPlanIfNecessary(
-            fetchedSubscription: subscription,
-            backupEntitlement: backupEntitlement,
-        )
+        try await db.awaitableWriteWithRollbackIfThrows { tx in
+            warnSubscriptionFailedToRenewIfNecessary(
+                fetchedSubscription: subscription,
+                tx: tx,
+            )
+
+            try downgradeBackupPlanIfNecessary(
+                fetchedSubscription: subscription,
+                backupEntitlement: backupEntitlement,
+                tx: tx,
+            )
+        }
 
         return subscription
+    }
+
+    /// Warn the user if their subscription has failed to renew.
+    private func warnSubscriptionFailedToRenewIfNecessary(
+        fetchedSubscription subscription: Subscription?,
+        tx: DBWriteTransaction,
+    ) {
+        guard let subscription else { return }
+
+        switch subscription.status {
+        case .active:
+            break
+        case .canceled, .unrecognized:
+            owsFailDebug("Unexpected subscription status for IAP subscription! \(subscription.status)")
+        case .pastDue:
+            // The .pastDue status is returned if we're in the IAP "billing
+            // retry", period, which indicates something has gone wrong with a
+            // subscription renewal.
+            backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionFailedToRenew(
+                endOfCurrentPeriod: subscription.endOfCurrentPeriod,
+                tx: tx,
+            )
+        }
     }
 
     /// While we store locally a `BackupPlan`, the ultimate source of truth as
@@ -347,95 +378,94 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private func downgradeBackupPlanIfNecessary(
         fetchedSubscription subscription: Subscription?,
         backupEntitlement: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements.BackupEntitlement?,
-    ) async throws {
-        try await db.awaitableWriteWithRollbackIfThrows { tx in
-            let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
+        tx: DBWriteTransaction,
+    ) throws {
+        let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
-            enum Downgrade {
-                case toFreeTier
-                case toPaidExpiringSoon(optimizeLocalStorage: Bool)
-            }
-            let downgrade: Downgrade? = {
-                /// The value of optimizeLocalStorage, if the current BackupPlan
-                /// is .paid. nil otherwise.
-                let paidTierOptimizeLocalStorage: Bool?
-                switch currentBackupPlan {
-                case .paidAsTester:
-                    // Handled by `BackupTestFlightEntitlementManager`.
-                    return nil
-                case .disabled, .disabling, .free:
-                    // Nothing to downgrade.
-                    return nil
-                case .paid(let optimizeLocalStorage):
-                    paidTierOptimizeLocalStorage = optimizeLocalStorage
-                case .paidExpiringSoon:
-                    paidTierOptimizeLocalStorage = nil
-                }
-
-                guard let subscription else {
-                    // The subscription will be missing if it's "expired", which
-                    // is the trigger for Chat Service to wipe its knowledge of
-                    // the subscriber ID.
-                    //
-                    // This happens in two ways:
-                    // - The user manually canceled, and their last-subscribed
-                    //   period has now elapsed.
-                    // - A renewal failed, and Apple's given up trying to get
-                    //   the user to resolve the issue. (Note that Apple will
-                    //   try for 60d, so our Backup entitlement will have
-                    //   generally have expired before this happens.)
-                    //
-                    // If the subscription is expired, downgrade to free.
-                    return .toFreeTier
-                }
-
-                guard
-                    let backupEntitlement,
-                    Date(timeIntervalSince1970: backupEntitlement.expirationSeconds) > dateProvider()
-                else {
-                    // Our entitlement has expired, so we must downgrade to the
-                    // free tier. (Paid-tier operations will no longer work!)
-                    //
-                    // This likely means the subscription failed to renew, and
-                    // the "grace period" during which the entitlement persists
-                    // after the subscription period ends has now elapsed
-                    // without the user fixing the renewal issue.
-                    return .toFreeTier
-                }
-
-                // At this point we have a subscription, and we have a Backup
-                // entitlement, so things are generally good.
-
-                if
-                    let paidTierOptimizeLocalStorage,
-                    subscription.cancelAtEndOfPeriod
-                {
-                    // We're on the paid tier, but our subscription won't renew.
-                    return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)
-                }
-
+        enum Downgrade {
+            case toFreeTier
+            case toPaidExpiringSoon(optimizeLocalStorage: Bool)
+        }
+        let downgrade: Downgrade? = {
+            /// The value of optimizeLocalStorage, if the current BackupPlan
+            /// is .paid. nil otherwise.
+            let paidTierOptimizeLocalStorage: Bool?
+            switch currentBackupPlan {
+            case .paidAsTester:
+                // Handled by `BackupTestFlightEntitlementManager`.
                 return nil
-            }()
+            case .disabled, .disabling, .free:
+                // Nothing to downgrade.
+                return nil
+            case .paid(let optimizeLocalStorage):
+                paidTierOptimizeLocalStorage = optimizeLocalStorage
+            case .paidExpiringSoon:
+                paidTierOptimizeLocalStorage = nil
+            }
 
-            if let downgrade {
-                let downgradedBackupPlan: BackupPlan = switch downgrade {
-                case .toFreeTier: .free
-                case .toPaidExpiringSoon(let optimizeLocalStorage): .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+            guard let subscription else {
+                // The subscription will be missing if it's "expired", which
+                // is the trigger for Chat Service to wipe its knowledge of
+                // the subscriber ID.
+                //
+                // This happens in two ways:
+                // - The user manually canceled, and their last-subscribed
+                //   period has now elapsed.
+                // - A renewal failed, and Apple's given up trying to get
+                //   the user to resolve the issue. (Note that Apple will
+                //   try for 60d, so our Backup entitlement will have
+                //   generally have expired before this happens.)
+                //
+                // If the subscription is expired, downgrade to free.
+                return .toFreeTier
+            }
+
+            guard
+                let backupEntitlement,
+                Date(timeIntervalSince1970: backupEntitlement.expirationSeconds) > dateProvider()
+            else {
+                // Our entitlement has expired, so we must downgrade to the
+                // free tier. (Paid-tier operations will no longer work!)
+                //
+                // This likely means the subscription failed to renew, and
+                // the "grace period" during which the entitlement persists
+                // after the subscription period ends has now elapsed
+                // without the user fixing the renewal issue.
+                return .toFreeTier
+            }
+
+            // At this point we have a subscription, and we have a Backup
+            // entitlement, so things are generally good.
+
+            if
+                let paidTierOptimizeLocalStorage,
+                subscription.cancelAtEndOfPeriod
+            {
+                // We're on the paid tier, but our subscription won't renew.
+                return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)
+            }
+
+            return nil
+        }()
+
+        if let downgrade {
+            let downgradedBackupPlan: BackupPlan = switch downgrade {
+            case .toFreeTier: .free
+            case .toPaidExpiringSoon(let optimizeLocalStorage): .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
+            }
+
+            do {
+                try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
+
+                switch downgrade {
+                case .toFreeTier:
+                    backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
+                case .toPaidExpiringSoon:
+                    break
                 }
-
-                do {
-                    try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
-
-                    switch downgrade {
-                    case .toFreeTier:
-                        backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
-                    case .toPaidExpiringSoon:
-                        break
-                    }
-                } catch {
-                    owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
-                    throw error
-                }
+            } catch {
+                owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
+                throw error
             }
         }
     }
