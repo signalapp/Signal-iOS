@@ -1917,7 +1917,6 @@ public class GroupsV2Impl: GroupsV2 {
             if let proposedRevision = proposedRevision {
                 if oldGroupModel.revision >= proposedRevision {
                     // No need to update database, group state is already acceptable.
-                    owsAssertDebug(!oldGroupMembership.isMemberOfAnyKind(localIdentifiers.aci))
                     return
                 }
                 newRevision = max(newRevision, proposedRevision)
