@@ -1046,11 +1046,7 @@ public class MessageSender {
     }
 
     static func isRetryableError(_ error: any Error) -> Bool {
-        switch error.httpStatusCode {
-        case 429: true
-        case 508: false
-        default: error.isRetryable
-        }
+        return (error.isRetryable && error.httpStatusCode != 508) || error.httpStatusCode == 429 || error is AccountChecker.RateLimitError
     }
 
     private func normalizeRecipientStatesIfNeeded(

@@ -503,6 +503,7 @@ public class MessageSenderJobQueue {
             var retryableError: (any Error)?
             var externalRetryTriggers: ExternalRetryTriggers = []
             var suggestedRetryDelay: TimeInterval = 0
+            var accountCheckerRetryDelay: TimeInterval = 0
             for error in errors {
                 // Some errors should never be retried. Because group send is
                 // all-or-nothing, this means we need to fail the entire operation even
@@ -533,6 +534,11 @@ public class MessageSenderJobQueue {
                 if let retryAfterDelay = error.httpResponseHeaders?.retryAfterTimeInterval {
                     suggestedRetryDelay = max(suggestedRetryDelay, retryAfterDelay)
                 }
+                // If there's a Retry-After from the AccountChecker, we want to wait for
+                // the sum of the Retry-Afters. (This avoids pathological O(n^2) behavior.)
+                if let rateLimitError = error as? AccountChecker.RateLimitError {
+                    accountCheckerRetryDelay += rateLimitError.retryAfter
+                }
             }
             guard let retryableError else {
                 throw arbitraryError
@@ -552,13 +558,20 @@ public class MessageSenderJobQueue {
                 failureCount: attemptCount,
                 maxAverageBackoff: maxAverageBackoff,
             )
-            // We pick the larger of the two values -- we don't want Retry-After
-            // headers to be able to trigger tight retry loops on the client, so we
-            // maintain a minimum of exponential backoff.
-            let retryDelay = max(exponentialRetryDelay, min(maxAverageBackoff, suggestedRetryDelay))
+            // We pick the largest of the values -- we don't want Retry-After headers
+            // to be able to trigger tight retry loops on the client, so we maintain a
+            // minimum of exponential backoff.
+            let retryDelay = max(
+                exponentialRetryDelay,
+                min(maxAverageBackoff, suggestedRetryDelay),
+                min(maxAverageBackoff, accountCheckerRetryDelay),
+            )
             var httpBlurb = ""
             if suggestedRetryDelay > 0 {
-                httpBlurb = " (retry-after: \(String(format: "%.1f", suggestedRetryDelay))s)"
+                httpBlurb += " (retry-after: \(String(format: "%.1f", suggestedRetryDelay))s)"
+            }
+            if accountCheckerRetryDelay > 0 {
+                httpBlurb += " (account-checker-retry-after: \(String(format: "%.1f", accountCheckerRetryDelay))s)"
             }
             Logger.warn("Resending \(operation.message.description) after \(String(format: "%.1f", retryDelay))s\(httpBlurb)")
             try? await withCooperativeTimeout(

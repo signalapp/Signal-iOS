@@ -15,6 +15,13 @@ public class AccountChecker {
     private let recipientStore: RecipientDatabaseTable
     private let tsAccountManager: any TSAccountManager
 
+    struct RateLimitError: Error, IsRetryableProvider {
+        var retryAfter: TimeInterval
+
+        /// This is a 4xx error, so it's not retryable without opting in.
+        var isRetryableProvider: Bool { false }
+    }
+
     init(
         db: any DB,
         networkManager: NetworkManager,
@@ -48,6 +55,8 @@ public class AccountChecker {
                 let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
                 recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
             }
+        } catch where error.httpStatusCode == 429 {
+            throw RateLimitError(retryAfter: error.httpResponseHeaders?.retryAfterTimeInterval ?? 0)
         } catch where error.httpStatusCode == 404 {
             await db.awaitableWrite { tx in
                 self.markAsUnregisteredAndSplitRecipientIfNeeded(serviceId: serviceId, shouldUpdateStorageService: true, tx: tx)
