@@ -12,7 +12,6 @@ public enum GroupsV2Error: Error {
     case timeout
     case localUserNotInGroup
     case cannotBuildGroupChangeProto_conflictingChange
-    case cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
     case cannotBuildGroupChangeProto_tooManyMembers
     case localUserIsNotARequestingMember
     case cantApplyChangesToPlaceholder

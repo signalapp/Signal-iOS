@@ -906,7 +906,6 @@ extension GroupsV2Error: IsRetryableProvider {
         case
                 .localUserNotInGroup,
                 .cannotBuildGroupChangeProto_conflictingChange,
-                .cannotBuildGroupChangeProto_lastAdminCantLeaveGroup,
                 .cannotBuildGroupChangeProto_tooManyMembers,
                 .localUserIsNotARequestingMember,
                 .cantApplyChangesToPlaceholder,

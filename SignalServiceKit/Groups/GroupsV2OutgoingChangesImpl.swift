@@ -276,8 +276,6 @@ public class GroupsV2OutgoingChanges {
 
         // Track member counts that are updated to reflect each new action.
         let currentGroupMembership = currentGroupModel.groupMembership
-        var fullMembers = Set(currentGroupMembership.fullMembers.compactMap { $0.serviceId as? Aci })
-        var fullMemberAdmins = Set(currentGroupMembership.fullMemberAdministrators.compactMap { $0.serviceId as? Aci })
 
         var groupUpdateMessageBehavior: GroupUpdateMessageBehavior = .sendUpdateToOtherGroupMembers
 
@@ -383,7 +381,6 @@ public class GroupsV2OutgoingChanges {
                     membersToUnban.append(aci)
 
                     fullOrInvitedMembers.insert(aci)
-                    fullMembers.insert(aci)
                 } else if let aci = serviceId as? Aci, let profileKeyCredential = profileKeyCredentials[aci] {
                     var actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
                     actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(
@@ -396,7 +393,6 @@ public class GroupsV2OutgoingChanges {
                     membersToUnban.append(aci)
 
                     fullOrInvitedMembers.insert(aci)
-                    fullMembers.insert(aci)
                 } else if currentGroupMembership.isInvitedMember(serviceId) {
                     // Another user has already invited this member. They may have been added
                     // with a different role. We don't treat that as a conflict.
@@ -429,11 +425,6 @@ public class GroupsV2OutgoingChanges {
                 actionsBuilder.addDeleteMembers(actionBuilder.buildInfallibly())
                 didChange = true
                 membersToBan.append(aci)
-
-                fullMembers.remove(aci)
-                if currentGroupMembership.isFullMemberAndAdministrator(aci) {
-                    fullMemberAdmins.remove(aci)
-                }
             } else if currentGroupMembership.isInvitedMember(serviceId) {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(for: serviceId)
@@ -533,12 +524,6 @@ public class GroupsV2OutgoingChanges {
             actionBuilder.setRole(newRole.asProtoRole)
             actionsBuilder.addModifyMemberRoles(actionBuilder.buildInfallibly())
             didChange = true
-
-            if currentRole == .administrator {
-                fullMemberAdmins.remove(aci)
-            } else if newRole == .administrator {
-                fullMemberAdmins.insert(aci)
-            }
         }
 
         let currentAccess = currentGroupModel.access
@@ -632,22 +617,10 @@ public class GroupsV2OutgoingChanges {
 
             if promotedLocalAci {
                 didChange = true
-                fullMembers.insert(localAci)
             }
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(
-                localAci: localAci,
-                fullMembers: fullMembers,
-                admins: fullMemberAdmins
-            )
-            guard canLeaveGroup else {
-                // This could happen if the last two admins leave at the same time
-                // and race.
-                throw GroupsV2Error.cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
-            }
-
             // Check that we are still invited or in group.
             if let invitedAtServiceId = currentGroupMembership.localUserInvitedAtServiceId(
                 localIdentifiers: localIdentifiers

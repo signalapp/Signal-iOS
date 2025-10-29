@@ -75,7 +75,8 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
 
         let sendPromises = try await GroupManager.updateGroupV2(
             groupModel: groupModel,
-            description: #fileID
+            description: #fileID,
+            isDeletingAccount: isDeletingAccount,
         ) { groupChangeSet in
             groupChangeSet.setShouldLeaveGroupDeclineInvite()
 

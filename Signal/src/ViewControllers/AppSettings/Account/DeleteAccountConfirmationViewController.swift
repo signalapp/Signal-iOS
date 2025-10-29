@@ -304,6 +304,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
             do {
                 try await self.deleteDonationSubscriptionIfNecessary()
+                try await self.leaveGroups()
                 try await self.unregisterAccount()
             } catch {
                 owsFailDebug("Failed to unregister \(error)")
@@ -334,6 +335,40 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         }
         Logger.info("Found subscriber ID. Canceling subscription...")
         return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId)
+    }
+
+    private func leaveGroups() async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        var sendUpdatePromises = [Promise<Void>]()
+        for uniqueId in databaseStorage.read(block: TSThread.anyAllUniqueIds(transaction:)) {
+            let leavePromise = await databaseStorage.awaitableWrite { (tx) -> Promise<[Promise<Void>]> in
+                guard
+                    let thread = TSThread.anyFetch(uniqueId: uniqueId, transaction: tx),
+                    let groupThread = thread as? TSGroupThread,
+                    groupThread.isGroupV2Thread
+                else {
+                    return .value([])
+                }
+                return GroupManager.localLeaveGroupOrDeclineInvite(
+                    groupThread: groupThread,
+                    isDeletingAccount: true,
+                    tx: tx,
+                )
+            }
+            do {
+                sendUpdatePromises.append(contentsOf: try await leavePromise.awaitable())
+            } catch GroupsV2Error.groupBlocked, GroupsV2Error.localUserNotInGroup {
+                // Can't do anything about these groups; ignore the errors.
+            }
+        }
+        for sendUpdatePromise in sendUpdatePromises {
+            do {
+                try await sendUpdatePromise.awaitable()
+            } catch {
+                Logger.warn("Couldn't send group update, but we've already left, so ignoring: \(error)")
+            }
+        }
     }
 
     private func unregisterAccount() async throws -> Never {
