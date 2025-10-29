@@ -14,10 +14,6 @@ enum PreKeyId {
         return UInt32.random(in: 1..<Constants.upperBound)
     }
 
-    static func randomSigned() -> UInt32 {
-        return UInt32.random(in: 1..<UInt32(Int32.max))
-    }
-
     static func nextPreKeyIds(lastPreKeyId: UInt32?, count: Int) -> ClosedRange<UInt32> {
         owsPrecondition(count >= 1)
         let result = nextPreKeyId(lastPreKeyId: lastPreKeyId, count: count)

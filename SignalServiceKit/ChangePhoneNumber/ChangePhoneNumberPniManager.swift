@@ -138,7 +138,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
-        let localDevicePniSignedPreKeyRecord = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: pniIdentityKeyPair.keyPair.privateKey)
+        let localDevicePniSignedPreKeyRecord = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: pniIdentityKeyPair.keyPair.privateKey)
         let localDevicePniPqLastResortPreKeyRecord = pniKyberPreKeyStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: pniIdentityKeyPair.keyPair.privateKey)
 
         let pendingState = ChangePhoneNumberPni.PendingState(

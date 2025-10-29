@@ -3424,7 +3424,7 @@ public class RegistrationCoordinatorTest {
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                 lastResortPreKey: KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: 0, now: Date(), signedBy: identityKeyPair.keyPair.privateKey),
             )
         }

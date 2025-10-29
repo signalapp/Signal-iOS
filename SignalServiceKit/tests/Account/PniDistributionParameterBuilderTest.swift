@@ -45,7 +45,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     func testBuildParametersHappyPath() async throws {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: pniKeyPair.keyPair.privateKey)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: pniKeyPair.keyPair.privateKey)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKeyForChangeNumber(signedBy: pniKeyPair.keyPair.privateKey)
@@ -84,7 +84,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     func testBuildParametersWithError() async {
         let pniKeyPair = ECKeyPair.generateKeyPair()
-        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: pniKeyPair.keyPair.privateKey)
+        let localSignedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: pniKeyPair.keyPair.privateKey)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = db.write { tx in
             self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKeyForChangeNumber(signedBy: pniKeyPair.keyPair.privateKey)

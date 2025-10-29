@@ -49,8 +49,13 @@ public class SignedPreKeyStoreImpl {
         metadataStore.removeAll(transaction: tx)
     }
 
-    func allocatePreKeyId() -> UInt32 {
-        return PreKeyId.randomSigned()
+    func allocatePreKeyId(tx: DBWriteTransaction) -> UInt32 {
+        return preKeyStore.allocatePreKeyIds(
+            in: self.metadataStore,
+            lastPreKeyIdKey: "TSStorageInternalSettingsNextPreKeyId",
+            count: 1,
+            tx: tx,
+        ).upperBound
     }
 
     static func generateSignedPreKey(

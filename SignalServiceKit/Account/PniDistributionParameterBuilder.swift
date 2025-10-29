@@ -187,7 +187,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             isSelfSend: true,
             encryptionStyle: .whisper,
             buildPlaintextContent: { deviceId, _ in
-                let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKey)
+                let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKey)
                 let pqLastResortPreKey = pniKyberPreKeyStore.generateLastResortKyberPreKeyForChangeNumber(signedBy: identityKey)
                 let registrationId = registrationIdGenerator.generate()
 

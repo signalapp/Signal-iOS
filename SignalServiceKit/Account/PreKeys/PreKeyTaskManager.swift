@@ -239,7 +239,7 @@ internal struct PreKeyTaskManager {
 
         let signedPreKeyStore = protocolStore.signedPreKeyStore
         let signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(
-            keyId: signedPreKeyStore.allocatePreKeyId(),
+            keyId: signedPreKeyStore.allocatePreKeyId(tx: tx),
             signedBy: identityKey,
         )
 
@@ -314,7 +314,7 @@ internal struct PreKeyTaskManager {
                 let preKeyIds = protocolStore.preKeyStore.allocatePreKeyIds(tx: tx)
                 preKeyRecords = PreKeyStoreImpl.generatePreKeyRecords(forPreKeyIds: preKeyIds)
             case .signedPreKey:
-                let preKeyId = protocolStore.signedPreKeyStore.allocatePreKeyId()
+                let preKeyId = protocolStore.signedPreKeyStore.allocatePreKeyId(tx: tx)
                 signedPreKey = SignedPreKeyStoreImpl.generateSignedPreKey(keyId: preKeyId, signedBy: identityKey)
             case .oneTimePqPreKey:
                 let preKeyIds = protocolStore.kyberPreKeyStore.allocatePreKeyIds(count: 100, tx: tx)

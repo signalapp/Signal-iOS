@@ -30,14 +30,14 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
             parameters: PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: keyPair,
                 localDeviceId: localDeviceId,
-                localDevicePniSignedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: keyPair.keyPair.privateKey),
+                localDevicePniSignedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: keyPair.keyPair.privateKey),
                 localDevicePniPqLastResortPreKey: localPqKey1,
                 localDevicePniRegistrationId: registrationId
             ),
             pendingState: ChangePhoneNumberPni.PendingState(
                 newE164: newE164,
                 pniIdentityKeyPair: keyPair,
-                localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: keyPair.keyPair.privateKey),
+                localDevicePniSignedPreKeyRecord: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: keyPair.keyPair.privateKey),
                 localDevicePniPqLastResortPreKeyRecord: localPqKey2,
                 localDevicePniRegistrationId: registrationId
             )

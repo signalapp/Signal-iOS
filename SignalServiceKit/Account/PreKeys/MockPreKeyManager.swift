@@ -21,13 +21,13 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 )
             )
@@ -44,13 +44,13 @@ internal class MockPreKeyManager: PreKeyManager {
                 aci: .init(
                     identity: .aci,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 ),
                 pni: .init(
                     identity: .pni,
                     identityKeyPair: identityKeyPair,
-                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.randomSigned(), signedBy: identityKeyPair.keyPair.privateKey),
+                    signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
                 )
             )
