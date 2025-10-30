@@ -42,7 +42,7 @@ public class ConversationStyle: NSObject {
     private let primaryTextColor: UIColor
 
     public let contentMarginTop: CGFloat = 24
-    public let contentMarginBottom: CGFloat = 24
+    public let contentMarginBottom: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { 8 } else { 24 }
 
     public let gutterLeading: CGFloat
     public let gutterTrailing: CGFloat

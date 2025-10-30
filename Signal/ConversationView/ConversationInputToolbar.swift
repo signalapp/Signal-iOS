@@ -141,7 +141,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     }
 
     private enum LayoutMetrics {
-        static let initialToolbarHeight: CGFloat = 52
+        static let initialToolbarHeight: CGFloat = 56
         static let initialTextBoxHeight: CGFloat = 40
 
         static let minTextViewHeight: CGFloat = 35
@@ -601,7 +601,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         contentView.semanticContentAttribute = .forceLeftToRight
         contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
             hMargin: OWSTableViewController2.defaultHOuterMargin - 16,
-            vMargin: iOS26Layout ? 6 : 0
+            vMargin: iOS26Layout ? 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight) : 0
         )
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentViewWrapperView.addSubview(contentView)
