@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 import UIKit
@@ -172,9 +173,9 @@ extension StoryReplySheet {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
-    func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar, tx: DBReadTransaction) -> [SignalServiceAddress] {
+    func storyReplyInputToolbarMentionPickerPossibleAcis(_ storyReplyInputToolbar: StoryReplyInputToolbar, tx: DBReadTransaction) -> [Aci] {
         guard let thread = thread, thread.isGroupThread else { return [] }
-        return thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx))
+        return thread.recipientAddresses(with: tx).compactMap(\.aci)
     }
 
     func storyReplyInputToolbarMentionCacheInvalidationKey() -> String {

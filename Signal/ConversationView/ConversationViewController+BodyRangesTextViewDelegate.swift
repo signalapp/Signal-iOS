@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
@@ -21,8 +22,8 @@ extension ConversationViewController: BodyRangesTextViewDelegate {
         bottomBarContainer
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
+    public func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci] {
+        supportsMentions ? thread.recipientAddresses(with: tx).compactMap(\.aci) : []
     }
 
     public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {

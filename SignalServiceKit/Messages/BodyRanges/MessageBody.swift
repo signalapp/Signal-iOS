@@ -195,7 +195,7 @@ extension MessageBody {
     /// This context is not necessarily one single thread; we could be pasting into a composer
     /// for sending to multiple threads. So the input array is _all_ valid addresses.
     public func forPasting(
-        intoContextWithPossibleAddresses possibleAddresses: [SignalServiceAddress],
+        intoContextWithPossibleAcis possibleAcis: [Aci],
         transaction: DBReadTransaction,
         isRTL: Bool = CurrentAppContext().isRTL
     ) -> MessageBody {
@@ -203,7 +203,7 @@ extension MessageBody {
             return self
         }
         let mentionHydrator = ContactsMentionHydrator.mentionHydrator(
-            excludedAcis: Set(possibleAddresses.compactMap(\.aci)),
+            excludedAcis: Set(possibleAcis),
             transaction: transaction
         )
         return hydrating(mentionHydrator: mentionHydrator, isRTL: isRTL).asMessageBodyForForwarding()

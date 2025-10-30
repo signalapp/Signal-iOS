@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 public import SignalServiceKit
 
 public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
@@ -15,7 +15,7 @@ public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
     // It doesn't matter what this key is; but when it changes cached mention names will be discarded.
     // Typically, we want this to change in new thread contexts and such.
     func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String
-    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress]
+    func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci]
 
     func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration
     func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle
@@ -104,15 +104,15 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
             text: "@",
             ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionAci], styles: [])
         )
-        let (hydrated, possibleAddresses) = DependenciesBridge.shared.db.read { tx in
+        let (hydrated, possibleAcis) = DependenciesBridge.shared.db.read { tx in
             return (
                 body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx)),
-                bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
+                bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx)
             )
         }
         let hydratedPlaintext = hydrated.asPlaintext()
 
-        if possibleAddresses.contains(mentionAddress) {
+        if possibleAcis.contains(mentionAci) {
             editableBody.beginEditing()
             editableBody.replaceCharacters(in: range, withMentionAci: mentionAci, txProvider: DependenciesBridge.shared.db.readTxProvider)
             editableBody.endEditing()
@@ -242,17 +242,17 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
         pickerView?.removeFromSuperview()
 
-        let mentionableAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
+        let mentionableAcis = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx)
         }
 
-        guard !mentionableAddresses.isEmpty else { return }
+        guard !mentionableAcis.isEmpty else { return }
 
         guard let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
             let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
 
         let pickerView = MentionPicker(
-            mentionableAddresses: mentionableAddresses,
+            mentionableAcis: mentionableAcis,
             style: bodyRangesDelegate.mentionPickerStyle(self)
         ) { [weak self] selectedAddress in
             self?.insertTypedMention(address: selectedAddress)
@@ -712,10 +712,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     public func editableMessageBodyHydrator(tx: DBReadTransaction) -> MentionHydrator {
         var possibleMentionAcis = Set<Aci>()
-        bodyRangesDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx).forEach {
-            if let aci = $0.aci {
-                possibleMentionAcis.insert(aci)
-            }
+        bodyRangesDelegate?.textViewMentionPickerPossibleAcis(self, tx: tx).forEach {
+            possibleMentionAcis.insert($0)
         }
         let hydrator = ContactsMentionHydrator.mentionHydrator(transaction: tx)
         return { aci in
@@ -847,8 +845,8 @@ extension BodyRangesTextView {
             var messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
             editableBody.beginEditing()
             DependenciesBridge.shared.db.read { tx in
-                if let possibleAddresses = bodyRangesDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx) {
-                    messageBody = messageBody.forPasting(intoContextWithPossibleAddresses: possibleAddresses, transaction: tx)
+                if let possibleAcis = bodyRangesDelegate?.textViewMentionPickerPossibleAcis(self, tx: tx) {
+                    messageBody = messageBody.forPasting(intoContextWithPossibleAcis: possibleAcis, transaction: tx)
                 }
                 editableBody.replaceCharacters(in: selectedRange, withPastedMessageBody: messageBody, txProvider: { $0(tx) })
             }

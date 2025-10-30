@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
+import CoreServices
+import Foundation
+public import LibSignalClient
 import MediaPlayer
 import Photos
-import CoreServices
 public import SignalServiceKit
 
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
@@ -37,7 +38,7 @@ public protocol AttachmentApprovalViewControllerDataSource: AnyObject {
 
     var attachmentApprovalRecipientNames: [String] { get }
 
-    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
+    func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci]
 
     func attachmentApprovalMentionCacheInvalidationKey() -> String
 }
@@ -1294,8 +1295,8 @@ extension AttachmentApprovalViewController: BodyRangesTextViewDelegate {
         return bottomToolView.attachmentTextToolbar
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
-        return approvalDataSource?.attachmentApprovalMentionableAddresses(tx: tx) ?? []
+    public func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci] {
+        return approvalDataSource?.attachmentApprovalMentionableAcis(tx: tx) ?? []
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {

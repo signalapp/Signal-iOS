@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 public enum MentionPickerStyle {
@@ -32,13 +33,14 @@ class MentionPicker: UIView {
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 
     init(
-        mentionableAddresses: [SignalServiceAddress],
+        mentionableAcis: [Aci],
         style: Style,
         selectedAddressCallback: @escaping (SignalServiceAddress) -> Void
     ) {
-        mentionableUsers = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        mentionableUsers = databaseStorage.read { transaction in
             let sortedAddresses = SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
-                mentionableAddresses,
+                mentionableAcis.map({ SignalServiceAddress($0) }),
                 transaction: transaction
             )
 

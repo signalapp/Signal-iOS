@@ -4,6 +4,7 @@
 //
 
 import CoreServices
+import LibSignalClient
 public import Photos
 public import SignalServiceKit
 public import SignalUI
@@ -991,8 +992,8 @@ extension ConversationViewController: SendMediaNavDataSource {
         return [displayName]
     }
 
-    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
+    func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci] {
+        supportsMentions ? thread.recipientAddresses(with: tx).compactMap(\.aci) : []
     }
 
     func sendMediaNavMentionCacheInvalidationKey() -> String {

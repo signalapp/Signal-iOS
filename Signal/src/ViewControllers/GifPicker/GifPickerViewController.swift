@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -54,43 +55,40 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
 
 extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDelegate {
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                                   didApproveAttachments attachments: [SignalAttachment],
-                                   messageBody: MessageBody?) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
         approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: attachments, messageBody: messageBody)
     }
 
-    public func attachmentApprovalDidCancel() {
+    func attachmentApprovalDidCancel() {
         approvalDelegate?.attachmentApprovalDidCancel()
     }
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                                   didChangeMessageBody newMessageBody: MessageBody?) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         approvalDelegate?.attachmentApproval(attachmentApproval, didChangeMessageBody: newMessageBody)
     }
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
 
-    public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) { }
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) { }
 }
 
 extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDataSource {
 
-    public var attachmentApprovalTextInputContextIdentifier: String? {
+    var attachmentApprovalTextInputContextIdentifier: String? {
         return approvalDataSource?.attachmentApprovalTextInputContextIdentifier
     }
 
-    public var attachmentApprovalRecipientNames: [String] {
+    var attachmentApprovalRecipientNames: [String] {
         approvalDataSource?.attachmentApprovalRecipientNames ?? []
     }
 
-    public func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        return approvalDataSource?.attachmentApprovalMentionableAddresses(tx: tx) ?? []
+    func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {
+        return approvalDataSource?.attachmentApprovalMentionableAcis(tx: tx) ?? []
     }
 
-    public func attachmentApprovalMentionCacheInvalidationKey() -> String {
+    func attachmentApprovalMentionCacheInvalidationKey() -> String {
         return approvalDataSource?.attachmentApprovalMentionCacheInvalidationKey() ?? UUID().uuidString
     }
 }

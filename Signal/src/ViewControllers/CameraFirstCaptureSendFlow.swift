@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -19,7 +20,7 @@ class CameraFirstCaptureSendFlow {
     private var approvalMessageBody: MessageBody?
     private var textAttachment: UnsentTextAttachment?
 
-    private var mentionCandidates: [SignalServiceAddress] = []
+    private var mentionCandidates: [Aci] = []
 
     private let selection = ConversationPickerSelection()
     private var selectedConversations: [ConversationItem] { selection.conversations }
@@ -35,21 +36,23 @@ class CameraFirstCaptureSendFlow {
     private func updateMentionCandidates() {
         AssertIsOnMainThread()
 
-        guard selectedConversations.count == 1,
-              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else {
+        guard
+            selectedConversations.count == 1,
+            case .group(let groupThreadId) = selectedConversations.first?.messageRecipient
+        else {
             mentionCandidates = []
             return
         }
 
-        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { readTx in
-            TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
-        }
-
-        owsAssertDebug(groupThread != nil)
-        if let groupThread = groupThread, groupThread.allowsMentionSend {
-            mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
-        } else {
-            mentionCandidates = []
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        self.mentionCandidates = databaseStorage.read { tx in
+            let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx)
+            owsAssertDebug(groupThread != nil)
+            if let groupThread, groupThread.allowsMentionSend {
+                return groupThread.recipientAddresses(with: tx).compactMap(\.aci)
+            } else {
+                return []
+            }
         }
     }
 }
@@ -118,7 +121,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDataSource {
         selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
-    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+    func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci] {
         return mentionCandidates
     }
 

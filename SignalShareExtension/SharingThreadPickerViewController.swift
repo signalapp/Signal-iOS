@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 class SharingThreadPickerViewController: ConversationPickerViewController {
 
@@ -48,7 +49,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var mentionCandidates: [SignalServiceAddress] = []
+    var mentionCandidates: [Aci] = []
 
     var selectedConversations: [ConversationItem] { selection.conversations }
 
@@ -76,21 +77,23 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     private func updateMentionCandidates() {
         AssertIsOnMainThread()
 
-        guard selectedConversations.count == 1,
-              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else {
+        guard
+            selectedConversations.count == 1,
+            case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else
+        {
             mentionCandidates = []
             return
         }
 
-        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { readTx in
-            TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
-        }
-
-        owsAssertDebug(groupThread != nil)
-        if let groupThread = groupThread, groupThread.allowsMentionSend {
-            mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
-        } else {
-            mentionCandidates = []
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        self.mentionCandidates = databaseStorage.read { tx in
+            let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx)
+            owsAssertDebug(groupThread != nil)
+            if let groupThread, groupThread.allowsMentionSend {
+                return groupThread.recipientAddresses(with: tx).compactMap(\.aci)
+            } else {
+                return []
+            }
         }
     }
 
@@ -732,7 +735,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDat
         selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
-    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+    func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {
         mentionCandidates
     }
 

@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import Photos
+import PhotosUI
 import SignalServiceKit
 import SignalUI
-import PhotosUI
 
 protocol SendMediaNavDelegate: AnyObject {
 
@@ -29,7 +30,7 @@ protocol SendMediaNavDataSource: AnyObject {
 
     var sendMediaNavRecipientNames: [String] { get }
 
-    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
+    func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci]
 
     func sendMediaNavMentionCacheInvalidationKey() -> String
 }
@@ -619,8 +620,8 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSou
         sendMediaNavDataSource?.sendMediaNavRecipientNames ?? []
     }
 
-    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        sendMediaNavDataSource?.sendMediaNavMentionableAddresses(tx: tx) ?? []
+    func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {
+        sendMediaNavDataSource?.sendMediaNavMentionableAcis(tx: tx) ?? []
     }
 
     func attachmentApprovalMentionCacheInvalidationKey() -> String {

@@ -5,6 +5,7 @@
 
 import AVFoundation
 import Foundation
+public import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
@@ -60,8 +61,8 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
         return [displayName]
     }
 
-    public func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
+    public func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {
+        supportsMentions ? thread.recipientAddresses(with: tx).compactMap(\.aci) : []
     }
 
     public func attachmentApprovalMentionCacheInvalidationKey() -> String {

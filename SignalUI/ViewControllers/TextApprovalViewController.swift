@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
 public import SignalServiceKit
 
 public protocol TextApprovalViewControllerDelegate: AnyObject {
@@ -176,7 +177,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         return nil
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
+    public func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci] {
         return []
     }
 

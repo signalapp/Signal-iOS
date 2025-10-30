@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
+import LibSignalClient
 import SignalServiceKit
+import UIKit
 
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
@@ -341,8 +342,8 @@ extension AttachmentTextToolbar: BodyRangesTextViewDelegate {
         return mentionTextViewDelegate?.textViewMentionPickerReferenceView(textView)
     }
 
-    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
-        return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView, tx: tx) ?? []
+    func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci] {
+        return mentionTextViewDelegate?.textViewMentionPickerPossibleAcis(textView, tx: tx) ?? []
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
