@@ -534,19 +534,17 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             }()
         ])
 
-        // "Suggested Stickers" horizontal list view will be placed in a wrapper view to allow for slide in / slide out animation.
-        updateSuggestedStickersPanelConstraints()
-
         if #available(iOS 26, *) {
             iOS26Layout = true
         }
 
+        stickerPanel.isHidden = true // not visible initially
         let contentViewWrapperView = UIView.container()
 
         // Outermost vertical stack:
         // [ Suggested Stickers Panel ]
         // [ Message Creation Input Box and Buttons ]
-        let outerVStack = UIStackView(arrangedSubviews: [ suggestedStickersPanel, contentViewWrapperView ] )
+        let outerVStack = UIStackView(arrangedSubviews: [ stickerPanel, contentViewWrapperView ] )
         outerVStack.axis = .vertical
         addSubview(outerVStack)
         outerVStack.translatesAutoresizingMaskIntoConstraints = false
@@ -1379,8 +1377,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     class var heightChangeAnimationDuration: TimeInterval { 0.25 }
 
-    private(set) var isAnimatingHeightChange = false
-
     var hasUnsavedDraft: Bool {
         let currentDraft = messageBodyForSending ?? .empty
 
@@ -1571,17 +1567,12 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         completion: ((Bool) -> Void)? = nil
     ) {
         if animated, component.isHidden != hide {
-            isAnimatingHeightChange = true
-
             UIView.animate(
                 withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
                 animations: {
                     component.isHidden = hide
                 },
-                completion: { completed in
-                    self.isAnimatingHeightChange = false
-                    completion?(completed)
-                }
+                completion: completion
             )
         } else {
             component.isHidden = hide
@@ -1708,7 +1699,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             return
         }
 
-        isAnimatingHeightChange = true
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
@@ -1717,9 +1707,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         animator.addAnimations {
             self.updateLinkPreviewConstraint()
             self.layoutIfNeeded()
-        }
-        animator.addCompletion { _ in
-            self.isAnimatingHeightChange = false
         }
         animator.startAnimation()
     }
@@ -1737,7 +1724,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             return
         }
 
-        isAnimatingHeightChange = true
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
@@ -1748,7 +1734,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             self.layoutIfNeeded()
         }
         animator.addCompletion { _ in
-            self.isAnimatingHeightChange = false
             self.linkPreviewView?.resetContent()
         }
         animator.startAnimation()
@@ -1764,104 +1749,177 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     private let suggestedStickerViewCache = StickerViewCache(maxSize: 12)
 
-    private var suggestedStickerEmoji: Character?
+    private var currentSuggestedStickerEmoji: Character?
 
-    private var suggestedStickerInfos: [StickerInfo] = []
+    private var currentSuggestedStickers: [StickerInfo] = []
 
-    private lazy var suggestedStickersListView: StickerHorizontalListView = {
-        let suggestedStickerSize: CGFloat = 48
-        let suggestedStickerSpacing: CGFloat = 12
-        let stickerListContentInset = UIEdgeInsets(
-            hMargin: OWSTableViewController2.defaultHOuterMargin,
-            vMargin: suggestedStickerSpacing
-        )
-        let view = StickerHorizontalListView(cellSize: suggestedStickerSize, cellInset: 0, spacing: suggestedStickerSpacing)
-        view.backgroundColor = Theme.conversationButtonBackgroundColor
-        view.contentInset = stickerListContentInset
-        view.autoSetDimension(.height, toSize: suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top)
-        return view
-    }()
+    private var isStickerPanelHidden = true
 
-    private let suggestedStickersPanel: UIView = {
-        let view = UIView.container()
-        view.clipsToBounds = true
-        return view
-    }()
+    private enum StickerLayout {
+        // Square.
+        static let listItemSize: CGFloat = 56
 
-    private var suggestedStickersPanelConstraints: [NSLayoutConstraint] = []
+        // Horizontal.
+        static let listItemSpacing: CGFloat = 12
 
-    private func updateSuggestedStickersPanelConstraints() {
-        NSLayoutConstraint.deactivate(suggestedStickersPanelConstraints)
+        // Spacing between sticker list view and visible background (blur/glass) panel.
+        static let listViewPadding = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 8)
 
-        defer {
-            NSLayoutConstraint.activate(suggestedStickersPanelConstraints)
-        }
+        // How much sticker panel (visible background) is inset from the full-width `stickerPanel`.
+        static let outerPanelHMargin: CGFloat = if #available(iOS 26, *) { OWSTableViewController2.cellHInnerMargin } else { 0 }
 
-        // suggestedStickerView is created lazily and isn't accessed until it is needed.
-        // Set wrapper's height to zero if it is not needed yet.
-        guard suggestedStickersPanel.subviews.count > 0 else {
-            let zeroHeightConstraint = suggestedStickersPanel.heightAnchor.constraint(equalToConstant: 0)
-            suggestedStickersPanelConstraints = [ zeroHeightConstraint ]
-            return
-        }
+        // For the glass/blur background.
+        static let backgroundCornerRadius: CGFloat = if #available(iOS 26, *) { 26 } else { 0 }
 
-        // To hide suggested stickers panel I constrain both top and bottom edges of the `suggestedStickerView`
-        // to the top edge of its wrapper view, effectively making that wrapper view a zero height view.
-        // `suggestedStickerView` has a fixed height so animating this change results in a nice slide in/out animation.
-        // `suggestedStickerView` is made visible by constraining all of its edges to wrapper view normally.
-        let constraint: NSLayoutConstraint
-        if isSuggestedStickersPanelHidden {
-            constraint = suggestedStickersPanel.bottomAnchor.constraint(equalTo: suggestedStickersListView.topAnchor)
-        } else {
-            constraint = suggestedStickersPanel.bottomAnchor.constraint(equalTo: suggestedStickersListView.bottomAnchor)
-        }
-        suggestedStickersPanelConstraints = [ constraint ]
+        static let animationTransform = CGAffineTransform.scale(0.9).translatedBy(x: 0, y: 24)
+
+        static let blurOverlayEffect = UIBlurEffect(style: .systemThinMaterial)
     }
 
-    private var isSuggestedStickersPanelHidden = true
+    // Outermost sticker view. Takes full width of ConversationInputToolbar.
+    // Placed inside of a vstack along with the panel that holds message input controls.
+    private let stickerPanel = UIView.container()
+
+    // Subview of `stickerPanel`. Contains background panel and sticker list view.
+    // Constrained horizontally to `stickerPanel.safeAreaLayoutGuide` with a fixed margin.
+    // On iOS 26 it's leading edge aligns with (+) attachment button and
+    // trailing edge aligns with the blue Send button.
+    private lazy var stickerListViewWrapper: UIView = {
+        let view: UIView
+        if #available(iOS 26, *) {
+            // Rounded corners for the entire wrapper view.
+            view = OWSLayerView(frame: .zero, layoutCallback: { v in
+                let shapeLayer = CAShapeLayer()
+                shapeLayer.path = UIBezierPath.init(roundedRect: v.bounds, cornerRadius: StickerLayout.backgroundCornerRadius).cgPath
+                v.layer.mask = shapeLayer
+            })
+        } else {
+            view = UIView()
+        }
+
+        // Background view.
+        let backgroundView: UIVisualEffectView
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            backgroundView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+        } else {
+            backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+        }
+#else
+        backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+#endif
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        NSLayoutConstraint.activate([
+            backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        // List view.
+        view.directionalLayoutMargins = StickerLayout.listViewPadding
+        stickersListView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.contentView.addSubview(stickersListView)
+        NSLayoutConstraint.activate([
+            stickersListView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            stickersListView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stickersListView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            stickersListView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+
+            stickersListView.heightAnchor.constraint(equalToConstant: StickerLayout.listItemSize),
+        ])
+
+        return view
+    }()
+
+    private var stickerListBlurOverlay: UIVisualEffectView?
+
+    private lazy var stickersListView: StickerHorizontalListView = {
+        let view = StickerHorizontalListView(
+            cellSize: StickerLayout.listItemSize,
+            cellInset: 0,
+            spacing: StickerLayout.listItemSpacing
+        )
+        view.backgroundColor = .clear
+        return view
+    }()
+
+    private func loadStickerPanelIfNecessary() {
+        guard stickerListViewWrapper.superview == nil else { return }
+
+        // List view wrapper.
+        stickerPanel.addSubview(stickerListViewWrapper)
+        stickerListViewWrapper.translatesAutoresizingMaskIntoConstraints = false
+        stickerPanel.addConstraints([
+            stickerListViewWrapper.topAnchor.constraint(
+                equalTo: stickerPanel.topAnchor
+            ),
+            stickerListViewWrapper.leadingAnchor.constraint(
+                equalTo: stickerPanel.safeAreaLayoutGuide.leadingAnchor,
+                constant: StickerLayout.outerPanelHMargin
+            ),
+            stickerListViewWrapper.trailingAnchor.constraint(
+                equalTo: stickerPanel.layoutMarginsGuide.trailingAnchor,
+                constant: -StickerLayout.outerPanelHMargin
+            ),
+            stickerListViewWrapper.bottomAnchor.constraint(
+                equalTo: stickerPanel.bottomAnchor
+            ),
+        ])
+
+        // Blur overlay.
+        if #available(iOS 26, *){
+            let stickerListBlurOverlay = UIVisualEffectView(effect: StickerLayout.blurOverlayEffect)
+            stickerListViewWrapper.addSubview(stickerListBlurOverlay)
+            stickerListBlurOverlay.translatesAutoresizingMaskIntoConstraints = false
+
+            stickerPanel.addConstraints([
+                stickerListBlurOverlay.topAnchor.constraint(equalTo: stickerListViewWrapper.topAnchor),
+                stickerListBlurOverlay.leadingAnchor.constraint(equalTo: stickerListViewWrapper.leadingAnchor),
+                stickerListBlurOverlay.trailingAnchor.constraint(equalTo: stickerListViewWrapper.trailingAnchor),
+                stickerListBlurOverlay.bottomAnchor.constraint(equalTo: stickerListViewWrapper.bottomAnchor),
+            ])
+
+            self.stickerListBlurOverlay = stickerListBlurOverlay
+        }
+
+        UIView.performWithoutAnimation {
+            stickerPanel.layoutIfNeeded()
+        }
+    }
 
     private func updateSuggestedStickers(animated: Bool) {
         let suggestedStickerEmoji = StickerManager.suggestedStickerEmoji(chatBoxText: inputTextView.trimmedText)
+        guard currentSuggestedStickerEmoji != suggestedStickerEmoji else { return }
+        currentSuggestedStickerEmoji = suggestedStickerEmoji
 
-        if self.suggestedStickerEmoji == suggestedStickerEmoji {
-            return
-        }
-        self.suggestedStickerEmoji = suggestedStickerEmoji
-
-        let suggestedStickerInfos: [StickerInfo]
+        let suggestedStickers: [StickerInfo]
         if let suggestedStickerEmoji {
-            suggestedStickerInfos = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            suggestedStickers = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return StickerManager.suggestedStickers(for: suggestedStickerEmoji, tx: tx).map { $0.info }
             }
         } else {
-            suggestedStickerInfos = []
+            suggestedStickers = []
         }
+        guard currentSuggestedStickers != suggestedStickers else { return }
 
-        if self.suggestedStickerInfos == suggestedStickerInfos {
+        currentSuggestedStickers = suggestedStickers
+
+        guard !suggestedStickers.isEmpty else {
+            hideStickerPanel(animated: animated)
             return
         }
-        self.suggestedStickerInfos = suggestedStickerInfos
 
-        guard !suggestedStickerInfos.isEmpty else {
-            hideSuggestedStickersPanel(animated: animated)
-            return
-        }
-
-        showSuggestedStickersPanel(animated: animated)
+        showStickerPanel(animated: animated)
     }
 
-    private func showSuggestedStickersPanel(animated: Bool) {
-        owsAssertDebug(!suggestedStickerInfos.isEmpty)
+    private func showStickerPanel(animated: Bool) {
+        owsAssertDebug(!currentSuggestedStickers.isEmpty)
 
-        if suggestedStickersListView.superview == nil {
-            suggestedStickersPanel.addSubview(suggestedStickersListView)
-            suggestedStickersListView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-            UIView.performWithoutAnimation {
-                suggestedStickersPanel.layoutIfNeeded()
-            }
-        }
+        loadStickerPanelIfNecessary()
 
-        suggestedStickersListView.items = suggestedStickerInfos.map { stickerInfo in
+        stickersListView.items = currentSuggestedStickers.map { stickerInfo in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerInfo,
                 didSelectBlock: { [weak self] in
@@ -1871,61 +1929,87 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             )
         }
 
-        guard isSuggestedStickersPanelHidden else { return }
+        guard isStickerPanelHidden else { return }
 
-        isSuggestedStickersPanelHidden = false
+        isStickerPanelHidden = false
 
         UIView.performWithoutAnimation {
-            self.suggestedStickersListView.layoutIfNeeded()
-            self.suggestedStickersListView.contentOffset = CGPoint(
-                x: -self.suggestedStickersListView.contentInset.left,
-                y: -self.suggestedStickersListView.contentInset.top
-            )
+            self.stickersListView.layoutIfNeeded()
+            self.stickersListView.contentOffset = .zero
         }
 
         guard animated else {
-            updateSuggestedStickersPanelConstraints()
+            stickerPanel.isHidden = false
+            stickerListBlurOverlay?.isHidden = true
             return
         }
 
-        isAnimatingHeightChange = true
+        // Prepare initial state for animations.
+        UIView.performWithoutAnimation {
+            if let stickerListBlurOverlay {
+                stickerListBlurOverlay.isHidden = false
+                stickerListBlurOverlay.effect = StickerLayout.blurOverlayEffect
+            }
+
+            stickerListViewWrapper.transform = StickerLayout.animationTransform
+            stickerListViewWrapper.alpha = 0
+        }
+
+        // Animate.
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            springDamping: 0.9,
-            springResponse: 0.3
+            springDamping: 1,
+            springResponse: 0.4
         )
         animator.addAnimations {
-            self.updateSuggestedStickersPanelConstraints()
-            self.layoutIfNeeded()
+            self.stickerPanel.isHidden = false
+
+            self.stickerListBlurOverlay?.effect = nil
+
+            self.stickerListViewWrapper.transform = .identity
+            self.stickerListViewWrapper.alpha = 1
         }
         animator.addCompletion { _ in
-            self.isAnimatingHeightChange = false
+            self.stickerListBlurOverlay?.isHidden = true
         }
         animator.startAnimation()
     }
 
-    private func hideSuggestedStickersPanel(animated: Bool) {
-        guard !isSuggestedStickersPanelHidden else { return }
+    private func hideStickerPanel(animated: Bool) {
+        guard !isStickerPanelHidden else { return }
 
-        isSuggestedStickersPanelHidden = true
+        isStickerPanelHidden = true
 
         guard animated else {
-            updateSuggestedStickersPanelConstraints()
+            stickerPanel.isHidden = true
             return
         }
 
-        isAnimatingHeightChange = true
+        if let stickerListBlurOverlay {
+            UIView.performWithoutAnimation {
+                stickerListBlurOverlay.isHidden = false
+                stickerListBlurOverlay.effect = nil
+            }
+        }
+
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            springDamping: 0.9,
-            springResponse: 0.3
+            springDamping: 1,
+            springResponse: 0.4
         )
         animator.addAnimations {
-            self.updateSuggestedStickersPanelConstraints()
-            self.layoutIfNeeded()
+            self.stickerPanel.isHidden = true
+
+            self.stickerListBlurOverlay?.effect = StickerLayout.blurOverlayEffect
+
+            self.stickerListViewWrapper.transform = StickerLayout.animationTransform
+            self.stickerListViewWrapper.alpha = 0
         }
         animator.addCompletion { _ in
-            self.isAnimatingHeightChange = false
+            self.stickerListBlurOverlay?.isHidden = true
+
+            self.stickerListViewWrapper.transform = .identity
+            self.stickerListViewWrapper.alpha = 1
         }
         animator.startAnimation()
     }
@@ -2746,8 +2830,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         textViewHeightConstraint.constant = newHeight
 
         if let superview, inputToolbarDelegate != nil {
-            isAnimatingHeightChange = true
-
             let animator = UIViewPropertyAnimator(
                 duration: ConversationInputToolbar.heightChangeAnimationDuration,
                 springDamping: 1,
@@ -2756,9 +2838,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
             animator.addAnimations {
                 self.invalidateIntrinsicContentSize()
                 superview.layoutIfNeeded()
-            }
-            animator.addCompletion { _ in
-                self.isAnimatingHeightChange = false
             }
             animator.startAnimation()
         } else {
