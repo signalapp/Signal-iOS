@@ -58,16 +58,19 @@ class EmojiPickerSheet: OWSViewController {
         sheetPresentationController?.detents = [.medium(), .large()]
         sheetPresentationController?.prefersGrabberVisible = true
         sheetPresentationController?.delegate = self
+
+        if forceDarkTheme {
+            self.overrideUserInterfaceStyle = .dark
+            if #available(iOS 17.0, *) {
+                sheetPresentationController?.traitOverrides.userInterfaceStyle = .dark
+            }
+        }
     }
 
     // MARK: -
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if self.forceDarkTheme {
-            self.overrideUserInterfaceStyle = .dark
-        }
 
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             view.backgroundColor = nil
@@ -110,7 +113,7 @@ class EmojiPickerSheet: OWSViewController {
         NSLayoutConstraint.activate([
             sectionToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             sectionToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            sectionToolbar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+            sectionToolbar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -8),
         ])
 
 #if compiler(>=6.2)
