@@ -6,6 +6,12 @@
 import Foundation
 
 public class BackupFailureStateManager {
+
+    private enum Constants {
+        static let requiredInteractiveFailuresForBadge = 1
+        static let requiredBackgroundFailuresForBadge = 3
+    }
+
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let tsAccountManager: TSAccountManager
@@ -21,6 +27,17 @@ public class BackupFailureStateManager {
     }
 
     // MARK: -
+    public func hasFailedBackup(tx: DBReadTransaction) -> Bool {
+        if backupSettingsStore.getInteractiveBackupErrorCount(tx: tx) >= Constants.requiredInteractiveFailuresForBadge {
+            return true
+        }
+
+        if backupSettingsStore.getBackgroundBackupErrorCount(tx: tx) >= Constants.requiredBackgroundFailuresForBadge {
+            return true
+        }
+
+        return false
+    }
 
     /// Allow for managing backup badge state from arbitrary points.
     /// This allows each target to be separately cleared, and also allows
@@ -35,7 +52,7 @@ public class BackupFailureStateManager {
             return false
         }
 
-        if backupSettingsStore.getLastBackupFailed(tx: tx) {
+        if hasFailedBackup(tx: tx) {
             return true
         }
 

@@ -366,7 +366,7 @@ class BackupExportJobImpl: BackupExportJob {
             await db.awaitableWrite {
                 switch mode {
                 case .bgProcessingTask:
-                    self.backupSettingsStore.setLastBackupFailed(tx: $0)
+                    self.backupSettingsStore.incrementBackgroundBackupErrorCount(tx: $0)
                 case .manual:
                     self.backupSettingsStore.setIsBackupUploadQueueSuspended(true, tx: $0)
                 }
@@ -375,7 +375,12 @@ class BackupExportJobImpl: BackupExportJob {
             throw .cancellationError
         } catch {
             await db.awaitableWrite {
-                self.backupSettingsStore.setLastBackupFailed(tx: $0)
+                switch mode {
+                case .bgProcessingTask:
+                    self.backupSettingsStore.incrementBackgroundBackupErrorCount(tx: $0)
+                case .manual:
+                    self.backupSettingsStore.incrementInteractiveBackupErrorCount(tx: $0)
+                }
             }
 
             if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {

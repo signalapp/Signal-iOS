@@ -80,10 +80,9 @@ public struct BackupSettingsStore {
         static let haveSetBackupID = "haveSetBackupID"
         static let lastBackupRefreshDate = "lastBackupRefreshDate"
         static let lastBackupEnabledDetails = "lastBackupEnabledDetails"
-        static let lastBackupFailed = "lastBackupFailed"
 
-        static let mostRecentDateKey = "mostRecentPromptDate"
-        static let promptCountKey = "promptCount"
+        static let backgroundBackupErrorCount = "backgroundBackupErrorCount"
+        static let interactiveBackupErrorCount = "interactiveBackupErrorCount"
     }
 
     private let kvStore: KeyValueStore
@@ -209,7 +208,6 @@ public struct BackupSettingsStore {
         setLastBackupRefreshDate(lastBackupDate, tx: tx)
 
         // Clear any persisted error state
-        kvStore.removeValue(forKey: Keys.lastBackupFailed, transaction: tx)
         errorStateStore.removeAll(transaction: tx)
     }
 
@@ -254,16 +252,6 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    public func getLastBackupFailed(tx: DBReadTransaction) -> Bool {
-        kvStore.getBool(Keys.lastBackupFailed, defaultValue: false, transaction: tx)
-    }
-
-    public func setLastBackupFailed(tx: DBWriteTransaction) {
-        kvStore.setBool(true, key: Keys.lastBackupFailed, transaction: tx)
-    }
-
-    // MARK: -
-
     public func getErrorBadgeMuted(target: String, tx: DBReadTransaction) -> Bool {
         errorStateStore.getBool(target + "_muted", defaultValue: false, transaction: tx)
     }
@@ -274,20 +262,22 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    public func getBackupErrorPromptCount(tx: DBReadTransaction) -> Int {
-        errorStateStore.getInt(Keys.promptCountKey, defaultValue: 0, transaction: tx)
+    public func getInteractiveBackupErrorCount(tx: DBReadTransaction) -> Int {
+        errorStateStore.getInt(Keys.interactiveBackupErrorCount, defaultValue: 0, transaction: tx)
     }
 
-    public func setBackupErrorPromptCount(_ count: Int, tx: DBWriteTransaction) {
-        errorStateStore.setInt(count, key: Keys.promptCountKey, transaction: tx)
+    public func incrementInteractiveBackupErrorCount(tx: DBWriteTransaction) {
+        let nextCount = getInteractiveBackupErrorCount(tx: tx) + 1
+        errorStateStore.setInt(nextCount, key: Keys.interactiveBackupErrorCount, transaction: tx)
     }
 
-    public func getBackupErrorLastPromptDate(tx: DBReadTransaction) -> Date? {
-        errorStateStore.getDate(Keys.mostRecentDateKey, transaction: tx)
+    public func getBackgroundBackupErrorCount(tx: DBReadTransaction) -> Int {
+        errorStateStore.getInt(Keys.backgroundBackupErrorCount, defaultValue: 0, transaction: tx)
     }
 
-    public func setBackupErrorLastPromptDate(_ date: Date, tx: DBWriteTransaction) {
-        errorStateStore.setDate(date, key: Keys.mostRecentDateKey, transaction: tx)
+    public func incrementBackgroundBackupErrorCount(tx: DBWriteTransaction) {
+        let nextCount = getBackgroundBackupErrorCount(tx: tx) + 1
+        errorStateStore.setInt(nextCount, key: Keys.backgroundBackupErrorCount, transaction: tx)
     }
 
     // MARK: -

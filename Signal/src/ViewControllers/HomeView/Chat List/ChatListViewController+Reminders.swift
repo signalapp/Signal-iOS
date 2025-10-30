@@ -273,10 +273,9 @@ extension ChatListViewController {
     public func updateBackupErrorStateWithSneakyTransaction() {
         var result: CLVViewState.BackupFailureBadgeType?
         let stateManager = DependenciesBridge.shared.backupFailureStateManager
-        let backupSettingsStore = BackupSettingsStore()
 
         SSKEnvironment.shared.databaseStorageRef.read { tx in
-            if backupSettingsStore.getLastBackupFailed(tx: tx) {
+            if stateManager.hasFailedBackup(tx: tx) {
                 result = []
                 CLVViewState.BackupFailureBadgeType.allCases.forEach { type in
                     if stateManager.shouldShowErrorBadge(target: type.target, tx: tx) {

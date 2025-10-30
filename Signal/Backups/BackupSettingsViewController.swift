@@ -25,6 +25,7 @@ class BackupSettingsViewController:
     private let backupDisablingManager: BackupDisablingManager
     private let backupEnablingManager: BackupEnablingManager
     private let backupExportJobRunner: BackupExportJobRunner
+    private let backupFailureStateManager: BackupFailureStateManager
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
@@ -57,6 +58,7 @@ class BackupSettingsViewController:
             backupDisablingManager: DependenciesBridge.shared.backupDisablingManager,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
+            backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
@@ -79,6 +81,7 @@ class BackupSettingsViewController:
         backupDisablingManager: BackupDisablingManager,
         backupEnablingManager: BackupEnablingManager,
         backupExportJobRunner: BackupExportJobRunner,
+        backupFailureStateManager: BackupFailureStateManager,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -106,6 +109,7 @@ class BackupSettingsViewController:
         self.backupDisablingManager = backupDisablingManager
         self.backupEnablingManager = backupEnablingManager
         self.backupExportJobRunner = backupExportJobRunner
+        self.backupFailureStateManager = backupFailureStateManager
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
@@ -132,7 +136,7 @@ class BackupSettingsViewController:
                     backupSettingsStore: backupSettingsStore,
                     tx: tx
                 ),
-                hasBackupFailed: backupSettingsStore.getLastBackupFailed(tx: tx)
+                hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx)
             )
 
             return viewModel
@@ -246,7 +250,7 @@ class BackupSettingsViewController:
                         db.read { tx in
                             self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
                             self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
-                            self.viewModel.hasBackupFailed = self.backupSettingsStore.getLastBackupFailed(tx: tx)
+                            self.viewModel.hasBackupFailed = self.backupFailureStateManager.hasFailedBackup(tx: tx)
                         }
                     }
                 }
