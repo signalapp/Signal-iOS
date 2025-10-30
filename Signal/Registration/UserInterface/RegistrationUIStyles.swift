@@ -55,6 +55,10 @@ extension Registration {
             }
         }
 
+        private static func primaryButtonForegroundColor() -> Color {
+            return .white
+        }
+
         private static func secondaryButtonForegroundColor() -> Color {
             if #available(iOS 26, *) {
                 return .Signal.label
@@ -71,6 +75,7 @@ extension Registration {
                         Spacer()
                         configuration.label
                             .font(.headline)
+                            .foregroundColor(UI.primaryButtonForegroundColor())
                         Spacer()
                     }
                     .padding(UI.largeButtonContentPadding)
