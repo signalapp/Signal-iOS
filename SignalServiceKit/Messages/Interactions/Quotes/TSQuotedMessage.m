@@ -209,8 +209,6 @@ NS_ASSUME_NONNULL_BEGIN
                                           isGiftBadge:isGiftBadge
                               isTargetMessageViewOnce:isTargetMessageViewOnce
                                                isPoll:isPoll];
-
-    // TODO (KC): add polls prefix for backup quoted messages when its implemented
 }
 
 - (nullable NSNumber *)getTimestampValue

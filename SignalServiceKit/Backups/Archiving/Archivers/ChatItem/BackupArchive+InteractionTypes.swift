@@ -333,9 +333,6 @@ extension BackupArchive {
         /// own stories; these replies would go into the Note To Self thread.
         /// We just drop these on export as they're meant to be impossible.
         case directStoryReplyInNoteToSelf
-
-        /// TODO (KC): Eventually remove this once we implement polls in backups.
-        case poll
     }
 
     enum ArchiveInteractionResult<Component> {

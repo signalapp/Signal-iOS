@@ -1380,10 +1380,14 @@ extension AppSetup.GlobalsContinuation {
             attachmentContentValidator: attachmentContentValidator,
             db: db
         )
+        let backupReactionArchiver = BackupArchiveReactionArchiver(
+            reactionStore: BackupArchiveReactionStore()
+        )
         let pollArchiver = BackupArchivePollArchiver(
             pollManager: pollMessageManager,
             db: db,
-            recipientDatabaseTable: recipientDatabaseTable
+            recipientDatabaseTable: recipientDatabaseTable,
+            reactionArchiver: backupReactionArchiver
         )
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
@@ -1451,6 +1455,7 @@ extension AppSetup.GlobalsContinuation {
                 pollArchiver: pollArchiver,
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore,
+                reactionArchiver: backupReactionArchiver
             ),
             contactRecipientArchiver: backupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,

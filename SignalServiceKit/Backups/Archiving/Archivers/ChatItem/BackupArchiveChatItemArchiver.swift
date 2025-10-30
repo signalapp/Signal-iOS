@@ -49,10 +49,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let pollArchiver: BackupArchivePollArchiver
     private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
+    private let reactionArchiver: BackupArchiveReactionArchiver
 
-    private lazy var reactionArchiver = BackupArchiveReactionArchiver(
-        reactionStore: BackupArchiveReactionStore()
-    )
     private lazy var contentsArchiver = BackupArchiveTSMessageContentsArchiver(
         interactionStore: interactionStore,
         archivedPaymentStore: archivedPaymentStore,
@@ -94,6 +92,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         pollArchiver: BackupArchivePollArchiver,
         reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
+        reactionArchiver: BackupArchiveReactionArchiver
     ) {
         self.archivedPaymentStore = archivedPaymentStore
         self.attachmentsArchiver = attachmentsArchiver
@@ -108,6 +107,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.pollArchiver = pollArchiver
         self.reactionStore = reactionStore
         self.threadStore = threadStore
+        self.reactionArchiver = reactionArchiver
     }
 
     // MARK: -

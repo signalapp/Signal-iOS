@@ -2124,10 +2124,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let poll = BackupArchive.RestoredMessageContents.Poll(
             poll: pollData,
             question: pollQuestion,
-            reactions: []
+            reactions: poll.reactions
         )
 
-        // TODO (KC): store actual reactions once they are in the spec
         if partialErrors.isEmpty {
             return .success(
                 .poll(poll)

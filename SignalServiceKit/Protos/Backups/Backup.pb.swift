@@ -3844,6 +3844,8 @@ public struct BackupProto_Poll: Sendable {
 
   public var hasEnded_p: Bool = false
 
+  public var reactions: [BackupProto_Reaction] = []
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public struct PollOption: Sendable {
@@ -10776,7 +10778,7 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
 extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Poll"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}question\0\u{1}allowMultiple\0\u{1}options\0\u{1}hasEnded\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}question\0\u{1}allowMultiple\0\u{1}options\0\u{1}hasEnded\0\u{1}reactions\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10788,6 +10790,7 @@ extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 2: try { try decoder.decodeSingularBoolField(value: &self.allowMultiple) }()
       case 3: try { try decoder.decodeRepeatedMessageField(value: &self.options) }()
       case 4: try { try decoder.decodeSingularBoolField(value: &self.hasEnded_p) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
       default: break
       }
     }
@@ -10806,6 +10809,9 @@ extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if self.hasEnded_p != false {
       try visitor.visitSingularBoolField(value: self.hasEnded_p, fieldNumber: 4)
     }
+    if !self.reactions.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -10814,6 +10820,7 @@ extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs.allowMultiple != rhs.allowMultiple {return false}
     if lhs.options != rhs.options {return false}
     if lhs.hasEnded_p != rhs.hasEnded_p {return false}
+    if lhs.reactions != rhs.reactions {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

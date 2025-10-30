@@ -12,15 +12,18 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
     private let pollManager: PollMessageManager
     private let db: DB
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let reactionArchiver: BackupArchiveReactionArchiver
 
     init(
         pollManager: PollMessageManager,
         db: DB,
-        recipientDatabaseTable: RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable,
+        reactionArchiver: BackupArchiveReactionArchiver
     ) {
         self.pollManager = pollManager
         self.db = db
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.reactionArchiver = reactionArchiver
     }
 
     // MARK: - Archiving
@@ -61,6 +64,32 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
                 pollOptionProto.votes.append(pollVoteProto)
             }
             pollProto.options.append(pollOptionProto)
+        }
+
+        var partialErrors = [ArchiveFrameError]()
+
+        var reactions: [BackupProto_Reaction] = []
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context.recipientContext
+        )
+
+        switch reactionsResult {
+        case .partialFailure(let values, let errors):
+            partialErrors.append(contentsOf: errors)
+            reactions.append(contentsOf: values)
+        case .completeFailure(let error):
+            return .completeFailure(error)
+        case .success(let values):
+            reactions.append(contentsOf: values)
+        default:
+            break
+        }
+
+        pollProto.reactions = reactions
+
+        if !partialErrors.isEmpty {
+            return .partialFailure(.poll(pollProto), partialErrors)
         }
 
         return .success(.poll(pollProto))
