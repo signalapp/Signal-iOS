@@ -243,6 +243,7 @@ public class PollMessageManager {
             let pollTerminateMessage = OutgoingPollTerminateMessage(
                 thread: thread,
                 targetPollTimestamp: targetPoll.timestamp,
+                expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
                 tx: tx
             )
 

@@ -13,11 +13,17 @@ class OutgoingPollTerminateMessage: TSOutgoingMessage {
     public init(
         thread: TSGroupThread,
         targetPollTimestamp: UInt64,
+        expiresInSeconds: UInt32 = 0,
         tx: DBReadTransaction
     ) {
         self.targetPollTimestamp = targetPollTimestamp
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            expiresInSeconds: expiresInSeconds,
+        )
+
         super.init(
-            outgoingMessageWith: .withDefaultValues(thread: thread),
+            outgoingMessageWith: builder,
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
