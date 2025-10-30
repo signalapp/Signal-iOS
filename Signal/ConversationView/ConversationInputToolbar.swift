@@ -532,7 +532,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // "Suggested Stickers" horizontal list view will be placed in a wrapper view to allow for slide in / slide out animation.
         updateSuggestedStickersPanelConstraints()
 
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             iOS26Layout = true
         }
 
