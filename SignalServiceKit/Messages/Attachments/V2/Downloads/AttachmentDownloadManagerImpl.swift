@@ -1579,7 +1579,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
-            headers["length"] = "\(length)"
+            headers["range"] = "bytes=0-\(length-1)"
 
             let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
             let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
