@@ -3,108 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public enum _DonationReceiptCredentialResultStore_Mode: CaseIterable {
-    /// Refers to a one-time boost.
-    case oneTimeBoost
-    /// Refers to a recurring subscription that was started for the first time.
-    case recurringSubscriptionInitiation
-    /// Refers to a recurring subscription that automatically renewed.
-    case recurringSubscriptionRenewal
-}
-
-public protocol DonationReceiptCredentialResultStore {
-    typealias Mode = _DonationReceiptCredentialResultStore_Mode
-
-    // MARK: Error persistence
-
-    func getRequestError(
-        errorMode: Mode,
-        tx: DBReadTransaction
-    ) -> DonationReceiptCredentialRequestError?
-
-    func setRequestError(
-        error: DonationReceiptCredentialRequestError,
-        errorMode: Mode,
-        tx: DBWriteTransaction
-    )
-
-    func clearRequestError(
-        errorMode: Mode,
-        tx: DBWriteTransaction
-    )
-
-    // MARK: Success persistence
-
-    func getRedemptionSuccess(
-        successMode: Mode,
-        tx: DBReadTransaction
-    ) -> DonationReceiptCredentialRedemptionSuccess?
-
-    func setRedemptionSuccess(
-        success: DonationReceiptCredentialRedemptionSuccess,
-        successMode: Mode,
-        tx: DBWriteTransaction
-    )
-
-    func clearRedemptionSuccess(
-        successMode: Mode,
-        tx: DBWriteTransaction
-    )
-
-    // MARK: Presentation
-
-    func hasPresentedError(errorMode: Mode, tx: DBReadTransaction) -> Bool
-    func setHasPresentedError(errorMode: Mode, tx: DBWriteTransaction)
-
-    func hasPresentedSuccess(successMode: Mode, tx: DBReadTransaction) -> Bool
-    func setHasPresentedSuccess(successMode: Mode, tx: DBWriteTransaction)
-}
-
-public extension DonationReceiptCredentialResultStore {
-    func getRequestErrorForAnyRecurringSubscription(
-        tx: DBReadTransaction
-    ) -> DonationReceiptCredentialRequestError? {
-        if let initiationError = getRequestError(
-            errorMode: .recurringSubscriptionInitiation, tx: tx
-        ) {
-            return initiationError
-        } else if let renewalError = getRequestError(
-            errorMode: .recurringSubscriptionRenewal, tx: tx
-        ) {
-            return renewalError
-        }
-
-        return nil
+/// Stores the result of `ReceiptCredential`-related operations, for donations.
+public struct DonationReceiptCredentialResultStore {
+    public enum Mode: CaseIterable {
+        /// Refers to a one-time boost.
+        case oneTimeBoost
+        /// Refers to a recurring subscription that was started for the first time.
+        case recurringSubscriptionInitiation
+        /// Refers to a recurring subscription that automatically renewed.
+        case recurringSubscriptionRenewal
     }
 
-    func getRedemptionSuccessForAnyRecurringSubscription(
-        tx: DBReadTransaction
-    ) -> DonationReceiptCredentialRedemptionSuccess? {
-        if let initiationSuccess = getRedemptionSuccess(
-            successMode: .recurringSubscriptionInitiation, tx: tx
-        ) {
-            return initiationSuccess
-        } else if let renewalSuccess = getRedemptionSuccess(
-            successMode: .recurringSubscriptionRenewal, tx: tx
-        ) {
-            return renewalSuccess
-        }
-
-        return nil
-    }
-
-    func clearRequestErrorForAnyRecurringSubscription(tx: DBWriteTransaction) {
-        clearRequestError(errorMode: .recurringSubscriptionInitiation, tx: tx)
-        clearRequestError(errorMode: .recurringSubscriptionRenewal, tx: tx)
-    }
-
-    func clearRedemptionSuccessForAnyRecurringSubscription(tx: DBWriteTransaction) {
-        clearRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: tx)
-        clearRedemptionSuccess(successMode: .recurringSubscriptionRenewal, tx: tx)
-    }
-}
-
-final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialResultStore {
     private enum StoreConstants {
         static let errorCollection = "SubRecCredReqErrorStore"
         static let successCollection = "SubRecCredReqSuccessStore"
@@ -139,9 +48,25 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         }
     }
 
-    // MARK: - Error persistence
+    // MARK: -
 
-    func getRequestError(
+    public func getRequestErrorForAnyRecurringSubscription(
+        tx: DBReadTransaction
+    ) -> DonationReceiptCredentialRequestError? {
+        if let initiationError = getRequestError(
+            errorMode: .recurringSubscriptionInitiation, tx: tx
+        ) {
+            return initiationError
+        } else if let renewalError = getRequestError(
+            errorMode: .recurringSubscriptionRenewal, tx: tx
+        ) {
+            return renewalError
+        }
+
+        return nil
+    }
+
+    public func getRequestError(
         errorMode: Mode,
         tx: DBReadTransaction
     ) -> DonationReceiptCredentialRequestError? {
@@ -151,7 +76,9 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         )
     }
 
-    func setRequestError(
+    // MARK: -
+
+    public func setRequestError(
         error: DonationReceiptCredentialRequestError,
         errorMode: Mode,
         tx: DBWriteTransaction
@@ -163,7 +90,12 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         errorPresentationKVStore.removeValue(forKey: modeKey, transaction: tx)
     }
 
-    func clearRequestError(errorMode: Mode, tx: DBWriteTransaction) {
+    public func clearRequestErrorForAnyRecurringSubscription(tx: DBWriteTransaction) {
+        clearRequestError(errorMode: .recurringSubscriptionInitiation, tx: tx)
+        clearRequestError(errorMode: .recurringSubscriptionRenewal, tx: tx)
+    }
+
+    public func clearRequestError(errorMode: Mode, tx: DBWriteTransaction) {
         let modeKey = key(mode: errorMode)
         errorKVStore.removeValue(forKey: modeKey, transaction: tx)
 
@@ -171,9 +103,25 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         errorPresentationKVStore.removeValue(forKey: modeKey, transaction: tx)
     }
 
-    // MARK: - Success persistence
+    // MARK: -
 
-    func getRedemptionSuccess(
+    public func getRedemptionSuccessForAnyRecurringSubscription(
+        tx: DBReadTransaction
+    ) -> DonationReceiptCredentialRedemptionSuccess? {
+        if let initiationSuccess = getRedemptionSuccess(
+            successMode: .recurringSubscriptionInitiation, tx: tx
+        ) {
+            return initiationSuccess
+        } else if let renewalSuccess = getRedemptionSuccess(
+            successMode: .recurringSubscriptionRenewal, tx: tx
+        ) {
+            return renewalSuccess
+        }
+
+        return nil
+    }
+
+    public func getRedemptionSuccess(
         successMode: Mode,
         tx: DBReadTransaction
     ) -> DonationReceiptCredentialRedemptionSuccess? {
@@ -183,7 +131,9 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         )
     }
 
-    func setRedemptionSuccess(
+    // MARK: -
+
+    public func setRedemptionSuccess(
         success: DonationReceiptCredentialRedemptionSuccess,
         successMode: Mode,
         tx: DBWriteTransaction
@@ -199,7 +149,12 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         successPresentationKVStore.removeValue(forKey: modeKey, transaction: tx)
     }
 
-    func clearRedemptionSuccess(
+    public func clearRedemptionSuccessForAnyRecurringSubscription(tx: DBWriteTransaction) {
+        clearRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: tx)
+        clearRedemptionSuccess(successMode: .recurringSubscriptionRenewal, tx: tx)
+    }
+
+    public func clearRedemptionSuccess(
         successMode: Mode,
         tx: DBWriteTransaction
     ) {
@@ -213,9 +168,9 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         successPresentationKVStore.removeValue(forKey: modeKey, transaction: tx)
     }
 
-    // MARK: - Presentation
+    // MARK: -
 
-    func hasPresentedError(errorMode: Mode, tx: DBReadTransaction) -> Bool {
+    public func hasPresentedError(errorMode: Mode, tx: DBReadTransaction) -> Bool {
         return errorPresentationKVStore.getBool(
             key(mode: errorMode),
             defaultValue: false,
@@ -223,7 +178,7 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         )
     }
 
-    func setHasPresentedError(errorMode: Mode, tx: DBWriteTransaction) {
+    public func setHasPresentedError(errorMode: Mode, tx: DBWriteTransaction) {
         errorPresentationKVStore.setBool(
             true,
             key: key(mode: errorMode),
@@ -231,7 +186,7 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         )
     }
 
-    func hasPresentedSuccess(successMode: Mode, tx: DBReadTransaction) -> Bool {
+    public func hasPresentedSuccess(successMode: Mode, tx: DBReadTransaction) -> Bool {
         return successPresentationKVStore.getBool(
             key(mode: successMode),
             defaultValue: false,
@@ -239,7 +194,7 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         )
     }
 
-    func setHasPresentedSuccess(successMode: Mode, tx: DBWriteTransaction) {
+    public func setHasPresentedSuccess(successMode: Mode, tx: DBWriteTransaction) {
         successPresentationKVStore.setBool(
             true,
             key: key(mode: successMode),

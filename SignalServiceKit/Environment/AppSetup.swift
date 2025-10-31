@@ -1189,7 +1189,7 @@ extension AppSetup.GlobalsContinuation {
             messageSenderJobQueue: messageSenderJobQueue
         )
 
-        let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStoreImpl()
+        let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStore()
 
         let usernameApiClient = UsernameApiClientImpl(
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
