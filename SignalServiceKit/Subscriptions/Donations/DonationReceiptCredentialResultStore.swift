@@ -105,17 +105,6 @@ public extension DonationReceiptCredentialResultStore {
 }
 
 final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialResultStore {
-    /// Uses values taken from ``DonationSubscriptionManager``, to preserve
-    /// compatibility with legacy data stored there.
-    ///
-    /// Specifically, recurring subscriptions have historically stored error
-    /// codes. One-time boosts never stored an error code, and neither stored
-    /// any information beyond the error code.
-    private enum LegacyErrorConstants {
-        static let collection = "SubscriptionKeyValueStore"
-        static let recurringSubscriptionKey = "lastSubscriptionReceiptRequestFailedKey"
-    }
-
     private enum StoreConstants {
         static let errorCollection = "SubRecCredReqErrorStore"
         static let successCollection = "SubRecCredReqSuccessStore"
@@ -128,8 +117,6 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         static let recurringSubscriptionRenewalKey = "recurringSubscriptionRenewal"
     }
 
-    private let legacyErrorKVStore: KeyValueStore
-
     private let errorKVStore: KeyValueStore
     private let successKVStore: KeyValueStore
 
@@ -137,8 +124,6 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
     private let successPresentationKVStore: KeyValueStore
 
     init() {
-        legacyErrorKVStore = KeyValueStore(collection: LegacyErrorConstants.collection)
-
         errorKVStore = KeyValueStore(collection: StoreConstants.errorCollection)
         successKVStore = KeyValueStore(collection: StoreConstants.successCollection)
 
@@ -160,28 +145,10 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         errorMode: Mode,
         tx: DBReadTransaction
     ) -> DonationReceiptCredentialRequestError? {
-        if let error: DonationReceiptCredentialRequestError = try? errorKVStore.getCodableValue(
+        return try? errorKVStore.getCodableValue(
             forKey: key(mode: errorMode),
-            transaction: tx
-        ) {
-            return error
-        } else if
-            let legacyErrorCodeInt = legacyErrorKVStore.getInt(
-                LegacyErrorConstants.recurringSubscriptionKey, transaction: tx
-            ),
-            let legacyErrorCode = ReceiptCredentialRequestError.ErrorCode(
-                rawValue: legacyErrorCodeInt
-            )
-        {
-            // See note above – we might have just the error code int, and if so
-            // we'll do our best without the rest of the state.
-
-            return DonationReceiptCredentialRequestError(
-                legacyErrorCode: legacyErrorCode
-            )
-        }
-
-        return nil
+            transaction: tx,
+        )
     }
 
     func setRequestError(
@@ -189,15 +156,6 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
         errorMode: Mode,
         tx: DBWriteTransaction
     ) {
-        switch errorMode {
-        case .oneTimeBoost: break
-        case .recurringSubscriptionInitiation, .recurringSubscriptionRenewal:
-            legacyErrorKVStore.removeValue(
-                forKey: LegacyErrorConstants.recurringSubscriptionKey,
-                transaction: tx
-            )
-        }
-
         let modeKey = key(mode: errorMode)
         try? errorKVStore.setCodable(error, key: modeKey, transaction: tx)
 
@@ -206,15 +164,6 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
     }
 
     func clearRequestError(errorMode: Mode, tx: DBWriteTransaction) {
-        switch errorMode {
-        case .oneTimeBoost: break
-        case .recurringSubscriptionInitiation, .recurringSubscriptionRenewal:
-            legacyErrorKVStore.removeValue(
-                forKey: LegacyErrorConstants.recurringSubscriptionKey,
-                transaction: tx
-            )
-        }
-
         let modeKey = key(mode: errorMode)
         errorKVStore.removeValue(forKey: modeKey, transaction: tx)
 

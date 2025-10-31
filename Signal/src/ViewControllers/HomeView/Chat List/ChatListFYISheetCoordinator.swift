@@ -168,12 +168,6 @@ class ChatListFYISheetCoordinator {
             return nil
         }
 
-        guard let badge = redemptionError.badge else {
-            // Might be missing for old errors, but we need this to present the
-            // sheet, so ignore if missing.
-            return nil
-        }
-
         switch redemptionError.errorCode {
         case .paymentStillProcessing:
             // Not a terminal error – no reason to show a sheet.
@@ -208,7 +202,7 @@ class ChatListFYISheetCoordinator {
 
         return .badgeIssue(FYISheet.BadgeIssue(
             redemptionError: redemptionError,
-            badge: badge,
+            badge: redemptionError.badge,
             errorMode: errorMode,
         ))
     }

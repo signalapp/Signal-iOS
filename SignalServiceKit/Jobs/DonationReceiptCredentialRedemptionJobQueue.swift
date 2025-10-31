@@ -388,10 +388,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         )
     }
 
-    private func timeIntervalSince(_ timestampMs: UInt64) -> TimeInterval {
-        return Date().timeIntervalSince(Date(millisecondsSince1970: timestampMs))
-    }
-
     private func sepaRetryDelay(configuration: Configuration) -> TimeInterval? {
         switch retryModeIfStillProcessing(
             paymentType: configuration.paymentType,
@@ -412,10 +408,13 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         guard let priorError, priorError.errorCode == .paymentStillProcessing else {
             return nil
         }
-        let delay = Constants.sepaRetryInterval - timeIntervalSince(priorError.timestampMs)
+
+        let nextAttemptDate = priorError.creationDate.addingTimeInterval(Constants.sepaRetryInterval)
+        let delay = nextAttemptDate.timeIntervalSince(dateProvider())
         guard delay > 0 else {
             return nil
         }
+
         owsAssertDebug(
             priorError.paymentMethod == .sepa || priorError.paymentMethod == .ideal,
             logger: logger
@@ -771,20 +770,14 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         amount: FiatMoney,
         tx: DBWriteTransaction
     ) {
-        let receiptCredentialRequestError: DonationReceiptCredentialRequestError = {
-            if let paymentMethod = configuration.paymentMethod {
-                return DonationReceiptCredentialRequestError(
-                    errorCode: errorCode,
-                    chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
-                    badge: badge,
-                    amount: amount,
-                    paymentMethod: paymentMethod
-                )
-            } else {
-                logger.warn("Building legacy error, job record missing fields!")
-                return DonationReceiptCredentialRequestError(legacyErrorCode: errorCode)
-            }
-        }()
+        let receiptCredentialRequestError = DonationReceiptCredentialRequestError(
+            errorCode: errorCode,
+            chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
+            badge: badge,
+            amount: amount,
+            paymentMethod: configuration.paymentMethod,
+            now: dateProvider(),
+        )
 
         donationReceiptCredentialResultStore.setRequestError(
             error: receiptCredentialRequestError,

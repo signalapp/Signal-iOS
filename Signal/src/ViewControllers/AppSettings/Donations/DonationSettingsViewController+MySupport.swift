@@ -345,11 +345,7 @@ extension DonationSettingsViewController {
         // We don't show anything for one-time boosts unless there's an
         // error.
         if let receiptCredentialRequestError {
-            guard let receiptAmount = receiptCredentialRequestError.amount else {
-                owsFailBeta("We never persisted these without an amount for one-time boosts. How did we get here?")
-                return nil
-            }
-            amount = receiptAmount
+            amount = receiptCredentialRequestError.amount
 
             logger.info("Showing boost error. \(receiptCredentialRequestError)")
 

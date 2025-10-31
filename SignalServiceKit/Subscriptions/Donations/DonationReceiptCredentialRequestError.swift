@@ -6,32 +6,22 @@
 /// Represents an error encountered while making a receipt credential request.
 public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     public let errorCode: ReceiptCredentialRequestError.ErrorCode
-
-    /// If our error code is `.paymentFailed`, this holds the associated charge
-    /// failure.
-    ///
-    /// We may have legacy or exceptional `.paymentFailed` errors persisted with
-    /// this `nil`.
-    public let chargeFailureCodeIfPaymentFailed: String?
-
-    /// We may have legacy errors persisted with this `nil`.
-    public let badge: ProfileBadge?
-
-    /// We may have legacy errors persisted with this `nil`.
-    public let amount: FiatMoney?
-
-    /// We may have legacy errors persisted with this `nil`.
+    public let badge: ProfileBadge
+    public let amount: FiatMoney
     public let paymentMethod: DonationPaymentMethod?
+    public let creationDate: Date
 
-    /// The epoch timestamp at which this error was created.
-    public let timestampMs: UInt64
+    /// If our error code is `.paymentFailed`, this should hold the associated
+    /// charge failure.
+    public let chargeFailureCodeIfPaymentFailed: String?
 
     public init(
         errorCode: ReceiptCredentialRequestError.ErrorCode,
         chargeFailureCodeIfPaymentFailed: String?,
         badge: ProfileBadge,
         amount: FiatMoney,
-        paymentMethod: DonationPaymentMethod
+        paymentMethod: DonationPaymentMethod?,
+        now: Date,
     ) {
         owsPrecondition(
             chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
@@ -43,19 +33,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
         self.badge = badge
         self.amount = amount
         self.paymentMethod = paymentMethod
-        self.timestampMs = Date().ows_millisecondsSince1970
-    }
-
-    /// When dealing with legacy persisted data, we may only have the raw error
-    /// code available. This should only be used if a full error cannot be
-    /// constructed!
-    public init(legacyErrorCode: ReceiptCredentialRequestError.ErrorCode) {
-        self.errorCode = legacyErrorCode
-        self.chargeFailureCodeIfPaymentFailed = nil
-        self.badge = nil
-        self.amount = nil
-        self.paymentMethod = nil
-        self.timestampMs = Date().ows_millisecondsSince1970
+        self.creationDate = now
     }
 
     // MARK: - Codable
@@ -72,44 +50,46 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        chargeFailureCodeIfPaymentFailed = try container.decodeIfPresent(String.self, forKey: .chargeFailureCodeIfPaymentFailed)
-        badge = try container.decodeIfPresent(ProfileBadge.self, forKey: .badge)
-        amount = try container.decodeIfPresent(FiatMoney.self, forKey: .amount)
-        timestampMs = try container.decode(UInt64.self, forKey: .timestampMs)
-
-        let errorCodeInt = try container.decode(Int.self, forKey: .errorCode)
-        let paymentMethodString = try container.decodeIfPresent(String.self, forKey: .paymentMethod)
-
-        guard let errorCode = ReceiptCredentialRequestError.ErrorCode(rawValue: errorCodeInt) else {
+        let rawErrorCode = try container.decode(Int.self, forKey: .errorCode)
+        if let errorCode = ReceiptCredentialRequestError.ErrorCode(
+            rawValue: rawErrorCode,
+        ) {
+            self.errorCode = errorCode
+        } else {
             throw DecodingError.dataCorrupted(DecodingError.Context(
                 codingPath: [CodingKeys.errorCode],
-                debugDescription: "Unexpected error code value: \(errorCodeInt)"
+                debugDescription: "Unexpected error code value: \(rawErrorCode)"
             ))
         }
-        self.errorCode = errorCode
 
-        guard let paymentMethodString else {
-            paymentMethod = nil
-            return
+        if let paymentMethodString = try container.decodeIfPresent(String.self, forKey: .paymentMethod) {
+            guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
+                throw DecodingError.dataCorrupted(DecodingError.Context(
+                    codingPath: [CodingKeys.paymentMethod],
+                    debugDescription: "Unexpected payment method value: \(paymentMethodString)"
+                ))
+            }
+
+            self.paymentMethod = paymentMethod
+        } else {
+            self.paymentMethod = nil
         }
 
-        guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
-            throw DecodingError.dataCorrupted(DecodingError.Context(
-                codingPath: [CodingKeys.paymentMethod],
-                debugDescription: "Unexpected payment method value: \(paymentMethodString)"
-            ))
-        }
-        self.paymentMethod = paymentMethod
+        let timestampMs = try container.decode(UInt64.self, forKey: .timestampMs)
+        creationDate = Date(millisecondsSince1970: timestampMs)
+
+        badge = try container.decode(ProfileBadge.self, forKey: .badge)
+        amount = try container.decode(FiatMoney.self, forKey: .amount)
+        chargeFailureCodeIfPaymentFailed = try container.decodeIfPresent(String.self, forKey: .chargeFailureCodeIfPaymentFailed)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encodeIfPresent(chargeFailureCodeIfPaymentFailed, forKey: .chargeFailureCodeIfPaymentFailed)
-        try container.encodeIfPresent(badge, forKey: .badge)
-        try container.encodeIfPresent(amount, forKey: .amount)
-        try container.encode(timestampMs, forKey: .timestampMs)
-
+        try container.encode(badge, forKey: .badge)
+        try container.encode(amount, forKey: .amount)
+        try container.encode(creationDate.ows_millisecondsSince1970, forKey: .timestampMs)
         try container.encode(errorCode.rawValue, forKey: .errorCode)
         try container.encodeIfPresent(paymentMethod?.rawValue, forKey: .paymentMethod)
     }
