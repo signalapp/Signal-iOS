@@ -538,7 +538,11 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             iOS26Layout = true
         }
 
-        stickerPanel.isHidden = true // not visible initially
+        // Set initial zero height for the sticker panel.
+        let zeroHeightConstraint = stickerPanel.heightAnchor.constraint(equalToConstant: 0)
+        stickerPanel.addConstraint(zeroHeightConstraint)
+        stickerPanelConstraint = zeroHeightConstraint
+
         let contentViewWrapperView = UIView.container()
 
         // Outermost vertical stack:
@@ -1762,78 +1766,90 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // Horizontal.
         static let listItemSpacing: CGFloat = 12
 
-        // Spacing between sticker list view and visible background (blur/glass) panel.
-        static let listViewPadding = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 8)
+        // Spacing around sticker list view's content.
+        // Set spacing as `UICollectionView.contentInset` to allow scrolling stickers right up to the edge of the background.
+        static let listViewPadding = UIEdgeInsets(hMargin: 10, vMargin: 6)
 
-        // How much sticker panel (visible background) is inset from the full-width `stickerPanel`.
+        // `stickersListView` must be inset a little bit to make room for glass background's border.
+        static let backgroundMargins = NSDirectionalEdgeInsets(margin: 2)
+
+        // How much is the sticker panel (visible background) inset from the full-width `stickerPanel`.
         static let outerPanelHMargin: CGFloat = if #available(iOS 26, *) { OWSTableViewController2.cellHInnerMargin } else { 0 }
 
-        // For the glass/blur background.
-        static let backgroundCornerRadius: CGFloat = if #available(iOS 26, *) { 26 } else { 0 }
+        // Corner radius of the glass/blur background.
+        @available(iOS 26.0, *)
+        static let backgroundCornerRadius: CGFloat = 26
 
-        static let animationTransform = CGAffineTransform.scale(0.9).translatedBy(x: 0, y: 24)
+        // When being animated in/out, the entire `stickerPanel` also moves for the amount of its entire height.
+        // So we need to compensate the translation for that.
+        static func animationTransform(_ view: UIView) -> CGAffineTransform {
+            let visualTranslationY: CGFloat = 24
+            let actualTranslationY = visualTranslationY - view.bounds.height
+            return CGAffineTransform.scale(0.9).translatedBy(x: 0, y: actualTranslationY)
+        }
 
-        static let blurOverlayEffect = UIBlurEffect(style: .systemThinMaterial)
+#if compiler(>=6.2)
+        static let panelVisualEffect: UIVisualEffect = {
+            // UIVisualEffect cannot "dematerialize" glass on iOS 26.0: setting `effect` to `nil` simply doesn't work.
+            // That was fixed in 26.1.
+            if #available(iOS 26.1, *) {
+                UIGlassEffect(style: .regular)
+            } else {
+                UIBlurEffect(style: .systemMaterial)
+            }
+        }()
+#else
+        static let panelVisualEffect = UIBlurEffect(style: .systemMaterial)
+#endif
     }
 
     // Outermost sticker view. Takes full width of ConversationInputToolbar.
     // Placed inside of a vstack along with the panel that holds message input controls.
     private let stickerPanel = UIView.container()
 
+    private var stickerPanelConstraint: NSLayoutConstraint?
+
     // Subview of `stickerPanel`. Contains background panel and sticker list view.
     // Constrained horizontally to `stickerPanel.safeAreaLayoutGuide` with a fixed margin.
     // On iOS 26 it's leading edge aligns with (+) attachment button and
     // trailing edge aligns with the blue Send button.
-    private lazy var stickerListViewWrapper: UIView = {
-        let view: UIView
-        if #available(iOS 26, *) {
-            // Rounded corners for the entire wrapper view.
-            view = OWSLayerView(frame: .zero, layoutCallback: { v in
-                let shapeLayer = CAShapeLayer()
-                shapeLayer.path = UIBezierPath.init(roundedRect: v.bounds, cornerRadius: StickerLayout.backgroundCornerRadius).cgPath
-                v.layer.mask = shapeLayer
-            })
-        } else {
-            view = UIView()
-        }
+    private lazy var stickerListViewWrapper: UIVisualEffectView = {
+        let view = UIVisualEffectView()
 
-        // Background view.
-        let backgroundView: UIVisualEffectView
 #if compiler(>=6.2)
-        if #available(iOS 26, *) {
-            backgroundView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
-        } else {
-            backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+        if #available(iOS 26.0, *) {
+            view.cornerConfiguration = .uniformCorners(radius: .fixed(StickerLayout.backgroundCornerRadius))
+
+            // Simply setting `cornerConfiguration` isn't enough on iOS 26.0.
+            // Appears to be a bug that was fixed in 26.1.
+            if #unavailable(iOS 26.1) {
+                view.layer.masksToBounds = true
+            }
+
+            // `stickersListView` is inset from its parent container with a very small inset.
+            // Make sure its corners are also rounded so that content doesn't go outside of the panel.
+            let minRadius = StickerLayout.backgroundCornerRadius - max(StickerLayout.backgroundMargins.leading, StickerLayout.backgroundMargins.top)
+            stickersListView.cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: minRadius))
         }
-#else
-        backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
 #endif
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(backgroundView)
-        NSLayoutConstraint.activate([
-            backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
 
         // List view.
-        view.directionalLayoutMargins = StickerLayout.listViewPadding
+        view.directionalLayoutMargins = StickerLayout.backgroundMargins
         stickersListView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundView.contentView.addSubview(stickersListView)
+        view.contentView.addSubview(stickersListView)
         NSLayoutConstraint.activate([
             stickersListView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             stickersListView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             stickersListView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             stickersListView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
 
-            stickersListView.heightAnchor.constraint(equalToConstant: StickerLayout.listItemSize),
+            stickersListView.heightAnchor.constraint(
+                equalToConstant: StickerLayout.listItemSize + StickerLayout.listViewPadding.totalHeight
+            ),
         ])
 
         return view
     }()
-
-    private var stickerListBlurOverlay: UIVisualEffectView?
 
     private lazy var stickersListView: StickerHorizontalListView = {
         let view = StickerHorizontalListView(
@@ -1842,6 +1858,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             spacing: StickerLayout.listItemSpacing
         )
         view.backgroundColor = .clear
+        view.contentInset = StickerLayout.listViewPadding
         return view
     }()
 
@@ -1863,30 +1880,27 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 equalTo: stickerPanel.layoutMarginsGuide.trailingAnchor,
                 constant: -StickerLayout.outerPanelHMargin
             ),
-            stickerListViewWrapper.bottomAnchor.constraint(
-                equalTo: stickerPanel.bottomAnchor
-            ),
         ])
-
-        // Blur overlay.
-        if #available(iOS 26, *){
-            let stickerListBlurOverlay = UIVisualEffectView(effect: StickerLayout.blurOverlayEffect)
-            stickerListViewWrapper.addSubview(stickerListBlurOverlay)
-            stickerListBlurOverlay.translatesAutoresizingMaskIntoConstraints = false
-
-            stickerPanel.addConstraints([
-                stickerListBlurOverlay.topAnchor.constraint(equalTo: stickerListViewWrapper.topAnchor),
-                stickerListBlurOverlay.leadingAnchor.constraint(equalTo: stickerListViewWrapper.leadingAnchor),
-                stickerListBlurOverlay.trailingAnchor.constraint(equalTo: stickerListViewWrapper.trailingAnchor),
-                stickerListBlurOverlay.bottomAnchor.constraint(equalTo: stickerListViewWrapper.bottomAnchor),
-            ])
-
-            self.stickerListBlurOverlay = stickerListBlurOverlay
-        }
 
         UIView.performWithoutAnimation {
             stickerPanel.layoutIfNeeded()
         }
+    }
+
+    private func updateStickerPanelConstraints() {
+        if let stickerPanelConstraint {
+            stickerPanel.removeConstraint(stickerPanelConstraint)
+        }
+
+        let constraint: NSLayoutConstraint = {
+            if isStickerPanelHidden {
+                return stickerPanel.bottomAnchor.constraint(equalTo: stickerListViewWrapper.topAnchor)
+            } else {
+                return stickerPanel.bottomAnchor.constraint(equalTo: stickerListViewWrapper.bottomAnchor)
+            }
+        }()
+        stickerPanel.addConstraint(constraint)
+        stickerPanelConstraint = constraint
     }
 
     private func updateSuggestedStickers(animated: Bool) {
@@ -1935,24 +1949,33 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         UIView.performWithoutAnimation {
             self.stickersListView.layoutIfNeeded()
-            self.stickersListView.contentOffset = .zero
+            self.stickersListView.contentOffset = CGPoint(
+                x: -(CurrentAppContext().isRTL
+                     ? stickersListView.frame.width - stickersListView.contentSize.width - StickerLayout.listViewPadding.right
+                     : StickerLayout.listViewPadding.left),
+                y: -StickerLayout.listViewPadding.top
+            )
         }
 
         guard animated else {
-            stickerPanel.isHidden = false
-            stickerListBlurOverlay?.isHidden = true
+            updateStickerPanelConstraints()
+
+            stickerListViewWrapper.isHidden = false
+            stickerListViewWrapper.transform = .identity
+            stickerListViewWrapper.effect = StickerLayout.panelVisualEffect
+
+            stickersListView.alpha = 1
+
             return
         }
 
         // Prepare initial state for animations.
         UIView.performWithoutAnimation {
-            if let stickerListBlurOverlay {
-                stickerListBlurOverlay.isHidden = false
-                stickerListBlurOverlay.effect = StickerLayout.blurOverlayEffect
-            }
+            stickerListViewWrapper.isHidden = false
+            stickerListViewWrapper.transform = StickerLayout.animationTransform(stickerListViewWrapper)
+            stickerListViewWrapper.effect = nil
 
-            stickerListViewWrapper.transform = StickerLayout.animationTransform
-            stickerListViewWrapper.alpha = 0
+            stickersListView.alpha = 0
         }
 
         // Animate.
@@ -1962,15 +1985,13 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             springResponse: 0.4
         )
         animator.addAnimations {
-            self.stickerPanel.isHidden = false
-
-            self.stickerListBlurOverlay?.effect = nil
+            self.updateStickerPanelConstraints()
+            self.layoutIfNeeded()
 
             self.stickerListViewWrapper.transform = .identity
-            self.stickerListViewWrapper.alpha = 1
-        }
-        animator.addCompletion { _ in
-            self.stickerListBlurOverlay?.isHidden = true
+            self.stickerListViewWrapper.effect = StickerLayout.panelVisualEffect
+
+            self.stickersListView.alpha = 1
         }
         animator.startAnimation()
     }
@@ -1981,15 +2002,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         isStickerPanelHidden = true
 
         guard animated else {
-            stickerPanel.isHidden = true
+            updateStickerPanelConstraints()
+            self.stickerListViewWrapper.isHidden = true
             return
-        }
-
-        if let stickerListBlurOverlay {
-            UIView.performWithoutAnimation {
-                stickerListBlurOverlay.isHidden = false
-                stickerListBlurOverlay.effect = nil
-            }
         }
 
         let animator = UIViewPropertyAnimator(
@@ -1998,18 +2013,16 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             springResponse: 0.4
         )
         animator.addAnimations {
-            self.stickerPanel.isHidden = true
+            self.updateStickerPanelConstraints()
+            self.layoutIfNeeded()
 
-            self.stickerListBlurOverlay?.effect = StickerLayout.blurOverlayEffect
+            self.stickerListViewWrapper.transform = StickerLayout.animationTransform(self.stickerListViewWrapper)
+            self.stickerListViewWrapper.effect = nil
 
-            self.stickerListViewWrapper.transform = StickerLayout.animationTransform
-            self.stickerListViewWrapper.alpha = 0
+            self.stickersListView.alpha = 0
         }
         animator.addCompletion { _ in
-            self.stickerListBlurOverlay?.isHidden = true
-
-            self.stickerListViewWrapper.transform = .identity
-            self.stickerListViewWrapper.alpha = 1
+            self.stickerListViewWrapper.isHidden = true
         }
         animator.startAnimation()
     }
