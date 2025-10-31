@@ -305,7 +305,10 @@ struct ChooseBackupPlanView: View {
                                 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
                                 comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}."
                             ),
-                            viewModel.storageAllowanceBytes.formatted(.owsByteCount),
+                            viewModel.storageAllowanceBytes.formatted(.owsByteCount(
+                                fudgeBase2ToBase10: true,
+                                zeroPadFractionDigits: false,
+                            )),
                         )),
                     ],
                     isCurrentPlan: viewModel.initialPlanSelection == .paid,

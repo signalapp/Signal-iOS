@@ -2803,6 +2803,7 @@
 		D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */; };
 		D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C544282B8578B50036F274 /* CallRecord+CallStatus.swift */; };
 		D9C5442B2B8578F30036F274 /* CallRecordMissedCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C5442A2B8578F30036F274 /* CallRecordMissedCallManager.swift */; };
+		D9C5634F2EB438500001626A /* OWSByteCountFormatStyleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C5634D2EB438300001626A /* OWSByteCountFormatStyleTest.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
@@ -6789,6 +6790,7 @@
 		D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadEraStore.swift; sourceTree = "<group>"; };
 		D9C544282B8578B50036F274 /* CallRecord+CallStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+CallStatus.swift"; sourceTree = "<group>"; };
 		D9C5442A2B8578F30036F274 /* CallRecordMissedCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordMissedCallManager.swift; sourceTree = "<group>"; };
+		D9C5634D2EB438300001626A /* OWSByteCountFormatStyleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSByteCountFormatStyleTest.swift; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
@@ -11240,6 +11242,7 @@
 				05104D172C8A151100F8851F /* AsyncViewTask.swift */,
 				05594CCF2C98A00200CCBFF6 /* HostingController.swift */,
 				D9B2E1172E748DFB00A823E4 /* OWSByteCountFormatStyle.swift */,
+				D9C5634D2EB438300001626A /* OWSByteCountFormatStyleTest.swift */,
 				D9DE35002DF0B886005099D7 /* ScrollableContentPinnedFooterView.swift */,
 				05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */,
 				0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */,
@@ -16738,6 +16741,7 @@
 				5073EACB2C4F3A16001FBB3E /* LinkPreviewFetcherTest.swift in Sources */,
 				50BF510A2BB2031600C2C309 /* LinkPreviewFetchStateTest.swift in Sources */,
 				50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */,
+				D9C5634F2EB438500001626A /* OWSByteCountFormatStyleTest.swift in Sources */,
 				50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */,
 				50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */,
 			);

@@ -1470,12 +1470,15 @@ struct BackupSettingsView: View {
                                             "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT",
                                             comment: "Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}."
                                         ),
-                                        viewModel.backupSubscriptionConfiguration.storageAllowanceBytes.formatted(.owsByteCount),
+                                        viewModel.backupSubscriptionConfiguration.storageAllowanceBytes.formatted(.owsByteCount(
+                                            fudgeBase2ToBase10: true,
+                                            zeroPadFractionDigits: false,
+                                        )),
                                         max(
                                             // Always display at least 5 MB
                                             1000 * 1000 * 5,
                                             Int64(clamping: mediaTierCapacityOverflow)
-                                        ).formatted(.owsByteCount)
+                                        ).formatted(.owsByteCount())
                                     )
                                 )
                                 .appendLink(CommonStrings.learnMore, useBold: true, tint: .Signal.label) {
@@ -2016,7 +2019,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED",
                             comment: "Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}."
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount)
+                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount())
                     )
                 case .disabling, .paidExpiringSoon:
                     String(
@@ -2024,7 +2027,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING",
                             comment: "Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}."
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount)
+                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount())
                     )
                 }
             case .running:
@@ -2033,8 +2036,8 @@ private struct BackupAttachmentDownloadProgressView: View {
                         "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING",
                         comment: "Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}."
                     ),
-                    latestDownloadUpdate.bytesDownloaded.formatted(.owsByteCount),
-                    latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount),
+                    latestDownloadUpdate.bytesDownloaded.formatted(.owsByteCount()),
+                    latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount()),
                     latestDownloadUpdate.percentageDownloaded.formatted(.percent.precision(.fractionLength(0))),
                 )
             case .pausedLowBattery:
@@ -2063,7 +2066,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                         "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE",
                         comment: "Subtitle for a progress bar tracking downloads that are paused because they need more disk space available. Embeds {{ the amount of space needed as a file size, e.g. 100 MB }}."
                     ),
-                    bytesRequired.formatted(.owsByteCount)
+                    bytesRequired.formatted(.owsByteCount())
                 )
             }
 
@@ -2166,8 +2169,8 @@ private struct BackupAttachmentUploadProgressView: View {
                     "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING",
                     comment: "Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}."
                 ),
-                bytesUploaded.formatted(.owsByteCount),
-                totalBytesToUpload.formatted(.owsByteCount),
+                bytesUploaded.formatted(.owsByteCount()),
+                totalBytesToUpload.formatted(.owsByteCount()),
                 percentageUploaded.formatted(.percent.precision(.fractionLength(0)))
             )
         case .pausedLowBattery:
@@ -2493,7 +2496,7 @@ private struct BackupDetailsView: View {
                     comment: "Label for a menu item explaining the size of the user's backup."
                 ))
                 Spacer()
-                Text(lastBackupSizeBytes.formatted(.owsByteCount))
+                Text(lastBackupSizeBytes.formatted(.owsByteCount()))
                     .foregroundStyle(Color.Signal.secondaryLabel)
             }
         }
