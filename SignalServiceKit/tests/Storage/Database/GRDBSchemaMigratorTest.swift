@@ -1005,6 +1005,37 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertNotNil(preKeys[2]["serializedRecord"] as Data?)
         }
     }
+
+    func testUniquifyUsernameLookupRecord() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            let aci1 = Aci.randomForTesting().rawUUID.data
+            let aci2 = Aci.randomForTesting().rawUUID.data
+            let aci3 = Aci.randomForTesting().rawUUID.data
+
+            try db.execute(
+                sql: """
+                CREATE TABLE UsernameLookupRecord (aci BLOB PRIMARY KEY NOT NULL, username TEXT NOT NULL);
+                INSERT INTO UsernameLookupRecord VALUES (?, ?), (?, ?), (?, ?);
+                """,
+                arguments: [aci1, "florp.01", aci2, "blorp.01", aci3, "florp.01"]
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.uniquifyUsernameLookupRecord(tx: tx)
+            }
+
+            let usernames = try Row.fetchAll(db, sql: "SELECT * FROM UsernameLookupRecord")
+
+            XCTAssertEqual(usernames.count, 2)
+            XCTAssertEqual(usernames[0]["aci"], aci2)
+            XCTAssertEqual(usernames[0]["username"], "blorp.01")
+            XCTAssertEqual(usernames[1]["aci"], aci3)
+            XCTAssertEqual(usernames[1]["username"], "florp.01")
+        }
+    }
 }
 
 // MARK: -

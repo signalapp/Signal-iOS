@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import GRDB
 public import LibSignalClient
 
 /// An interface for fetching and storing usernames. Note that with the
@@ -11,109 +11,87 @@ public import LibSignalClient
 /// only as fresh as the last time we looked it up - usernames should be
 /// considered transient.
 public protocol UsernameLookupManager {
-    typealias Username = String
-
     /// Fetch the most recently-known username for the given ACI, if any.
     func fetchUsername(
         forAci aci: Aci,
         transaction: DBReadTransaction
-    ) -> Username?
+    ) -> String?
 
     /// Fetch usernames for the given addresses, returning an array with a
     /// username corresponding to each passed address, if one is available.
     func fetchUsernames(
         forAddresses addresses: AnySequence<SignalServiceAddress>,
         transaction: DBReadTransaction
-    ) -> [Username?]
+    ) -> [String?]
 
     /// Save the given username, or lack thereof, for the given ACI.
     func saveUsername(
-        _ username: Username?,
+        _ username: String?,
         forAci aci: Aci,
         transaction: DBWriteTransaction
     )
 }
 
-/// A ``UsernameLookupManager`` implementation that uses on-disk persistence
-/// paired with an in-memory cache.
-public class UsernameLookupManagerImpl: UsernameLookupManager {
-    public typealias Username = String
+// MARK: -
 
-    private enum CachedLookupResult {
-        case found(username: Username)
-        case notFound
-
-        var usernameValue: Username? {
-            switch self {
-            case let .found(username):
-                return username
-            case .notFound:
-                return nil
-            }
-        }
-    }
-
-    // MARK: - Init
-
-    private let cachedLookups: AtomicDictionary<Aci, CachedLookupResult>
+class UsernameLookupManagerImpl: UsernameLookupManager {
     private let searchableNameIndexer: any SearchableNameIndexer
-    private let usernameLookupRecordStore: any UsernameLookupRecordStore
+    private let usernameLookupRecordStore: UsernameLookupRecordStore
 
-    public init(
-        searchableNameIndexer: any SearchableNameIndexer,
-        usernameLookupRecordStore: any UsernameLookupRecordStore
+    init(
+        searchableNameIndexer: SearchableNameIndexer,
+        usernameLookupRecordStore: UsernameLookupRecordStore
     ) {
-        self.cachedLookups = .init(lock: .init())
         self.searchableNameIndexer = searchableNameIndexer
         self.usernameLookupRecordStore = usernameLookupRecordStore
     }
 
-    // MARK: - UsernameLookupManager
+    // MARK: -
 
-    public func fetchUsername(
+    func fetchUsername(
         forAci aci: Aci,
-        transaction: DBReadTransaction
-    ) -> Username? {
-        if let cachedLookup = cachedLookups[aci] {
-            return cachedLookup.usernameValue
-        }
-
-        let persistedUsername = usernameLookupRecordStore.fetchOne(forAci: aci, tx: transaction)?.username
-        if let persistedUsername {
-            cachedLookups[aci] = .found(username: persistedUsername)
-            return persistedUsername
-        }
-
-        cachedLookups[aci] = .notFound
-        return nil
+        transaction tx: DBReadTransaction
+    ) -> String? {
+        return usernameLookupRecordStore.fetchOne(forAci: aci, tx: tx)?.username
     }
 
-    public func fetchUsernames(
-        forAddresses addresses: AnySequence<SignalServiceAddress>,
-        transaction: DBReadTransaction
-    ) -> [Username?] {
-        addresses.map { address -> Username? in
-            guard let aci = address.serviceId as? Aci else { return nil }
-
-            return fetchUsername(forAci: aci, transaction: transaction)
+    func fetchUsernames(
+        forAddresses addresses: some Sequence<SignalServiceAddress>,
+        transaction tx: DBReadTransaction
+    ) -> [String?] {
+        return addresses.map { address -> String? in
+            guard let aci = address.aci else { return nil }
+            return fetchUsername(forAci: aci, transaction: tx)
         }
     }
 
-    public func saveUsername(
-        _ username: Username?,
+    // MARK: -
+
+    func saveUsername(
+        _ username: String?,
         forAci aci: Aci,
         transaction tx: DBWriteTransaction
     ) {
-        // Delete first to ensure we can index the new value in FTS.
+        // First, delete any existing records for this ACI. This ensures that we
+        // can, if we insert a new record, subsequently index the new username
+        // in FTS via SearchableName.
         usernameLookupRecordStore.deleteOne(forAci: aci, tx: tx)
 
         if let username {
-            cachedLookups[aci] = .found(username: username)
+            // The `username` column is UNIQUE (enforced by an index), so we
+            // must take care to wipe any previous associations for this
+            // username.
+            //
+            // This is semantically appropriate as usernames can only be
+            // associated with one ACI at a time.
+            if let conflictingRecord = usernameLookupRecordStore.fetchOne(forUsername: username, tx: tx) {
+                let conflictingAci = Aci(fromUUID: conflictingRecord.aci)
+                usernameLookupRecordStore.deleteOne(forAci: conflictingAci, tx: tx)
+            }
+
             let usernameLookupRecord = UsernameLookupRecord(aci: aci, username: username)
             usernameLookupRecordStore.insertOne(usernameLookupRecord, tx: tx)
             searchableNameIndexer.insert(usernameLookupRecord, tx: tx)
-        } else {
-            cachedLookups[aci] = .notFound
         }
     }
 }

@@ -51,25 +51,25 @@ struct MockSearchableNameIndexer: SearchableNameIndexer {
 
 #endif
 
-public class SearchableNameIndexerImpl: SearchableNameIndexer {
+class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let threadStore: any ThreadStore
     private let signalAccountStore: any SignalAccountStore
     private let userProfileStore: any UserProfileStore
     private let signalRecipientStore: RecipientDatabaseTable
-    private let usernameLookupRecordStore: any UsernameLookupRecordStore
+    private let usernameLookupRecordStore: UsernameLookupRecordStore
     private let nicknameRecordStore: any NicknameRecordStore
 
-    public enum Constants {
+    enum Constants {
         public static let databaseTableName = "SearchableName"
         public static let databaseTableNameFTS = "SearchableNameFTS"
     }
 
-    public init(
+    init(
         threadStore: any ThreadStore,
         signalAccountStore: any SignalAccountStore,
         userProfileStore: any UserProfileStore,
         signalRecipientStore: RecipientDatabaseTable,
-        usernameLookupRecordStore: any UsernameLookupRecordStore,
+        usernameLookupRecordStore: UsernameLookupRecordStore,
         nicknameRecordStore: any NicknameRecordStore,
     ) {
         self.threadStore = threadStore
@@ -82,7 +82,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
 
     // MARK: - Search
 
-    public func search(
+    func search(
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
@@ -170,7 +170,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
 
     // MARK: - Indexing
 
-    public func insert(_ indexableName: IndexableName, tx: DBWriteTransaction) {
+    func insert(_ indexableName: IndexableName, tx: DBWriteTransaction) {
         guard let value = indexableName.indexableNameContent() else {
             return
         }
@@ -188,12 +188,12 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         }
     }
 
-    public func update(_ indexableName: IndexableName, tx: DBWriteTransaction) {
+    func update(_ indexableName: IndexableName, tx: DBWriteTransaction) {
         delete(indexableName, tx: tx)
         insert(indexableName, tx: tx)
     }
 
-    public func delete(_ indexableName: IndexableName, tx: DBWriteTransaction) {
+    func delete(_ indexableName: IndexableName, tx: DBWriteTransaction) {
         do {
             let (identifierColumn, identifierValue) = indexableName.indexableNameIdentifier().columnNameAndValue()
             try tx.database.execute(
@@ -207,7 +207,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         }
     }
 
-    public func indexEverything(tx: DBWriteTransaction) {
+    func indexEverything(tx: DBWriteTransaction) {
         indexThreads(tx: tx)
         SignalAccount.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { signalAccount, _ in
             insert(signalAccount, tx: tx)
@@ -226,7 +226,7 @@ public class SearchableNameIndexerImpl: SearchableNameIndexer {
         }
     }
 
-    public func indexThreads(tx: DBWriteTransaction) {
+    func indexThreads(tx: DBWriteTransaction) {
         TSThread.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { thread, _ in
             insert(thread, tx: tx)
         }

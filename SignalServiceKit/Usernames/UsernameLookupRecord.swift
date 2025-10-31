@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 public import GRDB
-public import LibSignalClient
+import LibSignalClient
 
 /// A point-in-time result of performing a lookup for a given username.
 ///
@@ -20,12 +19,10 @@ public struct UsernameLookupRecord: Codable, FetchableRecord, PersistableRecord 
         case username
     }
 
-    // MARK: - Init
-
     public let aci: UUID
     public let username: String
 
-    public init(aci: Aci, username: String) {
+    init(aci: Aci, username: String) {
         self.aci = aci.rawUUID
         self.username = username
     }

@@ -231,7 +231,7 @@ extension AppSetup.GlobalsContinuation {
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
         let userProfileStore = UserProfileStoreImpl()
-        let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
+        let usernameLookupRecordStore = UsernameLookupRecordStore()
         let nicknameRecordStore = NicknameRecordStoreImpl()
         let searchableNameIndexer = SearchableNameIndexerImpl(
             threadStore: threadStore,

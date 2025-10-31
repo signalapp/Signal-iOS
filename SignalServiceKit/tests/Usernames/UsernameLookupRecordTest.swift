@@ -18,7 +18,7 @@ final class UsernameLookupRecordTest: XCTestCase {
     }
 
     func testRoundTrip() throws {
-        let store = UsernameLookupRecordStoreImpl()
+        let store = UsernameLookupRecordStore()
         for (idx, (constant, _)) in UsernameLookupRecord.constants.enumerated() {
             inMemoryDB.insert(record: constant)
 

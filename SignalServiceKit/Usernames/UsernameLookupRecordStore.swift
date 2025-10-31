@@ -3,56 +3,52 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
-public import LibSignalClient
+import LibSignalClient
 
-public protocol UsernameLookupRecordStore {
-    func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord?
-    func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void)
-    func deleteOne(forAci aci: Aci, tx: DBWriteTransaction)
-    func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction)
-}
+struct UsernameLookupRecordStore {
+    init() {}
 
-public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
-    public init() {}
+    // MARK: -
 
-    public func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {
-        do {
-            return try UsernameLookupRecord.fetchOne(tx.database, key: aci.rawUUID)
-        } catch let error {
-            owsFailDebug("Got error while fetching record by ACI: \(error.grdbErrorForLogging)")
-            return nil
+    /// The `aci` column of `UsernameLookupRecord` is the primary key and
+    /// therefore unique, so there can only be one record for a given ACI.
+    func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {
+        return failIfThrows {
+            try UsernameLookupRecord.fetchOne(tx.database, key: aci.rawUUID)
         }
     }
 
-    public func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void) {
-        do {
-            let cursor = try UsernameLookupRecord.fetchCursor(
-                tx.database,
-                sql: "SELECT * FROM \(UsernameLookupRecord.databaseTableName)"
-            )
+    /// The `username` column of `UsernameLookupRecord` store is unique, so
+    /// there can only be one record for a given username.
+    func fetchOne(forUsername username: String, tx: DBReadTransaction) -> UsernameLookupRecord? {
+        return failIfThrows {
+            try UsernameLookupRecord
+                .filter(Column(UsernameLookupRecord.CodingKeys.username) == username)
+                .fetchOne(tx.database)
+        }
+    }
+
+    func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void) {
+        failIfThrows {
+            let cursor = try UsernameLookupRecord.all().fetchCursor(tx.database)
             while let value = try cursor.next() {
                 block(value)
             }
-        } catch {
-            owsFailDebug("Got error while enumerating usernames: \(error.grdbErrorForLogging)")
         }
     }
 
-    public func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction) {
-        do {
+    // MARK: -
+
+    func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction) {
+        failIfThrows {
             try usernameLookupRecord.insert(tx.database)
-        } catch let error {
-            owsFailDebug("Got error while upserting record: \(error.grdbErrorForLogging)")
         }
     }
 
-    public func deleteOne(forAci aci: Aci, tx: DBWriteTransaction) {
-        do {
-            try UsernameLookupRecord.deleteOne(tx.database, key: aci.rawUUID)
-        } catch let error {
-            owsFailDebug("Got error while deleting record by ACI: \(error.grdbErrorForLogging)")
+    func deleteOne(forAci aci: Aci, tx: DBWriteTransaction) {
+        failIfThrows {
+            _ = try UsernameLookupRecord.deleteOne(tx.database, key: aci.rawUUID)
         }
     }
 }

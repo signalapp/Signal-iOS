@@ -330,6 +330,7 @@ public class GRDBSchemaMigrator {
         case addPollVoteState
         case addPreKey
         case addKyberPreKeyUse
+        case uniquifyUsernameLookupRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -445,7 +446,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 132
+    public static let grdbSchemaVersionLatest: UInt = 133
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4239,6 +4240,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.uniquifyUsernameLookupRecord) { tx in
+            try uniquifyUsernameLookupRecord(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6452,6 +6458,42 @@ public class GRDBSchemaMigrator {
         for collection in collections {
             try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
         }
+    }
+
+    static func uniquifyUsernameLookupRecord(tx: DBWriteTransaction) throws {
+        // Iterate UsernameLookupRecord newest -> oldest, and record the ACIs of
+        // any duplicate usernames.
+        var seenUsernames: Set<String> = []
+        var acisWithDupeUsernames: Set<Data> = []
+        let cursor = try Row.fetchCursor(
+            tx.database,
+            sql: "SELECT * FROM UsernameLookupRecord ORDER BY rowid DESC",
+        )
+        while let row = try cursor.next() {
+            let aci: Data = row["aci"]
+            let username: String = row["username"]
+
+            if !seenUsernames.insert(username).inserted {
+                acisWithDupeUsernames.insert(aci)
+            }
+        }
+
+        // Delete duplicates.
+        for aci in acisWithDupeUsernames {
+            try tx.database.execute(
+                sql: "DELETE FROM UsernameLookupRecord WHERE aci = ?",
+                arguments: [aci],
+            )
+        }
+
+        // Build a UNIQUE index on the remaining contents, to let us query
+        // efficiently and maintain the uniqueness invariant.
+        try tx.database.create(
+            index: "UsernameLookupRecord_UniqueUsernames",
+            on: "UsernameLookupRecord",
+            columns: ["username"],
+            unique: true,
+        )
     }
 }
 

@@ -2562,3 +2562,9 @@ CREATE
                         )
 ) WITHOUT ROWID
 ;
+
+CREATE
+    UNIQUE INDEX "UsernameLookupRecord_UniqueUsernames"
+        ON "UsernameLookupRecord"("username"
+)
+;
