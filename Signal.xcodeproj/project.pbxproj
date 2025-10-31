@@ -2732,6 +2732,8 @@
 		D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */; };
 		D98CA2BE2DF398EF0060370E /* EnterAccountEntropyPoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CA2BD2DF398DF0060370E /* EnterAccountEntropyPoolViewController.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
+		D9905D822EB2AC9100BF22EC /* ReceiptCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9905D812EB2AC8B00BF22EC /* ReceiptCredentialManager.swift */; };
+		D9905D882EB2B9D200BF22EC /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9905D872EB2B9D200BF22EC /* ReceiptCredentialRequestError.swift */; };
 		D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */; };
 		D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */; };
@@ -6715,6 +6717,8 @@
 		D98CA2BD2DF398DF0060370E /* EnterAccountEntropyPoolViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterAccountEntropyPoolViewController.swift; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
+		D9905D812EB2AC8B00BF22EC /* ReceiptCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialManager.swift; sourceTree = "<group>"; };
+		D9905D872EB2B9D200BF22EC /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameApiClient.swift; sourceTree = "<group>"; };
 		D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLocalUsernameManager.swift; sourceTree = "<group>"; };
 		D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLinkManager.swift; sourceTree = "<group>"; };
@@ -12375,6 +12379,7 @@
 				D986D1372CC8334F00F9803D /* Backups */,
 				D97992A42D9E58E00080A4F5 /* Currencies */,
 				D986D1362CC8332F00F9803D /* Donations */,
+				D9905D862EB2B98500BF22EC /* ReceiptCredentials */,
 				D98300B12936E6C70018FDC2 /* SubscriptionConfigManager.swift */,
 				D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */,
 				D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */,
@@ -12751,6 +12756,15 @@
 				D98CA2AF2DF171110060370E /* LocalDeviceAuthentication.swift */,
 			);
 			path = LocalDeviceAuth;
+			sourceTree = "<group>";
+		};
+		D9905D862EB2B98500BF22EC /* ReceiptCredentials */ = {
+			isa = PBXGroup;
+			children = (
+				D9905D812EB2AC8B00BF22EC /* ReceiptCredentialManager.swift */,
+				D9905D872EB2B9D200BF22EC /* ReceiptCredentialRequestError.swift */,
+			);
+			path = ReceiptCredentials;
 			sourceTree = "<group>";
 		};
 		D990CAC42B4CCA69000A99A2 /* Usernames */ = {
@@ -18452,6 +18466,8 @@
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
 				6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
+				D9905D822EB2AC9100BF22EC /* ReceiptCredentialManager.swift in Sources */,
+				D9905D882EB2B9D200BF22EC /* ReceiptCredentialRequestError.swift in Sources */,
 				F9C5CC83289453B300548EEE /* ReceiptSender.swift in Sources */,
 				506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */,
 				50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */,

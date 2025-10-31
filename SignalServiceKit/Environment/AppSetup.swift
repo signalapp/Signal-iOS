@@ -475,6 +475,7 @@ extension AppSetup.GlobalsContinuation {
             backupSubscriptionRedeemer: BackupSubscriptionRedeemer(
                 authCredentialStore: authCredentialStore,
                 backupPlanManager: backupPlanManager,
+                dateProvider: dateProvider,
                 db: db,
                 reachabilityManager: reachabilityManager,
                 networkManager: networkManager,

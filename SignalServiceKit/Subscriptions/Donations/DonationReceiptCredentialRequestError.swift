@@ -5,17 +5,7 @@
 
 /// Represents an error encountered while making a receipt credential request.
 public struct DonationReceiptCredentialRequestError: Codable, Equatable {
-    public enum ErrorCode: Int {
-        case paymentStillProcessing = 204
-        case paymentFailed = 402
-
-        case localValidationFailed = 1
-        case serverValidationFailed = 400
-        case paymentNotFound = 404
-        case paymentIntentRedeemed = 409
-    }
-
-    public let errorCode: ErrorCode
+    public let errorCode: ReceiptCredentialRequestError.ErrorCode
 
     /// If our error code is `.paymentFailed`, this holds the associated charge
     /// failure.
@@ -37,7 +27,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     public let timestampMs: UInt64
 
     public init(
-        errorCode: ErrorCode,
+        errorCode: ReceiptCredentialRequestError.ErrorCode,
         chargeFailureCodeIfPaymentFailed: String?,
         badge: ProfileBadge,
         amount: FiatMoney,
@@ -59,7 +49,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     /// When dealing with legacy persisted data, we may only have the raw error
     /// code available. This should only be used if a full error cannot be
     /// constructed!
-    public init(legacyErrorCode: ErrorCode) {
+    public init(legacyErrorCode: ReceiptCredentialRequestError.ErrorCode) {
         self.errorCode = legacyErrorCode
         self.chargeFailureCodeIfPaymentFailed = nil
         self.badge = nil
@@ -90,7 +80,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
         let errorCodeInt = try container.decode(Int.self, forKey: .errorCode)
         let paymentMethodString = try container.decodeIfPresent(String.self, forKey: .paymentMethod)
 
-        guard let errorCode = ErrorCode(rawValue: errorCodeInt) else {
+        guard let errorCode = ReceiptCredentialRequestError.ErrorCode(rawValue: errorCodeInt) else {
             throw DecodingError.dataCorrupted(DecodingError.Context(
                 codingPath: [CodingKeys.errorCode],
                 debugDescription: "Unexpected error code value: \(errorCodeInt)"

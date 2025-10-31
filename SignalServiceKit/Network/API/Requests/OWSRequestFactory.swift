@@ -368,7 +368,7 @@ public enum OWSRequestFactory {
 
     static func subscriptionReceiptCredentialsRequest(
         subscriberID: Data,
-        request: Data
+        receiptCredentialRequest: ReceiptCredentialRequest,
     ) -> TSRequest {
         var result = TSRequest(
             url: .init(pathComponents: [
@@ -379,7 +379,7 @@ public enum OWSRequestFactory {
             ])!,
             method: "POST",
             parameters: [
-                "receiptCredentialRequest": request.base64EncodedString(),
+                "receiptCredentialRequest": receiptCredentialRequest.serialize().base64EncodedString(),
             ]
         )
         result.auth = .anonymous
@@ -407,9 +407,9 @@ public enum OWSRequestFactory {
     }
 
     static func boostReceiptCredentials(
-        with paymentIntentID: String,
-        for paymentProcessor: String,
-        request: Data
+        paymentIntentID: String,
+        paymentProcessor: DonationPaymentProcessor,
+        receiptCredentialRequest: ReceiptCredentialRequest,
     ) -> TSRequest {
         var result = TSRequest(
             url: .init(pathComponents: [
@@ -421,8 +421,8 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: [
                 "paymentIntentId": paymentIntentID,
-                "receiptCredentialRequest": request.base64EncodedString(),
-                "processor": paymentProcessor,
+                "receiptCredentialRequest": receiptCredentialRequest.serialize().base64EncodedString(),
+                "processor": paymentProcessor.rawValue,
             ]
         )
         result.auth = .anonymous

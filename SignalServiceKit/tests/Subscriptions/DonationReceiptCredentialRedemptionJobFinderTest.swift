@@ -23,7 +23,7 @@ struct DonationReceiptCredentialRedemptionJobFinderTest {
             let (
                 receiptCredentialRequestContext,
                 receiptCredentialRequest
-            ) = DonationSubscriptionManager.generateReceiptRequest()
+            ) = ReceiptCredentialManager.generateReceiptRequest()
 
             try! DonationReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "STRIPE",

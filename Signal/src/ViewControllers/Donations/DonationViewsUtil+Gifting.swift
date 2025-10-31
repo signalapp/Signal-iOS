@@ -143,7 +143,7 @@ extension DonationViewsUtil {
         ) async throws {
             let jobRecord = SendGiftBadgeJobQueue.createJob(
                 preparedPayment: preparedPayment,
-                receiptRequest: DonationSubscriptionManager.generateReceiptRequest(),
+                receiptRequest: ReceiptCredentialManager.generateReceiptRequest(),
                 amount: amount,
                 thread: thread,
                 messageText: messageText

@@ -309,16 +309,23 @@ private class SendGiftBadgeJobRunner: JobRunner {
         receiptCredentialRequest: ReceiptCredentialRequest,
         receiptCredentialRequestContext: ReceiptCredentialRequestContext
     ) async throws -> ReceiptCredentialPresentation {
-        let receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-            boostPaymentIntentId: paymentIntentId,
-            expectedBadgeLevel: .giftBadge(.signalGift),
-            paymentProcessor: payment.processor,
+        let receiptCredential = try await ReceiptCredentialManager(
+            dateProvider: { Date() },
+            logger: PrefixedLogger(prefix: "[Donations]"),
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+        ).requestReceiptCredential(
+            via: OWSRequestFactory.boostReceiptCredentials(
+                paymentIntentID: paymentIntentId,
+                paymentProcessor: payment.processor,
+                receiptCredentialRequest: receiptCredentialRequest,
+            ),
+            isValidReceiptLevelPredicate: { receiptLevel in
+                return receiptLevel == OneTimeBadgeLevel.giftBadge(.signalGift).rawValue
+            },
             context: receiptCredentialRequestContext,
-            request: receiptCredentialRequest,
-            logger: PrefixedLogger(prefix: "[Donations]")
         )
 
-        return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
+        return try ReceiptCredentialManager.generateReceiptCredentialPresentation(
             receiptCredential: receiptCredential
         )
     }

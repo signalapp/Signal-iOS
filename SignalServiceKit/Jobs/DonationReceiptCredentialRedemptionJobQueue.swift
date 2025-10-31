@@ -276,6 +276,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
+    private let receiptCredentialManager: ReceiptCredentialManager
     private let tsAccountManager: TSAccountManager
 
     private var logger: PrefixedLogger = .donations
@@ -297,6 +298,11 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.networkManager = networkManager
         self.profileManager = profileManager
+        self.receiptCredentialManager = ReceiptCredentialManager(
+            dateProvider: dateProvider,
+            logger: logger,
+            networkManager: networkManager,
+        )
         self.tsAccountManager = tsAccountManager
     }
 
@@ -575,7 +581,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                     badge: badge,
                     amount: amount
                 )
-            } catch let error as DonationSubscriptionManager.KnownReceiptCredentialRequestError {
+            } catch let error as ReceiptCredentialRequestError {
                 let errorCode = error.errorCode
                 let chargeFailureCodeIfPaymentFailed = error.chargeFailureCodeIfPaymentFailed
                 let paymentMethod = configuration.paymentMethod
@@ -714,19 +720,25 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         switch configuration.paymentType {
         case let .oneTimeBoost(paymentIntentId: paymentIntentId, amount: _):
             logger.info("Durable job requesting receipt for boost")
-            receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-                boostPaymentIntentId: paymentIntentId,
-                expectedBadgeLevel: .boostBadge,
-                paymentProcessor: configuration.paymentProcessor,
+            receiptCredential = try await receiptCredentialManager.requestReceiptCredential(
+                via: OWSRequestFactory.boostReceiptCredentials(
+                    paymentIntentID: paymentIntentId,
+                    paymentProcessor: configuration.paymentProcessor,
+                    receiptCredentialRequest: configuration.receiptCredentialRequest
+                ),
+                isValidReceiptLevelPredicate: { receiptLevel in
+                    return receiptLevel == OneTimeBadgeLevel.boostBadge.rawValue
+                },
                 context: configuration.receiptCredentialRequestContext,
-                request: configuration.receiptCredentialRequest,
-                logger: logger
             )
 
         case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _):
             logger.info("Durable job requesting receipt for subscription")
-            receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-                subscriberId: subscriberId,
+            receiptCredential = try await receiptCredentialManager.requestReceiptCredential(
+                via: OWSRequestFactory.subscriptionReceiptCredentialsRequest(
+                    subscriberID: subscriberId,
+                    receiptCredentialRequest: configuration.receiptCredentialRequest,
+                ),
                 isValidReceiptLevelPredicate: { receiptLevel -> Bool in
                     // Validate that receipt credential level matches requested
                     // level, or prior subscription level.
@@ -739,8 +751,6 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                     return false
                 },
                 context: configuration.receiptCredentialRequestContext,
-                request: configuration.receiptCredentialRequest,
-                logger: logger
             )
         }
 
@@ -748,13 +758,13 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             jobRecord.setReceiptCredential(receiptCredential, tx: tx)
         }
 
-        return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
+        return try ReceiptCredentialManager.generateReceiptCredentialPresentation(
             receiptCredential: receiptCredential
         )
     }
 
     private func persistErrorCode(
-        errorCode: DonationReceiptCredentialRequestError.ErrorCode,
+        errorCode: ReceiptCredentialRequestError.ErrorCode,
         chargeFailureCodeIfPaymentFailed: String?,
         configuration: Configuration,
         badge: ProfileBadge,

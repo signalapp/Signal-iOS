@@ -21,6 +21,7 @@ class BackupSubscriptionRedeemer {
     private let db: any DB
     private let logger: PrefixedLogger
     private let reachabilityManager: SSKReachabilityManager
+    private let receiptCredentialManager: ReceiptCredentialManager
     private let networkManager: NetworkManager
 
     private var networkRetryWaitingTask: AtomicValue<Task<Void, Never>?>
@@ -30,6 +31,7 @@ class BackupSubscriptionRedeemer {
     init(
         authCredentialStore: AuthCredentialStore,
         backupPlanManager: BackupPlanManager,
+        dateProvider: @escaping DateProvider,
         db: any DB,
         reachabilityManager: SSKReachabilityManager,
         networkManager: NetworkManager,
@@ -39,6 +41,11 @@ class BackupSubscriptionRedeemer {
         self.db = db
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.reachabilityManager = reachabilityManager
+        self.receiptCredentialManager = ReceiptCredentialManager(
+            dateProvider: dateProvider,
+            logger: logger,
+            networkManager: networkManager,
+        )
         self.networkManager = networkManager
 
         self.networkRetryWaitingTask = AtomicValue(nil, lock: .init())
@@ -193,7 +200,7 @@ class BackupSubscriptionRedeemer {
             let (
                 receiptCredentialRequestContext,
                 receiptCredentialRequest
-            ) = DonationSubscriptionManager.generateReceiptRequest()
+            ) = ReceiptCredentialManager.generateReceiptRequest()
 
             await db.awaitableWrite { tx in
                 context.attemptState = .receiptCredentialRequesting(
@@ -212,8 +219,11 @@ class BackupSubscriptionRedeemer {
 
             let receiptCredential: ReceiptCredential
             do {
-                receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-                    subscriberId: context.subscriberId,
+                receiptCredential = try await receiptCredentialManager.requestReceiptCredential(
+                    via: OWSRequestFactory.subscriptionReceiptCredentialsRequest(
+                        subscriberID: context.subscriberId,
+                        receiptCredentialRequest: receiptCredentialRequest,
+                    ),
                     isValidReceiptLevelPredicate: { receiptLevel -> Bool in
                         /// We'll accept either receipt level here to handle
                         /// things like clock skew, although we're generally
@@ -224,11 +234,8 @@ class BackupSubscriptionRedeemer {
                         )
                     },
                     context: receiptCredentialRequestContext,
-                    request: receiptCredentialRequest,
-                    networkManager: networkManager,
-                    logger: logger
                 )
-            } catch let error as DonationSubscriptionManager.KnownReceiptCredentialRequestError {
+            } catch let error as ReceiptCredentialRequestError {
                 switch error.errorCode {
                 case .paymentIntentRedeemed:
                     logger.warn("Subscription had already been redeemed for this period!")
@@ -277,7 +284,7 @@ class BackupSubscriptionRedeemer {
 
             let presentation: ReceiptCredentialPresentation
             do {
-                presentation = try DonationSubscriptionManager.generateReceiptCredentialPresentation(
+                presentation = try ReceiptCredentialManager.generateReceiptCredentialPresentation(
                     receiptCredential: receiptCredential
                 )
             } catch let error {

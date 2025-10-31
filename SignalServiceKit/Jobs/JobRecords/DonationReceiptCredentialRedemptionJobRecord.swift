@@ -23,7 +23,7 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
     /// interesting to callers!
     func getReceiptCredentialPresentation() throws -> ReceiptCredentialPresentation? {
         if let _receiptCredential {
-            return try DonationSubscriptionManager.generateReceiptCredentialPresentation(
+            return try ReceiptCredentialManager.generateReceiptCredentialPresentation(
                 receiptCredential: try ReceiptCredential(contents: _receiptCredential)
             )
         } else if let _receiptCredentialPresentation {

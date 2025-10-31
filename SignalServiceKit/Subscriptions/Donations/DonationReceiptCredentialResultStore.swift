@@ -169,7 +169,7 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
             let legacyErrorCodeInt = legacyErrorKVStore.getInt(
                 LegacyErrorConstants.recurringSubscriptionKey, transaction: tx
             ),
-            let legacyErrorCode = DonationReceiptCredentialRequestError.ErrorCode(
+            let legacyErrorCode = ReceiptCredentialRequestError.ErrorCode(
                 rawValue: legacyErrorCodeInt
             )
         {

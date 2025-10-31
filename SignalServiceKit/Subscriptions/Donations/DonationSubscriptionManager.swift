@@ -348,7 +348,7 @@ public enum DonationSubscriptionManager {
         let (
             receiptCredentialRequestContext,
             receiptCredentialRequest
-        ) = generateReceiptRequest()
+        ) = ReceiptCredentialManager.generateReceiptRequest()
 
         let redemptionJobRecord = await db.awaitableWrite { tx in
             return receiptCredentialRedemptionJobQueue.saveSubscriptionRedemptionJob(
@@ -380,7 +380,7 @@ public enum DonationSubscriptionManager {
         let (
             receiptCredentialRequestContext,
             receiptCredentialRequest
-        ) = generateReceiptRequest()
+        ) = ReceiptCredentialManager.generateReceiptRequest()
 
         let redemptionJobRecord = await db.awaitableWrite { tx in
             return receiptCredentialRedemptionJobQueue.saveBoostRedemptionJob(
@@ -397,197 +397,6 @@ public enum DonationSubscriptionManager {
         try await receiptCredentialRedemptionJobQueue.runRedemptionJob(
             jobRecord: redemptionJobRecord
         )
-    }
-
-    public static func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
-        do {
-            let clientOperations = clientZKReceiptOperations()
-            let receiptSerial = try generateReceiptSerial()
-
-            let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
-            let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest()
-            return (receiptCredentialRequestContext, receiptCredentialRequest)
-        } catch {
-            // This operation happens entirely on-device and is unlikely to fail.
-            // If it does, a full crash is probably desirable.
-            owsFail("Could not generate receipt request: \(error)")
-        }
-    }
-
-    /// Represents a known error received during a receipt credential request.
-    ///
-    /// Not to be confused with ``DonationReceiptCredentialRequestError``.
-    public struct KnownReceiptCredentialRequestError: Error {
-        /// A code describing this error.
-        public let errorCode: DonationReceiptCredentialRequestError.ErrorCode
-
-        /// If this error represents a payment failure, contains a string from
-        /// the payment processor describing the payment failure.
-        public let chargeFailureCodeIfPaymentFailed: String?
-
-        fileprivate init(
-            errorCode: DonationReceiptCredentialRequestError.ErrorCode,
-            chargeFailureCodeIfPaymentFailed: String? = nil
-        ) {
-            owsPrecondition(
-                chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
-                "Must only provide a charge failure if payment failed!"
-            )
-
-            self.errorCode = errorCode
-            self.chargeFailureCodeIfPaymentFailed = chargeFailureCodeIfPaymentFailed
-        }
-    }
-
-    public static func requestReceiptCredential(
-        subscriberId: Data,
-        isValidReceiptLevelPredicate: @escaping (UInt64) -> Bool,
-        context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest,
-        networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef,
-        logger: PrefixedLogger
-    ) async throws -> ReceiptCredential {
-        do {
-            let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
-                subscriberID: subscriberId,
-                request: request.serialize()
-            )
-            let response = try await networkManager.asyncRequest(networkRequest)
-            return try self.parseReceiptCredentialResponse(
-                httpResponse: response,
-                receiptCredentialRequestContext: context,
-                isValidReceiptLevelPredicate: isValidReceiptLevelPredicate,
-                logger: logger
-            )
-        } catch {
-            throw parseReceiptCredentialPresentationError(error: error)
-        }
-    }
-
-    public static func requestReceiptCredential(
-        boostPaymentIntentId: String,
-        expectedBadgeLevel: OneTimeBadgeLevel,
-        paymentProcessor: DonationPaymentProcessor,
-        context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest,
-        logger: PrefixedLogger
-    ) async throws -> ReceiptCredential {
-        do {
-            let networkRequest = OWSRequestFactory.boostReceiptCredentials(
-                with: boostPaymentIntentId,
-                for: paymentProcessor.rawValue,
-                request: request.serialize()
-            )
-            let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(networkRequest)
-            return try self.parseReceiptCredentialResponse(
-                httpResponse: response,
-                receiptCredentialRequestContext: context,
-                isValidReceiptLevelPredicate: { receiptLevel in
-                    return receiptLevel == expectedBadgeLevel.rawValue
-                },
-                logger: logger
-            )
-        } catch {
-            throw parseReceiptCredentialPresentationError(error: error)
-        }
-    }
-
-    public static func generateReceiptCredentialPresentation(
-        receiptCredential: ReceiptCredential
-    ) throws -> ReceiptCredentialPresentation {
-        return try clientZKReceiptOperations().createReceiptCredentialPresentation(
-            receiptCredential: receiptCredential
-        )
-    }
-
-    private static func parseReceiptCredentialResponse(
-        httpResponse: HTTPResponse,
-        receiptCredentialRequestContext: ReceiptCredentialRequestContext,
-        isValidReceiptLevelPredicate: (UInt64) -> Bool,
-        logger: PrefixedLogger
-    ) throws -> ReceiptCredential {
-        let clientOperations = clientZKReceiptOperations()
-
-        let httpStatusCode = httpResponse.responseStatusCode
-        switch httpStatusCode {
-        case 200:
-            logger.info("Got valid receipt response.")
-        case 204:
-            logger.info("No receipt yet, payment processing.")
-            throw KnownReceiptCredentialRequestError(
-                errorCode: .paymentStillProcessing
-            )
-        default:
-            throw OWSAssertionError(
-                "Unexpected success status code: \(httpStatusCode)",
-                logger: logger
-            )
-        }
-
-        func failValidation(_ message: String) -> Error {
-            owsFailDebug(message, logger: logger)
-            return KnownReceiptCredentialRequestError(errorCode: .localValidationFailed)
-        }
-
-        guard
-            let parser = httpResponse.responseBodyParamParser,
-            let receiptCredentialResponseData = Data(
-                base64Encoded: (try parser.required(key: "receiptCredentialResponse") as String)
-            )
-        else {
-            throw failValidation("Failed to parse receipt credential response into data!")
-        }
-
-        let receiptCredentialResponse = try ReceiptCredentialResponse(
-            contents: receiptCredentialResponseData
-        )
-        let receiptCredential = try clientOperations.receiveReceiptCredential(
-            receiptCredentialRequestContext: receiptCredentialRequestContext,
-            receiptCredentialResponse: receiptCredentialResponse
-        )
-
-        let receiptLevel = try receiptCredential.getReceiptLevel()
-        guard isValidReceiptLevelPredicate(receiptLevel) else {
-            throw failValidation("Unexpected receipt credential level! \(receiptLevel)")
-        }
-
-        // Validate receipt credential expiration % 86400 == 0, per server spec
-        let expiration = try receiptCredential.getReceiptExpirationTime()
-        guard expiration % 86400 == 0 else {
-            throw failValidation("Invalid receipt credential expiration! \(expiration)")
-        }
-
-        // Validate expiration is less than 90 days from now
-        let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
-        guard TimeInterval(expiration) < maximumValidExpirationDate else {
-            throw failValidation("Invalid receipt credential expiration!")
-        }
-
-        return receiptCredential
-    }
-
-    private static func parseReceiptCredentialPresentationError(
-        error: Error
-    ) -> Error {
-        guard
-            let httpStatusCode = error.httpStatusCode,
-            let errorCode = DonationReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
-        else { return error }
-
-        if
-            case .paymentFailed = errorCode,
-            let httpResponseData = error.httpResponseData,
-            let httpResponseDict = try? JSONSerialization.jsonObject(with: httpResponseData) as? [String: Any],
-            let chargeFailureDict = httpResponseDict["chargeFailure"] as? [String: Any],
-            let chargeFailureCode = chargeFailureDict["code"] as? String
-        {
-            return KnownReceiptCredentialRequestError(
-                errorCode: errorCode,
-                chargeFailureCodeIfPaymentFailed: chargeFailureCode
-            )
-        }
-
-        return KnownReceiptCredentialRequestError(errorCode: errorCode)
     }
 
     public static func redeemReceiptCredentialPresentation(
@@ -608,21 +417,9 @@ public enum DonationSubscriptionManager {
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
         let statusCode = response.responseStatusCode
         if statusCode != 200 {
-            Logger.warn("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
-            throw OWSRetryableSubscriptionError()
+            throw OWSAssertionError("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
         }
         _ = try await SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit())
-    }
-
-    private static func generateReceiptSerial() throws -> ReceiptSerial {
-        let count = ReceiptSerial.SIZE
-        let bytes = Randomness.generateRandomBytes(UInt(count))
-        return try ReceiptSerial(contents: bytes)
-    }
-
-    private static func clientZKReceiptOperations() -> ClientZkReceiptOperations {
-        let params = GroupsV2Protos.serverPublicParams()
-        return ClientZkReceiptOperations(serverPublicParams: params)
     }
 
     // MARK: Heartbeat
@@ -714,7 +511,7 @@ public enum DonationSubscriptionManager {
                 let (
                     receiptCredentialRequestContext,
                     receiptCredentialRequest
-                ) = generateReceiptRequest()
+                ) = ReceiptCredentialManager.generateReceiptRequest()
 
                 return receiptCredentialRedemptionJobQueue.saveSubscriptionRedemptionJob(
                     paymentProcessor: donationPaymentProcessor,
@@ -898,10 +695,6 @@ extension DonationSubscriptionManager {
 }
 
 // MARK: -
-
-public class OWSRetryableSubscriptionError: CustomNSError, IsRetryableProvider {
-    public var isRetryableProvider: Bool { true }
-}
 
 extension DonationSubscriptionManager {
 
