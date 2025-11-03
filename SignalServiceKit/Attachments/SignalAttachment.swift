@@ -171,9 +171,10 @@ public class SignalAttachment: NSObject {
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
-    public func preparedForOutput(qualityLevel: ImageQualityLevel) throws(SignalAttachmentError) -> SignalAttachment {
-        owsAssertDebug(!Thread.isMainThread)
-
+    #if compiler(>=6.2)
+    @concurrent
+    #endif
+    public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SignalAttachment {
         // We only bother converting/compressing non-animated images
         guard isImage, !isAnimatedImage else { return self }
 

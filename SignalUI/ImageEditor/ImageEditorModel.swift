@@ -97,6 +97,7 @@ class ImageEditorModel: NSObject {
         super.init()
     }
 
+    @MainActor
     func renderOutput() -> UIImage? {
         return ImageEditorCanvasView.renderForOutput(model: self, transform: currentTransform())
     }

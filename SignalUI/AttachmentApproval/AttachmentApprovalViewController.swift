@@ -648,72 +648,83 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return attachmentApprovalItemCollection.attachmentApprovalItems
     }
 
-    func outputAttachmentsPromise() -> Promise<[SignalAttachment]> {
-        var promises = [Promise<SignalAttachment>]()
+    private func prepareAttachments() async throws -> [SignalAttachment] {
+        let outputQualityLevel = self.outputQualityLevel
+        var results = [SignalAttachment]()
         for attachmentApprovalItem in attachmentApprovalItems {
-            let outputQualityLevel = self.outputQualityLevel
-            promises.append(outputAttachmentPromise(for: attachmentApprovalItem).map(on: DispatchQueue.global()) { attachment in
-                try attachment.preparedForOutput(qualityLevel: outputQualityLevel)
-            })
+            results.append(
+                try await self
+                    .prepareAttachment(attachmentApprovalItem: attachmentApprovalItem)
+                    .preparedForOutput(qualityLevel: outputQualityLevel)
+            )
         }
-        return Promise.when(fulfilled: promises)
+        return results
     }
 
     /// Returns a new SignalAttachment that reflects changes made in the editor.
-    func outputAttachmentPromise(for attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> SignalAttachment {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
-            return editedAttachmentPromise(imageEditorModel: imageEditorModel,
-                                           attachmentApprovalItem: attachmentApprovalItem)
+            return try await self.prepareImageAttachment(
+                attachmentApprovalItem: attachmentApprovalItem,
+                imageEditorModel: imageEditorModel,
+            )
         }
         if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
-            return .wrapAsync {
-                try await self.renderAttachment(videoEditorModel: videoEditorModel, attachmentApprovalItem: attachmentApprovalItem)
-            }
+            return try await self.prepareVideoAttachment(
+                attachmentApprovalItem: attachmentApprovalItem,
+                videoEditorModel: videoEditorModel,
+            )
         }
         // No editor applies. Use original, un-edited attachment.
-        return Promise.value(attachmentApprovalItem.attachment)
+        return attachmentApprovalItem.attachment
     }
 
-    func editedAttachmentPromise(imageEditorModel: ImageEditorModel,
-                                 attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+    #if compiler(>=6.2)
+    @concurrent
+    #endif
+    private nonisolated func prepareImageAttachment(
+        attachmentApprovalItem: AttachmentApprovalItem,
+        imageEditorModel: ImageEditorModel,
+    ) async throws -> SignalAttachment {
         assert(imageEditorModel.isDirty())
-        return DispatchQueue.main.async(.promise) { () -> UIImage in
-            guard let dstImage = imageEditorModel.renderOutput() else {
-                throw OWSAssertionError("Could not render for output.")
-            }
-            return dstImage
-        }.map(on: DispatchQueue.global()) { (dstImage: UIImage) -> SignalAttachment in
-            var dataType = UTType.image
-            guard let dstData: Data = {
-                let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
-                if isLossy {
-                    dataType = .jpeg
-                    return dstImage.jpegData(compressionQuality: 0.9)
-                } else {
-                    dataType = .png
-                    return dstImage.pngData()
-                }
-            }() else {
-                throw OWSAssertionError("Could not export for output.")
-            }
-            guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
-                throw OWSAssertionError("Could not prepare data source for output.")
-            }
 
-            // Rewrite the filename's extension to reflect the output file format.
-            var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-            if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-                if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
-                    filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
-                }
-            }
-            dataSource.sourceFilename = filename
-
-            return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
+        guard let dstImage = await imageEditorModel.renderOutput() else {
+            throw OWSAssertionError("Could not render for output.")
         }
+
+        var dataType = UTType.image
+        guard let dstData: Data = {
+            let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
+            if isLossy {
+                dataType = .jpeg
+                return dstImage.jpegData(compressionQuality: 0.9)
+            } else {
+                dataType = .png
+                return dstImage.pngData()
+            }
+        }() else {
+            throw OWSAssertionError("Could not export for output.")
+        }
+        guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
+            throw OWSAssertionError("Could not prepare data source for output.")
+        }
+
+        // Rewrite the filename's extension to reflect the output file format.
+        var filename: String? = attachmentApprovalItem.attachment.sourceFilename
+        if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+            if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
+                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+            }
+        }
+        dataSource.sourceFilename = filename
+
+        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
     }
 
-    func renderAttachment(videoEditorModel: VideoEditorModel, attachmentApprovalItem: AttachmentApprovalItem) async throws -> SignalAttachment {
+    private func prepareVideoAttachment(
+        attachmentApprovalItem: AttachmentApprovalItem,
+        videoEditorModel: VideoEditorModel,
+    ) async throws -> SignalAttachment {
         assert(videoEditorModel.needsRender)
         let result = try await videoEditorModel.ensureCurrentRender().render()
         let filePath = try result.consumeResultPath()
@@ -842,41 +853,37 @@ extension AttachmentApprovalViewController {
     private func didTapSend() {
         // Generate the attachments once, so that any changes we
         // make below are reflected afterwards.
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
-            self.outputAttachmentsPromise()
-                .done(on: DispatchQueue.main) { attachments in
-                    AssertIsOnMainThread()
-                    modalVC.dismiss {
-                        AssertIsOnMainThread()
-
-                        if self.options.contains(.canToggleViewOnce), self.isViewOnceEnabled {
-                            for attachment in attachments {
-                                attachment.isViewOnceAttachment = true
-                            }
-                            assert(attachments.count <= 1)
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, asyncBlock: { modalVC in
+            do {
+                let attachments = try await self.prepareAttachments()
+                modalVC.dismiss {
+                    if self.options.contains(.canToggleViewOnce), self.isViewOnceEnabled {
+                        for attachment in attachments {
+                            attachment.isViewOnceAttachment = true
                         }
-
-                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: self.attachmentTextToolbar.messageBodyForSending)
+                        assert(attachments.count <= 1)
                     }
-                }.catch { error in
-                    AssertIsOnMainThread()
-                    owsFailDebug("Error: \(error)")
 
-                    modalVC.dismiss {
-                        let actionSheet = ActionSheetController(
-                            title: CommonStrings.errorAlertTitle,
-                            message: (
-                                (error as? SignalAttachmentError)?.localizedDescription
-                                ?? OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported.")
-                            ),
-                        )
-                        actionSheet.overrideUserInterfaceStyle = .dark
-                        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
-
-                        self.present(actionSheet, animated: true)
-                    }
+                    self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: self.attachmentTextToolbar.messageBodyForSending)
                 }
-        }
+            } catch {
+                owsFailDebug("Error: \(error)")
+
+                modalVC.dismiss {
+                    let actionSheet = ActionSheetController(
+                        title: CommonStrings.errorAlertTitle,
+                        message: (
+                            (error as? SignalAttachmentError)?.localizedDescription
+                            ?? OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported.")
+                        ),
+                    )
+                    actionSheet.overrideUserInterfaceStyle = .dark
+                    actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
+
+                    self.present(actionSheet, animated: true)
+                }
+            }
+        })
     }
 
     @objc
@@ -1387,6 +1394,7 @@ private enum SaveableAsset {
 }
 
 private extension SaveableAsset {
+    @MainActor
     init(attachmentApprovalItem: AttachmentApprovalItem) throws {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
             try self.init(imageEditorModel: imageEditorModel)
@@ -1395,6 +1403,7 @@ private extension SaveableAsset {
         }
     }
 
+    @MainActor
     private init(imageEditorModel: ImageEditorModel) throws {
         guard let image = imageEditorModel.renderOutput() else {
             throw OWSAssertionError("failed to render image")
