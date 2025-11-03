@@ -336,7 +336,10 @@ final public class Theme: NSObject {
     }
 
     public class var primaryIconColor: UIColor {
-        isDarkThemeEnabled ? darkThemeNavbarIconColor : .ows_gray75
+        if #available(iOS 26, *) {
+            return primaryTextColor
+        }
+        return isDarkThemeEnabled ? darkThemeNavbarIconColor : .ows_gray75
     }
 
     public class var secondaryTextAndIconColor: UIColor {
