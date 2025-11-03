@@ -170,7 +170,7 @@ public class _RegistrationCoordinator_BuildFlagsWrapper: _RegistrationCoordinato
 
     public init() {}
 
-    public var backupSupported: Bool { BuildFlags.Backups.supported }
+    public var backupSupported: Bool { BuildFlags.Backups.alwaysShowSettings }
 }
 
 public protocol _RegistrationCoordinator_IdentityManagerShim {
