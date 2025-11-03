@@ -157,13 +157,18 @@ public class CVPollView: ManualStackView {
         var optionRowOuterStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .vertical,
                               alignment: .leading,
-                              spacing: 8,
+                              spacing: 4,
                               layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 4))
         }
 
-        let checkBoxSize = CGSize(square: 22)
+        let checkBoxSize = CGSize(square: 24)
+        let checkBoxEndedSize = CGSize(square: 20)
 
         let circleSize = CGSize(square: 2)
+
+        let progressBarHeight = CGFloat(8)
+
+        let trailingVoteStateSpacing = CGFloat(4)
 
         func buildOptionRowInnerStackConfig(voteLabelWidth: Double) -> CVStackViewConfig {
             CVStackViewConfig(axis: .horizontal,
@@ -310,7 +315,7 @@ public class CVPollView: ManualStackView {
                 subviewInfos: subViewInfos
             )
 
-            let progressBarSize = CGSize(width: maxLabelWidth, height: 8)
+            let progressBarSize = CGSize(width: maxLabelWidth, height: configurator.progressBarHeight)
             let optionRowOuterMeasurement = ManualStackView.measure(
                 config: configurator.optionRowOuterStackConfig,
                 measurementBuilder: measurementBuilder,
@@ -482,7 +487,7 @@ public class CVPollView: ManualStackView {
 
         let pollVoteHandler: (VoteType) -> Void
 
-        let checkbox = ManualLayoutView(name: "checkbox")
+        let checkboxContainer = ManualLayoutView(name: "checkboxContainer")
         let optionText = CVLabel()
         let innerStack = ManualStackView(name: "innerStack")
         let numVotesLabel = CVLabel()
@@ -627,13 +632,13 @@ public class CVPollView: ManualStackView {
             guard type.isPending() else {
                 return
             }
-            checkbox.subviews.forEach { $0.removeFromSuperview() }
+            checkboxContainer.subviews.forEach { $0.removeFromSuperview() }
 
             switch type {
             case .pendingVote, .pendingUnvote:
                 let spinningEllipse = UIImageView(image: UIImage(named: Theme.iconName(.ellipse)))
                 let checkMark = UIImageView(image: UIImage(named: Theme.iconName(.checkmark)))
-                checkbox.addSubview(spinningEllipse, withLayoutBlock: { [weak self] _ in
+                checkboxContainer.addSubview(spinningEllipse, withLayoutBlock: { [weak self] _ in
                     guard let self else { return }
                     spinView(view: spinningEllipse)
                     checkMark.frame = CGRect(
@@ -644,10 +649,119 @@ public class CVPollView: ManualStackView {
                     )
                 })
                 if type == .pendingVote {
-                    checkbox.addSubview(checkMark)
+                    checkboxContainer.addSubview(checkMark)
                 }
             default:
                 owsFailDebug("Function should only be called for pending states")
+            }
+        }
+
+        /// Sets up correct icon & checkbox size based on vote state and whether poll is ended.
+        private func configureCheckboxContainer(
+            configurator: Configurator,
+            pollIsEnded: Bool,
+            pendingVotesCount: Int
+        ) {
+            let circle = UIImageView(image: UIImage(named: Theme.iconName(.circle)))
+            let checkBoxSize = pollIsEnded ? configurator.checkBoxEndedSize : configurator.checkBoxSize
+
+            checkboxContainer.addSubview(circle, withLayoutBlock: { [weak self] _ in
+                guard let self = self else { return }
+                let subviewFrame = CGRect(
+                    x: (checkboxContainer.frame.width - checkBoxSize.width) / 2,
+                    y: (checkboxContainer.frame.height - checkBoxSize.height) / 2,
+                    width: checkBoxSize.width,
+                    height: checkBoxSize.height
+                )
+                Self.setSubviewFrame(subview: circle, frame: subviewFrame)
+            })
+
+            switch localUserVoteState {
+            case .vote:
+                let checkMarkCircle = UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill)))
+                checkboxContainer.addSubview(checkMarkCircle, withLayoutBlock: { [weak self] _ in
+                    guard let self = self else { return }
+                    let subviewFrame = CGRect(
+                        x: (checkboxContainer.frame.width - checkBoxSize.width) / 2,
+                        y: (checkboxContainer.frame.height - checkBoxSize.height) / 2,
+                        width: checkBoxSize.width,
+                        height: checkBoxSize.height
+                    )
+                    Self.setSubviewFrame(subview: checkMarkCircle, frame: subviewFrame)
+                })
+                checkboxContainer.tintColor = configurator.colorConfigurator.checkboxSelectedColor
+            case .pendingVote, .pendingUnvote:
+                // If there's multiple votes pending, don't delay the pending UI because it will pause the
+                // existing animations and restart them after the delay.
+                if pendingVotesCount > 1 {
+                    self.displayPendingUI(type: self.localUserVoteState)
+                    checkboxContainer.tintColor = configurator.colorConfigurator.checkboxOutlineColor
+                    break
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + Self.pendingDelay) { [weak self] in
+                    guard let self else { return }
+                    self.displayPendingUI(type: self.localUserVoteState)
+                }
+                checkboxContainer.tintColor = configurator.colorConfigurator.checkboxOutlineColor
+            case .unvote:
+                checkboxContainer.tintColor = configurator.colorConfigurator.checkboxOutlineColor
+            }
+        }
+
+        /// Configure correct layout at the trailing edge of the option row.
+        /// This might be only vote count, or if the poll is ended and the user
+        /// has voted for an option, a smaller checkbox will appear next to the vote count.
+        private func configureTrailingVoteState(
+            configurator: Configurator,
+            cellMeasurement: CVCellMeasurement,
+            pollIsEnded: Bool,
+            localizedVotesString: String,
+        ) {
+            let isRTL = CurrentAppContext().isRTL
+
+            let numVotesConfig = CVLabelConfig.unstyledText(
+                localizedVotesString,
+                font: UIFont.systemFont(ofSize: 15),
+                textColor: configurator.colorConfigurator.textColor,
+                numberOfLines: 0,
+                lineBreakMode: .byWordWrapping,
+                textAlignment: .trailing
+            )
+
+            let maxOptionWidth = cellMeasurement.cellSize.width
+            let labelSize = CVText.measureLabel(config: numVotesConfig, maxWidth: maxOptionWidth)
+
+            numVotesConfig.applyForRendering(label: numVotesLabel)
+            innerStackContainer.addSubview(numVotesLabel, withLayoutBlock: { [weak self] _ in
+                guard let self = self, let superview = numVotesLabel.superview else {
+                    owsFailDebug("Missing superview.")
+                    return
+                }
+
+                let yPoint = superview.bounds.maxY - (labelSize.height + 4)
+                let xPoint = isRTL ? superview.bounds.minX : superview.bounds.maxX - labelSize.width
+                let subviewFrame = CGRect(
+                    origin: CGPoint(x: xPoint, y: yPoint),
+                    size: labelSize
+                )
+                Self.setSubviewFrame(subview: numVotesLabel, frame: subviewFrame)
+            })
+
+            if pollIsEnded && localUserVoteState == .vote {
+                innerStackContainer.addSubview(checkboxContainer, withLayoutBlock: { [weak self] _ in
+                    guard let self = self, let superview = innerStack.superview else {
+                        owsFailDebug("Missing superview.")
+                        return
+                    }
+
+                    let yPoint = superview.bounds.maxY - (configurator.checkBoxEndedSize.height + 4)
+                    let xPoint = isRTL ? superview.bounds.minX + labelSize.width + 4 : superview.bounds.maxX - labelSize.width - configurator.checkBoxSize.width
+                    let subviewFrame = CGRect(
+                        origin: CGPoint(x: xPoint, y: yPoint),
+                        size: configurator.checkBoxEndedSize
+                    )
+                    Self.setSubviewFrame(subview: checkboxContainer, frame: subviewFrame)
+                })
             }
         }
 
@@ -661,31 +775,13 @@ public class CVPollView: ManualStackView {
             pollIsEnded: Bool,
             pendingVotesCount: Int
         ) {
-            checkbox.addSubview(UIImageView(image: UIImage(named: Theme.iconName(.circle))))
+            configureCheckboxContainer(
+                configurator: configurator,
+                pollIsEnded: pollIsEnded,
+                pendingVotesCount: pendingVotesCount
+            )
+
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapOption)))
-
-            switch localUserVoteState {
-            case .vote:
-                let checkMarkCircle = UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill)))
-                checkbox.addSubview(checkMarkCircle)
-
-                checkbox.tintColor = configurator.colorConfigurator.checkboxSelectedColor
-            case .pendingVote, .pendingUnvote:
-                // If there's multiple votes pending, don't delay the pending UI because it will pause the
-                // existing animations and restart them after the delay.
-                if pendingVotesCount > 1 {
-                    self.displayPendingUI(type: self.localUserVoteState)
-                    checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
-                    break
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + Self.pendingDelay) { [weak self] in
-                    guard let self else { return }
-                    self.displayPendingUI(type: self.localUserVoteState)
-                }
-                checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
-            case .unvote:
-                checkbox.tintColor = configurator.colorConfigurator.checkboxOutlineColor
-            }
 
             let optionTextConfig = CVLabelConfig.unstyledText(
                 option,
@@ -700,11 +796,8 @@ public class CVPollView: ManualStackView {
             if pollIsEnded {
                 self.isUserInteractionEnabled = false
                 subviews = [optionText]
-                if localUserVoteState == .vote {
-                    subviews.append(checkbox)
-                }
             } else {
-                subviews = [checkbox, optionText]
+                subviews = [checkboxContainer, optionText]
             }
 
             let localizedVotesString = localizedNumber(from: votes)
@@ -720,16 +813,12 @@ public class CVPollView: ManualStackView {
 
             innerStackContainer.addSubviewToFillSuperviewEdges(innerStack)
 
-            let numVotesConfig = CVLabelConfig.unstyledText(
-                localizedVotesString,
-                font: UIFont.dynamicTypeBody,
-                textColor: configurator.colorConfigurator.textColor,
-                numberOfLines: 0,
-                lineBreakMode: .byWordWrapping,
-                textAlignment: .trailing
+            configureTrailingVoteState(
+                configurator: configurator,
+                cellMeasurement: cellMeasurement,
+                pollIsEnded: pollIsEnded,
+                localizedVotesString: localizedVotesString
             )
-            numVotesConfig.applyForRendering(label: numVotesLabel)
-            innerStackContainer.addSubviewToFillSuperviewEdges(numVotesLabel)
 
             buildProgressBar(
                 votes: votes,
