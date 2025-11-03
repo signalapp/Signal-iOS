@@ -4,6 +4,7 @@
 //
 
 public import Foundation
+import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
@@ -171,7 +172,11 @@ public class CVLoader: NSObject {
                 return LoadState(
                     threadViewModel: threadViewModel,
                     conversationViewModel: conversationViewModel,
-                    items: self.buildRenderItems(loadContext: loadContext, updatedInteractionIds: updatedInteractionIds)
+                    items: self.buildRenderItems(
+                        loadContext: loadContext,
+                        updatedInteractionIds: updatedInteractionIds,
+                        localAci: localAci,
+                    )
                 )
             }
 
@@ -198,8 +203,11 @@ public class CVLoader: NSObject {
 
     // MARK: -
 
-    private func buildRenderItems(loadContext: CVLoadContext,
-                                  updatedInteractionIds: Set<String>) -> [CVRenderItem] {
+    private func buildRenderItems(
+        loadContext: CVLoadContext,
+        updatedInteractionIds: Set<String>,
+        localAci: Aci,
+    ) -> [CVRenderItem] {
 
         let conversationStyle = loadContext.conversationStyle
 
@@ -219,7 +227,7 @@ public class CVLoader: NSObject {
             itemModelBuilder.reuseComponentStates(prevRenderState: prevRenderState,
                                                   updatedInteractionIds: updatedInteractionIds)
         }
-        let itemModels: [CVItemModel] = itemModelBuilder.buildItems()
+        let itemModels: [CVItemModel] = itemModelBuilder.buildItems(localAci: localAci)
 
         var renderItems = [CVRenderItem]()
         for itemModel in itemModels {
@@ -344,12 +352,15 @@ public class CVLoader: NSObject {
             avatarBuilder: avatarBuilder,
             localAci: localAci
         )
-        guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
-                                                                     thread: thread,
-                                                                     threadAssociatedData: threadAssociatedData,
-                                                                     threadViewModel: threadViewModel,
-                                                                     itemBuildingContext: itemBuildingContext,
-                                                                     transaction: transaction) else {
+        guard let itemModel = CVItemModelBuilder.buildStandaloneItem(
+            interaction: interaction,
+            thread: thread,
+            threadAssociatedData: threadAssociatedData,
+            threadViewModel: threadViewModel,
+            itemBuildingContext: itemBuildingContext,
+            localAci: localAci,
+            transaction: transaction,
+        ) else {
             owsFailDebug("Couldn't build item model.")
             return nil
         }

@@ -100,7 +100,7 @@ struct CVItemModelBuilder: CVItemBuilding {
 
     // TODO: How should we handle failed stickers?
     // TODO: Do we need a new equivalent of clearNeedsUpdate?
-    mutating func buildItems() -> [CVItemModel] {
+    mutating func buildItems(localAci: Aci) -> [CVItemModel] {
         // Contact Offers / Thread Details are the first item in the thread
         if messageLoader.shouldShowThreadDetails {
             // The thread details should have a stable timestamp.
@@ -148,7 +148,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             owsAssertDebug(item != nil)
         }
 
-        let groupNameColors = GroupNameColors.groupNameColors(forThread: thread)
+        let groupNameColors = GroupNameColors.forThread(thread, localAci: localAci)
         let displayNameCache = DisplayNameCache()
 
         // Update the properties of the view items.
@@ -174,12 +174,15 @@ struct CVItemModelBuilder: CVItemBuilding {
         }
     }
 
-    public static func buildStandaloneItem(interaction: TSInteraction,
-                                           thread: TSThread,
-                                           threadAssociatedData: ThreadAssociatedData,
-                                           threadViewModel: ThreadViewModel,
-                                           itemBuildingContext: CVItemBuildingContext,
-                                           transaction: DBReadTransaction) -> CVItemModel? {
+    public static func buildStandaloneItem(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        threadViewModel: ThreadViewModel,
+        itemBuildingContext: CVItemBuildingContext,
+        localAci: Aci,
+        transaction: DBReadTransaction,
+    ) -> CVItemModel? {
         AssertIsOnMainThread()
 
         let viewStateSnapshot = itemBuildingContext.viewStateSnapshot
@@ -193,7 +196,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             return nil
         }
 
-        let groupNameColors = GroupNameColors.groupNameColors(forThread: thread)
+        let groupNameColors = GroupNameColors.forThread(thread, localAci: localAci)
         let displayNameCache = DisplayNameCache()
 
         configureItemViewState(item: itemBuilder,
@@ -379,7 +382,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 }
                 if shouldShowSenderName {
                     let senderName = NSAttributedString(string: authorName)
-                    let senderNameColor = groupNameColors.color(for: incomingSenderAddress)
+                    let senderNameColor = groupNameColors.color(for: incomingSenderAddress.aci)
                     itemViewState.senderNameState = CVComponentState.SenderName(senderName: senderName,
                                                                                 senderNameColor: senderNameColor)
                 }

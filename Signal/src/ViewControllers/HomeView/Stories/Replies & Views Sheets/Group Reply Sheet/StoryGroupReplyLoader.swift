@@ -221,19 +221,19 @@ class StoryGroupReplyLoader {
         var messages = [(SignalServiceAddress, TSMessage)]()
         var authorAddresses = Set<SignalServiceAddress>()
 
-        let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!
 
         for interaction in loadedInteractions {
             if let outgoingMessage = interaction as? TSOutgoingMessage {
-                messages.append((localAddress, outgoingMessage))
-                authorAddresses.insert(localAddress)
+                messages.append((localIdentifiers.aciAddress, outgoingMessage))
+                authorAddresses.insert(localIdentifiers.aciAddress)
             } else if let incomingMessage = interaction as? TSIncomingMessage {
                 messages.append((incomingMessage.authorAddress, incomingMessage))
                 authorAddresses.insert(incomingMessage.authorAddress)
             }
         }
 
-        let groupNameColors = GroupNameColors.groupNameColors(forThread: groupThread)
+        let groupNameColors = GroupNameColors.forThread(groupThread, localAci: localIdentifiers.aci)
         let displayNamesByAddress = SSKEnvironment.shared.contactManagerImplRef.displayNamesByAddress(
             for: Array(authorAddresses),
             transaction: transaction
@@ -260,7 +260,7 @@ class StoryGroupReplyLoader {
                     message: message,
                     authorAddress: authorAddress,
                     authorDisplayName: displayName,
-                    authorColor: groupNameColors.color(for: authorAddress),
+                    authorColor: groupNameColors.color(for: authorAddress.aci),
                     recipientStatus: recipientStatus,
                     transaction: transaction
                 )

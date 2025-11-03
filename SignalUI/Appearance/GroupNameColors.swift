@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 public import SignalServiceKit
 import UIKit
 
@@ -12,33 +13,30 @@ import UIKit
 /// Represents the "message sender" to "group name color" mapping
 /// for a given CVC load.
 public struct GroupNameColors {
-    fileprivate let colorMap: [SignalServiceAddress: UIColor]
+    fileprivate let colorMap: [Aci: UIColor]
     fileprivate let defaultColor: UIColor
 
-    public func color(for address: SignalServiceAddress) -> UIColor {
-        colorMap[address] ?? defaultColor
+    public func color(for aci: Aci?) -> UIColor {
+        return aci.flatMap({ colorMap[$0] }) ?? defaultColor
     }
 
     fileprivate static var defaultColors: GroupNameColors {
         GroupNameColors(colorMap: [:], defaultColor: Theme.primaryTextColor)
     }
 
-    public static func groupNameColors(forThread thread: TSThread) -> GroupNameColors {
+    public static func forThread(_ thread: TSThread, localAci: Aci) -> GroupNameColors {
         guard let groupThread = thread as? TSGroupThread else {
             return .defaultColors
         }
         let values = Self.groupNameColorValues
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        var colorMap = [SignalServiceAddress: UIColor]()
-        let addresses = groupThread.groupMembership.fullMembers
-            .filter { !$0.isLocalAddress }
-            .sorted(by: {
-                ($0.serviceId?.serviceIdString ?? $0.phoneNumber ?? "") < ($1.serviceId?.serviceIdString ?? $0.phoneNumber ?? "")
-            })
-        for (index, address) in addresses.enumerated() {
-            colorMap[address] = values[index % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
+        var colorMap = [Aci: UIColor]()
+        let groupMembers = groupThread.groupMembership.fullMembers
+            .compactMap(\.aci).filter { $0 != localAci }.sorted(by: <)
+        for (index, aci) in groupMembers.enumerated() {
+            colorMap[aci] = values[index % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
         }
-        let defaultColor = values[addresses.endIndex % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
+        let defaultColor = values[groupMembers.endIndex % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
         return GroupNameColors(colorMap: colorMap, defaultColor: defaultColor)
     }
 
