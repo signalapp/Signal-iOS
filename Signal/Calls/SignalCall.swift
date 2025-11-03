@@ -115,7 +115,7 @@ enum CallMode {
             guard case .incomingRing(let caller, _) = call.groupCallRingState else {
                 return nil
             }
-            return caller
+            return SignalServiceAddress(caller)
         case .callLink:
             return nil
         }

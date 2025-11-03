@@ -1616,7 +1616,7 @@ extension CallService: CallManagerDelegate {
                 return owsFailDebug("Failed to build group call")
             }
 
-            groupThreadCall.groupCallRingState = .incomingRing(caller: SignalServiceAddress(senderAci), ringId: ringId)
+            groupThreadCall.groupCallRingState = .incomingRing(caller: senderAci, ringId: ringId)
 
             self.callUIAdapter.reportIncomingCall(call)
         }

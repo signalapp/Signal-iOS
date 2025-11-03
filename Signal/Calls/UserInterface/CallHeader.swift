@@ -280,9 +280,9 @@ class CallHeader: UIView {
         }
     }
 
-    private func incomingRingText(caller: SignalServiceAddress) -> String {
+    private func incomingRingText(caller: Aci) -> String {
         let callerName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            SSKEnvironment.shared.contactManagerRef.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+            SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(caller), tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
         let formatString = OWSLocalizedString(
             "GROUP_CALL_INCOMING_RING_FORMAT",
