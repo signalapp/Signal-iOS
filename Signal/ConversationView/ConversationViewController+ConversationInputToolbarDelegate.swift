@@ -383,7 +383,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         case inputToolbarMissing
         case conversationBlocked
         case untrustedContacts
-        case invalidAttachment(SignalAttachment)
     }
 
     @MainActor
@@ -418,10 +417,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         guard identityIsConfirmed else {
             throw .untrustedContacts
-        }
-
-        if let attachment = attachments.first(where: \.hasError) {
-            throw .invalidAttachment(attachment)
         }
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
@@ -554,18 +549,16 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
 public extension ConversationViewController {
 
-    func showErrorAlert(forAttachment attachment: SignalAttachment?) {
+    func showErrorAlert(attachmentError: SignalAttachmentError?) {
         AssertIsOnMainThread()
-        owsAssertDebug(attachment == nil || attachment?.hasError == true)
 
-        let errorMessage = (attachment?.localizedErrorDescription
-                                ?? SignalAttachment.missingDataErrorMessage)
+        Logger.warn("\(attachmentError as Optional)")
+        let errorMessage = (attachmentError ?? .missingData).localizedDescription
 
-        Logger.error("\(errorMessage)")
-
-        OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE",
-                                                                 comment: "The title of the 'attachment error' alert."),
-                                        message: errorMessage)
+        OWSActionSheets.showActionSheet(
+            title: OWSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "The title of the 'attachment error' alert."),
+            message: errorMessage,
+        )
     }
 
     func showApprovalDialog(forAttachments attachments: [SignalAttachment]) {
@@ -835,59 +828,52 @@ extension ConversationViewController: UIDocumentPickerDelegate {
 
         // Although we want to be able to send higher quality attachments through the document picker
         // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
-        if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource,
-                                                        dataUTI: contentType.identifier) {
+        if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: contentType.identifier) {
             self.showApprovalDialogAfterProcessingVideoURL(url, filename: filename)
             return
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentType.identifier)
+        let attachment: SignalAttachment
+        do throws(SignalAttachmentError) {
+            attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentType.identifier)
+        } catch {
+            DispatchQueue.main.async {
+                self.showErrorAlert(attachmentError: error)
+            }
+            return
+        }
+
         showApprovalDialog(forAttachments: [attachment])
     }
 
     private func showApprovalDialogAfterProcessingVideoURL(_ movieURL: URL, filename: String?) {
         AssertIsOnMainThread()
 
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: true) { modalActivityIndicator in
-            let dataSource: DataSource
-            do {
-                dataSource = try DataSourcePath(fileUrl: movieURL, shouldDeleteOnDeallocation: false)
-            } catch {
-                owsFailDebug("Error: \(error).")
-
-                DispatchQueue.main.async {
-                    self.showErrorAlert(forAttachment: nil)
-                }
-                return
-            }
-
-            dataSource.sourceFilename = filename
-            let promise = Promise.wrapAsync({
-                return try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource,
-                                                                     dataUTI: UTType.mpeg4Movie.identifier)
-            })
-            promise.done(on: DispatchQueue.main) { (attachment: SignalAttachment) in
-                if modalActivityIndicator.wasCancelled {
-                    return
-                }
-                modalActivityIndicator.dismiss {
-                    if attachment.hasError {
-                        owsFailDebug("Invalid attachment: \(attachment.errorName ?? "Unknown error").")
-                        self.showErrorAlert(forAttachment: attachment)
-                    } else {
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: true,
+            asyncBlock: { modalActivityIndicator in
+                do {
+                    let dataSource = try DataSourcePath(
+                        fileUrl: movieURL,
+                        shouldDeleteOnDeallocation: false,
+                    )
+                    dataSource.sourceFilename = filename
+                    let attachment = try await SignalAttachment.compressVideoAsMp4(
+                        dataSource: dataSource,
+                        dataUTI: UTType.mpeg4Movie.identifier,
+                    )
+                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
                         self.showApprovalDialog(forAttachments: [attachment])
-                    }
+                    })
+                } catch {
+                    owsFailDebug("Error: \(error).")
+                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
+                        self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
+                    })
                 }
-            }.catch(on: DispatchQueue.main) { error in
-                owsFailDebug("Error: \(error).")
-
-                modalActivityIndicator.dismiss {
-                    owsFailDebug("Invalid attachment.")
-                    self.showErrorAlert(forAttachment: nil)
-                }
-            }
-        }
+            },
+        )
     }
 }
 
@@ -946,9 +932,6 @@ extension ConversationViewController: SendMediaNavDelegate {
             case .conversationBlocked, .untrustedContacts:
                 // User was prompted but chose not to make changes. Stop here.
                 break
-            case .invalidAttachment(let attachment):
-                Logger.warn("Invalid attachment: \(attachment.errorName ?? "Missing data").")
-                self.showErrorAlert(forAttachment: attachment)
             }
         }
     }

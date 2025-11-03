@@ -481,7 +481,7 @@ public class Location: NSObject {
             throw LocationError.assertion
         }
         let dataSource = DataSourceValue(jpegData, utiType: UTType.jpeg.identifier)
-        return SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
     }
 
     public var messageText: String {

@@ -147,7 +147,11 @@ class PhotoAlbumContents {
 
                     if let dataSource = try? DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false) {
                         if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
-                            future.resolve(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
+                            do {
+                                future.resolve(try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
+                            } catch {
+                                future.reject(error)
+                            }
                             return
                         }
                     }
@@ -173,7 +177,7 @@ class PhotoAlbumContents {
         switch asset.mediaType {
         case .image:
             return requestImageDataSource(for: asset).map(on: DispatchQueue.global()) { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+                return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         case .video:
             return requestVideoDataSource(for: asset)

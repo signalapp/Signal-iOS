@@ -220,21 +220,27 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         // If trying to paste a sticker, forego anything async since
         // the pasteboard will be cleared as soon as paste() exits.
         if SignalAttachment.pasteboardHasStickerAttachment() {
-            let attachment: SignalAttachment? = SignalAttachment.stickerAttachmentFromPasteboard()
-            self.didPasteAttachments(attachment.map { [$0] })
+            do throws(SignalAttachmentError) {
+                self.didPasteAttachments([try SignalAttachment.stickerAttachmentFromPasteboard()].compacted())
+            } catch {
+                self.showErrorAlert(attachmentError: error)
+            }
             return
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
-            let attachments: [SignalAttachment]? = await SignalAttachment.attachmentsFromPasteboard()
-
-            await MainActor.run {
+        ModalActivityIndicatorViewController.present(fromViewController: self, asyncBlock: { modal in
+            do throws(SignalAttachmentError) {
+                let attachments = try await SignalAttachment.attachmentsFromPasteboard()
                 modal.dismiss {
-                    // Note: attachment array might be nil or have an error at this point; that's fine.
+                    // Note: attachment array might be nil at this point; that's fine.
                     self.didPasteAttachments(attachments)
                 }
+            } catch {
+                modal.dismiss {
+                    self.showErrorAlert(attachmentError: error)
+                }
             }
-        }
+        })
     }
 
     func didPasteAttachments(_ attachments: [SignalAttachment]?) {

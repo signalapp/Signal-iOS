@@ -527,25 +527,15 @@ extension SendMediaNavigationController {
                 modal.dismissIfNotCanceled(completionIfNotCanceled: {
                     do {
                         let attachmentApprovalItems = try result.get()
-                        for item in attachmentApprovalItems {
-                            switch item.attachment.error {
-                            case nil:
-                                continue
-                            case .fileSizeTooLarge:
-                                OWSActionSheets.showActionSheet(
-                                    title: OWSLocalizedString(
-                                        "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
-                                        comment: "Attachment error message for attachments whose data exceed file size limits"
-                                    )
-                                )
-                                return
-                            default:
-                                OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
-                                return
-                            }
-                        }
                         self.showApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
                         picker?.dismiss(animated: true)
+                    } catch SignalAttachmentError.fileSizeTooLarge {
+                        OWSActionSheets.showActionSheet(
+                            title: OWSLocalizedString(
+                                "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
+                                comment: "Attachment error message for attachments whose data exceed file size limits"
+                            )
+                        )
                     } catch {
                         Logger.warn("failed to prepare attachments. error: \(error)")
                         OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))

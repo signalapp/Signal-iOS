@@ -34,17 +34,17 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
         )
         decryptedDataSource.sourceFilename = attachment.reference.sourceFilename
 
-        var signalAttachment: SignalAttachment
+        let signalAttachment: SignalAttachment
         switch attachment.reference.renderingFlag {
         case .default:
-            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
         case .voiceMessage:
-            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment = try SignalAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
         case .borderless:
-            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
             signalAttachment.isBorderless = true
         case .shouldLoop:
-            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
             signalAttachment.isLoopingVideo = true
         }
         signalAttachment.captionText = attachment.reference.storyMediaCaption?.text

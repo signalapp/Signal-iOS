@@ -1233,10 +1233,12 @@ extension PhotoCaptureViewController {
     private func showFailureUI(error: Error) {
         Logger.error("error: \(error)")
 
-        OWSActionSheets.showActionSheet(title: nil,
-                                        message: error.userErrorDescription,
-                                        buttonTitle: CommonStrings.dismissButton,
-                                        buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+        OWSActionSheets.showActionSheet(
+            title: nil,
+            message: error.userErrorDescription,
+            buttonTitle: CommonStrings.dismissButton,
+            buttonAction: { [weak self] _ in self?.dismiss(animated: true) },
+        )
     }
 
     private func updateFlashModeControl(animated: Bool) {

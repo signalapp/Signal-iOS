@@ -60,7 +60,7 @@ extension SignalAttachment {
             startTime += segmentDuration
         }
         let segments = try segmentFileUrls.map { url in
-            return SignalAttachment.attachment(
+            return try SignalAttachment.attachment(
                 dataSource: try DataSourcePath(
                     fileUrl: url,
                     shouldDeleteOnDeallocation: true

@@ -30,10 +30,6 @@ extension VoiceMessageSendableDraft {
         let dataSource = try DataSourcePath(fileUrl: attachmentUrl, shouldDeleteOnDeallocation: true)
         dataSource.sourceFilename = userVisibleFilename(currentDate: Date())
 
-        let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier)
-        guard !attachment.hasError else {
-            throw OWSAssertionError("Failed to create voice message attachment: \(attachment.errorName ?? "Unknown Error")")
-        }
-        return attachment
+        return try SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier)
     }
 }

@@ -15,7 +15,7 @@ class SignalAttachmentTest: SignalBaseTest {
         let size = (try? DataImageSource.forPath(url.path).imageMetadata()?.pixelSize) ?? .zero
 
         let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
-        let attachment = SignalAttachment.attachment(
+        let attachment = try SignalAttachment.attachment(
             dataSource: dataSource,
             dataUTI: UTType.jpeg.identifier
         )
@@ -59,7 +59,7 @@ class SignalAttachmentTest: SignalBaseTest {
             "Test is not set up correctly. Fixture doesn't have the expected chunks"
         )
 
-        let attachment = SignalAttachment.attachment(
+        let attachment = try SignalAttachment.attachment(
             dataSource: dataSource,
             dataUTI: UTType.png.identifier
         )
@@ -97,7 +97,7 @@ class SignalAttachmentTest: SignalBaseTest {
         )
         let dataSource = DataSourceValue(pngData, fileExtension: "png")
 
-        let attachment = SignalAttachment.attachment(
+        let attachment = try SignalAttachment.attachment(
             dataSource: dataSource,
             dataUTI: UTType.png.identifier
         )

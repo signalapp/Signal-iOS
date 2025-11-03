@@ -653,7 +653,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         for attachmentApprovalItem in attachmentApprovalItems {
             let outputQualityLevel = self.outputQualityLevel
             promises.append(outputAttachmentPromise(for: attachmentApprovalItem).map(on: DispatchQueue.global()) { attachment in
-                attachment.preparedForOutput(qualityLevel: outputQualityLevel)
+                try attachment.preparedForOutput(qualityLevel: outputQualityLevel)
             })
         }
         return Promise.when(fulfilled: promises)
@@ -705,9 +705,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     dataType = .png
                     return dstImage.pngData()
                 }
-                }() else {
-                    owsFailDebug("Could not export for output.")
-                    return attachmentApprovalItem.attachment
+            }() else {
+                owsFailDebug("Could not export for output.")
+                return attachmentApprovalItem.attachment
             }
             guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
                 owsFailDebug("Could not prepare data source for output.")
@@ -723,12 +723,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             dataSource.sourceFilename = filename
 
-            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
-            if let attachmentError = dstAttachment.error {
-                owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
+            do throws(SignalAttachmentError) {
+                return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
+            } catch {
+                owsFailDebug("could not prepare attachment for output: \(error)")
                 return attachmentApprovalItem.attachment
             }
-            return dstAttachment
         }
     }
 
@@ -756,10 +756,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-        if let attachmentError = dstAttachment.error {
-            throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
-        }
+        let dstAttachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
         dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
         return dstAttachment
     }
@@ -893,9 +890,10 @@ extension AttachmentApprovalViewController {
                     modalVC.dismiss {
                         let actionSheet = ActionSheetController(
                             title: CommonStrings.errorAlertTitle,
-                            message: OWSLocalizedString(
-                                "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT",
-                                comment: "Error that outgoing attachments could not be exported."),
+                            message: (
+                                (error as? SignalAttachmentError)?.localizedDescription
+                                ?? OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported.")
+                            ),
                         )
                         actionSheet.overrideUserInterfaceStyle = .dark
                         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))

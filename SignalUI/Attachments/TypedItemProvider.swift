@@ -191,11 +191,8 @@ public struct TypedItemProvider {
         case .contact:
             let contactData = try await loadDataRepresentation()
             let dataSource = DataSourceValue(contactData, utiType: itemType.typeIdentifier)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
+            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             attachment.isConvertibleToContactShare = true
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
             return attachment
         case .plainText, .text:
             let text: NSString = try await loadObjectWithKeyedUnarchiverFallback(
@@ -206,10 +203,7 @@ public struct TypedItemProvider {
         case .pkPass:
             let pkPass = try await loadDataRepresentation()
             let dataSource = DataSourceValue(pkPass, utiType: itemType.typeIdentifier)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
+            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             return attachment
         }
     }
@@ -301,10 +295,7 @@ public struct TypedItemProvider {
 
     private nonisolated static func createAttachment(withText text: String) throws -> SignalAttachment {
         let dataSource = DataSourceValue(oversizeText: text)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
+        let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
         attachment.isConvertibleToTextMessage = true
         return attachment
     }
@@ -315,11 +306,7 @@ public struct TypedItemProvider {
         }
         let type = UTType.png
         let dataSource = DataSourceValue(imagePng, utiType: type.identifier)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
-        return attachment
+        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
     }
 
     private nonisolated static func copyFileUrl(
@@ -355,7 +342,7 @@ public struct TypedItemProvider {
             defer {
                 progressPoller?.stopPolling()
             }
-            let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(
+            return try await SignalAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
                 sessionCallback: { exportSession in
@@ -364,20 +351,8 @@ public struct TypedItemProvider {
                     progressPoller?.startPolling()
                 }
             )
-
-            if let attachmentError = compressedAttachment.error {
-                throw attachmentError
-            }
-
-            return compressedAttachment
         } else {
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-
-            if let attachmentError = attachment.error {
-                throw attachmentError
-            }
-
-            return attachment
+            return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
         }
     }
 }

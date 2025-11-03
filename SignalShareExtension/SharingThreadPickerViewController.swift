@@ -33,25 +33,25 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         }
     }
 
-    var isTextMessage: Bool {
+    private var isTextMessage: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         // TODO: it may be convertible to an oversize text message, check that
         return attachment.isConvertibleToTextMessage && attachment.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
     }
 
-    var isContactShare: Bool {
+    private var isContactShare: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToContactShare
     }
 
-    var approvedAttachments: [SignalAttachment]?
-    var approvedContactShare: ContactShareDraft?
-    var approvalMessageBody: MessageBody?
-    var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
+    private var approvedAttachments: [SignalAttachment]?
+    private var approvedContactShare: ContactShareDraft?
+    private var approvalMessageBody: MessageBody?
+    private var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var mentionCandidates: [Aci] = []
+    private var mentionCandidates: [Aci] = []
 
-    var selectedConversations: [ConversationItem] { selection.conversations }
+    private var selectedConversations: [ConversationItem] { selection.conversations }
 
     public init(areAttachmentStoriesCompatPrecheck: Bool, shareViewDelegate: ShareViewDelegate) {
         self.areAttachmentStoriesCompatPrecheck = areAttachmentStoriesCompatPrecheck

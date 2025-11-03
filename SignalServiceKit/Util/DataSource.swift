@@ -74,11 +74,6 @@ public class DataSourceValue: DataSource {
         self.init(data, fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension)
     }
 
-    /// Initializes a new empty `DataSourceValue`.
-    public convenience init() {
-        self.init(Data(), fileExtension: "bin")
-    }
-
     deinit {
         if let _dataUrl {
             try? OWSFileSystem.deleteFileIfExists(url: _dataUrl)

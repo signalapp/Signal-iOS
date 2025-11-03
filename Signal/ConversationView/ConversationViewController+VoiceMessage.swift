@@ -112,7 +112,7 @@ extension ConversationViewController {
                 clearVoiceMessageDraft()
             }
         } catch {
-            owsFailDebug("Failed to send prepare voice message for sending \(error)")
+            self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
         }
     }
 

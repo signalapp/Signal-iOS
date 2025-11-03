@@ -473,40 +473,46 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         GiphyDownloader.giphyDownloader.cancelAllRequests()
 
         fileForCellTask?.cancel()
-        fileForCellTask = Task.detached(priority: .userInitiated) {
+        fileForCellTask = Task {
             do {
                 let asset = try await cell.requestRenditionForSending()
-                guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
-                    throw OWSAssertionError("Invalid asset description.")
-                }
-
-                let assetTypeIdentifier = giphyAsset.type.utiType
-                let assetFileExtension = giphyAsset.type.extension
-                let pathForCachedAsset = asset.filePath
-
-                let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
-                try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
-                let dataSource = try DataSourcePath(filePath: pathForConsumableFile, shouldDeleteOnDeallocation: false)
-
-                let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
-                attachment.isLoopingVideo = attachment.isVideo
-
-                await self.delegate?.gifPickerDidSelect(attachment: attachment)
+                let attachment = try await buildAttachment(forAsset: asset)
+                self.delegate?.gifPickerDidSelect(attachment: attachment)
             } catch {
-                await MainActor.run {
-                    let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                                      message: error.userErrorDescription)
-                    alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
-                        self.getFileForCell(cell)
-                    })
-                    alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                        self.delegate?.gifPickerDidCancel()
-                    })
-
-                    self.presentActionSheet(alert)
-                }
+                let alert = ActionSheetController(
+                    title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
+                    message: error.userErrorDescription,
+                )
+                alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
+                    self.getFileForCell(cell)
+                })
+                alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+                    self.delegate?.gifPickerDidCancel()
+                })
+                self.presentActionSheet(alert)
             }
         }
+    }
+
+    #if compiler(>=6.2)
+    @concurrent
+    #endif
+    private nonisolated func buildAttachment(forAsset asset: ProxiedContentAsset) async throws -> SignalAttachment {
+        guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
+            throw OWSAssertionError("Invalid asset description.")
+        }
+
+        let assetFileExtension = giphyAsset.type.extension
+        let assetFilePath = asset.filePath
+        let assetTypeIdentifier = giphyAsset.type.utiType
+
+        let consumableFilePath = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
+        try FileManager.default.copyItem(atPath: assetFilePath, toPath: consumableFilePath)
+        let dataSource = try DataSourcePath(filePath: consumableFilePath, shouldDeleteOnDeallocation: false)
+
+        let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
+        attachment.isLoopingVideo = attachment.isVideo
+        return attachment
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
