@@ -140,7 +140,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         continueButton.accessibilityIdentifier = "registration.splash.continueButton"
 
         let largeButtonsContainer: UIView
-        if FeatureFlags.Backups.supported {
+        if FeatureFlags.Backups.alwaysShowSettings {
             let restoreOrTransferButton = UIButton(
                 configuration: .largeSecondary(title: OWSLocalizedString(
                     "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",
