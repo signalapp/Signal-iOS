@@ -541,14 +541,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         if isThreadMuted(thread, transaction: transaction) {
             guard thread.isGroupThread else { return false }
 
-            guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
                 owsFailDebug("Missing local address")
                 return false
             }
 
-            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction)
-            let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
-            guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
+            let mentionedAcis = MentionFinder.mentionedAcis(for: incomingMessage, tx: transaction)
+            let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localIdentifiers.aciAddress) ?? false
+            guard mentionedAcis.contains(localIdentifiers.aci) || localUserIsQuoted else {
                 return false
             }
 

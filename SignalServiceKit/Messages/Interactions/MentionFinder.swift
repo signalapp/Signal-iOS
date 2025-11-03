@@ -91,25 +91,22 @@ public class MentionFinder {
         transaction.database.executeHandlingErrors(sql: sql, arguments: [message.uniqueId])
     }
 
-    public class func mentionedAddresses(for message: TSMessage, transaction: DBReadTransaction) -> [SignalServiceAddress] {
+    public class func mentionedAcis(for message: TSMessage, tx: DBReadTransaction) -> [Aci] {
         let sql = """
-            SELECT *
+            SELECT \(TSMention.columnName(.aciString))
             FROM \(TSMention.databaseTableName)
             WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
 
-        var addresses = [SignalServiceAddress]()
-
+        let aciStrings: [String]
         do {
-            let cursor = try TSMention.fetchCursor(transaction.database, sql: sql, arguments: [message.uniqueId])
-            while let mention = try cursor.next() {
-                addresses.append(mention.address)
-            }
+            aciStrings = try String.fetchAll(tx.database, sql: sql, arguments: [message.uniqueId])
         } catch {
-            owsFailDebug("unexpected error \(error)")
+            owsFailDebug("unexpected error \(error.grdbErrorForLogging)")
+            return []
         }
 
-        return addresses
+        return aciStrings.compactMap(Aci.parseFrom(aciString:))
     }
 
     public class func tryToCleanupOrphanedMention(

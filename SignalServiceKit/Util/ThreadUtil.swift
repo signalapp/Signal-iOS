@@ -489,8 +489,8 @@ extension TSThread {
             donationMetadata?.recipientCount = recipientAddresses(with: transaction).count
 
             if let message {
-                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction)
-                donationMetadata?.mentionsCurrentUser = mentionedAddresses.contains(localIdentifiers.aciAddress)
+                let mentionedAcis = MentionFinder.mentionedAcis(for: message, tx: transaction)
+                donationMetadata?.mentionsCurrentUser = mentionedAcis.contains(localIdentifiers.aci)
                 donationMetadata?.isReplyToCurrentUser = message.quotedMessage?.authorAddress == localIdentifiers.aciAddress
             }
         }
