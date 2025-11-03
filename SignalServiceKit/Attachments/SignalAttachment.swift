@@ -1198,44 +1198,36 @@ public class SignalAttachment: NSObject {
         exportSession.shouldOptimizeForNetworkUse = true
         exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
-        let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
-
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            group.addTask { @MainActor in
-                Logger.debug("Starting video export")
-                try await exportSession.exportAsync(to: exportURL, as: .mp4)
-
-                switch exportSession.status {
-                case .unknown:
-                    throw OWSAssertionError("Unknown export status.")
-                case .waiting:
-                    throw OWSAssertionError("Export status: .waiting.")
-                case .exporting:
-                    throw OWSAssertionError("Export status: .exporting.")
-                case .completed:
-                    break
-                case .failed:
-                    if let error = exportSession.error {
-                        owsFailDebug("Error: \(error)")
-                        throw error
-                    } else {
-                        throw OWSAssertionError("Export failed without error.")
-                    }
-                case .cancelled:
-                    throw CancellationError()
-                @unknown default:
-                    throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
-                }
-            }
-
-            if let sessionCallback {
-                sessionCallback(exportSession)
-            }
-
-            try await group.waitForAll()
+        if let sessionCallback {
+            sessionCallback(exportSession)
         }
 
-        Logger.debug("Completed video export")
+        let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+
+        try await exportSession.exportAsync(to: exportURL, as: .mp4)
+
+        switch exportSession.status {
+        case .unknown:
+            throw OWSAssertionError("Unknown export status.")
+        case .waiting:
+            throw OWSAssertionError("Export status: .waiting.")
+        case .exporting:
+            throw OWSAssertionError("Export status: .exporting.")
+        case .completed:
+            break
+        case .failed:
+            if let error = exportSession.error {
+                owsFailDebug("Error: \(error)")
+                throw error
+            } else {
+                throw OWSAssertionError("Export failed without error.")
+            }
+        case .cancelled:
+            throw CancellationError()
+        @unknown default:
+            throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
+        }
+
         let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
         do {
