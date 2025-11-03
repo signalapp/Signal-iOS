@@ -347,9 +347,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         guard let subscription else { return }
 
         switch subscription.status {
-        case .active:
+        case .active, .canceled:
             break
-        case .canceled, .unrecognized:
+        case .unrecognized:
             owsFailDebug("Unexpected subscription status for IAP subscription! \(subscription.status)")
         case .pastDue:
             // The .pastDue status is returned if we're in the IAP "billing
@@ -403,23 +403,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 paidTierOptimizeLocalStorage = nil
             }
 
-            guard let subscription else {
-                // The subscription will be missing if it's "expired", which
-                // is the trigger for Chat Service to wipe its knowledge of
-                // the subscriber ID.
-                //
-                // This happens in two ways:
-                // - The user manually canceled, and their last-subscribed
-                //   period has now elapsed.
-                // - A renewal failed, and Apple's given up trying to get
-                //   the user to resolve the issue. (Note that Apple will
-                //   try for 60d, so our Backup entitlement will have
-                //   generally have expired before this happens.)
-                //
-                // If the subscription is expired, downgrade to free.
-                return .toFreeTier
-            }
-
             guard
                 let backupEntitlement,
                 Date(timeIntervalSince1970: backupEntitlement.expirationSeconds) > dateProvider()
@@ -434,12 +417,35 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 return .toFreeTier
             }
 
-            // At this point we have a subscription, and we have a Backup
-            // entitlement, so things are generally good.
+            let subscriptionCancelAtEndOfPeriod: Bool
+            switch subscription?.status {
+            case nil, .canceled:
+                // This means the subscription is "expired", which happens in
+                // two ways:
+                // - The user manually canceled, and their last-subscribed
+                //   period has now elapsed.
+                // - A renewal failed, and Apple's given up trying to get
+                //   the user to resolve the issue. (Note that Apple will
+                //   try for 60d, so our Backup entitlement will have
+                //   generally have expired before this happens.)
+                //
+                // "Expiration" is the trigger for Chat Service to wipe its
+                // knowledge of the subscriber ID, hence we can infer that a
+                // missing subscription expired. If that wiping hasn't happened
+                // yet, Chat Service will return the `.canceled` status.
+                //
+                // If the subscription has expired, downgrade to free.
+                return .toFreeTier
+            case .active, .pastDue, .unrecognized:
+                subscriptionCancelAtEndOfPeriod = subscription!.cancelAtEndOfPeriod
+            }
+
+            // At this point we have a non-expired subscription, and we have a
+            // Backup entitlement, so things are generally good.
 
             if
                 let paidTierOptimizeLocalStorage,
-                subscription.cancelAtEndOfPeriod
+                subscriptionCancelAtEndOfPeriod
             {
                 // We're on the paid tier, but our subscription won't renew.
                 return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)

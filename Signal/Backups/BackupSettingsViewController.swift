@@ -699,7 +699,6 @@ class BackupSettingsViewController:
 
         switch backupSubscription.status {
         case .canceled, .unrecognized:
-            owsFailDebug("Unexpected subscription status for IAP subscription! \(backupSubscription.status)")
             fallthrough
         case .active:
             let endOfCurrentPeriod = backupSubscription.endOfCurrentPeriod
