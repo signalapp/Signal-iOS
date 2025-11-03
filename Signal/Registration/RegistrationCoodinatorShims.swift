@@ -170,7 +170,7 @@ public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordina
 
     public init() {}
 
-    public var backupSupported: Bool { FeatureFlags.Backups.supported }
+    public var backupSupported: Bool { FeatureFlags.Backups.alwaysShowSettings }
 }
 
 public protocol _RegistrationCoordinator_IdentityManagerShim {
