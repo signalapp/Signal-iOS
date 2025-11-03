@@ -659,13 +659,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return Promise.when(fulfilled: promises)
     }
 
-    // For any attachments edited with an editor, returns a
-    // new SignalAttachment that reflects those changes.  Otherwise,
-    // returns the original attachment.
-    //
-    // If any errors occurs in the export process, we fail over to
-    // sending the original attachment.  This seems better than trying
-    // to involve the user in resolving the issue.
+    /// Returns a new SignalAttachment that reflects changes made in the editor.
     func outputAttachmentPromise(for attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
             return editedAttachmentPromise(imageEditorModel: imageEditorModel,
@@ -680,12 +674,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return Promise.value(attachmentApprovalItem.attachment)
     }
 
-    // For any attachments edited with the image editor, returns a
-    // new SignalAttachment that reflects those changes.
-    //
-    // If any errors occurs in the export process, we fail over to
-    // sending the original attachment.  This seems better than trying
-    // to involve the user in resolving the issue.
     func editedAttachmentPromise(imageEditorModel: ImageEditorModel,
                                  attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         assert(imageEditorModel.isDirty())
@@ -706,12 +694,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     return dstImage.pngData()
                 }
             }() else {
-                owsFailDebug("Could not export for output.")
-                return attachmentApprovalItem.attachment
+                throw OWSAssertionError("Could not export for output.")
             }
             guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
-                owsFailDebug("Could not prepare data source for output.")
-                return attachmentApprovalItem.attachment
+                throw OWSAssertionError("Could not prepare data source for output.")
             }
 
             // Rewrite the filename's extension to reflect the output file format.
@@ -723,21 +709,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             dataSource.sourceFilename = filename
 
-            do throws(SignalAttachmentError) {
-                return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
-            } catch {
-                owsFailDebug("could not prepare attachment for output: \(error)")
-                return attachmentApprovalItem.attachment
-            }
+            return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
         }
     }
 
-    // For any attachments edited with the video editor, returns a
-    // new SignalAttachment that reflects those changes.
-    //
-    // If any errors occurs in the export process, we fail over to
-    // sending the original attachment.  This seems better than trying
-    // to involve the user in resolving the issue.
     func renderAttachment(videoEditorModel: VideoEditorModel, attachmentApprovalItem: AttachmentApprovalItem) async throws -> SignalAttachment {
         assert(videoEditorModel.needsRender)
         let result = try await videoEditorModel.ensureCurrentRender().render()
