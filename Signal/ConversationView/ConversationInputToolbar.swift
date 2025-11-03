@@ -69,6 +69,8 @@ protocol ConversationInputPanelWithContentLayoutGuide {
 
 public class ConversationInputToolbar: UIView, ConversationInputPanelWithContentLayoutGuide, QuotedReplyPreviewDelegate {
 
+    private var conversationStyle: ConversationStyle
+
     private let spoilerState: SpoilerRenderState
 
     private let mediaCache: CVMediaCache
@@ -78,6 +80,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     public let contentLayoutGuide = UILayoutGuide()
 
     init(
+        conversationStyle: ConversationStyle,
         spoilerState: SpoilerRenderState,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
@@ -87,6 +90,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         inputTextViewDelegate: ConversationInputTextViewDelegate,
         bodyRangesTextViewDelegate: BodyRangesTextViewDelegate
     ) {
+        self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
         self.mediaCache = mediaCache
         self.editTarget = editTarget
@@ -140,6 +144,13 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         }
     }
 
+    func update(conversationStyle: ConversationStyle) {
+        self.conversationStyle = conversationStyle
+        if #available(iOS 26, *), let sendButton = trailingEdgeControl as? UIButton {
+            sendButton.tintColor = conversationStyle.chatColorValue.asSendButtonTintColor().resolvedForInputToolbar()
+        }
+    }
+
     private enum LayoutMetrics {
         static let initialToolbarHeight: CGFloat = 56
         static let initialTextBoxHeight: CGFloat = 40
@@ -147,6 +158,42 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         static let minTextViewHeight: CGFloat = 35
         static let maxTextViewHeight: CGFloat = 98
         static let maxTextViewHeightIpad: CGFloat = 142
+    }
+
+    public enum Style {
+#if compiler(>=6.2)
+        @available(iOS 26, *)
+        static var glassTintColor: UIColor {
+            UIColor { traitCollection in
+                if traitCollection.userInterfaceStyle == .dark {
+                    return UIColor(white: 0, alpha: 0.2)
+                }
+                return UIColor(white: 1, alpha: 0.12)
+            }.resolvedForInputToolbar()
+        }
+
+        @available(iOS 26, *)
+        static var glassEffect: UIGlassEffect {
+            let glassEffect = UIGlassEffect(style: .regular)
+            glassEffect.tintColor = glassTintColor
+            return glassEffect
+        }
+#endif
+
+        static var primaryTextColor: UIColor {
+            .Signal.label.resolvedForInputToolbar()
+        }
+
+        static var secondaryTextColor: UIColor {
+            .Signal.secondaryLabel.resolvedForInputToolbar()
+        }
+
+        static var buttonTintColor: UIColor {
+            if #available(iOS 26, *) {
+                return .Signal.label.resolvedForInputToolbar()
+            }
+            return Theme.primaryIconColor.resolvedForInputToolbar()
+        }
     }
 
     private var iOS26Layout = false
@@ -163,11 +210,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 primaryAction: primaryAction
             )
             button.configuration?.image = buttonImage
-            if #available(iOS 26, *) {
-                button.configuration?.baseForegroundColor = Theme.primaryTextColor
-            } else {
-                button.configuration?.baseForegroundColor = Theme.primaryIconColor
-            }
+            button.configuration?.baseForegroundColor = Style.buttonTintColor
             button.accessibilityLabel = accessibilityLabel
             button.accessibilityIdentifier = accessibilityIdentifier
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -261,7 +304,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 configuration: .prominentGlass(),
                 primaryAction: primaryAction
             )
-            button.tintColor = .Signal.accent
+            // Button's tint color is set externalley (from `conversationStyle`).
             button.configuration?.image = Theme.iconImage(.arrowUp)
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
@@ -287,9 +330,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 configuration: .glass(),
                 primaryAction: primaryAction
             )
-            button.tintColor = .white
+            button.tintColor = Style.glassTintColor
             button.configuration?.image = UIImage(imageLiteralResourceName: "plus")
-            button.configuration?.baseForegroundColor = .Signal.label
+            button.configuration?.baseForegroundColor = Style.buttonTintColor
             button.configuration?.cornerStyle = .capsule
             button.accessibilityLabel = OWSLocalizedString(
                 "ATTACHMENT_LABEL",
@@ -320,7 +363,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 configuration: .prominentGlass(),
                 primaryAction: primaryAction
             )
-            button.tintColor = .Signal.red
+            button.tintColor = .Signal.red.resolvedForInputToolbar()
             button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
@@ -339,6 +382,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         let inputTextView = ConversationInputTextView()
         inputTextView.textViewToolbarDelegate = self
         inputTextView.font = .dynamicTypeBody
+        inputTextView.textColor = Style.primaryTextColor
+        inputTextView.placeholderTextColor = Style.secondaryTextColor
         inputTextView.semanticContentAttribute = .forceLeftToRight
         inputTextView.setContentHuggingVerticalHigh()
         inputTextView.setCompressionResistanceLow()
@@ -406,13 +451,15 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     private lazy var trailingEdgeControl: UIView = {
 #if compiler(>=6.2)
-        guard #unavailable(iOS 26.0) else {
-            return Buttons.sendButton(
+        if #available(iOS 26, *) {
+            let button = Buttons.sendButton(
                 primaryAction: UIAction { [weak self] _ in
                     self?.sendButtonPressed()
                 },
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton")
             )
+            button.tintColor = conversationStyle.bubbleChatColorOutgoing.asSendButtonTintColor().resolvedForInputToolbar()
+            return button
         }
 #endif
 
@@ -443,7 +490,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         let editIconView = UIImageView(image: Theme.iconImage(.compose16))
         editIconView.contentMode = .scaleAspectFit
         editIconView.setContentHuggingHigh()
-        editIconView.tintColor = .Signal.label
+        editIconView.tintColor = Style.buttonTintColor
 
         let editLabel = UILabel()
         editLabel.text = OWSLocalizedString(
@@ -451,7 +498,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             comment: "Label at the top of the input text when editing a message"
         )
         editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        editLabel.textColor = .Signal.label
+        editLabel.textColor = Style.primaryTextColor
 
         let stackView = UIStackView(arrangedSubviews: [editIconView, editLabel, editMessageThumbnailView])
         stackView.axis = .horizontal
@@ -696,7 +743,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 #if compiler(>=6.2)
         let backgroundView: UIView
         if #available(iOS 26, *) {
-            let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            let glassEffectView = UIVisualEffectView(effect: Style.glassEffect)
             glassEffectView.cornerConfiguration = .uniformCorners(radius: 20)
             glassEffectView.contentView.addSubview(messageComponentsView)
 
@@ -1094,7 +1141,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         lazy var cameraButton: UIButton = {
             let button = UIButton(type: .system)
-            button.tintColor = Theme.primaryIconColor
+            button.tintColor = Style.buttonTintColor
             button.accessibilityLabel = OWSLocalizedString(
                 "CAMERA_BUTTON_LABEL",
                 comment: "Accessibility label for camera button."
@@ -1111,7 +1158,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         lazy var voiceMemoButton: UIButton = {
             let button = UIButton(type: .system)
-            button.tintColor = Theme.primaryIconColor
+            button.tintColor = Style.buttonTintColor
             button.accessibilityLabel = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
                 comment: "accessibility label for the button which records voice memos"
@@ -1312,7 +1359,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             switch buttonState {
             case .add:
                 iconImageView.alpha = 1
-                iconImageView.tintColor = Theme.primaryIconColor
+                iconImageView.tintColor = Style.buttonTintColor
                 roundedCornersBackground.alpha = 0
                 roundedCornersBackground.transform = .scale(0.05)
 
@@ -1793,9 +1840,11 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             // UIVisualEffect cannot "dematerialize" glass on iOS 26.0: setting `effect` to `nil` simply doesn't work.
             // That was fixed in 26.1.
             if #available(iOS 26.1, *) {
-                UIGlassEffect(style: .regular)
+                let glassEffect = UIGlassEffect(style: .regular)
+                glassEffect.tintColor = Style.glassTintColor
+                return glassEffect
             } else {
-                UIBlurEffect(style: .systemMaterial)
+                return UIBlurEffect(style: .systemMaterial)
             }
         }()
 #else
@@ -2065,7 +2114,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     private lazy var voiceMemoDurationLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.textColor = .Signal.label
+        label.textColor = Style.primaryTextColor
         label.font = .monospacedDigitSystemFont(ofSize: UIFont.dynamicTypeBodyClamped.pointSize, weight: .semibold)
         label.setContentHuggingHigh()
         label.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recordingLabel")
@@ -2095,7 +2144,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 attributes: [ .font: cancelLabelFont ]
             )
         )
-        cancelString.addAttributeToEntireString(.foregroundColor, value: UIColor.Signal.secondaryLabel)
+        cancelString.addAttributeToEntireString(.foregroundColor, value: Style.secondaryTextColor)
         let label = UILabel()
         label.textAlignment = .right
         label.attributedText = cancelString
@@ -2112,7 +2161,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         micIcon.tintColor = .white
 
         let circleView = CircleView(frame: CGRect(origin: .zero, size: .square(circleSize)))
-        circleView.backgroundColor = .Signal.red
+        circleView.backgroundColor = .Signal.red.resolvedForInputToolbar()
         circleView.addSubview(micIcon)
         circleView.translatesAutoresizingMaskIntoConstraints = false
         micIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -2154,7 +2203,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             }
         )
         button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
-        button.configuration?.baseForegroundColor = .Signal.red
+        button.configuration?.baseForegroundColor = .Signal.red.resolvedForInputToolbar()
         return button
     }()
 
@@ -2176,7 +2225,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         // Red mic icon
         let redMicIconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-fill"))
-        redMicIconImageView.tintColor = .Signal.red
+        redMicIconImageView.tintColor = .Signal.red.resolvedForInputToolbar()
         redMicIconImageView.autoSetDimensions(to: .square(24))
         voiceMemoContentView.addSubview(redMicIconImageView)
 
@@ -2356,7 +2405,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             }
         )
         cancelButton.alpha = 0
-        cancelButton.configuration?.baseForegroundColor = .Signal.red
+        cancelButton.configuration?.baseForegroundColor = .Signal.red.resolvedForInputToolbar()
         cancelButton.configuration?.contentInsets = .init(margin: 8)
         cancelButton.configuration?.title = CommonStrings.cancelButton
         cancelButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
@@ -2945,5 +2994,57 @@ extension ConversationInputToolbar: AttachmentKeyboardDelegate {
 
     var isGroup: Bool {
         inputToolbarDelegate?.isGroup() ?? false
+    }
+}
+
+@available(iOS 26, *)
+private extension ColorOrGradientValue {
+
+    func asSendButtonTintColor() -> UIColor {
+        let bubbleColor: UIColor = {
+            switch self {
+            case .transparent:
+                return .Signal.accent
+
+            case .solidColor(let color):
+                return color
+
+            case .gradient(let gradientColor1, let gradientColor2, _):
+                return gradientColor1.midPoint(with: gradientColor2)
+            }
+        }()
+        let lightThemeFinalColor = bubbleColor.blendedWithOverlay(.white, opacity: 0.16)
+        let darkThemeFinalColor = bubbleColor.blendedWithOverlay(.black, opacity: 0.1)
+        return UIColor { traitCollection in
+            if traitCollection.userInterfaceStyle == .dark {
+                return darkThemeFinalColor
+            } else {
+                return lightThemeFinalColor
+            }
+        }
+    }
+}
+
+extension UIColor {
+
+    private static var lightTraitCollection: UITraitCollection {
+        UITraitCollection(userInterfaceStyle: .light)
+    }
+
+    private static var darkTraitCollection: UITraitCollection {
+        UITraitCollection(userInterfaceStyle: .dark)
+    }
+
+    private static var currentThemeTraitCollection: UITraitCollection {
+        Theme.isDarkThemeEnabled ? darkTraitCollection : lightTraitCollection
+    }
+
+    // Change this to false to resolve each color used to current interface style.
+    private static let useDynamicColors: Bool = true
+
+    func resolvedForInputToolbar() -> UIColor {
+        guard !Self.useDynamicColors else { return self }
+
+        return self.resolvedColor(with: Self.currentThemeTraitCollection)
     }
 }

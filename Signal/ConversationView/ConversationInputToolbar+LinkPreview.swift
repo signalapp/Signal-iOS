@@ -69,7 +69,7 @@ class OutgoingLinkPreviewView: UIView {
 
     private let backgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .Signal.secondaryFill
+        view.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         return view
     }()
 
@@ -90,13 +90,13 @@ class OutgoingLinkPreviewView: UIView {
     let cancelButton: UIButton = {
         let cancelButton = UIButton(configuration: .bordered())
         cancelButton.configuration?.image = UIImage(imageLiteralResourceName: "x-compact-bold")
-        cancelButton.configuration?.baseBackgroundColor = .init(dynamicProvider: { traitCollection in
+        cancelButton.configuration?.baseBackgroundColor = UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
             ? UIColor(rgbHex: 0x787880, alpha: 0.4)
             : UIColor(rgbHex: 0xF5F5F5, alpha: 0.9)
-        })
+        }.resolvedForInputToolbar()
         cancelButton.configuration?.background.visualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
-        cancelButton.tintColor = .Signal.label
+        cancelButton.tintColor = ConversationInputToolbar.Style.primaryTextColor
         cancelButton.configuration?.cornerStyle = .capsule
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.addConstraints([
@@ -146,7 +146,7 @@ class OutgoingLinkPreviewView: UIView {
 
     private func configureAsLoading() {
         let activityIndicator = UIActivityIndicatorView(style: .medium)
-        activityIndicator.tintColor = .Signal.secondaryLabel
+        activityIndicator.tintColor = ConversationInputToolbar.Style.secondaryTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(activityIndicator)
         contentView.addConstraints([
@@ -169,7 +169,7 @@ class OutgoingLinkPreviewView: UIView {
         if let text = draft.title?.nilIfEmpty {
             let label = UILabel()
             label.text = text
-            label.textColor = .Signal.label
+            label.textColor = ConversationInputToolbar.Style.primaryTextColor
             label.numberOfLines = 2
             label.font = .dynamicTypeFootnote.semibold()
             label.lineBreakMode = .byTruncatingTail
@@ -181,7 +181,7 @@ class OutgoingLinkPreviewView: UIView {
         if let text = draft.previewDescription?.nilIfEmpty {
             let label = UILabel()
             label.text = text
-            label.textColor = .Signal.label
+            label.textColor = ConversationInputToolbar.Style.primaryTextColor
             label.numberOfLines = 2
             label.font = .dynamicTypeFootnote
             label.lineBreakMode = .byTruncatingTail
@@ -196,7 +196,7 @@ class OutgoingLinkPreviewView: UIView {
             }
             let label = UILabel()
             label.text = text
-            label.textColor = .Signal.secondaryLabel
+            label.textColor = ConversationInputToolbar.Style.secondaryTextColor
             label.numberOfLines = 1
             label.font = .dynamicTypeCaption1
             label.lineBreakMode = .byTruncatingTail
@@ -308,7 +308,7 @@ class OutgoingLinkPreviewView: UIView {
 
         let titleLabel = UILabel()
         titleLabel.text = CallStrings.signalCall
-        titleLabel.textColor = .Signal.label
+        titleLabel.textColor = ConversationInputToolbar.Style.primaryTextColor
         titleLabel.numberOfLines = 2
         titleLabel.font = .dynamicTypeFootnote.semibold()
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -317,7 +317,7 @@ class OutgoingLinkPreviewView: UIView {
 
         let subtitleLabel = UILabel()
         subtitleLabel.text = CallStrings.callLinkDescription
-        subtitleLabel.textColor = .Signal.label
+        subtitleLabel.textColor = ConversationInputToolbar.Style.primaryTextColor
         subtitleLabel.numberOfLines = 2
         subtitleLabel.font = .dynamicTypeFootnote
         subtitleLabel.lineBreakMode = .byTruncatingTail
@@ -331,7 +331,7 @@ class OutgoingLinkPreviewView: UIView {
             }
             let label = UILabel()
             label.text = text
-            label.textColor = .Signal.secondaryLabel
+            label.textColor = ConversationInputToolbar.Style.secondaryTextColor
             label.numberOfLines = 1
             label.font = .dynamicTypeCaption1
             label.lineBreakMode = .byTruncatingTail

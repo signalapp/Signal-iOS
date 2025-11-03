@@ -59,7 +59,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
                 maskLayer.path = UIBezierPath(roundedRect: layerView.bounds, cornerRadius: 12).cgPath
             }
         )
-        backgroundView.backgroundColor = .Signal.secondaryFill
+        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         backgroundView.layer.mask = maskLayer
         addSubview(backgroundView)
 
@@ -206,7 +206,7 @@ private class QuotedMessageSnippetView: UIView {
         let label = UILabel()
         label.text = quotedAuthor
         label.font = Layout.quotedAuthorFont
-        label.textColor = .Signal.label
+        label.textColor = ConversationInputToolbar.Style.primaryTextColor
         label.lineBreakMode = .byTruncatingTail
         label.numberOfLines = 1
         label.setContentHuggingVerticalHigh()
@@ -228,7 +228,7 @@ private class QuotedMessageSnippetView: UIView {
         {
             let config = HydratedMessageBody.DisplayConfiguration.quotedReply(
                 font: Layout.quotedTextFont,
-                textColor: .fixed(.Signal.label)
+                textColor: .fixed(ConversationInputToolbar.Style.primaryTextColor)
             )
             attributedText = styleDisplayableQuotedText(
                 displayableQuotedText,
@@ -252,7 +252,7 @@ private class QuotedMessageSnippetView: UIView {
                 string: fileTypeForSnippet,
                 attributes: [
                     .font: Layout.fileTypeFont,
-                    .foregroundColor: UIColor.Signal.secondaryLabel
+                    .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                 ]
             )
         } else if let sourceFilename = sourceFilenameForSnippet(quotedMessage.content)?.filterForDisplay {
@@ -260,7 +260,7 @@ private class QuotedMessageSnippetView: UIView {
                 string: sourceFilename,
                 attributes: [
                     .font: Layout.filenameFont,
-                    .foregroundColor: UIColor.Signal.secondaryLabel
+                    .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                 ]
             )
         } else if quotedMessage.content.isGiftBadge {
@@ -271,7 +271,7 @@ private class QuotedMessageSnippetView: UIView {
                 ),
                 attributes: [
                     .font: Layout.fileTypeFont,
-                    .foregroundColor: UIColor.Signal.secondaryLabel
+                    .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                 ]
             )
         } else if quotedMessage.content.isPoll {
@@ -287,7 +287,7 @@ private class QuotedMessageSnippetView: UIView {
                     string: pollPrefix + pollQuestion,
                     attributes: [
                         .font: Layout.fileTypeFont,
-                        .foregroundColor: UIColor.Signal.secondaryLabel
+                        .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                     ]
                 )
             default:
@@ -299,7 +299,7 @@ private class QuotedMessageSnippetView: UIView {
                     ),
                     attributes: [
                         .font: Layout.fileTypeFont,
-                        .foregroundColor: UIColor.Signal.secondaryLabel
+                        .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                     ]
                 )
             }
@@ -311,7 +311,7 @@ private class QuotedMessageSnippetView: UIView {
                 ),
                 attributes: [
                     .font: Layout.fileTypeFont,
-                    .foregroundColor: UIColor.Signal.secondaryLabel
+                    .foregroundColor: ConversationInputToolbar.Style.secondaryTextColor
                 ]
             )
         }
@@ -396,7 +396,7 @@ private class QuotedMessageSnippetView: UIView {
         horizonalStack.spacing = 8
 
         let stripeView = UIView()
-        stripeView.backgroundColor = .Signal.quaternaryLabel
+        stripeView.backgroundColor = .Signal.quaternaryLabel.resolvedForInputToolbar()
         horizonalStack.addArrangedSubview(stripeView)
 #if compiler(>=6.2)
         if #available(iOS 26, *) {
@@ -459,7 +459,7 @@ private class QuotedMessageSnippetView: UIView {
             : UIColor(rgbHex: 0xF5F5F5, alpha: 0.9)
         })
         cancelButton.configuration?.background.visualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
-        cancelButton.tintColor = .Signal.label
+        cancelButton.tintColor = ConversationInputToolbar.Style.primaryTextColor
         cancelButton.configuration?.cornerStyle = .capsule
         cancelButton.setContentHuggingHorizontalHigh()
         cancelButton.setCompressionResistanceHorizontalHigh()
@@ -563,10 +563,10 @@ private class QuotedMessageSnippetView: UIView {
         } else if attachment.asAnyPointer() != nil {
             let refreshIcon = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
             refreshIcon.contentMode = .scaleAspectFit
-            refreshIcon.tintColor = .Signal.tertiaryLabel
+            refreshIcon.tintColor = .Signal.tertiaryLabel.resolvedForInputToolbar()
 
             let containerView = UIView.container()
-            containerView.backgroundColor = .Signal.tertiaryBackground
+            containerView.backgroundColor = .Signal.tertiaryBackground.resolvedForInputToolbar()
             containerView.addSubview(refreshIcon)
             refreshIcon.translatesAutoresizingMaskIntoConstraints = false
             containerView.addConstraints([

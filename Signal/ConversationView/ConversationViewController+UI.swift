@@ -286,6 +286,7 @@ extension ConversationViewController {
         }
 
         let inputToolbar = ConversationInputToolbar(
+            conversationStyle: conversationStyle,
             spoilerState: viewState.spoilerState,
             mediaCache: mediaCache,
             messageDraft: messageDraft,

@@ -68,14 +68,14 @@ extension ConversationInputToolbar {
 
         private lazy var lockIconView: UIImageView = {
             let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "lock"))
-            imageView.tintColor = .Signal.label
+            imageView.tintColor = Style.primaryTextColor
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }()
 
         private lazy var chevronView: UIImageView = {
             let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-up"))
-            imageView.tintColor = .Signal.label
+            imageView.tintColor = Style.primaryTextColor
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }()
@@ -101,7 +101,7 @@ extension ConversationInputToolbar {
         private let playbackTimeLabel: UILabel = {
             let label = UILabel()
             label.font = .monospacedDigitSystemFont(ofSize: UIFont.dynamicTypeSubheadlineClamped.pointSize, weight: .regular)
-            label.textColor = .Signal.secondaryLabel
+            label.textColor = Style.secondaryTextColor
             label.setContentHuggingHorizontalHigh()
             label.setCompressionResistanceHorizontalHigh()
             return label
@@ -112,7 +112,7 @@ extension ConversationInputToolbar {
             button.animationSize = CGSize(square: 24)
             button.animationSpeed = 3
             button.setValueProvider(
-                ColorValueProvider(UIColor.Signal.label.lottieColorValue),
+                ColorValueProvider(Theme.primaryIconColor.lottieColorValue),
                 keypath: AnimationKeypath(keypath: "**.Fill 1.Color")
             )
             button.addAction(
@@ -142,9 +142,9 @@ extension ConversationInputToolbar {
 
             voiceMessageInterruptedDraft.audioPlayer.delegate = self
 
-            waveformView.thumbColor = .Signal.label
-            waveformView.playedColor = .Signal.label
-            waveformView.unplayedColor = .Signal.tertiaryLabel
+            waveformView.thumbColor = Theme.primaryTextColor
+            waveformView.playedColor = Theme.primaryTextColor
+            waveformView.unplayedColor = Theme.ternaryTextColor
             waveformView.audioWaveformTask = voiceMessageInterruptedDraft.audioWaveformTask
 
             let stackView = UIStackView(arrangedSubviews: [

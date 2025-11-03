@@ -82,6 +82,11 @@ class ConversationInputTextView: BodyRangesTextView {
 
     // MARK: -
 
+    public var placeholderTextColor: UIColor? {
+        get { placeholderView.textColor }
+        set { placeholderView.textColor = newValue }
+    }
+
     override var defaultTextContainerInset: UIEdgeInsets {
         var textContainerInset = super.defaultTextContainerInset
         textContainerInset.left = 12

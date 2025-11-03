@@ -783,6 +783,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         self.conversationStyle = newConversationStyle
 
+        if let inputToolbar {
+            inputToolbar.update(conversationStyle: newConversationStyle)
+        }
+
         // We need to kick off a reload cycle if conversationStyle changes.
         loadCoordinator.updateConversationStyle(newConversationStyle)
 
