@@ -30,7 +30,9 @@ extension OWSOutgoingReactionMessage {
             owsFailDebug("Missing author for reaction.")
             return nil
         }
-        reactionBuilder.setTargetAuthorAci(messageAuthor.serviceIdString)
+        if BuildFlags.serviceIdStrings {
+            reactionBuilder.setTargetAuthorAci(messageAuthor.serviceIdString)
+        }
         if BuildFlags.serviceIdBinaryConstantOverhead {
             reactionBuilder.setTargetAuthorAciBinary(messageAuthor.serviceIdBinary)
         }

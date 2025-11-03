@@ -80,7 +80,9 @@ extension OWSOutgoingSentMessageTranscript {
             }
 
             let statusBuilder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.builder()
-            statusBuilder.setDestinationServiceID(recipientServiceId.serviceIdString)
+            if BuildFlags.serviceIdStrings {
+                statusBuilder.setDestinationServiceID(recipientServiceId.serviceIdString)
+            }
             if BuildFlags.serviceIdBinaryVariableOverhead {
                 statusBuilder.setDestinationServiceIDBinary(recipientServiceId.serviceIdBinary)
             }

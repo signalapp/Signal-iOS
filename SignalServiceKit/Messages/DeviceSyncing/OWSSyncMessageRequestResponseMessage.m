@@ -80,7 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.groupId != nil) {
         messageRequestResponseBuilder.groupID = self.groupId;
     } else if (self.threadAci != nil) {
-        messageRequestResponseBuilder.threadAci = self.threadAci;
+        if (BuildFlagsObjC.serviceIdStrings) {
+            messageRequestResponseBuilder.threadAci = self.threadAci;
+        }
         if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
             messageRequestResponseBuilder.threadAciBinary =
                 [[AciObjC alloc] initWithAciString:self.threadAci].serviceIdBinary;
@@ -104,7 +106,9 @@ NS_ASSUME_NONNULL_BEGIN
             TSContactThread *contactThread = (TSContactThread *)thread;
             ServiceIdObjC *threadAci = contactThread.contactAddress.serviceIdObjC;
             if ([threadAci isKindOfClass:[AciObjC class]]) {
-                messageRequestResponseBuilder.threadAci = threadAci.serviceIdString;
+                if (BuildFlagsObjC.serviceIdStrings) {
+                    messageRequestResponseBuilder.threadAci = threadAci.serviceIdString;
+                }
                 if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
                     messageRequestResponseBuilder.threadAciBinary = threadAci.serviceIdBinary;
                 }

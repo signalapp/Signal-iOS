@@ -269,7 +269,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         var usernameBetterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
 
         if let aci = contact.aci {
-            builder.setAci(aci.serviceIdString)
+            if BuildFlags.serviceIdStrings {
+                builder.setAci(aci.serviceIdString)
+            }
             if BuildFlags.serviceIdBinaryConstantOverhead {
                 builder.setAciBinary(aci.serviceIdBinary)
             }
@@ -279,7 +281,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             usernameBetterIdentifierChecker.add(e164: phoneNumber.stringValue)
         }
         if let pni = contact.pni {
-            builder.setPni(pni.rawUUID.uuidString.lowercased())
+            if BuildFlags.serviceIdStrings {
+                builder.setPni(pni.rawUUID.uuidString.lowercased())
+            }
             if BuildFlags.serviceIdBinaryConstantOverhead {
                 builder.setPniBinary(pni.rawUUID.data)
             }
@@ -1926,7 +1930,9 @@ extension StorageServiceAccountRecordUpdater {
             } else if let contactThread = pinnedThread as? TSContactThread {
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
                 if let serviceId = contactThread.contactAddress.serviceId {
-                    contactBuilder.setServiceID(serviceId.serviceIdString)
+                    if BuildFlags.serviceIdStrings {
+                        contactBuilder.setServiceID(serviceId.serviceIdString)
+                    }
                     if BuildFlags.serviceIdBinaryConstantOverhead {
                         contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
                     }
@@ -2005,7 +2011,9 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             builder.setName(story.name)
             let recipients = (try? storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)) ?? []
             let serviceIds = recipients.compactMap { ($0.aci ?? $0.pni) }
-            builder.setRecipientServiceIds(serviceIds.map(\.serviceIdString))
+            if BuildFlags.serviceIdStrings {
+                builder.setRecipientServiceIds(serviceIds.map(\.serviceIdString))
+            }
             if BuildFlags.serviceIdBinaryVariableOverhead {
                 builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
             }

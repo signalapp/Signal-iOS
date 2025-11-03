@@ -88,9 +88,11 @@ public enum BuildFlags {
     public static let decodeDeprecatedPreKeys = true
 
     public static let serviceIdBinaryProvisioning = true
-    public static let serviceIdBinaryConstantOverhead = build <= .internal
-    public static let serviceIdBinaryVariableOverhead = build <= .dev
-    public static let serviceIdBinaryOneOf = false
+    public static let serviceIdBinaryConstantOverhead = !serviceIdStrings || (build <= .internal)
+    public static let serviceIdBinaryVariableOverhead = !serviceIdStrings || (build <= .dev)
+    public static let serviceIdBinaryOneOf = !serviceIdStrings
+
+    public static let serviceIdStrings = TSConstants.isUsingProductionService
 }
 
 // MARK: -
@@ -101,6 +103,9 @@ public class BuildFlagsObjC: NSObject {
 
     @objc
     public static let serviceIdBinaryVariableOverhead = BuildFlags.serviceIdBinaryVariableOverhead
+
+    @objc
+    public static let serviceIdStrings = BuildFlags.serviceIdStrings
 }
 
 // MARK: -

@@ -64,7 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
         [SSKProtoSyncMessageViewOnceOpen builderWithTimestamp:self.messageIdTimestamp];
     ServiceIdObjC *senderAci = self.senderAddress.serviceIdObjC;
     if ([senderAci isKindOfClass:[AciObjC class]]) {
-        readProtoBuilder.senderAci = senderAci.serviceIdString;
+        if (BuildFlagsObjC.serviceIdStrings) {
+            readProtoBuilder.senderAci = senderAci.serviceIdString;
+        }
         if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
             readProtoBuilder.senderAciBinary = senderAci.serviceIdBinary;
         }

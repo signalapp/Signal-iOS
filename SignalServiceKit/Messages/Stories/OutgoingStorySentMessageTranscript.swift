@@ -95,7 +95,9 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     private func applyRecipientStates(_ recipientStates: [ServiceId: StoryRecipientState], sentBuilder: SSKProtoSyncMessageSentBuilder) {
         for (serviceId, state) in recipientStates {
             let builder = SSKProtoSyncMessageSentStoryMessageRecipient.builder()
-            builder.setDestinationServiceID(serviceId.serviceIdString)
+            if BuildFlags.serviceIdStrings {
+                builder.setDestinationServiceID(serviceId.serviceIdString)
+            }
             if BuildFlags.serviceIdBinaryVariableOverhead {
                 builder.setDestinationServiceIDBinary(serviceId.serviceIdBinary)
             }

@@ -153,11 +153,15 @@ public struct LinkingProvisioningMessage {
         messageBuilder.setReadReceipts(areReadReceiptsEnabled)
         messageBuilder.setProvisioningVersion(Constants.provisioningVersion)
         messageBuilder.setNumber(phoneNumber)
-        messageBuilder.setAci(aci.rawUUID.uuidString.lowercased())
+        if BuildFlags.serviceIdStrings {
+            messageBuilder.setAci(aci.rawUUID.uuidString.lowercased())
+        }
         if BuildFlags.serviceIdBinaryProvisioning {
             messageBuilder.setAciBinary(aci.rawUUID.data)
         }
-        messageBuilder.setPni(pni.rawUUID.uuidString.lowercased())
+        if BuildFlags.serviceIdStrings {
+            messageBuilder.setPni(pni.rawUUID.uuidString.lowercased())
+        }
         if BuildFlags.serviceIdBinaryProvisioning {
             messageBuilder.setPniBinary(pni.rawUUID.data)
         }

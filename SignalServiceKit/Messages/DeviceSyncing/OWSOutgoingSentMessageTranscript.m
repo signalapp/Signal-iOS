@@ -92,7 +92,9 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestinationE164:self.sentRecipientAddress.phoneNumber];
-    [sentBuilder setDestinationServiceID:self.sentRecipientAddress.serviceIdString];
+    if (BuildFlagsObjC.serviceIdStrings) {
+        [sentBuilder setDestinationServiceID:self.sentRecipientAddress.serviceIdString];
+    }
     if (BuildFlagsObjC.serviceIdBinaryConstantOverhead) {
         [sentBuilder setDestinationServiceIDBinary:self.sentRecipientAddress.serviceIdObjC.serviceIdBinary];
     }
