@@ -120,12 +120,13 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     static func insertFromBackup(
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
-        name: String,
-        restrictions: CallLinkRecord.Restrictions,
-        expiration: UInt64,
-        isUpcoming: Bool,
+        name: String?,
+        restrictions: CallLinkRecord.Restrictions?,
+        expiration: Int64?,
+        isUpcoming: Bool?,
         tx: DBWriteTransaction
     ) throws -> CallLinkRecord {
+        owsPrecondition(isUpcoming != true || adminPasskey != nil)
         do {
             return try CallLinkRecord.fetchOne(
                 tx.database,
@@ -145,7 +146,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
                     rootKey.bytes,
                     adminPasskey,
                     name,
-                    restrictions.rawValue,
+                    restrictions?.rawValue,
                     expiration,
                     isUpcoming
                 ]
