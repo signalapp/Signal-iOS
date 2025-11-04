@@ -19,6 +19,8 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
     private var quotedMessageView: QuotedMessageSnippetView?
     private var heightConstraint: NSLayoutConstraint!
 
+    private weak var contentView: UIView?
+
     @available(*, unavailable, message: "use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -40,14 +42,32 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
 
         directionalLayoutMargins = .init(hMargin: 8, vMargin: 0)
 
+        contentView = self
+
         // Background with rounded corners.
         let backgroundView: UIView
-#if compiler(>=6.2)
-        if #available(iOS 26, *) {
-            backgroundView = UIView()
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
 
+            // Colored overlay on top of blur.
+            let dimmingView = UIView()
+            dimmingView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
+            dimmingView.translatesAutoresizingMaskIntoConstraints = false
+            blurEffectView.contentView.addSubview(dimmingView)
+            NSLayoutConstraint.activate([
+                dimmingView.topAnchor.constraint(equalTo: blurEffectView.topAnchor),
+                dimmingView.leadingAnchor.constraint(equalTo: blurEffectView.leadingAnchor),
+                dimmingView.trailingAnchor.constraint(equalTo: blurEffectView.trailingAnchor),
+                dimmingView.bottomAnchor.constraint(equalTo: blurEffectView.bottomAnchor),
+            ])
+
+#if compiler(>=6.2)
             clipsToBounds = true
             cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
+#endif
+
+            contentView = blurEffectView.contentView
+            backgroundView = blurEffectView
         } else {
             let maskLayer = CAShapeLayer()
             backgroundView = OWSLayerView(
@@ -57,18 +77,8 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
                 }
             )
             backgroundView.layer.mask = maskLayer
+            backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         }
-#else
-        let maskLayer = CAShapeLayer()
-        backgroundView = OWSLayerView(
-            frame: .zero,
-            layoutCallback: { layerView in
-                maskLayer.path = UIBezierPath(roundedRect: layerView.bounds, cornerRadius: 12).cgPath
-            }
-        )
-        backgroundView.layer.mask = maskLayer
-#endif
-        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(backgroundView)
         addConstraints([
@@ -104,7 +114,8 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
         )
         quotedMessageView.delegate = self
         quotedMessageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(quotedMessageView)
+        let contentView = contentView ?? self
+        contentView.addSubview(quotedMessageView)
         addConstraints([
             quotedMessageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
             quotedMessageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
