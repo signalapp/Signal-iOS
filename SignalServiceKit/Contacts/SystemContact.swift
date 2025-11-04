@@ -11,6 +11,14 @@ public struct SystemContact {
         static let maxPhoneNumbers = 50
     }
 
+    public static var contactKeys: [CNKeyDescriptor] {
+        return [
+            CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+            CNContactPhoneNumbersKey as CNKeyDescriptor,
+            CNContactEmailAddressesKey as CNKeyDescriptor,
+        ]
+    }
+
     public let cnContactId: String
     public let firstName: String
     public let lastName: String

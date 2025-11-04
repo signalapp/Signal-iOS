@@ -112,7 +112,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
 
     private let collation = UILocalizedIndexedCollation.current()
 
-    private let allowedContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.fullContactKeys
+    private let allowedContactKeys: [CNKeyDescriptor] = SystemContact.contactKeys
 
     private let sortOrder: CNContactSortOrder = CNContactsUserDefaults.shared().sortOrder
 
