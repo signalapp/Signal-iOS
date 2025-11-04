@@ -12,12 +12,19 @@ class OutgoingLinkPreviewView: UIView {
         super.init(frame: .zero)
 
         directionalLayoutMargins = .init(top: 0, leading: 12, bottom: 0, trailing: 0)
-        translatesAutoresizingMaskIntoConstraints = false
-        addConstraint(heightConstraint)
 
-        addSubview(backgroundView)
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            clipsToBounds = true
+            cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
+        }
+#endif
+
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        addConstraints([
+        addSubview(backgroundView)
+        NSLayoutConstraint.activate([
             backgroundView.topAnchor.constraint(equalTo: topAnchor),
             backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
             backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -26,7 +33,7 @@ class OutgoingLinkPreviewView: UIView {
 
         addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        addConstraints([
+        NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
@@ -36,24 +43,19 @@ class OutgoingLinkPreviewView: UIView {
         configure(withState: state)
     }
 
+    // We need rounded corners on the whole view (and not background) because image view
+    // is constrained to view's top, bottom and trailing edges.
     override var bounds: CGRect {
         didSet {
+            // Use `cornerConfiguration`.
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { return }
+
             // Mask to round corners.
             let maskLayer = CAShapeLayer()
             maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: 12).cgPath
             layer.mask = maskLayer
-
-            if oldValue.width != bounds.width {
-                updateHeight()
-            }
         }
     }
-
-    override func layoutMarginsDidChange() {
-        super.layoutMarginsDidChange()
-        updateHeight()
-    }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -67,12 +69,6 @@ class OutgoingLinkPreviewView: UIView {
         return formatter
     }()
 
-    private let backgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
-        return view
-    }()
-
     private let contentView = UIView()
 
     private let imageView: UIImageView = {
@@ -81,6 +77,8 @@ class OutgoingLinkPreviewView: UIView {
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.setContentHuggingVerticalHigh()
+        // Lower than vertical hugging of text labels so image view's height is constrained by text.
+        imageView.setCompressionResistanceVerticalLow()
         return imageView
     }()
 
@@ -99,25 +97,12 @@ class OutgoingLinkPreviewView: UIView {
         cancelButton.tintColor = ConversationInputToolbar.Style.primaryTextColor
         cancelButton.configuration?.cornerStyle = .capsule
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.addConstraints([
+        NSLayoutConstraint.activate([
             cancelButton.widthAnchor.constraint(equalToConstant: 24),
             cancelButton.heightAnchor.constraint(equalToConstant: 24),
         ])
         return cancelButton
     }()
-
-    private lazy var heightConstraint = heightAnchor.constraint(equalToConstant: 0)
-
-    private func updateHeight() {
-        guard layoutMarginsGuide.layoutFrame.width > 0 else { return }
-
-        let size = contentView.systemLayoutSizeFitting(
-            CGSize(width: layoutMarginsGuide.layoutFrame.width, height: .greatestFiniteMagnitude),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
-        )
-        heightConstraint.constant = size.height + directionalLayoutMargins.totalHeight
-    }
 
     func resetContent() {
         contentView.removeAllSubviews()
@@ -140,8 +125,6 @@ class OutgoingLinkPreviewView: UIView {
         default:
             owsFailBeta("Invalid link preview state: [\(state)]")
         }
-
-        updateHeight()
     }
 
     private func configureAsLoading() {
@@ -149,7 +132,7 @@ class OutgoingLinkPreviewView: UIView {
         activityIndicator.tintColor = ConversationInputToolbar.Style.secondaryTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(activityIndicator)
-        contentView.addConstraints([
+        NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.5 * Self.imageSize.height),
@@ -207,7 +190,7 @@ class OutgoingLinkPreviewView: UIView {
         let textStackContainer = UIView.container()
         textStackContainer.addSubview(textStack)
         textStack.translatesAutoresizingMaskIntoConstraints = false
-        textStackContainer.addConstraints([
+        NSLayoutConstraint.activate([
             textStack.topAnchor.constraint(greaterThanOrEqualTo: textStackContainer.topAnchor, constant: 12),
             textStack.centerYAnchor.constraint(equalTo: textStackContainer.centerYAnchor),
             textStack.leadingAnchor.constraint(equalTo: textStackContainer.leadingAnchor),
@@ -223,7 +206,7 @@ class OutgoingLinkPreviewView: UIView {
         horizontalStack.axis = .horizontal
         horizontalStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(horizontalStack)
-        contentView.addConstraints([
+        NSLayoutConstraint.activate([
             horizontalStack.topAnchor.constraint(equalTo: contentView.topAnchor),
             horizontalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             horizontalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -244,8 +227,9 @@ class OutgoingLinkPreviewView: UIView {
             }
             horizontalStack.addArrangedSubview(imageView)
             horizontalStack.addSubview(cancelButton)
-            horizontalStack.addConstraints([
+            NSLayoutConstraint.activate([
                 imageView.widthAnchor.constraint(equalToConstant: Self.imageSize.width),
+                // Allow image view to grow with text.
                 imageView.heightAnchor.constraint(greaterThanOrEqualToConstant: Self.imageSize.height),
 
                 cancelButton.topAnchor.constraint(equalTo: imageView.topAnchor, constant: cancelButtonPadding),
@@ -256,7 +240,7 @@ class OutgoingLinkPreviewView: UIView {
 
             let cancelButtonContainer = UIView.container()
             cancelButtonContainer.addSubview(cancelButton)
-            cancelButtonContainer.addConstraints([
+            NSLayoutConstraint.activate([
                 cancelButton.topAnchor.constraint(equalTo: cancelButtonContainer.topAnchor, constant: cancelButtonPadding),
                 cancelButton.leadingAnchor.constraint(equalTo: cancelButtonContainer.leadingAnchor, constant: cancelButtonPadding),
                 cancelButton.trailingAnchor.constraint(equalTo: cancelButtonContainer.trailingAnchor, constant: -cancelButtonPadding),
@@ -282,7 +266,7 @@ class OutgoingLinkPreviewView: UIView {
 
         cameraIcon.translatesAutoresizingMaskIntoConstraints = false
         circleView.translatesAutoresizingMaskIntoConstraints = false
-        imageContainer.addConstraints([
+        NSLayoutConstraint.activate([
             cameraIcon.widthAnchor.constraint(equalToConstant: imageSize),
             cameraIcon.heightAnchor.constraint(equalToConstant: imageSize),
 
@@ -342,7 +326,7 @@ class OutgoingLinkPreviewView: UIView {
         // Cancel button
         let cancelButtonContainer = UIView.container()
         cancelButtonContainer.addSubview(cancelButton)
-        cancelButtonContainer.addConstraints([
+        NSLayoutConstraint.activate([
             cancelButton.topAnchor.constraint(equalTo: cancelButtonContainer.topAnchor),
             cancelButton.leadingAnchor.constraint(equalTo: cancelButtonContainer.leadingAnchor, constant: 6),
             cancelButton.trailingAnchor.constraint(equalTo: cancelButtonContainer.trailingAnchor, constant: -8),
@@ -356,7 +340,7 @@ class OutgoingLinkPreviewView: UIView {
         horizontalStack.directionalLayoutMargins = .init(hMargin: 0, vMargin: 8)
         horizontalStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(horizontalStack)
-        contentView.addConstraints([
+        NSLayoutConstraint.activate([
             horizontalStack.topAnchor.constraint(equalTo: contentView.topAnchor),
             horizontalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             horizontalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

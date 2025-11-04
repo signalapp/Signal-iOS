@@ -39,29 +39,61 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
         super.init(frame: .zero)
 
         directionalLayoutMargins = .init(hMargin: 8, vMargin: 0)
-        translatesAutoresizingMaskIntoConstraints = false
-        heightConstraint = heightAnchor.constraint(equalToConstant: 0)
-        addConstraint(heightConstraint)
-
-        updateContents()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
-    }
-
-    func updateContents() {
-        subviews.forEach { $0.removeFromSuperview() }
 
         // Background with rounded corners.
+        let backgroundView: UIView
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            backgroundView = UIView()
+
+            clipsToBounds = true
+            cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
+        } else {
+            let maskLayer = CAShapeLayer()
+            backgroundView = OWSLayerView(
+                frame: .zero,
+                layoutCallback: { layerView in
+                    maskLayer.path = UIBezierPath(roundedRect: layerView.bounds, cornerRadius: 12).cgPath
+                }
+            )
+            backgroundView.layer.mask = maskLayer
+        }
+#else
         let maskLayer = CAShapeLayer()
-        let backgroundView = OWSLayerView(
+        backgroundView = OWSLayerView(
             frame: .zero,
             layoutCallback: { layerView in
                 maskLayer.path = UIBezierPath(roundedRect: layerView.bounds, cornerRadius: 12).cgPath
             }
         )
-        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
         backgroundView.layer.mask = maskLayer
+#endif
+        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(backgroundView)
+        addConstraints([
+            backgroundView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+
+        reloadMessageSnippet()
+
+        // Quoted message text is complicated and is constructed via AttributedString.
+        // Simply reload message preview view when font size changes.
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(contentSizeCategoryDidChange),
+            name: UIContentSizeCategory.didChangeNotification,
+            object: nil
+        )
+    }
+
+    private func reloadMessageSnippet() {
+        if let quotedMessageView {
+            quotedMessageView.removeFromSuperview()
+        }
 
         // We instantiate quotedMessageView late to ensure that it is updated
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
@@ -71,65 +103,21 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
             spoilerState: spoilerState
         )
         quotedMessageView.delegate = self
-        self.quotedMessageView = quotedMessageView
-        quotedMessageView.setContentHuggingHorizontalLow()
-        quotedMessageView.setCompressionResistanceHorizontalLow()
-        quotedMessageView.backgroundColor = .clear
-        addSubview(quotedMessageView)
-
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
         quotedMessageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            backgroundView.topAnchor.constraint(equalTo: topAnchor),
-            backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
-
+        addSubview(quotedMessageView)
+        addConstraints([
             quotedMessageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
             quotedMessageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             quotedMessageView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             quotedMessageView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
         ])
 
-        updateHeight()
-    }
-
-    // MARK: Sizing
-
-    override var bounds: CGRect {
-        didSet {
-            if quotedMessageView != nil, oldValue.width != bounds.width {
-                updateHeight()
-            }
-        }
-    }
-
-    override func layoutMarginsDidChange() {
-        super.layoutMarginsDidChange()
-        guard quotedMessageView != nil else { return }
-        updateHeight()
-    }
-
-    func updateHeight() {
-        guard let quotedMessageView else {
-            owsFailDebug("missing quotedMessageView")
-            return
-        }
-        guard layoutMarginsGuide.layoutFrame.width > 0 else { return }
-
-        let size = quotedMessageView.systemLayoutSizeFitting(
-            CGSize(width: layoutMarginsGuide.layoutFrame.width, height: .greatestFiniteMagnitude),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
-        )
-        heightConstraint.constant = size.height + directionalLayoutMargins.totalHeight
+        self.quotedMessageView = quotedMessageView
     }
 
     @objc
     private func contentSizeCategoryDidChange(_ notification: Notification) {
-        Logger.debug("")
-
-        updateContents()
+        reloadMessageSnippet()
     }
 
     // MARK: QuotedMessageSnippetViewDelegate

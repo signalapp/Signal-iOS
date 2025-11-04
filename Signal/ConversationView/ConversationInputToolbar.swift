@@ -478,59 +478,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         return view
     }()
 
-    private lazy var editMessageThumbnailView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.layer.cornerRadius = 4
-        imageView.clipsToBounds = true
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-
-    private lazy var editMessageLabelWrapper: UIView = {
-        let editIconView = UIImageView(image: Theme.iconImage(.compose16))
-        editIconView.contentMode = .scaleAspectFit
-        editIconView.setContentHuggingHigh()
-        editIconView.tintColor = Style.buttonTintColor
-
-        let editLabel = UILabel()
-        editLabel.text = OWSLocalizedString(
-            "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL",
-            comment: "Label at the top of the input text when editing a message"
-        )
-        editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        editLabel.textColor = Style.primaryTextColor
-
-        let stackView = UIStackView(arrangedSubviews: [editIconView, editLabel, editMessageThumbnailView])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.spacing = 4
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        let view = UIView()
-        view.directionalLayoutMargins = .init(top: 12, leading: 12, bottom: 4, trailing: 8)
-        view.addSubview(stackView)
-        view.addConstraints([
-            editLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor), // align using textLabel, not stackView
-            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
-
-            editMessageThumbnailView.widthAnchor.constraint(equalToConstant: 20),
-            editMessageThumbnailView.heightAnchor.constraint(equalToConstant: 20),
-        ])
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "editMessageWrapper")
-
-        return view
-    }()
-
-    private lazy var quotedReplyWrapper: UIView = {
-        let view = UIView.container()
-        view.directionalLayoutMargins = .init(top: 6, leading: 6, bottom: 0, trailing: 6)
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedReplyWrapper")
-        return view
-    }()
-
     private lazy var linkPreviewWrapper: UIView = {
         let view = UIView.container()
         view.clipsToBounds = true
@@ -674,9 +621,17 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         inputTextView.bodyRangesDelegate = bodyRangesTextViewDelegate
         inputTextView.inputTextViewDelegate = inputTextViewDelegate
 
-        editMessageLabelWrapper.isHidden = !shouldShowEditUI
+        // Initial state for "Editing Message" label
+        if shouldShowEditUI {
+            loadEditMessageViewIfNecessary()
+            editMessageViewVisibleConstraint.isActive = true
+        }
 
-        quotedReplyWrapper.isHidden = quotedReplyDraft == nil
+        // Initial state for the quoted message snippet.
+        quotedReplyViewConstraints = [
+            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0)
+        ]
+        NSLayoutConstraint.activate(quotedReplyViewConstraints)
         self.quotedReplyDraft = quotedReplyDraft
 
         // 2. Prepare content displayed in the central part of the toolbar.
@@ -1535,15 +1490,135 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         set { editMessageThumbnailView.image = newValue }
     }
 
-    private func showEditMessageView(animated: Bool) {
-        toggleMessageComponentVisibility(hide: false, component: editMessageLabelWrapper, animated: animated)
-        setSendButtonEnabled(false)
+    private lazy var editMessageThumbnailView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 4
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+
+    private lazy var editMessageLabelView: UIView = {
+        let editIconView = UIImageView(image: Theme.iconImage(.compose16))
+        editIconView.contentMode = .scaleAspectFit
+        editIconView.setContentHuggingHigh()
+        editIconView.tintColor = Style.buttonTintColor
+
+        let editLabel = UILabel()
+        editLabel.text = OWSLocalizedString(
+            "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL",
+            comment: "Label at the top of the input text when editing a message"
+        )
+        editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+        editLabel.textColor = Style.primaryTextColor
+
+        let stackView = UIStackView(arrangedSubviews: [editIconView, editLabel, editMessageThumbnailView])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 4
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        let view = UIView()
+        view.directionalLayoutMargins = .init(top: 12, leading: 12, bottom: 4, trailing: 8)
+        view.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            // per design specs, align using textLabel, not stackView
+            editLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+
+            editMessageThumbnailView.widthAnchor.constraint(equalToConstant: 20),
+            editMessageThumbnailView.heightAnchor.constraint(equalToConstant: 20),
+        ])
+
+        return view
+    }()
+
+    private lazy var editMessageLabelWrapper: UIView = {
+        let view = UIView.container()
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "editMessageWrapper")
+        return view
+    }()
+
+    private lazy var editMessageViewVisibleConstraint = editMessageLabelView.bottomAnchor.constraint(
+        equalTo: editMessageLabelWrapper.bottomAnchor
+    )
+
+    private lazy var editMessageViewHiddenConstraint = editMessageLabelView.bottomAnchor.constraint(
+        equalTo: editMessageLabelWrapper.topAnchor
+    )
+
+    private func loadEditMessageViewIfNecessary() {
+        guard editMessageLabelView.superview == nil else { return }
+
+        editMessageLabelView.translatesAutoresizingMaskIntoConstraints = false
+        editMessageLabelWrapper.addSubview(editMessageLabelView)
+        NSLayoutConstraint.activate([
+            editMessageLabelView.topAnchor.constraint(equalTo: editMessageLabelWrapper.topAnchor),
+            editMessageLabelView.leadingAnchor.constraint(equalTo: editMessageLabelWrapper.leadingAnchor),
+            editMessageLabelView.trailingAnchor.constraint(equalTo: editMessageLabelWrapper.trailingAnchor),
+        ])
     }
 
-    private func hideEditMessageView(animated: Bool) {
+    private func showEditMessageView(animated isAnimated: Bool) {
+        loadEditMessageViewIfNecessary()
+
+        guard isAnimated else {
+            editMessageLabelView.alpha = 1
+            editMessageViewHiddenConstraint.isActive = false
+            editMessageViewVisibleConstraint.isActive = true
+            return
+        }
+
+        UIView.performWithoutAnimation {
+            editMessageLabelView.alpha = 0
+        }
+
+        let animator = UIViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            springDamping: 0.9,
+            springResponse: 0.3
+        )
+        animator.addAnimations {
+            self.editMessageLabelView.alpha = 1
+            self.editMessageViewHiddenConstraint.isActive = false
+            self.editMessageViewVisibleConstraint.isActive = true
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.setSendButtonEnabled(false)
+        }
+        animator.startAnimation()
+    }
+
+    private func hideEditMessageView(animated isAnimated: Bool) {
         owsAssertDebug(editTarget == nil)
-        toggleMessageComponentVisibility(hide: true, component: editMessageLabelWrapper, animated: animated)
-        setSendButtonEnabled(true)
+
+        guard isAnimated else {
+            editMessageViewVisibleConstraint.isActive = false
+            editMessageViewHiddenConstraint.isActive = true
+            return
+        }
+
+        let animator = UIViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            springDamping: 0.9,
+            springResponse: 0.3
+        )
+        animator.addAnimations {
+            self.editMessageLabelView.alpha = 0
+            self.editMessageViewVisibleConstraint.isActive = false
+            self.editMessageViewHiddenConstraint.isActive = true
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.setSendButtonEnabled(true)
+        }
+        animator.startAnimation()
     }
 
     private func setSendButtonEnabled(_ enabled: Bool) {
@@ -1569,65 +1644,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 hideQuotedReplyView(animated: animateChanges)
             }
             // This would show / hide Stickers|Keyboard button.
-            ensureButtonVisibility(withAnimation: true, doLayout: false)
+            ensureButtonVisibility(withAnimation: animateChanges, doLayout: false)
             clearDesiredKeyboard()
-        }
-    }
-
-    private func showQuotedReplyView(animated: Bool) {
-        guard let quotedReplyDraft else {
-            owsFailDebug("quotedReply == nil")
-            return
-        }
-
-        quotedReplyWrapper.removeAllSubviews()
-
-        let quotedMessagePreview = QuotedReplyPreview(
-            quotedReplyDraft: quotedReplyDraft,
-            spoilerState: spoilerState
-        )
-        quotedMessagePreview.delegate = self
-        quotedMessagePreview.setContentHuggingHorizontalLow()
-        quotedMessagePreview.setCompressionResistanceHorizontalLow()
-        quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
-        quotedReplyWrapper.addSubview(quotedMessagePreview)
-        quotedMessagePreview.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            quotedMessagePreview.topAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.topAnchor),
-            quotedMessagePreview.leadingAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.leadingAnchor),
-            quotedMessagePreview.trailingAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.trailingAnchor),
-            quotedMessagePreview.bottomAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.bottomAnchor),
-        ])
-
-        updateInputLinkPreview()
-
-        toggleMessageComponentVisibility(hide: false, component: quotedReplyWrapper, animated: animated)
-    }
-
-    private func hideQuotedReplyView(animated: Bool) {
-        owsAssertDebug(quotedReplyDraft == nil)
-        toggleMessageComponentVisibility(hide: true, component: quotedReplyWrapper, animated: animated) { _ in
-            self.quotedReplyWrapper.removeAllSubviews()
-        }
-    }
-
-    private func toggleMessageComponentVisibility(
-        hide: Bool,
-        component: UIView,
-        animated: Bool,
-        completion: ((Bool) -> Void)? = nil
-    ) {
-        if animated, component.isHidden != hide {
-            UIView.animate(
-                withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
-                animations: {
-                    component.isHidden = hide
-                },
-                completion: completion
-            )
-        } else {
-            component.isHidden = hide
-            completion?(true)
         }
     }
 
@@ -1640,6 +1658,127 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             return nil
         }
         return ThreadReplyInfo(timestamp: originalMessageTimestamp, author: aci)
+    }
+
+    private lazy var quotedReplyWrapper: UIView = {
+        let view = UIView.container()
+        view.clipsToBounds = true
+        view.directionalLayoutMargins = .init(top: 6, leading: 6, bottom: 0, trailing: 6)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedReplyWrapper")
+        return view
+    }()
+
+    private var quotedReplyViewConstraints = [NSLayoutConstraint]()
+
+    private func showQuotedReplyView(animated isAnimated: Bool) {
+        guard let quotedReplyDraft else {
+            owsFailDebug("quotedReply == nil")
+            return
+        }
+
+        let oldMessagePreviewView = quotedReplyWrapper.subviews.first as? QuotedReplyPreview
+        let oldConstraints = quotedReplyViewConstraints
+
+        // New quoted message snippet.
+        let quotedMessagePreview = QuotedReplyPreview(
+            quotedReplyDraft: quotedReplyDraft,
+            spoilerState: spoilerState
+        )
+        quotedMessagePreview.delegate = self
+        quotedMessagePreview.setContentHuggingHorizontalLow()
+        quotedMessagePreview.setCompressionResistanceHorizontalLow()
+        quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
+        quotedReplyWrapper.addSubview(quotedMessagePreview)
+        quotedMessagePreview.translatesAutoresizingMaskIntoConstraints = false
+
+        // Resize message snippet to its final size.
+        // Don't constrain the bottom though - do so in the animation block.
+        // Bottom constrain will cause `quotedReplyWrapper` to grow vertically.
+        NSLayoutConstraint.activate([
+            quotedMessagePreview.topAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.topAnchor),
+            quotedMessagePreview.leadingAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.leadingAnchor),
+            quotedMessagePreview.trailingAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.trailingAnchor),
+        ])
+        UIView.performWithoutAnimation {
+            quotedReplyWrapper.setNeedsLayout()
+            quotedReplyWrapper.layoutIfNeeded()
+        }
+
+        // New constraints.
+        let newConstraints = [
+            quotedMessagePreview.bottomAnchor.constraint(equalTo: quotedReplyWrapper.layoutMarginsGuide.bottomAnchor),
+        ]
+
+        defer {
+            quotedReplyViewConstraints = newConstraints
+        }
+
+        guard isAnimated else {
+            oldMessagePreviewView?.removeFromSuperview()
+            NSLayoutConstraint.deactivate(oldConstraints)
+            NSLayoutConstraint.activate(newConstraints)
+            return
+        }
+
+        UIView.performWithoutAnimation {
+            quotedMessagePreview.alpha = 0
+        }
+
+        let animator = UIViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            springDamping: 0.9,
+            springResponse: 0.3
+        )
+        animator.addAnimations {
+            oldMessagePreviewView?.alpha = 0
+            quotedMessagePreview.alpha = 1
+            NSLayoutConstraint.deactivate(oldConstraints)
+            NSLayoutConstraint.activate(newConstraints)
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            oldMessagePreviewView?.removeFromSuperview()
+        }
+        animator.startAnimation()
+    }
+
+    private func hideQuotedReplyView(animated isAnimated: Bool) {
+        owsAssertDebug(quotedReplyDraft == nil)
+
+        let oldMessagePreviewView = quotedReplyWrapper.subviews.first as? QuotedReplyPreview
+        let oldConstraints = quotedReplyViewConstraints
+
+        let newConstraints = [
+            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0)
+        ]
+
+        defer {
+            quotedReplyViewConstraints = newConstraints
+        }
+
+        guard isAnimated else {
+            oldMessagePreviewView?.removeFromSuperview()
+            NSLayoutConstraint.deactivate(oldConstraints)
+            NSLayoutConstraint.activate(newConstraints)
+            return
+        }
+
+        let animator = UIViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            springDamping: 0.9,
+            springResponse: 0.3
+        )
+        animator.addAnimations {
+            oldMessagePreviewView?.alpha = 0
+            NSLayoutConstraint.deactivate(oldConstraints)
+            NSLayoutConstraint.activate(newConstraints)
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            oldMessagePreviewView?.removeFromSuperview()
+        }
+        animator.startAnimation()
     }
 
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {
@@ -1867,13 +2006,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
 #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
+            view.clipsToBounds = true
             view.cornerConfiguration = .uniformCorners(radius: .fixed(StickerLayout.backgroundCornerRadius))
-
-            // Simply setting `cornerConfiguration` isn't enough on iOS 26.0.
-            // Appears to be a bug that was fixed in 26.1.
-            if #unavailable(iOS 26.1) {
-                view.layer.masksToBounds = true
-            }
 
             // `stickersListView` is inset from its parent container with a very small inset.
             // Make sure its corners are also rounded so that content doesn't go outside of the panel.
