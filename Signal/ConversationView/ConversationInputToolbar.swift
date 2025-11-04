@@ -947,9 +947,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // Show / hide Sticker or Keyboard buttons inside of the text input field.
         // Show / hide Camera and Voice Note buttons inside of the text input field on iOS 26.
         // In-field buttons are only visible if there's no any text input, including whitespace-only.
-        let hideTextFieldButtons = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReplyDraft != nil
-        let hideStickerButton = hideTextFieldButtons || desiredKeyboardType == .sticker
-        let hideKeyboardButton = hideTextFieldButtons || !hideStickerButton
+        let hideTextFieldButtons = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI
+        let hideStickerButton = hideTextFieldButtons || quotedReplyDraft != nil || desiredKeyboardType == .sticker
+        let hideKeyboardButton = hideTextFieldButtons || quotedReplyDraft != nil || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
         ConversationInputToolbar.setView(keyboardButton, hidden: hideKeyboardButton, usingAnimator: animator)
         if iOS26Layout {
