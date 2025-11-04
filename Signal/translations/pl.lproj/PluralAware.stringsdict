@@ -128,13 +128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Wiadomości tekstowe, w tym multimedia z ostatniego dnia</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 			<key>many</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>Multimedia z ostatniego dnia</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>Multimedia z ostatnich %1$d dni</string>
 			<key>many</key>
-			<string>Last %1$d days of media</string>
+			<string>Multimedia z ostatnich %1$d dni</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Multimedia z ostatnich %1$d dni</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Jeśli zmienisz tryb, kopia zapasowa będzie obejmować multimedia z ostatniego dnia oraz wszystkie wiadomości tekstowe.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Jeśli zmienisz tryb, kopia zapasowa będzie obejmować multimedia z ostatnich %1$d dni oraz wszystkie wiadomości tekstowe.</string>
 			<key>many</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Jeśli zmienisz tryb, kopia zapasowa będzie obejmować multimedia z ostatnich %1$d dni oraz wszystkie wiadomości tekstowe.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Jeśli zmienisz tryb, kopia zapasowa będzie obejmować multimedia z ostatnich %1$d dni oraz wszystkie wiadomości tekstowe.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Wszystkie wiadomości tekstowe + multimedia z %1$d dnia</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>Wszystkie wiadomości tekstowe + multimedia z %1$d dni</string>
 			<key>many</key>
-			<string>Text + %1$d days of media</string>
+			<string>Wszystkie wiadomości tekstowe + multimedia z %1$d dni</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Wszystkie wiadomości tekstowe + multimedia z %1$d dni</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1283,13 +1283,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Przenieś swoje wiadomości tekstowe, w tym multimedia z ostatniego dnia</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Przenieś swoje wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 			<key>many</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Przenieś swoje wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Przenieś swoje wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -2023,13 +2023,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem wiadomość głosowa nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dzień, nie są synchronizowane.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem wiadomość głosowa nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>many</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem wiadomość głosowa nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem wiadomość głosowa nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -2043,13 +2043,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem plik nie został przeniesiony. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dzień, nie są synchronizowane.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem plik nie został przeniesiony. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>many</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem plik nie został przeniesiony. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem plik nie został przeniesiony. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -2063,13 +2063,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem pełna treść wiadomości tekstowej nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dzień, nie są synchronizowane.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem pełna treść wiadomości tekstowej nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>many</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem pełna treść wiadomości tekstowej nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem pełna treść wiadomości tekstowej nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -2083,13 +2083,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem naklejka nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dzień, nie są synchronizowane.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem naklejka nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>many</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem naklejka nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Podczas łączenia urządzenia z Twoim telefonem naklejka nie została przeniesiona. Pliki i multimedia, które w momencie łączenia urządzeń mają ponad %1$d dni, nie są synchronizowane.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

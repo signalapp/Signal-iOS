@@ -128,13 +128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Poruke + medijski zapisi iz zadnjeg %1$d dana</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Poruke + medijski zapisi iz zadnja %1$d dana</string>
 			<key>many</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Poruke + medijski zapisi iz zadnjih %1$d dana</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Poruke + medijski zapisi iz zadnjih %1$d dana</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>Medijski zapisi iz zadnjeg %1$d dana</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>Medijski zapisi iz zadnja %1$d dana</string>
 			<key>many</key>
-			<string>Last %1$d days of media</string>
+			<string>Medijski zapisi iz zadnjih %1$d dana</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Medijski zapisi iz zadnjih %1$d dana</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Sve vaše poruke i medijski sadržaji iz posljednjeg %1$d dana bit će uključeni u vašu sigurnosnu kopiju ako promijenite plan.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Sve vaše poruke i medijski sadržaji iz posljednja %1$d dana bit će uključeni u vašu sigurnosnu kopiju ako promijenite plan.</string>
 			<key>many</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Sve vaše poruke i medijski sadržaji iz posljednjih %1$d dana bit će uključeni u vašu sigurnosnu kopiju ako promijenite plan.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Sve vaše poruke i medijski sadržaji iz posljednjih %1$d dana bit će uključeni u vašu sigurnosnu kopiju ako promijenite plan.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Poruke + medijski zapisi iz zadnjeg %1$d dana</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>Poruke + medijski zapisi iz zadnja %1$d dana</string>
 			<key>many</key>
-			<string>Text + %1$d days of media</string>
+			<string>Poruke + medijski zapisi iz zadnjih %1$d dana</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Poruke + medijski zapisi iz zadnjih %1$d dana</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1283,13 +1283,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Prenesite svoje poruke i medijske zapise iz zadnjeg %1$d dana</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Prenesite svoje poruke i medijske zapise iz zadnja %1$d dana</string>
 			<key>many</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Prenesite svoje poruke i medijske zapise iz zadnjih %1$d dana</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Prenesite svoje poruke i medijske zapise iz zadnjih %1$d dana</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -2023,13 +2023,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Ova glasovna poruka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova glasovna poruka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>many</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova glasovna poruka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova glasovna poruka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -2043,13 +2043,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Ova datoteka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova datoteka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>many</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova datoteka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova datoteka nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -2063,13 +2063,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Cijeli tekst ove poruke nije prenesen s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Cijeli tekst ove poruke nije prenesen s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>many</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Cijeli tekst ove poruke nije prenesen s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Cijeli tekst ove poruke nije prenesen s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -2083,13 +2083,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Ova naljepnica nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova naljepnica nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>many</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova naljepnica nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Ova naljepnica nije prenesena s vašeg telefona kad je ovaj uređaj povezan. Datoteke i medijske zapise starije od %1$d dana u trenutku povezivanja uređaja nije moguće sinkronizirati.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
