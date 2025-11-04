@@ -524,7 +524,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             if individualCall.isEnded {
                 individualCall.videoCaptureController.stopCapture()
             } else if individualCall.state == .connected || individualCall.state == .reconnecting {
-                callManager.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack, call: call)
+                callManager.setLocalVideoEnabled(call: call, enabled: shouldHaveLocalVideoTrack)
             } else if individualCall.isViewLoaded, individualCall.hasLocalVideo, !Platform.isSimulator {
                 // If we're not yet connected, just enable the camera but don't tell RingRTC
                 // to start sending video. This allows us to show a "vanity" view while connecting.
@@ -1263,23 +1263,6 @@ extension CallService: CallManagerDelegate {
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.handleUntrustedIdentityError()
         }
-    }
-
-    public nonisolated func callManager(
-        _ callManager: CallManager<SignalCall, CallService>,
-        shouldCompareCalls call1: SignalCall,
-        call2: SignalCall
-    ) -> Bool {
-        Logger.info("")
-        guard case .individual(let call1) = call1.mode else {
-            owsFailDebug("Can't compare multi-participant calls.")
-            return false
-        }
-        guard case .individual(let call2) = call2.mode else {
-            owsFailDebug("Can't compare multi-participant calls.")
-            return false
-        }
-        return call1.thread.uniqueId == call2.thread.uniqueId
     }
 
     // MARK: - 1:1 Call Delegates

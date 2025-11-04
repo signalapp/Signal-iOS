@@ -6783,7 +6783,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0</string>
 			<key>Title</key>
-			<string>libsignal-account-keys 0.1.0, libsignal-core 0.1.0, mrp 2.59.2, partial-default-derive 0.1.0, protobuf 2.59.2, regex-aot 0.1.0, ringrtc 2.59.2</string>
+			<string>libsignal-account-keys 0.1.0, libsignal-core 0.1.0, mrp 2.59.3, partial-default-derive 0.1.0, protobuf 2.59.3, regex-aot 0.1.0, ringrtc 2.59.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

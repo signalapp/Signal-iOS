@@ -60,6 +60,8 @@ final class IndividualCallService: CallServiceStateObserver {
 
     // MARK: - Call Control Actions
 
+    private var pniRemoteUuids = [Pni: UUID]()
+
     /**
      * Initiate an outgoing call.
      */
@@ -75,8 +77,26 @@ final class IndividualCallService: CallServiceStateObserver {
         // Create a call interaction for outgoing calls immediately.
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
+        guard let serviceId = call.individualCall.remoteAddress.serviceId else {
+            owsFailDebug("service id not available")
+            return
+        }
+
+        let remoteUuid: UUID
+        switch serviceId.concreteType {
+        case .aci(let aci):
+            remoteUuid = aci.rawUUID
+        case .pni(let pni):
+            if let pniRemoteUuid = self.pniRemoteUuids[pni] {
+                remoteUuid = pniRemoteUuid
+            } else {
+                remoteUuid = UUID()
+                self.pniRemoteUuids[pni] = remoteUuid
+            }
+        }
+
         do {
-            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: call.individualCall.localDeviceId.uint32Value)
+            try callManager.placeCall(call: call, remoteUuid: remoteUuid, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: call.individualCall.localDeviceId.uint32Value)
         } catch {
             self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
@@ -242,6 +262,7 @@ final class IndividualCallService: CallServiceStateObserver {
             do {
                 try self.callManager.receivedOffer(
                     call: newCall,
+                    remoteUuid: caller.rawUUID,
                     sourceDevice: sourceDevice.uint32Value,
                     callId: callId,
                     opaque: opaque,
@@ -273,36 +294,27 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        let identityKeys = identityManager.getCallIdentityKeys(remoteAci: caller, tx: tx)
+        guard let identityKeys = identityManager.getCallIdentityKeys(remoteAci: caller, tx: tx) else {
+            Logger.error("failed to get identity keys for answer")
+            return
+        }
 
         DispatchQueue.main.async {
-            self._handleReceivedAnswer(callId: callId, sourceDevice: sourceDevice, opaque: opaque, identityKeys: identityKeys)
+            self._handleReceivedAnswer(caller: caller, callId: callId, sourceDevice: sourceDevice, opaque: opaque, identityKeys: identityKeys)
         }
     }
 
     @MainActor
     private func _handleReceivedAnswer(
+        caller: Aci,
         callId: UInt64,
         sourceDevice: DeviceId,
         opaque: Data,
-        identityKeys: CallIdentityKeys?
+        identityKeys: CallIdentityKeys
     ) {
-        guard
-            let currentCall = callServiceState.currentCall,
-            currentCall.isIndividualCall,
-            currentCall.individualCall.callId == callId
-        else {
-            return
-        }
-
-        guard let identityKeys else {
-            handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"), shouldResetUI: true, shouldResetRingRTC: true)
-            return
-        }
-
         do {
             try callManager.receivedAnswer(
-                call: currentCall,
+                remoteUuid: caller.rawUUID,
                 sourceDevice: sourceDevice.uint32Value,
                 callId: callId,
                 opaque: opaque,
@@ -310,8 +322,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 receiverIdentityKey: identityKeys.localIdentityKey.publicKey.keyBytes,
             )
         } catch {
-            owsFailDebug("error: \(error)")
-            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
+            owsFailDebug("receivedAnswer failed: \(error)")
         }
     }
 
@@ -328,26 +339,16 @@ final class IndividualCallService: CallServiceStateObserver {
         }
 
         DispatchQueue.main.async {
-            self._handleReceivedIceCandidates(callId: callId, sourceDevice: sourceDevice, iceCandidates: iceCandidates)
+            self._handleReceivedIceCandidates(caller: caller, callId: callId, sourceDevice: sourceDevice, iceCandidates: iceCandidates)
         }
     }
 
     @MainActor
-    private func _handleReceivedIceCandidates(callId: UInt64, sourceDevice: DeviceId, iceCandidates: [Data]) {
-        guard
-            let currentCall = callServiceState.currentCall,
-            currentCall.isIndividualCall,
-            currentCall.individualCall.callId == callId
-        else {
-            return
-        }
-
+    private func _handleReceivedIceCandidates(caller: Aci, callId: UInt64, sourceDevice: DeviceId, iceCandidates: [Data]) {
         do {
-            try callManager.receivedIceCandidates(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId, candidates: iceCandidates)
+            try callManager.receivedIceCandidates(remoteUuid: caller.rawUUID, sourceDevice: sourceDevice.uint32Value, callId: callId, candidates: iceCandidates)
         } catch {
-            owsFailDebug("error: \(error)")
-            // we don't necessarily want to fail the call just because CallManager errored on an
-            // ICE candidate
+            owsFailDebug("receivedIceCandidates failed: \(error)")
         }
     }
 
@@ -367,25 +368,16 @@ final class IndividualCallService: CallServiceStateObserver {
         }
 
         DispatchQueue.main.async {
-            self._handleReceivedHangup(callId: callId, sourceDevice: sourceDevice, hangupType: hangupType, deviceId: deviceId)
+            self._handleReceivedHangup(caller: caller, callId: callId, sourceDevice: sourceDevice, hangupType: hangupType, deviceId: deviceId)
         }
     }
 
     @MainActor
-    private func _handleReceivedHangup(callId: UInt64, sourceDevice: DeviceId, hangupType: HangupType, deviceId: UInt32) {
-        guard
-            let currentCall = callServiceState.currentCall,
-            currentCall.isIndividualCall,
-            currentCall.individualCall.callId == callId
-        else {
-            return
-        }
-
+    private func _handleReceivedHangup(caller: Aci, callId: UInt64, sourceDevice: DeviceId, hangupType: HangupType, deviceId: UInt32) {
         do {
-            try callManager.receivedHangup(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId, hangupType: hangupType, deviceId: deviceId)
+            try callManager.receivedHangup(remoteUuid: caller.rawUUID, sourceDevice: sourceDevice.uint32Value, callId: callId, hangupType: hangupType, deviceId: deviceId)
         } catch {
-            owsFailDebug("\(error)")
-            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
+            owsFailDebug("receivedHangup failed: \(error)")
         }
     }
 
@@ -396,25 +388,16 @@ final class IndividualCallService: CallServiceStateObserver {
         Logger.info("callId: \(callId), \(caller)")
 
         DispatchQueue.main.async {
-            self._handleReceivedBusy(callId: callId, sourceDevice: sourceDevice)
+            self._handleReceivedBusy(caller: caller, callId: callId, sourceDevice: sourceDevice)
         }
     }
 
     @MainActor
-    private func _handleReceivedBusy(callId: UInt64, sourceDevice: DeviceId) {
-        guard
-            let currentCall = callServiceState.currentCall,
-            currentCall.isIndividualCall,
-            currentCall.individualCall.callId == callId
-        else {
-            return
-        }
-
+    private func _handleReceivedBusy(caller: Aci, callId: UInt64, sourceDevice: DeviceId) {
         do {
-            try callManager.receivedBusy(call: currentCall, sourceDevice: sourceDevice.uint32Value, callId: callId)
+            try callManager.receivedBusy(remoteUuid: caller.rawUUID, sourceDevice: sourceDevice.uint32Value, callId: callId)
         } catch {
-            owsFailDebug("\(error)")
-            handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
+            owsFailDebug("receivedBusy failed: \(error)")
         }
     }
 
