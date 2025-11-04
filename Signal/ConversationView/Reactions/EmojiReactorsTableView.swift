@@ -81,7 +81,7 @@ private class EmojiReactorCell: UITableViewCell {
         backgroundColor = .clear
         selectionStyle = .none
 
-        layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        layoutMargins = UIEdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20)
 
         contentView.addSubview(avatarView)
         avatarView.autoPinLeadingToSuperviewMargin()

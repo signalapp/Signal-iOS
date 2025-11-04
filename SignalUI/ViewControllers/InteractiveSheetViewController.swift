@@ -8,7 +8,7 @@ import SignalServiceKit
 open class InteractiveSheetViewController: OWSViewController {
 
     public enum Constants {
-        public static let handleSize = CGSize(width: 36, height: 5)
+        public static let handleSize = CGSize(width: 52, height: 5)
         public static let handleInsideMargin: CGFloat = 12
         public static let handleHeight = 2*handleInsideMargin + handleSize.height
 
@@ -61,7 +61,7 @@ open class InteractiveSheetViewController: OWSViewController {
     open var canInteractWithParent: Bool { false }
 
     open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
-    open var handleBackgroundColor: UIColor { Theme.tableView2PresentedSeparatorColor }
+    open var handleBackgroundColor: UIColor { UIColor.Signal.primaryFill }
 
     /// Override to `true` to make the content appear on a glass background on
     /// iOS 26 and later. `sheetBackgroundColor` will be ignored when on glass,

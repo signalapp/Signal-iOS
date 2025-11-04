@@ -111,9 +111,7 @@ class EmojiCountCell: UICollectionViewCell {
         super.init(frame: .zero)
 
         let selectedBackground = UIView()
-        selectedBackground.backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray60
-            : UIColor.ows_gray05)
+        selectedBackground.backgroundColor = UIColor.Signal.secondaryFill
         selectedBackgroundView = selectedBackground
 
         let stackView = UIStackView(arrangedSubviews: [emoji, count])
