@@ -196,7 +196,7 @@ public class PollMessageManager {
     }
 
     public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {
-        guard let question = message.body?.nilIfEmpty,
+        guard let question = message.body?.filterStringForDisplay().nilIfEmpty,
               let localAci = accountManager.localIdentifiers(tx: transaction)?.aci
         else {
             throw OWSAssertionError("Invalid question body or local user not registered")

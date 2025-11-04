@@ -396,6 +396,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (nullable NSString *)body
 {
+    if (self.isPoll) {
+        return _body;
+    }
+
     return _body.filterStringForDisplay;
 }
 
