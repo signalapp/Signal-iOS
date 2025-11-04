@@ -1036,6 +1036,41 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual(usernames[1]["username"], "florp.01")
         }
     }
+
+    func testFixUpcomingCallLinks() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: """
+                CREATE TABLE "CallLink" (isUpcoming BOOLEAN, adminPasskey BLOB);
+                INSERT INTO "CallLink" VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?);
+                """,
+                arguments: [
+                    true, Data(count: 32),
+                    false, Data(count: 32),
+                    nil as Bool?, Data(count: 32),
+                    true, nil as Data?,
+                    false, nil as Data?,
+                    nil as Bool?, nil as Data?,
+                ]
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.fixUpcomingCallLinks(tx: tx)
+            }
+
+            let callLinks = try Row.fetchAll(db, sql: "SELECT * FROM CallLink")
+            XCTAssertEqual(callLinks.count, 6)
+            XCTAssertEqual(callLinks[0][0] as Bool?, true)
+            XCTAssertEqual(callLinks[1][0] as Bool?, false)
+            XCTAssertEqual(callLinks[2][0] as Bool?, nil)
+            XCTAssertEqual(callLinks[3][0] as Bool?, false)
+            XCTAssertEqual(callLinks[4][0] as Bool?, false)
+            XCTAssertEqual(callLinks[5][0] as Bool?, nil)
+        }
+    }
 }
 
 // MARK: -

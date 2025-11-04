@@ -331,6 +331,7 @@ public class GRDBSchemaMigrator {
         case addPreKey
         case addKyberPreKeyUse
         case uniquifyUsernameLookupRecord
+        case fixUpcomingCallLinks
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -446,7 +447,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 133
+    public static let grdbSchemaVersionLatest: UInt = 134
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4245,6 +4246,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.fixUpcomingCallLinks) { tx in
+            try fixUpcomingCallLinks(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6493,6 +6499,13 @@ public class GRDBSchemaMigrator {
             on: "UsernameLookupRecord",
             columns: ["username"],
             unique: true,
+        )
+    }
+
+    static func fixUpcomingCallLinks(tx: DBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            UPDATE "CallLink" SET "isUpcoming"=0 WHERE "isUpcoming"=1 AND "adminPasskey" IS NULL
+            """
         )
     }
 }
