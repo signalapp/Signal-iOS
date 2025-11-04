@@ -369,11 +369,11 @@ private class QuotedMessageSnippetView: UIView {
 
     private enum Layout {
         static var quotedAuthorFont: UIFont {
-            UIFont.dynamicTypeSubheadline.semibold()
+            UIFont.dynamicTypeFootnoteClamped.semibold()
         }
 
         static var quotedTextFont: UIFont {
-            .dynamicTypeBody
+            .dynamicTypeSubheadlineClamped
         }
 
         static var filenameFont: UIFont {
