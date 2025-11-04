@@ -116,6 +116,7 @@ struct PollDetailsView: View {
                     }
                 }
 
+                let maxVotes = poll.maxVoteCount()
                 ForEach(poll.sortedOptions()) { option in
                     SignalSection {
                         ForEach(option.acis, id: \.self) { aci in
@@ -132,13 +133,15 @@ struct PollDetailsView: View {
                             .foregroundColor(Color.Signal.secondaryLabel)
                         }
                     } header: {
-                        // TODO: add star icon to winning option if poll is ended
                         HStack {
                             Text(option.text)
                                 .font(.body)
                                 .fontWeight(.medium)
                             Spacer()
                             if option.acis.count > 0 {
+                                if poll.isEnded && option.acis.count == maxVotes {
+                                    Image("poll-win")
+                                }
                                 Text(
                                     String.localizedStringWithFormat(
                                         OWSLocalizedString(

@@ -102,4 +102,8 @@ public struct OWSPoll: Equatable {
     public func pendingVotesCount() -> Int {
         return options.count { $0.value.latestPendingState != nil }
     }
+
+    public func maxVoteCount() -> Int {
+        return options.values.map { $0.acis.count }.max() ?? 0
+    }
 }
