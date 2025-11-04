@@ -103,12 +103,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         self.viewState.backupDownloadProgressView.update(viewState: self.viewState.backupDownloadProgressViewState)
     }
 
+    private var viewHasAppeared = false
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        defer {
-            loadCoordinator.loadIfNecessary(suppressAnimations: true)
-        }
 
         isViewVisible = true
 
@@ -117,6 +115,28 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
             extendedLayoutIncludesOpaqueBars = true
+        }
+
+        // iOS 26.1 introduced an egregious bug where view controller lifecycle
+        // functions are called inside the push/pop animation blocks when using
+        // UITabViewController. In practice, this means that changes to the chat
+        // list while in a conversation manifest as a growing-from-the-top-left
+        // animation when popping back. This dispatch alleviates that issue by
+        // ensuring the reloading doesn't happen with an animation.
+        if !viewHasAppeared {
+            // Prevent the chat list from flickering an empty state on launch
+            self._viewWillAppear(animated)
+            viewHasAppeared = true
+        } else {
+            DispatchQueue.main.async {
+                self._viewWillAppear(animated)
+            }
+        }
+    }
+
+    private func _viewWillAppear(_ animated: Bool) {
+        defer {
+            loadCoordinator.loadIfNecessary(suppressAnimations: true)
         }
 
         if isSearching {
