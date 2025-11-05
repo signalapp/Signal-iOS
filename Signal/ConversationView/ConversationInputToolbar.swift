@@ -173,9 +173,10 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         }
 
         @available(iOS 26, *)
-        static var glassEffect: UIGlassEffect {
+        static func glassEffect(isInteractive: Bool = false) -> UIGlassEffect {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.tintColor = glassTintColor
+            glassEffect.isInteractive = isInteractive
             return glassEffect
         }
 #endif
@@ -698,7 +699,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 #if compiler(>=6.2)
         let backgroundView: UIView
         if #available(iOS 26, *) {
-            let glassEffectView = UIVisualEffectView(effect: Style.glassEffect)
+            let glassEffectView = UIVisualEffectView(effect: Style.glassEffect(isInteractive: true))
             glassEffectView.cornerConfiguration = .uniformCorners(radius: 20)
             glassEffectView.contentView.addSubview(messageComponentsView)
 
@@ -1988,13 +1989,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         static let panelVisualEffect: UIVisualEffect = {
             // UIVisualEffect cannot "dematerialize" glass on iOS 26.0: setting `effect` to `nil` simply doesn't work.
             // That was fixed in 26.1.
-            if #available(iOS 26.1, *) {
-                let glassEffect = UIGlassEffect(style: .regular)
-                glassEffect.tintColor = Style.glassTintColor
-                return glassEffect
-            } else {
-                return UIBlurEffect(style: .systemMaterial)
-            }
+            if #available(iOS 26.1, *) { Style.glassEffect() } else { UIBlurEffect(style: .systemMaterial) }
         }()
 #else
         static let panelVisualEffect = UIBlurEffect(style: .systemMaterial)
