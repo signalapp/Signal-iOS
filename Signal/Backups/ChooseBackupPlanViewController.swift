@@ -417,7 +417,9 @@ private struct PlanOptionView: View {
                         }
                     }
 
-                    Text(title).font(.headline)
+                    Text(title)
+                        .font(.headline)
+                        .multilineTextAlignment(.leading)
                     Text(subtitle).foregroundStyle(Color.Signal.secondaryLabel)
 
                     ForEach(bullets, id: \.iconKey) { bullet in
