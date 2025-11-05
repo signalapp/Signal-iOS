@@ -25,14 +25,20 @@ open class InteractiveSheetViewController: OWSViewController {
         fileprivate static let dismissVelocityThreshold: CGFloat = 1000
     }
 
+    public var topCornerRadius: CGFloat = 16 {
+        didSet {
+            sheetContainerView.layer.cornerRadius = topCornerRadius
+        }
+    }
+
     private lazy var sheetContainerView: UIView = {
         let view: UIView
-        if let blurEffect = blurEffect {
-            view = UIVisualEffectView(effect: blurEffect)
+        if let visualEffect {
+            view = UIVisualEffectView(effect: visualEffect)
         } else {
             view = UIView()
         }
-        view.layer.cornerRadius = 16
+        view.layer.cornerRadius = topCornerRadius
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.layer.masksToBounds = true
         view.preservesSuperviewLayoutMargins = true
@@ -85,13 +91,13 @@ open class InteractiveSheetViewController: OWSViewController {
     private let handle = UIView()
     private lazy var handleContainer = UIView()
 
-    private let blurEffect: UIBlurEffect?
+    private let visualEffect: UIVisualEffect?
 
     public weak var sheetPanDelegate: SheetPanDelegate?
     public weak var dismissalDelegate: (any SheetDismissalDelegate)?
 
-    public init(blurEffect: UIBlurEffect? = nil) {
-        self.blurEffect = blurEffect
+    public init(visualEffect: UIVisualEffect? = nil) {
+        self.visualEffect = visualEffect
         super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self

@@ -27,6 +27,7 @@ struct ConversationHeaderBuilder {
         static let search    = Options(rawValue: 1 << 4)
 
         static let renderLocalUserAsNoteToSelf = Options(rawValue: 1 << 5)
+        static let noBackground = Options(rawValue: 1 << 6)
     }
 
     static func buildHeader(
@@ -527,7 +528,9 @@ struct ConversationHeaderBuilder {
 
         header.isUserInteractionEnabled = true
         header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: delegate, name: "mainSectionHeader")
-        header.addBackgroundView(withBackgroundColor: delegate.tableViewController.tableBackgroundColor)
+        if !options.contains(.noBackground) {
+            header.addBackgroundView(withBackgroundColor: delegate.tableViewController.tableBackgroundColor)
+        }
 
         return header
     }

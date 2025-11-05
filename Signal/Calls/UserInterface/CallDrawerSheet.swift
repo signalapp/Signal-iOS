@@ -121,7 +121,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             delegate: callControlsDelegate
         )
 
-        super.init(blurEffect: nil)
+        super.init()
 
         self.animationsShouldBeInterruptible = true
         self.sheetPanDelegate = sheetPanDelegate

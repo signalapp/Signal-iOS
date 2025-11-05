@@ -518,7 +518,7 @@ extension ImageEditorViewController {
         if UIAccessibility.isReduceTransparencyEnabled {
             stickerPicker = StickerPickerSheet(backgroundColor: Theme.darkThemeBackgroundColor)
         } else {
-            stickerPicker = StickerPickerSheet(blurEffect: .init(style: .dark))
+            stickerPicker = StickerPickerSheet(visualEffect: UIBlurEffect(style: .dark))
         }
 
         stickerPicker.pickerDelegate = self

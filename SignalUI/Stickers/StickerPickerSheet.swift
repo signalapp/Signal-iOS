@@ -37,8 +37,8 @@ public class StickerPickerSheet: InteractiveSheetViewController {
     private let stickerPacksToolbar = StickerPacksToolbar(forceDarkTheme: true)
     private lazy var stickerPicker = StickerPickerPageView(delegate: self, forceDarkTheme: true)
 
-    override init(blurEffect: UIBlurEffect? = nil) {
-        super.init(blurEffect: blurEffect)
+    override init(visualEffect: UIVisualEffect? = nil) {
+        super.init(visualEffect: visualEffect)
     }
 
     init(backgroundColor: UIColor) {

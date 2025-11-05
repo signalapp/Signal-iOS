@@ -40,8 +40,8 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             + bottomSafeAreaContentPadding
     }
 
-    public init() {
-        super.init()
+    public override init(visualEffect: UIVisualEffect? = nil) {
+        super.init(visualEffect: visualEffect)
 
         tableViewController.shouldDeferInitialLoad = false
 
