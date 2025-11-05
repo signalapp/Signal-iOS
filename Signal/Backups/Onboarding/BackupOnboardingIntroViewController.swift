@@ -58,25 +58,33 @@ struct BackupOnboardingIntroView: View {
         ),
     ]
 
+    private var titleString: AttributedString {
+        var attributedString = AttributedString("BETA")
+        attributedString.backgroundColor = Color.Signal.secondaryFill
+        return attributedString
+    }
+
     var body: some View {
         ScrollableContentPinnedFooterView {
-            VStack {
-                HStack {
-                    Image(uiImage: Theme.iconImage(.info))
-                        .frame(width: 25, height: 40)
+            HStack(spacing: 12) {
+                Image(Theme.iconName(.info))
 
-                    Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
-                        comment: "Notice that backups is a beta feature")
-                    )
-                    .font(.footnote)
-                    .multilineTextAlignment(.leading)
-                }
-                .foregroundColor(Color.Signal.label)
-                .padding(.all, 10)
-                .background(Color.Signal.quaternaryFill)
-                .cornerRadius(12)
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
+                    comment: "Notice that backups is a beta feature")
+                )
+                .font(.footnote)
+                .multilineTextAlignment(.leading)
+
+                Spacer(minLength: 0)
             }
+            .foregroundColor(Color.Signal.label)
+            .padding(.vertical, 16)
+            .padding(.leading, 16)
+            .padding(.trailing, 11)
+            .background(Color.Signal.quaternaryFill)
+            .cornerRadius(12)
+            .padding(.horizontal, 16)
 
             VStack {
                 Spacer().frame(height: 20)
@@ -90,7 +98,7 @@ struct BackupOnboardingIntroView: View {
                         "BACKUP_ONBOARDING_INTRO_TITLE",
                         comment: "Title for a view introducing Backups during an onboarding flow."
                     ))
-                    .font(.title)
+                    .font(Font(UIFont.dynamicTypeFont(ofStandardSize: 26)))
                     .fontWeight(.semibold)
                     .foregroundStyle(Color.Signal.label)
 
@@ -104,6 +112,7 @@ struct BackupOnboardingIntroView: View {
                         )
                         .foregroundStyle(Color.Signal.label)
                 }
+                .padding(.horizontal, 32)
                 .multilineTextAlignment(.center)
 
                 Spacer().frame(height: 12)
@@ -115,10 +124,11 @@ struct BackupOnboardingIntroView: View {
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
 
                 Spacer().frame(height: 32)
 
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 26) {
                     ForEach(bulletPoints) { bulletPoint in
                         HStack {
                             Label {
@@ -131,6 +141,7 @@ struct BackupOnboardingIntroView: View {
                         }
                     }
                 }
+                .padding(.horizontal, 72)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(Color.Signal.label)
                 .padding(.horizontal)
@@ -142,7 +153,7 @@ struct BackupOnboardingIntroView: View {
                 Text(CommonStrings.continueButton)
             }
             .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 40)
 
             Spacer().frame(height: 16)
 
@@ -152,9 +163,8 @@ struct BackupOnboardingIntroView: View {
                 Text(CommonStrings.notNowButton)
             }
             .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 40)
         }
-        .padding(.horizontal)
         .background(Color.Signal.groupedBackground)
     }
 }
@@ -163,11 +173,12 @@ struct BackupOnboardingIntroView: View {
 
 #if DEBUG
 
+@available(iOS 17, *)
 #Preview {
-    BackupOnboardingIntroView(
+    SheetPreviewViewController(sheet: OWSNavigationController(rootViewController: BackupOnboardingIntroViewController(
         onContinue: { print("Continuing...!") },
         onNotNow: { print("Not now...!") }
-    )
+    )))
 }
 
 #endif
