@@ -45,7 +45,7 @@ public protocol ContactDiscoveryManager {
     ///     results. It's worthwhile noting that the discovery process has side
     ///     effects, so callers may choose to ignore the result type and fetch
     ///     updated state directly from the database.
-    func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient>
+    func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient]
 }
 
 private enum Constant {
@@ -122,7 +122,7 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
         )
     }
 
-    public func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+    public func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient] {
         let isStateful = try await withCheckedThrowingContinuation { continuation in
             let pendingRequest = PendingRequest(mode: mode, continuation: continuation)
             lock.withLock {
@@ -204,7 +204,7 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
         pendingRequests = remainingRequests
     }
 
-    private func sendRequest(forPhoneNumbers phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+    private func sendRequest(forPhoneNumbers phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient] {
         lock.assertNotOwner()
 
         let fetchedPhoneNumbers = undiscoverableCache.filterPhoneNumbers(phoneNumbers, mode: mode)
@@ -324,7 +324,7 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
         }
 
         func processResults(
-            _ signalRecipients: Set<SignalRecipient>,
+            _ signalRecipients: [SignalRecipient],
             requestedPhoneNumbers: Set<String>
         ) {
             let now = Date()

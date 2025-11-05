@@ -11,9 +11,9 @@ import XCTest
 
 final class RecipientPickerViewControllerTests: XCTestCase {
     private struct MockContactDiscoveryManager: ContactDiscoveryManager {
-        var lookUpBlock: ((Set<String>) async throws -> Set<SignalRecipient>)?
+        var lookUpBlock: ((Set<String>) async throws -> [SignalRecipient])?
 
-        func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+        func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient] {
             return try await lookUpBlock?(phoneNumbers) ?? []
         }
     }

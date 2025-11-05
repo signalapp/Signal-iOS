@@ -2027,11 +2027,11 @@ public final class MessageReceiver {
         // Check if the SignalRecipient (used for sending messages) knows about
         // this device.
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        var recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         if !recipient.deviceIds.contains(deviceId) {
             let recipientManager = DependenciesBridge.shared.recipientManager
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
-            recipientManager.markAsRegisteredAndSave(recipient, deviceId: deviceId, shouldUpdateStorageService: true, tx: tx)
+            recipientManager.markAsRegisteredAndSave(&recipient, deviceId: deviceId, shouldUpdateStorageService: true, tx: tx)
         }
     }
 

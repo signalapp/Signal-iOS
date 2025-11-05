@@ -1767,10 +1767,10 @@ public class MessageSender {
         tx: DBWriteTransaction
     ) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
         self._updateDevices(
             serviceId: serviceId,
-            recipient: recipient,
+            recipient: &recipient,
             devicesToAdd: Array(Set(deviceIds).subtracting(recipient.deviceIds)),
             devicesToRemove: Array(Set(recipient.deviceIds).subtracting(deviceIds)),
             tx: tx
@@ -1784,13 +1784,13 @@ public class MessageSender {
         transaction tx: DBWriteTransaction
     ) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
-        self._updateDevices(serviceId: serviceId, recipient: recipient, devicesToAdd: devicesToAdd, devicesToRemove: devicesToRemove, tx: tx)
+        var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        self._updateDevices(serviceId: serviceId, recipient: &recipient, devicesToAdd: devicesToAdd, devicesToRemove: devicesToRemove, tx: tx)
     }
 
     private func _updateDevices(
         serviceId: ServiceId,
-        recipient: SignalRecipient,
+        recipient: inout SignalRecipient,
         devicesToAdd: [DeviceId],
         devicesToRemove: [DeviceId],
         tx: DBWriteTransaction
@@ -1800,7 +1800,7 @@ public class MessageSender {
 
         let recipientManager = DependenciesBridge.shared.recipientManager
         recipientManager.modifyAndSave(
-            recipient,
+            &recipient,
             deviceIdsToAdd: devicesToAdd,
             deviceIdsToRemove: devicesToRemove,
             shouldUpdateStorageService: true,

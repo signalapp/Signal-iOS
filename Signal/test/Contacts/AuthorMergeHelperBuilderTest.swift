@@ -23,7 +23,8 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
         let phoneNumber2 = E164("+16505550102")!
 
         inMemoryDb.write { tx in
-            recipientDatabaseTable.insertRecipient(SignalRecipient(aci: aci1, pni: nil, phoneNumber: phoneNumber1), transaction: tx)
+            var recipient = SignalRecipient(aci: aci1, pni: nil, phoneNumber: phoneNumber1)
+            recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
         }
 
         inMemoryDb.write { tx in

@@ -667,8 +667,9 @@ public class OWSMessageDecrypter {
         handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: tx)
 
         let recipientManager = DependenciesBridge.shared.recipientManager
+        var mergedRecipient = mergeRecipient(tx)
         recipientManager.markAsRegisteredAndSave(
-            mergeRecipient(tx),
+            &mergedRecipient,
             deviceId: decryptedEnvelope.sourceDeviceId,
             shouldUpdateStorageService: true,
             tx: tx

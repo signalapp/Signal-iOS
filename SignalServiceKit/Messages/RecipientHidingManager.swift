@@ -26,7 +26,7 @@ public protocol RecipientHidingManager {
     /// Returns set of all hidden recipients.
     ///
     /// - Parameter tx: The transaction to use for database operations.
-    func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient>
+    func hiddenRecipients(tx: DBReadTransaction) -> [SignalRecipient]
 
     /// Fetch the hidden-recipient state for the given `SignalRecipient`, if the
     /// `SignalRecipient` is currently hidden.
@@ -150,7 +150,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
     // MARK: -
 
-    public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
+    public func hiddenRecipients(tx: DBReadTransaction) -> [SignalRecipient] {
         do {
             let sql = """
                 SELECT \(SignalRecipient.databaseTableName).*
@@ -159,12 +159,10 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                     AS hiddenRecipient
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
-            return Set(
-                try SignalRecipient.fetchAll(tx.database, sql: sql)
-            )
+            return try SignalRecipient.fetchAll(tx.database, sql: sql)
         } catch {
             Logger.warn("Could not fetch hidden recipient records: \(error.grdbErrorForLogging)")
-            return Set()
+            return []
         }
     }
 

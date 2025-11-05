@@ -46,7 +46,7 @@ public class BackupArchiveRecipientStore {
     // MARK: - Restoring
 
     func insertRecipient(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         tx: DBWriteTransaction
     ) throws {
         try recipient.insert(tx.database)

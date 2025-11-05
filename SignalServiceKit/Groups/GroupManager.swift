@@ -1137,9 +1137,9 @@ public class GroupManager: NSObject {
             if localIdentifiers.contains(serviceId: addedMember) {
                 continue
             }
-            let (inserted, recipient) = recipientFetcher.fetchOrCreateImpl(serviceId: addedMember, tx: tx)
+            var (inserted, recipient) = recipientFetcher.fetchOrCreateImpl(serviceId: addedMember, tx: tx)
             if inserted {
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
+                recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: true, tx: tx)
             }
         }
     }

@@ -722,20 +722,13 @@ final class SignalRecipient2Test: XCTestCase {
     func testEncodePni() throws {
         let inMemoryDB = InMemoryDB()
         let pni = Pni.constantForTesting("PNI:30000000-5000-4000-8000-3000000000A9")
-        inMemoryDB.insert(record: SignalRecipient(aci: nil, pni: pni, phoneNumber: nil))
+        var record = SignalRecipient(aci: nil, pni: pni, phoneNumber: nil)
+        try inMemoryDB.write { tx in try record.insert(tx.database) }
         inMemoryDB.read { tx in
             let db = tx.database
             let rawPniValue = try! String.fetchOne(db, sql: #"SELECT "pni" FROM "model_SignalRecipient""#)!
             XCTAssertEqual(rawPniValue, pni.serviceIdUppercaseString)
         }
-    }
-
-    func testEqualityAndHashing() {
-        let someRecipient = SignalRecipient(aci: Aci.randomForTesting(), pni: nil, phoneNumber: nil, deviceIds: [1, 2].map { DeviceId(validating: $0)! })
-        let copiedRecipient = someRecipient.copyRecipient()
-        XCTAssertEqual(copiedRecipient, someRecipient)
-        XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)
-        XCTAssertEqual(Set([someRecipient, copiedRecipient]).count, 1)
     }
 
     func testUnregisteredTimestamps() {
@@ -752,16 +745,16 @@ final class SignalRecipient2Test: XCTestCase {
             storageServiceManager: FakeStorageServiceManager()
         )
         mockDb.write { tx in
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
-            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+            recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: false, tx: tx)
             XCTAssertNil(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
 
-            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: false, tx: tx)
+            recipientManager.markAsUnregisteredAndSave(&recipient, unregisteredAt: .now, shouldUpdateStorageService: false, tx: tx)
             XCTAssertGreaterThan(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp!, 0)
 
-            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+            recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: false, tx: tx)
             XCTAssertNil(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
         }
     }
@@ -799,9 +792,9 @@ final class SignalRecipient2Test: XCTestCase {
         )
         mockDb.write { tx in
             for testCase in testCases {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx)
-                recipientManager.setDeviceIds(Set(testCase.initialDeviceIds.map { DeviceId(validating: $0)! }), for: recipient, shouldUpdateStorageService: false)
-                recipientManager.markAsRegisteredAndSave(recipient, deviceId: DeviceId(validating: testCase.addedDeviceId)!, shouldUpdateStorageService: false, tx: tx)
+                var recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx)
+                recipientManager.setDeviceIds(Set(testCase.initialDeviceIds.map { DeviceId(validating: $0)! }), for: &recipient, shouldUpdateStorageService: false)
+                recipientManager.markAsRegisteredAndSave(&recipient, deviceId: DeviceId(validating: testCase.addedDeviceId)!, shouldUpdateStorageService: false, tx: tx)
                 XCTAssertEqual(Set(recipient.deviceIds), Set(testCase.expectedDeviceIds.map { DeviceId(validating: $0)! }), "\(testCase)")
             }
         }

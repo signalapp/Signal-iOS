@@ -130,13 +130,13 @@ class RecipientMergerTest: XCTestCase {
             let d = TestDependencies()
             func run(transaction: DBWriteTransaction) {
                 for initialRecipient in testCase.initialState {
-                    let recipient = SignalRecipient(
+                    var recipient = SignalRecipient(
                         aci: initialRecipient.aci,
                         pni: nil,
                         phoneNumber: initialRecipient.phoneNumber
                     )
                     d.recipientDatabaseTable.insertRecipient(
-                        recipient,
+                        &recipient,
                         transaction: transaction
                     )
                     XCTAssertEqual(recipient.id, initialRecipient.rowId, "\(testCase)")
@@ -166,7 +166,7 @@ class RecipientMergerTest: XCTestCase {
                     XCTAssertEqual(signalRecipient?.aci, finalRecipient.aci, "\(idx)")
                     XCTAssertEqual(signalRecipient?.phoneNumber?.stringValue, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
-                XCTAssertEqual(recipientTable, [:], "\(idx)")
+                XCTAssert(recipientTable.isEmpty, "\(idx)")
             }
             d.mockDB.write { run(transaction: $0) }
         }
@@ -241,8 +241,8 @@ class RecipientMergerTest: XCTestCase {
 
             d.mockDB.write { tx in
                 for initialState in testCase.initialState {
-                    let recipient = SignalRecipient(aci: initialState.aci, pni: nil, phoneNumber: initialState.phoneNumber)
-                    d.recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+                    var recipient = SignalRecipient(aci: initialState.aci, pni: nil, phoneNumber: initialState.phoneNumber)
+                    d.recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
                     if let identityKey = initialState.identityKey {
                         d.identityManager.recipientIdentities[recipient.uniqueId] = OWSRecipientIdentity(
                             uniqueId: recipient.uniqueId,
@@ -306,10 +306,8 @@ class RecipientMergerTest: XCTestCase {
             let d = TestDependencies()
             let mergedRecipient = d.mockDB.write { tx in
                 for initialState in testCase.initialState {
-                    d.recipientDatabaseTable.insertRecipient(
-                        SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber),
-                        transaction: tx
-                    )
+                    var recipient = SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber)
+                    d.recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
                 }
                 return d.recipientMerger.applyMergeFromContactDiscovery(
                     localIdentifiers: .forUnitTests,
@@ -339,7 +337,7 @@ class RecipientMergerTest: XCTestCase {
                 XCTAssertEqual(recipient.pni, finalState?.pni)
                 XCTAssertEqual(recipient.aci, finalState?.aci)
             }
-            XCTAssertEqual(recipientTable, [:])
+            XCTAssert(recipientTable.isEmpty)
         }
     }
 
@@ -347,12 +345,12 @@ class RecipientMergerTest: XCTestCase {
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let phone1 = E164("+16505550101")!
         let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
-        let recipient1 = SignalRecipient(aci: nil, pni: pni1, phoneNumber: phone1)
+        var recipient1 = SignalRecipient(aci: nil, pni: pni1, phoneNumber: phone1)
 
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
         let phone2 = E164("+16505550102")!
         let pni2 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b2")
-        let recipient2 = SignalRecipient(aci: aci2, pni: pni2, phoneNumber: phone2)
+        var recipient2 = SignalRecipient(aci: aci2, pni: pni2, phoneNumber: phone2)
 
         struct TestCase {
             let mergeRequest: (aci: Aci?, phoneNumber: E164, pni: Pni)
@@ -392,9 +390,8 @@ class RecipientMergerTest: XCTestCase {
 
             let d = TestDependencies()
             d.mockDB.write { tx in
-                for recipient in [recipient1, recipient2] {
-                    d.recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
-                }
+                d.recipientDatabaseTable.insertRecipient(&recipient1, transaction: tx)
+                d.recipientDatabaseTable.insertRecipient(&recipient2, transaction: tx)
                 for recipient in testCase.hasSession {
                     d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
                     let thread = TSContactThread(contactAddress: SignalServiceAddress(
@@ -430,18 +427,19 @@ class RecipientMergerTest: XCTestCase {
 
     func testPniSignatureMerge() throws {
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        let aciRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: nil)
+        var aciRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: nil)
 
         let phoneNumber = E164("+16505550101")!
         let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
-        let pniRecipient = SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber)
+        var pniRecipient = SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber)
 
         let d = TestDependencies()
         d.mockDB.write { tx in
-            for recipient in [aciRecipient, pniRecipient] {
-                d.recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
-                d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
-            }
+            d.recipientDatabaseTable.insertRecipient(&aciRecipient, transaction: tx)
+            d.aciSessionStoreKeyValueStore.setData(Data(), key: aciRecipient.uniqueId, transaction: tx)
+
+            d.recipientDatabaseTable.insertRecipient(&pniRecipient, transaction: tx)
+            d.aciSessionStoreKeyValueStore.setData(Data(), key: pniRecipient.uniqueId, transaction: tx)
         }
 
         d.mockDB.write { tx in
@@ -572,10 +570,8 @@ class RecipientMergerTest: XCTestCase {
             let d = TestDependencies()
             let mergedRecipient = d.mockDB.write { tx in
                 for initialState in testCase.initialState {
-                    d.recipientDatabaseTable.insertRecipient(
-                        SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber),
-                        transaction: tx
-                    )
+                    var recipient = SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber)
+                    d.recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
                 }
                 return d.recipientMerger.applyMergeFromStorageService(
                     localIdentifiers: .forUnitTests,
@@ -603,7 +599,7 @@ class RecipientMergerTest: XCTestCase {
                     XCTAssertEqual(mergedRecipient.uniqueId, recipient.uniqueId)
                 }
             }
-            XCTAssertEqual(recipientTable, [:])
+            XCTAssert(recipientTable.isEmpty)
         }
     }
 }

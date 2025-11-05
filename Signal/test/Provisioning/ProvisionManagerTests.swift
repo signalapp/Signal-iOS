@@ -50,7 +50,7 @@ public class ProvisioningManagerTests {
         let myAci = Aci.randomForTesting()
         let myPhoneNumber = E164("+16505550100")!
         let myPni = Pni.randomForTesting()
-        let myRecipient = SignalRecipient(aci: myAci, pni: myPni, phoneNumber: myPhoneNumber)
+        var myRecipient = SignalRecipient(aci: myAci, pni: myPni, phoneNumber: myPhoneNumber)
         let profileKey = Aes256Key.generateRandom()
         let accountEntropyPool = AccountEntropyPool()
         let mrbk = MediaRootBackupKey(backupKey: .generateRandom())
@@ -66,7 +66,7 @@ public class ProvisioningManagerTests {
         db.write { tx in
             accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: tx)
             accountKeyStore.setMediaRootBackupKey(mrbk, tx: tx)
-            recipientDatabaseTable.insertRecipient(myRecipient, transaction: tx)
+            recipientDatabaseTable.insertRecipient(&myRecipient, transaction: tx)
             mockIdentityManager.setIdentityKeyPair(myAciIdentityKeyPair.asECKeyPair, for: .aci, tx: tx)
             mockIdentityManager.setIdentityKeyPair(myPniIdentityKeyPair.asECKeyPair, for: .pni, tx: tx)
         }

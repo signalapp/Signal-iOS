@@ -111,7 +111,8 @@ class GRDBFinderTest: SignalBaseTest {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         self.write { transaction in
             [address1, address2, address3, address4].forEach {
-                recipientDatabaseTable.insertRecipient(SignalRecipient(aci: $0.aci, pni: nil, phoneNumber: $0.e164), transaction: transaction)
+                var recipient = SignalRecipient(aci: $0.aci, pni: nil, phoneNumber: $0.e164)
+                recipientDatabaseTable.insertRecipient(&recipient, transaction: transaction)
             }
         }
 

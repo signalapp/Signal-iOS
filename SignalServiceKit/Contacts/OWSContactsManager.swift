@@ -1211,7 +1211,7 @@ extension OWSContactsManager: ContactManager {
         }
     }
 
-    private func intersectContacts(_ phoneNumbers: Set<String>) async throws -> Set<SignalRecipient> {
+    private func intersectContacts(_ phoneNumbers: Set<String>) async throws -> [SignalRecipient] {
         if phoneNumbers.isEmpty {
             return []
         }

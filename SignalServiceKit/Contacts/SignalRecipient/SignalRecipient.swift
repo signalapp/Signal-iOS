@@ -17,7 +17,7 @@ public import LibSignalClient
 /// We also store the set of device IDs for each account on this record. If
 /// an account has at least one device, it's registered. If an account
 /// doesn't have any devices, then that user isn't registered.
-public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, PersistableRecord, Codable {
+public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codable {
     public static let databaseTableName = "model_SignalRecipient"
 
     public enum Constants {
@@ -78,11 +78,11 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
         )
     }
 
-    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?) {
+    public init(aci: Aci?, pni: Pni?, phoneNumber: E164?) {
         self.init(aci: aci, pni: pni, phoneNumber: phoneNumber, deviceIds: [])
     }
 
-    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [DeviceId]) {
+    public init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [DeviceId]) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
@@ -95,7 +95,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
     }
 
     static func buildEmptyRecipient(unregisteredAt timestamp: UInt64) -> Self {
-        let result = Self(aci: nil, pni: nil, phoneNumber: nil)
+        var result = Self(aci: nil, pni: nil, phoneNumber: nil)
         result.unregisteredAtTimestamp = timestamp
         return result
     }
@@ -154,50 +154,6 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
         self.unregisteredAtTimestamp = unregisteredAtTimestamp
     }
 
-    public func copy(with zone: NSZone? = nil) -> Any {
-        return copyRecipient()
-    }
-
-    public func copyRecipient() -> SignalRecipient {
-        return SignalRecipient(
-            id: id,
-            uniqueId: uniqueId,
-            aciString: aciString,
-            pni: pni,
-            phoneNumber: phoneNumber,
-            deviceIds: deviceIds,
-            unregisteredAtTimestamp: unregisteredAtTimestamp
-        )
-    }
-
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let otherRecipient = object as? SignalRecipient else {
-            return false
-        }
-        guard id == otherRecipient.id else { return false }
-        guard uniqueId == otherRecipient.uniqueId else { return false }
-        guard aciString == otherRecipient.aciString else { return false }
-        guard pni == otherRecipient.pni else { return false }
-        guard phoneNumber?.stringValue == otherRecipient.phoneNumber?.stringValue else { return false }
-        guard phoneNumber?.isDiscoverable == otherRecipient.phoneNumber?.isDiscoverable else { return false }
-        guard deviceIds == otherRecipient.deviceIds else { return false }
-        guard unregisteredAtTimestamp == otherRecipient.unregisteredAtTimestamp else { return false }
-        return true
-    }
-
-    public override var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(id)
-        hasher.combine(uniqueId)
-        hasher.combine(aciString)
-        hasher.combine(pni)
-        hasher.combine(phoneNumber?.stringValue)
-        hasher.combine(phoneNumber?.isDiscoverable)
-        hasher.combine(deviceIds)
-        hasher.combine(unregisteredAtTimestamp)
-        return hasher.finalize()
-    }
-
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
@@ -253,7 +209,6 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
 
     public var isRegistered: Bool { !deviceIds.isEmpty }
 
-    @objc
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber?.stringValue)
     }
@@ -274,7 +229,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
 
     // MARK: - Database Hooks
 
-    public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
 }
@@ -284,7 +239,7 @@ public final class SignalRecipient: NSObject, NSCopying, FetchableRecord, Persis
 extension SignalRecipientManagerImpl {
     func setDeviceIds(
         _ deviceIds: Set<DeviceId>,
-        for recipient: SignalRecipient,
+        for recipient: inout SignalRecipient,
         shouldUpdateStorageService: Bool
     ) {
         recipient.deviceIds = deviceIds.sorted()
@@ -292,14 +247,14 @@ extension SignalRecipientManagerImpl {
         // TODO: Should we deleteAllSessionsForContact here?
         setUnregisteredAtTimestamp(
             recipient.isRegistered ? nil : (recipient.unregisteredAtTimestamp ?? NSDate.ows_millisecondTimeStamp()),
-            for: recipient,
+            for: &recipient,
             shouldUpdateStorageService: shouldUpdateStorageService
         )
     }
 
     func setUnregisteredAtTimestamp(
         _ unregisteredAtTimestamp: UInt64?,
-        for recipient: SignalRecipient,
+        for recipient: inout SignalRecipient,
         shouldUpdateStorageService: Bool
     ) {
         if recipient.unregisteredAtTimestamp == unregisteredAtTimestamp {

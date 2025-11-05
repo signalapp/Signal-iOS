@@ -10,16 +10,16 @@ import XCTest
 
 final class ContactDiscoveryManagerTest: XCTestCase {
     private class MockContactDiscoveryTaskQueue: ContactDiscoveryTaskQueue {
-        var onPerform: ((Set<String>, ContactDiscoveryMode) async throws -> Set<SignalRecipient>)?
+        var onPerform: ((Set<String>, ContactDiscoveryMode) async throws -> [SignalRecipient])?
 
-        func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+        func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient] {
             return try await onPerform!(phoneNumbers, mode)
         }
 
-        static func foundResponse(for phoneNumbers: Set<String>) -> Set<SignalRecipient> {
-            Set(phoneNumbers.lazy.map {
-                SignalRecipient(aci: Aci.randomForTesting(), pni: Pni.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [DeviceId(validating: 1)!])
-            })
+        static func foundResponse(for phoneNumbers: Set<String>) -> [SignalRecipient] {
+            return phoneNumbers.lazy.map {
+                return SignalRecipient(aci: Aci.randomForTesting(), pni: Pni.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [DeviceId(validating: 1)!])
+            }
         }
     }
 
@@ -28,7 +28,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
 
     func testQueueing() async throws {
         // Start the first stateful request, but don't resolve it yet.
-        let initialRequest = CancellableContinuation<CheckedContinuation<Set<SignalRecipient>, any Error>>()
+        let initialRequest = CancellableContinuation<CheckedContinuation<[SignalRecipient], any Error>>()
         taskQueue.onPerform = { phoneNumbers, mode in
             return try await withCheckedThrowingContinuation { continuation in
                 initialRequest.resume(with: .success(continuation))

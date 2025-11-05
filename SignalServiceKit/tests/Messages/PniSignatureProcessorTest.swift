@@ -34,7 +34,7 @@ private class MockRecipientMerger: RecipientMerger {
         appliedMergesFromPniSignatures += 1
     }
 
-    func splitUnregisteredRecipientIfNeeded(localIdentifiers: LocalIdentifiers, unregisteredRecipient: SignalRecipient, tx: DBWriteTransaction) {
+    func splitUnregisteredRecipientIfNeeded(localIdentifiers: LocalIdentifiers, unregisteredRecipient: inout SignalRecipient, tx: DBWriteTransaction) {
         fatalError()
     }
 }
@@ -83,8 +83,8 @@ final class PniSignatureProcessorTest: XCTestCase {
         pniIdentityKeyPair = IdentityKeyPair.generate()
 
         mockDB.write { tx in
-            recipientDatabaseTable.insertRecipient(aciRecipient, transaction: tx)
-            recipientDatabaseTable.insertRecipient(pniRecipient, transaction: tx)
+            recipientDatabaseTable.insertRecipient(&aciRecipient, transaction: tx)
+            recipientDatabaseTable.insertRecipient(&pniRecipient, transaction: tx)
         }
         identityManager.recipientIdentities = [
             aciRecipient.uniqueId: OWSRecipientIdentity(

@@ -52,8 +52,8 @@ public class AccountChecker {
                 throw OWSGenericError("Unexpected server response.")
             }
             await db.awaitableWrite { tx in
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
+                var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+                recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: true, tx: tx)
             }
         } catch where error.httpStatusCode == 429 {
             throw RateLimitError(retryAfter: error.httpResponseHeaders?.retryAfterTimeInterval ?? 0)
@@ -72,12 +72,12 @@ public class AccountChecker {
     ) {
         AssertNotOnMainThread()
 
-        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) else {
+        guard var recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return
         }
 
         recipientManager.markAsUnregisteredAndSave(
-            recipient,
+            &recipient,
             unregisteredAt: .now,
             shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx
@@ -90,7 +90,7 @@ public class AccountChecker {
 
         recipientMerger.splitUnregisteredRecipientIfNeeded(
             localIdentifiers: localIdentifiers,
-            unregisteredRecipient: recipient,
+            unregisteredRecipient: &recipient,
             tx: tx
         )
     }

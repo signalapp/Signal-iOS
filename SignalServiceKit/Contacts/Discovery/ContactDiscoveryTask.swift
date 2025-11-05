@@ -8,7 +8,7 @@ import LibSignalClient
 
 /// The primary interface for discovering contacts through the CDS service.
 protocol ContactDiscoveryTaskQueue {
-    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient>
+    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient]
 }
 
 final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
@@ -41,7 +41,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         self.libsignalNet = libsignalNet
     }
 
-    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> Set<SignalRecipient> {
+    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) async throws -> [SignalRecipient] {
         let e164s = Set(phoneNumbers.compactMap { E164($0) })
         if e164s.isEmpty {
             return []
@@ -61,8 +61,8 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private func processResults(
         requestedPhoneNumbers: Set<E164>,
         discoveryResults: [ContactDiscoveryResult]
-    ) async throws -> Set<SignalRecipient> {
-        var registeredRecipients = Set<SignalRecipient>()
+    ) async throws -> [SignalRecipient] {
+        var registeredRecipients = [SignalRecipient]()
 
         try await TimeGatedBatch.enumerateObjects(discoveryResults, db: db) { discoveryResult, tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
@@ -75,16 +75,16 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
                 aci: discoveryResult.aci,
                 tx: tx
             )
-            guard let recipient else {
+            guard var recipient else {
                 return
             }
-            setPhoneNumberDiscoverable(true, for: recipient, tx: tx)
-            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
+            setPhoneNumberDiscoverable(true, for: &recipient, tx: tx)
+            recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: true, tx: tx)
 
             // We process all the results that we were provided, but we only return the
             // recipients that were specifically requested as part of this operation.
             if requestedPhoneNumbers.contains(discoveryResult.e164) {
-                registeredRecipients.insert(recipient)
+                registeredRecipients.append(recipient)
             }
         }
 
@@ -107,14 +107,14 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
             let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
-            guard let recipient else {
+            guard var recipient else {
                 return
             }
-            setPhoneNumberDiscoverable(false, for: recipient, tx: tx)
+            setPhoneNumberDiscoverable(false, for: &recipient, tx: tx)
             guard recipient.aci == nil, recipient.pni == nil else {
                 return
             }
-            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
+            recipientManager.markAsUnregisteredAndSave(&recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
         }
 
         return registeredRecipients
@@ -122,7 +122,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
 
     private func setPhoneNumberDiscoverable(
         _ isPhoneNumberDiscoverable: Bool,
-        for recipient: SignalRecipient,
+        for recipient: inout SignalRecipient,
         tx: DBWriteTransaction
     ) {
         if recipient.phoneNumber?.isDiscoverable == isPhoneNumberDiscoverable {

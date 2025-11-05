@@ -93,13 +93,13 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
     ) -> BackupArchive.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
 
-        let localSignalRecipient = SignalRecipient(
+        var localSignalRecipient = SignalRecipient(
             aci: context.localIdentifiers.aci,
             pni: context.localIdentifiers.pni,
             phoneNumber: E164(context.localIdentifiers.phoneNumber)
         )
         do {
-            try recipientStore.insertRecipient(localSignalRecipient, tx: context.tx)
+            try recipientStore.insertRecipient(&localSignalRecipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }

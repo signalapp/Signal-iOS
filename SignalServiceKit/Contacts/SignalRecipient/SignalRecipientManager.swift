@@ -12,7 +12,7 @@ public protocol SignalRecipientManager {
     ) -> SignalRecipient?
 
     func modifyAndSave(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         deviceIdsToAdd: [DeviceId],
         deviceIdsToRemove: [DeviceId],
         shouldUpdateStorageService: Bool,
@@ -20,7 +20,7 @@ public protocol SignalRecipientManager {
     )
 
     func markAsUnregisteredAndSave(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         unregisteredAt: UnregisteredAt,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
@@ -34,13 +34,13 @@ public enum UnregisteredAt {
 
 extension SignalRecipientManager {
     public func markAsRegisteredAndSave(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         deviceId: DeviceId = .primary,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
     ) {
         modifyAndSave(
-            recipient,
+            &recipient,
             deviceIdsToAdd: [deviceId],
             deviceIdsToRemove: [],
             shouldUpdateStorageService: shouldUpdateStorageService,
@@ -77,16 +77,16 @@ public class SignalRecipientManagerImpl: SignalRecipientManager {
     }
 
     public func markAsUnregisteredAndSave(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         unregisteredAt: UnregisteredAt,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction
     ) {
         if case .specificTimeFromOtherDevice(let timestamp) = unregisteredAt {
-            setUnregisteredAtTimestamp(timestamp, for: recipient, shouldUpdateStorageService: shouldUpdateStorageService)
+            setUnregisteredAtTimestamp(timestamp, for: &recipient, shouldUpdateStorageService: shouldUpdateStorageService)
         }
         modifyAndSave(
-            recipient,
+            &recipient,
             deviceIdsToAdd: [],
             deviceIdsToRemove: recipient.deviceIds,
             shouldUpdateStorageService: shouldUpdateStorageService,
@@ -95,7 +95,7 @@ public class SignalRecipientManagerImpl: SignalRecipientManager {
     }
 
     public func modifyAndSave(
-        _ recipient: SignalRecipient,
+        _ recipient: inout SignalRecipient,
         deviceIdsToAdd: [DeviceId],
         deviceIdsToRemove: [DeviceId],
         shouldUpdateStorageService: Bool,
@@ -116,7 +116,7 @@ public class SignalRecipientManagerImpl: SignalRecipientManager {
 
         Logger.info("Updating \(recipient.aci?.logString ?? recipient.pni?.logString ?? "<>")'s devices. Added \(newDeviceIds.subtracting(oldDeviceIds).sorted()). Removed \(oldDeviceIds.subtracting(newDeviceIds).sorted()).")
 
-        setDeviceIds(newDeviceIds, for: recipient, shouldUpdateStorageService: shouldUpdateStorageService)
+        setDeviceIds(newDeviceIds, for: &recipient, shouldUpdateStorageService: shouldUpdateStorageService)
         recipientDatabaseTable.updateRecipient(recipient, transaction: tx)
     }
 }

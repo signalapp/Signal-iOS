@@ -651,13 +651,13 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         }
 
         let recipientProto = recipient
-        let recipient: SignalRecipient = .fromBackup(
+        var recipient: SignalRecipient = .fromBackup(
             backupContactAddress,
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )
         do {
-            try recipientStore.insertRecipient(recipient, tx: context.tx)
+            try recipientStore.insertRecipient(&recipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
         }

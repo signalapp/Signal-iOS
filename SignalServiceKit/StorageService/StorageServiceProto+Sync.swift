@@ -451,7 +451,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return .invalid
         }
 
-        let recipient = recipientMerger.applyMergeFromStorageService(
+        var recipient = recipientMerger.applyMergeFromStorageService(
             localIdentifiers: localIdentifiers,
             isPrimaryDevice: isPrimaryDevice,
             serviceIds: contact.serviceIds,
@@ -460,7 +460,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             recipientManager.markAsUnregisteredAndSave(
-                recipient,
+                &recipient,
                 unregisteredAt: .specificTimeFromOtherDevice(unregisteredAtTimestamp),
                 shouldUpdateStorageService: false,
                 tx: transaction
@@ -472,13 +472,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             if contact.phoneNumber == nil, contact.pni == nil {
                 recipientMerger.splitUnregisteredRecipientIfNeeded(
                     localIdentifiers: localIdentifiers,
-                    unregisteredRecipient: recipient,
+                    unregisteredRecipient: &recipient,
                     tx: transaction
                 )
             }
         } else {
             recipientManager.markAsRegisteredAndSave(
-                recipient,
+                &recipient,
                 shouldUpdateStorageService: false,
                 tx: transaction
             )

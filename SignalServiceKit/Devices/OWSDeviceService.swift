@@ -119,9 +119,9 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
         let didAddOrRemove = await db.awaitableWrite { tx in
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
-            let localRecipient = recipientFetcher.fetchOrCreate(serviceId: localIdentifiers.aci, tx: tx)
+            var localRecipient = recipientFetcher.fetchOrCreate(serviceId: localIdentifiers.aci, tx: tx)
             recipientManager.modifyAndSave(
-                localRecipient,
+                &localRecipient,
                 deviceIdsToAdd: Array(Set(deviceIds).subtracting(localRecipient.deviceIds)),
                 deviceIdsToRemove: Array(Set(localRecipient.deviceIds).subtracting(deviceIds)),
                 shouldUpdateStorageService: false,

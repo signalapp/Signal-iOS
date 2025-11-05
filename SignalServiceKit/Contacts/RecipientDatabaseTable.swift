@@ -157,7 +157,7 @@ public struct RecipientDatabaseTable {
         return result
     }
 
-    public func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
+    public func insertRecipient(_ signalRecipient: inout SignalRecipient, transaction: DBWriteTransaction) {
         failIfThrows {
             do {
                 try signalRecipient.insert(transaction.database)

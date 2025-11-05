@@ -216,8 +216,8 @@ public struct UsernameQuerier {
         username: String,
         tx: DBWriteTransaction
     ) {
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
-        recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
+        var recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: true, tx: tx)
 
         let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
             forRecipient: recipient,

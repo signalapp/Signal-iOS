@@ -33,8 +33,8 @@ public class RecipientFetcherImpl: RecipientFetcher {
         if let serviceIdRecipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return (inserted: false, serviceIdRecipient)
         }
-        let newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
-        recipientDatabaseTable.insertRecipient(newInstance, transaction: tx)
+        var newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
+        recipientDatabaseTable.insertRecipient(&newInstance, transaction: tx)
         return (inserted: true, newInstance)
     }
 
@@ -42,8 +42,8 @@ public class RecipientFetcherImpl: RecipientFetcher {
         if let result = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }
-        let result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
-        recipientDatabaseTable.insertRecipient(result, transaction: tx)
+        var result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
+        recipientDatabaseTable.insertRecipient(&result, transaction: tx)
         searchableNameIndexer.insert(result, tx: tx)
         return result
     }

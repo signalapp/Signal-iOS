@@ -156,7 +156,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         isLocalRecipient: Bool
     ) -> MergedRecipient {
         let oldRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: oldPhoneNumber)
-        let newRecipient = oldRecipient.copyRecipient()
+        var newRecipient = oldRecipient
         newRecipient.phoneNumber = .init(stringValue: newPhoneNumber.stringValue, isDiscoverable: true)
         return MergedRecipient(isLocalRecipient: isLocalRecipient, oldRecipient: oldRecipient, newRecipient: newRecipient)
     }

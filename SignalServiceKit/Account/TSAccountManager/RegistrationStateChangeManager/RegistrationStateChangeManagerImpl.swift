@@ -415,7 +415,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, pni: pni, e164: e164))
 
-        let recipient = recipientMerger.applyMergeForLocalAccount(
+        var recipient = recipientMerger.applyMergeForLocalAccount(
             aci: aci,
             phoneNumber: e164,
             pni: pni,
@@ -424,7 +424,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         // Always add the .primary DeviceId as well as our own. This is how linked
         // devices know to send their initial sync messages to the primary.
         recipientManager.modifyAndSave(
-            recipient,
+            &recipient,
             deviceIdsToAdd: [deviceId, .primary],
             deviceIdsToRemove: [],
             shouldUpdateStorageService: false,

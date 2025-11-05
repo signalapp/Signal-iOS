@@ -84,14 +84,8 @@ struct PollManagerTest {
 
     private func insertSignalRecipient(aci: Aci, pni: Pni, phoneNumber: E164) {
         db.write { tx in
-            recipientDatabaseTable.insertRecipient(
-                SignalRecipient(
-                    aci: aci,
-                    pni: pni,
-                    phoneNumber: phoneNumber
-                ),
-                transaction: tx
-            )
+            var recipient = SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
+            recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
         }
     }
 

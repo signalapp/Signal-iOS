@@ -64,7 +64,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 tx: transaction
             )
             recipientManager.markAsRegisteredAndSave(
-                self.aliceRecipient!,
+                &self.aliceRecipient,
                 shouldUpdateStorageService: false,
                 tx: transaction
             )
@@ -82,7 +82,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 tx: transaction
             )
             recipientManager.markAsRegisteredAndSave(
-                self.bobRecipient!,
+                &self.bobRecipient,
                 shouldUpdateStorageService: false,
                 tx: transaction
             )
