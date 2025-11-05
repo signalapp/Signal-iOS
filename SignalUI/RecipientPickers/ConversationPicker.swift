@@ -44,18 +44,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private var searchTask: Task<Void, Never>?
 
-    fileprivate lazy var searchBar: OWSSearchBar = {
-        let searchBar = OWSSearchBar()
-        searchBar.placeholder = CommonStrings.searchPlaceholder
-        searchBar.delegate = self
-        return searchBar
-    }()
-
-    private let searchBarWrapper: UIStackView = {
-        let searchBarWrapper = UIStackView()
-        searchBarWrapper.axis = .vertical
-        searchBarWrapper.alignment = .fill
-        return searchBarWrapper
+    private lazy var searchController: UISearchController = {
+        let controller = UISearchController(searchResultsController: nil)
+        controller.searchResultsUpdater = self
+        controller.delegate = self
+        return controller
     }()
 
     public var textInput: String? {
@@ -124,8 +117,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         self.selectionBehavior = .toggleSelectionWithAction
         self.shouldAvoidKeyboard = true
-        searchBarWrapper.addArrangedSubview(searchBar)
-        self.topHeader = searchBarWrapper
+
+        self.navigationItem.searchController = searchController
+        if #available(iOS 16.0, *) {
+            self.navigationItem.preferredSearchBarPlacement = .stacked
+        }
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+
         self.bottomFooter = footerView
         selection.delegate = self
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
@@ -136,14 +134,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     public func updateApprovalMode() { footerView.updateContents() }
-
-    public var shouldShowSearchBar: Bool = true {
-        didSet {
-            if isViewLoaded {
-                ensureSearchBarVisibility()
-            }
-        }
-    }
 
     public override var preferredNavigationBarStyle: OWSNavigationBarStyle {
         return .solid
@@ -192,33 +182,27 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    public var shouldHideSearchBarIfCancelled = false
-
-    private func ensureSearchBarVisibility() {
-        AssertIsOnMainThread()
-
-        searchBar.isHidden = !shouldShowSearchBar
-    }
-
     public func selectSearchBar() {
         AssertIsOnMainThread()
 
-        shouldShowSearchBar = true
-        searchBar.becomeFirstResponder()
+        searchController.isActive = true
+        searchController.searchBar.becomeFirstResponder()
     }
 
     open override func viewDidLoad() {
         super.viewDidLoad()
 
         if pickerDelegate?.conversationPickerCanCancel(self) ?? false {
-            self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self.navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
                 self?.onTouchCancelButton()
             }
         }
 
-        ensureSearchBarVisibility()
-
         title = Strings.title
+
+        if #available(iOS 17.0, *) {
+            view.keyboardLayoutGuide.usesBottomSafeArea = false
+        }
 
         tableView.allowsMultipleSelection = true
         tableView.register(ConversationPickerCell.self, forCellReuseIdentifier: ConversationPickerCell.reuseIdentifier)
@@ -254,14 +238,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     open override func themeDidChange() {
         super.themeDidChange()
 
-        searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
         updateTableContents(shouldReload: false)
-    }
-
-    open override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-
-        searchBar.layoutMargins = cellOuterInsets
     }
 
     // MARK: - ConversationCollection
@@ -962,7 +939,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             didDeselect(conversation: conversation)
         } else {
             didSelect(conversation: conversation)
-            searchBar.resignFirstResponder()
+            searchController.searchBar.resignFirstResponder()
         }
     }
 
@@ -1162,10 +1139,12 @@ extension ConversationPickerViewController: NewStoryHeaderDelegate {
     }
 }
 
-// MARK: -
+// MARK: - UISearchController integration
 
-extension ConversationPickerViewController: UISearchBarDelegate {
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+extension ConversationPickerViewController: UISearchResultsUpdating, UISearchControllerDelegate {
+
+    public func updateSearchResults(for searchController: UISearchController) {
+        let searchText = (searchController.searchBar.text ?? "").stripped
         self.searchTask?.cancel()
         self.searchTask = Task { [self] in
             do throws(CancellationError) {
@@ -1181,38 +1160,16 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         }
     }
 
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(true, animated: true)
+    public func willPresentSearchController(_ searchController: UISearchController) {
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
         restoreSelection()
     }
 
-    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(false, animated: true)
+    public func didDismissSearchController(_ searchController: UISearchController) {
+        // Clear results and notify delegate.
+        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
         restoreSelection()
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = nil
-        searchBar.resignFirstResponder()
-        if shouldHideSearchBarIfCancelled {
-            self.shouldShowSearchBar = false
-        }
-        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
-        pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
-    }
-
-    public func resetSearchBarText() {
-        guard nil != searchBar.text?.nilIfEmpty else {
-            return
-        }
-        searchBar.text = nil
-        conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
-    }
-
-    public var isSearchBarActive: Bool {
-        searchBar.isFirstResponder
     }
 }
 
@@ -1274,7 +1231,6 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
         AssertIsOnMainThread()
 
         pickerDelegate?.conversationPickerDidBeginEditingText()
-        shouldShowSearchBar = false
     }
 }
 
@@ -1433,9 +1389,6 @@ extension ConversationPickerViewController: ConversationPickerSelectionDelegate 
         AssertIsOnMainThread()
 
         pickerDelegate?.conversationPickerSelectionDidChange(self)
-
-        // Clear the search text, if any.
-        resetSearchBarText()
     }
 
     func conversationPickerSelectionDidRemove() {

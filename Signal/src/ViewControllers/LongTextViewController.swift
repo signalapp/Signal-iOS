@@ -333,8 +333,10 @@ extension LongTextViewController: DatabaseChangeDelegate {
 // MARK: -
 
 extension LongTextViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
-                                              recipientThreads: [TSThread]) {
+    func forwardMessageFlowDidComplete(
+        items: [ForwardMessageItem],
+        recipientThreads: [TSThread],
+    ) {
         dismiss(animated: true) {
             ForwardMessageViewController.finalizeForward(items: items,
                                                          recipientThreads: recipientThreads,
@@ -342,7 +344,7 @@ extension LongTextViewController: ForwardMessageDelegate {
         }
     }
 
-    public func forwardMessageFlowDidCancel() {
+    func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
     }
 }

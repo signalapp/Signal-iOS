@@ -214,8 +214,10 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
-                                              recipientThreads: [TSThread]) {
+    func forwardMessageFlowDidComplete(
+        items: [ForwardMessageItem],
+        recipientThreads: [TSThread],
+    ) {
         AssertIsOnMainThread()
 
         self.uiMode = .normal
@@ -227,7 +229,7 @@ extension ConversationViewController: ForwardMessageDelegate {
         }
     }
 
-    public func forwardMessageFlowDidCancel() {
+    func forwardMessageFlowDidCancel() {
         self.dismiss(animated: true)
     }
 }

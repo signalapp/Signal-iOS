@@ -21,7 +21,6 @@ public class NewStoryHeaderView: UIStackView {
 
         super.init(frame: .zero)
 
-        addBackgroundView(withBackgroundColor: delegate.tableBackgroundColor)
         axis = .horizontal
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = .init(

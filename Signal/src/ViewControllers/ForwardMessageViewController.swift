@@ -3,41 +3,38 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
-public protocol ForwardMessageDelegate: AnyObject {
+protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                        recipientThreads: [TSThread])
     func forwardMessageFlowDidCancel()
 }
 
-class ForwardMessageViewController: InteractiveSheetViewController {
+class ForwardMessageViewController: OWSNavigationController {
 
-    private let pickerVC: ForwardPickerViewController
-    private let forwardNavigationViewController = ForwardNavigationViewController()
+    private let pickerVC: ConversationPickerViewController
 
-    override var interactiveScrollViews: [UIScrollView] { [ pickerVC.tableView ] }
+    weak var forwardMessageDelegate: ForwardMessageDelegate?
 
-    public weak var forwardMessageDelegate: ForwardMessageDelegate?
+    typealias Item = ForwardMessageItem
+    private typealias Content = ForwardMessageContent
 
-    public typealias Item = ForwardMessageItem
-    fileprivate typealias Content = ForwardMessageContent
+    private var content: Content
 
-    fileprivate var content: Content
-
-    fileprivate var textMessage: String?
+    private var textMessage: String?
 
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    override var sheetBackgroundColor: UIColor {
-        ForwardPickerViewController.tableBackgroundColor(isUsingPresentedStyle: true)
-    }
-
     private init(content: Content) {
         self.content = content
-        self.pickerVC = ForwardPickerViewController(selection: selection)
+        self.pickerVC = ConversationPickerViewController(selection: selection)
+
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            self.pickerVC.backgroundStyle = .none
+        }
 
         super.init()
 
@@ -51,18 +48,34 @@ class ForwardMessageViewController: InteractiveSheetViewController {
             self.pickerVC.shouldHideRecentConversationsTitle = true
         }
 
-        selectRecipientsStep()
+        pickerVC.pickerDelegate = self
+        pickerVC.shouldBatchUpdateIdentityKeys = true
 
-        minimizedHeight = 576
+        viewControllers = [pickerVC]
+
+        modalPresentationStyle = .formSheet
+        sheetPresentationController?.detents = [.medium(), .large()]
+        sheetPresentationController?.delegate = self
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
-                              from fromViewController: UIViewController,
-                              delegate: ForwardMessageDelegate) {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        pickerVC.title = OWSLocalizedString(
+            "FORWARD_MESSAGE_TITLE",
+            comment: "Title for the 'forward message(s)' view."
+        )
+    }
+
+    class func present(
+        forItemViewModels itemViewModels: [CVItemViewModelImpl],
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate,
+    ) {
         do {
             let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try Content.build(itemViewModels: itemViewModels, transaction: transaction)
@@ -74,9 +87,11 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    public class func present(forSelectionItems selectionItems: [CVSelectionItem],
-                              from fromViewController: UIViewController,
-                              delegate: ForwardMessageDelegate) {
+    class func present(
+        forSelectionItems selectionItems: [CVSelectionItem],
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate,
+    ) {
         do {
             let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try Content.build(selectionItems: selectionItems, transaction: transaction)
@@ -88,7 +103,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    public class func present(
+    class func present(
         forAttachmentStreams attachmentStreams: [ReferencedAttachmentStream],
         fromMessage message: TSMessage,
         from fromViewController: UIViewController,
@@ -118,7 +133,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    public class func present(
+    class func present(
         forStoryMessage storyMessage: StoryMessage,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
@@ -159,7 +174,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         present(content: .single(item: builder.build()), from: fromViewController, delegate: delegate)
     }
 
-    public class func present(
+    class func present(
         forMessageBody messageBody: MessageBody,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
@@ -201,39 +216,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    private func selectRecipientsStep() {
-        pickerVC.forwardMessageViewController = self
-        pickerVC.shouldShowSearchBar = false
-        pickerVC.shouldHideSearchBarIfCancelled = true
-        pickerVC.pickerDelegate = self
-        pickerVC.shouldBatchUpdateIdentityKeys = true
-
-        forwardNavigationViewController.forwardMessageViewController = self
-        forwardNavigationViewController.viewControllers = [ pickerVC ]
-        self.addChild(forwardNavigationViewController)
-
-        let navView = forwardNavigationViewController.view!
-        self.contentView.addSubview(navView)
-        navView.autoPinEdgesToSuperviewEdges()
-    }
-
-    fileprivate func selectSearchBar() {
-        AssertIsOnMainThread()
-
-        pickerVC.selectSearchBar()
-        ensureHeaderVisibility()
-    }
-
-    fileprivate func ensureHeaderVisibility() {
-        AssertIsOnMainThread()
-
-        forwardNavigationViewController.setNavigationBarHidden(pickerVC.isSearchBarActive, animated: false)
-        if pickerVC.isSearchBarActive {
-            maximizeHeight()
-        }
-    }
-
-    fileprivate func ensureBottomFooterVisibility() {
+    private func ensureBottomFooterVisibility() {
         AssertIsOnMainThread()
 
         if selectedConversations.allSatisfy({ $0.outgoingMessageType == .storyMessage }) {
@@ -249,10 +232,27 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         pickerVC.shouldHideBottomFooter = selectedConversations.isEmpty
     }
 
-    public override func willDismissInteractively() {
-        AssertIsOnMainThread()
+    private func maximizeHeight() {
+        sheetPresentationController?.animateChanges {
+            sheetPresentationController?.selectedDetentIdentifier = .large
+        }
+    }
+}
 
+extension ForwardMessageViewController: UISheetPresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+
+    func sheetPresentationControllerDidChangeSelectedDetentIdentifier(_ sheetPresentationController: UISheetPresentationController) {
+        // Alleviates an issue where the keyboard layout guide gets positioned
+        // wrong after swiping between detents.
+        DispatchQueue.main.async {
+            sheetPresentationController.animateChanges {
+                self.pickerVC.bottomFooter?.setNeedsLayout()
+                self.pickerVC.bottomFooter?.layoutIfNeeded()
+            }
+        }
     }
 }
 
@@ -388,7 +388,7 @@ extension ForwardMessageViewController {
         }
     }
 
-    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) {
+    private func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) {
         let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return body.forForwarding(to: recipientThread, transaction: transaction).asMessageBodyForForwarding()
         }
@@ -399,19 +399,19 @@ extension ForwardMessageViewController {
         )
     }
 
-    fileprivate func send(contactShare: ContactShareDraft, thread: TSThread) {
+    private func send(contactShare: ContactShareDraft, thread: TSThread) {
         ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
     }
 
-    fileprivate func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
+    private func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
         ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
     }
 
-    fileprivate func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) {
+    private func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) {
         ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
     }
 
-    fileprivate func enqueueMessageViaThreadUtil(
+    private func enqueueMessageViaThreadUtil(
         toRecipientThreads recipientThreads: [TSThread],
         enqueueBlock: (TSThread) -> Void
     ) async {
@@ -423,7 +423,7 @@ extension ForwardMessageViewController {
         try? await ThreadUtil.enqueueSendQueue.enqueue(operation: {}).value
     }
 
-    fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) async throws -> [TSThread] {
+    private func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) async throws -> [TSThread] {
         guard conversationItems.count > 0 else {
             throw OWSAssertionError("No recipients.")
         }
@@ -454,7 +454,7 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
     }
 
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
-        false
+        true
     }
 
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -472,16 +472,18 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
     }
 
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
-        ensureHeaderVisibility()
+        maximizeHeight()
     }
 }
 
 // MARK: -
 
 extension ForwardMessageViewController {
-    public static func finalizeForward(items: [Item],
-                                       recipientThreads: [TSThread],
-                                       fromViewController: UIViewController) {
+    static func finalizeForward(
+        items: [Item],
+        recipientThreads: [TSThread],
+        fromViewController: UIViewController,
+    ) {
         let toast: String
         if items.count > 1 {
             toast = OWSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
@@ -496,7 +498,7 @@ extension ForwardMessageViewController {
 
 // MARK: -
 
-public enum ForwardError: Error {
+enum ForwardError: Error {
     case missingInteraction
     case missingThread
     case invalidInteraction
@@ -506,8 +508,10 @@ public enum ForwardError: Error {
 
 extension ForwardMessageViewController {
 
-    public static func showAlertForForwardError(error: Error,
-                                                forwardedInteractionCount: Int) {
+    static func showAlertForForwardError(
+        error: Error,
+        forwardedInteractionCount: Int,
+    ) {
         let genericErrorMessage = (forwardedInteractionCount > 1
                                     ? OWSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_N",
                                                         comment: "Error indicating that messages could not be forwarded.")
@@ -538,7 +542,7 @@ extension ForwardMessageViewController {
 
 // MARK: -
 
-public struct ForwardMessageItem {
+struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
     let interaction: TSInteraction?
@@ -578,17 +582,6 @@ public struct ForwardMessageItem {
                 textAttachment: textAttachment
             )
         }
-    }
-
-    fileprivate var asBuilder: Builder {
-        let builder = Builder(interaction: interaction)
-        builder.attachments = attachments
-        builder.contactShare = contactShare
-        builder.messageBody = messageBody
-        builder.linkPreviewDraft = linkPreviewDraft
-        builder.stickerMetadata = stickerMetadata
-        builder.stickerAttachment = stickerAttachment
-        return builder
     }
 
     var isEmpty: Bool {
@@ -750,7 +743,7 @@ public struct ForwardMessageItem {
 // MARK: -
 
 private enum ForwardMessageContent {
-    fileprivate typealias Item = ForwardMessageItem
+    typealias Item = ForwardMessageItem
 
     case single(item: Item)
     case multiple(items: [Item])
@@ -790,7 +783,7 @@ private enum ForwardMessageContent {
         }
     }
 
-    fileprivate static func build(
+    static func build(
         itemViewModels: [CVItemViewModelImpl],
         transaction: DBReadTransaction
     ) throws -> ForwardMessageContent {
@@ -803,7 +796,7 @@ private enum ForwardMessageContent {
         return build(items: items)
     }
 
-    fileprivate static func build(
+    static func build(
         selectionItems: [CVSelectionItem],
         transaction: DBReadTransaction
     ) throws -> ForwardMessageContent {
@@ -833,52 +826,5 @@ private enum ForwardMessageContent {
             throw ForwardError.invalidInteraction
         }
         return componentState
-    }
-}
-
-// MARK: -
-
-private class ForwardNavigationViewController: OWSNavigationController {
-    weak var forwardMessageViewController: ForwardMessageViewController?
-
-}
-
-// MARK: -
-
-private class ForwardPickerViewController: ConversationPickerViewController {
-    weak var forwardMessageViewController: ForwardMessageViewController?
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        updateNavigationItem()
-    }
-
-    public func updateNavigationItem() {
-        title = OWSLocalizedString("FORWARD_MESSAGE_TITLE",
-                                  comment: "Title for the 'forward message(s)' view.")
-
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonX),
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(didPressCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonSearch),
-                                                            style: .plain,
-                                                            target: self,
-                                                            action: #selector(didPressSearch))
-    }
-
-    @objc
-    private func didPressCancel() {
-        AssertIsOnMainThread()
-
-        pickerDelegate?.conversationPickerDidCancel(self)
-    }
-
-    @objc
-    private func didPressSearch() {
-        AssertIsOnMainThread()
-
-        forwardMessageViewController?.selectSearchBar()
     }
 }

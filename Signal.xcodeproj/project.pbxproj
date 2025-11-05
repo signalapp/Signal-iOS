@@ -181,7 +181,6 @@
 		3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553D271B510400B05242 /* OWSActionSheets.swift */; };
 		3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550A271B510400B05242 /* NonContactTableViewCell.swift */; };
 		3402AAAE271D9E180084CBAE /* ImageEditorTextItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95553271B510400B05242 /* ImageEditorTextItem.swift */; };
-		3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */; };
 		3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95544271B510400B05242 /* OWSNavigationBar.swift */; };
 		3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95536271B510400B05242 /* ContactTableViewCell.swift */; };
 		3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVTextLabel.swift */; };
@@ -4218,7 +4217,6 @@
 		34A95524271B510400B05242 /* CVUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVUtils.swift; sourceTree = "<group>"; };
 		34A95525271B510400B05242 /* CVText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVText.swift; sourceTree = "<group>"; };
 		34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPanGestureRecognizer.swift; sourceTree = "<group>"; };
-		34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithPlaceholder.swift; sourceTree = "<group>"; };
 		34A95529271B510400B05242 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
 		34A9552C271B510400B05242 /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		34A9552D271B510400B05242 /* BodyRangesTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyRangesTextView.swift; sourceTree = "<group>"; };
@@ -8509,7 +8507,6 @@
 				34A95532271B510400B05242 /* TappableView.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
 				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
-				34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
 				34A95564271B510400B05242 /* Toast.swift */,
 				34A95519271B510400B05242 /* VideoPlayerView.swift */,
@@ -16689,7 +16686,6 @@
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
 				764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */,
-				3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */,
 				3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */,
 				34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */,
 				7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */,

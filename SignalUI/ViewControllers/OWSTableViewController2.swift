@@ -166,6 +166,17 @@ open class OWSTableViewController2: OWSViewController {
         applyContents()
     }
 
+    public enum BackgroundStyle {
+        case `default`
+        case none
+    }
+
+    /// In order for iOS 26 resizable sheets to maintain their background
+    /// transition from glass to solid, `.none` must mean the background is
+    /// never set, not that it is set to `.clear` or `nil`, as setting it at any
+    /// point will remove the system dynamic background.
+    public var backgroundStyle: BackgroundStyle = .default
+
     public var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
@@ -178,7 +189,13 @@ open class OWSTableViewController2: OWSViewController {
     private func applyTheme() {
         applyTheme(to: self)
 
-        tableView.backgroundColor = self.tableBackgroundColor
+        switch backgroundStyle {
+        case .default:
+            tableView.backgroundColor = self.tableBackgroundColor
+        case .none:
+            break
+        }
+
         tableView.sectionIndexColor = forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
 
         updateNavbarStyling()
@@ -657,7 +674,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     private func buildHeaderOrFooterTextView() -> UITextView {
         let textView = LinkingTextView()
-        textView.backgroundColor = self.tableBackgroundColor
+        switch backgroundStyle {
+        case .default:
+            textView.backgroundColor = self.tableBackgroundColor
+        case .none:
+            break
+        }
         return textView
     }
 
@@ -1014,7 +1036,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     public func applyTheme(to viewController: UIViewController) {
         AssertIsOnMainThread()
 
-        viewController.view.backgroundColor = self.tableBackgroundColor
+        switch backgroundStyle {
+        case .default:
+            if viewController !== self {
+                viewController.view.backgroundColor = self.tableBackgroundColor
+            }
+        case .none:
+            break
+        }
 
         if
             let owsNavigationController = viewController.owsNavigationController,

@@ -42,10 +42,10 @@ public class ApprovalFooterView: UIView {
     private let hStackView = UIStackView()
     private let vStackView = UIStackView()
 
-    private var textfieldBackgroundView: UIView?
+    private var textFieldBackgroundView: UIView?
 
     public var textInput: String? {
-        approvalTextMode == .none ? nil : textfield.text
+        approvalTextMode == .none ? nil : textField.text
     }
 
     private var approvalMode: ApprovalMode {
@@ -90,7 +90,7 @@ public class ApprovalFooterView: UIView {
         hStackView.spacing = 12
         hStackView.alignment = .center
 
-        vStackView.addArrangedSubviews([textfieldStack, hStackView])
+        vStackView.addArrangedSubviews([textFieldContainer, hStackView])
         vStackView.axis = .vertical
         vStackView.spacing = 16
         vStackView.alignment = .fill
@@ -98,10 +98,6 @@ public class ApprovalFooterView: UIView {
         vStackView.autoPinEdgesToSuperviewMargins()
 
         updateContents()
-
-        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: textfieldBackgroundColor)
-        textfieldBackgroundView.layer.cornerRadius = 10
-        self.textfieldBackgroundView = textfieldBackgroundView
 
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         applyTheme()
@@ -112,7 +108,7 @@ public class ApprovalFooterView: UIView {
         backgroundView.backgroundColor = Theme.keyboardBackgroundColor
         topStrokeView.backgroundColor = Theme.hairlineColor
         namesLabel.textColor = Theme.secondaryTextAndIconColor
-        textfieldBackgroundView?.backgroundColor = textfieldBackgroundColor
+        textFieldBackgroundView?.backgroundColor = textfieldBackgroundColor
     }
 
     private var textfieldBackgroundColor: UIColor {
@@ -172,20 +168,59 @@ public class ApprovalFooterView: UIView {
         return label
     }()
 
-    lazy var textfield: TextFieldWithPlaceholder = {
-        let textfield = TextFieldWithPlaceholder()
-        textfield.delegate = self
-        textfield.font = UIFont.dynamicTypeBody
-        return textfield
+    lazy var textField: UITextField = {
+        let textField = UITextField()
+        textField.delegate = self
+        textField.font = UIFont.dynamicTypeBody
+        textField.setCompressionResistanceHigh()
+        return textField
     }()
 
-    lazy var textfieldStack: UIStackView = {
-        let textfieldStack = UIStackView(arrangedSubviews: [textfield])
-        textfieldStack.axis = .vertical
-        textfieldStack.alignment = .fill
-        textfieldStack.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
-        textfieldStack.isLayoutMarginsRelativeArrangement = true
-        return textfieldStack
+    lazy var textFieldContainer: UIView = {
+        var containerView: UIView = UIView()
+        var contentView: UIView = UIView()
+
+        // When we stop using Xcode 16, change var to let and move this
+        // block to the `else` of the iOS 26 availability if statement.
+        ;{
+            let view = UIView()
+            view.backgroundColor = textfieldBackgroundColor
+            view.layer.cornerRadius = 10
+            view.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
+
+            self.textFieldBackgroundView = view
+
+            containerView = view
+            contentView = view
+        }()
+
+#if compiler(>=6.2)
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            let glassEffect = UIGlassEffect(style: .regular)
+            glassEffect.isInteractive = true
+            let glassEffectView = UIVisualEffectView(effect: glassEffect)
+            glassEffectView.cornerConfiguration = .capsule()
+            glassEffectView.contentView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 11)
+
+            containerView = glassEffectView
+            contentView = glassEffectView.contentView
+        }
+#endif
+
+        // I am at a loss as to why the text field always shrinks to 0
+        // height, but this makes sure there's vertical space for it.
+        let heightLabel = UILabel()
+        heightLabel.isUserInteractionEnabled = false
+        heightLabel.font = textField.font
+        heightLabel.text = " "
+        contentView.addSubview(heightLabel)
+        heightLabel.autoPinEdgesToSuperviewMargins()
+        heightLabel.setCompressionResistanceVerticalHigh()
+
+        contentView.addSubview(textField)
+        textField.autoPinEdgesToSuperviewMargins()
+
+        return containerView
     }()
 
     var proceedLoadingIndicator = UIActivityIndicatorView(style: .medium)
@@ -211,11 +246,11 @@ public class ApprovalFooterView: UIView {
 
         switch approvalTextMode {
         case .none:
-            textfieldStack.isHidden = true
-            textfield.resignFirstResponder()
+            textFieldContainer.isHidden = true
+            textField.resignFirstResponder()
         case .active(let placeholderText):
-            textfieldStack.isHidden = false
-            textfield.placeholderText = placeholderText
+            textFieldContainer.isHidden = false
+            textField.placeholder = placeholderText
         }
 
         if approvalMode == .loading {
@@ -250,14 +285,10 @@ fileprivate extension ApprovalMode {
     }
 }
 
-// MARK: -
+// MARK: - UITextFieldDelegate
 
-extension ApprovalFooterView: TextFieldWithPlaceholderDelegate {
+extension ApprovalFooterView: UITextFieldDelegate {
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.approvalFooterDidBeginEditingText()
-    }
-
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return true
     }
 }
