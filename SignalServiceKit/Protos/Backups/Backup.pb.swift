@@ -288,65 +288,99 @@ public struct BackupProto_Frame: Sendable {
   public init() {}
 }
 
-public struct BackupProto_AccountData: Sendable {
+public struct BackupProto_AccountData: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var profileKey: Data = Data()
+  public var profileKey: Data {
+    get {return _storage._profileKey}
+    set {_uniqueStorage()._profileKey = newValue}
+  }
 
   public var username: String {
-    get {return _username ?? String()}
-    set {_username = newValue}
+    get {return _storage._username ?? String()}
+    set {_uniqueStorage()._username = newValue}
   }
   /// Returns true if `username` has been explicitly set.
-  public var hasUsername: Bool {return self._username != nil}
+  public var hasUsername: Bool {return _storage._username != nil}
   /// Clears the value of `username`. Subsequent reads from it will return its default value.
-  public mutating func clearUsername() {self._username = nil}
+  public mutating func clearUsername() {_uniqueStorage()._username = nil}
 
   public var usernameLink: BackupProto_AccountData.UsernameLink {
-    get {return _usernameLink ?? BackupProto_AccountData.UsernameLink()}
-    set {_usernameLink = newValue}
+    get {return _storage._usernameLink ?? BackupProto_AccountData.UsernameLink()}
+    set {_uniqueStorage()._usernameLink = newValue}
   }
   /// Returns true if `usernameLink` has been explicitly set.
-  public var hasUsernameLink: Bool {return self._usernameLink != nil}
+  public var hasUsernameLink: Bool {return _storage._usernameLink != nil}
   /// Clears the value of `usernameLink`. Subsequent reads from it will return its default value.
-  public mutating func clearUsernameLink() {self._usernameLink = nil}
+  public mutating func clearUsernameLink() {_uniqueStorage()._usernameLink = nil}
 
-  public var givenName: String = String()
+  public var givenName: String {
+    get {return _storage._givenName}
+    set {_uniqueStorage()._givenName = newValue}
+  }
 
-  public var familyName: String = String()
+  public var familyName: String {
+    get {return _storage._familyName}
+    set {_uniqueStorage()._familyName = newValue}
+  }
 
-  public var avatarURLPath: String = String()
+  public var avatarURLPath: String {
+    get {return _storage._avatarURLPath}
+    set {_uniqueStorage()._avatarURLPath = newValue}
+  }
 
   public var donationSubscriberData: BackupProto_AccountData.SubscriberData {
-    get {return _donationSubscriberData ?? BackupProto_AccountData.SubscriberData()}
-    set {_donationSubscriberData = newValue}
+    get {return _storage._donationSubscriberData ?? BackupProto_AccountData.SubscriberData()}
+    set {_uniqueStorage()._donationSubscriberData = newValue}
   }
   /// Returns true if `donationSubscriberData` has been explicitly set.
-  public var hasDonationSubscriberData: Bool {return self._donationSubscriberData != nil}
+  public var hasDonationSubscriberData: Bool {return _storage._donationSubscriberData != nil}
   /// Clears the value of `donationSubscriberData`. Subsequent reads from it will return its default value.
-  public mutating func clearDonationSubscriberData() {self._donationSubscriberData = nil}
+  public mutating func clearDonationSubscriberData() {_uniqueStorage()._donationSubscriberData = nil}
 
   public var accountSettings: BackupProto_AccountData.AccountSettings {
-    get {return _accountSettings ?? BackupProto_AccountData.AccountSettings()}
-    set {_accountSettings = newValue}
+    get {return _storage._accountSettings ?? BackupProto_AccountData.AccountSettings()}
+    set {_uniqueStorage()._accountSettings = newValue}
   }
   /// Returns true if `accountSettings` has been explicitly set.
-  public var hasAccountSettings: Bool {return self._accountSettings != nil}
+  public var hasAccountSettings: Bool {return _storage._accountSettings != nil}
   /// Clears the value of `accountSettings`. Subsequent reads from it will return its default value.
-  public mutating func clearAccountSettings() {self._accountSettings = nil}
+  public mutating func clearAccountSettings() {_uniqueStorage()._accountSettings = nil}
 
   public var backupsSubscriberData: BackupProto_AccountData.IAPSubscriberData {
-    get {return _backupsSubscriberData ?? BackupProto_AccountData.IAPSubscriberData()}
-    set {_backupsSubscriberData = newValue}
+    get {return _storage._backupsSubscriberData ?? BackupProto_AccountData.IAPSubscriberData()}
+    set {_uniqueStorage()._backupsSubscriberData = newValue}
   }
   /// Returns true if `backupsSubscriberData` has been explicitly set.
-  public var hasBackupsSubscriberData: Bool {return self._backupsSubscriberData != nil}
+  public var hasBackupsSubscriberData: Bool {return _storage._backupsSubscriberData != nil}
   /// Clears the value of `backupsSubscriberData`. Subsequent reads from it will return its default value.
-  public mutating func clearBackupsSubscriberData() {self._backupsSubscriberData = nil}
+  public mutating func clearBackupsSubscriberData() {_uniqueStorage()._backupsSubscriberData = nil}
 
-  public var svrPin: String = String()
+  public var svrPin: String {
+    get {return _storage._svrPin}
+    set {_uniqueStorage()._svrPin = newValue}
+  }
+
+  public var androidSpecificSettings: BackupProto_AccountData.AndroidSpecificSettings {
+    get {return _storage._androidSpecificSettings ?? BackupProto_AccountData.AndroidSpecificSettings()}
+    set {_uniqueStorage()._androidSpecificSettings = newValue}
+  }
+  /// Returns true if `androidSpecificSettings` has been explicitly set.
+  public var hasAndroidSpecificSettings: Bool {return _storage._androidSpecificSettings != nil}
+  /// Clears the value of `androidSpecificSettings`. Subsequent reads from it will return its default value.
+  public mutating func clearAndroidSpecificSettings() {_uniqueStorage()._androidSpecificSettings = nil}
+
+  public var bioText: String {
+    get {return _storage._bioText}
+    set {_uniqueStorage()._bioText = newValue}
+  }
+
+  public var bioEmoji: String {
+    get {return _storage._bioEmoji}
+    set {_uniqueStorage()._bioEmoji = newValue}
+  }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -792,13 +826,23 @@ public struct BackupProto_AccountData: Sendable {
     public init() {}
   }
 
+  public struct AndroidSpecificSettings: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var useSystemEmoji: Bool = false
+
+    public var screenshotSecurity: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
   public init() {}
 
-  fileprivate var _username: String? = nil
-  fileprivate var _usernameLink: BackupProto_AccountData.UsernameLink? = nil
-  fileprivate var _donationSubscriberData: BackupProto_AccountData.SubscriberData? = nil
-  fileprivate var _accountSettings: BackupProto_AccountData.AccountSettings? = nil
-  fileprivate var _backupsSubscriberData: BackupProto_AccountData.IAPSubscriberData? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct BackupProto_Recipient: Sendable {
@@ -6436,78 +6480,153 @@ extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountData"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}username\0\u{1}usernameLink\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrlPath\0\u{1}donationSubscriberData\0\u{2}\u{2}accountSettings\0\u{1}backupsSubscriberData\0\u{1}svrPin\0\u{c}\u{8}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}username\0\u{1}usernameLink\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrlPath\0\u{1}donationSubscriberData\0\u{2}\u{2}accountSettings\0\u{1}backupsSubscriberData\0\u{1}svrPin\0\u{1}androidSpecificSettings\0\u{1}bioText\0\u{1}bioEmoji\0\u{c}\u{8}\u{1}")
+
+  fileprivate class _StorageClass {
+    var _profileKey: Data = Data()
+    var _username: String? = nil
+    var _usernameLink: BackupProto_AccountData.UsernameLink? = nil
+    var _givenName: String = String()
+    var _familyName: String = String()
+    var _avatarURLPath: String = String()
+    var _donationSubscriberData: BackupProto_AccountData.SubscriberData? = nil
+    var _accountSettings: BackupProto_AccountData.AccountSettings? = nil
+    var _backupsSubscriberData: BackupProto_AccountData.IAPSubscriberData? = nil
+    var _svrPin: String = String()
+    var _androidSpecificSettings: BackupProto_AccountData.AndroidSpecificSettings? = nil
+    var _bioText: String = String()
+    var _bioEmoji: String = String()
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _profileKey = source._profileKey
+      _username = source._username
+      _usernameLink = source._usernameLink
+      _givenName = source._givenName
+      _familyName = source._familyName
+      _avatarURLPath = source._avatarURLPath
+      _donationSubscriberData = source._donationSubscriberData
+      _accountSettings = source._accountSettings
+      _backupsSubscriberData = source._backupsSubscriberData
+      _svrPin = source._svrPin
+      _androidSpecificSettings = source._androidSpecificSettings
+      _bioText = source._bioText
+      _bioEmoji = source._bioEmoji
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._username) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._usernameLink) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.givenName) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.familyName) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.avatarURLPath) }()
-      case 7: try { try decoder.decodeSingularMessageField(value: &self._donationSubscriberData) }()
-      case 9: try { try decoder.decodeSingularMessageField(value: &self._accountSettings) }()
-      case 10: try { try decoder.decodeSingularMessageField(value: &self._backupsSubscriberData) }()
-      case 11: try { try decoder.decodeSingularStringField(value: &self.svrPin) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._usernameLink) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._givenName) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._familyName) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._avatarURLPath) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._donationSubscriberData) }()
+        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._accountSettings) }()
+        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._backupsSubscriberData) }()
+        case 11: try { try decoder.decodeSingularStringField(value: &_storage._svrPin) }()
+        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._androidSpecificSettings) }()
+        case 13: try { try decoder.decodeSingularStringField(value: &_storage._bioText) }()
+        case 14: try { try decoder.decodeSingularStringField(value: &_storage._bioEmoji) }()
+        default: break
+        }
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.profileKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 1)
-    }
-    try { if let v = self._username {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._usernameLink {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    } }()
-    if !self.givenName.isEmpty {
-      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 4)
-    }
-    if !self.familyName.isEmpty {
-      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 5)
-    }
-    if !self.avatarURLPath.isEmpty {
-      try visitor.visitSingularStringField(value: self.avatarURLPath, fieldNumber: 6)
-    }
-    try { if let v = self._donationSubscriberData {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._accountSettings {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-    } }()
-    try { if let v = self._backupsSubscriberData {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-    } }()
-    if !self.svrPin.isEmpty {
-      try visitor.visitSingularStringField(value: self.svrPin, fieldNumber: 11)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if !_storage._profileKey.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._profileKey, fieldNumber: 1)
+      }
+      try { if let v = _storage._username {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._usernameLink {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      if !_storage._givenName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._givenName, fieldNumber: 4)
+      }
+      if !_storage._familyName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._familyName, fieldNumber: 5)
+      }
+      if !_storage._avatarURLPath.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._avatarURLPath, fieldNumber: 6)
+      }
+      try { if let v = _storage._donationSubscriberData {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      } }()
+      try { if let v = _storage._accountSettings {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      } }()
+      try { if let v = _storage._backupsSubscriberData {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      } }()
+      if !_storage._svrPin.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._svrPin, fieldNumber: 11)
+      }
+      try { if let v = _storage._androidSpecificSettings {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+      } }()
+      if !_storage._bioText.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._bioText, fieldNumber: 13)
+      }
+      if !_storage._bioEmoji.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._bioEmoji, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_AccountData, rhs: BackupProto_AccountData) -> Bool {
-    if lhs.profileKey != rhs.profileKey {return false}
-    if lhs._username != rhs._username {return false}
-    if lhs._usernameLink != rhs._usernameLink {return false}
-    if lhs.givenName != rhs.givenName {return false}
-    if lhs.familyName != rhs.familyName {return false}
-    if lhs.avatarURLPath != rhs.avatarURLPath {return false}
-    if lhs._donationSubscriberData != rhs._donationSubscriberData {return false}
-    if lhs._accountSettings != rhs._accountSettings {return false}
-    if lhs._backupsSubscriberData != rhs._backupsSubscriberData {return false}
-    if lhs.svrPin != rhs.svrPin {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._username != rhs_storage._username {return false}
+        if _storage._usernameLink != rhs_storage._usernameLink {return false}
+        if _storage._givenName != rhs_storage._givenName {return false}
+        if _storage._familyName != rhs_storage._familyName {return false}
+        if _storage._avatarURLPath != rhs_storage._avatarURLPath {return false}
+        if _storage._donationSubscriberData != rhs_storage._donationSubscriberData {return false}
+        if _storage._accountSettings != rhs_storage._accountSettings {return false}
+        if _storage._backupsSubscriberData != rhs_storage._backupsSubscriberData {return false}
+        if _storage._svrPin != rhs_storage._svrPin {return false}
+        if _storage._androidSpecificSettings != rhs_storage._androidSpecificSettings {return false}
+        if _storage._bioText != rhs_storage._bioText {return false}
+        if _storage._bioEmoji != rhs_storage._bioEmoji {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6949,6 +7068,41 @@ extension BackupProto_AccountData.IAPSubscriberData: SwiftProtobuf.Message, Swif
   public static func ==(lhs: BackupProto_AccountData.IAPSubscriberData, rhs: BackupProto_AccountData.IAPSubscriberData) -> Bool {
     if lhs.subscriberID != rhs.subscriberID {return false}
     if lhs.iapSubscriptionID != rhs.iapSubscriptionID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_AccountData.AndroidSpecificSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AndroidSpecificSettings"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}useSystemEmoji\0\u{1}screenshotSecurity\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.useSystemEmoji) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.screenshotSecurity) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.useSystemEmoji != false {
+      try visitor.visitSingularBoolField(value: self.useSystemEmoji, fieldNumber: 1)
+    }
+    if self.screenshotSecurity != false {
+      try visitor.visitSingularBoolField(value: self.screenshotSecurity, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_AccountData.AndroidSpecificSettings, rhs: BackupProto_AccountData.AndroidSpecificSettings) -> Bool {
+    if lhs.useSystemEmoji != rhs.useSystemEmoji {return false}
+    if lhs.screenshotSecurity != rhs.screenshotSecurity {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

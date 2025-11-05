@@ -143,6 +143,8 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             accountData.givenName = localProfile.givenName ?? ""
             accountData.familyName = localProfile.familyName ?? ""
             accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
+            accountData.bioText = localProfile.bio ?? ""
+            accountData.bioEmoji = localProfile.bioEmoji ?? ""
 
             if let donationSubscriberId = donationSubscriptionManager.getSubscriberID(tx: context.tx) {
                 var donationSubscriberData = BackupProto_AccountData.SubscriberData()
@@ -353,6 +355,8 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             givenName: accountData.givenName,
             familyName: accountData.familyName.nilIfEmpty,
             avatarUrlPath: accountData.avatarURLPath.nilIfEmpty,
+            bio: accountData.bioText.nilIfEmpty,
+            bioEmoji: accountData.bioEmoji.nilIfEmpty,
             profileKey: profileKey,
             tx: context.tx
         )

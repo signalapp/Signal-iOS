@@ -246,6 +246,8 @@ public protocol _MessageBackup_ProfileManagerShim {
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
+        bio: String?,
+        bioEmoji: String?,
         profileKey: Aes256Key,
         tx: DBWriteTransaction
     )
@@ -308,6 +310,8 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
+        bio: String?,
+        bioEmoji: String?,
         profileKey: Aes256Key,
         tx: DBWriteTransaction
     ) {
@@ -326,6 +330,8 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             givenName: givenName,
             familyName: familyName,
             avatarUrlPath: avatarUrlPath,
+            bio: bio,
+            bioEmoji: bioEmoji,
             profileKey: profileKey,
             tx: sdsTx
         )
@@ -358,6 +364,8 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             givenName: givenName,
             familyName: familyName,
             avatarUrlPath: nil,
+            bio: nil,
+            bioEmoji: nil,
             profileKey: profileKey,
             tx: sdsTx
         )

@@ -1405,6 +1405,8 @@ extension OWSUserProfile {
         givenName: String?,
         familyName: String?,
         avatarUrlPath: String?,
+        bio: String?,
+        bioEmoji: String?,
         profileKey: Aes256Key?,
         tx: DBWriteTransaction
     ) {
@@ -1412,6 +1414,8 @@ extension OWSUserProfile {
         self.familyName = familyName
         self.avatarUrlPath = avatarUrlPath
         self.profileKey = profileKey
+        self.bio = bio
+        self.bioEmoji = bioEmoji
 
         anyUpsert(transaction: tx)
     }

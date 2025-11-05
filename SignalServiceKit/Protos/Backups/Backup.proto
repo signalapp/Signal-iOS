@@ -140,6 +140,11 @@ message AccountData {
     }
   }
 
+  message AndroidSpecificSettings {
+    bool useSystemEmoji = 1;
+    bool screenshotSecurity = 2;
+  }
+
   bytes profileKey = 1;
   optional string username = 2;
   UsernameLink usernameLink = 3;
@@ -151,6 +156,9 @@ message AccountData {
   AccountSettings accountSettings = 9;
   IAPSubscriberData backupsSubscriberData = 10;
   string svrPin = 11;
+  AndroidSpecificSettings androidSpecificSettings = 12;
+  string bioText = 13;
+  string bioEmoji = 14;
 }
 
 message Recipient {
