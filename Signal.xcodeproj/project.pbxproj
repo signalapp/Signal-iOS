@@ -153,7 +153,6 @@
 		3402AA80271D9E180084CBAE /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95532271B510400B05242 /* TappableView.swift */; };
 		3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */; };
 		3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95511271B510400B05242 /* OWSFlatButton.swift */; };
-		3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95531271B510400B05242 /* ResizingScrollView.swift */; };
 		3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95523271B510400B05242 /* CVCellMeasurement.swift */; };
 		3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550B271B510400B05242 /* ContactCellView.swift */; };
 		3402AA89271D9E180084CBAE /* ImageEditorPinchGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95558271B510400B05242 /* ImageEditorPinchGestureRecognizer.swift */; };
@@ -4222,7 +4221,6 @@
 		34A9552D271B510400B05242 /* BodyRangesTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyRangesTextView.swift; sourceTree = "<group>"; };
 		34A9552F271B510400B05242 /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34A95530271B510400B05242 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
-		34A95531271B510400B05242 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		34A95532271B510400B05242 /* TappableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableView.swift; sourceTree = "<group>"; };
 		34A95535271B510400B05242 /* OWSBubbleShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSBubbleShapeView.swift; sourceTree = "<group>"; };
 		34A95536271B510400B05242 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
@@ -8500,7 +8498,6 @@
 				32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */,
 				B92E76AA2B6871520095C4DF /* ProfileDetailLabel.swift */,
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
-				34A95531271B510400B05242 /* ResizingScrollView.swift */,
 				763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */,
 				766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */,
 				34A95509271B510400B05242 /* TappableStackView.swift */,
@@ -16640,7 +16637,6 @@
 				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,
 				34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */,
 				88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */,
-				3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */,
 				7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */,
 				763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */,
 				766BCA7D29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift in Sources */,
