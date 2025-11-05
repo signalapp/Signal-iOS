@@ -1599,10 +1599,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             self.editMessageLabelView.alpha = 1
             self.editMessageViewHiddenConstraint.isActive = false
             self.editMessageViewVisibleConstraint.isActive = true
-            self.layoutIfNeeded()
-        }
-        animator.addCompletion { _ in
             self.setSendButtonEnabled(false)
+            self.layoutIfNeeded()
         }
         animator.startAnimation()
     }
