@@ -1038,9 +1038,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
         switch backgroundStyle {
         case .default:
-            if viewController !== self {
-                viewController.view.backgroundColor = self.tableBackgroundColor
-            }
+            viewController.view.backgroundColor = self.tableBackgroundColor
         case .none:
             break
         }
