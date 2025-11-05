@@ -817,7 +817,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         updateMessageContentViewLeadingEdgeConstraint(isLeadingEdgeControlHidden: false)
         if iOS26Layout {
-            setSendButtonHidden(true, usingAnimator: nil)
+            setSendButtonHidden(true, disabled: false, usingAnimator: nil)
         } else {
             messageContentView.trailingAnchor.constraint(equalTo: trailingEdgeControl.leadingAnchor).isActive = true
         }
@@ -866,7 +866,10 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
             // Show Send button instead of Camera and Voice Message buttons only when text input isn't empty.
             let hasNonWhitespaceTextInput = !inputTextView.trimmedText.isEmpty || shouldShowEditUI
-            rightEdgeControlsState = hasNonWhitespaceTextInput ? .sendButton : .default
+            let hasQuotedMessage = quotedReplyDraft != nil
+            rightEdgeControlsState = hasNonWhitespaceTextInput
+            ? .sendButton
+            : (hasQuotedMessage ? .disabledSendButton : .default)
         }
 
         let animator: UIViewPropertyAnimator?
@@ -941,8 +944,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         // iOS 26+: show / hide Send button.
         if iOS26Layout {
-            let hideSendButton = rightEdgeControlsState != .sendButton
-            if setSendButtonHidden(hideSendButton, usingAnimator: animator) {
+            let hideSendButton = rightEdgeControlsState == .default
+            let disableSendButton = rightEdgeControlsState == .disabledSendButton
+            if setSendButtonHidden(hideSendButton, disabled: disableSendButton, usingAnimator: animator) {
                 hasLayoutChanged = true
             }
         }
@@ -1044,9 +1048,14 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     }
 
     @discardableResult
-    private func setSendButtonHidden(_ isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
+    private func setSendButtonHidden(
+        _ isHidden: Bool,
+        disabled isDisabled: Bool,
+        usingAnimator animator: UIViewPropertyAnimator?
+    ) -> Bool {
         // Only on iOS 26 trailing edge control (Send button) can get hidden.
         guard let sendButton = trailingEdgeControl as? UIButton else { return false }
+        sendButton.isEnabled = !isDisabled
         guard ConversationInputToolbar.setView(sendButton, hidden: isHidden, usingAnimator: animator) else { return false }
         updateMessageContentViewTrailingEdgeConstraint(isTrailingEdgeControlHidden: isHidden)
         return true
@@ -1068,6 +1077,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         enum State {
             case `default`
             case sendButton
+            case disabledSendButton
             case hiddenSendButton
         }
         private var _state: State = .default
@@ -1168,7 +1178,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                 )
                 voiceMemoButton.center = sendButton.center
 
-            case .sendButton, .hiddenSendButton:
+            case .sendButton, .disabledSendButton, .hiddenSendButton:
                 cameraButton.center = sendButton.center
                 voiceMemoButton.center = sendButton.center
             }
@@ -1185,8 +1195,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
                 sendButton.transform = .scale(0.1)
                 sendButton.alpha = 0
+                sendButton.isEnabled = true
 
-            case .sendButton, .hiddenSendButton:
+            case .sendButton, .disabledSendButton, .hiddenSendButton:
                 cameraButton.transform = .scale(0.1)
                 cameraButton.alpha = 0
 
@@ -1195,6 +1206,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
                 sendButton.transform = .identity
                 sendButton.alpha = state == .hiddenSendButton ? 0 : 1
+                sendButton.isEnabled = state == .sendButton
             }
         }
 
@@ -1202,7 +1214,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             let width: CGFloat = {
                 switch state {
                 case .default: return cameraButton.width + voiceMemoButton.width + 2 * Self.cameraButtonHMargin
-                case .sendButton, .hiddenSendButton: return sendButton.width + 2 * Self.sendButtonHMargin
+                case .sendButton, .disabledSendButton, .hiddenSendButton: return sendButton.width + 2 * Self.sendButtonHMargin
                 }
             }()
             return CGSize(width: width, height: LayoutMetrics.initialToolbarHeight)
