@@ -324,6 +324,8 @@ class MentionPicker: UIView {
 
         tableView.reloadData()
 
+        updateHeightIfNeeded()
+
         return true
     }
 }
@@ -492,7 +494,7 @@ private class MentionableUserCell: UITableViewCell {
     override func updateConfiguration(using state: UICellConfigurationState) {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
-            configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            configuration.backgroundColor = .Signal.primaryFill
             configuration.backgroundInsets = .init(hMargin: 0.5 * Self.hMargin, vMargin: 0)
             configuration.cornerRadius = 50
         }
