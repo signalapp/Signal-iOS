@@ -990,7 +990,7 @@ struct PollManagerTest {
         var voteCount = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1008,7 +1008,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount!),
                 transaction: tx
             )
@@ -1027,7 +1027,7 @@ struct PollManagerTest {
         voteCount = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: true,
                 transaction: tx
@@ -1048,7 +1048,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [], // unvote
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount!),
                 transaction: tx
             )
@@ -1088,7 +1088,7 @@ struct PollManagerTest {
         var voteCount = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1099,7 +1099,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount!),
                 transaction: tx
             )
@@ -1118,7 +1118,7 @@ struct PollManagerTest {
         voteCount = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1142,7 +1142,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(1), OWSPoll.OptionIndex(0)],
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount!),
                 transaction: tx
             )
@@ -1165,7 +1165,7 @@ struct PollManagerTest {
         voteCount = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: true,
                 transaction: tx
@@ -1176,7 +1176,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(1)], // waffles only
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount!),
                 transaction: tx
             )
@@ -1221,7 +1221,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1231,7 +1231,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1248,7 +1248,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount1!),
                 transaction: tx
             )
@@ -1258,7 +1258,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0), OWSPoll.OptionIndex(1)], // waffles + pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount2!),
                 transaction: tx
             )
@@ -1303,7 +1303,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1313,7 +1313,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1331,7 +1331,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0), OWSPoll.OptionIndex(1)], // waffles + pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount2!),
                 transaction: tx
             )
@@ -1354,7 +1354,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount1!),
                 transaction: tx
             )
@@ -1402,7 +1402,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1413,7 +1413,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: message.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount1!),
                 transaction: tx
             )
@@ -1423,7 +1423,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1435,7 +1435,7 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount2!,
                 interactionId: message.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }
@@ -1456,7 +1456,7 @@ struct PollManagerTest {
         let voteCount3 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1467,7 +1467,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: message.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(1)], // waffles
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount3!),
                 transaction: tx
             )
@@ -1477,7 +1477,7 @@ struct PollManagerTest {
         let voteCount4 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: true,
                 transaction: tx
@@ -1489,7 +1489,7 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount4!,
                 interactionId: message.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }
@@ -1536,7 +1536,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1547,7 +1547,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: message.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount1!),
                 transaction: tx
             )
@@ -1557,7 +1557,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1569,7 +1569,7 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount2!,
                 interactionId: message.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }
@@ -1590,7 +1590,7 @@ struct PollManagerTest {
         let voteCount3 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1601,7 +1601,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: message.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0), OWSPoll.OptionIndex(1)],
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount3!),
                 transaction: tx
             )
@@ -1611,7 +1611,7 @@ struct PollManagerTest {
         let voteCount4 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: message.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: true,
                 transaction: tx
@@ -1623,7 +1623,7 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount4!,
                 interactionId: message.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }
@@ -1668,7 +1668,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1679,7 +1679,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1690,7 +1690,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(1)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount2!),
                 transaction: tx
             )
@@ -1702,7 +1702,7 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount1!,
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }
@@ -1749,7 +1749,7 @@ struct PollManagerTest {
         let voteCount1 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(0), // pancakes
                 isUnvote: false,
                 transaction: tx
@@ -1760,7 +1760,7 @@ struct PollManagerTest {
             try pollStore.updatePollWithVotes(
                 interactionId: outgoingMessage.grdbId!.int64Value,
                 optionsVoted: [OWSPoll.OptionIndex(0)], // pancakes
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 voteCount: UInt32(voteCount1!),
                 transaction: tx
             )
@@ -1770,7 +1770,7 @@ struct PollManagerTest {
         let voteCount2 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: false,
                 transaction: tx
@@ -1781,7 +1781,7 @@ struct PollManagerTest {
         let voteCount3 = try db.write { tx in
             try pollStore.applyPendingVote(
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                localRecipientId: signalRecipient!.id!,
+                localRecipientId: signalRecipient!.id,
                 optionIndex: OWSPoll.OptionIndex(1), // waffles
                 isUnvote: true,
                 transaction: tx
@@ -1793,14 +1793,14 @@ struct PollManagerTest {
             try pollStore.revertVoteCount(
                 voteCount: voteCount2!,
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
 
             try pollStore.revertVoteCount(
                 voteCount: voteCount3!,
                 interactionId: outgoingMessage.grdbId!.int64Value,
-                voteAuthorId: signalRecipient!.id!,
+                voteAuthorId: signalRecipient!.id,
                 transaction: tx
             )
         }

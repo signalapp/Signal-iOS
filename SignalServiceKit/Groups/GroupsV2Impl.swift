@@ -1277,7 +1277,7 @@ public class GroupsV2Impl: GroupsV2 {
                 expiration: groupSendEndorsementsResponse.expiration,
                 combinedEndorsement: combinedEndorsement,
                 individualEndorsements: individualEndorsements.map { serviceId, endorsement in
-                    return (recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx).id!, endorsement)
+                    return (recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx).id, endorsement)
                 },
                 tx: tx
             )

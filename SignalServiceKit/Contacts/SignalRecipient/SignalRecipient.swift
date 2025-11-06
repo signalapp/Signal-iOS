@@ -17,7 +17,7 @@ public import LibSignalClient
 /// We also store the set of device IDs for each account on this record. If
 /// an account has at least one device, it's registered. If an account
 /// doesn't have any devices, then that user isn't registered.
-public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codable {
+public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
     public static let databaseTableName = "model_SignalRecipient"
 
     public enum Constants {
@@ -35,7 +35,7 @@ public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codabl
     }
 
     public typealias RowId = Int64
-    public private(set) var id: RowId?
+    public let id: RowId
 
     public let uniqueId: String
     /// Represents the ACI for this SignalRecipient.
@@ -136,7 +136,7 @@ public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codabl
             throw SDSError.invalidValue()
         }
 
-        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        id = try container.decode(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         aciString = try container.decodeIfPresent(String.self, forKey: .aciString)
         pni = try container.decodeIfPresent(String.self, forKey: .pni).map { try Pni.parseFrom(serviceIdString: $0) }
@@ -155,7 +155,7 @@ public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codabl
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(id, forKey: .id)
         try container.encode(SDSRecordType.signalRecipient.rawValue, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(aciString, forKey: .aciString)
@@ -186,12 +186,6 @@ public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codabl
     /// they don't perform CDS syncs at regular intervals.
     public var isPhoneNumberDiscoverable: Bool {
         return isRegistered && phoneNumber?.isDiscoverable == true
-    }
-
-    // MARK: - Database Hooks
-
-    public mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
     }
 }
 

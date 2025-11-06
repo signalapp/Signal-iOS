@@ -47,7 +47,7 @@ public struct NicknameManagerImpl: NicknameManager {
         for recipient: SignalRecipient,
         tx: DBReadTransaction
     ) -> NicknameRecord? {
-        recipient.id.flatMap { nicknameRecordStore.fetch(recipientRowID: $0, tx: tx) }
+        return nicknameRecordStore.fetch(recipientRowID: recipient.id, tx: tx)
     }
 
     // MARK: Write

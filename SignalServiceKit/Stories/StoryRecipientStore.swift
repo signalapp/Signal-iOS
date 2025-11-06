@@ -77,10 +77,10 @@ public struct StoryRecipientStore {
     }
 
     public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) throws {
-        let threadIds = try fetchStoryThreadIds(forRecipientId: recipient.id!, tx: tx)
+        let threadIds = try fetchStoryThreadIds(forRecipientId: recipient.id, tx: tx)
         for threadId in threadIds {
-            try removeRecipientId(recipient.id!, forStoryThreadId: threadId, tx: tx)
-            try insertRecipientId(targetRecipient.id!, forStoryThreadId: threadId, tx: tx)
+            try removeRecipientId(recipient.id, forStoryThreadId: threadId, tx: tx)
+            try insertRecipientId(targetRecipient.id, forStoryThreadId: threadId, tx: tx)
         }
     }
 }

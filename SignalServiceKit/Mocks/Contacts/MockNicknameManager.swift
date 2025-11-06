@@ -11,7 +11,7 @@ public class MockNicknameManager: NicknameManager {
     private var mockNicknames: [Int64: NicknameRecord] = [:]
 
     public func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord? {
-        recipient.id.flatMap { mockNicknames[$0] }
+        return mockNicknames[recipient.id]
     }
 
     public func createOrUpdate(

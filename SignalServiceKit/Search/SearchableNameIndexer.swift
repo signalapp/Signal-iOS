@@ -340,7 +340,7 @@ extension OWSUserProfile: IndexableName {
 
 extension SignalRecipient: IndexableName {
     public func indexableNameIdentifier() -> IndexableNameIdentifier {
-        return .signalRecipient(id!)
+        return .signalRecipient(id)
     }
 
     public func indexableNameContent() -> String? {

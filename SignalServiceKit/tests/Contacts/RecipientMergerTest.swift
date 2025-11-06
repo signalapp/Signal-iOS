@@ -155,7 +155,7 @@ class RecipientMergerTest: XCTestCase {
 
                 var recipientTable = [SignalRecipient.RowId: SignalRecipient]()
                 d.recipientDatabaseTable.enumerateAll(tx: transaction) {
-                    recipientTable[$0.id!] = $0
+                    recipientTable[$0.id] = $0
                 }
 
                 for finalRecipient in testCase.finalState.reversed() {
@@ -331,7 +331,7 @@ class RecipientMergerTest: XCTestCase {
             var recipientTable = [SignalRecipient.RowId: SignalRecipient]()
             d.mockDB.read { tx in
                 d.recipientDatabaseTable.enumerateAll(tx: tx) {
-                    recipientTable[$0.id!] = $0
+                    recipientTable[$0.id] = $0
                 }
             }
 
@@ -458,7 +458,7 @@ class RecipientMergerTest: XCTestCase {
         var recipientTable = [SignalRecipient.RowId: SignalRecipient]()
         d.mockDB.read { tx in
             d.recipientDatabaseTable.enumerateAll(tx: tx) {
-                recipientTable[$0.id!] = $0
+                recipientTable[$0.id] = $0
             }
         }
 
@@ -598,7 +598,7 @@ class RecipientMergerTest: XCTestCase {
             var recipientTable = [SignalRecipient.RowId: SignalRecipient]()
             d.mockDB.read { tx in
                 d.recipientDatabaseTable.enumerateAll(tx: tx) {
-                    recipientTable[$0.id!] = $0
+                    recipientTable[$0.id] = $0
                 }
             }
 

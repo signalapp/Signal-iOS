@@ -170,14 +170,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         signalRecipient: SignalRecipient,
         tx: DBReadTransaction
     ) -> HiddenRecipient? {
-        guard let signalRecipientRowId = signalRecipient.id else {
-            return nil
-        }
-
-        let db = tx.database
-
         do {
-            return try HiddenRecipient.fetchOne(db, key: signalRecipientRowId)
+            return try HiddenRecipient.fetchOne(tx.database, key: signalRecipient.id)
         } catch {
             Logger.warn("Failed to fetch HiddenRecipient: \(error.grdbErrorForLogging)")
             return nil
@@ -278,12 +272,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             throw RecipientHidingError.recipientAlreadyHidden
         }
 
-        guard let signalRecipientRowId = recipient.id else {
-            throw RecipientHidingError.recipientIdNotFound
-        }
-
         let record = HiddenRecipient(
-            signalRecipientRowId: signalRecipientRowId,
+            signalRecipientRowId: recipient.id,
             inKnownMessageRequestState: inKnownMessageRequestState
         )
         try record.save(tx.database)
@@ -296,13 +286,13 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) throws {
-        if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
+        if isHiddenRecipient(recipient, tx: tx) {
             Logger.info("Unhiding recipient")
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.signalRecipientRowId.stringValue) = ?
             """
-            try tx.database.execute(sql: sql, arguments: [id])
+            try tx.database.execute(sql: sql, arguments: [recipient.id])
             didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
@@ -350,7 +340,7 @@ private extension RecipientHidingManagerImpl {
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
             let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
             storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
-                recipient.id!,
+                recipient.id,
                 shouldUpdateStorageService: true,
                 tx: tx
             )
@@ -449,8 +439,6 @@ public enum RecipientHidingError: Error, CustomStringConvertible {
     /// allow for an already-hidden recipient to be hidden again, but
     /// never say never.
     case recipientAlreadyHidden
-    /// The recipient did not have an id.
-    case recipientIdNotFound
     /// The recipient's address was invalid.
     case invalidRecipientAddress(SignalServiceAddress)
     /// The recipient attempted to hide themselves (ie, Note to Self).
@@ -463,8 +451,6 @@ public enum RecipientHidingError: Error, CustomStringConvertible {
         switch self {
         case .recipientAlreadyHidden:
             return "Recipient already hidden."
-        case .recipientIdNotFound:
-            return "Id of recipient to hide was not found."
         case .invalidRecipientAddress(let address):
             return "Address of recipient to hide was invalid: \(address)."
         case .cannotHideLocalAddress:

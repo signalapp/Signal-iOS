@@ -298,7 +298,7 @@ public class ProfileFetcherJob {
             let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx),
             let individualEndorsement = try endorsementStore.fetchIndividualEndorsement(
                 groupThreadId: groupThread.sqliteRowId!,
-                recipientId: recipient.id!,
+                recipientId: recipient.id,
                 tx: tx
             )
         else {

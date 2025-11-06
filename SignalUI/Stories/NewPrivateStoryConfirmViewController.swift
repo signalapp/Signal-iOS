@@ -177,7 +177,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                 newStory.anyInsert(transaction: tx)
 
                 let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                let recipientIds = serviceIds.map { recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx).id! }
+                let recipientIds = serviceIds.map { recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx).id }
 
                 let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
                 failIfThrows {

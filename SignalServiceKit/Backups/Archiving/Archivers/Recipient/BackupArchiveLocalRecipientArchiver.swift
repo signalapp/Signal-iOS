@@ -108,9 +108,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }
 
-        if let localSignalRecipientId = localSignalRecipient.id {
-            context.localSignalRecipientRowId = localSignalRecipientId
-        }
+        context.localSignalRecipientRowId = localSignalRecipient.id
 
         if
             selfRecipientProto.hasAvatarColor,
@@ -119,7 +117,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
             do {
                 try avatarDefaultColorManager.persistDefaultColor(
                     defaultColor,
-                    recipientRowId: localSignalRecipient.id!,
+                    recipientRowId: localSignalRecipient.id,
                     tx: context.tx
                 )
             } catch {

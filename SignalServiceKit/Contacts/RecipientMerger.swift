@@ -803,7 +803,7 @@ class RecipientMergerImpl: RecipientMerger {
                 // TODO: Should we clean up any more state related to the discarded recipient?
                 aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
-                blockedRecipientStore.mergeRecipientId(affectedRecipient.id!, into: mergedRecipient.id!, tx: tx)
+                blockedRecipientStore.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, tx: tx)
                 failIfThrows { try storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx) }
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if oldRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {

@@ -106,7 +106,7 @@ public struct AvatarDefaultColorManager {
         case .contact(let recipient):
             do {
                 persistedColorRecord = try AvatarDefaultColorRecord
-                    .filter(Column(AvatarDefaultColorRecord.CodingKeys.recipientRowId) == recipient.id!)
+                    .filter(Column(AvatarDefaultColorRecord.CodingKeys.recipientRowId) == recipient.id)
                     .fetchOne(tx.database)
             } catch let error {
                 owsFailDebug("Failed to fetch default color record for recipient: \(error.grdbErrorForLogging)")

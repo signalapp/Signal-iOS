@@ -304,15 +304,12 @@ class NicknameEditorViewController: OWSTableViewController2 {
             return
         }
 
-        guard let nicknameRecord = NicknameRecord(
+        let nicknameRecord = NicknameRecord(
             recipient: self.recipient,
             givenName: nickname?.givenName,
             familyName: nickname?.familyName,
             note: self.note
-        ) else {
-            owsFailBeta("Nickname record could not be initialized")
-            return
-        }
+        )
 
         self.context.db.write { tx in
             // A Storage Service sync might have happened while this was open,
@@ -348,10 +345,9 @@ class NicknameEditorViewController: OWSTableViewController2 {
     }
 
     private func deleteNickname() {
-        guard let recipientRowID = self.recipient.id else { return }
         self.context.db.write { tx in
             self.context.nicknameManager.deleteNickname(
-                recipientRowID: recipientRowID,
+                recipientRowID: self.recipient.id,
                 updateStorageServiceFor: self.recipient.uniqueId,
                 tx: tx
             )

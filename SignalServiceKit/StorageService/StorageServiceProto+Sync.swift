@@ -686,24 +686,22 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        if
-            record.nickname?.hasGiven == true || record.nickname?.hasFamily == true || record.hasNote,
+        if record.nickname?.hasGiven == true || record.nickname?.hasFamily == true || record.hasNote {
             let nicknameRecord = NicknameRecord(
                 recipient: recipient,
                 givenName: record.nickname?.given,
                 familyName: record.nickname?.family,
                 note: record.note
             )
-        {
             nicknameManager.createOrUpdate(
                 nicknameRecord: nicknameRecord,
                 // Don't create a recursive Storage Service sync
                 updateStorageServiceFor: nil,
                 tx: tx
             )
-        } else if let recipientRowID = recipient.id {
+        } else {
             nicknameManager.deleteNickname(
-                recipientRowID: recipientRowID,
+                recipientRowID: recipient.id,
                 // Don't create a recursive Storage Service sync
                 updateStorageServiceFor: nil,
                 tx: tx
@@ -858,7 +856,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         } else if let remoteDefaultAvatarColor {
             try? avatarDefaultColorManager.persistDefaultColor(
                 remoteDefaultAvatarColor,
-                recipientRowId: recipient.id!,
+                recipientRowId: recipient.id,
                 tx: tx
             )
         }
@@ -1825,7 +1823,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         } else if let remoteDefaultAvatarColor {
             try? avatarDefaultColorManager.persistDefaultColor(
                 remoteDefaultAvatarColor,
-                recipientRowId: localRecipient.id!,
+                recipientRowId: localRecipient.id,
                 tx: tx
             )
         }
@@ -2070,7 +2068,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         }
 
         let remoteRecipientIds = remoteRecipientServiceIds.map {
-            return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id!
+            return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id
         }
 
         if let story = existingStory {

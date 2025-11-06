@@ -112,7 +112,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let recipientIds = self.recipientSet.orderedMembers.lazy.compactMap { $0.address?.serviceId }.map {
-                return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id!
+                return recipientFetcher.fetchOrCreate(serviceId: $0, tx: transaction).id
             }
             self.thread.updateWithStoryViewMode(
                 self.mode,

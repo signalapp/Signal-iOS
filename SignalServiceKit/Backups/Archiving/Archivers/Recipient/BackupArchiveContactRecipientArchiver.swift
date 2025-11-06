@@ -201,7 +201,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     for: recipient,
                     tx: context.tx
                 ),
-                isBlocked: blockedRecipientIds.contains(recipient.id!),
+                isBlocked: blockedRecipientIds.contains(recipient.id),
                 isWhitelisted: whitelistedAddresses.contains(recipient.address),
                 isStoryHidden: isStoryHidden,
                 visibility: { () -> BackupProto_Contact.Visibility in
@@ -259,7 +259,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 )
             )
 
-            writeToStream(contact: contact, contactAddress: contactAddress, contactDbRowId: recipient.id!, frameBencher: frameBencher)
+            writeToStream(contact: contact, contactAddress: contactAddress, contactDbRowId: recipient.id, frameBencher: frameBencher)
         }
 
         do {
@@ -682,7 +682,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
         }
-        context.setRecipientDbRowId(recipient.id!, forBackupRecipientId: recipientProto.recipientId)
+        context.setRecipientDbRowId(recipient.id, forBackupRecipientId: recipientProto.recipientId)
 
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate
@@ -741,17 +741,13 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         let nicknameGivenName = contactProto.nickname.given.nilIfEmpty
         let nicknameFamilyName = contactProto.nickname.family.nilIfEmpty
         let nicknameNote = contactProto.note.nilIfEmpty
-        if
-            nicknameGivenName != nil
-            || nicknameFamilyName != nil
-            || nicknameNote != nil,
+        if nicknameGivenName != nil || nicknameFamilyName != nil || nicknameNote != nil {
             let nicknameRecord = NicknameRecord(
                 recipient: recipient,
                 givenName: nicknameGivenName,
                 familyName: nicknameFamilyName,
                 note: nicknameNote
             )
-        {
             self.nicknameManager.createOrUpdate(
                 nicknameRecord: nicknameRecord,
                 updateStorageServiceFor: nil,
@@ -849,7 +845,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             do {
                 try avatarDefaultColorManager.persistDefaultColor(
                     defaultAvatarColor,
-                    recipientRowId: recipient.id!,
+                    recipientRowId: recipient.id,
                     tx: context.tx
                 )
             } catch let error {
