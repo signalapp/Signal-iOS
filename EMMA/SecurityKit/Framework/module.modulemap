@@ -1,0 +1,10 @@
+framework module EMMASecurityKit {
+    umbrella header "EMSecurityKit.h"
+    export *
+    module * { export * }
+
+    explicit module Private {
+        header "ios_platform.h"
+        export *
+    }
+}

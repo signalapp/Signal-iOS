@@ -463,6 +463,18 @@ For technical questions about the iOS port, please open an issue.
 
 ---
 
-**Version**: 1.0.0-foundation
+**Version**: 1.1.0-frameworks
 **Last Updated**: 2025-11-06
-**Status**: Phase 1 Complete ✅
+**Status**: Phase 2 Complete ✅
+
+## 🎯 Phase 2 Updates
+
+**NEW in Phase 2 (Frameworks)**:
+- ✅ CocoaPods integration (`EMMASecurityKit.podspec`, `EMMATranslationKit.podspec`)
+- ✅ Framework metadata (module maps, Info.plist)
+- ✅ CMake build system for native components
+- ✅ Comprehensive unit tests (29 tests total)
+- ✅ Swift bridging header
+- ✅ Integration guide ([PHASE2_INTEGRATION_GUIDE.md](PHASE2_INTEGRATION_GUIDE.md))
+
+**See**: [Phase 2 Integration Guide](PHASE2_INTEGRATION_GUIDE.md) for complete setup instructions
