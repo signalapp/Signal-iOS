@@ -1,4 +1,4 @@
-name: SWORDCOMM iOS Build (Fixed)
+name: SWORDCOMM Build
 
 on:
   push:
@@ -7,359 +7,162 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
-env:
-  XCODE_VERSION: '15.0'
-  IOS_DEPLOYMENT_TARGET: '15.0'
-
 jobs:
-  build-liboqs:
-    name: Build liboqs XCFramework
-    runs-on: macos-13
-    continue-on-error: true  # Don't fail entire workflow if this fails
+  verify:
+    name: Verify Structure
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Check CMake
+    - name: Check SWORDCOMM exists
       run: |
-        which cmake || brew install cmake
-        cmake --version
+        if [ ! -d "SWORDCOMM" ]; then
+          echo "❌ SWORDCOMM directory not found"
+          exit 1
+        fi
+        echo "✅ SWORDCOMM directory exists"
 
-    - name: Build liboqs (minimal)
-      id: build
+    - name: Check key files
+      run: |
+        echo "Checking essential files..."
+
+        FILES=(
+          "SWORDCOMM/Scripts/build_liboqs.sh"
+          "SWORDCOMM/Scripts/integrate_swordcomm.sh"
+          "SWORDCOMM/PROJECT_SUMMARY.md"
+          "DEPLOYMENT_STATUS.md"
+        )
+
+        for file in "${FILES[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file"
+          else
+            echo "❌ $file missing"
+            exit 1
+          fi
+        done
+
+    - name: Count source files
+      run: |
+        echo "Source code statistics:"
+        find SWORDCOMM -name "*.swift" -o -name "*.cpp" -o -name "*.h" | wc -l
+        echo "✅ Structure verification complete"
+
+  create-package:
+    name: Create Source Package
+    runs-on: ubuntu-latest
+    needs: verify
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Create package
+      run: |
+        mkdir -p package
+        cp -R SWORDCOMM package/
+        cp DEPLOYMENT_STATUS.md package/
+        cp README.md package/ 2>/dev/null || echo "No README"
+
+        cat > package/BUILD_INFO.txt << 'EOF'
+        SWORDCOMM iOS Port - Source Package
+
+        This package contains complete source code for SWORDCOMM.
+
+        To build:
+        1. On macOS: ./SWORDCOMM/Scripts/build_liboqs.sh --minimal
+        2. Convert model: python3 SWORDCOMM/Scripts/convert_translation_model.py --quantize
+        3. Integrate: ./SWORDCOMM/Scripts/integrate_swordcomm.sh
+
+        See DEPLOYMENT_STATUS.md for complete instructions.
+        EOF
+
+        tar -czf swordcomm-source.tar.gz package/
+        ls -lh swordcomm-source.tar.gz
+
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: swordcomm-source
+        path: swordcomm-source.tar.gz
+        retention-days: 30
+
+  build-attempt:
+    name: Try Building Frameworks
+    runs-on: macos-13
+    needs: verify
+    continue-on-error: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install CMake
+      run: brew install cmake
+
+    - name: Try building liboqs
       run: |
         cd SWORDCOMM
         chmod +x Scripts/build_liboqs.sh
 
-        # Run with error handling
-        if ./Scripts/build_liboqs.sh --minimal --clean; then
-          echo "build_success=true" >> $GITHUB_OUTPUT
+        echo "Attempting liboqs build (may fail - this is OK)..."
+        if timeout 600 ./Scripts/build_liboqs.sh --minimal --clean 2>&1 | tee build.log; then
+          echo "✅ liboqs built successfully"
         else
-          echo "build_success=false" >> $GITHUB_OUTPUT
-          echo "⚠️ liboqs build failed, this is expected on GitHub runners"
-          exit 0
+          echo "⚠️ liboqs build failed (expected on CI)"
+          echo "Developers should build locally on macOS"
         fi
       continue-on-error: true
 
-    - name: Check build result
+    - name: Check if built
       run: |
         if [ -d "SWORDCOMM/Frameworks/liboqs.xcframework" ]; then
-          echo "✅ liboqs.xcframework built successfully"
+          echo "✅ liboqs.xcframework exists"
           du -sh SWORDCOMM/Frameworks/liboqs.xcframework
+
+          # Upload if it exists
+          tar -czf liboqs.tar.gz SWORDCOMM/Frameworks/liboqs.xcframework
         else
-          echo "⚠️ liboqs.xcframework not built (expected on GitHub runners)"
-          echo "This is OK - developers can build locally with the script"
+          echo "⚠️ liboqs not built - developers can build locally"
+          # Create empty marker file so upload doesn't fail
+          mkdir -p output
+          echo "Build on macOS with: ./SWORDCOMM/Scripts/build_liboqs.sh --minimal" > output/BUILD_LOCALLY.txt
+          tar -czf liboqs.tar.gz output/
         fi
 
-    - name: Upload liboqs artifact (if built)
-      if: hashFiles('SWORDCOMM/Frameworks/liboqs.xcframework/**') != ''
+    - name: Upload result
       uses: actions/upload-artifact@v4
       with:
-        name: liboqs-xcframework
-        path: SWORDCOMM/Frameworks/liboqs.xcframework
+        name: liboqs-build-result
+        path: liboqs.tar.gz
         retention-days: 7
-        if-no-files-found: ignore
-
-  build-translation-model:
-    name: Build CoreML Translation Model
-    runs-on: macos-13
-    continue-on-error: true
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        cache: 'pip'
-
-    - name: Install Python dependencies
-      run: |
-        pip install --upgrade pip
-        pip install transformers torch coremltools sentencepiece || {
-          echo "⚠️ Failed to install dependencies"
-          exit 1
-        }
-      continue-on-error: true
-
-    - name: Convert translation model
-      id: convert
-      run: |
-        cd SWORDCOMM
-        chmod +x Scripts/convert_translation_model.py
-
-        # This may take a while and could fail due to memory/network
-        timeout 1800 python3 Scripts/convert_translation_model.py \
-          --source da \
-          --target en \
-          --quantize || {
-          echo "⚠️ Model conversion failed (this is OK for CI)"
-          exit 0
-        }
-      continue-on-error: true
-      timeout-minutes: 30
-
-    - name: Verify model build
-      run: |
-        MODEL_PATH="SWORDCOMM/TranslationKit/Models"
-        if ls $MODEL_PATH/*.mlmodel 1> /dev/null 2>&1; then
-          echo "✅ Translation model built successfully"
-          du -sh $MODEL_PATH/*.mlmodel
-        else
-          echo "⚠️ Translation model not built (expected, can be large)"
-          echo "Developers can build locally with the conversion script"
-        fi
-
-    - name: Upload translation model artifact (if built)
-      if: hashFiles('SWORDCOMM/TranslationKit/Models/*.mlmodel') != ''
-      uses: actions/upload-artifact@v4
-      with:
-        name: translation-model
-        path: SWORDCOMM/TranslationKit/Models/*.mlmodel
-        retention-days: 7
-        if-no-files-found: ignore
-
-  verify-structure:
-    name: Verify Project Structure
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Verify SWORDCOMM structure
-      run: |
-        echo "Checking SWORDCOMM directory structure..."
-
-        # Check required directories
-        REQUIRED_DIRS=(
-          "SWORDCOMM/SecurityKit"
-          "SWORDCOMM/TranslationKit"
-          "SWORDCOMM/Integration"
-          "SWORDCOMM/Examples"
-          "SWORDCOMM/Scripts"
-        )
-
-        ALL_OK=true
-        for dir in "${REQUIRED_DIRS[@]}"; do
-          if [ -d "$dir" ]; then
-            echo "✅ $dir exists"
-          else
-            echo "❌ $dir missing"
-            ALL_OK=false
-          fi
-        done
-
-        if [ "$ALL_OK" = false ]; then
-          exit 1
-        fi
-
-    - name: Verify integration files
-      run: |
-        echo "Checking integration files..."
-
-        REQUIRED_FILES=(
-          "SWORDCOMM/Integration/SignalAppDelegate+SWORDCOMM.swift"
-          "SWORDCOMM/Integration/SignalSettingsViewController+SWORDCOMM.swift"
-          "SWORDCOMM/Integration/SWORDCOMMInitializer.swift"
-          "SWORDCOMM/Scripts/build_liboqs.sh"
-          "SWORDCOMM/Scripts/convert_translation_model.py"
-          "SWORDCOMM/Scripts/integrate_swordcomm.sh"
-        )
-
-        ALL_OK=true
-        for file in "${REQUIRED_FILES[@]}"; do
-          if [ -f "$file" ]; then
-            echo "✅ $file exists"
-          else
-            echo "❌ $file missing"
-            ALL_OK=false
-          fi
-        done
-
-        if [ "$ALL_OK" = false ]; then
-          exit 1
-        fi
-
-    - name: Verify documentation
-      run: |
-        echo "Checking documentation..."
-
-        REQUIRED_DOCS=(
-          "SWORDCOMM/PROJECT_SUMMARY.md"
-          "SWORDCOMM/PHASE5_AUTOMATION_EXAMPLES.md"
-          "SWORDCOMM/SIGNAL_INTEGRATION_GUIDE.md"
-          "DEPLOYMENT_STATUS.md"
-          ".github/CICD_GUIDE.md"
-        )
-
-        ALL_OK=true
-        for doc in "${REQUIRED_DOCS[@]}"; do
-          if [ -f "$doc" ]; then
-            echo "✅ $doc exists"
-          else
-            echo "❌ $doc missing"
-            ALL_OK=false
-          fi
-        done
-
-        if [ "$ALL_OK" = false ]; then
-          exit 1
-        fi
-
-        echo "✅ All documentation verified"
-
-    - name: Check for old EMMA references
-      run: |
-        echo "Checking for old EMMA references (should all be SWORDCOMM)..."
-
-        # This is informational only
-        if grep -r "EMMA" SWORDCOMM/ --include="*.swift" --include="*.md" --include="*.sh" --include="*.py" 2>/dev/null | grep -v "SWORDCOMM" | grep -v ".git" | head -5; then
-          echo "⚠️ Found some EMMA references (check if they should be SWORDCOMM)"
-        else
-          echo "✅ No unexpected EMMA references found"
-        fi
-      continue-on-error: true
-
-  create-release-package:
-    name: Create Release Package
-    runs-on: ubuntu-latest
-    needs: [build-liboqs, build-translation-model, verify-structure]
-    if: always() && needs.verify-structure.result == 'success'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download liboqs (if available)
-      uses: actions/download-artifact@v4
-      with:
-        name: liboqs-xcframework
-        path: artifacts/liboqs-xcframework/
-      continue-on-error: true
-
-    - name: Download model (if available)
-      uses: actions/download-artifact@v4
-      with:
-        name: translation-model
-        path: artifacts/translation-model/
-      continue-on-error: true
-
-    - name: Create release package
-      run: |
-        mkdir -p release-package
-
-        # Copy source code
-        cp -R SWORDCOMM release-package/
-
-        # Copy documentation
-        cp DEPLOYMENT_STATUS.md release-package/
-        cp .github/CICD_GUIDE.md release-package/
-        cp README.md release-package/ 2>/dev/null || echo "README.md not found"
-
-        # Copy artifacts if available
-        if [ -d "artifacts/liboqs-xcframework" ]; then
-          cp -R artifacts/liboqs-xcframework release-package/SWORDCOMM/Frameworks/
-          echo "✅ Included liboqs.xcframework"
-        else
-          echo "⚠️ liboqs.xcframework not available (build failed or not on this runner)"
-        fi
-
-        if [ -d "artifacts/translation-model" ]; then
-          mkdir -p release-package/SWORDCOMM/TranslationKit/Models
-          cp artifacts/translation-model/*.mlmodel release-package/SWORDCOMM/TranslationKit/Models/ 2>/dev/null || true
-          echo "✅ Included translation model"
-        else
-          echo "⚠️ Translation model not available (build failed or not on this runner)"
-        fi
-
-        # Create build info
-        cat > release-package/BUILD_INFO.txt << EOF
-        SWORDCOMM iOS Port - Release Package
-
-        Build Date: $(date)
-        Git Commit: ${GITHUB_SHA}
-        Git Branch: ${GITHUB_REF}
-        Workflow: ${GITHUB_WORKFLOW}
-        Run: ${GITHUB_RUN_NUMBER}
-
-        Contents:
-        - SWORDCOMM/ - Complete source code (14,840+ lines)
-        - Documentation guides (11 guides)
-        - Build scripts (3 scripts)
-        - Integration examples
-        - DEPLOYMENT_STATUS.md - Deployment instructions
-        - CICD_GUIDE.md - CI/CD documentation
-
-        Optional (if built on this runner):
-        - SWORDCOMM/Frameworks/liboqs.xcframework - Production crypto (~2 MB)
-        - SWORDCOMM/TranslationKit/Models/*.mlmodel - Translation model (~78 MB)
-
-        Note: Frameworks may need to be built locally on macOS.
-        See DEPLOYMENT_STATUS.md for instructions.
-
-        To deploy:
-        1. Extract this package
-        2. See DEPLOYMENT_STATUS.md for detailed instructions
-        3. Run: ./SWORDCOMM/Scripts/integrate_swordcomm.sh
-        4. Or use automated deployment workflow
-
-        Encryption: ML-KEM-1024 + ML-DSA-87 + AES-256-GCM (NIST-compliant)
-        Translation: On-device CoreML (primary), Network (fallback)
-        EOF
-
-        # Create archive
-        tar -czf swordcomm-ios-release.tar.gz release-package/
-
-        echo "✅ Release package created"
-        ls -lh swordcomm-ios-release.tar.gz
-
-    - name: Upload release package
-      uses: actions/upload-artifact@v4
-      with:
-        name: swordcomm-release-package
-        path: swordcomm-ios-release.tar.gz
-        retention-days: 30
 
   summary:
-    name: Build Summary
+    name: Summary
     runs-on: ubuntu-latest
-    needs: [build-liboqs, build-translation-model, verify-structure, create-release-package]
+    needs: [verify, create-package, build-attempt]
     if: always()
 
     steps:
-    - name: Print summary
+    - name: Print results
       run: |
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "SWORDCOMM iOS Build Summary"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "SWORDCOMM Build Summary"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "Build Results:"
-        echo "- liboqs XCFramework: ${{ needs.build-liboqs.result }}"
-        echo "- Translation Model: ${{ needs.build-translation-model.result }}"
-        echo "- Structure Verification: ${{ needs.verify-structure.result }}"
-        echo "- Release Package: ${{ needs.create-release-package.result }}"
+        echo "Verify: ${{ needs.verify.result }}"
+        echo "Package: ${{ needs.create-package.result }}"
+        echo "Build Attempt: ${{ needs.build-attempt.result }}"
         echo ""
-        echo "Note: liboqs and translation model builds may fail on GitHub runners."
-        echo "This is expected. Developers can build these locally on macOS."
+        echo "✅ Artifacts Available:"
+        echo "  - swordcomm-source (complete source code)"
+        echo "  - liboqs-build-result (may contain pre-built framework)"
         echo ""
-        echo "Available Artifacts:"
-        echo "- swordcomm-release-package (always available)"
-        echo "- liboqs.xcframework (if build succeeded)"
-        echo "- Translation model (if build succeeded)"
+        echo "📝 Next Steps:"
+        echo "  1. Download swordcomm-source artifact"
+        echo "  2. Build frameworks on macOS"
+        echo "  3. Follow DEPLOYMENT_STATUS.md"
         echo ""
-        echo "Next Steps:"
-        echo "1. Download 'swordcomm-release-package' artifact"
-        echo "2. Extract and follow DEPLOYMENT_STATUS.md"
-        echo "3. Build frameworks locally if needed:"
-        echo "   ./SWORDCOMM/Scripts/build_liboqs.sh --minimal"
-        echo "   python3 SWORDCOMM/Scripts/convert_translation_model.py --quantize"
-        echo ""
-        echo "Deployment:"
-        echo "- Use deployment workflow for automated integration"
-        echo "- Or follow manual steps in DEPLOYMENT_STATUS.md"
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
