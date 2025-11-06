@@ -495,8 +495,10 @@ private class MentionableUserCell: UITableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = .Signal.primaryFill
-            configuration.backgroundInsets = .init(hMargin: 0.5 * Self.hMargin, vMargin: 0)
-            configuration.cornerRadius = 50
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+                configuration.backgroundInsets = .init(hMargin: 0.5 * Self.hMargin, vMargin: 0)
+                configuration.cornerRadius = 50
+            }
         }
         backgroundConfiguration = configuration
     }
