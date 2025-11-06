@@ -71,10 +71,10 @@
 "ACTION_SEND_MESSAGE" = "İleti Gönder";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Bir şeyler ters gitti. Lütfen destek ekibiyle iletişime geç.";
 
 /* Message shown in an action sheet when a network error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Bir şeyler ters gitti. Bağlantını kontrol edip tekrar dene.";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "İndirmek için dokunun";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@ tarihinde sona erdi";
 
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Aboneliği Yönet";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Ödeme yöntemi reddedildi";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Ödeme yönteminin güncel olduğundan emin olmak için kontrol et";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Planı Yönet";
@@ -896,10 +896,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Cihazda depolamayı optimize et";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "You’ve reached your backup storage limit. Free up space in Signal to continue backing up chats and media.";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Yedekleme depolama sınırına ulaştın. Sohbetleri ve medyayı yedeklemeye devam etmek için Signal'da yer aç.";
 
 /* Title for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Backup Storage Full";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Yedekleme Depolama Dolu";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Yedeklemeleri yeniden etkinleştir";
@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Medya yükleme duraklatıldı: Wi-Fi bekleniyor";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "You’ve reached the %1$@ storage limit that’s included with your backup plan. To backup new chats and media, free up %2$@ in Signal, and then tap “Back Up Now.”";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "Yedekleme planına dahil olan %1$@ depolama sınırına ulaştın. Yeni sohbetleri ve medyayı yedeklemek için Signal'da %2$@ alan boşalt ve ardından \"Şimdi Yedekle\"ye dokun.";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@/%2$@ yükleniyor (%3$@)";
@@ -938,13 +938,13 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal Güvenli Yedeklemelere hoş geldin. Yedeklemeni şimdi başlat.";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Ödeme yönteminin güncel olduğundan emin olmak için kontrol et. Aboneliği Yönet > Signal > Ödeme Yöntemini Güncelle seçeneklerine dokun.";
 
 /* Primary button for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Aboneliği Yönet";
 
 /* Title for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Yedekleme Aboneliğin Yenilenemedi";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Sorunu çözmemize yardımcı olması için lütfen bize hata ayıklama günlüklerini gönder!";
@@ -1646,7 +1646,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Tam metin mesaj yedeklemesi";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ depolama";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Yedeklemeleri etkinleştirmek için kayıtlı olman gerekir.";
@@ -1655,7 +1655,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Bir şeyler ters gitti. Lütfen tekrar dene.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Alışverişini etkinleştirirken bir şeyler ters gitti. Lütfen destek ekibiyle iletişime geç.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Mevcut plan";
@@ -1685,13 +1685,13 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "%1$@/ay ile abone ol";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Backups are end-to-end encrypted. Signal is a non profit. Paying for backups helps support us.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Yedeklemeler uçtan uca şifrelenmiştir. Signal kâr amacı gütmeyen bir kuruluştur. Yedeklemeler için yapılan ödemeler bizi desteklemeye yardımcı olur.";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Şartlar ve Gizlilik İlkesi";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Yedekleme Planı Seç";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Sohbet Rengi ve Duvar Kâğıdı";
@@ -4325,7 +4325,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arşiv";
 
 /* Title for the conversation list's backup storage full context menu action. */
-"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Yedekleme Depolama Dolu";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Yedekleme Yapılamadı";
@@ -5579,7 +5579,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Geç ve Yeni PIN Oluştur";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Use Recovery Key";
+"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Kurtarma Anahtarı Kullan";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "PIN'inizi hatırlayamıyorsanız, yeni bir tane oluşturabilirsiniz. Hesabınızı kaydedebilir ve kullanabilirsiniz, ancak profil bilgileriniz gibi kaydedilmiş bazı ayarları kaybedersiniz.";
@@ -5594,10 +5594,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal Güvenli Yedeklemeleri Geri Yükle";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "Şimdi geri yüklemeyi atlarsan, sonradan geri yükleme yapamazsın. Bu cihazda yedeklemeleri yeniden etkinleştirirsen, mevcut yedeklemen yeni mesajlaşma geçmişinle değiştirilir.";
 
 /* Title for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Geri Yükleme Atlansın mı?";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Mesaj geçmişini ve hesap verilerini nasıl geri yüklemek istediğini seç.";
@@ -6440,7 +6440,7 @@
 "PIN_ENTER_EXISTING_SKIP" = "PIN'i atla";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Use Recovery Key";
+"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Kurtarma Anahtarı Kullan";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "PIN Oluşturma Başarısız Oldu";
@@ -6548,10 +6548,10 @@
 "POLL_DETAILS_TITLE" = "Anket Detayları";
 
 /* Title for an action sheet confirming the user wants end a poll. */
-"POLL_END_CONFIRMATION" = "End poll?";
+"POLL_END_CONFIRMATION" = "Anket sonlandırılsın mı?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "Grup üyeleri artık bu ankette oy kullanamayacak.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ anketi sonlandırdı: %2$@";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Yardıma mı ihtiyacınız var?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN'in, sayısal veya alfanümerik karakterler kullanarak oluşturduğun 4+ haneli bir koddur. PIN kodunu hatırlayamıyorsan, hesabını yeniden kaydetmek için 7 gün beklemen gerekir. Signal Güvenli Yedeklemeleri etkinleştirdiysen, Kurtarma Anahtarın ile devam edebilirsin.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN'in, sayısal veya alfanümerik karakterler kullanarak oluşturduğun 4+ haneli bir koddur. PIN'ini hatırlamıyorsan, kaydolabilir ve hesabını kullanabilirsin ancak profil bilgilerin gibi bazı kaydedilmiş ayarları kaybedersin. Signal Güvenli Yedeklemeleri etkinleştirdiysen, Kurtarma Anahtarın ile devam edebilirsin.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN'in, sayısal veya alfanümerik karakterler kullanarak oluşturduğun 4+ haneli bir koddur. PIN'ini hatırlayamıyorsan yeni bir tane oluşturabilirsin. Hesabını kaydedebilir ve kullanabilirsin ancak profil bilgilerin gibi kaydedilmiş bazı ayarları kaybedersin. Signal Güvenli Yedeklemeleri etkinleştirdiysen, Kurtarma Anahtarın ile devam edebilirsin.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Yanlış PIN";
@@ -6971,13 +6971,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Aktarımı tamamlanamadı";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Kurtarma anahtarını yanlış girmiş veya eski cihazında en az bir yedeklemeyi tamamlamamış olabilirsin. \n\nSignal Güvenli Yedeklemeleri etkinleştirirken kaydettiğin aynı telefon numarası ve kurtarma anahtarıyla kaydolduğundan emin ol ve eski cihazının bir yedeklemeyi tamamladığını onayla.";
 
 /* Body for a sheet warning users about an incorrect recovery key and having hit a rate limit on retries. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait 1 hour and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "Kurtarma anahtarı denemelerin tükendi. Güvenliğin için yapabileceğin deneme sayısı sınırlıdır. 1 saat bekle ve tekrar dene.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Can't Find Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Yedekleme Bulunamıyor";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Yedeklemen şu anda geri yüklenemiyor. İnternet bağlantını kontrol et ve tekrar dene.";

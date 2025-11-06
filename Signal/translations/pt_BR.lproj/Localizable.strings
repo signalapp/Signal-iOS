@@ -71,10 +71,10 @@
 "ACTION_SEND_MESSAGE" = "Enviar mensagem";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Algo deu errado. Entre em contato com o suporte.";
 
 /* Message shown in an action sheet when a network error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Algo deu errado. Verifique a sua conexão e tente novamente.";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Toque para baixar";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Expirou em %1$@";
 
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Gerenciar assinatura";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Forma de pagamento recusada";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Verifique se sua forma de pagamento está atualizada";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Gerenciar plano";
@@ -896,10 +896,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Otimizar armazenamento no dispositivo";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "You’ve reached your backup storage limit. Free up space in Signal to continue backing up chats and media.";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Você atingiu seu limite de armazenamento de backup. Libere espaço no Signal para continuar fazendo backup de conversas e arquivos de mídia.";
 
 /* Title for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Backup Storage Full";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Armazenamento de backup cheio";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Reativar backups";
@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Upload de mídia pausado: aguardando Wi-Fi";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "You’ve reached the %1$@ storage limit that’s included with your backup plan. To backup new chats and media, free up %2$@ in Signal, and then tap “Back Up Now.”";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "Você atingiu o limite de armazenamento de %1$@ incluído no seu plano de backup. Para fazer backup de novas conversas e mídias, libere %2$@ no Signal e toque em “Fazer backup agora”.";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Carregando %1$@ de %2$@ (%3$@)";
@@ -938,13 +938,13 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Bem-vindo(a) aos Backups seguros do Signal. Comece quando quiser.";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Verifique se sua forma de pagamento está atualizada. Toque em Gerenciar assinatura > Signal > Atualizar forma de pagamento.";
 
 /* Primary button for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Gerenciar assinatura";
 
 /* Title for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Não foi possível renovar seu plano de assinatura de backups.";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Não esqueça de nos enviar os registros de depuração para ajudar a resolver o problema!";
@@ -1646,7 +1646,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Backup completo de mensagens de texto";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ de armazenamento";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "É necessário se registrar para ativar os backups.";
@@ -1655,7 +1655,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Algo deu errado. Tente novamente.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Ocorreu um erro ao resgatar sua compra. Entre em contato com o suporte.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Plano atual";
@@ -1685,13 +1685,13 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Assine por %1$@/mês";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Backups are end-to-end encrypted. Signal is a non profit. Paying for backups helps support us.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Os backups são criptografados de ponta a ponta. O Signal é uma organização sem fins lucrativos. Ao pagar pelos backups, você estará nos apoiando.";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Termos & Política de Privacidade";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Escolher plano de backup";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Cor e papel de parede do chat";
@@ -4325,7 +4325,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arquivo";
 
 /* Title for the conversation list's backup storage full context menu action. */
-"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Armazenamento de backup cheio";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Falha no backup";
@@ -5579,7 +5579,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Pular e criar novo PIN";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Use Recovery Key";
+"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Usar a chave de recuperação";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Se não conseguir se lembrar do seu PIN, você pode criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
@@ -5594,10 +5594,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurar backups seguros do Signal";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "Se não restaurar agora, você não poderá fazer isso mais tarde. Se você reativar os backups neste dispositivo, seu backup atual será substituído pelo seu novo histórico de mensagens.";
 
 /* Title for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Pular restauração?";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Escolha como você gostaria de restaurar o histórico de mensagens e os dados da conta.";
@@ -6440,7 +6440,7 @@
 "PIN_ENTER_EXISTING_SKIP" = "Ignorar PIN";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Use Recovery Key";
+"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Usar a chave de recuperação";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Criação do PIN falhou";
@@ -6548,10 +6548,10 @@
 "POLL_DETAILS_TITLE" = "Detalhes da enquete";
 
 /* Title for an action sheet confirming the user wants end a poll. */
-"POLL_END_CONFIRMATION" = "End poll?";
+"POLL_END_CONFIRMATION" = "Encerrar enquete?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "Os membros do grupo não poderão mais votar nesta enquete.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ encerrou a enquete: %2$@";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Precisa de ajuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Seu PIN é um código com no mínimo 4 dígitos e pode ser numérico ou alfanumérico. Se você não conseguir se lembrar do seu PIN, terá que aguardar 7 dias para registrar novamente a sua conta. Se você tiver o recurso de backups seguros do Signal ativado, poderá prosseguir com sua chave de recuperação.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Seu PIN é um código com no mínimo 4 dígitos e pode ser numérico ou alfanumérico. Se não conseguir lembrar do seu PIN, você poderá se cadastrar e usar sua conta, mas perderá algumas configurações salvas como suas informações de perfil. Se você tiver o recurso de backups seguros do Signal ativado, poderá prosseguir com sua chave de recuperação.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Seu PIN é um código com no mínimo 4 dígitos e pode ser numérico ou alfanumérico. Se não conseguir lembrar seu PIN, crie um novo. Você pode se cadastrar e usar sua conta, mas perderá algumas configurações salvas, como suas informações de perfil. Se você tiver o recurso de backups seguros do Signal ativado, poderá prosseguir com sua chave de recuperação.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorreto";
@@ -6971,13 +6971,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Não foi possível concluir a transferência";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Você pode ter inserido sua chave de recuperação incorretamente ou não ter concluído pelo menos um backup no seu dispositivo antigo. \n\nConfira se você está se registrando com o mesmo número de telefone e chave de recuperação que você salvou ao habilitar os Backups Seguros do Signal e confirme se seu dispositivo antigo concluiu um backup.";
 
 /* Body for a sheet warning users about an incorrect recovery key and having hit a rate limit on retries. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait 1 hour and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "Você esgotou as tentativas com a chave de recuperação. Para sua segurança, o número de tentativas que você pode fazer é limitado. Aguarde 1 hora e tente novamente.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Can't Find Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Não foi possível encontrar o backup";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Seu backup não pode ser restaurado no momento. Verifique sua conexão com a Internet e tente novamente.";

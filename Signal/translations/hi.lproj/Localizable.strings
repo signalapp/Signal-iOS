@@ -71,10 +71,10 @@
 "ACTION_SEND_MESSAGE" = "मैसेज भेजें";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "कोई गड़बड़ी हुई। कृपया सपोर्ट टीम से संपर्क करें।";
 
 /* Message shown in an action sheet when a network error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "कोई गड़बड़ी हुई। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "डाउनलोड करने के लिए टैप करें";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "%1$@ की समयसीमा खत्म हो गई";
 
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "सब्सक्रिप्शन मैनेज करें";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "पेमेंट मेथड को मंज़ूरी नहीं मिली";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "यह पक्का कर लें कि आपका पेमेंट मेथड अप-टू-डेट है।";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "प्लान मैनेज करें";
@@ -896,10 +896,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "डिवाइस पर स्टोरेज को ऑप्टिमाइज़ करें";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "You’ve reached your backup storage limit. Free up space in Signal to continue backing up chats and media.";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "आपने अपने बैकअप स्टोरेज की सीमा पूरी कर ली है। Signal में स्पेस खाली करें, ताकि आप चैट और मीडिया का बैकअप लेना जारी रख सकें।";
 
 /* Title for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Backup Storage Full";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "बैकअप स्टोरेज में जगह नहीं है";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "बैकअप फिर से चालू करें";
@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "मीडिया अपलोड रोका गया है: Wi-Fi का इंतज़ार है";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "You’ve reached the %1$@ storage limit that’s included with your backup plan. To backup new chats and media, free up %2$@ in Signal, and then tap “Back Up Now.”";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "आपने अपने बैकअप प्लान में मिलने वाले %1$@ स्टोरेज की सीमा पूरी कर ली है। नए चैट और मीडिया का बैकअप लेने के लिए, Signal में %2$@ का स्टोरेज खाली करें और फिर 'अभी बैकअप लें' पर टैप करें।";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%2$@ में से %1$@ अपलोड किया जा रहा है (%3$@)";
@@ -938,13 +938,13 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal सिक्योर बैकअप में आपका स्वागत है। अपना बैकअप अभी शुरू करें।";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "पक्का कर लें कि आपका पेमेंट मेथड अप-टू-डेट है। \"सब्सक्रिप्शन मैनेज करें > Signal > पेमेंट मेथड अपडेट करें\" पर टैप करें।";
 
 /* Primary button for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "सब्सक्रिप्शन मैनेज करें";
 
 /* Title for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "आपके बैकअप का सब्सक्रिप्शन रिन्यू नहीं हो पाया";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "कृपया हमें डीबग लॉग भेजें, ताकि हम इस समस्या को हल कर सकें!";
@@ -971,7 +971,7 @@
 "BADGE_CONFIGURATION_TITLE" = "बैज";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "अभी दान दें";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "अभी डोनेट करें";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ Signal का समर्थन करता/करती है";
@@ -1646,7 +1646,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "पूरे टेक्स्ट संदेश का बैकअप";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ का स्टोरेज";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "बैकअप चालू करने के लिए, आपको रजिस्टर होना होगा।";
@@ -1655,7 +1655,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "कुछ गलत हो गया। कृपया फिर से प्रयास करें।";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "आपकी खरीदारी रिडीम करने में कोई गड़बड़ी हुई। कृपया सपोर्ट टीम से संपर्क करें।";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "मौजूदा प्लान";
@@ -1685,13 +1685,13 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "%1$@/महीने में सब्सक्राइब करें";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Backups are end-to-end encrypted. Signal is a non profit. Paying for backups helps support us.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "बैकअप एंड-टू-एंड एनक्रिप्टेड होते हैं। Signal एक गैर-लाभकारी संस्था है। बैकअप के लिए पेमेंट करने का मतलब है, हमारे काम में सहयोग देना।";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "नियम और गोपनीयता नीति";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "बैकअप प्लान चुनें";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "चैट रंग और वॉलपेपर";
@@ -2756,7 +2756,7 @@
 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "बैंक ट्रांसफर";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
-"DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "डेबिट कार्ड के लिए क्रेडिट";
+"DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "डेबिट या क्रेडिट कार्ड";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ की ओर से";
@@ -2771,10 +2771,10 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Signal को %1$@ का दान";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal को %1$@ का दान दें";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal को %1$@ डोनेट करें";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal को %1$@ का दान दें";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal को %1$@ डोनेट करें";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "प्राप्तकर्ता को सीधे भेजे जानेवाले एक संदेश द्वारा दान के बारे में सूचित किया जाएगा। अपना खुद का संदेश नीचे जोड़ें।";
@@ -2894,7 +2894,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Signal इस्तेमाल करनेवाले किसी दोस्त या परिवार के सदस्य के लिए दान देकर Signal को सहयोग दें। उन्हें अपना सहयोग अपनी प्रोफ़ाइल पर दर्शाने का विकल्प दिया जाएगा।";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "किसी दोस्त के लिए दान दें";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "किसी दोस्त के बदले डोनेट करें";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "प्राप्तकर्ता चुनें";
@@ -2969,7 +2969,7 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal को दान का सहयोग प्राप्त है, यानी कि हम आपकी निजता को ध्यान में रखते हुए ही सबकुछ करते हैं। Signal आपके डेटा या किसी लाभ के लिए नहीं, बल्कि आपके लिए बना है।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "यदि संभव हो तो कृपया आज दान दे कर Signal को हर किसी के लिए मज़ेदार, भरोसेमंद, और उपलब्ध बनाए रखने में सहयोग दें।";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "मुमकिन हो, तो आज ही डोनेट करें, ताकि Signal को हर किसी तक पहुंचाने और इसे भरोसेमंद और मज़ेदार प्लैटफ़ॉर्म बनाए रखने में मदद मिल सके।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
 "DONATION_READ_MORE_SCREEN_TITLE" = "Signal अलग है।";
@@ -3023,7 +3023,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "दान करें";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "आपके द्वारा आर्थिक सहायता प्राप्त निजी संदेश सेवा। न कोई विज्ञापन, न ट्रैकिंग, न ही समझौता। Signal को सहयोग देने के लिए अभी दान दें।";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "आपके द्वारा आर्थिक सहायता प्राप्त निजी संदेश सेवा। न कोई विज्ञापन, न ट्रैकिंग, न ही समझौता। Signal को सहयोग करने के लिए अभी डोनेट करें।";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "ज़्यादा पढ़ें";
@@ -3056,7 +3056,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "हमें आपके दान को संसाधित करने में परेशानी हो रही है। %1$@";
 
 /* Title for a sheet explaining that a payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "दान संसाधित करने में त्रुटि";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "डोनेशन प्रोसेस करने में कोई गड़बड़ी हुई";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "दान की पुष्टि नहीं की जा सकी";
@@ -3083,10 +3083,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "दान लंबित है";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "दान संसाधित किया जा रहा है...";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "डोनेशन प्रोसेस किया जा रहा है...";
 
 /* A label describing a donation payment that has failed to process. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "दान संसाधित करने में त्रुटि";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "डोनेशन प्रोसेस करने में कोई गड़बड़ी हुई";
 
 /* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "मासिक दान रद्द किया गया";
@@ -4325,7 +4325,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "आर्काइव करें";
 
 /* Title for the conversation list's backup storage full context menu action. */
-"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "बैकअप स्टोरेज में जगह नहीं है";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "बैकअप नहीं लिया जा सका";
@@ -5579,7 +5579,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "स्किप करके नया पिन बनाएँ";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Use Recovery Key";
+"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "'रिकवरी की' इस्तेमाल करें";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "अगर आपको अपना पिन याद नहीं है, तो आपके पास नया पिन बनाने का विकल्प मौजूद है। रजिस्टर करके अपना अकाउंट इस्तेमाल किया जा सकता है, लेकिन सेव की गईं कुछ सेटिंग खो सकती हैं, जैसे कि आपकी प्रोफ़ाइल से जुड़ी जानकारी।";
@@ -5594,10 +5594,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal सिक्योर बैकअप रीस्टोर करें";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "अगर आपने अभी रीस्टोर नहीं किया, तो आपके पास बाद में रीस्टोर करने का विकल्प नहीं रहेगा। अगर आपने इस डिवाइस पर बैकअप फिर से चालू किया, तो आपके पुराने बैकअप को नई चैट हिस्ट्री से बदल दिया जाएगा।";
 
 /* Title for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "अभी रीस्टोर नहीं करना है?";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "चुनें कि आप अपने संदेश इतिहास और अकाउंट के डेटा को कैसे रीस्टोर करना चाहेंगे।";
@@ -5903,7 +5903,7 @@
 "PAYMENT_DETAILS_BANK_TITLE" = "बैंक ट्रांसफर";
 
 /* Header title for card payment details screen */
-"PAYMENT_DETAILS_CARD_TITLE" = "डेबिट कार्ड के लिए क्रेडिट";
+"PAYMENT_DETAILS_CARD_TITLE" = "डेबिट या क्रेडिट कार्ड";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ से %2$@";
@@ -6440,7 +6440,7 @@
 "PIN_ENTER_EXISTING_SKIP" = "पिन छोड़ें";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Use Recovery Key";
+"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "'रिकवरी की' इस्तेमाल करें";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "पिन नहीं बनाया जा सका";
@@ -6548,10 +6548,10 @@
 "POLL_DETAILS_TITLE" = "पोल का विवरण";
 
 /* Title for an action sheet confirming the user wants end a poll. */
-"POLL_END_CONFIRMATION" = "End poll?";
+"POLL_END_CONFIRMATION" = "पोल खत्म करना है?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "ग्रुप के सदस्य अब इस पोल में वोट नहीं दे पाएंगे।";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ ने यह पोल समाप्त कर दिया है: %2$@";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "क्या आपको मदद चाहिए?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "आपका पिन 4+ अंकों का एक कोड होता है, जिसे आपने ही बनाया था। यह न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आपको अपना पिन याद नहीं है, तो आपको अपना अकाउंट दोबारा रजिस्टर करने से पहले 7 दिन इंतज़ार करना होगा। अगर आपने Signal सिक्योर बैकअप चालू किया हुआ है, तो अपनी 'रिकवरी की' के साथ आगे बढ़ें।";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "आपका पिन 4+ डिजिट का एक कोड होता है, जिसे आपने ही बनाया था। यह न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आपको अपना पिन याद नहीं है, तो आपके पास रजिस्टर करके अपना अकाउंट इस्तेमाल करने का विकल्प मौजूद है। हालांकि, ऐसा करने पर सेव की गईं कुछ सेटिंग खो सकती हैं, जैसे कि आपकी प्रोफ़ाइल से जुड़ी जानकारी। अगर आपने Signal सिक्योर बैकअप चालू किया हुआ है, तो अपनी 'रिकवरी की' के साथ आगे बढ़ें।";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "आपका पिन 4+ डिजिट का एक कोड होता है। यह कोड सिर्फ़ अंकों वाला या अक्षरों और अंकों का मिश्रण हो सकता है। अगर आपको अपना पिन याद नहीं है, तो आपके पास नया पिन बनाने का विकल्प मौजूद है। रजिस्टर करके अपना अकाउंट इस्तेमाल किया जा सकता है। हालांकि, ऐसा करने पर सेव की गईं कुछ सेटिंग खो सकती हैं, जैसे कि आपकी प्रोफ़ाइल से जुड़ी जानकारी। अगर आपने Signal सिक्योर बैकअप चालू किया हुआ है, तो अपनी 'रिकवरी की' के साथ आगे बढ़ें।";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "पिन सही नहीं है";
@@ -6971,13 +6971,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "ट्रांसफ़र पूरा नहीं किया जा सका";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "हो सकता है कि आपने अपनी 'रिकवरी की' गलत डाली हो या अपने पुराने डिवाइस पर एक बैकअप भी पूरा न किया हो। \n\nरजिस्टर करते समय वही फ़ोन नंबर और 'रिकवरी की' इस्तेमाल करें, जो आपने Signal सिक्योर बैकअप चालू करते समय सेव की थी। साथ ही, इसकी पुष्टि कर लें कि आपके पुराने डिवाइस ने बैकअप पूरा कर लिया है।";
 
 /* Body for a sheet warning users about an incorrect recovery key and having hit a rate limit on retries. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait 1 hour and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "आपको जितनी बार ‘रिकवरी की’ डालने की अनुमति थी, आपने वह सीमा पूरी कर ली है। आपकी सुरक्षा के लिए, 'रिकवरी की' डालने की एक सीमा तय की गई है। अब 1 घंटा इंतज़ार करें और फिर से कोशिश करें।";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Can't Find Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "बैकअप नहीं मिल पा रहा है";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "आपका बैकअप अभी रीस्टोर नहीं किया जा सकता। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
@@ -7853,121 +7853,121 @@
 "SETTINGS_LINK_PREVIEWS" = "लिंक का प्रीव्यू जनरेट करें";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "भेजने वाले संदेशों के लिए सीधे वेबसाइट से ही लिंक प्रीव्यू प्राप्त करें।";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "भेजे जाने वाले मैसेज के लिए, सीधे वेबसाइट से लिंक प्रीव्यू करने की सुविधा पाएं।";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "कभी नहीं";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi और सेलुलर";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "वाई-फ़ाई और मोबाइल नेटवर्क";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "वाई-फ़ाई";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "ऑडियो";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "डॉक्युमेंट्स";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "डॉक्यूमेंट";
 
 /* Label for the 'photo' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "तस्वीरें";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "फ़ोटो";
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "वीडियो";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "देखें और शेयर करें कि संदेश पढ़ लिए गए हैं और टाइप किए जा रहे हैं। यदि निष्क्रिय किया हुआ, तो आप अन्य लोगों के 'पढ़ लिया गया' रिसीप्ट या 'टाइपिंग कर रहे हैं' संकेत नहीं देख सकेंगे।";
+"SETTINGS_MESSAGING_FOOTER" = "मैसेज देखे जाने या टाइप किए जाने की सूचना देखें और शेयर करें। अगर आपने इस सुविधा को बंद कर दिया, तो आपको भी पता नहीं चल पाएगा कि जिन्हें आपने मैसेज भेजा है उन्होंने उसे देखा या नहीं। साथ ही, आपको टाइप किए जाने की सूचना भी नहीं मिल पाएगी।";
 
 /* Title for settings activity */
-"SETTINGS_NAV_BAR_TITLE" = "सेटिंग्स";
+"SETTINGS_NAV_BAR_TITLE" = "सेटिंग";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "म्यूट की गई चैट शामिल करें";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "बैज की गिनती";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "बैज की संख्या";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "कॉल और संदेश सूचनाएँ फ़ोन लॉक होने पर भी दिखाई दे सकती हैं।";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "आपका फ़ोन लॉक रहने के दौरान भी आपको कॉल और मैसेज के नोटिफ़िकेशन मिल सकते हैं।";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "सूचना सामग्री";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "नोटिफ़िकेशन का कॉन्टेंट";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "संपर्क Signal से जुड़े";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "कॉन्टैक्ट ने Signal जॉइन किया";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "तब सूचित करें, जब…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "तब सूचना भेजें, जब…";
 
 /* The title for the notification settings. */
-"SETTINGS_NOTIFICATIONS" = "सूचनाएं";
+"SETTINGS_NOTIFICATIONS" = "नोटिफ़िकेशन";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "सक्रिय करें";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "चालू करें";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "आप MobileCoin भेजने और पाने के लिए Signal इस्तेमाल कर सकते हैं। सभी भुगतानों पर MobileCoin और MobileCoin वॉलेट के इस्तेमाल की शर्तें लागू होती हैं। आपको कुछ समस्याएँ आ सकती हैं और जो भुगतान या बैलेंस आप खोते हैं उन्हें रिकवर नहीं किया जा सकता।";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "सक्रिय करें";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "चालू करें";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin शर्तें देखें";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin की शर्तें देखें";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "धनराशि जोड़ें";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "फ़ंड जोड़ें";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "धनराशि जोड़ने के लिए, अपने वॉलेट पते में MobileCoin भेजें। अपने खाते से किसी ऐसे एक्सचेंज पर लेन-देन शुरू करें जो MobileCoin का समर्थन करता हो, फिर QR स्कैन करें या अपने वॉलेट पते को कॉपी करें।";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "फ़ंड जोड़ने के लिए, अपने वॉलेट पते पर MobileCoin भेजें। जिस एक्सचेंज पर MobileCoin काम करता है, वहां अपने खाते से लेन-देन शुरू करें, फिर QR कोड स्कैन करें या अपना वॉलेट पता कॉपी करें।";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "वॉलेट पता कॉपी किया गया";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "सभी भुगतान";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "सभी पेमेंट";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ से %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%3$@ बजे %1$@ %2$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal में भुगतान अब उपलब्ध नहीं है। अब भी आप किसी एक्सचेंज में धनराशि ट्रांसफ़र कर सकते हैं लेकिन अब आप भुगतान भेज या प्राप्त नहीं कर सकते या धनराशि नहीं जोड़ सकते।";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal में पेमेंट की सुविधा अब उपलब्ध नहीं है। हालांकि, एक्सचेंज में अभी भी फ़ंड ट्रांसफ़र किए जा सकते हैं, लेकिन सीधे तौर पर फ़ंड भेजने या पाने या फिर फ़ंड जोड़ने की सुविधा अब मौजूद नहीं है।";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "भुगतान को निष्क्रिय नहीं कर सकते क्योंकि आपका बैलेंस उपलब्ध नहीं है। अपना कनेक्शन जाँचें और दोबारा प्रयास करें।";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "पेमेंट की सुविधा बंद नहीं की जा सकती। ऐसा इसलिए, क्योंकि आपका मौजूदा बैलेंस नहीं दिख रहा है। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "भुगतान पूरा नहीं किया जा सका क्योंकि आपका बैलेंस उपलब्ध नहीं है। अपना कनेक्शन जाँचें और दोबारा प्रयास करें।";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "पेमेंट नहीं हो सका, क्योंकि आपका मौजूदा बैलेंस नहीं दिख रहा था। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal में भुगतान अब उपलब्ध नहीं है। अब भी आप किसी एक्सचेंज में धनराशि ट्रांसफ़र कर सकते हैं लेकिन अब आप भुगतान भेज या प्राप्त नहीं कर सकते या धनराशि नहीं जोड़ सकते।";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal में पेमेंट की सुविधा अब उपलब्ध नहीं है। हालांकि, एक्सचेंज में अभी भी फ़ंड ट्रांसफ़र किए जा सकते हैं, लेकिन सीधे तौर पर फ़ंड भेजने या पाने या फिर फ़ंड जोड़ने की सुविधा अब मौजूद नहीं है।";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal में भुगतान अब उपलब्ध नहीं है। अब भी आप किसी एक्सचेंज में धनराशि ट्रांसफ़र कर सकते हैं लेकिन अब आप भुगतान भेज या प्राप्त नहीं कर सकते या धनराशि नहीं जोड़ सकते।";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal में पेमेंट की सुविधा अब उपलब्ध नहीं है। हालांकि, एक्सचेंज में अभी भी फ़ंड ट्रांसफ़र किए जा सकते हैं, लेकिन सीधे तौर पर फ़ंड भेजने या पाने या फिर फ़ंड जोड़ने की सुविधा अब मौजूद नहीं है।";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "रूपांतरण केवल अनुमान हैं और सटीक नहीं भी हो सकते हैं।";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "सभी मुद्राएँ";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "सभी करंसी";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "बचे हुए बैलेंस को ट्रांसफ़र करें";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "बाकी बैलेंस ट्रांसफ़र करें";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "निष्क्रिय करें";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "बंद करें";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "भुगतान निष्क्रिय करें";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "पेमेंट की सुविधा बंद करें";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "यदि आप भुगतान निष्क्रिय करते हैं तो आप Signal में Mobilecoin भेजने या प्राप्त करने में सक्षम नहीं रहेंगे।";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "पेमेंट की सुविधा बंद करने पर, Signal पर MobileCoin भेजने या पाने की सुविधा भी बंद हो जाएगी।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "भुगतान निष्क्रिय करें?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "पेमेंट की सुविधा बंद करनी है?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "भुगतान निष्क्रिय करें";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "पेमेंट की सुविधा बंद करें";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "हमारा सुझाव है कि भुगतान निष्क्रिय करने से पहले आप अपनी धनराशि को किसी अन्य वॉलेट पते पर ट्रांसफ़र कर लें। यदि आप अपनी धनराशि को अभी ट्रांसफर करना नहीं चुनते हैं तो भुगतानों को फिर से सक्रिय करने की स्थिति में वह धनराशि Signal से लिंक किए गए आपके वॉलेट में बनी रहेगी।";
@@ -7976,37 +7976,37 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "यदि आप भुगतान फिर से सक्रिय करना चुनते हैं तो आपका बैलेंस Signal से लिंक किए हुए आपके वॉलेट में ही रहेगा।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ट्रांसफ़र किए बिना निष्क्रिय करें?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ट्रांसफ़र किए बिना बंद करना है?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ट्रांसफ़र किए बिना निष्क्रिय करें";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ट्रांसफ़र किए बिना बंद करें";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "भुगतान निष्क्रिय नहीं किए जा सके";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "पेमेंट की सुविधा बंद नहीं की जा सकी";
 
 /* Label for the 'payments details' view of the app settings. */
-"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "माहिती";
+"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "विवरण";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "भुगतान चालू करें";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "पेमेंट की सुविधा चालू करें";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
 "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "भुगतान लॉक";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin एक नई गोपनीयता केंद्रित डिजिटल मुद्रा है।";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin एक डिजिटल करंसी है, जिसमें प्राइवेसी का खास ध्यान रखा जाता है।";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin के बारे में";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "आप अपने वॉलेट पते में MobileCoin भेज कर Signal में उपयोग करने के लिए धनराशि जोड़ सकते हैं।";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Signal में इस्तेमाल करने के लिए, अपने वॉलेट पते पर MobileCoin भेजकर फ़ंड जोड़े जा सकते हैं।";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "धनराशि जोड़ना";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "फ़ंड जोड़ना";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "आप MobileCoin का समर्थन करने वाले एक्सचेंज पर किसी भी समय MobileCoin को भुना सकते हैं। बस उस एक्सचेंज में अपने खाते पर ट्रांसफ़र करें।";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin की सुविधा वाले किसी एक्सचेंज पर किसी भी समय MobileCoin को भुनाया जा सकता है। आपको बस एक्सचेंज में अपने अकाउंट में ट्रांसफ़र करना होगा।";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "भुनाना";
@@ -8024,40 +8024,40 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "पिन अपडेट करें";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "अधिक बैलेंस होने पर, अपने खाते को ज़्यादा सुरक्षित करने के लिए आपको एक अक्षरों और अंकों वाले PIN पर अपडेट करना चाहिए।";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "अगर आपके अकाउंट में बैलेंस ज़्यादा है, तो सुरक्षा बढ़ाने के लिए अपने पिन को अल्फ़ान्यूमेरिक में अपडेट करें।";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "अपना PIN अपडेट करें";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "अपना पिन अपडेट करें";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "अमान्य वॉलेट पता";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "वॉलेट पता सही नहीं है";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
 "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "भुगतान लॉक";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "अभी तक हाल की कोई गतिविधि नहीं है।";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "आपने हाल में कोई ट्रांज़ैक्शन नहीं किया है।";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "क्या आप भुगतान को सक्रिय करना चाहेंगे?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "क्या आपको पेमेंट की सुविधा चालू करनी है?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "भुगतान चालू नहीं हैं";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "पेमेंट की सुविधा चालू नहीं है";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "भुगतान भेजने के लिए री-रजिस्टर करें।";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "पेमेंट भेजने के लिए फिर से रजिस्टर करें।";
 
 /* Title for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "पंजीकृत नहीं है";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "रजिस्टर नहीं है";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "भुगतान सक्रिय करें";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "पेमेंट की सुविधा चालू करें";
 
 /* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "भुगतान सक्रिय किया गया।";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "पेमेंट की सुविधा चालू की गई।";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin, एक नई गोपनीयता केंद्रित डिजिटल मुद्रा भेजने और प्राप्त करने के लिए Signal का उपयोग करें। शुरु करने के लिए सक्रिय करें।";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin भेजने और पाने के लिए Signal का इस्तेमाल करें। यह एक डिजिटल करंसी है, जिसमें प्राइवेसी का खास ध्यान रखा जाता है। शुरू करने के लिए ऐक्टिवेट करें।";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "भुगतान दोबारा सक्रिय करें";
@@ -8075,7 +8075,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "बिना सहेजे जारी रखना है?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "आपके द्वारा Signal फिर से इंस्टॉल करते समय यदि आप अपने Signal PIN की पुष्टि करते हैं तो आपका बैलेंस अपने आप रीस्टोर हो जाएगा। आप रिकवरी फ़्रेज़ का उपयोग करके भी अपना बैलेंस रीस्टोर कर सकते हैं, जो कि एक 24-शब्दों का आपके लिए अलग वाक्यांश होता है। इसे लिख लें और किसी सुरक्षित स्थान पर रखें।";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Signal दोबारा इंस्टॉल करने पर आपको अपने Signal पिन की पुष्टि करनी होगी। ऐसा करने के बाद आपका बैलेंस अपने-आप वापस आ जाएगा। बैलेंस को रिकवरी फ़्रेज़ के ज़रिए भी वापस पाया जा सकता है। आपको बता दें कि यह 24 शब्दों का एक यूनीक फ़्रेज़ होता है, जो हर यूज़र के लिए अलग-अलग हो सकता है। इसे लिखकर किसी सुरक्षित जगह संभालकर रखें।";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "आपने संतुलन बना लिया है! समय है अपने रिकवरी वाक्य को सहेजने का—24 शब्दों की एक कुंजी जिसके इस्तेमाल से आप अपना संतुलन वापस पा सकते हैं।";
@@ -8084,7 +8084,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "समय है अपने रिकवरी वाक्य को सहेजने का—24 शब्दों की एक कुंजी जिसके इस्तेमाल से आप अपना संतुलन वापस पा सकते हैं।";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "धनराशि जोड़ें";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "फ़ंड जोड़ें";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "नंबर ब्लॉक करें";
@@ -8099,46 +8099,46 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%1$@ से मिला";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "द्वारा भेजा गया";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "इन्होंने भेजा";
 
 /* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "निम्न द्वारा प्रयास किया गया";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ को %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ को %1$@ ने भेजा";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@ को भेजा जा रहा है";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "भेज दिया गया";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "भेजा गया";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@ को भेजा गया";
 
 /* Label for the transaction status in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "स्थिति";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "स्टेटस";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "भुगतान राशि और लेन-देन के समय सहित लेन-देन विवरण MobileCoin लेजर का हिस्सा हैं।";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "पेमेंट की रकम और ट्रांज़ैक्शन का समय समेत इससे जुड़ी अन्य जानकारी, MobileCoin Ledger का हिस्सा होती है।";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "जब आपके स्वामित्व के कॉइन किसी लेन-देन को पूरा करने के लिए एकत्र नहीं किए जा सकते हैं तब “कॉइन क्लीनअप शुल्क” लगाया जाता है। क्लीनअप द्वारा आप भुगतान भेजना जारी रख सकेंगे।";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "जब आपके पास इतने कॉइन मौजूद न हो कि उन्हें मिलाकर कोई ट्रांज़ैक्शन पूरा किया जा सके, तो आपसे 'कॉइन क्लीनअप शुल्क' लिया जा सकता है। क्लीनअप करने से पेमेंट भेजा जा सकता है।";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "इस भुगतान को पूरा करने के लिए आपके पास पर्याप्त MOB नहीं है। आपका मौजूदा बैलेंस %1$@ है।";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "इस पेमेंट को पूरा करने के लिए आपके पास पर्याप्त MOB नहीं है। आपका मौजूदा बैलेंस %1$@ है।";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "अपर्याप्त बैलेंस";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "पर्याप्त बैलेंस मौजूद नहीं है";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%1$@ से";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%1$@ की ओर से";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%1$@ को";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "भुगतान निष्क्रिय किया गया।";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "पेमेंट की सुविधा बंद कर दी गई है।";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "इस चरण को छोड़ने से कोई भी ऐसा व्यक्ति जिसके हाथ आपका फ़ोन लग जाए, उसके इस्तेमाल से निधियाँ अंतरित कर सकता है या आपका रिकवरी वाक्य देख सकता है।";
@@ -8198,10 +8198,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "मिला";
 
 /* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "भेज दिया गया";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "भेजा गया";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "हाल ही के भुगतान";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "हाल के पेमेंट";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "इससे पहले कि आप अपना PIN अक्षम करें, अपने भुगतान खाते को रिकवर करना सुनिश्चित करने के लिए आपको अपना भुगतान रिकवरी फ़्रेज़ रिकॉर्ड करना होगा।";
@@ -8210,34 +8210,34 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "रिकवरी फ़्रेज़ रिकॉर्ड करें";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "भुगतान रिकवरी फ़्रेज़ रिकॉर्ड करें";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "पेमेंट रिकवरी फ़्रेज़ रिकॉर्ड करें";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "शेष बैलेंस";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "बाकी बैलेंस";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "भुगतान खाता रीस्टोर करें";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "पेमेंट खाता रीस्टोर करें";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "सुनिश्चित करें कि आपने अपना वाक्यांश सही दर्ज किया है।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "पक्का कर लें कि आपने सही फ़्रेज़ डाला है।";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "रिकवरी फ़्रेज़ की पुष्टि करें";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "भुगतान खाता रीस्टोर किया गया।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "पेमेंट खाता रीस्टोर किया गया।";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "मैन्युअल रूप से दर्ज करें";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "मैन्युअल तरीके से डालें";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "रिकवरी विफल रही";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "रिकवरी नहीं हो पाई";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "यह एक मान्य रिकवरी फ़्रेज़ नहीं है।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "यह रिकवरी फ़्रेज़ मान्य नहीं है।";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "अमान्य वाक्यांश";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "फ़्रेज़ अमान्य है";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "क्लिपबोर्ड से पेस्ट करें";
@@ -8249,34 +8249,34 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "रिकवरी फ़्रेज़ पेस्ट करें";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "आपका रिकवरी फ़्रेज़ 24 शब्दों का एक विशेष फ़्रेज़ है। अपना भुगतान अकाउंट रीस्टोर करने के लिए इसका इस्तेमाल करें।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "आपका रिकवरी फ़्रेज़ 24 शब्दों का एक यूनीक फ़्रेज़ होता है। अपना पेमेंट खाता रीस्टोर करने के लिए इसका इस्तेमाल करें।";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "रिकवरी फ़्रेज़ दर्ज करें";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "रिकवरी फ़्रेज़ डालें";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "रिकवरी फ़्रेज़";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "%1$@ शब्द दर्ज करें";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "%1$@ शब्द डालें";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "अमान्य रिकवरी वाक्यांश।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "रिकवरी फ़्रेज़ सही नहीं है।";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "शब्द को ग़लत ढंग से लिखा गया है।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "शब्द को सही तरीके से नहीं लिखा गया है।";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "रिकवरी फ़्रेज़ दर्ज करें";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "रिकवरी फ़्रेज़ डालें";
 
 /* Title for the first step of the 'save payments passphrase' views. */
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "रिकवरी वाक्य सहेजें";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ट्रांसफ़र रसीद के लिए QR कोड स्कैन करें।";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ट्रांसफ़र रसीद देखने के लिए QR कोड स्कैन करें।";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "अमान्य पता";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "पता सही नहीं है";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR कोड स्कैन करें";
@@ -8300,37 +8300,37 @@
 "SETTINGS_PAYMENTS_SECURITY_TITLE" = "भुगतान";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "भुगतान भेजें";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "पेमेंट भेजें";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "प्राप्तकर्ता चुनें";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "जिन्हें भेजना है उनका नाम चुनें";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "मुद्रा रूपांतरण";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "करंसी कन्वर्ज़न";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "भुगतान";
+"SETTINGS_PAYMENTS_TITLE" = "पेमेंट";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "आप अपने Signal वॉलेट पते पर ट्रांसफ़र नहीं कर सकते। अपने खाते से किसी समर्थित एक्सचेंज पर वॉलेट पता दर्ज करें।";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Signal वॉलेट पता ट्रांसफ़र नहीं किया जा सकता। सही एक्सचेंज पर अपने अकाउंट का वॉलेट पता डालें।";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "आप एक्सचेंज द्वारा दिए गए वॉलेट पते पर कोई लेन-देन पूरा करके MobileCoin ट्रांसफ़र कर सकते हैं। वॉलेट पता अंकों और अक्षरों की एक श्रंखला होता है जो सामान्यतः QR कोड के नीचे स्थित होता है।";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "एक्सचेंज की ओर से दिए गए वॉलेट पते पर ट्रांसफ़र पूरा करके, MobileCoin भेजे जा सकते हैं। वॉलेट पता आम तौर पर अंकों और अक्षरों की एक स्ट्रिंग होती है, जो आम तौर पर QR कोड के नीचे मौजूद होता है।";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "आप जिस वॉलेट पते पर ट्रांसफ़र का प्रयास कर रहे हैं उसकी जाँच करें और दोबारा प्रयास करें।";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "आपको जिस वॉलेट पते पर ट्रांसफ़र करना है उसे सही से देखें और दोबारा कोशिश करें।";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "ग़लत पता";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "पता सही नहीं है";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "प्रति: वॉलेट पता स्कैन या दर्ज करें";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "इनको: वॉलेट पता स्कैन करें या डालें";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "एक्सचेंज करने के लिए ट्रांसफ़र करें";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "एक्सचेंज को ट्रांसफ़र करें";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "एक्सचेंज करने के लिए ट्रांसफ़र करें";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "एक्सचेंज को ट्रांसफ़र करें";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "रिकवरी फ़्रेज़ का सेटअप पूरा हुआ।";
@@ -8339,13 +8339,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "पुष्टि करें";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "अपने रिकवरी फ़्रेज़ से %1$@ और %2$@ शब्द दर्ज करें।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "अपने रिकवरी फ़्रेज़ से %1$@ और %2$@ शब्द डालें।";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "कोई एक शब्द ग़लत है। दोबारा प्रयास करें।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "कोई एक शब्द गलत है। दोबारा कोशिश करें।";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "दोनों शब्द ग़लत हैं। दोबारा प्रयास करें।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "दोनों शब्द गलत हैं। दोबारा कोशिश करें।";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "शब्द %1$@";
@@ -8360,13 +8360,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "क्लिपबोर्ड पर कॉपी करें";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "यदि आप अपने रिकवरी फ़्रेज़ को डिजिटल रूप से स्टोर करना चुनें, तो सुनिश्चित करें उसे आपके भरोसेमंद स्थान पर सुरक्षित रखा गया हो।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "अगर आपको अपना रिकवरी फ़्रेज़ डिजिटल रूप में सुरक्षित रखना है, तो इसे किसी भरोसेमंद और सुरक्षित जगह पर ही रखें।";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "क्लिपबोर्ड पर कॉपी करें?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "क्लिपबोर्ड पर कॉपी करना है?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "वाक्यांश दोबारा देखें";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "फ़्रेज़ दोबारा देखें";
 
 /* Title for the first step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "रिकवरी फ़्रेज़ देखें";
@@ -8375,7 +8375,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "रिकवरी फ़्रेज़";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "निम्न 24 शब्दों को क्रम में लिखें। अपनी सूची को किसी सुरक्षित स्थान पर रखें।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "नीचे दिए गए 24 शब्दों को क्रम में लिखें। अपनी सूची को किसी सुरक्षित जगह पर रखें।";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "इस सूची को साझा न करें";
@@ -8414,43 +8414,43 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "मेरा नंबर कौन देख सकता है";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "रिमाइन्डर बंद करें";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "रिमाइंडर बंद करें";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "ध्यान रखें कि आप अपना पिन याद कर लें या कहीं सुरक्षित रख लें क्योंकि खोया हुआ पिन वापस नहीं लाया जा सकता। अगर आप अपना पिन भूल जाते हैं, तो आप Signal में पुनः पंजीकरण करते समय अपना डाटा खो सकते हैं।";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "अपना पिन याद रखें या सुरक्षित जगह पर सहेजकर रखें, क्योंकि इसे रिकवर नहीं किया जा सकता। अगर आपको अपना पिन याद नहीं रहता, तो Signal अकाउंट दोबारा रजिस्टर करते समय आपका कुछ डेटा खो सकता है।";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "अपना Signal पिन कि पुष्टि करें";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "अपने Signal पिन की पुष्टि करें";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "पिन के रिमाईन्डर";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "पिन के रिमाइंडर";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN Signal द्वारा संग्रहीत जानकारी को एन्क्रिप्ट रखते हैं, ताकि केवल आप ही उसे एक्सेस कर पाएँ। आपका PIN रिकवर नहीं किया जा सकता। आपकी प्रोफ़ाइल, सेटिंग्ज़, और संपर्क आपके द्वारा Signal को फिर से इंस्टॉल करने पर रीस्टोर हो जाएँगे।";
+"SETTINGS_PINS_FOOTER" = "पिन की मदद से Signal पर आपकी जानकारी एन्क्रिप्टेड रूप में स्टोर की जाती है, ताकि सिर्फ़ आप ही उसे देख सकें। Signal दोबारा इंस्टॉल करने पर आपकी प्रोफ़ाइल, सेटिंग, और कॉन्टैक्ट रीस्टोर हो जाएगा। ऐप खोलने के लिए पिन की ज़रूरत नहीं होगी।";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "अपना पिन बदलें";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "पिेन बनाएँ";
+"SETTINGS_PINS_ITEM_CREATE" = "पिन बनाएं";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "Signal PIN";
+"SETTINGS_PINS_TITLE" = "Signal पिन";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "सेंसरशिप उपाय, प्रॉक्सी, रिले कॉल, और सील्ड सेंडर सेटिंग्स।";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "अधिक";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "ऐडवांस";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "कॉल रीसेंट सूची में दिखाएँ";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "'हाल ही के' में कॉल दिखाएं";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "गोपनियता";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "पढ़ने की रसीदें";
+"SETTINGS_READ_RECEIPT" = "मैसेज पढ़े जाने की सूचना";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "बंद करें";
@@ -8462,10 +8462,10 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "रजिस्ट्रेशन लॉक बंद नहीं हो सका। अपना इंटरनेट कनेक्शन देखें और फिर से कोशिश करें।";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "पंजीकरण लॉक हटाएँ?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "रजिस्ट्रेशन लॉक हटाना है?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "शुरु करें";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "चालू करें";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "रजिस्ट्रेशन लॉक चालू नहीं हो सका। कृपया सपोर्ट टीम से संपर्क करें।";
@@ -8477,16 +8477,16 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "रजिस्ट्रेशन लॉक इस्तेमाल करने के लिए पिन बनाएं।";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "अगर आप अपना Signal पिन, Signal पर पुनः पंजीकरण करवाते समय भूल गये़, तो आप अपने खाते को 7 दिन तक नहीं खोल पाएँगे।";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "अगर Signal पर दोबारा रजिस्टर करते समय आपको अपना Signal पिन याद नहीं रहता, तो आपका अकाउंट 7 दिनों के लिए लॉक हो जाएगा।";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "पंजीकरण लाॅक लगाएँ?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "रजिस्ट्रेशन लॉक चालू करना है?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "फिर से लिंक";
+"SETTINGS_RELINK_BUTTON" = "फिर से लिंक करें";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "पुनः पंजीकरन";
+"SETTINGS_REREGISTER_BUTTON" = "फिर से रजिस्टर करें";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "स्क्रीन लॉक टाइमआउट";
@@ -8495,10 +8495,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "स्क्रीन लॉक";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "ऐप स्विचर में स्क्रीन छिपाएँ";
+"SETTINGS_SCREEN_SECURITY" = "ऐप स्विचर में स्क्रीन छिपाएं";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "कॉल को iOS फ़ोन ऐप की “हाल ही के” सूची में दिखाएँ।";
+"SETTINGS_SECTION_FOOTER_CALLING" = "iOS फ़ोन ऐप में 'हाल ही के' सूची में कॉल दिखाएं।";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "आवाज़";
@@ -8507,25 +8507,25 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "कॉल की जा रही है";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Signal को अनलॉक करने के लिए Touch ID, Face ID, या अपने iOS डिवाइस पासकोड का उपयोग करें।";
+"SETTINGS_SECURITY_DETAIL" = "Signal अनलॉक करने के लिए Touch ID, Face ID या अपने iOS डिवाइस के पासकोड का इस्तेमाल करें।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal को अनलॉक करने के लिए Face ID का उपयोग करें।";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal अनलॉक करने के लिए Face ID का इस्तेमाल करें।";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_OPTICID" = "Signal को अनलॉक करने के लिए Optic ID का इस्तेमाल करें।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal को अनलॉक करने के लिए अपने डिवाइस के पासकोड का उपयोग करें।";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal अनलॉक करने के लिए अपने डिवाइस का पासकोड इस्तेमाल करें।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal अनलॉक करने के लिए Touch ID का उपयोग करें।";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal अनलॉक करने के लिए Touch ID का इस्तेमाल करें।";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "ऐप सुरक्षा";
+"SETTINGS_SECURITY_TITLE" = "ऐप की सुरक्षा";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "हाई क्वालिटी मीडिया भेजने के लिए अधिक डेटा खर्च होगा।";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "हाई क्वालिटी मीडिया भेजने के लिए ज़्यादा डेटा खर्च होगा।";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "फ़ोटो और वीडियो";
@@ -8537,25 +8537,25 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "सुझाव और नोटिफ़िकेशन को शेयर करने जैसे फ़ीचर के लिए iOS को Signal के कॉन्टैक्ट और चैट के एक्सेस की अनुमति दें.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "पंजीकरण लॉक";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "रजिस्ट्रेशन लॉक";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal के साथ अपना फोन नंबर दोबारा रजिस्टर करने के लिए आपका Signal PIN आवश्यक होता है।";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal में अपना फ़ोन नंबर दोबारा रजिस्टर करने के लिए Signal पिन ज़रूरी होता है।";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "टाइपिंग संकेतक";
+"SETTINGS_TYPING_INDICATORS" = "टाइप किए जाने की सूचना";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "सील्ड सेंडर";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "एनक्रिप्टेड सेंडर";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "स्थिति आइकन दिखाएँ";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "स्टेटस आइकन दिखाएं";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "कोई भी मुझे संदेश भेज सकता हैं";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "कोई भी भेज सकता है";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "सील्ड सेंडर फी़चर आने वाले मेसेजों के लिये शुरु कर दिया जाऐगा जिसके अनुसार वो लोग जो आपके संपर्क में नहीं  हैं या जिनसे आपने अपना प्रोफ़ाइल साझा नहीं किया है, वो भी आपको मेसेज भेज पाएंगे|";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "‘एनक्रिप्टेड सेंडर’ की सुविधा चालू करें। इससे आपको उन मैसेज का पता चल पाएगा जो कॉन्टैक्ट लिस्ट से बाहर के और ऐसे लोग भेजते हैं जिनके साथ आपने अपनी प्रोफ़ाइल शेयर नहीं की है।";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "वर्ज़न";
@@ -8564,37 +8564,37 @@
 "SHARE_ACTION_MAIL" = "मेल";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "मेसेज";
+"SHARE_ACTION_MESSAGE" = "मैसेज";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "आपका सुरक्षा नंबर %1$@ के साथ बदल गया है। आप संदेश भेजने से पेहले एक बार सत्यापित करें।";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%1$@ के साथ आपका सेफ़्टी नंबर हाल ही में बदला है। मैसेज भेजने से पहले मुख्य ऐप में जाकर इसे वेरिफ़ाई किया जा सकता है।";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "लोड हो रहा है";
+"SHARE_EXTENSION_LOADING" = "लोड हो रहा है…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "पंजीकरन करने के लिये Signal ऐप शुरु करें।";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "रजिस्टर करने के लिए Signal ऐप खोलें।";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "पंजीकृत नहीं है";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "रजिस्टर नहीं है";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "अटैचमेंट भेजने में असमर्थ";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "अटैचमेंट नहीं भेजा जा सका";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%2$@ का %1$@ अपलोड हो रहा है…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%2$@ में से %1$@ अपलोड हो रहे हैं…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "अपलोड हो रहा है…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "अटैचमेंट तैयार करने में असमर्थ";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "अटैचमेंट तैयार नहीं हो सका";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal पर शेयर करें";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "शेयर करने के सुझाव को डिसेबल करना असफल रहा।";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "शेयर करने के सुझाव बंद नहीं हो सके।";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "चैट दिखाएँ";
@@ -8603,7 +8603,7 @@
 "SIGNAL_CALL" = "Signal कॉल";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "मैं आपको Signal स्थापिेत करने का निमंत्रण देता हुँ, ये रही लिंक:";
+"SMS_INVITE_BODY" = "मैंने आपको Signal इंस्टॉल करने का इनवाइट भेजा है! यह है लिंक:";
 
 /* An error message generically indicating that something went wrong. */
 "SOMETHING_WENT_WRONG_ERROR" = "कुछ गलत हो गया।";
@@ -8612,31 +8612,31 @@
 "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "कुछ गलत हो गया। कृपया बाद में पुन: प्रयास करें।";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "ध्वनियाँ और सूचनाएँ";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "साउंड और नोटिफ़िकेशन";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "कुछ नहीं";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "सत्यापन पूर्ण।";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "वेरिफ़िकेशन पूरा हुआ।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "यदि आप सत्यापन को छोड़ना चुनते हैं, तो आप अन्य लोगों के संदेशों विफल हो सकते हैं और आपके संदेश भेजने में विफल हो सकते हैं।";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "अगर आपने वेरिफ़िकेशन का स्टेप अभी छोड़ दिया है, तो हो सकता है कि आपको दूसरों के मैसेज न मिलें। साथ ही, यह भी मुमकिन है कि आपके मैसेज भेजने की सुविधा काम न करे।";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "सत्यापित किए बिना जारी रखें?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "वेरिफ़िकेशन के बिना जारी रखना है?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Signal पर स्पैम को रोकने में सहायता करने हेतु कृपया सत्यापन पूरा करें।\n\nसत्यापन के बाद आप संदेश संवाद जारी रख सकते हैं। रुके हुए सारे संदेश अपने आप भेज दिए जाएँगे।";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal पर स्पैम रोकने में मदद करने के लिए, कृपया वेरिफ़िकेशन की प्रक्रिया पूरी करें।\n\nवेरिफ़िकेशन के बाद, मैसेज भेजे जा सकते हैं। कोई भी पॉज़ हुआ मैसेज अपने-आप भेज दिया जाएगा।";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "संदेश संवाद जारी रखने के लिए सत्यापन करें";
+"SPAM_CAPTCHA_SHEET_TITLE" = "मैसेज की सुविधा जारी रखने के लिए वेरिफ़ाई करें";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "सत्यापन छोड़ें";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "वेरिफ़िकेशन रहने दें";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "सत्यापन पूरा करें";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "वेरिफ़िकेशन पूरा करें";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
 "SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "स्पीकर बंद";
@@ -8651,7 +8651,7 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "नवीनतम";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "स्टिकर मेसेज";
+"STICKER_MESSAGE_PREVIEW" = "स्टिकर वाले मैसेज";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "स्टिकर उपलब्ध नहीं है";
@@ -8663,46 +8663,46 @@
 "STICKERS_INSTALL_BUTTON" = "इंस्टॉल करें";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal की कलाकार श्रृंखला से";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal की आर्टिस्ट सीरीज़";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "आपको प्राप्त स्टीकर";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "आपको मिले स्टिकर";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "कुछ स्टिकर पैक लोड नहीं हो पाए";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "इंस्टॉल करे हुए स्टिकर";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "इंस्टॉल किए गए स्टिकर";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "लोड हो रहा है";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "लोड हो रहा है…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "कोई स्टीकर इंस्टॉल नहीं है";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "कोई स्टिकर इंस्टॉल नहीं है";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "आने वाले मेसेजों के स्टिकर यहां दिखाई देंगे";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "आने वाले मैसेज के स्टिकर यहां दिखाई देंगे";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "स्टिकर";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "स्टीकर पैक";
+"STICKERS_PACK_DEFAULT_TITLE" = "स्टिकर पैक";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "स्टीकर पैक";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "स्टिकर पैक";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "स्टिकर पैक लोड नहीं हो पाए";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "स्टिकर पैक लोड नहीं हो पाया";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "अनइंस्टॉल";
+"STICKERS_UNINSTALL_BUTTON" = "अनइंस्टॉल करें";
 
 /* Text indication a story caption can be tapped to read more. */
 "STORIES_CAPTION_READ_MORE" = "ज़्यादा पढ़ें";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "कॉपी";
+"STORIES_COPY_REPLY_ACTION" = "कॉपी करें";
 
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "डिलीट करें";
@@ -8714,7 +8714,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "यह स्टोरी डिलीट करनी है? यह उन सभी के लिए भी डिलीट हो जाएगी जिन्हें यह मिली है।";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "आगे भेजें";
+"STORIES_FORWARD_STORY_ACTION" = "फ़ॉरवर्ड करें";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "चैट पर जाएँ";
@@ -8750,10 +8750,10 @@
 "STORIES_NO_REPLIES_SUBTITLE" = "इस समूह के सभी सदस्य जवाब देख सकते हैं";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "कोई जवाब नहीं";
+"STORIES_NO_REPLIES_YET" = "अभी तक कोई जवाब नहीं मिला";
 
 /* Indicates that this story has no views yet */
-"STORIES_NO_VIEWS_YET" = "अब तक कोई व्यू नहीं";
+"STORIES_NO_VIEWS_YET" = "अब तक कोई व्यू नहीं मिला";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "आपकी स्टोरी को देख सकने वाले लोगों को प्रतिक्रिया और जवाब देने दें।";
@@ -8801,7 +8801,7 @@
 "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "स्टोरीज़ कब व्यू की जा रही हैं इसे देखें और शेयर करें। अक्षम होने की स्थिति में आप नहीं देख पाएंगे कि अन्य लोगों ने आपकी स्टोरीज़ कब देखी।";
 
 /* Context menu action to share the selected story */
-"STORIES_SHARE_STORY_ACTION" = "साझा करें";
+"STORIES_SHARE_STORY_ACTION" = "शेयर करें";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
 "STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "इनको भेजा गया";
@@ -8855,13 +8855,13 @@
 "STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "कोई URL टाइप या पेस्ट करें";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "लिंक विज़िट करें";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "लिंक पर जाएं";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "मौजूद नहीं";
+"STORY_NO_LONGER_AVAILABLE" = "अब यह मौजूद नहीं है";
 
 /* Button to access the story privacy settings menu */
-"STORY_PRIVACY_SETTINGS" = "गोपनियता";
+"STORY_PRIVACY_SETTINGS" = "प्राइवेसी";
 
 /* Title for the story privacy settings view */
 "STORY_PRIVACY_TITLE" = "स्टोरी की निजता";
@@ -8879,7 +8879,7 @@
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ की स्टोरी पर %1$@ प्रतिक्रिया दी";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON" = "उत्तर";
+"STORY_REPLY_BUTTON" = "जवाब दें";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
 "STORY_REPLY_REACTION_SECOND_PERSON" = "स्टोरी पर प्रतिक्रिया दी";
@@ -8888,7 +8888,7 @@
 "STORY_REPLY_REACTION_THIRD_PERSON" = "स्टोरी पर प्रतिक्रिया दी";
 
 /* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "उत्तर";
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "जवाब";
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "ग्रुप को जवाब दें";
@@ -8981,25 +8981,25 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "दाता आईडी को क्लिपबोर्ड पर कॉपी किया गया";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "आपका सुरक्षा नंबर %1$@ के साथ मेल खा रहा है। आप उन्हें सत्यापित मार्क करे हुए कर सकते हैं।";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%1$@ के साथ आपका सेफ़्टी नंबर मेल खा रहा है। उन्हें 'वेरिफ़ाइड' के तौर पर मार्क किया जा सकता है।";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "सुरक्षा नंबर मेल हुआ!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "सेफ़्टी नंबर मेल खा रहा है!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "हमसे संपर्क करें";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "हमें बताएँ कि क्या चल रहा है";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "हमें बताएं कि क्या चल रहा है";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "हमें समस्या के बारे में बताएँ: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "हमें समस्या के बारे में बताएं: ";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "कृपया अपना समर्थन अनुरोध support@signal.org पर ईमेल करके भेजें";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "कृपया, सहायता के अनुरोध के लिए support@signal.org पर ईमेल भेजें";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "फिल्टर: %1$@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "फ़िल्टर: %1$@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
 "SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "हार्डवेयर: %1$@";
@@ -9008,34 +9008,34 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %1$@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- समर्थन जानकारी ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- सहायता की जानकारी ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS वर्ज़न: %1$@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "स्थान: %1$@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "इलाका: %1$@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "लॉग URL: %1$@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS समर्थन अनुरोध";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS के लिए सहायता का अनुरोध";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "आप कैसा महसूस कर रहे हैं? (वैकल्पिक)";
+"SUPPORT_EMOJI_PROMPT" = "आपको कैसा लग रहा है? (ज़रूरी नहीं है)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "क्या आपने अभी तक हमारे FAQ को पढ़ लिया है?";
+"SUPPORT_FAQ_PROMPT" = "क्या आपने अब तक हमारा FAQ पढ़ा?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "डीबग लॉग को शामिल करें";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "डीबग लॉग शामिल करें";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "लोड हो रहा है";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "अभी भी प्रोसेस कर रहे";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "अब भी प्रोसेस हो रहा है";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "सब्सक्रिप्शन रद्द करें";
@@ -9050,22 +9050,22 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "रद्द करने की पुष्टि करें?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "आपका बैज आपके अकाउंट में नहीं शामिल किया जा सका. कृपया सपोर्ट से संपर्क करें.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "आपका बैज आपके अकाउंट में नहीं जोड़ा जा सका। कृपया सपोर्ट से संपर्क करें.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "बैज नहीं शामिल कर सके";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "बैज नहीं जोड़ा जा सका";
 
 /* Action sheet title for Error Authorizing Payment sheet */
 "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "भुगतान अनुमोदित करने में त्रुटि हुई";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "दान संसाधित करने में त्रुटि";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "डोनेशन प्रोसेस करने में कोई गड़बड़ी हुई";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/महीना";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "दान संसाधित किया जा रहा है...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "डोनेशन प्रोसेस किया जा रहा है...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ को नवीकृत होता है";
@@ -9080,25 +9080,25 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "अभी नहीं";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "आज आपसे नए सब्सक्रिप्शन मूल्य की पूरी राशि (%1$@) ली जाएगी. आपका नया सब्सक्रिप्शन मासिक रूप से रिन्यू होगा.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "आज आपसे नए सब्सक्रिप्शन मूल्य की पूरी राशि (%1$@) ली जाएगी। आपका नया सब्सक्रिप्शन हर महीने रिन्यू होगा.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "सब्सक्रिप्शन को अपडेट करें?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "सब्सक्रिप्शन अपडेट करना है?";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "बंद";
+"SWITCH_OFF" = "बंद है";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "पर";
+"SWITCH_ON" = "चालू है";
 
 /* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
 "SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "सत्यापित करें";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "वेरिफ़ाई करें";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "उन्हें भेजते ही ग़ायब होने वाले संदेश का समय %1$@ पर सेट हो जाएगा।";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "उन्हें मैसेज भेजने के बाद, मैसेज गायब होने का समय %1$@ पर सेट हो जाएगा।";
 
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "सावधानी से समीक्षा करें";
@@ -9176,7 +9176,7 @@
 "THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "प्रोफ़ाइल नाम";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
-"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "देखना";
+"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "देखें";
 
 /* Label for a group you are not in which has three members, listing their names */
 "THREAD_DETAILS_THREE_MEMBERS" = "%1$@, %2$@, और %3$@";
@@ -9212,43 +9212,43 @@
 "TIME_AMOUNT_DAYS" = "%1$@ दिन";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@दिन";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@ दि";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%1$@ घंटे";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@घंटे";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@ घं";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%1$@ मिनट";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@मिनट";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@ मि.";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%1$@सेकंड";
+"TIME_AMOUNT_SECONDS" = "%1$@ सेकंड";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@सेकंड";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@ से.";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%1$@दिन";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@ दिन";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%1$@घंटा";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ घंटा";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@मिनट";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ मिनट";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%1$@हफ़्ता";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ हफ़्ता";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%1$@ हफ़्ते";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@हफते";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ ह.";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal बंद करें";
@@ -9269,7 +9269,7 @@
 "TXT_DELETE_TITLE" = "डिलीट करें";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "अनारक्षित करें";
+"UNARCHIVE_ACTION" = "आर्काइव नहीं करें";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "अब यह मीडिया उपलब्ध नहीं है";
@@ -9278,46 +9278,46 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "यूज़र आपके संपर्क में नहीं है। क्या आप उन्हें ब्लॉक करना चाहते हैं?";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "आपके किसी डिवाइस ने एक मेसेज भेजा है जो याहाँ दिखाया नहीं जा सकता क्योंकि वह Signal का नया फ़ीचर इस्तेमाल करता है।";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "आपके किसी डिवाइस से ऐसा मैसेज भेजा गया है, जिसे यहां दिखाया या पढ़ा नहीं जा सकता, क्योंकि उसमें Signal की नई सुविधा का इस्तेमाल किया गया है।";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%1$@ ने एक मेसेज भेजा है जो याहाँ दिखाया नहीं जा सकता क्योंकि वह Signal का नया फ़ीचर इस्तेमाल करता है।";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%1$@ ने ऐसा मैसेज भेजा है, जिसे यहां दिखाया या पढ़ा नहीं जा सकता, क्योंकि उसमें Signal की नई सुविधा का इस्तेमाल किया गया है।";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "आपको एक मेसेज आया है जो याहाँ दिखाया नहीं जा सकता क्योंकि वह Signal का नया फ़ीचर इस्तेमाल करता है।";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "आपके एक ऐसा मैसेज मिला है, जिसे यहां दिखाया या पढ़ा नहीं जा सकता, क्योंकि उसमें Signal की नई सुविधा का इस्तेमाल किया गया है।";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal अभी अपडेट करें";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "अभी Signal अपडेट करें";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal को उसके नवीनतम वर्ज़न तक अपडेट कर दिया गया है। अब आप इस तरह के मेसेज अपने डिवाइस पर प्राप्त कर सकते हैं।";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal को ताज़ा वर्ज़न पर अपडेट कर दिया गया है। अब आपको इ तरह के मैसेज अपने डिवाइस पर मिल सकेंगे।";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "आप Signal का नवीनतम वर्ज़न तक अपडेट हो चुके हैं, अब आप %1$@ को यह मेसेज फिर से भेजने के लिये कह सकते हैं।";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "अब आप %1$@ को दोबारा इस मैसेज को भेजने को कहें, क्योंकि अब आपके Signal का वर्ज़न पूरी तरह अप-टू-डेट है।";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "आप Signal का नवीनतम वर्ज़न तक अपडेट हो चुके हैं, अब आप मेसेज भेजने वाले को यह मेसेज फिर से भेजने के लिये कह सकते हैं।";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "अब आप मैसेज भेजने वाले व्यक्ति को दोबारा इस मैसेज को भेजने को कहें, क्योंकि अब आपके Signal का वर्ज़न पूरी तरह अप-टू-डेट है।";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "अनजान";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ग़ायब होने वाले संदेश अक्षम हैं।";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "मैसेज गायब होने की सुविधा बंद है।";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ग़ायब होने वाले संदेशों का समय %1$@ पर सेट है।";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "मैसेज गायब होने का समय %1$@ पर सेट है।";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "अनजान";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "अनलिंक";
+"UNLINK_ACTION" = "अनलिंक करें";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "अगर यह डिवाइस अनलिंक किया गया तो मेसेज भेज या प्राप्त नहीं कर पाएगा।";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "अनलिंक करने के बाद इस डिवाइस पर कोई मैसेज नहीं आ सकता और न ही इस डिवाइस से कोई मैसेज भेजा जा सकता।";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%1$@\" को अनलिंक करें?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%1$@\" को अनलिंक करना है?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "यह डिवाइस अब लिंक नहीं है। संदेश भेजना जारी रखने के लिए Signal को अपने फोन से पुन: लिंक करें।";
@@ -9326,7 +9326,7 @@
 "UNLINKED_WARNING_ACTION_TITLE" = "डिवाइस पुन: लिंक करें";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal आपका डिवाइस अनलिंक करने में असमर्थ रहा।";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal आपका डिवाइस अनलिंक नहीं कर सका।";
 
 /* Text for a toast confirming that the mic has been unmuted for a call. */
 "UNMUTE_CONFIRMATION_TOAST_LABEL" = "माइक चालू";
@@ -9338,28 +9338,28 @@
 "UNPINNED_SECTION_TITLE" = "चैट";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "अनपढ़ा करें";
+"UNREAD_ACTION" = "अनरीड के तौर पर मार्क करें";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "असमर्थित अटैचमेंट प्रकार प्राप्त हुआ है।";
+"UNSUPPORTED_ATTACHMENT" = "आपको ऐसे टाइप का अटैचमेंट मिला है जो काम नहीं करता।";
 
 /* When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts. */
-"UNSUPPORTED_FEATURE_ERROR" = "आपका डिवाइस इस फ़ीचर का समर्थन नहीं करता।";
+"UNSUPPORTED_FEATURE_ERROR" = "आपके डिवाइस पर इसकी सुविधा मौजूद नहीं है।";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "%1$@ के साथ आपका सुरक्षा नंबर शायद इसलिए बदल गया है क्योंकि उन्होंने Signal को फिर से इंस्टॉल कर लिया है या डिवाइस बदल दिए हैं। नए सुरक्षा नंबर की पुष्टि करने के लिए सत्यापित करें पर टैप करें। यह वैकल्पिक है।";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "%1$@ के साथ आपका सेफ़्टी नंबर बदल गया है। ऐसा इसलिए, क्योंकि हो सकता है कि उन्होंने फिर से Signal इंस्टॉल किया हो या फिर उनका डिवाइस बदल गया हो। नए सेफ़्टी नंबर की पुष्टि करने के लिए 'वेरिफ़ाई करें' पर टैप करें। हालांकि, ऐसा करना ज़रूरी नहीं है।";
 
 /* Action to verify a safety number after it has changed */
-"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "सत्यापित करें";
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "वेरिफ़ाई करें";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "संपर्क को अपडेट करें";
+"UPDATE_CONTACT_ACTION" = "कॉन्टैक्ट अपडेट करें";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "ग्रुप अपडेट नहीं हो पाया।";
+"UPDATE_GROUP_FAILED" = "ग्रुप अपडेट नहीं हो सका।";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ग्रुप को अपडेट नहीं किया जा सका। अपना इंटरनेट कनेक्शन चेक करें और फिर से प्रयास करें।";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ग्रुप अपडेट नहीं हो सका। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Button to activate the signal proxy */
 "USE_PROXY_BUTTON" = "प्रॉक्सी का उपयोग करें";
@@ -9512,25 +9512,25 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "यूज़रनेम तभी अपडेट हो सकता है जब आप इंटरनेट से जुड़े हों।";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "आपने %1$@ को असत्यापित मार्क करे हुए है।";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "आपने %1$@ को 'वेरिफ़ाइड नहीं है' के तौर पर मार्क किया है।";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "आपने %1$@ को दूसरे डिवाइस में असत्यापित मार्क करे हुए है।";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "आपने %1$@ को दूसरे डिवाइस पर 'वेरिफ़ाइड नहीं है' के तौर पर मार्क किया है।";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "आपने %1$@ को सत्यापित मार्क करे हुए है।";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "आपने %1$@ को 'वेरिफ़ाइड है' के तौर पर मार्क किया है।";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "आपने %1$@ को दूसरे डिवाइस में सत्यापित मार्क करे हुए है।";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "आपने %1$@ को दूसरे डिवाइस पर 'वेरिफ़ाइड है' के तौर पर मार्क किया है।";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "सत्यापन स्थिति बदल गई है।";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "वेरिफ़िकेशन का स्टेटस बदल गया है।";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "सुरक्षा संख्या देखें";
+"VERIFY_PRIVACY" = "सेफ़्टी नंबर देखें";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "सुरक्षा नंबर जांचे";
+"VERIFY_PRIVACY_MULTIPLE" = "सेफ़्टी नंबर की समीक्षा करें";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
 "VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@ के साथ अपने एंड-टू-एंड एन्क्रिप्शन की पुष्टि करने के लिए, ऊपर दिए गए नंबरों की उनके डिवाइस से तुलना करें। आप उनकी डिवाइस पर कोड को स्कैन भी कर सकते हैं।";
@@ -9545,10 +9545,10 @@
 "VIEW_CONTACT_BUTTON" = "संपर्क देखें";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "आप इस संदेश को देख चुके हैं।";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "आपने यह मैसेज पहले ही देख लिया है।";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "इस संदेश को देखने के बाद ग़ायब करने के लिए यहाँ टैप करें।";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "देखे जाने के बाद इस मैसेज को गायब करने के लिए यहां टैप करें।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "आउटगोइंग व्यू-एक बार मीडिया फ़ाइलों को उनके भेजे जाने के बाद स्वचालित रूप से हटा दिया जाता है।";
@@ -9566,19 +9566,19 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "रद्द करने के लिए स्लाइड करें";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "रिकॉर्ड करने के लिए दबा कर रखें।";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "रिकॉर्ड करने के लिए दबाकर रखें।";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "%1$@ और %2$@ के साथ ग्रेडिएंट";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "संपर्क नाम";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "कॉन्टैक्ट का नाम";
 
 /* Blur button on wallpaper preview. */
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "फ़ोटो ब्लर करें";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ज़ूम करने के लिए पिंच करें, समायोजित करने के लिए खींचें।";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ज़ूम करने के लिए पिंच करें, अडजस्ट करने के लिए खींचें।";
 
 /* The incoming bubble text when setting a preset */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "और वॉलपेपर का प्रीव्यू देखने के लिए स्वाइप करें।";
@@ -9599,22 +9599,22 @@
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "इस चैट के लिए चैट का रंग हटाएँ?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "वॉलपेपर हटाएँ";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "वॉलपेपर हटाएं";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "इस चैट के लिए वॉलपेपर हटाएँ?";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "डार्क थीम वॉलपेपर की रोशनी कम कर देती है";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "डार्क थीम में वॉलपेपर की रोशनी कम हो जाती है";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "वॉलपेपर हटाया नहीं जा सका, कृपया बाद में दोबारा प्रयास करें या यदि समस्या बनी रहती है, तो सहायता टीमा से संपर्क करें।";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "वॉलपेपर हटाया नहीं जा सका। कृपया, बाद में दोबारा कोशिश करें। अगर तब भी बात नहीं बनती है, तो सपोर्ट टीम से संपर्क करें।";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "सभी वॉलपेपर रीसेट नहीं किए जा सके, कृपया बाद में दोबारा प्रयास करें या यदि समस्या बनी रहती है, तो सहायता टीम से संपर्क करें।";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "सभी वॉलपेपर रीसेट नहीं किए जा सके। कृपया, बाद में दोबारा कोशिश करें। अगर तब भी बात नहीं बनती है, तो सपोर्ट टीम से संपर्क करें।";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "सभी रंग रीसेट करें";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "सभी कलर रीसेट करें";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "सभी वॉलपेपर रीसेट करें";
@@ -9644,7 +9644,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "वॉलपेपर रीसेट करें";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "क्या आप सभी वॉलपेपर ओवरराइड करना चाहेंगे?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "क्या आपको सभी वॉलपेपर ओवरराइड करना है?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "वॉलपेपर रीसेट करें";
@@ -9662,10 +9662,10 @@
 "YOU_DELETED_THIS_MESSAGE" = "आपने यह संदेश डिलीट कर दिया।";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपने गायब मेसेज अक्षम कर दिए हैं।";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपने मैसेज गायब होने की सुविधा बंद कर दी है।";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "आगे बढने से पहले आपको सेटअप पूरा करना होगा।";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "आगे बढ़ने से पहले आपको सेटअप पूरा करना होगा।";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपने मेसेजों के गायब होने का समय %1$@ कर दिया है।";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपने मैसेज गायब होने का समय %1$@ पर सेट कर दिया है।";

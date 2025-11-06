@@ -104,9 +104,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>टेक्स्ट + %1$d दिन का मीडिया बैकअप</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>टेक्स्ट + %1$d दिनों का मीडिया बैकअप</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -280,7 +280,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$dचीज़ें</string>
+			<string>%1$d आइटम</string>
 			<key>other</key>
 			<string>%1$d आइटम</string>
 		</dict>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>आखिरी %1$d दिन का मीडिया</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>आखिरी %1$d दिनों का मीडिया</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>प्लान बदलने पर, आपके सभी टेक्स्ट मैसेज और पिछले %1$d दिन का मीडिया आपके बैकअप में आ जाएगा।</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>प्लान बदलने पर, आपके सभी टेक्स्ट मैसेज और पिछले %1$d दिनों का मीडिया आपके बैकअप में आ जाएगा।</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>टेक्स्ट + %1$d दिन का मीडिया</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>टेक्स्ट + %1$d दिनों का मीडिया</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -483,9 +483,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d मिनट</string>
+			<string>%1$d मि.</string>
 			<key>other</key>
-			<string>%1$d मिनट</string>
+			<string>%1$d मि.</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -995,9 +995,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>आप 1 से अधिक आइटम शेयर नहीं कर सकते।</string>
+			<string>%1$d से ज़्यादा आइटम शेयर नहीं किए जा सकते।</string>
 			<key>other</key>
-			<string>आप %1$d से अधिक आइटम शेयर नहीं कर सकते।</string>
+			<string>%1$d से ज़्यादा आइटम शेयर नहीं किए जा सकते।</string>
 		</dict>
 	</dict>
 	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
@@ -1027,9 +1027,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>अपने टेक्स्ट मैसेज और पिछले %1$d दिन का मीडिया ट्रांसफ़र करें</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>अपने टेक्स्ट मैसेज और पिछले %1$d दिनों का मीडिया ट्रांसफ़र करें</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1379,9 +1379,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>आमंत्रण फिर से लागू करें</string>
+			<string>इनवाइट वापस लें</string>
 			<key>other</key>
-			<string>आमंत्रण फिर से लागू करें</string>
+			<string>इनवाइट वापस लें</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1619,9 +1619,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह वॉइस मैसेज आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिन से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह वॉइस मैसेज आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिनों से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1635,9 +1635,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह फ़ाइल आपके फ़ोन से ट्रांसफ़र नहीं हुई थी। डिवाइस लिंक करते समय %1$d दिन से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह फ़ाइल आपके फ़ोन से ट्रांसफ़र नहीं हुई थी। डिवाइस लिंक करते समय %1$d दिनों से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1651,9 +1651,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय इस मैसेज का पूरा टेक्स्ट आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिन से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय इस मैसेज का पूरा टेक्स्ट आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिनों से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1667,9 +1667,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह स्टिकर आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिन से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>इस डिवाइस को लिंक करते समय यह स्टिकर आपके फ़ोन से ट्रांसफ़र नहीं हुआ था। डिवाइस लिंक करते समय %1$d दिनों से पुराना मीडिया और फ़ाइलें सिंक नहीं की जा सकतीं।</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

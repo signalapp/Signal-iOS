@@ -71,10 +71,10 @@
 "ACTION_SEND_MESSAGE" = "বার্তা পাঠান";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "কোনো একটি সমস্যা হয়েছে। অনুগ্রহ করে সহায়তা কেন্দ্রে যোগাযোগ করুন।";
 
 /* Message shown in an action sheet when a network error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "কোনো একটি সমস্যা হয়েছে। আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "ডাউনলোড করতে ট্যাপ করুন";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "মেয়াদ শেষ হয়েছে %1$@";
 
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "সদস্যতা পরিচালনা করুন";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "পেমেন্ট পদ্ধতি প্রত্যাখ্যান করা হয়েছে";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "আপনার পেমেন্ট পদ্ধতি হালনাগাদ কিনা তা নিশ্চিত করতে পরীক্ষা করুন";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "পরিকল্পনা নিয়ন্ত্রণ করুন";
@@ -896,10 +896,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "অন-ডিভাইস স্টোরেজ অপ্টিমাইজ করুন";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "You’ve reached your backup storage limit. Free up space in Signal to continue backing up chats and media.";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "আপনি আপনার ব্যাকআপ স্টোরেজের সীমায় পৌঁছে গেছেন। চ্যাট ও মিডিয়া ব্যাকআপ রাখা চালিয়ে যেতে Signal-এ জায়গা খালি করুন।";
 
 /* Title for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Backup Storage Full";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "ব্যাকআপ স্টোরেজ পূর্ণ হয়ে গেছে";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "ব্যাকআপ পুনরায় সচল করুন";
@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "মিডিয়া আপলোড বন্ধ আছে: ওয়াই-ফাইয়ের জন্য অপেক্ষা করা হচ্ছে";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "You’ve reached the %1$@ storage limit that’s included with your backup plan. To backup new chats and media, free up %2$@ in Signal, and then tap “Back Up Now.”";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "আপনি আপনার ব্যাকআপ প্ল্যানের সাথে অন্তর্ভুক্ত %1$@ স্টোরেজের সর্বোচ্চ সীমায় পৌঁছে গেছেন। নতুন চ্যাট ও মিডিয়া ব্যাকআপ নিতে, Signal-এ %2$@ খালি করুন এবং তারপর \"এখনই ব্যাকআপ নিন\"-এ ট্যাপ করুন।";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%2$@-টির মধ্যে %1$@-টি (%3$@) আপলোড হচ্ছে";
@@ -938,13 +938,13 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal নিরাপদ ব্যাকআপে স্বাগতম। এখনই আপনার ব্যাকআপ শুরু করুন।";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "আপনার পেমেন্ট পদ্ধতি হালনাগাদ কিনা তা নিশ্চিত করতে পরীক্ষা করুন। সাবস্ক্রিপশন নিয়ন্ত্রণ করুন > Signal > পেমেন্ট পদ্ধতি আপডেট করুন-এ ট্যাপ করুন।";
 
 /* Primary button for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "সদস্যতা পরিচালনা করুন";
 
 /* Title for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "আপনার ব্যাকআপ সাবস্ক্রিপশন নবায়ন ব্যর্থ হয়েছে";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "সমস্যা সমাধানে সাহায্য করার জন্য অনুগ্রহ করে আমাদেরকে ডিবাগ লগ পাঠান!";
@@ -1646,7 +1646,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "সম্পূর্ণ টেক্সট মেসেজ ব্যাকআপ";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ স্টোরেজ";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "ব্যাকআপ সক্রিয় করতে আপনাকে অবশ্যই নিবন্ধিত হতে হবে।";
@@ -1655,7 +1655,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "কোনো একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "আপনার কেনাকাটা ছাড় করার সময় কিছু একটা সমস্যা হয়েছে। অনুগ্রহ করে সহায়তা কেন্দ্রে যোগাযোগ করুন।";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "বর্তমান প্ল্যান";
@@ -1685,13 +1685,13 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "%1$@/মাসের জন্য সাবস্ক্রাইব করুন";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Backups are end-to-end encrypted. Signal is a non profit. Paying for backups helps support us.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "ব্যাকআপগুলো এন্ড-টু-এন্ড এনক্রিপ্টকৃত। Signal একটি অলাভজনক প্রতিষ্ঠান। ব্যাকআপের জন্য পেমেন্ট আমাদের সহায়তা করতে সাহায্য করে।";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "শর্তাদি এবং গোপনীয়তা নীতি";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "ব্যাকআপ প্ল্যান বেছে নিন";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "চ্যাটের রং ও ওয়ালপেপার";
@@ -4325,7 +4325,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "সংরক্ষাণাগার";
 
 /* Title for the conversation list's backup storage full context menu action. */
-"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "ব্যাকআপ স্টোরেজ পূর্ণ হয়ে গেছে";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "ব্যাকআপ সফল হয়নি";
@@ -5579,7 +5579,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "এড়িয়ে যান এবং নতুন পিন তৈরি করুন";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Use Recovery Key";
+"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "পুনরুদ্ধার 'কি' ব্যবহার করুন";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "আপনি যদি আপনার পিনটি মনে না করতে পারেন তবে আপনি একটি নতুন তৈরি করতে পারেন। আপনি নিজের অ্যাকাউন্টটি রেজিস্টার করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সংরক্ষিত সেটিংস হারাবেন।";
@@ -5594,10 +5594,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Signal নিরাপদ ব্যাকআপ পুনর্বহাল করুন";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "আপনি যদি এখন পুনর্বহাল করা এড়িয়ে যান তবে পরে পুনর্বহাল করতে পারবেন না। এই ডিভাইসে ব্যাকআপ পুনরায় চালু করলে, আপনার বর্তমান ব্যাকআপটি আপনার নতুন মেসেজের ইতিহাস দিয়ে প্রতিস্থাপিত হবে।";
 
 /* Title for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "পুনর্বহাল এড়িয়ে যাবেন?";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "আপনার মেসেজের ইতিহাস ও অ্যাকাউন্টের ডেটা কীভাবে রিস্টোর করতে চান তা বেছে নিন";
@@ -6440,7 +6440,7 @@
 "PIN_ENTER_EXISTING_SKIP" = "পিন এড়িয়ে যান";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Use Recovery Key";
+"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "পুনরুদ্ধার 'কি' ব্যবহার করুন";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "পিন তৈরি করতে ব্যর্থ হয়েছে";
@@ -6548,10 +6548,10 @@
 "POLL_DETAILS_TITLE" = "ভোটের বিস্তারিত";
 
 /* Title for an action sheet confirming the user wants end a poll. */
-"POLL_END_CONFIRMATION" = "End poll?";
+"POLL_END_CONFIRMATION" = "জরিপ শেষ করবেন?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "গ্রুপের সদস্যরা আর এই জরিপে ভোট দিতে পারবেন না।";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ জরিপটি শেষ করেছেন: %2$@";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "সাহায্য দরকার?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "আপনার পিন হলো আপনারই তৈরি একটি 4+ সংখ্যার কোড, যা সংখ্যাসূচক বা আলফানিউমেরিক হতে পারে। যদি আপনি আপনার পিন মনে রাখতে না পারেন, তাহলে আপনার অ্যাকাউন্ট পুনরায় নিবন্ধন করার জন্য আপনাকে 7 দিন অপেক্ষা করতে হবে। যদি আপনার 'Signal নিরাপদ ব্যাকআপ' সক্রিয় থাকে, তাহলে আপনি আপনার পুনরুদ্ধার 'কি' দিয়ে এগিয়ে যেতে পারেন।";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "আপনার পিন হলো আপনারই তৈরি একটি 4+ সংখ্যার কোড, যা সংখ্যাসূচক বা আলফানিউমেরিক হতে পারে। আপনার পিন মনে না রাখতে পারলেও আপনি রেজিস্ট্রেশন করতে এবং আপনার অ্যাকাউন্ট ব্যবহার করতে পারবেন, তবে আপনি আপনার প্রোফাইলের তথ্যের মতো কিছু সংরক্ষিত সেটিংস হারাবেন। যদি আপনার 'Signal নিরাপদ ব্যাকআপ' সক্রিয় থাকে, তাহলে আপনি আপনার পুনরুদ্ধার 'কি' দিয়ে এগিয়ে যেতে পারেন।";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "আপনার পিন হলো আপনারই তৈরি একটি 4+ সংখ্যার কোড, যা সংখ্যাসূচক বা আলফানিউমেরিক হতে পারে। আপনি যদি আপনার পিন মনে রাখতে না পারেন তবে আপনি একটি নতুন পিন তৈরি করতে পারেন। আপনি আপনার অ্যাকাউন্ট নিবন্ধন করতে ও ব্যবহার করতে পারবেন, তবে আপনি আপনার প্রোফাইলের তথ্যের মতো কিছু সংরক্ষিত সেটিংস হারাবেন। যদি আপনার 'Signal নিরাপদ ব্যাকআপ' সক্রিয় থাকে, তাহলে আপনি আপনার পুনরুদ্ধার 'কি' দিয়ে এগিয়ে যেতে পারেন।";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ভুল পিন";
@@ -6971,13 +6971,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "ট্রান্সফার সম্পন্ন করা যায়নি";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "আপনি হয়তো আপনার পুনরুদ্ধার 'কি' ভুল লিখেছেন, অথবা আপনার পুরনো ডিভাইসে অন্তত একটি ব্যাকআপ সম্পন্ন করেননি। \n\nSignal নিরাপদ ব্যাকআপ সচল করার সময় আপনি যে ফোন নম্বর ও পুনরুদ্ধার 'কি'-টি সেভ করেছিলেন, নিশ্চিত করুন যে আপনি সেগুলো দিয়েই রেজিস্ট্রেশন করছেন এবং এটিও নিশ্চিত করুন যে আপনার পুরানো ডিভাইসটি একটি ব্যাকআপ সম্পন্ন করেছে।";
 
 /* Body for a sheet warning users about an incorrect recovery key and having hit a rate limit on retries. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait 1 hour and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "আপনার পুনরুদ্ধার 'কি' দিয়ে ঢোকার প্রচেষ্টার সর্বোচ্চ সংখ্যা ফুরিয়ে গেছে। আপনার নিরাপত্তার জন্য, আপনি যতবার ঢোকার চেষ্টা করতে পারবেন তার সংখ্যা সীমিত। 1 ঘন্টা অপেক্ষা করুন এবং আবার চেষ্টা করুন।";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Can't Find Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "ব্যাকআপ খুঁজে পাওয়া যাচ্ছে না";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "আপনার ব্যাকআপ এখনই পুনর্বহাল করা যাবে না। আপনার ইন্টারনেট সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";

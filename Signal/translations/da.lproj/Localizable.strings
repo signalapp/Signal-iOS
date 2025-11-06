@@ -71,10 +71,10 @@
 "ACTION_SEND_MESSAGE" = "Send besked";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Something went wrong. Please contact support.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Noget gik galt. Kontakt support.";
 
 /* Message shown in an action sheet when a network error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Something went wrong. Check your connection and try again.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Noget gik galt. Tjek din forbindelse, og prøv igen.";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Tryk for at hente";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_CANCELED_PAST_EXPIRATION_FORMAT" = "Udløb %1$@";
 
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Administrer abonnement";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Betalingsmetode blev afvist";
 
 /* Text describing that the user's paid backup plan has been canceled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Sørg for, at din betalingsmetode er opdateret";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Administrer sikkerhedskopieringsabonnement";
@@ -896,10 +896,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimer lagring på enheden";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "You’ve reached your backup storage limit. Free up space in Signal to continue backing up chats and media.";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Du har ikke mere plads til sikkerhedskopier. Frigør plads i Signal for at sikkerhedskopiere beskeder og medier.";
 
 /* Title for a notification telling the user they are out of remote storage space. */
-"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Backup Storage Full";
+"BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE" = "Din sikkerhedskopieringslagerplads er fuld";
 
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Slå sikkerhedskopiering til igen";
@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Medieupload sat på pause: Venter på Wi-Fi";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "You’ve reached the %1$@ storage limit that’s included with your backup plan. To backup new chats and media, free up %2$@ in Signal, and then tap “Back Up Now.”";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "Du har opbrugt %1$@ lagerplads, der er inkluderet i dit sikkerhedskopieringsabonnement. Frigør %2$@ i Signal for at sikkerhedskopiere nye chats, og medier og tryk derefter på Sikkerhedskopiér nu.";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Uploader %1$@ af %2$@ (%3$@)";
@@ -938,13 +938,13 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Velkommen til Sikre sikkerhedskopier i Signal. Start din sikkerhedskopiering nu.";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Check to make sure your payment method is up to date. Tap Manage Subscription > Signal > Update Payment Method.";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Sørg for, at din betalingsmetode er opdateret. Tryk på Administrer abonnement > Signal > Opdatér betalingsmetode.";
 
 /* Primary button for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Manage Subscription";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_PRIMARY_BUTTON" = "Administrer abonnement";
 
 /* Title for a sheet shown when your Backup subscription fails to renew. */
-"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Your Backups Subscription Failed to Renew";
+"BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Dit sikkerhedskopieringsabonnement kunne ikke fornyes";
 
 /* Body for system notification when we detect paid backup media uploads have encountered a problem */
 "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY" = "Send os fejlfindingslogfiler for at hjælpe med at løse problemet!";
@@ -1646,7 +1646,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Fuld sikkerhedskopi af sms-beskeder";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
-"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ of storage";
+"CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ lagerplads";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Registrering er påkrævet for at aktivere sikkerhedskopier.";
@@ -1655,7 +1655,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Noget gik galt. Prøv igen.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Der opstod en fejl under indløsningen af dit køb. Kontakt support.";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Nuværende abonnement";
@@ -1685,13 +1685,13 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "Abonner for %1$@/måned";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Backups are end-to-end encrypted. Signal is a non profit. Paying for backups helps support us.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "Sikkerhedskopier er end-to-end-krypteret. Signal er en nonprofitorganisation. Når du betaler for sikkerhedskopier hjælper du med at støtte os.";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Vilkår og privatlivspolitik";
 
 /* Title for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_TITLE" = "Choose Backup Plan";
+"CHOOSE_BACKUP_PLAN_TITLE" = "Vælg sikkerhedskopi";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chatfarve og baggrund";
@@ -4325,7 +4325,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
 
 /* Title for the conversation list's backup storage full context menu action. */
-"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+"HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Din sikkerhedskopieringslagerplads er fuld";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Kunne ikke sikkerhedskopiere";
@@ -5579,7 +5579,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Spring over og opret ny pinkode";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Use Recovery Key";
+"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Brug gendannelsesnøgle";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Hvis du ikke kan huske din pinkode, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.";
@@ -5594,10 +5594,10 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Genopret Sikre sikkerhedskopier";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "If you skip restore now, you will not be able to restore later. If you re-enable backups on this device, your current backup will be replaced with your new messaging history.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "Hvis du vælger ikke at gendanne nu, vil du ikke kunne gendanne senere. Hvis du genaktiverer sikkerhedskopier på denne enhed, vil din nuværende sikkerhedskopi blive erstattet med din nye beskedhistorik.";
 
 /* Title for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Skip Restore?";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Vil du springe gendannelse over?";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION" = "Vælg, hvordan du vil gendanne din beskedhistorik og dine kontodata.";
@@ -6440,7 +6440,7 @@
 "PIN_ENTER_EXISTING_SKIP" = "Spring pinkode over";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Use Recovery Key";
+"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Brug gendannelsesnøgle";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Oprettelse af pinkode mislykkedes";
@@ -6548,10 +6548,10 @@
 "POLL_DETAILS_TITLE" = "Afstemningsoplysninger";
 
 /* Title for an action sheet confirming the user wants end a poll. */
-"POLL_END_CONFIRMATION" = "End poll?";
+"POLL_END_CONFIRMATION" = "Vil du afslutte afstemningen?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Group members will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "Gruppemedlemmer vil ikke længere kunne stemme i denne afstemning.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ afsluttede afstemningen: %2$@";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Brug for hjælp?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din pinkode er en numerisk eller alfanumerisk firecifret kode, som du har oprettet. Hvis du ikke kan huske din pinkode, bliver du nødt til at vente syv dage, før du kan registrere din konto igen. Hvis du har aktiveret Sikre sikkerhedskopier, kan du fortsætte med din gendannelsesnøgle.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Din pinkode er en numerisk eller alfanumerisk firecifret kode, som du har oprettet. Hvis du ikke kan huske din pinkode, kan du tilmelde dig og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger. Hvis du har aktiveret Sikre sikkerhedskopier, kan du fortsætte med din gendannelsesnøgle.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information. If you have Signal Secure Backups enabled, you can proceed with your Recovery Key.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Din pinkode er en numerisk eller alfanumerisk firecifret kode, som du har oprettet. Hvis du ikke kan huske din pinkode, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger. Hvis du har aktiveret Sikre sikkerhedskopier, kan du fortsætte med din gendannelsesnøgle.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Forkert pinkode";
@@ -6971,13 +6971,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_TITLE" = "Overførslen kunne ikke afsluttes";
 
 /* Body for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly, or you have not completed at least one backup on your old device. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups, and confirm that your old device has completed a backup.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_BODY" = "Du kan have indtastet din gendannelsesnøgle forkert, ellers har du ikke gennemført mindst én sikkerhedskopi på din gamle enhed. \n\nSørg for, at du registrerer dig med det samme telefonnummer og den samme gendannelsesnøgle, som du gemte, da du aktiverede Sikre sikkerhedskopier, og bekræft, at din gamle enhed har gennemført en sikkerhedskopi.";
 
 /* Body for a sheet warning users about an incorrect recovery key and having hit a rate limit on retries. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "You have run out of recovery key attempts. For your security, the number of attempts you can make is limited. Wait 1 hour and try again.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_RATE_LIMIT_BODY" = "Du er løbet tør for forsøg på gendannelsesnøglen. Af sikkerhedshensyn er antallet af forsøg, du kan gøre, begrænset. Vent en time, og prøv igen.";
 
 /* Title for a sheet warning users about an incorrect recovery key. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Can't Find Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Kan ikke finde sikkerhedskopien";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Din sikkerhedskopi kan ikke gendannes lige nu. Tjek din internetforbindelse, og prøv igen.";

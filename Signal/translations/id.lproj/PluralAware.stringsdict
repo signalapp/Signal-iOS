@@ -92,7 +92,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Pencadangan pesan teks + media selama %1$d hari</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -288,7 +288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Media selama %1$d hari terakhir</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Semua pesan teks dan media selama %1$d hari terakhir akan disertakan dalam data cadangan jika Anda mengubah jenis paket.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Pesan teks + media selama %1$d hari</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -899,7 +899,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Transfer pesan teks dan media dari %1$d hari terakhir</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1417,7 +1417,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Pesan suara ini tidak ditransfer dari ponsel Anda saat perangkat ini ditautkan. File dan media yang tersimpan lebih dari %1$d hari pada saat penautan perangkat tidak dapat disinkronkan.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1431,7 +1431,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>File ini tidak ditransfer dari ponsel Anda saat perangkat ini ditautkan. File dan media yang tersimpan lebih dari %1$d hari pada saat penautan perangkat tidak dapat disinkronkan.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1445,7 +1445,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Teks lengkap dalam pesan ini tidak ditransfer dari ponsel Anda saat perangkat ini ditautkan. File dan media yang tersimpan lebih dari %1$d hari pada saat penautan perangkat tidak dapat disinkronkan.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1459,7 +1459,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Stiker ini tidak ditransfer dari ponsel Anda saat perangkat ini ditautkan. File dan media yang tersimpan lebih dari %1$d hari pada saat penautan perangkat tidak dapat disinkronkan.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

@@ -104,9 +104,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>मजकूर + %1$d दिवसाचा मीडिया बॅकअप</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>मजकूर + %1$d दिवसांचा मीडिया बॅकअप</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>मिडीयाचा शेवटचा %1$d दिवस</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>मिडीयाचे शेवटचे %1$d दिवस</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>तुम्ही तुमचा प्लॅन बदललात तर तुमचे सगळे टेक्स्ट संदेश आणि मागील %1$d दिवसाचा मीडिया तुमच्या बॅकअपमध्ये सामील होईल.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>तुम्ही तुमचा प्लॅन बदललात तर तुमचे सगळे टेक्स्ट संदेश आणि मागील %1$d दिवसांचा मीडिया तुमच्या बॅकअपमध्ये सामील होईल.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>मजकूर + मिडीयाचा %1$d दिवस</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>मजकूर + मिडीयाचे %1$d दिवस</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1027,9 +1027,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>तुमचे टेक्स्ट संदेश आणि गेल्या %1$d दिवसातील तुमचा मीडिया हस्तांतरित करा</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>तुमचे टेक्स्ट संदेश आणि गेल्या %1$d दिवसांतील तुमचा मीडिया हस्तांतरित करा</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1619,9 +1619,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा हा व्हॉईस संदेश तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसापेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा हा व्हॉईस संदेश तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसांपेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1635,9 +1635,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा ही फाईल तुमच्या फोनवरून हस्तांतरित झाली नव्हती. डिव्हाईस सिंक करतेवेळी %1$d दिवसापेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा ही फाईल तुमच्या फोनवरून हस्तांतरित झाली नव्हती. डिव्हाईस सिंक करतेवेळी %1$d दिवसांपेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1651,9 +1651,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा या संदेशातील संपूर्ण मजकूर तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसापेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा या संदेशातील संपूर्ण मजकूर तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसांपेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1667,9 +1667,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा हा स्टिकर तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसापेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>हा डिव्हाईस लिंक केला तेव्हा हा स्टिकर तुमच्या फोनवरून हस्तांतरित झाला नव्हता. डिव्हाईस सिंक करतेवेळी %1$d दिवसांपेक्षा जुना मीडिया आणि जुन्या फाइल्स सिंक करता येत नाहीत.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

@@ -104,9 +104,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Sikkerhetskopiering av tekst samt mediefiler fra det siste døgnet</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Sikkerhetskopiering av tekst samt mediefiler fra de siste %1$d dagene</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>Mediefiler sendt det siste døgnet</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Mediefiler sendt de siste %1$d dagene</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Alle tekstmeldingene samt mediefilene dine fra det siste døgnet sikkerhetskopieres hvis du bytter abonnement.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Alle tekstmeldingene samt mediefilene dine fra de siste %1$d dagene sikkerhetskopieres hvis du bytter abonnement.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Tekst samt mediefiler sendt det siste døgnet</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Tekst samt mediefiler sendt de siste %1$d dagene</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1027,9 +1027,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Overfør alle tekstmeldingene dine samt mediefilene dine fra det siste døgnet.</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Overfør alle tekstmeldingene dine samt mediefilene dine fra de siste %1$d dagene.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1619,9 +1619,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Denne talemeldingen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dag gamle, når enheten kobles til.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Denne talemeldingen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dager gamle, når enheten kobles til.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1635,9 +1635,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Denne filen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dag gamle, når enheten kobles til.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Denne filen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dager gamle, når enheten kobles til.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1651,9 +1651,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>All teksten i denne meldingen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dag gamle, når enheten kobles til.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>All teksten i denne meldingen ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dager gamle, når enheten kobles til.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1667,9 +1667,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Dette klistremerket ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dag gamle, når enheten kobles til.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Dette klistremerket ble ikke overført fra telefonen din da du koblet til denne enheten. Det er ikke mulig å synkronisere mediefiler og andre filer som er mer enn %1$d dager gamle, når enheten kobles til.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

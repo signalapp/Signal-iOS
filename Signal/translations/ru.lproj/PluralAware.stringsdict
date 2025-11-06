@@ -128,13 +128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Резервное копирование сообщений и медиафайлов за %1$d день</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Резервное копирование сообщений и медиафайлов за %1$d дня</string>
 			<key>many</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Резервное копирование сообщений и медиафайлов за %1$d дней</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Резервное копирование сообщений и медиафайлов за %1$d дня</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>Медиафайлы за %1$d последний день</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>Медиафайлы за %1$d последних дня</string>
 			<key>many</key>
-			<string>Last %1$d days of media</string>
+			<string>Медиафайлы за %1$d последних дней</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Медиафайлы за %1$d последних дня</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Если вы измените свой план, в резервную копию будут включены все ваши текстовые сообщения и медиафайлы за %1$d последний день.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Если вы измените свой план, в резервную копию будут включены все ваши текстовые сообщения и медиафайлы за последние %1$d дня.</string>
 			<key>many</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Если вы измените свой план, в резервную копию будут включены все ваши текстовые сообщения и медиафайлы за последние %1$d дней.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Если вы измените свой план, в резервную копию будут включены все ваши текстовые сообщения и медиафайлы за последние %1$d дня.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Текстовые сообщения + медиафайлы за %1$d день</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>Текстовые сообщения + медиафайлы за %1$d дня</string>
 			<key>many</key>
-			<string>Text + %1$d days of media</string>
+			<string>Текстовые сообщения + медиафайлы за %1$d дней</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Текстовые сообщения + медиафайлы за %1$d дня</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1283,13 +1283,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Перенести все ваши текстовые сообщения и медиафайлы за %1$d последний день</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Перенести все ваши текстовые сообщения и медиафайлы за последние %1$d дня</string>
 			<key>many</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Перенести все ваши текстовые сообщения и медиафайлы а последние %1$d дней</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Перенести все ваши текстовые сообщения и медиафайлы за последние %1$d дня</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -2023,13 +2023,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Это голосовое сообщение не было перенесено с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d день, не могут быть синхронизированы.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Это голосовое сообщение не было перенесено с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 			<key>many</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Это голосовое сообщение не было перенесено с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дней, не могут быть синхронизированы.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Это голосовое сообщение не было перенесено с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -2043,13 +2043,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Этот файл не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d день, не могут быть синхронизированы.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот файл не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 			<key>many</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот файл не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дней, не могут быть синхронизированы.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот файл не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -2063,13 +2063,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Полный текст этого сообщения не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d день, не могут быть синхронизированы.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Полный текст этого сообщения не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 			<key>many</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Полный текст этого сообщения не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дней, не могут быть синхронизированы.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Полный текст этого сообщения не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -2083,13 +2083,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Этот стикер не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d день, не могут быть синхронизированы.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот стикер не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 			<key>many</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот стикер не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дней, не могут быть синхронизированы.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Этот стикер не был перенесён с вашего телефона при привязке этого устройства. Медиафайлы и файлы, срок создания которых на момент привязки устройства превышал %1$d дня, не могут быть синхронизированы.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

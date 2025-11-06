@@ -152,17 +152,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d يوم من ملفات الوسائط</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d يوم من ملفات الوسائط</string>
 			<key>two</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d يومين من ملفات الوسائط</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d أيام من ملفات الوسائط</string>
 			<key>many</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d يومًا من ملفات الوسائط</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>النسخ الاحتياطي للنص و%1$d يومٍ من ملفات الوسائط</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -488,17 +488,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Last %1$d days of media</string>
+			<string>الأيام %1$d الأخيرة من الوسائط</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>اليوم %1$d الأخير من الوسائط</string>
 			<key>two</key>
-			<string>Last %1$d days of media</string>
+			<string>اليومان %1$d الأخيران من الوسائط</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>الأيام %1$d الأخيرة من الوسائط</string>
 			<key>many</key>
-			<string>Last %1$d days of media</string>
+			<string>الأيام %1$d الأخيرة من الوسائط</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>الأيام %1$d الأخيرة من الوسائط</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -512,17 +512,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر %1$d يوم من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر %1$d يوم من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 			<key>two</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر %1$d يومين من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر %1$d أيام من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 			<key>many</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر %1$d يومًا من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>سَيتم تضمين كل رسائلك النصية وآخر 45 يومٍ من ملفات الوسائط في نسختك الاحتياطية إذا غيَّرتَ خطتك.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -536,17 +536,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Text + %1$d days of media</string>
+			<string>الرسائل النصية + %1$d أيام من الوسائط</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>الرسائل النصية + %1$d يوم من الوسائط</string>
 			<key>two</key>
-			<string>Text + %1$d days of media</string>
+			<string>الرسائل النصية + %1$d يومين من الوسائط</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>الرسائل النصية + %1$d أيام من الوسائط</string>
 			<key>many</key>
-			<string>Text + %1$d days of media</string>
+			<string>الرسائل النصية + %1$d يومًا من الوسائط</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>الرسائل النصية + %1$d يومٍ من الوسائط</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1539,17 +1539,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d يوم من الوسائط</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d يوم من الوسائط</string>
 			<key>two</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d يومين من الوسائط</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d أيام من الوسائط</string>
 			<key>many</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d يومًا من الوسائط</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>انقل رسائلك النصية وآخر %1$d يومٍ من الوسائط</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -2427,17 +2427,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>two</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومين منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d أيام منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>many</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومًا منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذه الرسالة الصوتية من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومٍ منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -2451,17 +2451,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>two</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومين منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d أيام منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>many</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومًا منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>لم يُنقَل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومٍ منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -2475,17 +2475,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>two</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومين منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d أيام منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>many</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومًا منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل النص الكامل من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومٍ منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -2499,17 +2499,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يوم منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>two</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومين منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d أيام منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>many</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومًا منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>تعذَّر تحويل هذا المُلصَق من هاتفك عندما كان هذا الجهاز مُرتبِطًا. لا يمكن مُزامنة الملفات والوسائط التي تعود إلى أكثر من %1$d يومٍ منذ الوقت الذي تمَّ فيه ربط الجهاز.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

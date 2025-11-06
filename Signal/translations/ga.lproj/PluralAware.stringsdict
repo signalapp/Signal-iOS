@@ -140,15 +140,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Téacs + %1$d lá amháin de chúltaca meán</string>
 			<key>two</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Téacs + %1$d lá de chúltaca meán</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Téacs + %1$d lá de chúltaca meán</string>
 			<key>many</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Téacs + %1$d lá de chúltaca meán</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Téacs + %1$d lá de chúltaca meán</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -448,15 +448,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>An %1$d lá deireanach amháin de mheáin</string>
 			<key>two</key>
-			<string>Last %1$d days of media</string>
+			<string>An %1$d lá dheireanacha de mheáin</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>Na %1$d lá dheireanacha de mheáin</string>
 			<key>many</key>
-			<string>Last %1$d days of media</string>
+			<string>Na %1$d lá dheireanacha de mheáin</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Na %1$d lá dheireanacha de mheáin</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -470,15 +470,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Cuirfear do theachtaireachtaí téacs uile agus an %1$d lá amháin anuas de mheáin i do chúltaca má athraíonn tú do phlean.</string>
 			<key>two</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Cuirfear do theachtaireachtaí téacs uile agus an %1$d lá anuas de mheáin i do chúltaca má athraíonn tú do phlean.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Cuirfear do theachtaireachtaí téacs uile agus na %1$d lá anuas de mheáin i do chúltaca má athraíonn tú do phlean.</string>
 			<key>many</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Cuirfear do theachtaireachtaí téacs uile agus na %1$d lá anuas de mheáin i do chúltaca má athraíonn tú do phlean.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Cuirfear do theachtaireachtaí téacs uile agus na %1$d lá anuas de mheáin i do chúltaca má athraíonn tú do phlean.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -492,15 +492,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Téacs + %1$d lá amháin de mheáin</string>
 			<key>two</key>
-			<string>Text + %1$d days of media</string>
+			<string>Téacs + %1$d lá de mheáin</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>Téacs + %1$d lá de mheáin</string>
 			<key>many</key>
-			<string>Text + %1$d days of media</string>
+			<string>Téacs + %1$d lá de mheáin</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Téacs + %1$d lá de mheáin</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1411,15 +1411,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Aistrigh do theachtaireachtaí téacs agus an %1$d lá amháin anuas de do mheáin</string>
 			<key>two</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Aistrigh do theachtaireachtaí téacs agus an %1$d lá anuas de do mheáin</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Aistrigh do theachtaireachtaí téacs agus na %1$d lá anuas de do mheáin</string>
 			<key>many</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Aistrigh do theachtaireachtaí téacs agus na %1$d lá anuas de do mheáin</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Aistrigh do theachtaireachtaí téacs agus na %1$d lá anuas de do mheáin</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -2225,15 +2225,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an glórphost seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá amháin ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>two</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an glórphost seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an glórphost seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>many</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an glórphost seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an glórphost seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -2247,15 +2247,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an comhad seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá amháin ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>two</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an comhad seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an comhad seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>many</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an comhad seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an comhad seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -2269,15 +2269,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh iomlán an téacs sa teachtaireacht seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá amháin ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>two</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh iomlán an téacs sa teachtaireacht seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh iomlán an téacs sa teachtaireacht seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>many</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh iomlán an téacs sa teachtaireacht seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh iomlán an téacs sa teachtaireacht seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -2291,15 +2291,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an greamán seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá amháin ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>two</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an greamán seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an greamán seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>many</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an greamán seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Níor aistríodh an greamán seo ó do ghuthán nuair a nascadh an gléas seo. Meáin agus comhaid a bhí níos sine ná %1$d lá ag an uair a nascadh an gléas, ní féidir iad a shioncronú.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

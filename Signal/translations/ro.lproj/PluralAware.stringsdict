@@ -116,11 +116,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media backup</string>
+			<string>Text + %1$d zi de backup al fișierelor</string>
 			<key>few</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Text + %1$d zile de backup al fișierelor</string>
 			<key>other</key>
-			<string>Text + %1$d days of media backup</string>
+			<string>Text + %1$d de zile de backup al fișierelor</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -368,11 +368,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Last %1$d day of media</string>
+			<string>Ultima %1$d zi de fișiere media</string>
 			<key>few</key>
-			<string>Last %1$d days of media</string>
+			<string>Ultimele %1$d zile de fișiere media</string>
 			<key>other</key>
-			<string>Last %1$d days of media</string>
+			<string>Ultimele %1$d de zile de fișiere media</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d</key>
@@ -386,11 +386,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All of your text messages and last %1$d day of media will be included in your backup if you change your plan.</string>
+			<string>Toate mesajele text și fișierele media din ultima %1$d zi vor fi incluse în backup dacă îți schimbi abonamentul.</string>
 			<key>few</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Toate mesajele text și fișierele media din ultimele %1$d zile vor fi incluse în backup dacă îți schimbi abonamentul.</string>
 			<key>other</key>
-			<string>All of your text messages and last %1$d days of media will be included in your backup if you change your plan.</string>
+			<string>Toate mesajele text și fișierele media din ultimele %1$d de zile vor fi incluse în backup dacă îți schimbi abonamentul.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -404,11 +404,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text + %1$d day of media</string>
+			<string>Text + %1$d zi de fișiere media</string>
 			<key>few</key>
-			<string>Text + %1$d days of media</string>
+			<string>Text + %1$d zile de fișiere media</string>
 			<key>other</key>
-			<string>Text + %1$d days of media</string>
+			<string>Text + %1$d de zile de fișiere media</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1155,11 +1155,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Transfer your text messages and your last %1$d day of media</string>
+			<string>Transferă mesajele text și fișierele media din ultima %1$d zi</string>
 			<key>few</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Transferă mesajele text și fișierele media din ultimele %1$d zile</string>
 			<key>other</key>
-			<string>Transfer your text messages and your last %1$d days of media</string>
+			<string>Transferă mesajele text și fișierele media din ultimele %1$d de zile</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1821,11 +1821,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Acest mesaj vocal nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Media și fișierele mai vechi de %1$d zi în momentul conectării dispozitivului nu pot fi sincronizate.</string>
 			<key>few</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest mesaj vocal nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Media și fișierele mai vechi de %1$d zile în momentul conectării dispozitivului nu pot fi sincronizate.</string>
 			<key>other</key>
-			<string>This voice message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest mesaj vocal nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Media și fișierele mai vechi de %1$d de zile în momentul conectării dispozitivului nu pot fi sincronizate.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1839,11 +1839,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d zi în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>few</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d zile în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>other</key>
-			<string>This file was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d de zile în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1857,11 +1857,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Textul complet din acest mesaj nu a fost transferat de pe telefonul tău atunci când acest dispozitiv a fost asociat. Fișierele mai vechi de %1$d zi la momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>few</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Textul complet din acest mesaj nu a fost transferat de pe telefonul tău atunci când acest dispozitiv a fost asociat. Fișierele mai vechi de %1$d zile la momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>other</key>
-			<string>The complete text in this message was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Textul complet din acest mesaj nu a fost transferat de pe telefonul tău atunci când acest dispozitiv a fost asociat. Fișierele mai vechi de %1$d de zile la momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1875,11 +1875,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d day at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d zi în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>few</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d zile în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 			<key>other</key>
-			<string>This sticker was not transferred from your phone when this device was linked. Media and files older than %1$d days at the time of device linking cannot be synced.</string>
+			<string>Acest fișier nu a fost transferat de pe telefonul tău când acest dispozitiv a fost asociat. Fișierele și conținutul media mai vechi de %1$d de zile în momentul asocierii dispozitivului nu pot fi sincronizate.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>
