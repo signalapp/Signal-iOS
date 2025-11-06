@@ -246,7 +246,7 @@ public class GroupMembership: MTLModel {
     #if TESTABLE_BUILD
     /// Construction for tests is functionally equivalent to construction of a
     /// group membership for a legacy, V1 group model.
-    convenience init(membersForTest: [SignalServiceAddress]) {
+    public convenience init(membersForTest: [SignalServiceAddress]) {
         self.init(v1Members: membersForTest)
     }
     #endif

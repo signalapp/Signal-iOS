@@ -341,6 +341,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let databaseMigratorRunner = LazyDatabaseMigratorRunner(
             databaseStorage: databaseStorage,
+            modelReadCaches: { SSKEnvironment.shared.modelReadCachesRef },
+            tsAccountManager: { DependenciesBridge.shared.tsAccountManager },
         )
         databaseMigratorRunner.registerBGProcessingTask(appReadiness: appReadiness)
 

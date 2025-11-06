@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 
-enum TimeGatedBatch {
+public enum TimeGatedBatch {
     /// Processes `objects` within one or more transactions.
     ///
     /// You probably don't need this method and shouldn't use it. Splitting an
@@ -70,7 +70,7 @@ enum TimeGatedBatch {
     /// Processes all elements in batches bound by time, asynchronously.
     ///
     /// Like `processAll`, but `async`. See that method for details.
-    static func processAllAsync<E: Error, TxContext>(
+    public static func processAllAsync<E: Error, TxContext>(
         db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
@@ -92,7 +92,7 @@ enum TimeGatedBatch {
     ///
     /// Like `processAll`, but `async` and without "transaction contexts". See
     /// that method for details.
-    static func processAllAsync<E: Error>(
+    public static func processAllAsync<E: Error>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
@@ -177,7 +177,7 @@ enum TimeGatedBatch {
     /// processed in that transaction.
     ///
     /// - Returns: The total number of items processed across all batches.
-    static func processAll<E: Error, TxContext>(
+    public static func processAll<E: Error, TxContext>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
@@ -199,7 +199,7 @@ enum TimeGatedBatch {
     ///
     /// Like `processAll` above, but without "transaction contexts". See that
     /// method for details.
-    static func processAll<E: Error>(
+    public static func processAll<E: Error>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,

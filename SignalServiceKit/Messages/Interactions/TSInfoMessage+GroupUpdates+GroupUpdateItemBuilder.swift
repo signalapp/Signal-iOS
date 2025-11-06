@@ -1012,7 +1012,6 @@ private struct NewGroupUpdateItemBuilder {
         {
             localMembershipStatus = pniMembership
         } else {
-            owsFailDebug("Group was inserted without local membership!")
             return nil
         }
 

@@ -2692,6 +2692,8 @@
 		D968F71E2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
+		D97046062E81D4240034C05D /* InfoMessageGroupUpdateMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */; };
+		D970460A2E81D5C00034C05D /* InfoMessageGroupUpdateMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */; };
 		D970541A2CFE49E400AC7954 /* SubscriptionFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */; };
 		D970541F2CFE4D0200AC7954 /* BackupPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */; };
 		D97054202CFE4D0200AC7954 /* BackupPaymentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */; };
@@ -6672,6 +6674,8 @@
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
 		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
+		D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessageGroupUpdateMigrator.swift; sourceTree = "<group>"; };
+		D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessageGroupUpdateMigratorTest.swift; sourceTree = "<group>"; };
 		D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionFetcher.swift; sourceTree = "<group>"; };
 		D970541D2CFE4D0200AC7954 /* BackupPaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPaymentMethod.swift; sourceTree = "<group>"; };
 		D970541E2CFE4D0200AC7954 /* BackupPaymentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPaymentProcessor.swift; sourceTree = "<group>"; };
@@ -9172,6 +9176,7 @@
 			isa = PBXGroup;
 			children = (
 				F9F0B53E2982D7800012C590 /* FullTextSearchOptimizer.swift */,
+				D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */,
 				502F187E2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift */,
 			);
 			path = Storage;
@@ -11096,6 +11101,7 @@
 				50791B1B2D037A7800D747F8 /* RecipientPickers */,
 				661278052996BA6700A1D5A1 /* Registration */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
+				D97046082E81D5B60034C05D /* Storage */,
 				E75DD3DC2810CD3500E32C36 /* subscriptions */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
 				5033D47129DCB3F1007FEADA /* URLs */,
@@ -12597,6 +12603,14 @@
 				D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */,
 			);
 			path = Jobs;
+			sourceTree = "<group>";
+		};
+		D97046082E81D5B60034C05D /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 		D970D0332E4554D4001FF608 /* SyncMessages */ = {
@@ -17180,6 +17194,7 @@
 				D9E43C2A2CC194140001536E /* IndividualCall.swift in Sources */,
 				D9E43C2B2CC194140001536E /* IndividualCallService.swift in Sources */,
 				D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */,
+				D97046062E81D4240034C05D /* InfoMessageGroupUpdateMigrator.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				665229892E218D5F002C14A0 /* InternalDiskUsageViewController.swift in Sources */,
 				45B27B862037FFB400A539DF /* InternalFileBrowserViewController.swift in Sources */,
@@ -17553,6 +17568,7 @@
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
+				D970460A2E81D5C00034C05D /* InfoMessageGroupUpdateMigratorTest.swift in Sources */,
 				D931080E2B338D15006A034E /* InterleavingCompositeCursorTest.swift in Sources */,
 				45C845AF291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
