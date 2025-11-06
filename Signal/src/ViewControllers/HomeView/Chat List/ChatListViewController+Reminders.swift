@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 public class CLVReminderViews {
 
-    fileprivate let reminderViewCell = UITableViewCell()
+    let reminderViewCell = UITableViewCell()
+
     fileprivate let reminderStackView = UIStackView()
     fileprivate let expiredView = ExpirationNagView(
         dateProvider: Date.provider,
@@ -33,8 +34,6 @@ public class CLVReminderViews {
         reminderViewCell.selectionStyle = .none
         reminderViewCell.contentView.addSubview(reminderStackView)
         reminderStackView.autoPinEdgesToSuperviewEdges()
-        reminderViewCell.accessibilityIdentifier = "reminderViewCell"
-        reminderStackView.accessibilityIdentifier = "reminderStackView"
 
         let deregisteredText: String
         let deregisteredActionTitle: String
@@ -195,29 +194,7 @@ public class CLVReminderViews {
 
 extension ChatListViewController {
 
-    public var unreadPaymentNotificationsCount: UInt {
-        get { viewState.unreadPaymentNotificationsCount }
-        set { viewState.unreadPaymentNotificationsCount = newValue }
-    }
-
-    fileprivate var firstUnreadPaymentModel: TSPaymentModel? {
-        get { viewState.firstUnreadPaymentModel }
-        set { viewState.firstUnreadPaymentModel = newValue }
-    }
-
-    var backupFailureAlerts: Set<CLVViewState.BackupFailureAlertType> {
-        get { viewState.backupFailureAlerts }
-        set { viewState.backupFailureAlerts = newValue }
-    }
-
-    var hasConsumedMediaTierCapacity: Bool? {
-        get { viewState.hasConsumedMediaTierCapacity }
-        set { viewState.hasConsumedMediaTierCapacity = newValue }
-    }
-
-    public var reminderViewCell: UITableViewCell { reminderViews.reminderViewCell }
-
-    fileprivate var reminderStackView: UIStackView { reminderViews.reminderStackView }
+    private var reminderViews: CLVReminderViews { viewState.reminderViews }
     fileprivate var expiredView: ExpirationNagView { reminderViews.expiredView }
     fileprivate var deregisteredView: UIView { reminderViews.deregisteredView }
     fileprivate var outageView: UIView { reminderViews.outageView }
@@ -225,8 +202,6 @@ extension ChatListViewController {
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
     fileprivate var usernameCorruptedReminderView: UIView { reminderViews.usernameCorruptedReminderView }
     fileprivate var usernameLinkCorruptedReminderView: UIView { reminderViews.usernameLinkCorruptedReminderView }
-
-    public var reminderViews: CLVReminderViews { viewState.reminderViews }
 
     public func updateArchiveReminderView() {
         archiveReminderView.isHidden = viewState.chatListMode != .archive
@@ -270,13 +245,15 @@ extension ChatListViewController {
         }
     }
 
+    // MARK: -
+
     public func updateBackupFailureAlertsWithSneakyTransaction() {
         typealias BackupFailureAlertType = CLVViewState.BackupFailureAlertType
 
         let db = DependenciesBridge.shared.db
         let failureStateManager = DependenciesBridge.shared.backupFailureStateManager
 
-        self.backupFailureAlerts = db.read { tx -> Set<BackupFailureAlertType> in
+        viewState.backupFailureAlerts = db.read { tx -> Set<BackupFailureAlertType> in
             guard failureStateManager.hasFailedBackup(tx: tx) else {
                 return []
             }
@@ -296,9 +273,21 @@ extension ChatListViewController {
 
     public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
         let backupSettingsStore = BackupSettingsStore()
-        self.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        viewState.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in
             backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
         }
+    }
+
+    // MARK: -
+
+    fileprivate var unreadPaymentNotificationsCount: UInt {
+        get { viewState.unreadPaymentNotificationsCount }
+        set { viewState.unreadPaymentNotificationsCount = newValue }
+    }
+
+    fileprivate var firstUnreadPaymentModel: TSPaymentModel? {
+        get { viewState.firstUnreadPaymentModel }
+        set { viewState.firstUnreadPaymentModel = newValue }
     }
 
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
@@ -336,6 +325,8 @@ extension ChatListViewController {
 
         updatePaymentReminderView()
     }
+
+    // MARK: -
 
     /// Update reminder views as appropriate for the current username state.
     private func updateUsernameStateViews(tx: DBReadTransaction) {

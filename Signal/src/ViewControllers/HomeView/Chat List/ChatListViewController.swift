@@ -22,7 +22,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableDataSource.scrollViewDelegate = self
         tableDataSource.viewController = self
         loadCoordinator.viewController = self
-        reminderViews.chatListViewController = self
+        viewState.reminderViews.chatListViewController = self
         viewState.backupDownloadProgressView.chatListViewController = self
         viewState.settingsButtonCreator.delegate = self
         viewState.proxyButtonCreator.delegate = self

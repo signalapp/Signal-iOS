@@ -551,7 +551,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
         switch section.type {
         case .reminders:
-            cell = viewController.reminderViewCell
+            cell = viewController.viewState.reminderViews.reminderViewCell
         case .backupDownloadProgressView:
             cell = viewController.viewState.backupDownloadProgressView.backupDownloadProgressViewCell
         case .pinned, .unpinned:

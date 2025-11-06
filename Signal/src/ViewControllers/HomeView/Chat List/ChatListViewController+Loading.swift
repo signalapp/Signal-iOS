@@ -379,8 +379,7 @@ public class CLVLoadCoordinator {
 
         // Copy the "current" load info, reset "next" load info.
 
-        let reminderViews = viewController.viewState.reminderViews
-        let hasVisibleReminders = reminderViews.hasVisibleReminders
+        let hasVisibleReminders = viewController.viewState.reminderViews.hasVisibleReminders
         let shouldBackupDownloadProgressViewBeVisible = viewController.viewState.backupDownloadProgressView.shouldBeVisible
 
         let loadResult: CLVLoadResult = SSKEnvironment.shared.databaseStorageRef.read { transaction in
