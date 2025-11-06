@@ -46,15 +46,9 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     private func makeAndInsertRecipient(address: SignalServiceAddress) -> SignalRecipient {
-        var recipient = SignalRecipient(
-            aci: address.aci,
-            pni: nil,
-            phoneNumber: address.e164
-        )
-        self.dbV2.write { tx in
-            mockRecipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
+        return self.dbV2.write { tx in
+            return try! SignalRecipient.insertRecord(aci: address.aci, phoneNumber: address.e164, tx: tx)
         }
-        return recipient
     }
 
     private func createRecipients(_ serviceIds: [ServiceId]) {

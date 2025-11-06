@@ -100,16 +100,8 @@ public struct NewKeyValueStore {
     private func withDatabaseError<T>(_ block: () throws -> T) throws(GRDB.DatabaseError) -> T {
         do {
             return try block()
-        } catch let error as GRDB.DatabaseError {
-            throw error.forLogging
         } catch {
-            owsFailDebug("The database threw a non-DatabaseError: \(error)")
-            throw DatabaseError(
-                resultCode: .SQLITE_ERROR,
-                message: "\(error)",
-                sql: nil,
-                arguments: nil,
-            )
+            throw error.forceCastToDatabaseError()
         }
     }
 

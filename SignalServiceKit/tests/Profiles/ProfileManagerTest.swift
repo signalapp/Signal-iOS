@@ -19,7 +19,14 @@ class ProfileManagerTest: XCTestCase {
 
         let db = InMemoryDB()
 
-        func normalizeRecipient(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
+        func normalizeRecipient(aci: Aci?, phoneNumber: E164?, pni: Pni?, tx: DBWriteTransaction) {
+            try! SignalRecipient.deleteAll(tx.database)
+            let recipient = try! SignalRecipient.insertRecord(
+                aci: aci,
+                phoneNumber: phoneNumber,
+                pni: pni,
+                tx: tx,
+            )
             OWSProfileManager.swift_normalizeRecipientInProfileWhitelist(
                 recipient,
                 serviceIdStore: serviceIdStore,
@@ -30,7 +37,7 @@ class ProfileManagerTest: XCTestCase {
 
         // Don't add any values unless one is already present.
         db.write { tx in
-            normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber), tx: tx)
+            normalizeRecipient(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx)
             XCTAssertFalse(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertFalse(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))
             XCTAssertFalse(serviceIdStore.hasValue(pni.serviceIdUppercaseString, transaction: tx))
@@ -39,7 +46,7 @@ class ProfileManagerTest: XCTestCase {
         // Move the PNI identifier to the phone number.
         db.write { tx in
             serviceIdStore.setBool(true, key: pni.serviceIdUppercaseString, transaction: tx)
-            normalizeRecipient(SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber), tx: tx)
+            normalizeRecipient(aci: nil, phoneNumber: phoneNumber, pni: pni, tx: tx)
             XCTAssertFalse(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertTrue(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))
             XCTAssertFalse(serviceIdStore.hasValue(pni.serviceIdUppercaseString, transaction: tx))
@@ -48,7 +55,7 @@ class ProfileManagerTest: XCTestCase {
         // Clear lower priority identifiers when multiple are present.
         db.write { tx in
             serviceIdStore.setBool(true, key: aci.serviceIdUppercaseString, transaction: tx)
-            normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber), tx: tx)
+            normalizeRecipient(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx)
             XCTAssertTrue(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertFalse(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))
             XCTAssertFalse(serviceIdStore.hasValue(pni.serviceIdUppercaseString, transaction: tx))
@@ -56,7 +63,7 @@ class ProfileManagerTest: XCTestCase {
 
         // Keep the highest priority identifier if it's already present.
         db.write { tx in
-            normalizeRecipient(SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber), tx: tx)
+            normalizeRecipient(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx)
             XCTAssertTrue(serviceIdStore.hasValue(aci.serviceIdUppercaseString, transaction: tx))
             XCTAssertFalse(phoneNumberStore.hasValue(phoneNumber.stringValue, transaction: tx))
             XCTAssertFalse(serviceIdStore.hasValue(pni.serviceIdUppercaseString, transaction: tx))

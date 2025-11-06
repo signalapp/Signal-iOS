@@ -72,13 +72,19 @@ final class RecipientPickerViewControllerTests: XCTestCase {
                 localNumber: "+16505550100",
                 contactDiscoveryManager: MockContactDiscoveryManager(lookUpBlock: { phoneNumbers in
                     XCTAssertTrue(testCase.isValid)
-                    return testCase.isFound ? [
-                        SignalRecipient(
-                            aci: Aci.randomForTesting(),
-                            pni: Pni.randomForTesting(),
-                            phoneNumber: E164(phoneNumbers.first)!
-                        )
-                    ] : []
+                    if testCase.isFound {
+                        let db = InMemoryDB()
+                        return db.write { tx in
+                            return [try! SignalRecipient.insertRecord(
+                                aci: Aci.randomForTesting(),
+                                phoneNumber: E164(phoneNumbers.first)!,
+                                pni: Pni.randomForTesting(),
+                                tx: tx,
+                            )]
+                        }
+                    } else {
+                        return []
+                    }
                 }),
                 phoneNumberUtil: PhoneNumberUtil()
             )

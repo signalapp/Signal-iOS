@@ -17,7 +17,7 @@ struct PollManagerTest {
     private var groupThread: TSGroupThread!
     private var recipient: SignalRecipient!
     private let mockTSAccountManager = MockTSAccountManager()
-    var pollAuthorAci: Aci!
+    private let pollAuthorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
 
     init() throws {
         pollMessageManager = PollMessageManager(
@@ -30,11 +30,12 @@ struct PollManagerTest {
             attachmentContentValidator: AttachmentContentValidatorMock(),
             db: db
         )
-        let testPhone = E164("+16505550101")!
-        pollAuthorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
-        let pni = Pni(fromUUID: UUID())
+        let pollAuthorPhoneNumber = E164("+16505550100")!
+        let pollAuthorPni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b0")
         groupThread = TSGroupThread.randomForTesting()
-        recipient = SignalRecipient(aci: pollAuthorAci, pni: pni, phoneNumber: testPhone)
+        recipient = db.write { tx in
+            return try! SignalRecipient.insertRecord(aci: pollAuthorAci, phoneNumber: pollAuthorPhoneNumber, pni: pollAuthorPni, tx: tx)
+        }
     }
 
     private func createIncomingMessage(
@@ -84,8 +85,7 @@ struct PollManagerTest {
 
     private func insertSignalRecipient(aci: Aci, pni: Pni, phoneNumber: E164) {
         db.write { tx in
-            var recipient = SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
-            recipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx)
         }
     }
 
@@ -966,12 +966,6 @@ struct PollManagerTest {
 
     @Test
     func testPendingThenSentVote_singleSelect() throws {
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
-
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
 
@@ -1070,12 +1064,6 @@ struct PollManagerTest {
 
     @Test
     func testPendingThenSentVote_multiSelect() throws {
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
-
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
 
@@ -1209,12 +1197,6 @@ struct PollManagerTest {
 
     @Test
     func testMultiplePendingBeforeSent_multi() throws {
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
-
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
 
@@ -1297,12 +1279,6 @@ struct PollManagerTest {
 
     @Test
     func testOutOfOrderPendingAndSent() throws {
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
-
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
 
@@ -1404,11 +1380,6 @@ struct PollManagerTest {
         var voteAuthorAci: Aci
         let message = insertOutgoingPollMessage(question: question)
         voteAuthorAci = pollAuthorAci
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
 
         let pollCreateProto = buildPollCreateProto(
             question: question,
@@ -1543,11 +1514,6 @@ struct PollManagerTest {
         var voteAuthorAci: Aci
         let message = insertOutgoingPollMessage(question: question)
         voteAuthorAci = pollAuthorAci
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
 
         let pollCreateProto = buildPollCreateProto(
             question: question,
@@ -1677,12 +1643,6 @@ struct PollManagerTest {
 
     @Test
     func testSendFailsButVoteCountHasMovedOn() throws {
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
-
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
 
@@ -1767,11 +1727,6 @@ struct PollManagerTest {
         var voteAuthorAci: Aci
         let outgoingMessage = insertOutgoingPollMessage(question: question)
         voteAuthorAci = pollAuthorAci
-        insertSignalRecipient(
-            aci: pollAuthorAci,
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1"),
-            phoneNumber: E164("+16505550101")!
-        )
 
         let pollCreateProto = buildPollCreateProto(
             question: question,

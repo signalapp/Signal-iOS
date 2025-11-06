@@ -722,8 +722,9 @@ final class SignalRecipient2Test: XCTestCase {
     func testEncodePni() throws {
         let inMemoryDB = InMemoryDB()
         let pni = Pni.constantForTesting("PNI:30000000-5000-4000-8000-3000000000A9")
-        var record = SignalRecipient(aci: nil, pni: pni, phoneNumber: nil)
-        try inMemoryDB.write { tx in try record.insert(tx.database) }
+        try inMemoryDB.write { tx in
+            _ = try SignalRecipient.insertRecord(pni: pni, tx: tx)
+        }
         inMemoryDB.read { tx in
             let db = tx.database
             let rawPniValue = try! String.fetchOne(db, sql: #"SELECT "pni" FROM "model_SignalRecipient""#)!

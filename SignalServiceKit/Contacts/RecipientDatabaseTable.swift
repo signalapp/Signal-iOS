@@ -157,16 +157,6 @@ public struct RecipientDatabaseTable {
         return result
     }
 
-    public func insertRecipient(_ signalRecipient: inout SignalRecipient, transaction: DBWriteTransaction) {
-        failIfThrows {
-            do {
-                try signalRecipient.insert(transaction.database)
-            } catch {
-                throw error.grdbErrorForLogging
-            }
-        }
-    }
-
     public func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         failIfThrows {
             do {

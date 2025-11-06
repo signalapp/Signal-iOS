@@ -45,11 +45,7 @@ public class BackupArchiveRecipientStore {
 
     // MARK: - Restoring
 
-    func insertRecipient(
-        _ recipient: inout SignalRecipient,
-        tx: DBWriteTransaction
-    ) throws {
-        try recipient.insert(tx.database)
+    func didInsertRecipient(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
         // Unlike messages, whose indexing is deferred, we insert
         // into the index immediately within the backup write tx.
         // This is because:

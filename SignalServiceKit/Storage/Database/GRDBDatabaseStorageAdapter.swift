@@ -1002,4 +1002,19 @@ extension Error {
         // If not a GRDB error, return unmodified.
         return (self as? GRDB.DatabaseError)?.forLogging ?? self
     }
+
+    public func forceCastToDatabaseError() -> DatabaseError {
+        switch self {
+        case let error as GRDB.DatabaseError:
+            return error.forLogging
+        default:
+            owsFailDebug("The database threw a non-DatabaseError: \(self)")
+            return DatabaseError(
+                resultCode: .SQLITE_ERROR,
+                message: "\(self)",
+                sql: nil,
+                arguments: nil,
+            )
+        }
+    }
 }

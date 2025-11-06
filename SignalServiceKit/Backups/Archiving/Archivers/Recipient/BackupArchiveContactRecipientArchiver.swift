@@ -650,14 +650,35 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             break
         }
 
+        let deviceIds: [DeviceId]
+        if isRegistered {
+            // If we think they are registered, just add the primary device id.
+            // When we try and send a message, the server will tell us about
+            // any other device ids.
+            // ...The server would tell us too if we sent an empty deviceIds array,
+            // so there's not really a material difference.
+            deviceIds = [.primary]
+        } else {
+            // Otherwise (including if we don't know if they're registered),
+            // use an empty device IDs array. This doesn't make any difference,
+            // the server will give us the deviceIds anyway and unregisteredAtTimestamp
+            // is the thing that actually drives unregistered state, but
+            // this is at least a better representation of what we know.
+            deviceIds = []
+        }
+
         let recipientProto = recipient
-        var recipient: SignalRecipient = .fromBackup(
-            backupContactAddress,
-            isRegistered: isRegistered,
-            unregisteredAtTimestamp: unregisteredTimestamp
-        )
-        do {
-            try recipientStore.insertRecipient(&recipient, tx: context.tx)
+        let recipient: SignalRecipient
+        do throws(GRDB.DatabaseError) {
+            recipient = try SignalRecipient.insertRecord(
+                aci: backupContactAddress.aci,
+                phoneNumber: backupContactAddress.e164,
+                pni: backupContactAddress.pni,
+                deviceIds: deviceIds,
+                unregisteredAtTimestamp: unregisteredTimestamp,
+                tx: context.tx,
+            )
+            recipientStore.didInsertRecipient(recipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
         }

@@ -320,7 +320,7 @@ final class ThreadMergerTest: XCTestCase {
                 mergedRecipient: MergedRecipient(
                     isLocalRecipient: false,
                     oldRecipient: nil,
-                    newRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
+                    newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, tx: tx),
                 ),
                 tx: tx
             )

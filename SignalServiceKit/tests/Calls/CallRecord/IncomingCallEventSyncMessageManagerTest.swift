@@ -212,7 +212,6 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         let threadRowId = thread.sqliteRowId!
 
         let contactServiceId = contactAddress.aci!
-        var contactRecipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
 
         let interaction = TSCall(
             callType: callType,
@@ -223,7 +222,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
         mockDB.write { tx in
             mockInteractionStore.insertInteraction(interaction, tx: tx)
-            mockRecipientDatabaseTable.insertRecipient(&contactRecipient, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: contactServiceId, tx: tx)
         }
 
         let callRecord = CallRecord(
@@ -280,8 +279,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockThreadStore.insertThread(contactThread)
 
         mockDB.write { tx in
-            var recipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
-            mockRecipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: contactServiceId, tx: tx)
         }
 
         mockDB.write { tx in
@@ -317,8 +315,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockThreadStore.insertThread(contactThread)
 
         mockDB.write { tx in
-            var recipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
-            mockRecipientDatabaseTable.insertRecipient(&recipient, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: contactServiceId, tx: tx)
         }
 
         mockCallRecordStore.fetchMock = { .matchDeleted }

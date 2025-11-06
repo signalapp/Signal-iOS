@@ -46,7 +46,7 @@ class UserProfileMergerTest: XCTestCase {
                 mergedRecipient: MergedRecipient(
                     isLocalRecipient: true,
                     oldRecipient: nil,
-                    newRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
+                    newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx),
                 ),
                 tx: tx
             )
@@ -81,7 +81,7 @@ class UserProfileMergerTest: XCTestCase {
                 mergedRecipient: MergedRecipient(
                     isLocalRecipient: false,
                     oldRecipient: nil,
-                    newRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
+                    newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx),
                 ),
                 tx: tx
             )

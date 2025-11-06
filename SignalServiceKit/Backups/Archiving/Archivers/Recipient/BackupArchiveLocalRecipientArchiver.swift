@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+
 extension BackupArchive {
     public struct LocalRecipientId: BackupArchive.LoggableId {
         public var typeLogString: String { "Local Recipient" }
@@ -93,13 +95,15 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
     ) -> BackupArchive.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
 
-        var localSignalRecipient = SignalRecipient(
-            aci: context.localIdentifiers.aci,
-            pni: context.localIdentifiers.pni,
-            phoneNumber: E164(context.localIdentifiers.phoneNumber)
-        )
-        do {
-            try recipientStore.insertRecipient(&localSignalRecipient, tx: context.tx)
+        let localSignalRecipient: SignalRecipient
+        do throws(GRDB.DatabaseError) {
+            localSignalRecipient = try SignalRecipient.insertRecord(
+                aci: context.localIdentifiers.aci,
+                phoneNumber: E164(context.localIdentifiers.phoneNumber),
+                pni: context.localIdentifiers.pni,
+                tx: context.tx,
+            )
+            recipientStore.didInsertRecipient(localSignalRecipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }

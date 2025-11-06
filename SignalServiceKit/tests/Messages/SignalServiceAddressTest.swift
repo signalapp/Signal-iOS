@@ -23,15 +23,12 @@ class SignalServiceAddressTest: XCTestCase {
 
     private func makeHighTrustAddress(aci: Aci? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
         cache.updateRecipient(
-            SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber.flatMap { E164($0) }),
+            aci: aci,
+            phoneNumber: phoneNumber,
+            pni: nil,
             isPhoneNumberVisible: true
         )
         return makeAddress(serviceId: aci, phoneNumber: phoneNumber)
-    }
-
-    @discardableResult
-    private func updateMapping(aci: Aci, phoneNumber: String? = nil) -> SignalServiceAddress {
-        return makeHighTrustAddress(aci: aci, phoneNumber: phoneNumber)
     }
 
     func test_isEqualPermissive() {
@@ -46,7 +43,7 @@ class SignalServiceAddressTest: XCTestCase {
             makeAddress(serviceId: aci1, phoneNumber: phoneNumber1)
         )
 
-        updateMapping(aci: aci1, phoneNumber: phoneNumber1)
+        _ = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1)
 
         // Single match works, ignores single missing.
         XCTAssertEqual(
@@ -150,7 +147,7 @@ class SignalServiceAddressTest: XCTestCase {
 
         // High-trust with phoneNumber1.
 
-        updateMapping(aci: aci1, phoneNumber: phoneNumber1)
+        _ = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1)
 
         XCTAssertEqual(address1a.serviceId, aci1)
         XCTAssertEqual(address1a.phoneNumber, phoneNumber1)
@@ -169,7 +166,7 @@ class SignalServiceAddressTest: XCTestCase {
 
         // High-trust with phoneNumber3.
 
-        updateMapping(aci: aci1, phoneNumber: phoneNumber3)
+        _ = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber3)
 
         XCTAssertEqual(address1a.serviceId, aci1)
         XCTAssertEqual(address1a.phoneNumber, phoneNumber3)
@@ -216,55 +213,6 @@ class SignalServiceAddressTest: XCTestCase {
 
         // aci2, phoneNumber1
         let hash3 = makeHighTrustAddress(aci: aci2, phoneNumber: phoneNumber1).hash
-
-        // There should be hash continuity for aci2, even though the uuid has changed.
-        XCTAssertEqual(hash1, hash2)
-        XCTAssertEqual(hash1, hash3)
-        XCTAssertEqual(hash2, hash3)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash3, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash3, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-    }
-
-    // A new address "takes" a uuid component a pre-existing address.
-    func test_mappingChanges1b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
-        let phoneNumber1 = "+16505550100"
-        let phoneNumber2 = "+16505550101"
-
-        let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1).hash
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        // aci1, phoneNumber1 -> phoneNumber2
-        let hash2 = updateMapping(aci: aci1, phoneNumber: phoneNumber2).hash
-
-        // There should be hash continuity for aci1, since the uuid remains the same.
-        XCTAssertEqual(hash1, hash2)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-
-        // aci2, phoneNumber1
-        let hash3 = updateMapping(aci: aci2, phoneNumber: phoneNumber1).hash
 
         // There should be hash continuity for aci2, even though the uuid has changed.
         XCTAssertEqual(hash1, hash2)
@@ -336,57 +284,6 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
-    // A new address "takes" a phone number component a pre-existing address.
-    func test_mappingChanges2b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
-        let phoneNumber1 = "+16505550100"
-        let phoneNumber2 = "+16505550101"
-
-        let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1).hash
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        // aci1 -> aci2, phoneNumber1
-        _ = makeAddress(serviceId: aci2)
-        let hash2 = updateMapping(aci: aci2, phoneNumber: phoneNumber1).hash
-
-        // There should not be hash continuity for aci2 since the phone number was
-        // transferred to a UUID that already existed.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertNil(makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-
-        // aci1, phoneNumber2
-        let hash3 = updateMapping(aci: aci1, phoneNumber: phoneNumber2).hash
-
-        // There should be hash continuity for aci1.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-    }
-
     // A new address "combines" 2 pre-existing addresses.
     func test_mappingChanges3a() {
         let aci1 = Aci.randomForTesting()
@@ -404,37 +301,6 @@ class SignalServiceAddressTest: XCTestCase {
 
         // Associate aci1, phoneNumber1
         let hash3 = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1).hash
-
-        // There should be hash continuity for the uuid, not the phone number.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-    }
-
-    // A new address "combines" 2 pre-existing addresses.
-    func test_mappingChanges3b() {
-        let aci1 = Aci.randomForTesting()
-        let phoneNumber1 = "+16505550100"
-
-        let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-
-        let hash2 = makeHighTrustAddress(aci: nil, phoneNumber: phoneNumber1).hash
-
-        // There should not be hash continuity; the two addresses have nothing in common.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        // Associate aci1, phoneNumber1
-        let hash3 = updateMapping(aci: aci1, phoneNumber: phoneNumber1).hash
 
         // There should be hash continuity for the uuid, not the phone number.
         XCTAssertNotEqual(hash1, hash2)
@@ -491,48 +357,6 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
-    // A new address "takes" 1 component each from 2 pre-existing addresses.
-    func test_mappingChanges4b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
-        let phoneNumber1 = "+16505550100"
-        let phoneNumber2 = "+16505550101"
-
-        let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: phoneNumber1).hash
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        let hash2 = makeHighTrustAddress(aci: aci2, phoneNumber: phoneNumber2).hash
-
-        // There should not be hash continuity; the two addresses have nothing in common.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        // Associate aci1, phoneNumber2
-        let hash3 = updateMapping(aci: aci1, phoneNumber: phoneNumber2).hash
-
-        // There should be hash continuity for aci1.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-    }
-
     // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
     func test_mappingChanges5a() {
         let aci1 = Aci.randomForTesting()
@@ -569,42 +393,6 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
-    // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
-    func test_mappingChanges5b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
-        let phoneNumber2 = "+16505550101"
-
-        let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-
-        let hash2 = makeHighTrustAddress(aci: aci2, phoneNumber: phoneNumber2).hash
-
-        // There should not be hash continuity; the two addresses have nothing in common.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        // Associate aci1, phoneNumber2
-        let hash3 = updateMapping(aci: aci1, phoneNumber: phoneNumber2).hash
-
-        // There should be hash continuity for aci1.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
-        XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-    }
-
     // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
     func test_mappingChanges6a() {
         let aci2 = Aci.randomForTesting()
@@ -624,42 +412,6 @@ class SignalServiceAddressTest: XCTestCase {
 
         // Associate aci2, phoneNumber1
         let hash3 = makeHighTrustAddress(aci: aci2, phoneNumber: phoneNumber1).hash
-
-        // There should be hash continuity for aci2.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertNotEqual(hash1, hash3)
-        XCTAssertEqual(hash2, hash3)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertNotEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
-        XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber2).serviceId)
-        XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
-    }
-
-    // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
-    func test_mappingChanges6b() {
-        let aci2 = Aci.randomForTesting()
-        let phoneNumber1 = "+16505550100"
-        let phoneNumber2 = "+16505550101"
-
-        let hash1 = makeHighTrustAddress(aci: nil, phoneNumber: phoneNumber1).hash
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-
-        let hash2 = makeHighTrustAddress(aci: aci2, phoneNumber: phoneNumber2).hash
-
-        // There should not be hash continuity; the two addresses have nothing in common.
-        XCTAssertNotEqual(hash1, hash2)
-        XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
-        XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
-        XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
-
-        // Associate aci2, phoneNumber1
-        let hash3 = updateMapping(aci: aci2, phoneNumber: phoneNumber1).hash
 
         // There should be hash continuity for aci2.
         XCTAssertNotEqual(hash1, hash2)
@@ -744,7 +496,11 @@ class SignalServiceAddressTest: XCTestCase {
         let pn_a = E164("+16505550101")!
         let pn_b = E164("+16505550102")!
 
-        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_a), isPhoneNumberVisible: true)
+        var recipient = mockDb.write { tx in
+            return try! SignalRecipient.insertRecord(aci: aci, phoneNumber: pn_a, tx: tx)
+        }
+
+        cache.updateRecipient(recipient, isPhoneNumberVisible: true)
 
         let address1 = SignalServiceAddress(
             serviceId: aci,
@@ -766,7 +522,8 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address2.e164, pn_a)
         XCTAssertEqual(address3.e164, pn_b)
 
-        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_b), isPhoneNumberVisible: true)
+        recipient.phoneNumber?.stringValue = pn_b.stringValue
+        cache.updateRecipient(recipient, isPhoneNumberVisible: true)
 
         XCTAssertEqual(address1.e164, pn_b)
         XCTAssertEqual(address2.e164, pn_b)
@@ -779,7 +536,10 @@ class SignalServiceAddressTest: XCTestCase {
         let serviceId = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let phoneNumber = E164("+16505550101")!
 
-        cache.updateRecipient(SignalRecipient(aci: serviceId, pni: nil, phoneNumber: phoneNumber), isPhoneNumberVisible: true)
+        let recipient = mockDb.write { tx in
+            return try! SignalRecipient.insertRecord(aci: serviceId, phoneNumber: phoneNumber, tx: tx)
+        }
+        cache.updateRecipient(recipient, isPhoneNumberVisible: true)
 
         var addresses = [SignalServiceAddress]()
         addresses.reserveCapacity(iterations)
@@ -843,10 +603,11 @@ class SignalServiceAddressTest: XCTestCase {
 
         addBatch(isVisible: false)
 
-        cache.updateRecipient(
-            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
-            isPhoneNumberVisible: false
-        )
+        let recipient = mockDb.write { tx in
+            return try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx)
+        }
+
+        cache.updateRecipient(recipient, isPhoneNumberVisible: false)
 
         addBatch(isVisible: false)
 
@@ -859,10 +620,7 @@ class SignalServiceAddressTest: XCTestCase {
             XCTAssertEqual(pniAddress.phoneNumber, phoneNumber?.stringValue)
         }
 
-        cache.updateRecipient(
-            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
-            isPhoneNumberVisible: true
-        )
+        cache.updateRecipient(recipient, isPhoneNumberVisible: true)
 
         addBatch(isVisible: true)
 
@@ -875,10 +633,7 @@ class SignalServiceAddressTest: XCTestCase {
             XCTAssertEqual(pniAddress.phoneNumber, phoneNumber?.stringValue)
         }
 
-        cache.updateRecipient(
-            SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber),
-            isPhoneNumberVisible: false
-        )
+        cache.updateRecipient(recipient, isPhoneNumberVisible: false)
 
         for aciAddress in aciAddresses {
             XCTAssertEqual(aciAddress.serviceId, aci)

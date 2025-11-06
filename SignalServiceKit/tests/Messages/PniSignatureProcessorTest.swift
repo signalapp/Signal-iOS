@@ -74,17 +74,17 @@ final class PniSignatureProcessorTest: XCTestCase {
         )
 
         aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        aciRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: nil)
         aciIdentityKeyPair = IdentityKeyPair.generate()
 
         pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
         phoneNumber = E164("+16505550101")!
-        pniRecipient = SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber)
         pniIdentityKeyPair = IdentityKeyPair.generate()
 
-        mockDB.write { tx in
-            recipientDatabaseTable.insertRecipient(&aciRecipient, transaction: tx)
-            recipientDatabaseTable.insertRecipient(&pniRecipient, transaction: tx)
+        (aciRecipient, pniRecipient) = mockDB.write { tx in
+            return (
+                try! SignalRecipient.insertRecord(aci: aci, tx: tx),
+                try! SignalRecipient.insertRecord(phoneNumber: phoneNumber, pni: pni, tx: tx),
+            )
         }
         identityManager.recipientIdentities = [
             aciRecipient.uniqueId: OWSRecipientIdentity(

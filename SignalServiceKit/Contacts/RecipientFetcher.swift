@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 public import LibSignalClient
 
 public protocol RecipientFetcher {
@@ -33,8 +34,9 @@ public class RecipientFetcherImpl: RecipientFetcher {
         if let serviceIdRecipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return (inserted: false, serviceIdRecipient)
         }
-        var newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
-        recipientDatabaseTable.insertRecipient(&newInstance, transaction: tx)
+        let newInstance = failIfThrowsDatabaseError { () throws(GRDB.DatabaseError) in
+            return try SignalRecipient.insertRecord(aci: serviceId as? Aci, pni: serviceId as? Pni, tx: tx)
+        }
         return (inserted: true, newInstance)
     }
 
@@ -42,8 +44,9 @@ public class RecipientFetcherImpl: RecipientFetcher {
         if let result = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }
-        var result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
-        recipientDatabaseTable.insertRecipient(&result, transaction: tx)
+        let result = failIfThrowsDatabaseError { () throws(GRDB.DatabaseError) in
+            return try SignalRecipient.insertRecord(phoneNumber: phoneNumber, tx: tx)
+        }
         searchableNameIndexer.insert(result, tx: tx)
         return result
     }

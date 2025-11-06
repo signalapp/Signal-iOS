@@ -17,8 +17,17 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         }
 
         static func foundResponse(for phoneNumbers: Set<String>) -> [SignalRecipient] {
-            return phoneNumbers.lazy.map {
-                return SignalRecipient(aci: Aci.randomForTesting(), pni: Pni.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [DeviceId(validating: 1)!])
+            let db = InMemoryDB()
+            return db.write { tx in
+                return phoneNumbers.map {
+                    return try! SignalRecipient.insertRecord(
+                        aci: Aci.randomForTesting(),
+                        phoneNumber: E164($0)!,
+                        pni: Pni.randomForTesting(),
+                        deviceIds: [DeviceId(validating: 1)!],
+                        tx: tx,
+                    )
+                }
             }
         }
     }

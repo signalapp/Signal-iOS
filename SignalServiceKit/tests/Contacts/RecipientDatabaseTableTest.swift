@@ -21,8 +21,7 @@ final class RecipientDatabaseTableTest: XCTestCase {
         let pni2 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b2")
 
         mockDB.write { tx in
-            var recipient = SignalRecipient(aci: aci1, pni: pni1, phoneNumber: phoneNumber1)
-            s.insertRecipient(&recipient, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: aci1, phoneNumber: phoneNumber1, pni: pni1, tx: tx)
         }
 
         func fetchServiceId(_ serviceId: ServiceId?, _ phoneNumber: E164?) -> ServiceId? {

@@ -117,10 +117,11 @@ class GroupMemberUpdaterTest: XCTestCase {
         mockDB.write { tx in
             for signalRecipient in signalRecipients {
                 mockSignalServiceAddressCache.updateRecipient(
-                    SignalRecipient(
+                    try! SignalRecipient.insertRecord(
                         aci: Aci.constantForTesting(signalRecipient.aci),
+                        phoneNumber: E164(signalRecipient.phoneNumber),
                         pni: signalRecipient.pni.map { Pni.constantForTesting($0) },
-                        phoneNumber: E164(signalRecipient.phoneNumber)
+                        tx: tx,
                     ),
                     tx: tx
                 )

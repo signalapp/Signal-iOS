@@ -35,10 +35,8 @@ final class RecipientStateMergerTest: XCTestCase {
         let pni4 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b4")
 
         mockDB.write { tx in
-            var recipient1 = SignalRecipient(aci: aci1, pni: pni1, phoneNumber: nil)
-            recipientDatabaseTable.insertRecipient(&recipient1, transaction: tx)
-            var recipient4 = SignalRecipient(aci: aci4, pni: pni4, phoneNumber: nil)
-            recipientDatabaseTable.insertRecipient(&recipient4, transaction: tx)
+            _ = try! SignalRecipient.insertRecord(aci: aci1, pni: pni1, tx: tx)
+            _ = try! SignalRecipient.insertRecord(aci: aci4, pni: pni4, tx: tx)
         }
 
         var recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = [

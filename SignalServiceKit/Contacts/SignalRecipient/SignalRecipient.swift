@@ -78,80 +78,41 @@ public struct SignalRecipient: FetchableRecord, MutablePersistableRecord, Codabl
         )
     }
 
-    public init(aci: Aci?, pni: Pni?, phoneNumber: E164?) {
-        self.init(aci: aci, pni: pni, phoneNumber: phoneNumber, deviceIds: [])
-    }
-
-    public init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [DeviceId]) {
-        self.init(
-            id: nil,
-            uniqueId: UUID().uuidString,
-            aciString: aci?.serviceIdUppercaseString,
-            pni: pni,
-            phoneNumber: phoneNumber.map { PhoneNumber(stringValue: $0.stringValue, isDiscoverable: false) },
-            deviceIds: deviceIds,
-            unregisteredAtTimestamp: deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil
-        )
-    }
-
-    static func buildEmptyRecipient(unregisteredAt timestamp: UInt64) -> Self {
-        var result = Self(aci: nil, pni: nil, phoneNumber: nil)
-        result.unregisteredAtTimestamp = timestamp
-        return result
-    }
-
-    public static func fromBackup(
-        _ backupContact: BackupArchive.ContactAddress,
-        isRegistered: Bool,
-        unregisteredAtTimestamp: UInt64?
-    ) -> Self {
-        let deviceIds: [DeviceId]
-        if isRegistered {
-            // If we think they are registered, just add the primary device id.
-            // When we try and send a message, the server will tell us about
-            // any other device ids.
-            // ...The server would tell us too if we sent an empty deviceIds array,
-            // so there's not really a material difference.
-            deviceIds = [.primary]
-        } else {
-            // Otherwise (including if we don't know if they're registered),
-            // use an empty device IDs array. This doesn't make any difference,
-            // the server will give us the deviceIds anyway and unregisteredAtTimestamp
-            // is the thing that actually drives unregistered state, but
-            // this is at least a better representation of what we know.
-            deviceIds = []
+    static func insertRecord(
+        aci: Aci? = nil,
+        phoneNumber: E164? = nil,
+        pni: Pni? = nil,
+        deviceIds: [DeviceId] = [],
+        unregisteredAtTimestamp: UInt64?? = nil,
+        tx: DBWriteTransaction,
+    ) throws(GRDB.DatabaseError) -> Self {
+        do {
+            return try SignalRecipient.fetchOne(
+                tx.database,
+                sql: """
+                    INSERT INTO \(SignalRecipient.databaseTableName) (
+                        \(signalRecipientColumn: .recordType),
+                        \(signalRecipientColumn: .uniqueId),
+                        \(signalRecipientColumn: .aciString),
+                        \(signalRecipientColumn: .phoneNumber),
+                        \(signalRecipientColumn: .pni),
+                        \(signalRecipientColumn: .deviceIds),
+                        \(signalRecipientColumn: .unregisteredAtTimestamp)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *
+                    """,
+                arguments: [
+                    SDSRecordType.signalRecipient.rawValue,
+                    UUID().uuidString,
+                    aci?.serviceIdUppercaseString,
+                    phoneNumber?.stringValue,
+                    pni?.serviceIdUppercaseString,
+                    Data(deviceIds.map(\.uint8Value)),
+                    unregisteredAtTimestamp ?? (deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil),
+                ],
+            )!
+        } catch {
+            throw error.forceCastToDatabaseError()
         }
-        return Self.init(
-            id: nil,
-            uniqueId: UUID().uuidString,
-            aciString: backupContact.aci?.serviceIdUppercaseString,
-            pni: backupContact.pni,
-            phoneNumber: backupContact.e164.map {
-                // Assume they're not discoverable. We'll learn the correct value for this
-                // property during the first CDS sync.
-                PhoneNumber(stringValue: $0.stringValue, isDiscoverable: false)
-            },
-            deviceIds: deviceIds,
-            unregisteredAtTimestamp: unregisteredAtTimestamp
-        )
-    }
-
-    private init(
-        id: RowId?,
-        uniqueId: String,
-        aciString: String?,
-        pni: Pni?,
-        phoneNumber: PhoneNumber?,
-        deviceIds: [DeviceId],
-        unregisteredAtTimestamp: UInt64?
-    ) {
-        self.id = id
-        self.uniqueId = uniqueId
-        self.aciString = aciString
-        self.pni = pni
-        self.phoneNumber = phoneNumber
-        self.deviceIds = deviceIds
-        self.unregisteredAtTimestamp = unregisteredAtTimestamp
     }
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
