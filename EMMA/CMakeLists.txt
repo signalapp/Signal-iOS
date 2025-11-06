@@ -27,6 +27,8 @@ set(SECURITY_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/memory_scrambler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/timing_obfuscation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/nist_pqc.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/liboqs_wrapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/hkdf.cpp
 )
 
 set(SECURITY_BRIDGE_SOURCES
@@ -56,6 +58,10 @@ if(IOS)
         ${FOUNDATION_FRAMEWORK}
         ${SECURITY_FRAMEWORK}
     )
+
+    # CommonCrypto is available by default on iOS (no explicit linking needed)
+    # Just ensure headers are available
+    target_compile_definitions(EMMASecurityKit PRIVATE IOS_PLATFORM)
 endif()
 
 # Installation

@@ -1,8 +1,15 @@
 #include "nist_pqc.h"
+#include "liboqs_wrapper.h"
 #include "../../Common/ios_platform.h"
 #include <stdexcept>
 #include <cstring>
 #include <algorithm>
+
+// Initialize liboqs once (thread-safe in C++11)
+static bool init_liboqs_once() {
+    static bool initialized = liboqs_init();
+    return initialized;
+}
 
 namespace emma {
 namespace security {
@@ -12,21 +19,28 @@ namespace security {
 // ============================================================================
 
 MLKEMKeyPair MLKEM1024::generate_keypair() {
+    // Ensure liboqs is initialized
+    init_liboqs_once();
+
     MLKEMKeyPair kp;
     kp.public_key.resize(ML_KEM_1024_PUBLIC_KEY_SIZE);
     kp.secret_key.resize(ML_KEM_1024_SECRET_KEY_SIZE);
 
-    // TODO: Replace with actual liboqs ML-KEM-1024 implementation
-    // For now, generate random bytes for testing
-    if (!secure_random_bytes(kp.public_key.data(), ML_KEM_1024_PUBLIC_KEY_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-KEM public key");
+    // Use liboqs for production ML-KEM-1024 keypair generation
+    int result = liboqs_ml_kem_1024_keypair(
+        kp.public_key.data(),
+        kp.secret_key.data()
+    );
+
+    if (result != 0) {
+        throw std::runtime_error("Failed to generate ML-KEM-1024 keypair");
     }
 
-    if (!secure_random_bytes(kp.secret_key.data(), ML_KEM_1024_SECRET_KEY_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-KEM secret key");
+    if (liboqs_ml_kem_1024_enabled()) {
+        EMMA_LOG_INFO("Generated ML-KEM-1024 keypair (NIST FIPS 203) - PRODUCTION");
+    } else {
+        EMMA_LOG_WARN("Generated ML-KEM-1024 keypair - STUB MODE (NOT SECURE)");
     }
-
-    EMMA_LOG_INFO("Generated ML-KEM-1024 keypair (NIST FIPS 203) - TEST MODE");
 
     return kp;
 }
@@ -40,17 +54,18 @@ MLKEMEncapsulationResult MLKEM1024::encapsulate(const std::vector<uint8_t>& publ
     result.ciphertext.resize(ML_KEM_1024_CIPHERTEXT_SIZE);
     result.shared_secret.resize(ML_KEM_1024_SHARED_SECRET_SIZE);
 
-    // TODO: Replace with actual liboqs ML-KEM-1024 implementation
-    // For now, generate random bytes for testing
-    if (!secure_random_bytes(result.ciphertext.data(), ML_KEM_1024_CIPHERTEXT_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-KEM ciphertext");
+    // Use liboqs for production ML-KEM-1024 encapsulation
+    int ret = liboqs_ml_kem_1024_encapsulate(
+        result.ciphertext.data(),
+        result.shared_secret.data(),
+        public_key.data()
+    );
+
+    if (ret != 0) {
+        throw std::runtime_error("Failed to perform ML-KEM-1024 encapsulation");
     }
 
-    if (!secure_random_bytes(result.shared_secret.data(), ML_KEM_1024_SHARED_SECRET_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-KEM shared secret");
-    }
-
-    EMMA_LOG_DEBUG("ML-KEM-1024 encapsulation (TEST MODE)");
+    EMMA_LOG_DEBUG("ML-KEM-1024 encapsulation successful");
 
     return result;
 }
@@ -69,13 +84,18 @@ std::vector<uint8_t> MLKEM1024::decapsulate(
 
     std::vector<uint8_t> shared_secret(ML_KEM_1024_SHARED_SECRET_SIZE);
 
-    // TODO: Replace with actual liboqs ML-KEM-1024 implementation
-    // For now, generate random bytes for testing
-    if (!secure_random_bytes(shared_secret.data(), ML_KEM_1024_SHARED_SECRET_SIZE)) {
-        throw std::runtime_error("Failed to recover ML-KEM shared secret");
+    // Use liboqs for production ML-KEM-1024 decapsulation
+    int ret = liboqs_ml_kem_1024_decapsulate(
+        shared_secret.data(),
+        ciphertext.data(),
+        secret_key.data()
+    );
+
+    if (ret != 0) {
+        throw std::runtime_error("Failed to perform ML-KEM-1024 decapsulation");
     }
 
-    EMMA_LOG_DEBUG("ML-KEM-1024 decapsulation (TEST MODE)");
+    EMMA_LOG_DEBUG("ML-KEM-1024 decapsulation successful");
 
     return shared_secret;
 }
@@ -101,21 +121,28 @@ bool MLKEM1024::secure_random_bytes(uint8_t* buffer, size_t size) {
 // ============================================================================
 
 MLDSAKeyPair MLDSA87::generate_keypair() {
+    // Ensure liboqs is initialized
+    init_liboqs_once();
+
     MLDSAKeyPair kp;
     kp.public_key.resize(ML_DSA_87_PUBLIC_KEY_SIZE);
     kp.secret_key.resize(ML_DSA_87_SECRET_KEY_SIZE);
 
-    // TODO: Replace with actual liboqs ML-DSA-87 implementation
-    // For now, generate random bytes for testing
-    if (!secure_random_bytes(kp.public_key.data(), ML_DSA_87_PUBLIC_KEY_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-DSA public key");
+    // Use liboqs for production ML-DSA-87 keypair generation
+    int result = liboqs_ml_dsa_87_keypair(
+        kp.public_key.data(),
+        kp.secret_key.data()
+    );
+
+    if (result != 0) {
+        throw std::runtime_error("Failed to generate ML-DSA-87 keypair");
     }
 
-    if (!secure_random_bytes(kp.secret_key.data(), ML_DSA_87_SECRET_KEY_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-DSA secret key");
+    if (liboqs_ml_dsa_87_enabled()) {
+        EMMA_LOG_INFO("Generated ML-DSA-87 keypair (NIST FIPS 204) - PRODUCTION");
+    } else {
+        EMMA_LOG_WARN("Generated ML-DSA-87 keypair - STUB MODE (NOT SECURE)");
     }
-
-    EMMA_LOG_INFO("Generated ML-DSA-87 keypair (NIST FIPS 204) - TEST MODE");
 
     return kp;
 }
@@ -135,13 +162,25 @@ MLDSASignature MLDSA87::sign(
     MLDSASignature sig;
     sig.signature.resize(ML_DSA_87_SIGNATURE_SIZE);
 
-    // TODO: Replace with actual liboqs ML-DSA-87 implementation
-    // For now, generate random bytes for testing
-    if (!secure_random_bytes(sig.signature.data(), ML_DSA_87_SIGNATURE_SIZE)) {
-        throw std::runtime_error("Failed to generate ML-DSA signature");
+    // Use liboqs for production ML-DSA-87 signing
+    size_t signature_len = ML_DSA_87_SIGNATURE_SIZE;
+    int ret = liboqs_ml_dsa_87_sign(
+        sig.signature.data(),
+        &signature_len,
+        message.data(),
+        message.size(),
+        secret_key.data()
+    );
+
+    if (ret != 0) {
+        throw std::runtime_error("Failed to perform ML-DSA-87 signing");
     }
 
-    EMMA_LOG_DEBUG("ML-DSA-87 sign: %zu bytes (TEST MODE)", message.size());
+    // Resize to actual signature length (may be less than maximum)
+    sig.signature.resize(signature_len);
+
+    EMMA_LOG_DEBUG("ML-DSA-87 sign: %zu bytes message -> %zu bytes signature",
+                   message.size(), signature_len);
 
     return sig;
 }
@@ -156,8 +195,8 @@ bool MLDSA87::verify(
         return false;
     }
 
-    if (!validate_signature(signature)) {
-        EMMA_LOG_ERROR("Invalid ML-DSA signature size");
+    if (signature.empty()) {
+        EMMA_LOG_ERROR("Empty ML-DSA signature");
         return false;
     }
 
@@ -166,11 +205,24 @@ bool MLDSA87::verify(
         return false;
     }
 
-    // TODO: Replace with actual liboqs ML-DSA-87 implementation
-    // For testing, always return true
-    EMMA_LOG_DEBUG("ML-DSA-87 verify: %zu bytes (TEST MODE - always true)", message.size());
+    // Use liboqs for production ML-DSA-87 verification
+    int ret = liboqs_ml_dsa_87_verify(
+        message.data(),
+        message.size(),
+        signature.data(),
+        signature.size(),
+        public_key.data()
+    );
 
-    return true; // TEST MODE
+    bool valid = (ret == 0);
+
+    if (valid) {
+        EMMA_LOG_DEBUG("ML-DSA-87 signature verified successfully");
+    } else {
+        EMMA_LOG_WARN("ML-DSA-87 signature verification failed");
+    }
+
+    return valid;
 }
 
 bool MLDSA87::validate_public_key(const std::vector<uint8_t>& key) {
