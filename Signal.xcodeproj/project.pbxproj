@@ -18064,6 +18064,7 @@
 				D9F399AD2A95798A001599EC /* IdentityKeyChecker.swift in Sources */,
 				D9F399B22A96D65D001599EC /* IdentityKeyMismatchManager.swift in Sources */,
 				661BFE0A2C07FB950065435B /* ImageMetadata.swift in Sources */,
+				63BA1AD22EBA643E00B2AD82 /* ImageQualitySettingStore.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
 				D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */,
 				04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */,

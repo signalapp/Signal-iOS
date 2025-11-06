@@ -9,6 +9,7 @@ public enum ImageQualityLevel: UInt, Comparable {
     case one = 1
     case two = 2
     case three = 3
+    case original = 4
 
     public static let high: ImageQualityLevel = .three
 
@@ -26,6 +27,7 @@ public enum ImageQualityLevel: UInt, Comparable {
         case .one: return .four
         case .two: return .five
         case .three: return .seven
+        case .original: return .seven // Will skip compression entirely
         }
     }
 
@@ -37,6 +39,8 @@ public enum ImageQualityLevel: UInt, Comparable {
             return UInt(1.5 * 1024 * 1024)
         case .three: // 3.0MiB
             return 3 * 1024 * 1024
+        case .original: // 100MiB
+            return 100 * 1024 * 1024
         }
     }
 
@@ -48,6 +52,8 @@ public enum ImageQualityLevel: UInt, Comparable {
             return 300 * 1024
         case .three: // 400KiB
             return 400 * 1024
+        case .original: // 100MiB
+            return 100 * 1024 * 1024
         }
     }
 
@@ -104,6 +110,8 @@ public enum ImageQualityLevel: UInt, Comparable {
             return OWSLocalizedString("SENT_MEDIA_QUALITY_STANDARD", comment: "String describing standard quality sent media")
         case .three:
             return OWSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
+        case .original:
+            return OWSLocalizedString("SENT_MEDIA_QUALITY_ORIGINAL", comment: "String describing original quality sent media")
         }
     }
 
