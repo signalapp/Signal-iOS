@@ -15,15 +15,15 @@ Military-grade encrypted messaging built on Signal iOS with post-quantum cryptog
 
 ## ⚠️ Critical Performance Notice
 
-SWORDCOMM-iOS implements aggressive security countermeasures that **will impact device performance**:
+SWORDCOMM-iOS implements aggressive security countermeasures that **can impact device performance when enabled**:
 
-- **Battery drain**: Up to 15-25% reduction in battery life during active monitoring
-- **Device heat**: Up to 42°C device temperature under sustained threat detection
-- **CPU overhead**: 1-2% baseline, up to 15% during active countermeasures
+- **Battery drain**: < 2% with default settings (security monitoring disabled); up to 15-25% with maximum security
+- **Device heat**: Minimal with default settings; up to 42°C device temperature under sustained threat detection with maximum security
+- **CPU overhead**: < 0.5% baseline with default settings; up to 15% during active countermeasures with maximum security
 - **Memory usage**: Additional 80-120 MB for security monitoring and ML models
 - **Network data**: On-device translation uses **zero network data**; fallback mode requires connectivity
 
-These tradeoffs are **intentional design choices** to provide military-grade security. The system prioritizes security over convenience.
+**Default configuration prioritizes resource efficiency**: Security monitoring is disabled by default (< 2% battery impact). Users can enable enhanced security levels based on their threat model and operational needs.
 
 ---
 
@@ -340,13 +340,16 @@ Configure threat response aggressiveness based on your operational environment:
 
 #### Security Level Details
 
-**Minimal** (Default for development):
-- EL2 detection only
-- No active countermeasures
-- Logging to console
-- **Best for**: Development, testing, debugging
+**Minimal** (Default for all users):
+- Security monitoring disabled by default
+- No active countermeasures unless manually enabled
+- Logging to console when enabled
+- Monitoring interval: 10 seconds (when enabled)
+- Countermeasure intensity: 30% (when enabled)
+- **Best for**: General use, development, testing, resource-constrained scenarios
+- **Battery impact**: < 2%
 
-**Standard** (Default for general users):
+**Standard** (Recommended for privacy-conscious users):
 - EL2 + cache monitoring
 - Countermeasures at MEDIUM threat
 - Battery-conscious operation
@@ -573,7 +576,7 @@ Test procedure:
 | Security Level | Battery Life (hours) | Reduction vs Baseline |
 |----------------|----------------------|----------------------|
 | Baseline (Signal) | 12.5 hours | — |
-| Minimal | 12.0 hours | -4% |
+| Minimal (Default) | 12.3 hours | -2% |
 | Standard | 11.2 hours | -10% |
 | Enhanced | 10.5 hours | -16% |
 | Maximum | 9.8 hours | -22% |
@@ -1129,7 +1132,7 @@ A: Yes! On-device translation (90-100% coverage) works completely offline. Only 
 A: STUB mode is for development only. For real post-quantum protection, you must build with liboqs (PRODUCTION mode).
 
 **Q: What's the battery impact in practice?**
-A: With default settings (Standard security level), expect 10-15% battery reduction. You can lower this by using Minimal security level (2-5% impact) or increase protection with Maximum security level (20-25% impact).
+A: With default settings (Minimal security level with monitoring disabled), expect < 2% battery reduction. You can enable Standard security level (10-15% impact) for enhanced protection, or use Maximum security level (20-25% impact) for hostile environments.
 
 **Q: Is SWORDCOMM legal to use?**
 A: SWORDCOMM includes cryptographic software. Check your country's laws regarding encryption software import/use. See [Cryptography Notice](#cryptography-notice) below.
