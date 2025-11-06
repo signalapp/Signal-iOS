@@ -579,7 +579,8 @@ public extension ConversationViewController {
             hasQuotedReplyDraft: inputToolbar.quotedReplyDraft != nil,
             approvalDelegate: self,
             approvalDataSource: self,
-            stickerSheetDelegate: self
+            stickerSheetDelegate: self,
+            thread: thread
         )
         modal.modalPresentationStyle = .overCurrentContext
         let presenter = self.splitViewController ?? self
@@ -981,6 +982,10 @@ extension ConversationViewController: SendMediaNavDataSource {
 
     func sendMediaNavMentionCacheInvalidationKey() -> String {
         return thread.uniqueId
+    }
+
+    var sendMediaNavThread: TSThread? {
+        return thread
     }
 }
 

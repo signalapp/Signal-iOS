@@ -33,6 +33,8 @@ protocol SendMediaNavDataSource: AnyObject {
     func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci]
 
     func sendMediaNavMentionCacheInvalidationKey() -> String
+
+    var sendMediaNavThread: TSThread? { get }
 }
 
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
@@ -214,7 +216,8 @@ class SendMediaNavigationController: OWSNavigationController {
         if hasQuotedReplyDraft {
             options.insert(.disallowViewOnce)
         }
-        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
+        let thread = sendMediaNavDataSource.sendMediaNavThread
+        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems, thread: thread)
         approvalViewController.approvalDelegate = self
         approvalViewController.approvalDataSource = self
         approvalViewController.stickerSheetDelegate = self

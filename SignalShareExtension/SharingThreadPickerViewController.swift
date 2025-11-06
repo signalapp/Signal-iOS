@@ -174,7 +174,7 @@ extension SharingThreadPickerViewController {
             if self.selection.conversations.contains(where: \.isStory) {
                 approvalVCOptions.insert(.disallowViewOnce)
             }
-            let approvalView = AttachmentApprovalViewController(options: approvalVCOptions, attachmentApprovalItems: approvalItems)
+            let approvalView = AttachmentApprovalViewController(options: approvalVCOptions, attachmentApprovalItems: approvalItems, thread: nil)
             approvalVC = approvalView
             approvalView.approvalDelegate = self
             approvalView.approvalDataSource = self

@@ -33,7 +33,14 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         super.init()
 
-        image = attachmentStream.thumbnailImageSync(quality: .large)
+        // Load full-quality image to preserve metadata when shared from preview
+        // Use decryptedImage() which loads the original file, not a processed thumbnail
+        image = try? attachmentStream.decryptedImage()
+
+        // Fall back to large thumbnail if decryptedImage fails (e.g., for very large images)
+        if image == nil {
+            image = attachmentStream.thumbnailImageSync(quality: .large)
+        }
     }
 
     deinit {

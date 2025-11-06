@@ -128,6 +128,11 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDataSource {
     func sendMediaNavMentionCacheInvalidationKey() -> String {
         return "\(mentionCandidates.hashValue)"
     }
+
+    var sendMediaNavThread: TSThread? {
+        // Camera first flow supports multiple recipients, so no single thread
+        return nil
+    }
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {

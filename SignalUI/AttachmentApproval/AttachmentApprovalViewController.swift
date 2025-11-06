@@ -100,7 +100,25 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    lazy var outputQualityLevel: ImageQualityLevel = SSKEnvironment.shared.databaseStorageRef.read { .resolvedQuality(tx: $0) }
+    lazy var outputQualityLevel: ImageQualityLevel = {
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
+            // Check if there's a thread-specific quality setting
+            if let thread = self.thread {
+                let imageQualityStore = ImageQualitySettingStore()
+                let resolvedLevel = imageQualityStore.resolvedQualityLevel(for: thread, tx: tx)
+                // Enable metadata preservation for original quality mode
+                if resolvedLevel == .original {
+                    self.attachmentApprovalItemCollection.attachmentApprovalItems.forEach { item in
+                        item.attachment.preserveMetadata = true
+                    }
+                }
+                return resolvedLevel
+            }
+            return .resolvedQuality(tx: tx)
+        }
+    }()
+
+    private let thread: TSThread?
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -126,10 +144,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    public init(options: AttachmentApprovalViewControllerOptions, attachmentApprovalItems: [AttachmentApprovalItem]) {
+    public init(options: AttachmentApprovalViewControllerOptions, attachmentApprovalItems: [AttachmentApprovalItem], thread: TSThread? = nil) {
         assert(attachmentApprovalItems.count > 0)
 
         self.receivedOptions = options
+        self.thread = thread
 
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
@@ -169,7 +188,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         hasQuotedReplyDraft: Bool,
         approvalDelegate: AttachmentApprovalViewControllerDelegate,
         approvalDataSource: AttachmentApprovalViewControllerDataSource,
-        stickerSheetDelegate: StickerPickerSheetDelegate?
+        stickerSheetDelegate: StickerPickerSheetDelegate?,
+        thread: TSThread? = nil
     ) -> OWSNavigationController {
 
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
@@ -178,7 +198,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if hasQuotedReplyDraft {
             options.insert(.disallowViewOnce)
         }
-        let vc = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
+        let vc = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems, thread: thread)
         // The data source needs to be set before the message body because it is needed to hydrate mentions.
         vc.approvalDataSource = approvalDataSource
         vc.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
@@ -1045,9 +1065,25 @@ extension AttachmentApprovalViewController {
         let localPhoneNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
         let standardQualityLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)
 
+        // Determine if Original quality option should be shown
+        let threadSupportsOriginal: Bool
+        if let thread = thread {
+            // Single-recipient: show Original only if enabled for this specific thread
+            threadSupportsOriginal = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                let imageQualityStore = ImageQualitySettingStore()
+                let setting = imageQualityStore.fetchSetting(for: thread, tx: tx)
+                return setting == .original
+            }
+        } else {
+            // Multi-recipient: always show Original option
+            // It will apply to threads that have it enabled, others will get High quality
+            threadSupportsOriginal = true
+        }
+
         let selectionControl = MediaQualitySelectionControl(
             standardQualityLevel: standardQualityLevel,
-            currentQualityLevel: outputQualityLevel
+            currentQualityLevel: outputQualityLevel,
+            supportsOriginal: threadSupportsOriginal
         )
         selectionControl.callback = { [weak self, weak actionSheet] qualityLevel in
             self?.outputQualityLevel = qualityLevel
@@ -1099,14 +1135,24 @@ extension AttachmentApprovalViewController {
             )
         )
 
+        private let buttonQualityOriginal = MediaQualityButton(
+            title: ImageQualityLevel.original.localizedString,
+            subtitle: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_ORIGINAL_OPTION_SUBTITLE",
+                comment: "Subtitle for the 'original' option for media quality."
+            )
+        )
+
         private let standardQualityLevel: ImageQualityLevel
+        private let supportsOriginal: Bool
         private(set) var qualityLevel: ImageQualityLevel
 
         var callback: ((ImageQualityLevel) -> Void)?
 
-        init(standardQualityLevel: ImageQualityLevel, currentQualityLevel: ImageQualityLevel) {
+        init(standardQualityLevel: ImageQualityLevel, currentQualityLevel: ImageQualityLevel, supportsOriginal: Bool = false) {
             self.standardQualityLevel = standardQualityLevel
             self.qualityLevel = currentQualityLevel
+            self.supportsOriginal = supportsOriginal
 
             self.buttonQualityStandard = MediaQualityButton(
                 title: standardQualityLevel.localizedString,
@@ -1124,14 +1170,26 @@ extension AttachmentApprovalViewController {
             addSubview(buttonQualityStandard)
             buttonQualityStandard.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .trailing)
 
-            buttonQualityHigh.block = { [weak self] in
-                self?.didSelectQualityLevel(.high)
+            // Two-button layout: Always show Standard + either Original or High
+            if supportsOriginal {
+                // Standard | Original
+                buttonQualityOriginal.block = { [weak self] in
+                    self?.didSelectQualityLevel(.original)
+                }
+                addSubview(buttonQualityOriginal)
+                buttonQualityOriginal.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
+                buttonQualityOriginal.autoPinEdge(.leading, to: .trailing, of: buttonQualityStandard, withOffset: 20)
+                buttonQualityOriginal.autoPinWidth(toWidthOf: buttonQualityStandard)
+            } else {
+                // Standard | High
+                buttonQualityHigh.block = { [weak self] in
+                    self?.didSelectQualityLevel(.high)
+                }
+                addSubview(buttonQualityHigh)
+                buttonQualityHigh.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
+                buttonQualityHigh.autoPinEdge(.leading, to: .trailing, of: buttonQualityStandard, withOffset: 20)
+                buttonQualityHigh.autoPinWidth(toWidthOf: buttonQualityStandard)
             }
-            addSubview(buttonQualityHigh)
-            buttonQualityHigh.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
-
-            buttonQualityHigh.autoPinWidth(toWidthOf: buttonQualityStandard)
-            buttonQualityHigh.autoPinEdge(.leading, to: .trailing, of: buttonQualityStandard, withOffset: 20)
 
             updateButtonAppearance()
         }
@@ -1149,6 +1207,7 @@ extension AttachmentApprovalViewController {
         private func updateButtonAppearance() {
             buttonQualityStandard.isSelected = qualityLevel == standardQualityLevel
             buttonQualityHigh.isSelected = qualityLevel == .high
+            buttonQualityOriginal.isSelected = qualityLevel == .original
         }
 
         private class MediaQualityButton: OWSButton {
@@ -1180,6 +1239,11 @@ extension AttachmentApprovalViewController {
 
                 topLabel.text = title
                 bottomLabel.text = subtitle
+
+                // Parent MediaQualitySelectionControl handles accessibility
+                isAccessibilityElement = false
+                topLabel.isAccessibilityElement = false
+                bottomLabel.isAccessibilityElement = false
 
                 let stackView = UIStackView(arrangedSubviews: [ topLabel, bottomLabel ])
                 stackView.alignment = .center
@@ -1229,8 +1293,15 @@ extension AttachmentApprovalViewController {
 
         override var accessibilityValue: String? {
             get {
-                let selectedButton = qualityLevel == .high ? buttonQualityHigh : buttonQualityStandard
-                return [ selectedButton.topLabel, selectedButton.bottomLabel ].compactMap { $0.text }.joined(separator: ",")
+                let selectedButton: MediaQualityButton
+                if qualityLevel == .original {
+                    selectedButton = buttonQualityOriginal
+                } else if qualityLevel == .high {
+                    selectedButton = buttonQualityHigh
+                } else {
+                    selectedButton = buttonQualityStandard
+                }
+                return [ selectedButton.topLabel, selectedButton.bottomLabel ].compactMap { $0.text }.joined(separator: ", ")
             }
             set { super.accessibilityValue = newValue }
         }
@@ -1247,13 +1318,15 @@ extension AttachmentApprovalViewController {
 
         override func accessibilityIncrement() {
             if qualityLevel == standardQualityLevel {
-                qualityLevel = .high
+                // Increment to either Original or High depending on what's available
+                qualityLevel = supportsOriginal ? .original : .high
                 updateButtonAppearance()
             }
         }
 
         override func accessibilityDecrement() {
-            if qualityLevel == .high {
+            if qualityLevel == .high || qualityLevel == .original {
+                // Decrement back to standard
                 qualityLevel = standardQualityLevel
                 updateButtonAppearance()
             }
