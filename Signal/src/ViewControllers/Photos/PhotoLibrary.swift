@@ -97,21 +97,22 @@ class PhotoAlbumContents {
 
     private func requestImageDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
         return Promise { future in
+            // Use PHAssetResourceManager to get original file bytes with metadata intact
+            guard let resource = PHAssetResource.assetResources(for: asset).first else {
+                future.reject(PhotoLibraryError.assertionError(description: "No asset resource found"))
+                return
+            }
 
-            let options: PHImageRequestOptions = PHImageRequestOptions()
+            let dataUTI = resource.uniformTypeIdentifier
+            var imageData = Data()
+            let options = PHAssetResourceRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.version = .current
-            options.deliveryMode = .highQualityFormat
 
-            _ = imageManager.requestImageDataAndOrientation(for: asset, options: options) { imageData, dataUTI, _, _ in
-
-                guard let imageData = imageData else {
-                    future.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
-                    return
-                }
-
-                guard let dataUTI = dataUTI else {
-                    future.reject(PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil"))
+            PHAssetResourceManager.default().requestData(for: resource, options: options, dataReceivedHandler: { data in
+                imageData.append(data)
+            }, completionHandler: { error in
+                if let error = error {
+                    future.reject(error)
                     return
                 }
 
@@ -121,7 +122,7 @@ class PhotoAlbumContents {
                 }
 
                 future.resolve((dataSource: dataSource, dataUTI: dataUTI))
-            }
+            })
         }
     }
 

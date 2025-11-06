@@ -81,6 +81,10 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
 // This class gathers that logic. It offers factory methods for attachments
 // that do the necessary work.
 //
+// The return value for the factory methods will be nil if the input is nil.
+//
+// [SignalAttachment hasError] will be true for non-valid attachments.
+//
 // TODO: Perhaps do conversion off the main thread?
 
 public class SignalAttachment: NSObject {
@@ -114,6 +118,10 @@ public class SignalAttachment: NSObject {
     public var isValidVideo: Bool {
         return dataSource.isValidVideo
     }
+
+    // When true, preserve all metadata (location, camera info, etc.) in the image.
+    // This should only be true when the user has explicitly opted into sending original images.
+    public var preserveMetadata = false
 
     // This flag should be set for text attachments that can be sent as text messages.
     public var isConvertibleToTextMessage = false
@@ -171,19 +179,48 @@ public class SignalAttachment: NSObject {
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
+    public class var missingDataErrorMessage: String {
+        guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
+            owsFailDebug("Missing error description")
+            return ""
+        }
+        return errorDescription
+    }
+
     #if compiler(>=6.2)
     @concurrent
     #endif
     public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SignalAttachment {
+        // When opted into, return the original image without any processing
+        // This preserves the original format (HEIC, PNG, etc.) and all metadata
+        // Check inputImageUTISet instead of isImage since HEIC is valid input but not valid output
+        let isInputImage = Self.inputImageUTISet.contains(dataUTI)
+        if qualityLevel == .original && isInputImage {
+            return self
+        }
+
         // We only bother converting/compressing non-animated images
         guard isImage, !isAnimatedImage else { return self }
 
+        // Check if the image is already in a valid output format with acceptable size
         guard !Self.isValidOutputOriginalImage(
             dataSource: dataSource,
             dataUTI: dataUTI,
             imageQuality: qualityLevel
-        ) else { return self }
+        ) else {
+            // Valid output format, but still need to remove metadata (unless preserving)
+            if preserveMetadata {
+                return self
+            }
+            do {
+                return try removingImageMetadata()
+            } catch {
+                Logger.warn("Failed to remove metadata: \(error)")
+                return self
+            }
+        }
 
+        // Needs conversion/compression
         return try Self.convertAndCompressImage(
             dataSource: dataSource,
             attachment: self,
@@ -200,6 +237,7 @@ public class SignalAttachment: NSObject {
         result.isVoiceMessage = isVoiceMessage
         result.isBorderless = isBorderless
         result.isLoopingVideo = isLoopingVideo
+        result.preserveMetadata = preserveMetadata
         return result
     }
 
@@ -816,16 +854,17 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            // When preparing an attachment, we always prepare it in the max quality for the current
-            // context. The user can choose during sending whether they want the final send to be in
-            // standard or high quality. We will do the final convert and compress before uploading.
+            // When preparing an attachment, we defer processing to preparedForOutput()
+            // so that optionally we can preserve the original format (HEIC, PNG, etc.)
+            // without any conversion. We only do immediate processing for formats that
+            // need to be converted for compatibility.
 
-            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .maximumForCurrentAppContext) {
-                do {
-                    return try attachment.removingImageMetadata()
-                } catch {}
+            // For valid input formats, return as-is and process later in preparedForOutput()
+            if inputImageUTISet.contains(dataUTI) {
+                return attachment
             }
 
+            // If we get here, it's an unsupported format that needs immediate conversion
             return try convertAndCompressImage(
                 dataSource: dataSource,
                 attachment: attachment,
@@ -841,6 +880,12 @@ public class SignalAttachment: NSObject {
         dataUTI: String,
         imageQuality: ImageQualityLevel
     ) -> Bool {
+        // For original quality mode, accept any image format without recompression
+        if imageQuality == .original {
+            guard dataSource.dataLength <= imageQuality.maxFileSize else { return false }
+            return true
+        }
+
         // 10-18-2023: Due to an issue with corrupt JPEG IPTC metadata causing a
         // crash in CGImageDestinationCopyImageSource, stop using the original
         // JPEGs and instead go through the recompresing step.
