@@ -40,3 +40,4 @@ Scripts/sds_codegen/sds-includes/*
 /.vscode
 
 fastlane/Preview.html
+SWORDCOMM/build/
