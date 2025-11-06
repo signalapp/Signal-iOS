@@ -251,6 +251,10 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         func invalidate(key: Key) {
             cache[key] = nil
         }
+
+        func reset() {
+            cache.removeAll()
+        }
     }
 
     private let cdnSessionCache = CDNSessionCache()
@@ -464,6 +468,9 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     @objc
     private func isSignalProxyReadyDidChange() {
         self.updateIsCensorshipCircumventionActive()
+        Task {
+            await cdnSessionCache.reset()
+        }
     }
 
     // MARK: - Constants
