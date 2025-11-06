@@ -1,1 +1,1 @@
-• 正值秋天，在表情符號心情回應中現已支援使用新的「無葉樹」表情符號 （以及 Unicode 16.0 中的其他六個新表情符號）。
+• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though

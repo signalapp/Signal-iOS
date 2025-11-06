@@ -1,1 +1,1 @@
-• Ara tens més emojis disponibles per triar quan reaccionis a un missatge.
+• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though

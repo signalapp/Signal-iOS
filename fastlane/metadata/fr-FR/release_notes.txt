@@ -1,1 +1,1 @@
-• Les feuilles mortes se ramassent à la pelle… Et les émojis aussi ! Pour réagir aux messages, vous pouvez maintenant utiliser l'émoji "arbre sans feuilles" et une pelletée de 6 autres émojis Unicode 16.0.
+• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though
