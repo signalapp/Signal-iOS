@@ -771,6 +771,8 @@
 		50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */; };
 		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
+		63BA1AD22EBA643E00B2AD82 /* ImageQualitySettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BA1AD12EBA643E00B2AD82 /* ImageQualitySettingStore.swift */; };
+		63BA1AD42EBA651700B2AD82 /* ImageQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BA1AD32EBA651700B2AD82 /* ImageQualitySettingsViewController.swift */; };
 		6600BB182BA3A04C0005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */; };
 		6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB1C2BA3ABDD0005A035 /* MockLinkPreviewManager.swift */; };
@@ -4741,6 +4743,8 @@
 		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
 		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
+		63BA1AD12EBA643E00B2AD82 /* ImageQualitySettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualitySettingStore.swift; sourceTree = "<group>"; };
+		63BA1AD32EBA651700B2AD82 /* ImageQualitySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualitySettingsViewController.swift; sourceTree = "<group>"; };
 		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
 		6600BB172BA3A04C0005A035 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
 		6600BB192BA3A0930005A035 /* LinkPreviewManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManagerImpl.swift; sourceTree = "<group>"; };
@@ -8062,9 +8066,9 @@
 				B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */,
 				34E20D4B24256563002C011E /* ConversationHeaderBuilder.swift */,
 				34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */,
+				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
 				34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */,
 				34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */,
-				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
 				D900E6FE2DE143E9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift */,
 				D900E6F72DE1048A004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift */,
 				346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */,
@@ -8075,8 +8079,9 @@
 				347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */,
 				889DFA0F264EE76F00D03921 /* GroupNameViewController.swift */,
 				88BE44A72615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift */,
-				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
 				347B83F82436820C0019A52C /* GroupViewHelper.swift */,
+				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
+				63BA1AD32EBA651700B2AD82 /* ImageQualitySettingsViewController.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
 				32CBF07C258C939800D56903 /* NameCollisionResolutionViewController.swift */,
 				B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */,
@@ -8961,6 +8966,7 @@
 			children = (
 				66F6D6A12C7D0CA100EFAF75 /* Models */,
 				500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */,
+				63BA1AD12EBA643E00B2AD82 /* ImageQualitySettingStore.swift */,
 				66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */,
 				66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */,
 				66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */,
@@ -17494,6 +17500,7 @@
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */,
+				63BA1AD42EBA651700B2AD82 /* ImageQualitySettingsViewController.swift in Sources */,
 				F93BCB9A29EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift in Sources */,
 				342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */,
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
@@ -17763,6 +17770,7 @@
 				66CD256A2B06963200139E17 /* BackupArchiveStickerPackArchiver.swift in Sources */,
 				66232ADB2CB9E33600AE6A76 /* BackupArchiveStoryStore.swift in Sources */,
 				D9BFB8BF2C4EE33C00D67881 /* BackupArchiveThreadMergeChatUpdateArchiver.swift in Sources */,
+				63BA1AD22EBA643E00B2AD82 /* ImageQualitySettingStore.swift in Sources */,
 				66232AD92CB9D00400AE6A76 /* BackupArchiveThreadStore.swift in Sources */,
 				66CD258F2B0EB4AC00139E17 /* BackupArchiveTSIncomingMessageArchiver.swift in Sources */,
 				66CD25932B0EC55100139E17 /* BackupArchiveTSMessageContentsArchiver.swift in Sources */,

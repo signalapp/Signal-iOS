@@ -49,6 +49,7 @@ extension ConversationSettingsViewController {
         addDisappearingMessagesItem(to: mainSection)
         addNicknameItemIfNecessary(to: mainSection)
         addColorAndWallpaperSettingsItem(to: mainSection)
+        addImageQualitySettingsItem(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
         addSafetyNumberItemIfNecessary(to: mainSection)
 
@@ -433,6 +434,46 @@ extension ConversationSettingsViewController {
         },
         actionBlock: { [weak self] in
             self?.showColorAndWallpaperSettingsView()
+        }))
+    }
+
+    private func addImageQualitySettingsItem(to section: OWSTableSection) {
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let imageQualityStore = ImageQualitySettingStore()
+            let settingText = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                let setting = imageQualityStore.fetchSetting(for: self.thread, tx: tx)
+                if setting == .original {
+                    return OWSLocalizedString(
+                        "IMAGE_QUALITY_ORIGINAL",
+                        comment: "Option for original image quality"
+                    )
+                } else {
+                    return OWSLocalizedString(
+                        "IMAGE_QUALITY_DEFAULT",
+                        comment: "Option to use default image quality setting"
+                    )
+                }
+            }
+
+            let cell = OWSTableItem.buildCell(
+                icon: .buttonPhotoLibrary,
+                itemName: OWSLocalizedString(
+                    "IMAGE_QUALITY_SETTING_TITLE",
+                    comment: "The title for the image quality settings screen"
+                ),
+                accessoryText: settingText,
+                accessoryType: .disclosureIndicator,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "image_quality")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showImageQualitySettingsView()
         }))
     }
 

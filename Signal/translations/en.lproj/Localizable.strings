@@ -346,6 +346,9 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Saved";
 
+/* Subtitle for the 'original' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_ORIGINAL_OPTION_SUBTITLE" = "With all metadata";
+
 /* Subtitle for the 'high' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
 
@@ -7540,8 +7543,26 @@
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "High";
 
+/* String describing original quality sent media */
+"SENT_MEDIA_QUALITY_ORIGINAL" = "Original";
+
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+
+/* The title for the image quality settings screen */
+"IMAGE_QUALITY_SETTING_TITLE" = "Image Quality";
+
+/* Warning message about original quality images preserving metadata */
+"IMAGE_QUALITY_ORIGINAL_WARNING" = "Sending images with Original Quality preserves locations and other metadata. Be aware that your location can be inadvertently shared through the photos you send.";
+
+/* Option for original image quality */
+"IMAGE_QUALITY_ORIGINAL" = "Original Quality";
+
+/* Toggle label for sending original quality images */
+"IMAGE_QUALITY_ORIGINAL_TOGGLE" = "Send Original Quality";
+
+/* Option to use default image quality setting */
+"IMAGE_QUALITY_DEFAULT" = "Default";
 
 /* Users can donate to Signal with a bank account. This is the label for email field on that screen. */
 "SEPA_DONATION_EMAIL_LABEL" = "Email";

@@ -407,6 +407,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    func showImageQualitySettingsView() {
+        let vc = ImageQualitySettingsViewController(thread: thread) { [weak self] in
+            self?.updateTableContents()
+        }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     func showSoundAndNotificationsSettingsView() {
         let vc = SoundAndNotificationsSettingsViewController(threadViewModel: threadViewModel)
         navigationController?.pushViewController(vc, animated: true)
