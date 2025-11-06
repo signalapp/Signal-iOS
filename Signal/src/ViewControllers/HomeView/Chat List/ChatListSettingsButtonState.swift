@@ -15,10 +15,10 @@ final class ChatListSettingsButtonState {
     var hasInboxChats: Bool = false
     var hasArchivedChats: Bool = false
     var hasUnreadPaymentNotification: Bool = false
-    var hasBackupError: Bool = false
+    var showBackupsFailedMenuItem: Bool = false
     var hasConsumedMediaTierCapacity: Bool = false
-    var showAvatarBackupBadge: Bool = false
-    var showMenuBackupBadge: Bool = false
+    var showBackupsFailedAvatarBadge: Bool = false
+    var showBackupsFailedMenuItemBadge: Bool = false
 
     weak var delegate: ChatListSettingsButtonDelegate?
 
@@ -26,10 +26,10 @@ final class ChatListSettingsButtonState {
         hasInboxChats: Bool? = nil,
         hasArchivedChats: Bool? = nil,
         hasUnreadPaymentNotification: Bool? = nil,
-        hasBackupError: Bool? = nil,
         hasConsumedMediaTierCapacity: Bool? = nil,
-        showAvatarBackupBadge: Bool? = nil,
-        showMenuBackupBadge: Bool? = nil,
+        showBackupsFailedAvatarBadge: Bool? = nil,
+        showBackupsFailedMenuItemBadge: Bool? = nil,
+        showBackupsFailedMenuItem: Bool? = nil,
     ) {
         var didUpdate = false
         if let hasInboxChats {
@@ -44,21 +44,21 @@ final class ChatListSettingsButtonState {
             didUpdate = didUpdate || self.hasUnreadPaymentNotification != hasUnreadPaymentNotification
             self.hasUnreadPaymentNotification = hasUnreadPaymentNotification
         }
-        if let hasBackupError {
-            didUpdate = didUpdate || self.hasBackupError != hasBackupError
-            self.hasBackupError = hasBackupError
-        }
         if let hasConsumedMediaTierCapacity {
             didUpdate = didUpdate || self.hasConsumedMediaTierCapacity != hasConsumedMediaTierCapacity
             self.hasConsumedMediaTierCapacity = hasConsumedMediaTierCapacity
         }
-        if let showAvatarBackupBadge {
-            didUpdate = didUpdate || self.showAvatarBackupBadge != showAvatarBackupBadge
-            self.showAvatarBackupBadge = showAvatarBackupBadge
+        if let showBackupsFailedAvatarBadge {
+            didUpdate = didUpdate || self.showBackupsFailedAvatarBadge != showBackupsFailedAvatarBadge
+            self.showBackupsFailedAvatarBadge = showBackupsFailedAvatarBadge
         }
-        if let showMenuBackupBadge {
-            didUpdate = didUpdate || self.showMenuBackupBadge != showMenuBackupBadge
-            self.showMenuBackupBadge = showMenuBackupBadge
+        if let showBackupsFailedMenuItemBadge {
+            didUpdate = didUpdate || self.showBackupsFailedMenuItemBadge != showBackupsFailedMenuItemBadge
+            self.showBackupsFailedMenuItemBadge = showBackupsFailedMenuItemBadge
+        }
+        if let showBackupsFailedMenuItem {
+            didUpdate = didUpdate || self.showBackupsFailedMenuItem != showBackupsFailedMenuItem
+            self.showBackupsFailedMenuItem = showBackupsFailedMenuItem
         }
         if didUpdate {
             delegate?.didUpdateButton(self)

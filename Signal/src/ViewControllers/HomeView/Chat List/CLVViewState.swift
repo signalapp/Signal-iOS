@@ -53,38 +53,26 @@ class CLVViewState {
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 
-    public struct BackupFailureBadgeType: OptionSet, CaseIterable {
-        let rawValue: Int
+    public enum BackupFailureAlertType: CaseIterable {
+        case avatarBadge
+        case menuItemBadge
+        case menuItem
 
-        static let avatar = BackupFailureBadgeType(rawValue: 1 << 0)
-        static let menu = BackupFailureBadgeType(rawValue: 1 << 1)
-
-        public static var allCases: [CLVViewState.BackupFailureBadgeType] {[ .avatar, .menu ]}
-
-        var target: String {
+        var errorBadgeTarget: BackupSettingsStore.ErrorBadgeTarget? {
             return switch self {
-            case .avatar: "avatar"
-            case .menu: "menu"
-            default: "unknown"
+            case .avatarBadge: .chatListAvatar
+            case .menuItemBadge: .chatListMenuItem
+            case .menuItem: nil
             }
         }
     }
-
-    var hasBackupFailure: BackupFailureBadgeType? {
+    var backupFailureAlerts: Set<BackupFailureAlertType> = [] {
         didSet {
-            if let hasBackupFailure {
-                settingsButtonCreator.updateState(
-                    hasBackupError: true,
-                    showAvatarBackupBadge: hasBackupFailure.contains(.avatar),
-                    showMenuBackupBadge: hasBackupFailure.contains(.menu)
-                )
-            } else {
-                settingsButtonCreator.updateState(
-                    hasBackupError: false,
-                    showAvatarBackupBadge: false,
-                    showMenuBackupBadge: false
-                )
-            }
+            settingsButtonCreator.updateState(
+                showBackupsFailedAvatarBadge: backupFailureAlerts.contains(.avatarBadge),
+                showBackupsFailedMenuItemBadge: backupFailureAlerts.contains(.menuItemBadge),
+                showBackupsFailedMenuItem: backupFailureAlerts.contains(.menuItem),
+            )
         }
     }
 

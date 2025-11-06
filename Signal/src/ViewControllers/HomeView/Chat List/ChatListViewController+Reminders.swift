@@ -205,9 +205,9 @@ extension ChatListViewController {
         set { viewState.firstUnreadPaymentModel = newValue }
     }
 
-    var hasBackupFailureState: CLVViewState.BackupFailureBadgeType? {
-        get { viewState.hasBackupFailure }
-        set { viewState.hasBackupFailure = newValue }
+    var backupFailureAlerts: Set<CLVViewState.BackupFailureAlertType> {
+        get { viewState.backupFailureAlerts }
+        set { viewState.backupFailureAlerts = newValue }
     }
 
     var hasConsumedMediaTierCapacity: Bool? {
@@ -270,22 +270,28 @@ extension ChatListViewController {
         }
     }
 
-    public func updateBackupErrorStateWithSneakyTransaction() {
-        var result: CLVViewState.BackupFailureBadgeType?
-        let stateManager = DependenciesBridge.shared.backupFailureStateManager
+    public func updateBackupFailureAlertsWithSneakyTransaction() {
+        typealias BackupFailureAlertType = CLVViewState.BackupFailureAlertType
 
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            if stateManager.hasFailedBackup(tx: tx) {
-                result = []
-                CLVViewState.BackupFailureBadgeType.allCases.forEach { type in
-                    if stateManager.shouldShowErrorBadge(target: type.target, tx: tx) {
-                        result?.update(with: type)
-                    }
+        let db = DependenciesBridge.shared.db
+        let failureStateManager = DependenciesBridge.shared.backupFailureStateManager
+
+        self.backupFailureAlerts = db.read { tx -> Set<BackupFailureAlertType> in
+            guard failureStateManager.hasFailedBackup(tx: tx) else {
+                return []
+            }
+
+            var alerts: Set<BackupFailureAlertType> = [.menuItem]
+            for alertType in BackupFailureAlertType.allCases {
+                if
+                    let errorBadgeTarget = alertType.errorBadgeTarget,
+                    failureStateManager.shouldShowErrorBadge(target: errorBadgeTarget, tx: tx)
+                {
+                    alerts.insert(alertType)
                 }
             }
+            return alerts
         }
-
-        self.hasBackupFailureState = result
     }
 
     public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {

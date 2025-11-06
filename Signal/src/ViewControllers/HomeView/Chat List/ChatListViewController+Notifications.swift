@@ -147,7 +147,7 @@ extension ChatListViewController {
     @objc
     private func backupDidRun(_ notification: NSNotification) {
         AssertIsOnMainThread()
-        updateBackupErrorStateWithSneakyTransaction()
+        updateBackupFailureAlertsWithSneakyTransaction()
     }
 
     @objc

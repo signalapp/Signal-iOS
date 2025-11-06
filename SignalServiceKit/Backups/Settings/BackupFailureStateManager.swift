@@ -42,7 +42,10 @@ public class BackupFailureStateManager {
     /// Allow for managing backup badge state from arbitrary points.
     /// This allows each target to be separately cleared, and also allows
     /// backups to reset the state for all of them on a failure
-    public func shouldShowErrorBadge(target: String, tx: DBReadTransaction) -> Bool {
+    public func shouldShowErrorBadge(
+        target: BackupSettingsStore.ErrorBadgeTarget,
+        tx: DBReadTransaction,
+    ) -> Bool {
         guard shouldBackupsBeRunning(tx: tx) else {
             return false
         }
@@ -61,11 +64,6 @@ public class BackupFailureStateManager {
         }
 
         return false
-    }
-
-    public func clearErrorBadge(target: String, tx: DBWriteTransaction) {
-        // set this target as muted
-        backupSettingsStore.setErrorBadgeMuted(target: target, tx: tx)
     }
 
     // MARK: -

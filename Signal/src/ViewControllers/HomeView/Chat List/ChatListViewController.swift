@@ -168,7 +168,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
         // Update Backup error state
-        updateBackupErrorStateWithSneakyTransaction()
+        updateBackupFailureAlertsWithSneakyTransaction()
         updateHasConsumedMediaTierCapacityWithSneakyTransaction()
 
         // During main app launch, the chat list becomes visible _before_
@@ -450,19 +450,21 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }()
 
     private func settingsBarButtonItem() -> UIBarButtonItem {
+        let backupSettingsStore = BackupSettingsStore()
         let db = SSKEnvironment.shared.databaseStorageRef
+
         let barButtonItem = createSettingsBarButtonItem(
             databaseStorage: db,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
-            shouldShowBackupFailureBadge: viewState.settingsButtonCreator.showAvatarBackupBadge,
+            shouldShowBackupFailureBadge: viewState.settingsButtonCreator.showBackupsFailedAvatarBadge,
             shouldShowOutOfMediaTierCapacityBadge: viewState.settingsButtonCreator.hasConsumedMediaTierCapacity,
             delegate: self,
             buildActions: { settingsAction -> [UIMenuElement] in
                 var contextMenuActions: [UIMenuElement] = []
 
-                if viewState.settingsButtonCreator.hasBackupError {
+                if viewState.settingsButtonCreator.showBackupsFailedMenuItem {
                     var image = Theme.iconImage(.backup).withTintColor(UIColor.Signal.label)
-                    if viewState.settingsButtonCreator.showMenuBackupBadge {
+                    if viewState.settingsButtonCreator.showBackupsFailedMenuItemBadge {
                         image = image.withBadge(
                             color: UIColor.Signal.yellow,
                             badgeSize: .square(8.5)
@@ -479,13 +481,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 image: image,
                                 handler: { [weak self] _ in
                                     SignalApp.shared.showAppSettings(mode: .backups)
-                                    db.write {
-                                        DependenciesBridge.shared.backupFailureStateManager.clearErrorBadge(
-                                            target: CLVViewState.BackupFailureBadgeType.menu.target,
-                                            tx: $0
-                                        )
+                                    db.write { tx in
+                                        backupSettingsStore.setErrorBadgeMuted(target: .chatListMenuItem, tx: tx)
                                     }
-                                    self?.updateBackupErrorStateWithSneakyTransaction()
+                                    self?.updateBackupFailureAlertsWithSneakyTransaction()
                                 }
                             )
                         ])
@@ -1515,14 +1514,14 @@ extension ChatListViewController: ContextMenuButtonDelegate {
     func contextMenuWillDisplay(from contextMenuButton: ContextMenuButton) { }
 
     func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton) {
-        if viewState.settingsButtonCreator.showAvatarBackupBadge {
-            SSKEnvironment.shared.databaseStorageRef.write {
-                DependenciesBridge.shared.backupFailureStateManager.clearErrorBadge(
-                    target: CLVViewState.BackupFailureBadgeType.avatar.target,
-                    tx: $0
-                )
+        let db = DependenciesBridge.shared.db
+        let backupSettingsStore = BackupSettingsStore()
+
+        if viewState.backupFailureAlerts.contains(.avatarBadge) {
+            db.write { tx in
+                backupSettingsStore.setErrorBadgeMuted(target: .chatListAvatar, tx: tx)
             }
+            updateBackupFailureAlertsWithSneakyTransaction()
         }
-        updateBackupErrorStateWithSneakyTransaction()
     }
 }

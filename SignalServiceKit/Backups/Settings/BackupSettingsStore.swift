@@ -252,12 +252,24 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    public func getErrorBadgeMuted(target: String, tx: DBReadTransaction) -> Bool {
-        errorStateStore.getBool(target + "_muted", defaultValue: false, transaction: tx)
+    public enum ErrorBadgeTarget {
+        case chatListAvatar
+        case chatListMenuItem
+
+        fileprivate var key: String {
+            switch self {
+            case .chatListAvatar: "avatar_muted"
+            case .chatListMenuItem: "menu_muted"
+            }
+        }
     }
 
-    public func setErrorBadgeMuted(target: String, tx: DBWriteTransaction) {
-        errorStateStore.setBool(true, key: target + "_muted", transaction: tx)
+    public func getErrorBadgeMuted(target: ErrorBadgeTarget, tx: DBReadTransaction) -> Bool {
+        errorStateStore.getBool(target.key, defaultValue: false, transaction: tx)
+    }
+
+    public func setErrorBadgeMuted(target: ErrorBadgeTarget, tx: DBWriteTransaction) {
+        errorStateStore.setBool(true, key: target.key, transaction: tx)
     }
 
     // MARK: -
