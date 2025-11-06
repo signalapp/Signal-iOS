@@ -761,6 +761,16 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     /// Clears the value of `screenLockTimeoutMinutes`. Subsequent reads from it will return its default value.
     public mutating func clearScreenLockTimeoutMinutes() {_uniqueStorage()._screenLockTimeoutMinutes = nil}
 
+    /// If unset, consider pin reminders to be enabled.
+    public var pinReminders: Bool {
+      get {return _storage._pinReminders ?? false}
+      set {_uniqueStorage()._pinReminders = newValue}
+    }
+    /// Returns true if `pinReminders` has been explicitly set.
+    public var hasPinReminders: Bool {return _storage._pinReminders != nil}
+    /// Clears the value of `pinReminders`. Subsequent reads from it will return its default value.
+    public mutating func clearPinReminders() {_uniqueStorage()._pinReminders = nil}
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -6735,7 +6745,7 @@ extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: Swift
 
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -6763,6 +6773,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _defaultSentMediaQuality: BackupProto_AccountData.SentMediaQuality = .unknownQuality
     var _autoDownloadSettings: BackupProto_AccountData.AutoDownloadSettings? = nil
     var _screenLockTimeoutMinutes: UInt32? = nil
+    var _pinReminders: Bool? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -6798,6 +6809,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _defaultSentMediaQuality = source._defaultSentMediaQuality
       _autoDownloadSettings = source._autoDownloadSettings
       _screenLockTimeoutMinutes = source._screenLockTimeoutMinutes
+      _pinReminders = source._pinReminders
     }
   }
 
@@ -6841,6 +6853,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 23: try { try decoder.decodeSingularEnumField(value: &_storage._defaultSentMediaQuality) }()
         case 24: try { try decoder.decodeSingularMessageField(value: &_storage._autoDownloadSettings) }()
         case 26: try { try decoder.decodeSingularUInt32Field(value: &_storage._screenLockTimeoutMinutes) }()
+        case 27: try { try decoder.decodeSingularBoolField(value: &_storage._pinReminders) }()
         default: break
         }
       }
@@ -6928,6 +6941,9 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       try { if let v = _storage._screenLockTimeoutMinutes {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 26)
       } }()
+      try { if let v = _storage._pinReminders {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 27)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6962,6 +6978,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._defaultSentMediaQuality != rhs_storage._defaultSentMediaQuality {return false}
         if _storage._autoDownloadSettings != rhs_storage._autoDownloadSettings {return false}
         if _storage._screenLockTimeoutMinutes != rhs_storage._screenLockTimeoutMinutes {return false}
+        if _storage._pinReminders != rhs_storage._pinReminders {return false}
         return true
       }
       if !storagesAreEqual {return false}

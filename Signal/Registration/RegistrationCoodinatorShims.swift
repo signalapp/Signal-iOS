@@ -249,7 +249,7 @@ public protocol _RegistrationCoordinator_OWS2FAManagerShim {
 
     func isReglockEnabled(_ tx: DBReadTransaction) -> Bool
 
-    func markPinEnabled(_ pin: String, _ tx: DBWriteTransaction)
+    func markPinEnabled(pin: String, resetReminderInterval: Bool, tx: DBWriteTransaction)
 
     func markRegistrationLockEnabled(_  tx: DBWriteTransaction)
 }
@@ -271,8 +271,12 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
         return manager.isRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func markPinEnabled(_ pin: String, _ tx: DBWriteTransaction) {
-        manager.markEnabled(pin: pin, transaction: SDSDB.shimOnlyBridge(tx))
+    public func markPinEnabled(pin: String, resetReminderInterval: Bool, tx: DBWriteTransaction) {
+        manager.markEnabled(
+            pin: pin,
+            resetReminderInterval: resetReminderInterval,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
     }
 
     public func markRegistrationLockEnabled(_ tx: DBWriteTransaction) {

@@ -172,7 +172,7 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 
     public var didMarkPinEnabled: ((String) -> Void)?
 
-    public func markPinEnabled(_ pin: String, _ tx: SignalServiceKit.DBWriteTransaction) {
+    public func markPinEnabled(pin: String, resetReminderInterval: Bool, tx: SignalServiceKit.DBWriteTransaction) {
         didMarkPinEnabled?(pin)
     }
 

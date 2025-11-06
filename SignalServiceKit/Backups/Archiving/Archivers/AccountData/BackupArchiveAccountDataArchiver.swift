@@ -249,6 +249,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         case .everybody: .everybody
         case .nobody: .nobody
         }
+        let hasPinReminders = ows2FAManager.areRemindersEnabled(tx: context.tx)
 
         // Populate the proto with the settings
         var accountSettings = BackupProto_AccountData.AccountSettings()
@@ -269,6 +270,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
+        accountSettings.pinReminders = hasPinReminders
         switch backupPlanManager.backupPlan(tx: context.tx) {
         case .disabling, .disabled:
             accountSettings.clearBackupTier()
@@ -587,6 +589,13 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 let timeout = Double(settings.screenLockTimeoutMinutes * 60)
                 screenLock.setIsScreenLockEnabled(true, tx: context.tx)
                 screenLock.setScreenLockTimeout(timeout, tx: context.tx)
+            }
+
+            if settings.hasPinReminders {
+                ows2FAManager.setAreRemindersEnabled(settings.pinReminders, tx: context.tx)
+                if settings.pinReminders {
+                    ows2FAManager.resetDefaultRepetitionIntervalForBackupRestore(tx: context.tx)
+                }
             }
         }
 

@@ -179,6 +179,9 @@ public class _MessageBackup_ImageQualityLevelWrapper: _MessageBackup_ImageQualit
 public protocol _MessageBackup_OWS2FAManagerShim {
     func getPin(tx: DBReadTransaction) -> String?
     func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction)
+    func areRemindersEnabled(tx: DBReadTransaction) -> Bool
+    func setAreRemindersEnabled(_ areRemindersEnabled: Bool, tx: DBWriteTransaction)
+    func resetDefaultRepetitionIntervalForBackupRestore(tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerShim {
@@ -194,6 +197,18 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
 
     public func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction) {
         ows2FAManager.restorePinFromBackup(pin, transaction: tx)
+    }
+
+    public func areRemindersEnabled(tx: DBReadTransaction) -> Bool {
+        ows2FAManager.areRemindersEnabled(transaction: tx)
+    }
+
+    public func setAreRemindersEnabled(_ areRemindersEnabled: Bool, tx: DBWriteTransaction) {
+        ows2FAManager.setAreRemindersEnabled(areRemindersEnabled, transaction: tx)
+    }
+
+    public func resetDefaultRepetitionIntervalForBackupRestore(tx: DBWriteTransaction) {
+        ows2FAManager.setDefaultRepetitionIntervalForBackupRestore(transaction: tx)
     }
 }
 

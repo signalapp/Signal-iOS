@@ -120,6 +120,7 @@ message AccountData {
     AutoDownloadSettings autoDownloadSettings = 24;
     reserved /* wifiAutoDownloadSettings */ 25;
     optional uint32 screenLockTimeoutMinutes = 26; // If unset, consider screen lock to be disabled.
+    optional bool pinReminders = 27; // If unset, consider pin reminders to be enabled.
   }
 
   message SubscriberData {

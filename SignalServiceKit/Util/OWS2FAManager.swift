@@ -67,6 +67,11 @@ public class OWS2FAManager {
     public func setDefaultRepetitionInterval(transaction: DBWriteTransaction) {
         keyValueStore.removeValue(forKey: kOWS2FAManager_RepetitionInterval, transaction: transaction)
     }
+    public func setDefaultRepetitionIntervalForBackupRestore(transaction: DBWriteTransaction) {
+        keyValueStore.setDouble(7 * .day, key: kOWS2FAManager_RepetitionInterval, transaction: transaction)
+        // Reset the interval as part of the restore
+        setLastCompletedReminderDate(Date(), transaction: transaction)
+    }
     public var repetitionInterval: TimeInterval {
         return db.read { repetitionInterval(transaction: $0) }
     }
@@ -167,16 +172,22 @@ public class OWS2FAManager {
 
     /// Marks the given PIN as enabled locally.
     /// - SeeAlso ``enablePin(_:)``
-    public func markEnabled(pin: String, transaction: DBWriteTransaction) {
+    public func markEnabled(
+        pin: String,
+        resetReminderInterval: Bool,
+        transaction: DBWriteTransaction
+    ) {
         owsPrecondition(!pin.isEmpty)
 
         setNormalizedPin(pin, tx: transaction)
 
-        // Reset the reminder repetition interval for the new pin.
-        setDefaultRepetitionInterval(transaction: transaction)
+        if resetReminderInterval {
+            // Reset the reminder repetition interval for the new pin.
+            setDefaultRepetitionInterval(transaction: transaction)
 
-        // Schedule next reminder relative to now
-        setLastCompletedReminderDate(Date(), transaction: transaction)
+            // Schedule next reminder relative to now
+            setLastCompletedReminderDate(Date(), transaction: transaction)
+        }
 
         transaction.addSyncCompletion {
             self.triggerAccountAttributesUpdate()
@@ -218,7 +229,7 @@ public class OWS2FAManager {
         ).awaitable()
 
         await db.awaitableWrite { tx in
-            markEnabled(pin: pin, transaction: tx)
+            markEnabled(pin: pin, resetReminderInterval: true, transaction: tx)
         }
     }
 
