@@ -2565,6 +2565,6 @@ CREATE
 
 CREATE
     UNIQUE INDEX "UsernameLookupRecord_UniqueUsernames"
-        ON "UsernameLookupRecord"("username"
+        ON "UsernameLookupRecord"("username" COLLATE NOCASE
 )
 ;

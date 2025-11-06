@@ -19,12 +19,19 @@ struct UsernameLookupRecordStore {
         }
     }
 
-    /// The `username` column of `UsernameLookupRecord` store is unique, so
-    /// there can only be one record for a given username.
-    func fetchOne(forUsername username: String, tx: DBReadTransaction) -> UsernameLookupRecord? {
+    /// Fetch the `UsernameLookupRecord` with the given username
+    /// (case-insensitive, via `COLLATE NOCASE`), if one exists.
+    ///
+    /// The `username` column of `UsernameLookupRecord` store is
+    /// case-insensitively unique, so there can only be one record for a given
+    /// username.
+    func fetchOne(forUsernameCaseInsensitive username: String, tx: DBReadTransaction) -> UsernameLookupRecord? {
         return failIfThrows {
             try UsernameLookupRecord
-                .filter(Column(UsernameLookupRecord.CodingKeys.username) == username)
+                .filter(
+                    Column(UsernameLookupRecord.CodingKeys.username)
+                        .collating(.nocase) == username
+                )
                 .fetchOne(tx.database)
         }
     }
