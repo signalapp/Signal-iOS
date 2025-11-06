@@ -552,14 +552,3 @@ public class ModelReadCacheFactory: NSObject {
         return ModelReadCache(adapter: adapter, appReadiness: appReadiness)
     }
 }
-
-#if TESTABLE_BUILD
-@objc
-class TestableModelReadCacheFactory: ModelReadCacheFactory {
-    override func create<KeyType: Hashable & Equatable, ValueType>(
-        adapter: ModelCacheAdapter<KeyType, ValueType>
-    ) -> ModelReadCache<KeyType, ValueType> {
-        return ModelReadCache(adapter: adapter, appReadiness: appReadiness)
-    }
-}
-#endif

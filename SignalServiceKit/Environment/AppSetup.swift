@@ -93,7 +93,6 @@ extension AppSetup {
         let groupV2Updates: (any GroupV2Updates)?
         let groupsV2: (any GroupsV2)?
         let messageSender: (AccountChecker) -> MessageSender?
-        let modelReadCaches: ModelReadCaches?
         let networkManager: NetworkManager?
         let paymentsCurrencies: (any PaymentsCurrenciesSwift)?
         let paymentsHelper: (any PaymentsHelperSwift)?
@@ -115,7 +114,6 @@ extension AppSetup {
             groupV2Updates: (any GroupV2Updates)? = nil,
             groupsV2: (any GroupsV2)? = nil,
             messageSender: @escaping ((AccountChecker) -> MessageSender?) = { _ in nil },
-            modelReadCaches: ModelReadCaches? = nil,
             networkManager: NetworkManager? = nil,
             paymentsCurrencies: (any PaymentsCurrenciesSwift)? = nil,
             paymentsHelper: (any PaymentsHelperSwift)? = nil,
@@ -136,7 +134,6 @@ extension AppSetup {
             self.groupV2Updates = groupV2Updates
             self.groupsV2 = groupsV2
             self.messageSender = messageSender
-            self.modelReadCaches = modelReadCaches
             self.networkManager = networkManager
             self.paymentsCurrencies = paymentsCurrencies
             self.paymentsHelper = paymentsHelper
@@ -295,7 +292,7 @@ extension AppSetup.GlobalsContinuation {
         let groupSendEndorsementStore = GroupSendEndorsementStoreImpl()
 
         let messageSenderJobQueue = MessageSenderJobQueue(appReadiness: appReadiness)
-        let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
+        let modelReadCaches = ModelReadCaches(
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
         )
         let ows2FAManager = OWS2FAManager()

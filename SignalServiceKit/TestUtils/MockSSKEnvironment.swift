@@ -57,9 +57,6 @@ public class MockSSKEnvironment {
                 groupV2Updates: MockGroupV2Updates(),
                 groupsV2: MockGroupsV2(),
                 messageSender: { FakeMessageSender(accountChecker: $0) },
-                modelReadCaches: ModelReadCaches(
-                    factory: TestableModelReadCacheFactory(appReadiness: appReadiness)
-                ),
                 networkManager: OWSFakeNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 paymentsCurrencies: MockPaymentsCurrencies(),
                 paymentsHelper: MockPaymentsHelper(),
