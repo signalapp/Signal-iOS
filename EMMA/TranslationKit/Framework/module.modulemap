@@ -1,0 +1,5 @@
+framework module EMMATranslationKit {
+    umbrella header "EMTranslationKit.h"
+    export *
+    module * { export * }
+}

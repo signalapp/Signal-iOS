@@ -47,6 +47,13 @@ pod 'libwebp'
 
 pod 'Reachability', :inhibit_warnings => true
 
+###
+# EMMA Security & Translation
+###
+
+pod 'EMMASecurityKit', :path => './EMMA'
+pod 'EMMATranslationKit', :path => './EMMA'
+
 def ui_pods
   pod 'BonMot', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
