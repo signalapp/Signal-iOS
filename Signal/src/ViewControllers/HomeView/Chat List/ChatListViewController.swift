@@ -453,12 +453,31 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let backupSettingsStore = BackupSettingsStore()
         let db = SSKEnvironment.shared.databaseStorageRef
 
+        let badgeColor: UIColor?
+        var onDidDismissContextMenu: () -> Void
+        if viewState.settingsButtonCreator.showBackupsFailedAvatarBadge {
+            badgeColor = .Signal.yellow
+            onDidDismissContextMenu = { [weak self] in
+                db.write { tx in
+                    backupSettingsStore.setErrorBadgeMuted(target: .chatListAvatar, tx: tx)
+                }
+                self?.updateBackupFailureAlertsWithSneakyTransaction()
+            }
+        } else if viewState.settingsButtonCreator.hasUnreadPaymentNotification {
+            badgeColor = .Signal.accent
+            onDidDismissContextMenu = {}
+        } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
+            badgeColor = .Signal.red
+            onDidDismissContextMenu = {}
+        } else {
+            badgeColor = nil
+            onDidDismissContextMenu = {}
+        }
+
         let barButtonItem = createSettingsBarButtonItem(
             databaseStorage: db,
-            shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
-            shouldShowBackupFailureBadge: viewState.settingsButtonCreator.showBackupsFailedAvatarBadge,
-            shouldShowOutOfMediaTierCapacityBadge: viewState.settingsButtonCreator.hasConsumedMediaTierCapacity,
-            delegate: self,
+            badgeColor: badgeColor,
+            onDidDismissContextMenu: onDidDismissContextMenu,
             buildActions: { settingsAction -> [UIMenuElement] in
                 var contextMenuActions: [UIMenuElement] = []
 
@@ -556,7 +575,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
         )
         barButtonItem.accessibilityLabel = CommonStrings.openAppSettingsButton
-        barButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
         return barButtonItem
     }
 
@@ -1506,22 +1524,6 @@ extension ChatListViewController: ChatListFilterControlDelegate {
             tableView.performBatchUpdates {
                 loadCoordinator.loadIfNecessary()
             }
-        }
-    }
-}
-
-extension ChatListViewController: ContextMenuButtonDelegate {
-    func contextMenuWillDisplay(from contextMenuButton: ContextMenuButton) { }
-
-    func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton) {
-        let db = DependenciesBridge.shared.db
-        let backupSettingsStore = BackupSettingsStore()
-
-        if viewState.backupFailureAlerts.contains(.avatarBadge) {
-            db.write { tx in
-                backupSettingsStore.setErrorBadgeMuted(target: .chatListAvatar, tx: tx)
-            }
-            updateBackupFailureAlertsWithSneakyTransaction()
         }
     }
 }

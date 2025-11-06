@@ -13,12 +13,15 @@ extension HomeTabViewController {
         return splitViewController as? ConversationSplitViewController
     }
 
+    /// - Parameter badgeColor
+    /// Color for a badge added to the bar button item, if any.
+    /// - Parameter onDidDismissContextMenu
+    /// Block called when the context menu presented by tapping the bar button
+    /// item is dismissed.
     func createSettingsBarButtonItem(
         databaseStorage: SDSDatabaseStorage,
-        shouldShowUnreadPaymentBadge: Bool = false,
-        shouldShowBackupFailureBadge: Bool = false,
-        shouldShowOutOfMediaTierCapacityBadge: Bool = false,
-        delegate: ContextMenuButtonDelegate? = nil,
+        badgeColor: UIColor? = nil,
+        onDidDismissContextMenu: @escaping () -> Void = {},
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
@@ -35,9 +38,11 @@ extension HomeTabViewController {
             handler: { _ in showAppSettings() }
         )
 
-        let contextButton = ContextMenuButton(actions: buildActions(settingsAction))
+        let contextButton = ContextMenuButton(
+            actions: buildActions(settingsAction),
+            onDidDismissContextMenu: onDidDismissContextMenu,
+        )
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
-        contextButton.delegate = delegate
 
         let sizeClass: ConversationAvatarView.Configuration.SizeClass
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
@@ -68,23 +73,11 @@ extension HomeTabViewController {
 
         let barButtonView: UIView
 
-        if shouldShowBackupFailureBadge {
+        if let badgeColor {
             let wrapper = UIView.container()
             wrapper.addSubview(contextButton)
             contextButton.autoPinEdgesToSuperviewEdges()
-            wrapper.addCircleBadge(color: UIColor.Signal.yellow)
-            barButtonView = wrapper
-        } else if shouldShowUnreadPaymentBadge {
-            let wrapper = UIView.container()
-            wrapper.addSubview(contextButton)
-            contextButton.autoPinEdgesToSuperviewEdges()
-            PaymentsViewUtils.addUnreadBadge(toView: wrapper)
-            barButtonView = wrapper
-        } else if shouldShowOutOfMediaTierCapacityBadge {
-            let wrapper = UIView.container()
-            wrapper.addSubview(contextButton)
-            contextButton.autoPinEdgesToSuperviewEdges()
-            wrapper.addCircleBadge(color: UIColor.Signal.red)
+            wrapper.addCircleBadge(color: badgeColor)
             barButtonView = wrapper
         } else {
             barButtonView = contextButton

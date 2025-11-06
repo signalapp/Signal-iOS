@@ -63,10 +63,6 @@ public class PaymentsViewUtils {
 
     // MARK: -
 
-    static func addUnreadBadge(toView: UIView) {
-        toView.addCircleBadge(color: Theme.accentBlueColor)
-    }
-
     static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         owsAssertDebug(paymentModel.isUnread)
         paymentModel.update(withIsUnread: false, transaction: transaction)

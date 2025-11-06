@@ -6,31 +6,34 @@
 import SignalServiceKit
 import UIKit
 
-protocol ContextMenuButtonDelegate: AnyObject {
-    /// The context menu for the given button will display.
-    func contextMenuWillDisplay(from contextMenuButton: ContextMenuButton)
-
-    /// The context menu for the given button dismissed.
-    func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton)
-}
-
 /// A button that shows a fixed context menu when tapped.
-///
-/// - SeeAlso: ``DelegatingContextMenuButton``
 class ContextMenuButton: UIButton {
     override var intrinsicContentSize: CGSize { .zero }
 
-    weak var delegate: (any ContextMenuButtonDelegate)?
+    private let onWillDisplayContextMenu: () -> Void
+    private let onDidDismissContextMenu: () -> Void
 
     /// Creates a context menu button with the given actions.
-    init(actions: [UIMenuElement]) {
+    init(
+        actions: [UIMenuElement],
+        onWillDisplayContextMenu: @escaping () -> Void = {},
+        onDidDismissContextMenu: @escaping () -> Void = {},
+    ) {
+        self.onWillDisplayContextMenu = onWillDisplayContextMenu
+        self.onDidDismissContextMenu = onDidDismissContextMenu
         super.init(frame: .zero)
         setActions(actions: actions)
     }
 
     /// Creates an empty context menu button. Callers should subsequently call
     /// ``setActions(actions:)`` manually to populate the button.
-    init(empty: Void) {
+    init(
+        empty: Void,
+        onWillDisplayContextMenu: @escaping () -> Void = {},
+        onDidDismissContextMenu: @escaping () -> Void = {},
+    ) {
+        self.onWillDisplayContextMenu = onWillDisplayContextMenu
+        self.onDidDismissContextMenu = onDidDismissContextMenu
         super.init(frame: .zero)
         setActions(actions: [])
     }
@@ -54,7 +57,7 @@ class ContextMenuButton: UIButton {
         animator: (any UIContextMenuInteractionAnimating)?
     ) {
         super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-        delegate?.contextMenuWillDisplay(from: self)
+        onWillDisplayContextMenu()
     }
 
     override func contextMenuInteraction(
@@ -63,6 +66,6 @@ class ContextMenuButton: UIButton {
         animator: (any UIContextMenuInteractionAnimating)?
     ) {
         super.contextMenuInteraction(interaction, willEndFor: configuration, animator: animator)
-        delegate?.contextMenuDidDismiss(from: self)
+        onDidDismissContextMenu()
     }
 }

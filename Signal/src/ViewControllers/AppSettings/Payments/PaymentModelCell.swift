@@ -85,7 +85,7 @@ public class PaymentModelCell: UITableViewCell {
             avatarWrapper.addSubview(avatarView)
             avatarView.autoPinEdgesToSuperviewEdges()
             avatarView = avatarWrapper
-            PaymentsViewUtils.addUnreadBadge(toView: avatarView)
+            avatarView.addCircleBadge(color: .Signal.accent)
         }
         arrangedSubviews.append(avatarView)
 

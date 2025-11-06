@@ -11,7 +11,7 @@ import SignalUI
 import UIKit
 import SDWebImage
 
-protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
+protocol StoryItemMediaViewDelegate: AnyObject {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
 
