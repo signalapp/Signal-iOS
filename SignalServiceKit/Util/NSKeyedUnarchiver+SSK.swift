@@ -6,7 +6,6 @@
 import Foundation
 
 extension NSKeyedUnarchiver {
-#if TESTABLE_BUILD
     public static func unarchivedObject<DecodedObjectType>(
         ofClass cls: DecodedObjectType.Type,
         from data: Data,
@@ -16,5 +15,4 @@ extension NSKeyedUnarchiver {
         coder.requiresSecureCoding = requiringSecureCoding
         return try coder.decodeTopLevelObject(of: cls, forKey: NSKeyedArchiveRootObjectKey)
     }
-#endif
 }
