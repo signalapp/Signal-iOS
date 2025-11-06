@@ -94,7 +94,7 @@ public class SecurityManager {
     private var currentAnalysis: ThreatAnalysis?
 
     // Configuration
-    public var monitoringInterval: TimeInterval = 5.0 // Check every 5 seconds
+    public var monitoringInterval: TimeInterval = 10.0 // Check every 10 seconds
     public var isMonitoring: Bool = false
 
     // Callbacks

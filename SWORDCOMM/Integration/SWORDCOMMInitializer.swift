@@ -28,7 +28,7 @@ public final class SWORDCOMMInitializer {
 
     public struct Configuration {
         /// Enable security monitoring on startup
-        public var enableSecurityMonitoring: Bool = true
+        public var enableSecurityMonitoring: Bool = false
 
         /// Enable translation features on startup
         public var enableTranslation: Bool = true
@@ -37,7 +37,7 @@ public final class SWORDCOMMInitializer {
         public var autoActivateCountermeasures: Bool = false
 
         /// Countermeasure intensity (0.0 to 1.0)
-        public var countermeasureIntensity: Double = 0.5
+        public var countermeasureIntensity: Double = 0.3
 
         /// Show security HUD overlay
         public var showSecurityHUD: Bool = false
@@ -286,7 +286,7 @@ extension UserDefaults {
             config.enableTranslation = bool(forKey: "SWORDCOMM.Translation") != false
             config.autoActivateCountermeasures = bool(forKey: "SWORDCOMM.AutoCountermeasures")
             config.countermeasureIntensity = double(forKey: "SWORDCOMM.CountermeasureIntensity") != 0 ?
-                double(forKey: "SWORDCOMM.CountermeasureIntensity") : 0.5
+                double(forKey: "SWORDCOMM.CountermeasureIntensity") : 0.3
             config.showSecurityHUD = bool(forKey: "SWORDCOMM.ShowSecurityHUD")
             config.translationNetworkFallback = bool(forKey: "SWORDCOMM.NetworkFallback") != false
 

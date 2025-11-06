@@ -240,10 +240,10 @@ class SWORDCOMMSettingsViewModel: ObservableObject {
         // Load from UserDefaults or configuration
         let defaults = UserDefaults.standard
 
-        securityMonitoringEnabled = defaults.bool(forKey: "SWORDCOMM.SecurityMonitoring") != false // Default true
+        securityMonitoringEnabled = defaults.bool(forKey: "SWORDCOMM.SecurityMonitoring") // Default false
         autoCountermeasuresEnabled = defaults.bool(forKey: "SWORDCOMM.AutoCountermeasures")
         countermeasureIntensity = defaults.double(forKey: "SWORDCOMM.CountermeasureIntensity") != 0 ?
-            defaults.double(forKey: "SWORDCOMM.CountermeasureIntensity") : 0.5
+            defaults.double(forKey: "SWORDCOMM.CountermeasureIntensity") : 0.3
 
         translationEnabled = defaults.bool(forKey: "SWORDCOMM.Translation") != false // Default true
         autoTranslateEnabled = defaults.bool(forKey: "SWORDCOMM.AutoTranslate")
