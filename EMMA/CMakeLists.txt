@@ -26,7 +26,7 @@ set(SECURITY_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/cache_operations.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/memory_scrambler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/timing_obfuscation.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/kyber1024.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SecurityKit/Native/nist_pqc.cpp
 )
 
 set(SECURITY_BRIDGE_SOURCES

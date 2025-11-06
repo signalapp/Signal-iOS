@@ -12,7 +12,7 @@
 #include "../Native/memory_scrambler.h"
 #include "../Native/timing_obfuscation.h"
 #include "../Native/cache_operations.h"
-#include "../Native/kyber1024.h"
+#include "../Native/nist_pqc.h"
 
 using namespace emma::security;
 
@@ -263,6 +263,193 @@ using namespace emma::security;
     @catch (NSException *exception) {
         NSLog(@"Kyber decapsulation failed: %@", exception);
         return nil;
+    }
+}
+
+@end
+
+// MARK: - ML-KEM-1024 (NIST FIPS 203)
+
+@implementation EMMLKEMKeyPair
+
+- (instancetype)initWithPublicKey:(NSData *)publicKey secretKey:(NSData *)secretKey {
+    if (self = [super init]) {
+        _publicKey = [publicKey copy];
+        _secretKey = [secretKey copy];
+    }
+    return self;
+}
+
+@end
+
+@implementation EMMLKEMEncapsulationResult
+
+- (instancetype)initWithCiphertext:(NSData *)ciphertext sharedSecret:(NSData *)sharedSecret {
+    if (self = [super init]) {
+        _ciphertext = [ciphertext copy];
+        _sharedSecret = [sharedSecret copy];
+    }
+    return self;
+}
+
+@end
+
+@implementation EMMLKEM1024
+
++ (nullable EMMLKEMKeyPair *)generateKeypair {
+    @try {
+        MLKEMKeyPair kp = MLKEM1024::generate_keypair();
+
+        NSData *publicKey = [NSData dataWithBytes:kp.public_key.data()
+                                          length:kp.public_key.size()];
+        NSData *secretKey = [NSData dataWithBytes:kp.secret_key.data()
+                                          length:kp.secret_key.size()];
+
+        return [[EMMLKEMKeyPair alloc] initWithPublicKey:publicKey secretKey:secretKey];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-KEM keypair generation failed: %@", exception);
+        return nil;
+    }
+}
+
++ (nullable EMMLKEMEncapsulationResult *)encapsulateWithPublicKey:(NSData *)publicKey {
+    if (!publicKey || publicKey.length != ML_KEM_1024_PUBLIC_KEY_SIZE) {
+        return nil;
+    }
+
+    @try {
+        std::vector<uint8_t> pk_vec((const uint8_t *)publicKey.bytes,
+                                    (const uint8_t *)publicKey.bytes + publicKey.length);
+
+        MLKEMEncapsulationResult result = MLKEM1024::encapsulate(pk_vec);
+
+        NSData *ciphertext = [NSData dataWithBytes:result.ciphertext.data()
+                                           length:result.ciphertext.size()];
+        NSData *sharedSecret = [NSData dataWithBytes:result.shared_secret.data()
+                                             length:result.shared_secret.size()];
+
+        return [[EMMLKEMEncapsulationResult alloc] initWithCiphertext:ciphertext
+                                                         sharedSecret:sharedSecret];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-KEM encapsulation failed: %@", exception);
+        return nil;
+    }
+}
+
++ (nullable NSData *)decapsulateWithCiphertext:(NSData *)ciphertext secretKey:(NSData *)secretKey {
+    if (!ciphertext || ciphertext.length != ML_KEM_1024_CIPHERTEXT_SIZE ||
+        !secretKey || secretKey.length != ML_KEM_1024_SECRET_KEY_SIZE) {
+        return nil;
+    }
+
+    @try {
+        std::vector<uint8_t> ct_vec((const uint8_t *)ciphertext.bytes,
+                                    (const uint8_t *)ciphertext.bytes + ciphertext.length);
+        std::vector<uint8_t> sk_vec((const uint8_t *)secretKey.bytes,
+                                    (const uint8_t *)secretKey.bytes + secretKey.length);
+
+        std::vector<uint8_t> shared_secret = MLKEM1024::decapsulate(ct_vec, sk_vec);
+
+        return [NSData dataWithBytes:shared_secret.data() length:shared_secret.size()];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-KEM decapsulation failed: %@", exception);
+        return nil;
+    }
+}
+
+@end
+
+// MARK: - ML-DSA-87 (NIST FIPS 204)
+
+@implementation EMMLDSAKeyPair
+
+- (instancetype)initWithPublicKey:(NSData *)publicKey secretKey:(NSData *)secretKey {
+    if (self = [super init]) {
+        _publicKey = [publicKey copy];
+        _secretKey = [secretKey copy];
+    }
+    return self;
+}
+
+@end
+
+@implementation EMMLDSASignature
+
+- (instancetype)initWithSignature:(NSData *)signature {
+    if (self = [super init]) {
+        _signature = [signature copy];
+    }
+    return self;
+}
+
+@end
+
+@implementation EMMLDSA87
+
++ (nullable EMMLDSAKeyPair *)generateKeypair {
+    @try {
+        MLDSAKeyPair kp = MLDSA87::generate_keypair();
+
+        NSData *publicKey = [NSData dataWithBytes:kp.public_key.data()
+                                          length:kp.public_key.size()];
+        NSData *secretKey = [NSData dataWithBytes:kp.secret_key.data()
+                                          length:kp.secret_key.size()];
+
+        return [[EMMLDSAKeyPair alloc] initWithPublicKey:publicKey secretKey:secretKey];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-DSA keypair generation failed: %@", exception);
+        return nil;
+    }
+}
+
++ (nullable EMMLDSASignature *)signMessage:(NSData *)message withSecretKey:(NSData *)secretKey {
+    if (!message || message.length == 0 || !secretKey || secretKey.length != ML_DSA_87_SECRET_KEY_SIZE) {
+        return nil;
+    }
+
+    @try {
+        std::vector<uint8_t> msg_vec((const uint8_t *)message.bytes,
+                                     (const uint8_t *)message.bytes + message.length);
+        std::vector<uint8_t> sk_vec((const uint8_t *)secretKey.bytes,
+                                    (const uint8_t *)secretKey.bytes + secretKey.length);
+
+        MLDSASignature sig = MLDSA87::sign(msg_vec, sk_vec);
+
+        NSData *signature = [NSData dataWithBytes:sig.signature.data()
+                                          length:sig.signature.size()];
+
+        return [[EMMLDSASignature alloc] initWithSignature:signature];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-DSA signing failed: %@", exception);
+        return nil;
+    }
+}
+
++ (BOOL)verifyMessage:(NSData *)message signature:(NSData *)signature withPublicKey:(NSData *)publicKey {
+    if (!message || message.length == 0 ||
+        !signature || signature.length != ML_DSA_87_SIGNATURE_SIZE ||
+        !publicKey || publicKey.length != ML_DSA_87_PUBLIC_KEY_SIZE) {
+        return NO;
+    }
+
+    @try {
+        std::vector<uint8_t> msg_vec((const uint8_t *)message.bytes,
+                                     (const uint8_t *)message.bytes + message.length);
+        std::vector<uint8_t> sig_vec((const uint8_t *)signature.bytes,
+                                     (const uint8_t *)signature.bytes + signature.length);
+        std::vector<uint8_t> pk_vec((const uint8_t *)publicKey.bytes,
+                                    (const uint8_t *)publicKey.bytes + publicKey.length);
+
+        return MLDSA87::verify(msg_vec, sig_vec, pk_vec) ? YES : NO;
+    }
+    @catch (NSException *exception) {
+        NSLog(@"ML-DSA verification failed: %@", exception);
+        return NO;
     }
 }
 
