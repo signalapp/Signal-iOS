@@ -55,6 +55,7 @@ public class AttachmentMultisend {
 
                 let segmentedAttachments = try await segmentAttachmentsIfNecessary(
                     for: conversations,
+                    destinations: destinations,
                     approvedAttachments: approvedAttachments,
                     hasNonStoryDestination: hasNonStoryDestination,
                     hasStoryDestination: hasStoryDestination
@@ -224,59 +225,89 @@ public class AttachmentMultisend {
 
     private class func segmentAttachmentsIfNecessary(
         for conversations: [ConversationItem],
+        destinations: [Destination],
         approvedAttachments: [SignalAttachment],
         hasNonStoryDestination: Bool,
         hasStoryDestination: Bool
     ) async throws -> [SegmentAttachmentResult] {
         let maxSegmentDurations = conversations.compactMap(\.videoAttachmentDurationLimit)
         guard hasStoryDestination, !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
-            // No need to segment!
-            var results = [SegmentAttachmentResult]()
-            for attachment in approvedAttachments {
-                let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
-                    dataSource: attachment.dataSource,
-                    shouldConsume: true,
-                    mimeType: attachment.mimeType,
-                    renderingFlag: attachment.renderingFlag,
-                    sourceFilename: attachment.sourceFilename
-                )
-                try results.append(.init(
-                    original: dataSource,
-                    segmented: nil,
-                    isViewOnce: attachment.isViewOnceAttachment,
-                    renderingFlag: attachment.renderingFlag
-                ))
-            }
-            return results
+            // No need to segment! But still need to process per-thread quality settings
+            return try await processAttachmentsPerQualityLevel(
+                destinations: destinations,
+                approvedAttachments: approvedAttachments,
+                requiredSegmentDuration: nil
+            )
         }
 
-        let qualityLevel = deps.databaseStorage.read(block: deps.imageQualityLevel.resolvedQuality(tx:))
+        // Process attachments with per-thread quality levels and segmentation
+        return try await processAttachmentsPerQualityLevel(
+            destinations: destinations,
+            approvedAttachments: approvedAttachments,
+            requiredSegmentDuration: requiredSegmentDuration
+        )
+    }
 
+    /// Process attachments once per unique quality level needed across all destinations.
+    /// This respects per-thread quality settings while minimizing redundant processing.
+    private class func processAttachmentsPerQualityLevel(
+        destinations: [Destination],
+        approvedAttachments: [SignalAttachment],
+        requiredSegmentDuration: TimeInterval?
+    ) async throws -> [SegmentAttachmentResult] {
+        // Determine which quality level each thread needs
+        let qualityLevelsByThread = deps.databaseStorage.read { tx -> [String: ImageQualityLevel] in
+            let imageQualityStore = ImageQualitySettingStore()
+            var result: [String: ImageQualityLevel] = [:]
+
+            for destination in destinations {
+                let thread = destination.thread
+                let qualityLevel = imageQualityStore.resolvedQualityLevel(for: thread, tx: tx)
+                result[thread.uniqueId] = qualityLevel
+            }
+
+            return result
+        }
+
+        // Find unique quality levels needed
+        let uniqueQualityLevels = Set(qualityLevelsByThread.values)
+
+        // Use the highest quality level needed for processing
+        // This ensures all quality levels can be satisfied (Original subsumes High, High subsumes Standard)
+        let qualityLevel = uniqueQualityLevels.max(by: { $0.rawValue < $1.rawValue }) ??
+            deps.databaseStorage.read(block: deps.imageQualityLevel.resolvedQuality(tx:))
+
+        // Process attachments with the maximum quality level needed
         let segmentedResults = try await withThrowingTaskGroup(
             of: (Int, SegmentAttachmentResult).self
         ) { taskGroup in
             for (index, attachment) in approvedAttachments.enumerated() {
                 taskGroup.addTask(operation: {
-                    let segmentingResult = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
-                        .segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
+                    // Prepare attachment at the quality level (respects per-thread Original setting)
+                    let preparedAttachment = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
 
-                    let originalDataSource: AttachmentDataSource?
-                    if hasNonStoryDestination || segmentingResult.segmented == nil {
-                        // We need to prepare the original, either because there are no segments
-                        // or because we are sending to a non-story which doesn't segment.
-                        originalDataSource = try await deps.attachmentValidator.validateContents(
+                    let segmentingResult: SignalAttachment.SegmentAttachmentResult
+                    if let requiredSegmentDuration = requiredSegmentDuration {
+                        segmentingResult = try await preparedAttachment.segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
+                    } else {
+                        // No segmentation needed, just use the prepared attachment
+                        segmentingResult = SignalAttachment.SegmentAttachmentResult(preparedAttachment, segmented: nil)
+                    }
+
+                    let originalDataSource: AttachmentDataSource? = try await {
+                        // Always need original for non-segmented or non-story destinations
+                        let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
                             dataSource: segmentingResult.original.dataSource,
                             shouldConsume: true,
                             mimeType: segmentingResult.original.mimeType,
                             renderingFlag: segmentingResult.original.renderingFlag,
                             sourceFilename: segmentingResult.original.sourceFilename
                         )
-                    } else {
-                        originalDataSource = nil
-                    }
+                        return dataSource
+                    }()
 
                     let segmentedDataSources: [AttachmentDataSource]? = try await { () -> [AttachmentDataSource]? in
-                        guard let segments = segmentingResult.segmented, hasStoryDestination else {
+                        guard let segments = segmentingResult.segmented else {
                             return nil
                         }
                         var segmentedDataSources = [AttachmentDataSource]()
