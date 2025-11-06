@@ -2428,7 +2428,8 @@ private struct BackupSubscriptionView: View {
             Spacer()
 
             Image("backups-subscribed")
-                .frame(width: 56, height: 56)
+                .resizable()
+                .frame(width: 64, height: 64)
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 8)
