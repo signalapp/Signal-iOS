@@ -332,6 +332,7 @@ public class GRDBSchemaMigrator {
         case addKyberPreKeyUse
         case uniquifyUsernameLookupRecord
         case fixUpcomingCallLinks
+        case uniquifyUsernameLookupRecord2
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -4242,12 +4243,23 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.uniquifyUsernameLookupRecord) { tx in
-            try uniquifyUsernameLookupRecord(tx: tx)
+            try uniquifyUsernameLookupRecord(caseInsensitive: false, tx: tx)
             return .success(())
         }
 
         migrator.registerMigration(.fixUpcomingCallLinks) { tx in
             try fixUpcomingCallLinks(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.uniquifyUsernameLookupRecord2) { tx in
+            // UsernameLookupRecord_UniqueUsernames enforces UNIQUE-ness for the
+            // "username" column of UsernameLookupRecord...but when added was
+            // case-sensitive, whereas usernames should be case-insensitive.
+            //
+            // To that end, replay the uniquification, case-insensitive.
+            try tx.database.drop(index: "UsernameLookupRecord_UniqueUsernames")
+            try uniquifyUsernameLookupRecord(caseInsensitive: true, tx: tx)
             return .success(())
         }
 
@@ -6466,7 +6478,10 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    static func uniquifyUsernameLookupRecord(tx: DBWriteTransaction) throws {
+    static func uniquifyUsernameLookupRecord(
+        caseInsensitive: Bool,
+        tx: DBWriteTransaction,
+    ) throws {
         // Iterate UsernameLookupRecord newest -> oldest, and record the ACIs of
         // any duplicate usernames.
         var seenUsernames: Set<String> = []
@@ -6477,7 +6492,11 @@ public class GRDBSchemaMigrator {
         )
         while let row = try cursor.next() {
             let aci: Data = row["aci"]
-            let username: String = row["username"]
+            var username: String = row["username"]
+
+            if caseInsensitive {
+                username = username.lowercased()
+            }
 
             if !seenUsernames.insert(username).inserted {
                 acisWithDupeUsernames.insert(aci)
@@ -6492,14 +6511,16 @@ public class GRDBSchemaMigrator {
             )
         }
 
-        // Build a UNIQUE index on the remaining contents, to let us query
-        // efficiently and maintain the uniqueness invariant.
-        try tx.database.create(
-            index: "UsernameLookupRecord_UniqueUsernames",
-            on: "UsernameLookupRecord",
-            columns: ["username"],
-            unique: true,
-        )
+        let usernameColumnExpr = if caseInsensitive {
+            "\"username\" COLLATE NOCASE"
+        } else {
+            "\"username\""
+        }
+
+        try tx.database.execute(sql: """
+            CREATE UNIQUE INDEX "UsernameLookupRecord_UniqueUsernames"
+            ON "UsernameLookupRecord"(\(usernameColumnExpr))
+        """)
     }
 
     static func fixUpcomingCallLinks(tx: DBWriteTransaction) throws {

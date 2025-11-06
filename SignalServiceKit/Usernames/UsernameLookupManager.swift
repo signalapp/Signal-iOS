@@ -80,11 +80,14 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
         if let username {
             // The `username` column is UNIQUE (enforced by an index), so we
             // must take care to wipe any previous associations for this
-            // username.
+            // username (case-insensitive).
             //
             // This is semantically appropriate as usernames can only be
             // associated with one ACI at a time.
-            if let conflictingRecord = usernameLookupRecordStore.fetchOne(forUsername: username, tx: tx) {
+            if let conflictingRecord = usernameLookupRecordStore.fetchOne(
+                forUsernameCaseInsensitive: username,
+                tx: tx,
+            ) {
                 let conflictingAci = Aci(fromUUID: conflictingRecord.aci)
                 usernameLookupRecordStore.deleteOne(forAci: conflictingAci, tx: tx)
             }
