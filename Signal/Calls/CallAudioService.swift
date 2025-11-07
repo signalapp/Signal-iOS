@@ -27,6 +27,10 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     private var observers = [NSObjectProtocol]()
 
+    private var interruptionPreventionTimer = Timer()
+    private var lastCallPeekCount = 0
+    private let fiveMinutesSeconds = 5 * kMinuteInterval
+
     private var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
@@ -77,6 +81,49 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         ensureProperAudioSession(call: call)
+    }
+
+    func groupCallPeekChanged(_ call: GroupCall) {
+        // This is a bit weird, so buckle up.
+        //
+        // Without this hack, if a user is in a group call, everyone else leaves, 8 minutes pass, and then another
+        // user joins, audio will not play OR record until and unless either:
+        // (a) This user leaves and rejoins
+        // (b) Everyone else leaves and rejoins
+        //
+        // This is because, after 8 minutes of idle time, an "interruption" fires (as seen in system logs):
+        // (iOS 15)
+        // CMSUtility_DeactivateTimerHandler: Deactivating client 'sid:<ID>, Signal(<pid>), 'prim'' because it has not been playing for 8 minutes
+        // (iOS 18)
+        // CMSUtility_DeactivateTimerHandler: INTERRUPTING client 'sid:<ID>, Signal(<pid>), 'prim'' because there has been no activity since <time> ( 8 minutes )
+        //
+        // This deactivation causes any future `setActive` calls to fail, in particular when attempting to start
+        // playback or recording in WebRTC.
+        //
+        // I have not found documentation about the exact circumstances in which this timer starts and fires, or how
+        // to end such an interruption.
+        //
+        // On iOS 15, playing any media (even silence) is enough to end the interruption and allow reactivation
+        // (though it appears that this first media play will fail -- that is, if it were not silence, nothing would
+        // play anyway).
+        //
+        // On iOS 18, that is not true, so instead we preemptively play some media to prevent the interruption.
+        //
+        // So, if we are the only person in the call, we set a timer to play a 100ms clip of silence once every five
+        // minutes.
+        lastCallPeekCount = call.ringRtcCall.peekInfo?.joinedMembers.count ?? 1
+        if lastCallPeekCount == 1 {
+            interruptionPreventionTimer = Timer.scheduledTimer(withTimeInterval: fiveMinutesSeconds, repeats: true, block: { [self] _ in
+                if self.lastCallPeekCount == 1 {
+                    Logger.info("Prevent interrupt; play silence")
+                    self.play(sound: .silence)
+                }
+            })
+        } else {
+            Logger.info("Invalidate interrupt prevention timer; no longer alone in call")
+            interruptionPreventionTimer.invalidate()
+        }
+
     }
 
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
@@ -164,6 +211,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         guard call.ringRtcCall.localDeviceState.joinState != .notJoined else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
+
+            interruptionPreventionTimer.invalidate()
+
             return
         }
 
