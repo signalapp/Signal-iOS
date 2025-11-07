@@ -79,22 +79,14 @@ class MentionPicker: UIView {
         }
 
         if useVisualEffectViewBackground {
-            var backgroundView: UIVisualEffectView?
-
 #if compiler(>=6.2)
-            // Glass background.
+            // Glass background, rounded corners, horizontal insets.
             if #available(iOS 26, *), useGlassBackground {
-                let glassEffect = UIGlassEffect(style: .regular)
-                // Copy from ConversationInputToolbar.
-                glassEffect.tintColor = UIColor { traitCollection in
-                    if traitCollection.userInterfaceStyle == .dark {
-                        return UIColor(white: 0, alpha: 0.2)
-                    }
-                    return UIColor(white: 1, alpha: 0.12)
-                }
-                backgroundView = UIVisualEffectView(effect: glassEffect)
-                backgroundView?.clipsToBounds = true
-                backgroundView?.cornerConfiguration = .uniformCorners(radius: .fixed(34))
+                let glassEffectView = UIVisualEffectView(effect: backgroundViewVisualEffect())
+                glassEffectView.clipsToBounds = true
+                glassEffectView.cornerConfiguration = .uniformCorners(radius: .fixed(34))
+
+                backgroundView = glassEffectView
 
                 tableView.cornerConfiguration = .uniformCorners(radius: .fixed(34))
                 tableView.contentInset.top = 10
@@ -106,16 +98,12 @@ class MentionPicker: UIView {
 
             // Blur background.
             if backgroundView == nil {
-                let forceDarkTheme = overrideUserInterfaceStyle == .dark
-
                 if UIAccessibility.isReduceTransparencyEnabled {
-                    tableView.backgroundColor = forceDarkTheme
+                    tableView.backgroundColor = overrideUserInterfaceStyle == .dark
                     ? Theme.darkThemeBackgroundColor
                     : Theme.backgroundColor
                 } else {
-                    backgroundView = UIVisualEffectView(
-                        effect: forceDarkTheme ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
-                    )
+                    backgroundView = UIVisualEffectView(effect: backgroundViewVisualEffect())
                 }
             }
 
@@ -131,7 +119,11 @@ class MentionPicker: UIView {
             }
         }
 
-        addSubview(tableView)
+        if let backgroundView {
+            backgroundView.contentView.addSubview(tableView)
+        } else {
+            addSubview(tableView)
+        }
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: topAnchor),
@@ -160,6 +152,8 @@ class MentionPicker: UIView {
                 hairlineView.trailingAnchor.constraint(equalTo: trailingAnchor),
                 hairlineView.heightAnchor.constraint(equalToConstant: 1),
             ])
+
+            self.hairlineView = hairlineView
         }
 
         // Setup height constraint for the container view.
@@ -183,6 +177,35 @@ class MentionPicker: UIView {
 
     // MARK: - Layout
 
+    // `nil` if "Reduce Transparency" is enabled on iOS 15-18.
+    private var backgroundView: UIVisualEffectView?
+
+    private func backgroundViewVisualEffect() -> UIVisualEffect? {
+#if compiler(>=6.2)
+        if #available(iOS 26.1, *) {
+            let glassEffect = UIGlassEffect(style: .regular)
+            // Copy from ConversationInputToolbar.
+            glassEffect.tintColor = UIColor { traitCollection in
+                if traitCollection.userInterfaceStyle == .dark {
+                    return UIColor(white: 0, alpha: 0.2)
+                }
+                return UIColor(white: 1, alpha: 0.12)
+            }
+            return glassEffect
+        }
+        // 26.0 would still use a panel with rounded corners, but with blur effect instead of glass.
+        // This is because on 26.0 `UIGlassEffect` can't "dematerialize" due to UIKit bug.
+        if #available(iOS 26, *) {
+            return UIBlurEffect(style: .systemThinMaterial)
+        }
+#endif
+
+        guard !UIAccessibility.isReduceTransparencyEnabled else { return nil }
+
+        let blurEffect = overrideUserInterfaceStyle == .dark ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
+        return blurEffect
+    }
+
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = self
@@ -194,6 +217,8 @@ class MentionPicker: UIView {
         tableView.register(MentionableUserCell.self, forCellReuseIdentifier: MentionableUserCell.reuseIdentifier)
         return tableView
     }()
+
+    private var hairlineView: UIView?
 
     private var currentHeight: CGFloat = 0
 
@@ -259,6 +284,62 @@ class MentionPicker: UIView {
         }
         let maximumContentHeight = CGFloat(filteredMentionableUsers.count) * MentionableUserCell.cellHeight + tableView.contentInset.totalHeight
         return min(maximumContentHeight, maximumContainerHeight)
+    }
+
+    // MARK: - Animations
+
+    private static func animator() -> UIViewPropertyAnimator {
+        return UIViewPropertyAnimator(
+            duration: 0.25,
+            springDamping: 1,
+            springResponse: 0.4
+        )
+    }
+
+    private static var animationTransform: CGAffineTransform {
+        return .scale(0.9)
+    }
+
+    func prepareToAnimateIn() {
+        if let backgroundView {
+            backgroundView.effect = nil
+        }
+        tableView.alpha = 0
+        hairlineView?.alpha = 0
+        transform = .scale(0.9)
+    }
+
+    func animateIn() {
+        let animator = MentionPicker.animator()
+        animator.addAnimations {
+            self.transform = .identity
+
+            if let backgroundView = self.backgroundView,
+               let backgroundViewEffect = self.backgroundViewVisualEffect()
+            {
+                backgroundView.effect = backgroundViewEffect
+            }
+
+            self.tableView.alpha = 1
+            self.hairlineView?.alpha = 1
+        }
+        animator.startAnimation()
+    }
+
+    func animateOut(completion: @escaping (UIViewAnimatingPosition) -> Void) {
+        let animator = MentionPicker.animator()
+        animator.addAnimations {
+            self.transform = MentionPicker.animationTransform
+
+            if let backgroundView = self.backgroundView {
+                backgroundView.effect = nil
+            }
+
+            self.tableView.alpha = 0
+            self.hairlineView?.alpha = 0
+        }
+        animator.addCompletion(completion)
+        animator.startAnimation()
     }
 
     // MARK: - Scroll Handling

@@ -234,96 +234,74 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     private weak var pickerView: MentionPicker?
-    private weak var pickerViewTopConstraint: NSLayoutConstraint?
+
     private func didBeginTypingMention() {
-        guard let bodyRangesDelegate = bodyRangesDelegate else { return }
+        guard let bodyRangesDelegate else { return }
 
         bodyRangesDelegate.textViewDidBeginTypingMention(self)
 
-        pickerView?.removeFromSuperview()
+        if let pickerView {
+            pickerView.removeFromSuperview()
+            self.pickerView = nil
+        }
+
+        guard let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
+              let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
 
         let mentionableAcis = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx)
         }
-
         guard !mentionableAcis.isEmpty else { return }
-
-        guard let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
-            let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
 
         let pickerView = MentionPicker(
             mentionableAcis: mentionableAcis,
-            style: bodyRangesDelegate.mentionPickerStyle(self)
-        ) { [weak self] selectedAddress in
-            self?.insertTypedMention(address: selectedAddress)
+            style: bodyRangesDelegate.mentionPickerStyle(self)) { [weak self] selectedAddress in
+                self?.insertTypedMention(address: selectedAddress)
+            }
+
+        // IS THIS EVEN POSSIBLE?
+        guard let currentlyTypingMentionText, pickerView.mentionTextChanged(currentlyTypingMentionText) else {
+            state = .notTypingMention
+            return
         }
+
         self.pickerView = pickerView
 
+        // Add to super view and set up constraints.
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
         pickerParentView.insertSubview(pickerView, belowSubview: pickerReferenceView)
-        pickerView.autoPinWidthToSuperview()
-        pickerView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.activate([
+            pickerView.topAnchor.constraint(greaterThanOrEqualTo: pickerParentView.safeAreaLayoutGuide.topAnchor),
+            pickerView.leadingAnchor.constraint(equalTo: pickerParentView.leadingAnchor),
+            pickerView.trailingAnchor.constraint(equalTo: pickerParentView.trailingAnchor),
+            pickerView.bottomAnchor.constraint(equalTo: pickerReferenceView.topAnchor),
+        ])
 
-        let animationTopConstraint = pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
-
-        guard let currentlyTypingMentionText = currentlyTypingMentionText,
-            pickerView.mentionTextChanged(currentlyTypingMentionText) else {
-                pickerView.removeFromSuperview()
-                self.pickerView = nil
-                state = .notTypingMention
-                return
+        // Do initial layout - make sure views are in their final position before being presented.
+        UIView.performWithoutAnimation {
+            pickerView.prepareToAnimateIn()
+            pickerParentView.layoutIfNeeded()
+            pickerView.updateHeightIfNeeded()
         }
+
+        // Fade in.
+        pickerView.animateIn()
 
         ImpactHapticFeedback.impactOccurred(style: .light)
-
-        pickerParentView.layoutIfNeeded()
-
-        // Slide up.
-        UIView.animate(withDuration: 0.25) {
-            pickerView.alpha = 1
-            animationTopConstraint.isActive = false
-            self.pickerViewTopConstraint = pickerView.autoPinEdge(.bottom, to: .top, of: pickerReferenceView)
-            pickerParentView.layoutIfNeeded()
-        }
     }
 
     private func didEndTypingMention() {
         bodyRangesDelegate?.textViewDidEndTypingMention(self)
 
-        guard let pickerView = pickerView else { return }
+        guard let pickerView else { return }
 
-        self.pickerView = nil
-
-        let pickerViewTopConstraint = self.pickerViewTopConstraint
-        self.pickerViewTopConstraint = nil
-
-        guard let bodyRangesDelegate = bodyRangesDelegate,
-            let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
-            let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else {
-                pickerView.removeFromSuperview()
-                return
-        }
-
-        let style = bodyRangesDelegate.mentionPickerStyle(self)
-
-        // Slide down.
-        UIView.animate(withDuration: 0.25, animations: {
-            pickerViewTopConstraint?.isActive = false
-            pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
-            pickerParentView.layoutIfNeeded()
-
-            switch style {
-            case .composingAttachment:
-                pickerView.alpha = 0
-            case .groupReply, .`default`:
-                break
-            }
-        }) { _ in
+        pickerView.animateOut { _ in
             pickerView.removeFromSuperview()
         }
     }
 
     private func didUpdateMentionText(_ text: String) {
-        if let pickerView = pickerView, !pickerView.mentionTextChanged(text) {
+        if let pickerView, !pickerView.mentionTextChanged(text) {
             state = .notTypingMention
         }
     }
