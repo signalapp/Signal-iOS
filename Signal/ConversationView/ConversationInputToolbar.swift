@@ -893,7 +893,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             rightEdgeControlsState = .sendButton
         }
         // If there's a quoted message or we're editing a message: show inactive Send button.
-        else if hasQuotedMessage || isEditingMessage {
+        else if isEditingMessage {
             rightEdgeControlsState = .disabledSendButton
         }
         // No input, not editing message, no quoted message: do not show Send button.
@@ -913,7 +913,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let hideAllTextFieldButtons = rightEdgeControlsState != .default
         // Sticker/keyboard buttons will also be hidden if there's whitespace-only input.
         let textFieldHasAnyInput = !inputTextView.untrimmedText.isEmpty
-        let hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput
+        let hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput || hasQuotedMessage
         let hideStickerButton = hideInputMethodButtons || desiredKeyboardType == .sticker
         let hideKeyboardButton = hideInputMethodButtons || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
