@@ -24,6 +24,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         return view
     }
 
+    public func viewForSuggestedStickersPanel() -> UIView { view }
+
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 

@@ -25,6 +25,10 @@ protocol ConversationInputToolbarDelegate: AnyObject {
     // but might as well request root view for all iOS versions.
     func viewForKeyboardLayoutGuide() -> UIView
 
+    /// Return a view where `ConversationInputToolbar` should place suggested stickers panel.
+    /// This view must contain `ConversationInputToolbar` otherwise the behavior is undefined (we'll crash).
+    func viewForSuggestedStickersPanel() -> UIView
+
     // MARK: Voice Memo
 
     func voiceMemoGestureDidStart()
@@ -2027,12 +2031,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         @available(iOS 26.0, *)
         static let backgroundCornerRadius: CGFloat = 26
 
-        // When being animated in/out, the entire `stickerPanel` also moves for the amount of its entire height.
-        // So we need to compensate the translation for that.
         static func animationTransform(_ view: UIView) -> CGAffineTransform {
-            let visualTranslationY: CGFloat = 24
-            let actualTranslationY = visualTranslationY - view.bounds.height
-            return CGAffineTransform.scale(0.9).translatedBy(x: 0, y: actualTranslationY)
+            return CGAffineTransform.scale(0.9)
         }
 
 #if compiler(>=6.2)
@@ -2046,16 +2046,15 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 #endif
     }
 
-    // Outermost sticker view. Takes full width of ConversationInputToolbar.
-    // Placed inside of a vstack along with the panel that holds message input controls.
+    /// Outermost sticker view placed as a subview of the delegate provided view and takes full width of that.
     private let stickerPanel = UIView.container()
 
     private var stickerPanelConstraint: NSLayoutConstraint?
 
-    // Subview of `stickerPanel`. Contains background panel and sticker list view.
-    // Constrained horizontally to `stickerPanel.safeAreaLayoutGuide` with a fixed margin.
-    // On iOS 26 it's leading edge aligns with (+) attachment button and
-    // trailing edge aligns with the blue Send button.
+    /// Subview of `stickerPanel`. Contains background panel and sticker list view.
+    /// Constrained horizontally to `stickerPanel.safeAreaLayoutGuide` with a fixed margin.
+    /// On iOS 26 it's leading edge aligns with (+) attachment button and
+    /// trailing edge aligns with the blue Send button.
     private lazy var stickerListViewWrapper: UIVisualEffectView = {
         let view = UIVisualEffectView()
 
@@ -2103,7 +2102,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private func loadStickerPanelIfNecessary() {
         guard stickerListViewWrapper.superview == nil else { return }
 
-        // List view wrapper.
         stickerPanel.addSubview(stickerListViewWrapper)
         stickerListViewWrapper.translatesAutoresizingMaskIntoConstraints = false
         stickerPanel.addConstraints([
@@ -2118,27 +2116,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 equalTo: stickerPanel.layoutMarginsGuide.trailingAnchor,
                 constant: -StickerLayout.outerPanelHMargin
             ),
+            stickerListViewWrapper.bottomAnchor.constraint(
+                equalTo: stickerPanel.bottomAnchor
+            )
         ])
 
         UIView.performWithoutAnimation {
             stickerPanel.layoutIfNeeded()
         }
-    }
-
-    private func updateStickerPanelConstraints() {
-        if let stickerPanelConstraint {
-            stickerPanel.removeConstraint(stickerPanelConstraint)
-        }
-
-        let constraint: NSLayoutConstraint = {
-            if isStickerPanelHidden {
-                return stickerPanel.bottomAnchor.constraint(equalTo: stickerListViewWrapper.topAnchor)
-            } else {
-                return stickerPanel.bottomAnchor.constraint(equalTo: stickerListViewWrapper.bottomAnchor)
-            }
-        }()
-        stickerPanel.addConstraint(constraint)
-        stickerPanelConstraint = constraint
     }
 
     private func updateSuggestedStickers(animated: Bool) {
@@ -2167,6 +2152,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }
 
     private func showStickerPanel(animated: Bool) {
+        guard let stickerPanelSuperview = inputToolbarDelegate?.viewForSuggestedStickersPanel() else {
+            owsFailBeta("No view provided for stickers panel.")
+            return
+        }
+
         owsAssertDebug(!currentSuggestedStickers.isEmpty)
 
         loadStickerPanelIfNecessary()
@@ -2186,8 +2176,47 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         isStickerPanelHidden = false
 
         UIView.performWithoutAnimation {
-            self.stickersListView.layoutIfNeeded()
-            self.stickersListView.contentOffset = CGPoint(
+            // Find a subview of `stickerPanelSuperview` that we would put `stickerPanel` behind.
+            var stickerPanelSiblingView: UIView = self
+            while let siblingSuperView = stickerPanelSiblingView.superview,
+                  siblingSuperView != stickerPanelSuperview
+            {
+                stickerPanelSiblingView = siblingSuperView
+            }
+
+            // Add `stickerPanel` to the view hierarchy and set up constraints.
+            stickerPanelSuperview.insertSubview(stickerPanel, belowSubview: stickerPanelSiblingView)
+            stickerPanel.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                stickerPanel.leadingAnchor.constraint(equalTo: stickerPanelSuperview.leadingAnchor),
+                stickerPanel.trailingAnchor.constraint(equalTo: stickerPanelSuperview.trailingAnchor),
+                stickerPanel.bottomAnchor.constraint(equalTo: self.topAnchor)
+            ])
+
+            // Manually calculate final size and position of the `stickerPanel`
+            // and place it appropriately.
+            // This is done to avoid calling `layoutSubviews` on the panel's parent which is likely VC's root view.
+            let stickerPanelMaxY = stickerPanelSuperview.convert(bounds.origin, from: self).y
+            let stickerPanelSize = stickerPanel.systemLayoutSizeFitting(
+                CGSize(width: stickerPanelSuperview.bounds.width, height: 300),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            stickerPanel.frame = CGRect(
+                origin: CGPoint(
+                    x: stickerPanelSuperview.bounds.minX,
+                    y: stickerPanelMaxY - stickerPanelSize.height
+                ),
+                size: CGSize(
+                    width: stickerPanelSuperview.bounds.width,
+                    height: stickerPanelSize.height
+                )
+            )
+            // Ensure final layout within the panel.
+            stickerPanel.layoutIfNeeded()
+
+            // Set initial scroll position in the list.
+            stickersListView.contentOffset = CGPoint(
                 x: -(CurrentAppContext().isRTL
                      ? stickersListView.frame.width - stickersListView.contentSize.width - StickerLayout.listViewPadding.right
                      : StickerLayout.listViewPadding.left),
@@ -2196,20 +2225,15 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
 
         guard animated else {
-            updateStickerPanelConstraints()
-
-            stickerListViewWrapper.isHidden = false
             stickerListViewWrapper.transform = .identity
             stickerListViewWrapper.effect = StickerLayout.panelVisualEffect
 
             stickersListView.alpha = 1
-
             return
         }
 
         // Prepare initial state for animations.
         UIView.performWithoutAnimation {
-            stickerListViewWrapper.isHidden = false
             stickerListViewWrapper.transform = StickerLayout.animationTransform(stickerListViewWrapper)
             stickerListViewWrapper.effect = nil
 
@@ -2223,9 +2247,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             springResponse: 0.4
         )
         animator.addAnimations {
-            self.updateStickerPanelConstraints()
-            self.layoutIfNeeded()
-
             self.stickerListViewWrapper.transform = .identity
             self.stickerListViewWrapper.effect = StickerLayout.panelVisualEffect
 
@@ -2237,11 +2258,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private func hideStickerPanel(animated: Bool) {
         guard !isStickerPanelHidden else { return }
 
-        isStickerPanelHidden = true
-
         guard animated else {
-            updateStickerPanelConstraints()
-            self.stickerListViewWrapper.isHidden = true
+            stickerPanel.removeFromSuperview()
+            isStickerPanelHidden = true
             return
         }
 
@@ -2251,16 +2270,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             springResponse: 0.4
         )
         animator.addAnimations {
-            self.updateStickerPanelConstraints()
-            self.layoutIfNeeded()
-
             self.stickerListViewWrapper.transform = StickerLayout.animationTransform(self.stickerListViewWrapper)
             self.stickerListViewWrapper.effect = nil
 
             self.stickersListView.alpha = 0
         }
         animator.addCompletion { _ in
-            self.stickerListViewWrapper.isHidden = true
+            self.stickerPanel.removeFromSuperview()
+            self.isStickerPanelHidden = true
         }
         animator.startAnimation()
     }
