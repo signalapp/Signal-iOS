@@ -178,32 +178,7 @@ class MessageReactionPicker: UIStackView {
         if addAnyButton {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-
-            let imageView = UIImageView(image: UIImage(named: "more"))
-            imageView.contentMode = .scaleAspectFit
-            imageView.tintColor = .Signal.secondaryLabel
-
-            let imageBackground = UIView()
-            imageBackground.backgroundColor = .Signal.primaryFill
-
-            // Fill colors are translucent, so place over a normal background
-            // so it looks solid when being pushed up.
-            let backgroundBackground = UIView()
-            backgroundBackground.backgroundColor = .Signal.background
-
-            backgroundBackground.addSubview(imageBackground)
-            imageBackground.autoPinEdgesToSuperviewEdges()
-
-            backgroundBackground.addSubview(imageView)
-            imageView.autoPinEdgesToSuperviewEdges(with: .init(margin: 2))
-
-            button.addSubview(backgroundBackground)
-            let size: CGFloat = 32
-            backgroundBackground.autoSetDimensions(to: .square(size))
-            backgroundBackground.layer.cornerRadius = size / 2
-            backgroundBackground.clipsToBounds = true
-            backgroundBackground.autoCenterInSuperview()
-
+            button.setImage(Theme.isDarkThemeEnabled || forceDarkTheme ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectAnyEmoji()
             }
