@@ -945,8 +945,19 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         // iOS 26+: show / hide Send button.
         if iOS26Layout {
-            let hideSendButton = rightEdgeControlsState == .default
-            let disableSendButton = rightEdgeControlsState == .disabledSendButton
+            let hideSendButton: Bool
+            var disableSendButton = false
+            switch rightEdgeControlsState {
+            case .default:
+                hideSendButton = true
+            case .sendButton:
+                hideSendButton = false
+            case .disabledSendButton:
+                hideSendButton = false
+                disableSendButton = true
+            case .hiddenSendButton:
+                hideSendButton = true
+            }
             if setSendButtonHidden(hideSendButton, disabled: disableSendButton, usingAnimator: animator) {
                 hasLayoutChanged = true
             }
