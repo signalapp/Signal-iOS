@@ -8,12 +8,12 @@ public import LibSignalClient
 
 public extension BackupArchive {
     enum Request {
-        public struct SourceAttachment: Codable {
+        public struct SourceAttachment {
             let cdn: UInt32
             let key: String
         }
 
-        public struct MediaItem: Codable {
+        public struct MediaItem {
             let sourceAttachment: SourceAttachment
             let objectLength: UInt32
             let mediaId: Data
@@ -111,7 +111,10 @@ public protocol BackupRequestManager {
         auth: BackupServiceAuth
     ) async throws -> Upload.Form
 
-    func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form
+    func fetchBackupMediaAttachmentUploadForm(
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger?
+    ) async throws -> Upload.Form
 
     func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: BackupServiceAuth) async throws -> MediaTierReadCredential
 
@@ -119,7 +122,8 @@ public protocol BackupRequestManager {
 
     func copyToMediaTier(
         item: BackupArchive.Request.MediaItem,
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger?
     ) async throws -> UInt32
 
     func copyToMediaTier(
@@ -246,11 +250,19 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     }
 
     /// CDN upload form for uploading backup media
-    public func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth) async throws -> Upload.Form {
+    public func fetchBackupMediaAttachmentUploadForm(
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger? = nil
+    ) async throws -> Upload.Form {
         owsAssertDebug(auth.type == .media)
         return try await executeBackupService(
             auth: auth,
-            requestFactory: OWSRequestFactory.backupMediaUploadFormRequest(auth:)
+            requestFactory: { auth in
+                OWSRequestFactory.backupMediaUploadFormRequest(
+                    auth: auth,
+                    logger: logger
+                )
+            }
         )
     }
 
@@ -348,7 +360,8 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     public func copyToMediaTier(
         item: BackupArchive.Request.MediaItem,
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger? = nil
     ) async throws -> UInt32 {
         owsAssertDebug(auth.type == .media)
         do {
@@ -357,7 +370,8 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
                 requestFactory: {
                     OWSRequestFactory.copyToMediaTier(
                         auth: $0,
-                        item: item
+                        item: item,
+                        logger: logger
                     )
                 }
             )
@@ -559,7 +573,8 @@ public class BackupRequestManagerMock: BackupRequestManager {
     }
 
     public func fetchBackupMediaAttachmentUploadForm(
-        auth: SignalServiceKit.BackupServiceAuth
+        auth: SignalServiceKit.BackupServiceAuth,
+        logger: PrefixedLogger? = nil
     ) async throws -> SignalServiceKit.Upload.Form {
         fatalError("Unimplemented")
     }
@@ -579,7 +594,8 @@ public class BackupRequestManagerMock: BackupRequestManager {
 
     public func copyToMediaTier(
         item: SignalServiceKit.BackupArchive.Request.MediaItem,
-        auth: SignalServiceKit.BackupServiceAuth
+        auth: SignalServiceKit.BackupServiceAuth,
+        logger: PrefixedLogger? = nil
     ) async throws -> UInt32 {
         fatalError("Unimplemented")
     }

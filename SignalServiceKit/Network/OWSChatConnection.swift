@@ -388,18 +388,18 @@ public class OWSChatConnection {
         let requestId = UInt64.random(in: .min ... .max)
         let requestDescription = "\(request) [\(requestId)]"
         do {
-            Logger.info("Sending… -> \(requestDescription)")
+            request.logger.info("Sending… -> \(requestDescription)")
 
             return try await waitUntilReadyAndPerformRequest {
                 let response = try await self.makeRequestInternal(request, requestId: requestId)
-                Logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
+                request.logger.info("HTTP \(response.responseStatusCode) <- \(requestDescription)")
                 return response
             }
         } catch {
             if let statusCode = error.httpStatusCode {
-                Logger.warn("HTTP \(statusCode) <- \(requestDescription)")
+                request.logger.warn("HTTP \(statusCode) <- \(requestDescription)")
             } else {
-                Logger.warn("Failure. <- \(requestDescription): \(error)")
+                request.logger.warn("Failure. <- \(requestDescription): \(error)")
             }
             throw error
         }
@@ -684,7 +684,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             do {
                 body = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
-                owsFailDebug("[\(requestId)]: \(error).")
+                owsFailDebug("[\(requestId)]: \(error).", logger: request.logger)
                 throw OWSHTTPError.invalidRequest
             }
 
@@ -733,13 +733,13 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             case is CancellationError:
                 throw error
             default:
-                owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)")
+                owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)", logger: request.logger)
                 throw OWSHTTPError.networkFailure(.genericFailure)
             }
         }
 
         if DebugFlags.internalLogging {
-            Logger.info("received response for requestId: \(requestId), message: \(response.message), route: \(connectionInfo)")
+            request.logger.info("received response for requestId: \(requestId), message: \(response.message), route: \(connectionInfo)")
         }
 
 #if TESTABLE_BUILD

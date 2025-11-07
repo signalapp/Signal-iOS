@@ -6,8 +6,8 @@
 import Foundation
 
 open class PrefixedLogger {
-    private let prefix: String
-    private var suffix: String
+    let prefix: String
+    let suffix: String
 
     public static func empty() -> PrefixedLogger {
         return PrefixedLogger(rawPrefix: "")

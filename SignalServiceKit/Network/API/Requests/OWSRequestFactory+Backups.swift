@@ -36,11 +36,15 @@ extension OWSRequestFactory {
         return request
     }
 
-    public static func backupMediaUploadFormRequest(auth: BackupServiceAuth) -> TSRequest {
+    public static func backupMediaUploadFormRequest(
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger? = nil
+    ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/media/upload/form")!,
             method: "GET",
-            parameters: nil
+            parameters: nil,
+            logger: logger
         )
         request.auth = .backup(auth)
         return request
@@ -78,12 +82,14 @@ extension OWSRequestFactory {
 
     public static func copyToMediaTier(
         auth: BackupServiceAuth,
-        item: BackupArchive.Request.MediaItem
+        item: BackupArchive.Request.MediaItem,
+        logger: PrefixedLogger? = nil
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/media")!,
             method: "PUT",
-            parameters: item.asParameters
+            parameters: item.asParameters,
+            logger: logger
         )
         request.auth = .backup(auth)
         return request

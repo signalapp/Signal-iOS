@@ -12,6 +12,7 @@ public struct TSRequest: CustomDebugStringConvertible {
     public var headers: HttpHeaders
     public var body: Body
     public var timeoutInterval: TimeInterval = OWSRequestFactory.textSecureHTTPTimeOut
+    public let logger: PrefixedLogger
 
     public enum Body {
         case parameters([String: Any])
@@ -22,17 +23,33 @@ public struct TSRequest: CustomDebugStringConvertible {
         }
     }
 
-    public init(url: URL, method: String = "GET", parameters: [String: Any]? = [:]) {
-        self.init(url: url, method: method, body: .parameters(parameters ?? [:]))
+    public init(
+        url: URL,
+        method: String = "GET",
+        parameters: [String: Any]? = [:],
+        logger: PrefixedLogger? = nil
+    ) {
+        self.init(
+            url: url,
+            method: method,
+            body: .parameters(parameters ?? [:]),
+            logger: logger
+        )
     }
 
-    public init(url: URL, method: String, body: Body) {
+    public init(
+        url: URL,
+        method: String,
+        body: Body,
+        logger: PrefixedLogger? = nil
+    ) {
         owsAssertDebug(method.isEmpty.negated)
 
         self.url = url
         self.method = method
         self.headers = HttpHeaders()
         self.body = body
+        self.logger = logger ?? .empty()
     }
 
     // MARK: - Authorization

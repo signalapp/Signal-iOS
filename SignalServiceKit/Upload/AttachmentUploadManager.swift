@@ -438,7 +438,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
         let cdnNumber: UInt32
         do {
-            cdnNumber =  try await self.copyToMediaTier(
+            cdnNumber = try await self.copyToMediaTier(
                 backupKey: backupKey,
                 auth: auth,
                 mediaName: mediaName,
@@ -811,7 +811,10 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 ).start()
             case .mediaTier(let auth, _):
                 uploadForm = try await self.backupRequestManager
-                    .fetchBackupMediaAttachmentUploadForm(auth: auth)
+                    .fetchBackupMediaAttachmentUploadForm(
+                        auth: auth,
+                        logger: logger
+                    )
             }
 
             attachmentUploadRecord.uploadForm = uploadForm
@@ -1226,7 +1229,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 hmacKey: mediaEncryptionMetadata.hmacKey,
                 aesKey: mediaEncryptionMetadata.aesKey
             ),
-            auth: auth
+            auth: auth,
+            logger: logger
         )
     }
 
