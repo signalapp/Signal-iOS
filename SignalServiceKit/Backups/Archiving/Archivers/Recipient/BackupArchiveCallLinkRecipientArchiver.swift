@@ -172,7 +172,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
             let record = try callLinkStore.insertFromBackup(
                 rootKey: rootKey,
                 adminPasskey: adminKey,
-                name: hasAnyState ? callLinkProto.name : nil,
+                name: hasAnyState ? callLinkProto.name.nilIfEmpty : nil,
                 restrictions: hasAnyState ? restrictions : nil,
                 expiration: hasAnyState ? Int64(callLinkProto.expirationMs / 1000) : nil,
                 isUpcoming: hasAnyState ? (adminKey != nil) : nil,
