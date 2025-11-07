@@ -29,7 +29,6 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     private var interruptionPreventionTimer = Timer()
     private var lastCallPeekCount = 0
-    private let fiveMinutesSeconds = 5 * kMinuteInterval
 
     private var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
@@ -113,7 +112,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         // minutes.
         lastCallPeekCount = call.ringRtcCall.peekInfo?.joinedMembers.count ?? 1
         if lastCallPeekCount == 1 {
-            interruptionPreventionTimer = Timer.scheduledTimer(withTimeInterval: fiveMinutesSeconds, repeats: true, block: { [self] _ in
+            interruptionPreventionTimer = Timer.scheduledTimer(withTimeInterval: 5 * .minute, repeats: true, block: { [self] _ in
                 if self.lastCallPeekCount == 1 {
                     Logger.info("Prevent interrupt; play silence")
                     self.play(sound: .silence)
