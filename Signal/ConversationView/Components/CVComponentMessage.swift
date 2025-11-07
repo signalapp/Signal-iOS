@@ -2287,6 +2287,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
+        func focusAccessibility() {
+            UIAccessibility.post(notification: .layoutChanged, argument: self.hInnerStack)
+        }
+        
         // MARK: - Flashing Message Bubble
 
         func performMessageBubbleHighlightAnimation() {
