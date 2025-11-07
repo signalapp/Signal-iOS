@@ -1134,6 +1134,30 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual(callLinks[2][0] as Bool?, false)
         }
     }
+
+    func testFixNameForRestoredCallLinks() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: """
+                CREATE TABLE "CallLink" (name TEXT);
+                INSERT INTO "CallLink" VALUES (NULL), (''), ('Something');
+                """,
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.fixNameForRestoredCallLinks(tx: tx)
+            }
+
+            let callLinks = try Row.fetchAll(db, sql: "SELECT * FROM CallLink")
+            XCTAssertEqual(callLinks.count, 3)
+            XCTAssertEqual(callLinks[0][0] as String?, nil)
+            XCTAssertEqual(callLinks[1][0] as String?, nil)
+            XCTAssertEqual(callLinks[2][0] as String?, "Something")
+        }
+    }
 }
 
 // MARK: -

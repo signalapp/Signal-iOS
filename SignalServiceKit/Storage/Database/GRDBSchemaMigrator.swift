@@ -334,6 +334,7 @@ public class GRDBSchemaMigrator {
         case fixUpcomingCallLinks
         case uniquifyUsernameLookupRecord2
         case fixRevokedForRestoredCallLinks
+        case fixNameForRestoredCallLinks
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -4269,6 +4270,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.fixNameForRestoredCallLinks) { tx in
+            try fixNameForRestoredCallLinks(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6539,6 +6545,13 @@ public class GRDBSchemaMigrator {
     static func fixRevokedForRestoredCallLinks(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             UPDATE "CallLink" SET "revoked"=0 WHERE "revoked" IS NULL AND "expiration" IS NOT NULL
+            """
+        )
+    }
+
+    static func fixNameForRestoredCallLinks(tx: DBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            UPDATE "CallLink" SET "name"=NULL WHERE "name" IS ''
             """
         )
     }
