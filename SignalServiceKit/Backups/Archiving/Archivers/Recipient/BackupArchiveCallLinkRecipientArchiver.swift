@@ -96,6 +96,8 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                         allowZero: true
                     )
 
+                    owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
+
                     let recipientId = context.assignRecipientId(to: callLinkAppId)
                     Self.writeFrameToStream(
                         stream,
@@ -174,6 +176,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                 adminPasskey: adminKey,
                 name: hasAnyState ? callLinkProto.name.nilIfEmpty : nil,
                 restrictions: hasAnyState ? restrictions : nil,
+                revoked: hasAnyState ? false : nil,
                 expiration: hasAnyState ? Int64(callLinkProto.expirationMs / 1000) : nil,
                 isUpcoming: hasAnyState ? (adminKey != nil) : nil,
                 tx: context.tx

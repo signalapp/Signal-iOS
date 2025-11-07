@@ -122,6 +122,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
         adminPasskey: Data?,
         name: String?,
         restrictions: CallLinkRecord.Restrictions?,
+        revoked: Bool?,
         expiration: Int64?,
         isUpcoming: Bool?,
         tx: DBWriteTransaction
@@ -137,9 +138,10 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
                     \(CallLinkRecord.CodingKeys.adminPasskey.rawValue),
                     \(CallLinkRecord.CodingKeys.name.rawValue),
                     \(CallLinkRecord.CodingKeys.restrictions.rawValue),
+                    \(CallLinkRecord.CodingKeys.revoked.rawValue),
                     \(CallLinkRecord.CodingKeys.expiration.rawValue),
                     \(CallLinkRecord.CodingKeys.isUpcoming.rawValue)
-                ) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
                 """,
                 arguments: [
                     rootKey.deriveRoomId(),
@@ -147,6 +149,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
                     adminPasskey,
                     name,
                     restrictions?.rawValue,
+                    revoked,
                     expiration,
                     isUpcoming
                 ]
