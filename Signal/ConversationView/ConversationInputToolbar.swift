@@ -62,12 +62,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
     func showUnblockConversationUI(completion: ((Bool) -> Void)?)
 }
 
-protocol ConversationInputPanelWithContentLayoutGuide {
-    /// View controller should use this layout guide to position content above the keyboard.
-    var contentLayoutGuide: UILayoutGuide { get }
-}
-
-public class ConversationInputToolbar: UIView, ConversationInputPanelWithContentLayoutGuide, QuotedReplyPreviewDelegate {
+public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     private var conversationStyle: ConversationStyle
 
@@ -76,8 +71,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     private let mediaCache: CVMediaCache
 
     private weak var inputToolbarDelegate: ConversationInputToolbarDelegate?
-
-    public let contentLayoutGuide = UILayoutGuide()
 
     init(
         conversationStyle: ConversationStyle,
@@ -126,7 +119,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: Layout
+    // MARK: Layout Configuration.
 
     public override var frame: CGRect {
         didSet {
@@ -495,10 +488,10 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         return view
     }()
 
-    // Whole-width container that contains (+) button, text input part and Send button.
+    /// Whole-width container that contains (+) button, text input part and Send button.
     private let contentView = UIView()
 
-    // Occupies central part of the `contentView`. That's where text input field, link preview etc live in.
+    /// Occupies central part of the `contentView`. That's where text input field, link preview etc live in.
     private let messageContentView = UIView()
 
     @available(iOS 26, *)
@@ -515,50 +508,32 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         // This means you'll need to set the appropriate `semanticContentAttribute`
         // to ensure horizontal stack views layout left-to-right.
         semanticContentAttribute = .forceLeftToRight
+        contentView.semanticContentAttribute = .forceLeftToRight
 
-        // `contentLayoutGuide` defines area where all the content lives.
-        addLayoutGuide(contentLayoutGuide)
-        addConstraints([
-            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
-            contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
-            contentLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
-            {
-                let c = contentLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
-                c.priority = .defaultLow
-                return c
-            }()
-        ])
-
+        let contentViewSuperview: UIView
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             iOS26Layout = true
-        }
 
-        // Set initial zero height for the sticker panel.
-        let zeroHeightConstraint = stickerPanel.heightAnchor.constraint(equalToConstant: 0)
-        stickerPanel.addConstraint(zeroHeightConstraint)
-        stickerPanelConstraint = zeroHeightConstraint
+            // Glass Container.
+#if compiler(>=6.2)
+            let glassContainerView = UIVisualEffectView(effect: UIGlassContainerEffect())
+            addSubview(glassContainerView)
+            glassContainerView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                glassContainerView.topAnchor.constraint(equalTo: topAnchor),
+                glassContainerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+                glassContainerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+                glassContainerView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
 
-        let contentViewWrapperView = UIView.container()
-
-        // Outermost vertical stack:
-        // [ Suggested Stickers Panel ]
-        // [ Message Creation Input Box and Buttons ]
-        let outerVStack = UIStackView(arrangedSubviews: [ stickerPanel, contentViewWrapperView ] )
-        outerVStack.axis = .vertical
-        addSubview(outerVStack)
-        outerVStack.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            outerVStack.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
-            outerVStack.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-            outerVStack.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-            outerVStack.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
-        ])
-
-        // Background needed on pre-iOS 26 devices.
-        // Background is constrained to `contentViewWrapperView` on all edges except for bottom.
-        // Background is constrained to `self.bottom` to cover any safe area gaps.
-        if !iOS26Layout {
-            let backgroundView = UIView()
+            contentViewSuperview = glassContainerView.contentView
+#else
+            contentViewSuperview = self
+#endif
+        } else {
+            // Background needed on pre-iOS 26 devices.
+            // The background is stretched to all edges to cover any safe area gaps.
+           let backgroundView = UIView()
             if UIAccessibility.isReduceTransparencyEnabled {
                 backgroundView.backgroundColor = Theme.toolbarBackgroundColor
             } else {
@@ -583,30 +558,31 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                     blurEffectView.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor),
                 ])
             }
-            contentViewWrapperView.addSubview(backgroundView)
+            addSubview(backgroundView)
             backgroundView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                backgroundView.topAnchor.constraint(equalTo: contentViewWrapperView.topAnchor),
-                backgroundView.leadingAnchor.constraint(equalTo: contentViewWrapperView.leadingAnchor),
-                backgroundView.trailingAnchor.constraint(equalTo: contentViewWrapperView.trailingAnchor),
-                // Note different anchor here.
-                backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                backgroundView.topAnchor.constraint(equalTo: topAnchor),
+                backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                // extend background view down to cover any potentian gaps between input toolbar and keyboard.
+                backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 200),
             ])
+
+            contentViewSuperview = self
         }
 
         // Set up content view.
-        contentView.semanticContentAttribute = .forceLeftToRight
         contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
             hMargin: OWSTableViewController2.defaultHOuterMargin - 16,
             vMargin: iOS26Layout ? 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight) : 0
         )
+        contentViewSuperview.addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentViewWrapperView.addSubview(contentView)
         NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: contentViewWrapperView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: contentViewWrapperView.safeAreaLayoutGuide.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: contentViewWrapperView.safeAreaLayoutGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: contentViewWrapperView.bottomAnchor),
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
@@ -623,7 +599,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
         inputTextView.inputTextViewDelegate = inputTextViewDelegate
 
         // Initial state for "Editing Message" label
-        if shouldShowEditUI {
+        if isEditingMessage {
             loadEditMessageViewIfNecessary()
             editMessageViewVisibleConstraint.isActive = true
         }
@@ -696,14 +672,16 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         // Rounded rect background for the text input field:
         // Liquid Glass on iOS 26, gray-ish on earlier iOS versions.
-#if compiler(>=6.2)
         let backgroundView: UIView
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+#if compiler(>=6.2)
             let glassEffectView = UIVisualEffectView(effect: Style.glassEffect(isInteractive: true))
             glassEffectView.cornerConfiguration = .uniformCorners(radius: 20)
             glassEffectView.contentView.addSubview(messageComponentsView)
-
             backgroundView = glassEffectView
+#else
+            backgroundView = UIView()
+#endif
         } else {
             backgroundView = UIView()
             backgroundView.backgroundColor = UIColor.Signal.tertiaryFill
@@ -711,13 +689,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
             messageContentView.addSubview(messageComponentsView)
         }
-#else
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.Signal.tertiaryFill
-        backgroundView.layer.cornerRadius = 20
-
-        messageContentView.addSubview(messageComponentsView)
-#endif
 
         let vMargin = 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight)
         let hMargin: CGFloat = iOS26Layout ? 12 : 0 // iOS 26 needs space between leading/trailing buttons and text view background.
@@ -818,7 +789,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         updateMessageContentViewLeadingEdgeConstraint(isLeadingEdgeControlHidden: false)
         if iOS26Layout {
-            setSendButtonHidden(true, disabled: false, usingAnimator: nil)
+            setSendButtonHidden(true, usingAnimator: nil)
         } else {
             messageContentView.trailingAnchor.constraint(equalTo: trailingEdgeControl.leadingAnchor).isActive = true
         }
@@ -828,6 +799,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
         isConfigurationComplete = true
     }
+
+    // MARK: Layout Updates.
 
     @discardableResult
     class func setView(_ view: UIView, hidden isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
@@ -853,25 +826,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     private func ensureButtonVisibility(withAnimation isAnimated: Bool, doLayout: Bool) {
 
         var hasLayoutChanged = false
-        var rightEdgeControlsState: RightEdgeControlsView.State
-
-        // Voice Memo UI.
-        if isShowingVoiceMemoUI {
-            voiceMemoContentView.setIsHidden(false, animated: isAnimated)
-
-            // Send button would be visible if there's voice recording in progress in "locked" state.
-            let hideSendButton = voiceMemoRecordingState == .recordingHeld || voiceMemoRecordingState == .idle
-            rightEdgeControlsState = hideSendButton ? .hiddenSendButton : .sendButton
-        } else {
-            voiceMemoContentView.setIsHidden(true, animated: isAnimated)
-
-            // Show Send button instead of Camera and Voice Message buttons only when text input isn't empty.
-            let hasNonWhitespaceTextInput = !inputTextView.trimmedText.isEmpty || shouldShowEditUI
-            let hasQuotedMessage = quotedReplyDraft != nil
-            rightEdgeControlsState = hasNonWhitespaceTextInput
-            ? .sendButton
-            : (hasQuotedMessage ? .disabledSendButton : .default)
-        }
 
         let animator: UIViewPropertyAnimator?
         if isAnimated {
@@ -880,7 +834,19 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             animator = nil
         }
 
-        // Attachment Button
+        //
+        // 1. Show / hide Voice Memo UI.
+        //
+        voiceMemoContentView.setIsHidden(isShowingVoiceMemoUI == false, animated: isAnimated)
+
+        //
+        // 2. Update leading edge control.
+        //
+
+        // Possible states of the leading edge control:
+        // * (+) attachment button: when there is no voice note UI visible.
+        // * Delete Voice Note button: when there's a voice note draft.
+        // * No control: when there's voice note recording in progress.
         let leadingEdgeControlState: LeadingEdgeControlState =  {
             if isShowingVoiceMemoUI {
                 return voiceMemoRecordingState == .draft ? .deleteVoiceMemoDraft : .none
@@ -891,10 +857,12 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             hasLayoutChanged = true
         }
 
-        // Attachment button has more complex animations and cannot be grouped with the rest.
+        // (+) attachment button can be displayed in its alternative appearance - as (X) button in two cases:
+        // * attachment keyboard is displayed.
+        // * user is editing a message.
         if let attachmentButton = leadingEdgeControl as? AttachmentButtonProtocol {
             let buttonState: AttachmentButtonState = {
-                if shouldShowEditUI {
+                if isEditingMessage {
                     return .close
                 } else {
                     return desiredKeyboardType == .attachment ? .close : .add
@@ -903,21 +871,56 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             attachmentButton.setButtonState(buttonState, usingAnimator: animator)
         }
 
-        // Show / hide Sticker or Keyboard buttons inside of the text input field.
-        // Show / hide Camera and Voice Note buttons inside of the text input field on iOS 26.
-        // In-field buttons are only visible if there's no any text input, including whitespace-only.
-        let hideTextFieldButtons = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI
-        let hideStickerButton = hideTextFieldButtons || quotedReplyDraft != nil || desiredKeyboardType == .sticker
-        let hideKeyboardButton = hideTextFieldButtons || quotedReplyDraft != nil || !hideStickerButton
+        //
+        // 3. Determine state of the trailing edge controls.
+        //
+
+        let rightEdgeControlsState: TrailingEdgeControlState
+        // Voice recording is in progress in "locked" state: show Send button in active state.
+        // In all other voice note recording states there are no trailing edge controls.
+        if isShowingVoiceMemoUI {
+            let showSendButton = voiceMemoRecordingState == .recordingLocked
+            rightEdgeControlsState = showSendButton ? .sendButton : .hiddenSendButton
+        }
+        // Text field has non-whitespace input: show Send button in active state.
+        // Note: Activating "edit message" feature would temporarily disable Send button
+        //       even if there is non-whitespace text. Editing text would re-enable Send button.
+        else if hasMessageText {
+            rightEdgeControlsState = .sendButton
+        }
+        // If there's a quoted message or we're editing a message: show inactive Send button.
+        else if hasQuotedMessage || isEditingMessage {
+            rightEdgeControlsState = .disabledSendButton
+        }
+        // No input, not editing message, no quoted message: do not show Send button.
+        // On iOS 26 there would be no right edge controls.
+        // On iOS 15-18 there would be Camera and Mic buttons.
+        else {
+            rightEdgeControlsState = .default
+        }
+
+        //
+        // 4. Update middle part: text input field and buttons inside.
+        //
+
+        // Only ever show in-field buttons when there's no Send button visible on the right.
+        // On iOS 26 there are Camera and Voice Note buttons inside of the text input field:
+        // those would be hidden to match pre-iOS 26 behavior.
+        let hideAllTextFieldButtons = rightEdgeControlsState != .default
+        // Sticker/keyboard buttons will also be hidden if there's whitespace-only input.
+        let textFieldHasAnyInput = !inputTextView.untrimmedText.isEmpty
+        let hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput
+        let hideStickerButton = hideInputMethodButtons || desiredKeyboardType == .sticker
+        let hideKeyboardButton = hideInputMethodButtons || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
         ConversationInputToolbar.setView(keyboardButton, hidden: hideKeyboardButton, usingAnimator: animator)
         if iOS26Layout {
-            ConversationInputToolbar.setView(cameraButton, hidden: hideTextFieldButtons, usingAnimator: animator)
-            ConversationInputToolbar.setView(voiceNoteButton, hidden: hideTextFieldButtons, usingAnimator: animator)
+            ConversationInputToolbar.setView(cameraButton, hidden: hideAllTextFieldButtons, usingAnimator: animator)
+            ConversationInputToolbar.setView(voiceNoteButton, hidden: hideAllTextFieldButtons, usingAnimator: animator)
         }
 
-        // Hide text input field if Voice Message UI is presented or make it visible otherwise.
-        // Do not change "isHidden" because that'll cause inputTextView to lose focus.
+        // Text input is hidden whenever Voice Message UI is presented.
+        // Change view's opacity instead of `isHidden` because the latter will cause inputTextView to lose focus.
         let inputTextViewAlpha: CGFloat = isShowingVoiceMemoUI ? 0 : 1
         if let animator {
             animator.addAnimations {
@@ -927,24 +930,27 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             inputTextView.alpha = inputTextViewAlpha
         }
 
-        // Pre-iOS 26: update trailing edge controls.
-        if let rightEdgeControlsView = trailingEdgeControl as? RightEdgeControlsView {
-            if rightEdgeControlsView.state != rightEdgeControlsState {
-                hasLayoutChanged = true
+        //
+        // 5. Apply changes to trailing edge controls.
+        //
 
-                if let animator {
-                    // `state` in implicitly animatable.
-                    animator.addAnimations {
-                        rightEdgeControlsView.state = rightEdgeControlsState
-                    }
-                } else {
+        // iOS 15-18: update trailing edge controls view.
+        if let rightEdgeControlsView = trailingEdgeControl as? RightEdgeControlsView,
+           rightEdgeControlsView.state != rightEdgeControlsState {
+            hasLayoutChanged = true
+
+            if let animator {
+                // `state` in implicitly animatable.
+                animator.addAnimations {
                     rightEdgeControlsView.state = rightEdgeControlsState
                 }
+            } else {
+                rightEdgeControlsView.state = rightEdgeControlsState
             }
         }
 
-        // iOS 26+: show / hide Send button.
-        if iOS26Layout {
+        // iOS 26: Update Send button state.
+        if iOS26Layout, let sendButton = trailingEdgeControl as? UIButton {
             let hideSendButton: Bool
             var disableSendButton = false
             switch rightEdgeControlsState {
@@ -958,10 +964,32 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             case .hiddenSendButton:
                 hideSendButton = true
             }
-            if setSendButtonHidden(hideSendButton, disabled: disableSendButton, usingAnimator: animator) {
+
+            let sendButtonVisibilityChanges = setSendButtonHidden(hideSendButton, usingAnimator: animator)
+            if sendButtonVisibilityChanges {
                 hasLayoutChanged = true
             }
+
+            // Enable/disable Send button, taking potential visibility changes into accoount.
+            if hideSendButton, sendButtonVisibilityChanges {
+                // If Send button becomes hidden do not update `isEnabled` until animation completes.
+                if let animator {
+                    animator.addCompletion { _ in
+                        sendButton.isEnabled = !disableSendButton
+                    }
+                } else {
+                    sendButton.isEnabled = !disableSendButton
+                }
+            } else {
+                // If Send button becomes visible or becomes enabled/disabled while being visible
+                // we need to apply changes to `isEnabled` right away.
+                sendButton.isEnabled = !disableSendButton
+            }
         }
+
+        //
+        // 6. Commit animations.
+        //
 
         if let animator {
             if doLayout && hasLayoutChanged {
@@ -1021,9 +1049,28 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     }
 
     private enum LeadingEdgeControlState {
+        /// No control.
         case none
+
+        /// (+) button.
         case addAttachment
+
+        /// Red 🗑️ delete Voice Note button.
         case deleteVoiceMemoDraft
+    }
+
+    private enum TrailingEdgeControlState {
+        /// No control on iOS 26+. Camera and Mic on iOS 15-18.
+        case `default`
+
+        /// Active Send button.
+        case sendButton
+
+        /// Inactive Send button.
+        case disabledSendButton
+
+        /// Send button not visible, but the space for is is reserved.
+        case hiddenSendButton
     }
 
     @discardableResult
@@ -1060,14 +1107,9 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     }
 
     @discardableResult
-    private func setSendButtonHidden(
-        _ isHidden: Bool,
-        disabled isDisabled: Bool,
-        usingAnimator animator: UIViewPropertyAnimator?
-    ) -> Bool {
+    private func setSendButtonHidden(_ isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
         // Only on iOS 26 trailing edge control (Send button) can get hidden.
         guard let sendButton = trailingEdgeControl as? UIButton else { return false }
-        sendButton.isEnabled = !isDisabled
         guard ConversationInputToolbar.setView(sendButton, hidden: isHidden, usingAnimator: animator) else { return false }
         updateMessageContentViewTrailingEdgeConstraint(isTrailingEdgeControlHidden: isHidden)
         return true
@@ -1086,12 +1128,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
     @available(iOS, deprecated: 26.0)
     private class RightEdgeControlsView: UIView {
 
-        enum State {
-            case `default`
-            case sendButton
-            case disabledSendButton
-            case hiddenSendButton
-        }
+        typealias State = TrailingEdgeControlState
+
         private var _state: State = .default
         var state: State {
             get { _state }
@@ -1207,7 +1245,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
                 sendButton.transform = .scale(0.1)
                 sendButton.alpha = 0
-                sendButton.isEnabled = true
 
             case .sendButton, .disabledSendButton, .hiddenSendButton:
                 cameraButton.transform = .scale(0.1)
@@ -1401,6 +1438,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     // MARK: Message Body
 
+    private var hasMessageText: Bool { inputTextView.trimmedText.isEmpty == false }
+
     private var textViewHeight: CGFloat = 0
 
     private var textViewHeightConstraint: NSLayoutConstraint!
@@ -1469,7 +1508,7 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     // MARK: Edit Message
 
-    var shouldShowEditUI: Bool { editTarget != nil }
+    var isEditingMessage: Bool { editTarget != nil }
 
     var editTarget: TSOutgoingMessage? {
         didSet {
@@ -1499,7 +1538,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
                     messageBody = MessageBody(text: "", ranges: .empty)
                 }
                 self.setMessageBody(messageBody, animated: true)
-
                 showEditMessageView(animated: animateChanges)
             } else if oldValue != nil {
                 editThumbnail = nil
@@ -1611,6 +1649,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             self.editMessageLabelView.alpha = 1
             self.editMessageViewHiddenConstraint.isActive = false
             self.editMessageViewVisibleConstraint.isActive = true
+            // We simply disable Send button until something (like user editing text) enables it back.
+            // Whether or not message text actually changes isn't tracked.
             self.setSendButtonEnabled(false)
             self.layoutIfNeeded()
         }
@@ -1637,9 +1677,6 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             self.editMessageViewHiddenConstraint.isActive = true
             self.layoutIfNeeded()
         }
-        animator.addCompletion { _ in
-            self.setSendButtonEnabled(true)
-        }
         animator.startAnimation()
     }
 
@@ -1653,6 +1690,8 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
 
     // MARK: Quoted Reply
 
+    private var hasQuotedMessage: Bool { quotedReplyDraft != nil }
+
     var quotedReplyDraft: DraftQuotedReplyModel? {
         didSet {
             guard oldValue != quotedReplyDraft else { return }
@@ -1660,13 +1699,13 @@ public class ConversationInputToolbar: UIView, ConversationInputPanelWithContent
             layer.removeAllAnimations()
 
             let animateChanges = window != nil
-            if quotedReplyDraft != nil {
+            if hasQuotedMessage {
                 showQuotedReplyView(animated: animateChanges)
             } else {
                 hideQuotedReplyView(animated: animateChanges)
             }
             // This would show / hide Stickers|Keyboard button.
-            ensureButtonVisibility(withAnimation: animateChanges, doLayout: false)
+            ensureButtonVisibility(withAnimation: animateChanges, doLayout: true)
             clearDesiredKeyboard()
         }
     }
@@ -2961,7 +3000,7 @@ extension ConversationInputToolbar {
     @objc
     private func addOrCancelButtonPressed() {
         ImpactHapticFeedback.impactOccurred(style: .light)
-        if shouldShowEditUI {
+        if isEditingMessage {
             editTarget = nil
             quotedReplyDraft = nil
             clearTextMessage(animated: true)
@@ -3079,7 +3118,9 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         updateInputLinkPreview()
 
         if editTarget != nil {
-            setSendButtonEnabled(textView.hasText)
+            // Here we could potentially compare to original (before edit)
+            // message and update Send button accordingly.
+            setSendButtonEnabled(hasMessageText)
         }
     }
 
@@ -3145,6 +3186,10 @@ extension ConversationInputToolbar: AttachmentKeyboardDelegate {
     var isGroup: Bool {
         inputToolbarDelegate?.isGroup() ?? false
     }
+}
+
+extension ConversationInputToolbar: ConversationBottomBar {
+    var shouldAttachToKeyboardLayoutGuide: Bool { true }
 }
 
 @available(iOS 26, *)

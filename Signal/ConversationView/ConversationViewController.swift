@@ -671,10 +671,26 @@ public final class ConversationViewController: OWSViewController {
 
         super.viewSafeAreaInsetsDidChange()
 
+        // Workaround for iOS 26 animating bottom bar getting in its final position
+        // during view presentation animation.
+        if #available(iOS 26, *) {
+            UIView.performWithoutAnimation {
+                bottomBarContainer.setNeedsLayout()
+                bottomBarContainer.layoutIfNeeded()
+                bottomBarContainer.frame = CGRect(
+                    origin: CGPoint(
+                        x: 0,
+                        y: view.bounds.maxY - bottomBarContainer.frame.height
+                    ),
+                    size: bottomBarContainer.bounds.size
+                )
+            }
+        }
+
         updateContentInsetsDebounced()
-        self.updateInputToolbarLayout()
-        self.viewSafeAreaInsetsDidChangeForLoad()
-        self.updateConversationStyle()
+        updateInputToolbarLayout()
+        viewSafeAreaInsetsDidChangeForLoad()
+        updateConversationStyle()
     }
 }
 

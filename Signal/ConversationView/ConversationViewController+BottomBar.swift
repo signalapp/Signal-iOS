@@ -19,6 +19,12 @@ enum CVCBottomViewType: Equatable {
     case announcementOnlyGroup
 }
 
+protocol ConversationBottomBar: UIView {
+    /// Return `true` to have view controller put this bar above keyboard (using `keyboardLayoutGuide`).
+    /// Return `false` to have view controller constrain bottom edge of the bar to the bottom edge of the screen.
+    var shouldAttachToKeyboardLayoutGuide: Bool { get }
+}
+
 // MARK: -
 
 public extension ConversationViewController {
@@ -133,15 +139,21 @@ public extension ConversationViewController {
         if let bottomView {
             bottomView.translatesAutoresizingMaskIntoConstraints = false
             bottomBarContainer.addSubview(bottomView)
-            bottomBarContainer.addConstraints([
+            NSLayoutConstraint.activate([
                 bottomView.topAnchor.constraint(equalTo: bottomBarContainer.topAnchor),
                 bottomView.leadingAnchor.constraint(equalTo: bottomBarContainer.leadingAnchor),
                 bottomView.trailingAnchor.constraint(equalTo: bottomBarContainer.trailingAnchor),
-                bottomView.bottomAnchor.constraint(equalTo: bottomBarContainer.bottomAnchor),
             ])
-            if let viewWithContentLayoutGuide = bottomView as? ConversationInputPanelWithContentLayoutGuide {
+
+            if let conversationBottomBar = bottomView as? ConversationBottomBar,
+               conversationBottomBar.shouldAttachToKeyboardLayoutGuide
+            {
                 NSLayoutConstraint.activate([
-                    viewWithContentLayoutGuide.contentLayoutGuide.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
+                    bottomView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    bottomView.bottomAnchor.constraint(equalTo: bottomBarContainer.bottomAnchor),
                 ])
             }
         }

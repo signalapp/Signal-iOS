@@ -46,3 +46,7 @@ class ConversationBottomPanelView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+extension ConversationBottomPanelView: ConversationBottomBar {
+    var shouldAttachToKeyboardLayoutGuide: Bool { false }
+}

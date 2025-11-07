@@ -101,8 +101,7 @@ extension ConversationViewController: MessageActionsDelegate {
                         owsFailDebug("Could not load thumnail.")
                         return
                     }
-                    guard let inputToolbar,
-                          inputToolbar.shouldShowEditUI else { return }
+                    guard let inputToolbar, inputToolbar.isEditingMessage else { return }
                     inputToolbar.editThumbnail = image
                 }
             }

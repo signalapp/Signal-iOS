@@ -149,7 +149,7 @@ protocol SearchResultsBarDelegate: AnyObject {
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGuide {
+public class SearchResultsBar: UIView {
 
     weak var resultsBarDelegate: SearchResultsBarDelegate?
 
@@ -158,7 +158,6 @@ public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGu
 
     let labelItem = UIBarButtonItem(title: nil, style: .plain, target: nil, action: nil)
     let toolbar = UIToolbar.clear()
-    let contentLayoutGuide = UILayoutGuide()
 
     var resultSet: ConversationScreenSearchResultSet?
 
@@ -168,18 +167,6 @@ public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGu
         layoutMargins = .zero
 
         let isLegacyLayout: Bool = if #unavailable(iOS 26) { true } else { false }
-
-        addLayoutGuide(contentLayoutGuide)
-        addConstraints([
-            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
-            contentLayoutGuide.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-            contentLayoutGuide.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            {
-                let c = contentLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
-                c.priority = .defaultLow
-                return c
-            }()
-        ])
 
         if isLegacyLayout {
             if UIAccessibility.isReduceTransparencyEnabled {
@@ -205,10 +192,10 @@ public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGu
         let vMargin: CGFloat = isLegacyLayout ? 0 : 6
         let hMargin: CGFloat = 0
         addConstraints([
-            toolbar.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor, constant: vMargin),
-            toolbar.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor, constant: hMargin),
-            toolbar.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor, constant: -hMargin),
-            toolbar.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -vMargin),
+            toolbar.topAnchor.constraint(equalTo: topAnchor, constant: vMargin),
+            toolbar.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: hMargin),
+            toolbar.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -hMargin),
+            toolbar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -vMargin),
         ])
 
         let leftExteriorChevronMargin: CGFloat
@@ -347,4 +334,8 @@ public class SearchResultsBar: UIView, ConversationInputPanelWithContentLayoutGu
             showLessRecentButton.isEnabled = false
         }
     }
+}
+
+extension SearchResultsBar: ConversationBottomBar {
+    var shouldAttachToKeyboardLayoutGuide: Bool { true }
 }
