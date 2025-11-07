@@ -33,9 +33,14 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
+    var shouldCancelNavigationBack: Bool {
+        onBackPressedBlock != nil
+    }
+
     private let aep: AccountEntropyPool
     private let onContinuePressedBlock: (BackupRecordKeyViewController) -> Void
     private let onCreateNewKeyPressedBlock: (BackupRecordKeyViewController) -> Void
+    private let onBackPressedBlock: (() -> Void)?
     private let options: [Option]
 
     /// - Parameter onCreateNewKeyPressed
@@ -49,10 +54,12 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         options: [Option],
         onCreateNewKeyPressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
         onContinuePressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
+        onBackPressed: (() -> Void)? = nil
     ) {
         self.aep = aepMode.aep
         self.onContinuePressedBlock = onContinuePressed
         self.onCreateNewKeyPressedBlock = onCreateNewKeyPressed
+        self.onBackPressedBlock = onBackPressed
         self.options = options
 
         super.init()
@@ -70,6 +77,18 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.groupedBackground
+
+        if let onBackPressedBlock {
+            navigationItem.hidesBackButton = true
+            navigationItem.leftBarButtonItem = .init(
+                image: UIImage(named: "chevron-left-bold-28"),
+                primaryAction: UIAction { _ in
+                    onBackPressedBlock()
+                }
+            )
+
+            isModalInPresentation = true
+        }
 
         let heroIconView = UIImageView()
         heroIconView.image = .backupsLock

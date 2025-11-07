@@ -120,6 +120,9 @@ class BackupOnboardingCoordinator {
                 onContinuePressed: { [self] _ in
                     showConfirmRecoveryKey(aep: aep)
                 },
+                onBackPressed: { [weak self] in
+                    self?.promptToCancelOnboarding()
+                },
             ),
             animated: true
         )
@@ -144,6 +147,9 @@ class BackupOnboardingCoordinator {
             onSeeKeyAgain: {
                 onboardingNavController.popViewController(animated: true)
             },
+            onBackPressed: { [weak self] in
+                self?.promptToCancelOnboarding()
+            }
         )
 
         onboardingNavController.pushViewController(
@@ -207,5 +213,31 @@ class BackupOnboardingCoordinator {
             preOnboardingViewControllers + [backupSettingsViewController],
             animated: true
         )
+    }
+
+    private func promptToCancelOnboarding() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_ONBOARDING_CANCEL_SHEET_TITLE",
+                comment: "Title for action sheet when attempting to cancel backup onboarding"
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE",
+                comment: "Message for action sheet when attempting to cancel backup onboarding"
+            )
+        )
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION",
+                comment: "Button label for action sheet to cancel backup onboarding"
+            ),
+            style: .default,
+            handler: { [weak onboardingNavController] _ in
+                onboardingNavController?.popToRootViewController(animated: true)
+            }
+        ))
+        actionSheet.addAction(.cancel)
+
+        onboardingNavController?.topViewController?.presentActionSheet(actionSheet)
     }
 }
