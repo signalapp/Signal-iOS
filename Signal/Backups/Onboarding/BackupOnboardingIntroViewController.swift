@@ -84,7 +84,7 @@ struct BackupOnboardingIntroView: View {
             .padding(.trailing, 11)
             .background(Color.Signal.quaternaryFill)
             .cornerRadius(12)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
 
             VStack {
                 Spacer().frame(height: 20)
@@ -141,7 +141,7 @@ struct BackupOnboardingIntroView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 72)
+                .padding(.horizontal, 56)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(Color.Signal.label)
                 .padding(.horizontal)
