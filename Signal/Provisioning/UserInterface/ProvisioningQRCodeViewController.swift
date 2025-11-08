@@ -120,7 +120,6 @@ private struct ProvisioningQRCodeView: View {
                             "Debug only: Share URL"
                         ))
                     }
-                    .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                     .simultaneousGesture(TapGesture().onEnded {
                         // When tapped, also copy to the clipboard for easy
                         // extraction from a simulator.
@@ -130,7 +129,6 @@ private struct ProvisioningQRCodeView: View {
                     Button(LocalizationNotNeeded("Debug only: Copy URL")) {
                         UIPasteboard.general.url = provisioningUrl
                     }
-                    .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                 }
 #endif
 
