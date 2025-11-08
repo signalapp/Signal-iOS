@@ -90,12 +90,13 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
     override func touchLocationInViewDidEnd(locationInView: CGPoint) -> Bool {
         // Send focused emoji if needed
         if let focusedEmoji = reactionPicker.focusedEmoji {
-            if focusedEmoji == MessageReactionPicker.anyEmojiName {
+            switch focusedEmoji {
+            case .more:
                 didSelectAnyEmoji()
-            } else {
-                let isRemoving = focusedEmoji == self.itemViewModel?.reactionState?.localUserEmoji
-                if let index = reactionPicker.currentEmojiSet().firstIndex(of: focusedEmoji) {
-                    didSelectReaction(reaction: focusedEmoji, isRemoving: isRemoving, inPosition: index )
+            case .emoji(let emoji):
+                let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmoji
+                if let index = reactionPicker.currentEmojiSet().firstIndex(of: emoji) {
+                    didSelectReaction(reaction: emoji, isRemoving: isRemoving, inPosition: index )
                 }
             }
             return true

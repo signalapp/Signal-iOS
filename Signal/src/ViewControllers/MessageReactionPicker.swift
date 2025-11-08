@@ -26,7 +26,6 @@ class MessageReactionPicker: UIStackView {
         var isInline: Bool { self == .inline }
     }
 
-    static let anyEmojiName = "any"
     weak var delegate: MessageReactionPickerDelegate?
 
     let pickerDiameter: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
@@ -35,16 +34,47 @@ class MessageReactionPicker: UIStackView {
     var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
 
+    enum Emoji: Equatable {
+        case emoji(String)
+        case more
+    }
+
+    private enum Button: Equatable {
+        case emoji(emoji: String, button: OWSFlatButton)
+        case more(UIView)
+
+        var emoji: Emoji {
+            switch self {
+            case .emoji(let emoji, _): .emoji(emoji)
+            case .more(_): .more
+            }
+        }
+
+        var emojiButton: OWSFlatButton? {
+            switch self {
+            case .emoji(_, let button): button
+            case .more(_): nil
+            }
+        }
+
+        var view: UIView {
+            switch self {
+            case let .emoji(_, button): button
+            case let .more(button): button
+            }
+        }
+    }
+
     private let emojiStackView: UIStackView = UIStackView()
-    private var buttonForEmoji = [(emoji: String, button: OWSFlatButton)]()
+    private var buttonForEmoji = [Button]()
     private var selectedEmoji: EmojiWithSkinTones?
     private var backgroundView: UIView?
 
     private let style: Style
 
     /// The individual emoji buttons and the Any button from `buttonForEmoji`
-    private var buttons: [OWSFlatButton] {
-        return buttonForEmoji.map(\.button)
+    private var buttonViews: [UIView] {
+        return buttonForEmoji.map(\.view)
     }
 
     init(
@@ -96,6 +126,7 @@ class MessageReactionPicker: UIStackView {
                 withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
                 cornerRadius: pickerDiameter / 2
             )
+            backgroundView?.layer.cornerCurve = .continuous
             backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
             backgroundView?.layer.shadowRadius = 4
             backgroundView?.layer.shadowOpacity = 0.05
@@ -159,7 +190,7 @@ class MessageReactionPicker: UIStackView {
                     self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue, inPosition: index)
                 }
             }
-            buttonForEmoji.append((emoji.rawValue, button))
+            buttonForEmoji.append(.emoji(emoji: emoji.rawValue, button: button))
             emojiStackView.addArrangedSubview(button)
 
             // Add a circle behind the currently selected emoji
@@ -176,13 +207,39 @@ class MessageReactionPicker: UIStackView {
         }
 
         if addAnyButton {
-            let button = OWSFlatButton()
-            button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setImage(Theme.isDarkThemeEnabled || forceDarkTheme ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
-            button.setPressedBlock { [weak self] in
+            let button = OWSButton { [weak self] in
                 self?.delegate?.didSelectAnyEmoji()
             }
-            buttonForEmoji.append((MessageReactionPicker.anyEmojiName, button))
+            button.autoSetDimensions(to: CGSize(square: reactionHeight))
+            button.dimsWhenHighlighted = true
+
+            let imageView = UIImageView(image: UIImage(resource: .more))
+            imageView.contentMode = .scaleAspectFit
+            imageView.tintColor = .Signal.secondaryLabel
+
+            let imageBackground = UIView()
+            imageBackground.backgroundColor = .Signal.primaryFill
+
+            // Fill colors are translucent, so place over a normal background
+            // so it looks solid when being pushed up.
+            let backgroundBackground = UIView()
+            backgroundBackground.backgroundColor = .Signal.background
+
+            backgroundBackground.addSubview(imageBackground)
+            imageBackground.autoPinEdgesToSuperviewEdges()
+
+            backgroundBackground.addSubview(imageView)
+            imageView.autoPinEdgesToSuperviewEdges(with: .init(margin: 2))
+
+            button.addSubview(backgroundBackground)
+            let size: CGFloat = 32
+            backgroundBackground.autoSetDimensions(to: .square(size))
+            backgroundBackground.layer.cornerRadius = size / 2
+            backgroundBackground.clipsToBounds = true
+            backgroundBackground.autoCenterInSuperview()
+            backgroundBackground.isUserInteractionEnabled = false
+
+            buttonForEmoji.append(.more(button))
             self.addArrangedSubview(button)
         }
     }
@@ -243,26 +300,29 @@ class MessageReactionPicker: UIStackView {
     }
 
     public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
-        let buttonTuple = buttonForEmoji[position]
-        let button = buttonTuple.button
+        guard let button = buttonForEmoji[position].emojiButton else { return }
         button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
-        buttonForEmoji.replaceSubrange(position...position, with: [(newEmoji, button)])
+        buttonForEmoji.replaceSubrange(
+            position...position,
+            with: [.emoji(emoji: newEmoji, button: button)]
+        )
     }
 
     public func currentEmojiSet() -> [String] {
-        var emojiSet: [String] = []
-        for button in buttons {
-            if let emoji = button.button.title(for: .normal) {
-                emojiSet.append(emoji)
+        buttonForEmoji.compactMap { button in
+            switch button {
+            case .emoji(let emoji, _):
+                emoji
+            case .more(_):
+                nil
             }
         }
-        return emojiSet
     }
 
     public func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
-        var buttonToWiggle: OWSFlatButton?
+        var buttonToWiggle: UIView?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            for (index, button) in self.buttons.enumerated() {
+            for (index, button) in self.buttonViews.enumerated() {
                 // Shrink and fade
                 if index != position {
                     button.alpha = 0.3
@@ -288,7 +348,7 @@ class MessageReactionPicker: UIStackView {
 
     public func endReplaceAnimation() {
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            for button in self.buttons {
+            for button in self.buttonViews {
                 button.alpha = 1
                 button.transform = CGAffineTransform.identity
                 button.layer.removeAnimation(forKey: "wiggle")
@@ -307,7 +367,7 @@ class MessageReactionPicker: UIStackView {
         }
 
         var delay: TimeInterval = 0
-        for view in self.buttons {
+        for view in self.buttonViews {
             view.alpha = 0
             view.transform = CGAffineTransform(translationX: 0, y: 24)
             UIView.animate(withDuration: duration, delay: delay, options: .curveEaseIn, animations: {
@@ -329,21 +389,24 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    var focusedEmoji: String?
+    var focusedEmoji: Emoji?
     func updateFocusPosition(_ position: CGPoint, animated: Bool) {
-        var previouslyFocusedButton: OWSFlatButton?
-        var focusedButton: OWSFlatButton?
+        var previouslyFocusedButton: UIView?
+        var focusedButton: UIView?
 
-        if let focusedEmoji = focusedEmoji, let focusedButton = buttonForEmoji.first(where: { $0.emoji == focusedEmoji})?.button {
+        if
+            let focusedEmoji = focusedEmoji,
+            let focusedButton = buttonForEmoji.first(where: { $0.emoji == focusedEmoji})?.view
+        {
             previouslyFocusedButton = focusedButton
         }
 
         focusedEmoji = nil
 
-        for (emoji, button) in buttonForEmoji {
-            guard focusArea(for: button).contains(position) else { continue }
-            focusedEmoji = emoji
-            focusedButton = buttonForEmoji.first(where: { $0.emoji == emoji })?.button
+        for button in buttonForEmoji {
+            guard focusArea(for: button.view).contains(position) else { continue }
+            focusedEmoji = button.emoji
+            focusedButton = button.view
             break
         }
 
