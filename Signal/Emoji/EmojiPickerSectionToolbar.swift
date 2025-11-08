@@ -163,13 +163,12 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             ])
 
             glassEffectView.clipsToBounds = true
-            glassEffectView.layoutMargins = UIEdgeInsets(top: 0, leading: 1, bottom: 0, trailing: -4)
             glassEffectView.contentView.addSubview(collectionView)
             NSLayoutConstraint.activate([
-                collectionView.leadingAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.leadingAnchor),
-                collectionView.trailingAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.trailingAnchor),
-                collectionView.topAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.topAnchor),
-                collectionView.bottomAnchor.constraint(equalTo: glassEffectView.layoutMarginsGuide.bottomAnchor),
+                collectionView.leadingAnchor.constraint(equalTo: glassEffectView.leadingAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: glassEffectView.trailingAnchor),
+                collectionView.topAnchor.constraint(equalTo: glassEffectView.topAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: glassEffectView.bottomAnchor),
             ])
             backgroundConfigured = true
         }
@@ -205,9 +204,9 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
 
             NSLayoutConstraint.activate([
                 collectionView.topAnchor.constraint(equalTo: topAnchor),
-                collectionView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-                collectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-                collectionView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+                collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             ])
         }
 
@@ -242,25 +241,53 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
     private class func buildCollectionViewLayout(numberOfItems: Int) -> UICollectionViewLayout {
         let cellSize = EmojiSectionCellContentView.viewSize
 
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(cellSize),
-            heightDimension: .absolute(cellSize)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let layout = UICollectionViewCompositionalLayout { _, environment in
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .absolute(cellSize),
+                heightDimension: .absolute(cellSize)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1 / CGFloat(numberOfItems)),
-            heightDimension: .absolute(cellSize)
-        )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            let availableWidth = environment.container.effectiveContentSize.width - (collectionViewSectionMargin * 2)
 
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = NSDirectionalEdgeInsets(margin: collectionViewSectionMargin)
-        return UICollectionViewCompositionalLayout(section: section)
+            let totalSpacing = collectionViewSectionMargin * CGFloat(numberOfItems - 1)
+            let minimumWidth = CGFloat(numberOfItems) * cellSize + totalSpacing
+
+            if minimumWidth <= availableWidth {
+                let groupSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(cellSize)
+                )
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: numberOfItems)
+                group.interItemSpacing = .fixed(collectionViewSectionMargin)
+
+                let section = NSCollectionLayoutSection(group: group)
+                section.orthogonalScrollingBehavior = .none
+                section.contentInsets = NSDirectionalEdgeInsets(margin: collectionViewSectionMargin)
+                return section
+            } else {
+                let groupSize = NSCollectionLayoutSize(
+                    widthDimension: .absolute(cellSize),
+                    heightDimension: .absolute(cellSize)
+                )
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+                let section = NSCollectionLayoutSection(group: group)
+                section.orthogonalScrollingBehavior = .continuous
+                section.interGroupSpacing = collectionViewSectionMargin
+                section.contentInsets = .init(
+                    hMargin: collectionViewSectionMargin * 2,
+                    vMargin: collectionViewSectionMargin
+                )
+                return section
+            }
+        }
+
+        return layout
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         delegate?.emojiPickerSectionToolbar(self, didSelectSection: indexPath.item)
     }
 
