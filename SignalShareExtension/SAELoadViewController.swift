@@ -66,7 +66,7 @@ class SAELoadViewController: UIViewController, OWSNavigationChildController {
         //
         // TODO: Make it safe to do so and remove this hack.
         if self.shouldMimicRecipientPicker {
-            self.title = ConversationPickerViewController.Strings.title
+            self.title = ConversationPickerViewController.Strings.defaultTitle
             self.navigationItem.rightBarButtonItem = .cancelButton(action: {})
             self.navigationItem.rightBarButtonItem?.isEnabled = false
         }

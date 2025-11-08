@@ -30,7 +30,13 @@ class ForwardMessageViewController: OWSNavigationController {
 
     private init(content: Content) {
         self.content = content
-        self.pickerVC = ConversationPickerViewController(selection: selection)
+        self.pickerVC = ConversationPickerViewController(
+            selection: selection,
+            overrideTitle: OWSLocalizedString(
+                "FORWARD_MESSAGE_TITLE",
+                comment: "Title for the 'forward message(s)' view."
+            )
+        )
 
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             self.pickerVC.backgroundStyle = .none
@@ -60,15 +66,6 @@ class ForwardMessageViewController: OWSNavigationController {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        pickerVC.title = OWSLocalizedString(
-            "FORWARD_MESSAGE_TITLE",
-            comment: "Title for the 'forward message(s)' view."
-        )
     }
 
     class func present(

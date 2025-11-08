@@ -92,7 +92,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public init(
         selection: ConversationPickerSelection,
         attachments: [SignalAttachment]? = nil,
-        textAttachment: UnsentTextAttachment? = nil
+        textAttachment: UnsentTextAttachment? = nil,
+        overrideTitle: String? = nil,
     ) {
         self.selection = selection
         self.attachments = attachments
@@ -117,6 +118,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         self.selectionBehavior = .toggleSelectionWithAction
         self.shouldAvoidKeyboard = true
+
+        if let overrideTitle {
+            self.title = overrideTitle
+        } else {
+            self.title = Strings.defaultTitle
+        }
 
         self.navigationItem.searchController = searchController
         if #available(iOS 16.0, *) {
@@ -197,8 +204,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 self?.onTouchCancelButton()
             }
         }
-
-        title = Strings.title
 
         if #available(iOS 17.0, *) {
             view.keyboardLayoutGuide.usesBottomSafeArea = false
@@ -1238,7 +1243,10 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 
 extension ConversationPickerViewController {
     public struct Strings {
-        public static let title = OWSLocalizedString("CONVERSATION_PICKER_TITLE", comment: "navbar header")
+        public static let defaultTitle = OWSLocalizedString(
+            "CONVERSATION_PICKER_TITLE",
+            comment: "navbar header"
+        )
         fileprivate static let recentsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
         fileprivate static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
         fileprivate static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
