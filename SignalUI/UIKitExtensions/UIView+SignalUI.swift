@@ -142,8 +142,10 @@ public extension UIView {
         layer.borderWidth = 1
     }
 
-    func addRedBorder() {
+    @discardableResult
+    func addRedBorder() -> Self {
         addBorder(with: .red)
+        return self
     }
 
     func addCircleBadge(color: UIColor) {
