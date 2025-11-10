@@ -620,11 +620,6 @@ extension TSOutgoingMessage {
             return nil
         }
     }
-
-    @objc
-    func shouldBumpProtoForPolls() -> Bool {
-        return !BuildFlags.pollKeepProtoVersion
-    }
 }
 
 // MARK: - Receipts

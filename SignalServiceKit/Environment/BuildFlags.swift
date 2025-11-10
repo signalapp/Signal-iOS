@@ -76,9 +76,8 @@ public enum BuildFlags {
     public static let iOS26SDKIsAvailable = false
 #endif
 
-    public static let pollSend = build <= .internal
+    public static let pollSend = true
     public static let pollReceive = true
-    public static let pollKeepProtoVersion = build <= .internal
 
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 

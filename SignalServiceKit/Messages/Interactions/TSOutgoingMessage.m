@@ -451,9 +451,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
         [builder setPollCreate:pollCreateProto];
 
-        if ([self shouldBumpProtoForPolls]) {
-            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPolls;
-        }
+        requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPolls;
     } else {
         [builder setBody:trimmedBody];
 
