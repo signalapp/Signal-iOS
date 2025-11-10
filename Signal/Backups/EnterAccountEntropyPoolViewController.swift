@@ -198,7 +198,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         case .notFullyEntered, .malformedAEP, .wellFormedButMismatched:
             owsFailDebug("Next button should be disabled!")
         case .success(let aep):
-            aepTextView.resignFirstResponder()
+            dismissKeyboard()
             onEntryConfirmed(aep)
         }
     }
