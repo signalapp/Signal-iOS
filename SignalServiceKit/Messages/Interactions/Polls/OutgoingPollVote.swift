@@ -82,10 +82,6 @@ public class OutgoingPollVoteMessage: TSOutgoingMessage {
             pollVoteBuilder.buildInfallibly()
         )
 
-        if !BuildFlags.pollKeepProtoVersion {
-            dataMessageBuilder.setRequiredProtocolVersion(UInt32(SSKProtoDataMessageProtocolVersion.polls.rawValue))
-        }
-
         return dataMessageBuilder
     }
 
