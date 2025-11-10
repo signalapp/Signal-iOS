@@ -5,19 +5,26 @@
 
 import SignalServiceKit
 
+/// Represents an error that is potentially displayable in an action sheet.
 public enum ActionSheetDisplayableError: Error {
     case networkError
     case genericError
     case custom(localizedMessage: String)
+    /// - Important
+    /// Does not show an action sheet, under the assumption that the user having
+    /// manually cancelled makes it obvious why a given action was aborted.
+    case userCancelled
 
     public func showActionSheet(from fromViewController: UIViewController?) {
-        OWSActionSheets.showActionSheet(
-            message: localizedActionSheetMessage,
-            fromViewController: fromViewController,
-        )
+        if let localizedActionSheetMessage {
+            OWSActionSheets.showActionSheet(
+                message: localizedActionSheetMessage,
+                fromViewController: fromViewController,
+            )
+        }
     }
 
-    private var localizedActionSheetMessage: String {
+    private var localizedActionSheetMessage: String? {
         switch self {
         case .networkError:
             OWSLocalizedString(
@@ -31,6 +38,8 @@ public enum ActionSheetDisplayableError: Error {
             )
         case .custom(let localizedMessage):
             localizedMessage
+        case .userCancelled:
+            nil
         }
     }
 }

@@ -188,11 +188,7 @@ final class BackupEnablingManager {
             try await setBackupPlan { _ in .free }
 
         case .userCancelled:
-            // Do nothing – don't even dismiss "choose plan", to give
-            // the user the chance to try again. We've reserved a Backup
-            // ID at this point, but that's fine even if they don't end
-            // up enabling Backups at all.
-            break
+            throw .userCancelled
 
         }
     }
