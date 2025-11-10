@@ -34,12 +34,26 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
         delegate?.terminatePoll(poll: self.poll)
         dismiss(animated: true)
     }
+
+    func presentContactSheet(address: SignalServiceAddress) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address.")
+            return
+        }
+        ProfileSheetSheetCoordinator(
+            address: address,
+            groupViewHelper: nil,
+            spoilerState: SpoilerRenderState()
+        )
+        .presentAppropriateSheet(from: self)
+    }
 }
 
 private class PollDetailsViewModel {
     protocol ActionsDelegate: AnyObject {
         func onDismiss()
         func pollTerminate()
+        func presentContactSheet(address: SignalServiceAddress)
     }
 
     weak var actionsDelegate: ActionsDelegate?
@@ -63,6 +77,10 @@ private class PollDetailsViewModel {
                 self?.actionsDelegate?.pollTerminate()
             }
         )
+    }
+
+    func presentContactSheet(address: SignalServiceAddress) {
+        actionsDelegate?.presentContactSheet(address: address)
     }
 }
 
@@ -120,9 +138,14 @@ struct PollDetailsView: View {
                 ForEach(poll.sortedOptions()) { option in
                     SignalSection {
                         ForEach(option.acis, id: \.self) { aci in
-                            ContactRow(address: SignalServiceAddress(aci))
-                                .padding(.vertical, 1)
-                                .padding(.horizontal, 4)
+                            ContactRow(
+                                address: SignalServiceAddress(aci),
+                                onTap: { address in
+                                    viewModel.presentContactSheet(address: address)
+                                }
+                            )
+                            .padding(.vertical, 1)
+                            .padding(.horizontal, 4)
                         }
                         if option.acis.count == 0 {
                             Text(OWSLocalizedString(
@@ -195,12 +218,17 @@ struct PollDetailsView: View {
 
     struct ContactRow: UIViewRepresentable {
         let address: SignalServiceAddress
+        var onTap: ((SignalServiceAddress) -> Void)
 
         func updateUIView(_ uiView: ManualStackView, context: Context) {
         }
 
         func makeUIView(context: Context) -> ManualStackView {
-            return addressCell(address: address) ?? ManualStackView(name: "??")
+            let contactView = addressCell(address: address) ?? ManualStackView(name: "??")
+            contactView.addTapGesture {
+                onTap(address)
+            }
+            return contactView
         }
 
         private func addressCell(address: SignalServiceAddress) -> ManualStackView? {

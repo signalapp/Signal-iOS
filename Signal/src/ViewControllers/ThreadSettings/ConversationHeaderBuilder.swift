@@ -219,11 +219,13 @@ struct ConversationHeaderBuilder {
                 ),
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
-                    SignalApp.shared.presentConversationForThread(
-                        threadUniqueId: delegate.thread.uniqueId,
-                        action: .compose,
-                        animated: true
-                    )
+                    SignalApp.shared.dismissAllModals(animated: true, completion: {
+                        SignalApp.shared.presentConversationForThread(
+                            threadUniqueId: delegate.thread.uniqueId,
+                            action: .compose,
+                            animated: true
+                        )
+                    })
                 }
             ))
         }
