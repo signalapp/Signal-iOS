@@ -19,6 +19,8 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         UIEdgeInsets(top: 0, leading: hMargin, bottom: 24, trailing: hMargin)
     }
 
+    private let currentBackupPlan: BackupPlan
+    private let freeTierMediaDays: UInt64
     private let didDismiss: () -> Void
     private let linkAndSync: () -> Void
     private let linkOnly: () -> Void
@@ -26,24 +28,51 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
     private var didSelectAnAction = false
 
     init(
+        currentBackupPlan: BackupPlan,
+        freeTierMediaDays: UInt64,
         didDismiss: @escaping () -> Void,
         linkAndSync: @escaping () -> Void,
         linkOnly: @escaping () -> Void
     ) {
+        self.currentBackupPlan = currentBackupPlan
+        self.freeTierMediaDays = freeTierMediaDays
         self.didDismiss = didDismiss
         self.linkAndSync = linkAndSync
         self.linkOnly = linkOnly
         super.init()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
+    static func load(
+        didDismiss: @escaping () -> Void,
+        linkAndSync: @escaping () -> Void,
+        linkOnly: @escaping () -> Void
+    ) -> LinkOrSyncPickerSheet {
+        let backupSettingsStore = BackupSettingsStore()
         let db = DependenciesBridge.shared.db
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
-        let freeTierMediaDays = db.read { tx in
-            subscriptionConfigManager.backupConfigurationOrDefault(tx: tx).freeTierMediaDays
+        let (currentBackupPlan, freeTierMediaDays): (
+            BackupPlan,
+            UInt64
+        ) = db.read { tx in
+            (
+                backupSettingsStore.backupPlan(tx: tx),
+                subscriptionConfigManager.backupConfigurationOrDefault(tx: tx).freeTierMediaDays,
+            )
         }
+
+        return LinkOrSyncPickerSheet(
+            currentBackupPlan: currentBackupPlan,
+            freeTierMediaDays: freeTierMediaDays,
+            didDismiss: didDismiss,
+            linkAndSync: linkAndSync,
+            linkOnly: linkOnly,
+        )
+    }
+
+    // MARK: -
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
         self.stackView.alignment = .fill
         self.stackView.spacing = 16
@@ -92,14 +121,24 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                     "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
                     comment: "title for choosing to send message history when linking a new device"
                 ),
-                subtitleText: String.localizedStringWithFormat(
-                    OWSLocalizedString(
-                        "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d",
-                        tableName: "PluralAware",
-                        comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
-                    ),
-                    freeTierMediaDays,
-                )
+                subtitleText: {
+                    switch currentBackupPlan {
+                    case .disabled, .disabling, .free:
+                        String.localizedStringWithFormat(
+                            OWSLocalizedString(
+                                "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d",
+                                tableName: "PluralAware",
+                                comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                            ),
+                            freeTierMediaDays,
+                        )
+                    case .paid, .paidExpiringSoon, .paidAsTester:
+                        OWSLocalizedString(
+                            "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE",
+                            comment: "Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled.",
+                        )
+                    }
+                }(),
             ) { [weak self] in
                 guard let self else { return }
                 self.didSelectAnAction = true
@@ -203,12 +242,12 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    SheetPreviewViewController(sheet: LinkOrSyncPickerSheet {
-        print("didDismiss")
-    } linkAndSync: {
-        print("linkAndSync")
-    } linkOnly: {
-        print("linkOnly")
-    })
+    SheetPreviewViewController(sheet: LinkOrSyncPickerSheet(
+        currentBackupPlan: .paid(optimizeLocalStorage: false),
+        freeTierMediaDays: 45,
+        didDismiss: { print("didDismiss") },
+        linkAndSync: { print("linkAndSync") },
+        linkOnly: { print("linkOnly") },
+    ))
 }
 #endif

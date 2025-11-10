@@ -122,13 +122,17 @@ class LinkDeviceViewController: OWSViewController {
         if
             deviceProvisioningUrl.capabilities.contains(.linknsync)
         {
-            let linkOrSyncSheet = LinkOrSyncPickerSheet {
-                self.popToLinkedDeviceList()
-            } linkAndSync: {
-                self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: true)
-            } linkOnly: {
-                self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
-            }
+            let linkOrSyncSheet: LinkOrSyncPickerSheet = .load(
+                didDismiss: {
+                    self.popToLinkedDeviceList()
+                },
+                linkAndSync: {
+                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: true)
+                },
+                linkOnly: {
+                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
+                },
+            )
 
             self.safePresent(linkOrSyncSheet)
         } else {
