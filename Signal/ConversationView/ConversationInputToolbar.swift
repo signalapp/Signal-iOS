@@ -2031,8 +2031,19 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         @available(iOS 26.0, *)
         static let backgroundCornerRadius: CGFloat = 26
 
+        // Make sure to match parameters from MentionPicker.
         static func animationTransform(_ view: UIView) -> CGAffineTransform {
-            return CGAffineTransform.scale(0.9)
+            guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return .identity }
+            return .scale(0.9)
+        }
+
+        // Make sure to match parameters from MentionPicker.
+        static func animator() -> UIViewPropertyAnimator {
+            return UIViewPropertyAnimator(
+                duration: 0.35,
+                springDamping: 1,
+                springResponse: 0.35
+            )
         }
 
 #if compiler(>=6.2)
@@ -2241,11 +2252,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
 
         // Animate.
-        let animator = UIViewPropertyAnimator(
-            duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            springDamping: 1,
-            springResponse: 0.4
-        )
+        let animator = StickerLayout.animator()
         animator.addAnimations {
             self.stickerListViewWrapper.transform = .identity
             self.stickerListViewWrapper.effect = StickerLayout.panelVisualEffect
@@ -2264,11 +2271,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             return
         }
 
-        let animator = UIViewPropertyAnimator(
-            duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            springDamping: 1,
-            springResponse: 0.4
-        )
+        let animator = StickerLayout.animator()
         animator.addAnimations {
             self.stickerListViewWrapper.transform = StickerLayout.animationTransform(self.stickerListViewWrapper)
             self.stickerListViewWrapper.effect = nil

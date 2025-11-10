@@ -288,15 +288,18 @@ class MentionPicker: UIView {
 
     // MARK: - Animations
 
+    // Make sure to match parementers in ConversationInputToolbar.StickerLayout.
     private static func animator() -> UIViewPropertyAnimator {
         return UIViewPropertyAnimator(
-            duration: 0.25,
+            duration: 0.35,
             springDamping: 1,
-            springResponse: 0.4
+            springResponse: 0.35
         )
     }
 
+    // Make sure to match parementers in ConversationInputToolbar.StickerLayout.
     private static var animationTransform: CGAffineTransform {
+        guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return .identity }
         return .scale(0.9)
     }
 
@@ -306,7 +309,7 @@ class MentionPicker: UIView {
         }
         tableView.alpha = 0
         hairlineView?.alpha = 0
-        transform = .scale(0.9)
+        transform = MentionPicker.animationTransform
     }
 
     func animateIn() {
