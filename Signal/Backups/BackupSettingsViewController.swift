@@ -1287,7 +1287,6 @@ class BackupSettingsViewController:
         present(alreadyRedeemedSheet, animated: true)
     }
 
-<<<<<<< HEAD
     fileprivate func showBackupIAPNotFoundLocallySheet() {
         let notFoundLocallySheet = HeroSheetViewController(
             hero: .circleIcon(icon: .backupErrorBold, iconSize: 40, tintColor: .orange, backgroundColor: UIColor(rgbHex: 0xF9E4B6)),
