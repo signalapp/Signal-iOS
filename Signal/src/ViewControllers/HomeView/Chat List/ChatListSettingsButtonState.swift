@@ -21,6 +21,8 @@ final class ChatListSettingsButtonState {
     var showBackupsFailedMenuItemBadge: Bool = false
     var showBackupsSubscriptionAlreadyRedeemedAvatarBadge: Bool = false
     var showBackupsSubscriptionAlreadyRedeemedMenuItem: Bool = false
+    var showBackupsIAPNotFoundLocallyAvatarBadge: Bool = false
+    var showBackupsIAPNotFoundLocallyMenuItem: Bool = false
 
     weak var delegate: ChatListSettingsButtonDelegate?
 
@@ -34,6 +36,8 @@ final class ChatListSettingsButtonState {
         showBackupsFailedMenuItem: Bool? = nil,
         showBackupsSubscriptionAlreadyRedeemedAvatarBadge: Bool? = nil,
         showBackupsSubscriptionAlreadyRedeemedMenuItem: Bool? = nil,
+        showBackupsIAPNotFoundLocallyAvatarBadge: Bool? = nil,
+        showBackupsIAPNotFoundLocallyMenuItem: Bool? = nil
     ) {
         var didUpdate = false
         if let hasInboxChats {
@@ -71,6 +75,14 @@ final class ChatListSettingsButtonState {
         if let showBackupsSubscriptionAlreadyRedeemedMenuItem {
             didUpdate = didUpdate || self.showBackupsSubscriptionAlreadyRedeemedMenuItem != showBackupsSubscriptionAlreadyRedeemedMenuItem
             self.showBackupsSubscriptionAlreadyRedeemedMenuItem = showBackupsSubscriptionAlreadyRedeemedMenuItem
+        }
+        if let showBackupsIAPNotFoundLocallyAvatarBadge {
+            didUpdate = didUpdate || self.showBackupsIAPNotFoundLocallyAvatarBadge != showBackupsIAPNotFoundLocallyAvatarBadge
+            self.showBackupsIAPNotFoundLocallyAvatarBadge = showBackupsIAPNotFoundLocallyAvatarBadge
+        }
+        if let showBackupsIAPNotFoundLocallyMenuItem {
+            didUpdate = didUpdate || self.showBackupsIAPNotFoundLocallyMenuItem != showBackupsIAPNotFoundLocallyMenuItem
+            self.showBackupsIAPNotFoundLocallyMenuItem = showBackupsIAPNotFoundLocallyMenuItem
         }
         if didUpdate {
             delegate?.didUpdateButton(self)

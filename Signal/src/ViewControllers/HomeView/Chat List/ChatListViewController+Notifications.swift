@@ -111,6 +111,12 @@ extension ChatListViewController {
         )
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(backupIAPNotFoundLocallyDidChange),
+            name: .backupIAPNotFoundLocallyDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(hasConsumedMediaTierCapacityStateDidChange),
             name: .hasConsumedMediaTierCapacityStatusDidChange,
             object: nil
@@ -160,6 +166,12 @@ extension ChatListViewController {
     private func backupSubscriptionFailedToRedeemDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
         updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
+    }
+
+    @objc
+    private func backupIAPNotFoundLocallyDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+        updateBackupIAPNotFoundLocallyAlertsWithSneakyTx()
     }
 
     @objc

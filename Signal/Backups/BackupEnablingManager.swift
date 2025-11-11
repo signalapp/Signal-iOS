@@ -14,6 +14,7 @@ final class BackupEnablingManager {
     private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private let db: DB
@@ -25,6 +26,8 @@ final class BackupEnablingManager {
         backupDisablingManager: BackupDisablingManager,
         backupKeyService: BackupKeyService,
         backupPlanManager: BackupPlanManager,
+        backupSettingsStore: BackupSettingsStore,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
@@ -35,7 +38,8 @@ final class BackupEnablingManager {
         self.backupDisablingManager = backupDisablingManager
         self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
-        self.backupSettingsStore = BackupSettingsStore()
+        self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.db = db
@@ -108,6 +112,13 @@ final class BackupEnablingManager {
         } catch {
             owsFailDebug("Unexpectedly failed to register Backup ID! \(error)")
             throw .genericError
+        }
+
+        // Proactively clear persisted subscription-related issues, as they'll
+        // be superceded, and/or re-set, by our imminent enabling attempt.
+        await db.awaitableWrite { tx in
+            backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
+            backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
         }
 
         switch planSelection {

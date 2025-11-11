@@ -175,6 +175,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         // Populate Backups error states
         updateBackupFailureAlertsWithSneakyTransaction()
         updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
+        updateBackupIAPNotFoundLocallyAlertsWithSneakyTx()
         updateHasConsumedMediaTierCapacityWithSneakyTransaction()
 
         // During main app launch, the chat list becomes visible _before_
@@ -478,6 +479,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 }
                 self?.updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
             }
+        } else if viewState.settingsButtonCreator.showBackupsIAPNotFoundLocallyAvatarBadge {
+            badgeColor = .Signal.yellow
+            onDidDismissContextMenu = { [weak self] in
+                db.write { tx in
+                    backupSubscriptionIssueStore.setDidAckIAPSubscriptionNotFoundLocallyChatListBadge(tx: tx)
+                }
+                self?.updateBackupIAPNotFoundLocallyAlertsWithSneakyTx()
+            }
         } else if viewState.settingsButtonCreator.hasUnreadPaymentNotification {
             badgeColor = .Signal.accent
             onDidDismissContextMenu = {}
@@ -539,6 +548,32 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                         backupSubscriptionIssueStore.setDidAckIAPSubscriptionAlreadyRedeemedChatListMenuItem(tx: tx)
                                     }
                                     self?.updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
+                                }
+                            )
+                        ])
+                    )
+                } else if viewState.settingsButtonCreator.showBackupsIAPNotFoundLocallyMenuItem {
+                    let image = Theme.iconImage(.backup)
+                        .withTintColor(.Signal.label)
+                        .withBadge(
+                            color: .Signal.yellow,
+                            badgeSize: .square(8.5)
+                        )
+
+                    contextMenuActions.append(
+                        UIMenu(options: .displayInline, children: [
+                            UIAction(
+                                title: OWSLocalizedString(
+                                    "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY",
+                                    comment: "Title for the conversation list's backup subscription not found locally context menu action.",
+                                ),
+                                image: image,
+                                handler: { [weak self] _ in
+                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    db.write { tx in
+                                        backupSubscriptionIssueStore.setDidAckIAPSubscriptionNotFoundLocallyChatListMenuItem(tx: tx)
+                                    }
+                                    self?.updateBackupIAPNotFoundLocallyAlertsWithSneakyTx()
                                 }
                             )
                         ])

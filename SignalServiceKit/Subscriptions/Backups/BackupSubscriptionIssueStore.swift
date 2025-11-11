@@ -5,6 +5,7 @@
 
 extension Notification.Name {
     public static let backupSubscriptionAlreadyRedeemedDidChange = Notification.Name("BackupSubscriptionAlreadyRedeemedDidChange")
+    public static let backupIAPNotFoundLocallyDidChange = Notification.Name("BackupIAPNotFoundLocallyDidChange")
 }
 
 public struct BackupSubscriptionIssueStore {
@@ -21,6 +22,12 @@ public struct BackupSubscriptionIssueStore {
             static let shouldShowChatListMenuItem = "IAPSubscriptionAlreadyRedeemed.shouldShowChatListMenuItem"
         }
 
+        enum IAPSubscriptionNotFoundLocally {
+            static let shouldWarn = "IAPSubscriptionNotFoundLocally.shouldWarn"
+            static let shouldShowChatListBadge = "IAPSubscriptionNotFoundLocally.shouldShowChatListBadge"
+            static let shouldShowChatListMenuItem = "IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem"
+        }
+
         enum IAPSubscriptionExpired {
             static let shouldWarn = "shouldWarnIAPSubscriptionExpired"
         }
@@ -31,9 +38,11 @@ public struct BackupSubscriptionIssueStore {
     }
 
     private let kvStore: NewKeyValueStore
+    private let logger: PrefixedLogger
 
     public init() {
         self.kvStore = NewKeyValueStore(collection: "BackupSubscriptionIssueStore")
+        self.logger = PrefixedLogger(prefix: "[Backups][Sub]")
     }
 
     // MARK: -
@@ -58,12 +67,15 @@ public struct BackupSubscriptionIssueStore {
             return
         }
 
+        logger.warn("")
         kvStore.writeValue(true, forKey: Keys.IAPSubscriptionFailedToRenew.shouldWarn, tx: tx)
         kvStore.writeValue(endOfCurrentPeriod, forKey: Keys.IAPSubscriptionFailedToRenew.lastWarnedEndOfCurrentPeriod, tx: tx)
     }
 
     public func setDidWarnIAPSubscriptionFailedToRenew(tx: DBWriteTransaction) {
         kvStore.writeValue(false, forKey: Keys.IAPSubscriptionFailedToRenew.shouldWarn, tx: tx)
+        // Don't wipe lastWarnedEndOfCurrentPeriod, because we never again need
+        // to re-warn for a given subscription failing to renew.
     }
 
     // MARK: -
@@ -96,6 +108,7 @@ public struct BackupSubscriptionIssueStore {
             return
         }
 
+        logger.warn("")
         kvStore.writeValue(true, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldWarn, tx: tx)
         kvStore.writeValue(true, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListBadge, tx: tx)
         kvStore.writeValue(true, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListMenuItem, tx: tx)
@@ -115,13 +128,62 @@ public struct BackupSubscriptionIssueStore {
     }
 
     public func setStopWarningIAPSubscriptionAlreadyRedeemed(tx: DBWriteTransaction) {
+        logger.info("")
         kvStore.removeValue(forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldWarn, tx: tx)
         kvStore.removeValue(forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListBadge, tx: tx)
         kvStore.removeValue(forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListMenuItem, tx: tx)
+        // Remove the lastWarnedEndOfCurrentPeriod, because it's possible to
+        // clear this warning (e.g., downgrade to free) and try again to redeem
+        // the same already-redeemed subscription period, in which case we
+        // should warn again.
         kvStore.removeValue(forKey: Keys.IAPSubscriptionAlreadyRedeemed.lastWarnedEndOfCurrentPeriod, tx: tx)
 
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: .backupSubscriptionAlreadyRedeemedDidChange, object: nil)
+        }
+    }
+
+    // MARK: -
+
+    public func shouldShowIAPSubscriptionNotFoundLocallyWarning(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldWarn, tx: tx) ?? false
+    }
+
+    public func shouldShowIAPSubscriptionNotFoundLocallyChatListBadge(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListBadge, tx: tx) ?? false
+    }
+
+    public func shouldShowIAPSubscriptionNotFoundLocallyChatListMenuItem(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem, tx: tx) ?? false
+    }
+
+    public func setShouldWarnIAPSubscriptionNotFoundLocally(tx: DBWriteTransaction) {
+        logger.warn("")
+        kvStore.writeValue(true, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldWarn, tx: tx)
+        kvStore.writeValue(true, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListBadge, tx: tx)
+        kvStore.writeValue(true, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem, tx: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: .backupIAPNotFoundLocallyDidChange, object: nil)
+        }
+    }
+
+    public func setDidAckIAPSubscriptionNotFoundLocallyChatListBadge(tx: DBWriteTransaction) {
+        kvStore.writeValue(false, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListBadge, tx: tx)
+    }
+
+    public func setDidAckIAPSubscriptionNotFoundLocallyChatListMenuItem(tx: DBWriteTransaction) {
+        kvStore.writeValue(false, forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem, tx: tx)
+    }
+
+    public func setStopWarningIAPSubscriptionNotFoundLocally(tx: DBWriteTransaction) {
+        logger.info("")
+        kvStore.removeValue(forKey: Keys.IAPSubscriptionNotFoundLocally.shouldWarn, tx: tx)
+        kvStore.removeValue(forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListBadge, tx: tx)
+        kvStore.removeValue(forKey: Keys.IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem, tx: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: .backupIAPNotFoundLocallyDidChange, object: nil)
         }
     }
 
@@ -132,6 +194,7 @@ public struct BackupSubscriptionIssueStore {
     }
 
     public func setShouldWarnIAPSubscriptionExpired(_ value: Bool, tx: DBWriteTransaction) {
+        if value { logger.warn("") }
         kvStore.writeValue(value, forKey: Keys.IAPSubscriptionExpired.shouldWarn, tx: tx)
     }
 
@@ -142,6 +205,7 @@ public struct BackupSubscriptionIssueStore {
     }
 
     public func setShouldWarnTestFlightSubscriptionExpired(_ value: Bool, tx: DBWriteTransaction) {
+        if value { logger.warn("") }
         kvStore.writeValue(value, forKey: Keys.TestFlightSubscriptionExpired.shouldWarn, tx: tx)
     }
 }

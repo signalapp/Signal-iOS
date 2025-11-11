@@ -289,6 +289,24 @@ extension ChatListViewController {
         }
     }
 
+    public func updateBackupIAPNotFoundLocallyAlertsWithSneakyTx() {
+        typealias BackupIAPNotFoundLocallyAlertType = CLVViewState.BackupIAPNotFoundLocallyAlertType
+
+        let db = DependenciesBridge.shared.db
+        let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
+
+        viewState.backupIAPNotFoundLocallyAlerts = db.read { tx in
+            var alerts = Set<BackupIAPNotFoundLocallyAlertType>()
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionNotFoundLocallyChatListBadge(tx: tx) {
+                alerts.insert(.avatarBadge)
+            }
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionNotFoundLocallyChatListMenuItem(tx: tx) {
+                alerts.insert(.menuItem)
+            }
+            return alerts
+        }
+    }
+
     public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
         let backupSettingsStore = BackupSettingsStore()
         viewState.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in

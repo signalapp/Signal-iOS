@@ -679,6 +679,9 @@
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgrade";
 
+/* Text describing the user's free backup plan when they have Backups disabled. */
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "You turned off backups";
+
 /* Text describing the user's free backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Your backup plan is free";
 
@@ -712,10 +715,10 @@
 /* Title for a button allowing users to manage a paid backup plan that failed to renew. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_ACTION_BUTTON_TITLE" = "Manage Subscription";
 
-/* Text describing that the user's paid backup plan has been canceled. */
+/* Text describing that the user's paid backup plan has failed to renew. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_1" = "Payment method declined";
 
-/* Text describing that the user's paid backup plan has been canceled. */
+/* Text describing that the user's paid backup plan has failed to renew. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FAILED_TO_RENEW_DESCRIPTION_2" = "Check to make sure your payment method is up to date";
 
 /* Title for a button allowing users to manage their backup plan as a tester. */
@@ -723,6 +726,12 @@
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Paid (complimentary for TestFlight users)";
+
+/* Title for a button allowing users to renew their backup subscription on this device. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "Renew";
+
+/* Text describing that the user's paid backup plan did not correspond to a App Store subscription on this device. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "Your subscription was not found on this device. Renew to continue using Signal Backups.";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
@@ -867,6 +876,15 @@
 
 /* Label for a menu item offering to show the user their recovery key. */
 "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "View Recovery Key";
+
+/* Body for a sheet explaining that the user's Backups subscription was not found on this device. */
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "Your subscription couldn't be restored on this device. This can happen if you're signed into the App Store with a different Apple account or you transferred from an Android phone.\n\nIf you have an active subscription on your old phone consider cancelling it before it renews.";
+
+/* Button for a sheet explaining that the user's Backups subscription was not found on this device. */
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "Got It";
+
+/* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Subscription Not Found";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Back Up Now";
@@ -4353,6 +4371,9 @@
 
 /* Title for the conversation list's failed to redeem backup subscription context menu action. */
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "Backup Subscription Error";
+
+/* Title for the conversation list's backup subscription not found locally context menu action. */
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Backup Subscription Not Found";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";

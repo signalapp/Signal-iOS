@@ -187,8 +187,35 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         self.tsAccountManager = tsAccountManager
         self.whoAmIManager = whoAmIManager
 
+        Task { await doStartupLogging() }
         listenForTransactionUpdates()
     }
+
+    private func doStartupLogging() async {
+        let latestTransaction = await self.latestTransaction(onlyEntitling: false)
+        let latestEntitlingTransaction = await self.latestTransaction(onlyEntitling: true)
+        let localIAPSubscriberData = db.read { store.getIAPSubscriberData(tx: $0) }
+
+        if let latestEntitlingTransaction {
+            if let localIAPSubscriberData, localIAPSubscriberData.matches(storeKitTransaction: latestEntitlingTransaction) {
+                logger.info("Active StoreKit, matches local IAPSubscriberData.")
+            } else {
+                logger.info("Active StoreKit, does not match local IAPSubscriberData.")
+            }
+        } else if let latestTransaction {
+            if let localIAPSubscriberData, localIAPSubscriberData.matches(storeKitTransaction: latestTransaction) {
+                logger.info("Inactive StoreKit, matches local IAPSubscriberData.")
+            } else {
+                logger.info("Inactive StoreKit, does not match local IAPSubscriberData.")
+            }
+        } else if localIAPSubscriberData != nil {
+            logger.info("No StoreKit, but local IAPSubscriberData.")
+        } else {
+            logger.info("No StoreKit or local IAPSubscriberData.")
+        }
+    }
+
+    // MARK: -
 
     /// This should never throw, nor be missing.
     private func getPaidTierProduct() async throws -> Product {
@@ -215,28 +242,32 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
     }
 
-    /// Returns the `Transaction` that most recently entitled us to the StoreKit
-    /// "paid tier" subscription, or `nil` if we are not entitled to it.
+    /// Returns the latest `Transaction` for the the StoreKit "paid tier"
+    /// subscription, or `nil` if this IAP account has never subscribed.
     ///
-    /// For example, if we originally purchased a subscription in transaction T,
-    /// then renewed it twice in transactions T+1 (now expired) and T+2
-    /// (currently valid), this method will return transaction T+2.
-    private func latestEntitlingTransaction() async -> Transaction? {
-        guard let latestEntitlingTransactionResult = await Transaction.currentEntitlement(
-            for: Constants.paidTierBackupsProductId
-        ) else {
+    /// - Parameter onlyEntitling
+    /// If `true`, returns the latest `Transaction` if it currently entitles us
+    /// to the subscription.
+    private func latestTransaction(onlyEntitling: Bool) async -> Transaction? {
+        let transactionResult: VerificationResult<Transaction>? = if onlyEntitling {
+            await Transaction.currentEntitlement(for: Constants.paidTierBackupsProductId)
+        } else {
+            await Transaction.latest(for: Constants.paidTierBackupsProductId)
+        }
+
+        guard let transactionResult else {
             return nil
         }
 
-        guard let latestEntitlingTransaction = try? latestEntitlingTransactionResult.payloadValue else {
+        guard let transaction = try? transactionResult.payloadValue else {
             owsFailDebug(
-                "Latest entitlement transaction was unverified!",
+                "Transaction was unverified! onlyEntitling: \(onlyEntitling)",
                 logger: logger
             )
             return nil
         }
 
-        return latestEntitlingTransaction
+        return transaction
     }
 
     /// `Transaction.updates` is how the app is informed by StoreKit about
@@ -262,12 +293,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                     continue
                 }
 
-                /// All transactions should be finished eventually, so let's
-                /// make sure we do so.
-                await transaction.finish()
-
                 if
-                    let latestEntitlingTransaction = await latestEntitlingTransaction(),
+                    let latestEntitlingTransaction = await latestTransaction(onlyEntitling: true),
                     latestEntitlingTransaction.id == transaction.id
                 {
                     logger.info("Transaction update is for latest entitling transaction; attempting subscription redemption.")
@@ -289,6 +316,10 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 } else {
                     logger.info("Transaction update is not for latest entitling subscription.")
                 }
+
+                /// All transactions should be finished eventually, so let's
+                /// make sure we do so.
+                await transaction.finish()
             }
         }
     }
@@ -465,6 +496,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
                 switch downgrade {
                 case .toFreeTier:
+                    // Subscription issues no longer relevant!
+                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
+                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
+
+                    // Warn that it expired, though.
                     backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
                 case .toPaidExpiringSoon:
                     break
@@ -576,19 +612,21 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             return
         }
 
-        let localEntitlingTransaction = await latestEntitlingTransaction()
-        var registerNewSubscriberIdIfSubscriptionMissing = false
+        let localEntitlingTransaction = await latestTransaction(onlyEntitling: true)
 
+        let localIAPSubscriberData: IAPSubscriberData
+        var registerNewSubscriberIdIfSubscriptionMissing = false
         if
             let localEntitlingTransaction,
             let persistedIAPSubscriberData
         {
             if persistedIAPSubscriberData.matches(storeKitTransaction: localEntitlingTransaction) {
-                /// We have an active local subscription that matches our persisted
-                /// identifiers. That's the simplest happy-path! Probably...
-                logger.debug("Local transaction matches persisted: \(localEntitlingTransaction.originalID)")
+                localIAPSubscriberData = persistedIAPSubscriberData
 
-                /// ...because we may need to register a new subscriber ID.
+                /// We have an active local subscription that matches our persisted
+                /// identifiers. Happy path!
+                ///
+                /// However, we may need to register a new subscriber ID.
                 ///
                 /// If you start a subscription with StoreKit, cancel it (and
                 /// let it expire), then resubscribe, StoreKit uses the same
@@ -615,7 +653,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 /// As a rule we prefer to rely on the local subscription, so
                 /// we'll "claim" it by generating and registering identifiers
                 /// for the local subscription!
-                try await registerNewSubscriberId(
+                localIAPSubscriberData = try await registerNewSubscriberId(
                     originalTransactionId: localEntitlingTransaction.originalID
                 )
             }
@@ -623,22 +661,28 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             /// We have a local subscription, but don't yet have any persisted
             /// identifiers. (This might be the first time we're subscribing!)
             /// Generate and register them now!
-            try await registerNewSubscriberId(
+            localIAPSubscriberData = try await registerNewSubscriberId(
                 originalTransactionId: localEntitlingTransaction.originalID
             )
-        } else if persistedIAPSubscriberData != nil {
-            /// We're don't have an active local subscription, but we do have
-            /// identifiers for a subscription. The subscription may be from
-            /// this device but since expired, or we may have restored the
-            /// subscription from another device where we initiated the IAP
-            /// subscription. Regardless, we'll move forward with the
-            /// subscription identifiers in case they're still valid!
-            logger.warn("Have persisted backup subscription IDs, but no local active subscription...")
+        } else if let persistedIAPSubscriberData {
+            /// We don't have an active subscription locally, but we do have
+            /// identifiers for one. Those identifiers may be for a subscription
+            /// started by the current IAP account but since expired, or they
+            /// may be for a subscription started by another IAP account (e.g.,
+            /// a different Apple ID on this or another device, or an Android
+            /// from which we restored).
+            ///
+            /// We'll go ahead and continue to redeem these identifiers if
+            /// possible, but because they don't match the local IAP account
+            /// we'll persist a warning below.
+            localIAPSubscriberData = persistedIAPSubscriberData
         } else {
             /// We don't have an active local subscription, nor do we have
             /// subscription IDs for some other subscription. Nothing to do!
             return
         }
+
+        await reconcileIAPNotFoundLocallyWarnings(localIAPSubscriberData: localIAPSubscriberData)
 
         let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
             BackupSubscriptionRedemptionContext
@@ -672,7 +716,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
                     let newSubscriberId = try await registerNewSubscriberId(
                         originalTransactionId: localEntitlingTransaction.originalID
-                    )
+                    ).subscriberId
 
                     if let subscription = try await _fetchAndMaybeDowngradeSubscription(
                         subscriberID: newSubscriberId,
@@ -707,10 +751,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     /// Generate a new subscriber ID, and register it with the server to be
     /// associated with the given StoreKit "original transaction ID" for a
     /// subscription. Persists and returns the new subscriber ID.
-    @discardableResult
     private func registerNewSubscriberId(
         originalTransactionId: UInt64
-    ) async throws -> Data {
+    ) async throws -> IAPSubscriberData {
         logger.info("Generating and registering new Backups subscriber ID!")
 
         let newSubscriberId: Data = Randomness.generateRandomBytes(32)
@@ -747,14 +790,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             )
         }
 
+        let newSubscriberData = IAPSubscriberData(
+            subscriberId: newSubscriberId,
+            iapSubscriptionId: .originalTransactionId(originalTransactionId)
+        )
+
         /// Our subscription is now set up on the service, and we should record
         /// it locally!
         await db.awaitableWrite { tx in
-            let newSubscriberData = IAPSubscriberData(
-                subscriberId: newSubscriberId,
-                iapSubscriptionId: .originalTransactionId(originalTransactionId)
-            )
-
             store.setIAPSubscriberData(newSubscriberData, tx: tx)
         }
 
@@ -762,7 +805,59 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         /// that backup now.
         storageServiceManager.recordPendingLocalAccountUpdates()
 
-        return newSubscriberId
+        return newSubscriberData
+    }
+
+    /// We warn the user if their `IAPSubscriberData` doesn't correspond to the
+    /// local-device IAP account. This method manages setting or clearing that
+    /// warning as appropriate.
+    private func reconcileIAPNotFoundLocallyWarnings(
+        localIAPSubscriberData: IAPSubscriberData,
+    ) async {
+        let (
+            isWarningIAPNotFoundLocally,
+            backupPlan,
+        ): (Bool, BackupPlan) = db.read { tx in
+            return (
+                backupSubscriptionIssueStore.shouldShowIAPSubscriptionNotFoundLocallyWarning(tx: tx),
+                backupPlanManager.backupPlan(tx: tx),
+            )
+        }
+
+        if
+            let latestTransaction = await latestTransaction(onlyEntitling: false),
+            localIAPSubscriberData.matches(storeKitTransaction: latestTransaction)
+        {
+            // Our local IAPSubscriberData came from a subscription by the local
+            // IAP account: clear any "not found locally" warnings.
+            if isWarningIAPNotFoundLocally {
+                await db.awaitableWrite { tx in
+                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
+                }
+            }
+            return
+        }
+
+        // Our local IAPSubscriberData doesn't match a subscription from the
+        // local IAP account. We may want to save a warning.
+
+        if isWarningIAPNotFoundLocally {
+            // Already warning!
+            return
+        }
+
+        switch backupPlan {
+        case .free, .paidAsTester:
+            // We never discard IAPSubscriberData, even when we downgrade. If
+            // we're on the free or TestFlight plans, we don't need to warn.
+            return
+        case .disabling, .disabled, .paid, .paidExpiringSoon:
+            break
+        }
+
+        await db.awaitableWrite { tx in
+            backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionNotFoundLocally(tx: tx)
+        }
     }
 
     // MARK: - Persistence
