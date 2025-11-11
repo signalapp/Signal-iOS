@@ -1902,7 +1902,10 @@ struct BackupSettingsView: View {
 
             case .disabled:
                 SignalSection {
-                    reenableBackupsButton
+                    ReenableBackupsButton(
+                        backupSubscriptionLoadingState: viewModel.backupSubscriptionLoadingState,
+                        viewModel: viewModel,
+                    )
                 } header: {
                     Text(OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER",
@@ -1946,7 +1949,10 @@ struct BackupSettingsView: View {
                 }
 
                 SignalSection {
-                    reenableBackupsButton
+                    ReenableBackupsButton(
+                        backupSubscriptionLoadingState: viewModel.backupSubscriptionLoadingState,
+                        viewModel: viewModel,
+                    )
                 }
 
                 SignalSection {
@@ -1955,35 +1961,48 @@ struct BackupSettingsView: View {
             }
         }
     }
+}
 
-    /// A button to enable Backups if it was previously disabled, if we can let
-    /// the user reenable.
-    private var reenableBackupsButton: AnyView {
-        let implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?
-        switch viewModel.backupSubscriptionLoadingState {
+private struct YellowBadgeView: View {
+    var body: some View {
+        VStack {
+            Spacer().frame(height: 6)
+            Circle()
+                .frame(width: 10, height: 10)
+                .foregroundStyle(Color.Signal.yellow)
+            Spacer()
+        }
+        .frame(maxHeight: .infinity)
+    }
+}
+
+private struct ReenableBackupsButton: View {
+    let backupSubscriptionLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
+    let viewModel: BackupSettingsViewModel
+
+    private var implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?? {
+        switch backupSubscriptionLoadingState {
         case .loading, .networkError:
-            // Don't let them reenable until we know if they're already paying
-            // or not.
-            return AnyView(EmptyView())
-        case .loaded(.paidButFreeForTesters):
-            // Let them reenable with anything; there was no purchase.
-            implicitPlanSelection = nil
+            // Don't let them reenable until we know more.
+            return nil
         case
                 .loaded(.freeAndEnabled),
                 .loaded(.freeAndDisabled),
+                .loaded(.paidButFreeForTesters),
                 .loaded(.paidButExpired),
                 .loaded(.paidButFailedToRenew),
                 .loaded(.paidButIAPNotFoundLocally),
                 .genericError:
-            // Let them reenable with anything.
-            implicitPlanSelection = nil
+            // Let them choose with which plan to reenable.
+            return .some(nil)
         case .loaded(.paid), .loaded(.paidButExpiring):
-            // Only let the user reenable with .paid, because they're already
-            // paying.
-            implicitPlanSelection = .paid
+            // They're currently paid, so automatically reenable with paid.
+            return .paid
         }
+    }
 
-        return AnyView(
+    var body: some View {
+        if let implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection? {
             Button {
                 viewModel.enableBackups(implicitPlanSelection: implicitPlanSelection)
             } label: {
@@ -1993,7 +2012,7 @@ struct BackupSettingsView: View {
                 ))
                 .foregroundStyle(Color.Signal.label)
             }
-        )
+        }
     }
 }
 
@@ -3099,7 +3118,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Failed Backup") {
     BackupSettingsView(viewModel: .forPreview(
-        backupSubscriptionLoadingState: .loaded(.free),
+        backupSubscriptionLoadingState: .loaded(.freeAndEnabled),
         backupPlan: .free,
         hasBackupFailed: true,
     ))
@@ -3297,7 +3316,7 @@ private extension BackupSettingsViewModel {
 
 #Preview("Disabling: Remotely (w/ Downloads)") {
     BackupSettingsView(viewModel: .forPreview(
-        backupSubscriptionLoadingState: .loaded(.free),
+        backupSubscriptionLoadingState: .loaded(.freeAndDisabled),
         backupPlan: .disabling,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
     ))
