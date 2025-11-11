@@ -67,6 +67,9 @@ open class CustomKeyboard: UIInputView {
         if CustomKeyboard.cachedKeyboardHeights[key] == nil {
             CustomKeyboard.cachedKeyboardHeights[key] = height
         }
+    }
+
+    public func updateHeightForPresentation() {
         updateHeightConstraint()
     }
 

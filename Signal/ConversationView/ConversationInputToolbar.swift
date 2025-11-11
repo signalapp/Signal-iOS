@@ -2908,6 +2908,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         ensureButtonVisibility(withAnimation: animated, doLayout: true)
 
+        // Do this before assigning as `inputView`.
+        if let customKeyboard = desiredInputView as? CustomKeyboard {
+            customKeyboard.updateHeightForPresentation()
+        }
+
         inputTextView.inputView = desiredInputView
         inputTextView.reloadInputViews()
 
