@@ -3260,7 +3260,7 @@ extension UIColor {
     }
 
     // Change this to false to resolve each color used to current interface style.
-    private static let useDynamicColors: Bool = true
+    private static let useDynamicColors: Bool = false
 
     func resolvedForInputToolbar() -> UIColor {
         guard !Self.useDynamicColors else { return self }
