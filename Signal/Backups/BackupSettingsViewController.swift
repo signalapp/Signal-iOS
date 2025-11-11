@@ -142,6 +142,7 @@ class BackupSettingsViewController:
                     tx: tx,
                 ),
                 hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
+                isBackgroundAppRefreshDisabled: Self.isBackgroundAppRefreshDisabled(),
             )
 
             return viewModel
@@ -327,6 +328,16 @@ class BackupSettingsViewController:
                         _hasConsumedMediaTierCapacityDidChange()
                     }
                 }
+            },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: UIApplication.backgroundRefreshStatusDidChangeNotification,
+                ) {
+                    await MainActor.run { [weak self] in
+                        guard let self else { return }
+                        _isBackgroundAppRefreshDisabledDidChange()
+                    }
+                }
             }
         ]
     }
@@ -440,6 +451,18 @@ class BackupSettingsViewController:
             return (try? backupAttachmentUploadStore.totalEstimatedFullsizeBytesToUpload(tx: tx)) ?? 0
         } else {
             return nil
+        }
+    }
+
+    private func _isBackgroundAppRefreshDisabledDidChange() {
+        viewModel.isBackgroundAppRefreshDisabled = Self.isBackgroundAppRefreshDisabled()
+    }
+
+    private static func isBackgroundAppRefreshDisabled() -> Bool {
+        switch UIApplication.shared.backgroundRefreshStatus {
+        case .restricted, .denied: true
+        case .available: false
+        @unknown default: false
         }
     }
 
@@ -1256,6 +1279,7 @@ class BackupSettingsViewController:
         present(alreadyRedeemedSheet, animated: true)
     }
 
+<<<<<<< HEAD
     fileprivate func showBackupIAPNotFoundLocallySheet() {
         let notFoundLocallySheet = HeroSheetViewController(
             hero: .circleIcon(icon: .backupErrorBold, iconSize: 40, tintColor: .orange, backgroundColor: UIColor(rgbHex: 0xF9E4B6)),
@@ -1289,6 +1313,37 @@ class BackupSettingsViewController:
 
         present(notFoundLocallySheet, animated: true)
     }
+
+    fileprivate func showBackgroundAppRefreshDisabledWarningSheet() {
+        let disabledSheet = HeroSheetViewController(
+            hero: .circleIcon(icon: .backupErrorBold, iconSize: 40, tintColor: .orange, backgroundColor: UIColor(rgbHex: 0xF9E4B6)),
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE",
+                comment: "Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions.",
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE",
+                comment: "Message for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions.",
+            ),
+            primaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON",
+                    comment: "Title for a button that takes the users to Signal's iOS Settings page.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        UIApplication.shared.openSystemSettings()
+                    }
+                },
+            ),
+            secondaryButton: .dismissing(
+                title: CommonStrings.dismissButton,
+                style: .secondary,
+            ),
+        )
+
+        present(disabledSheet, animated: true)
+    }
 }
 
 // MARK: -
@@ -1318,6 +1373,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
         func showBackupSubscriptionAlreadyRedeemedSheet()
         func showBackupIAPNotFoundLocallySheet()
+        func showBackgroundAppRefreshDisabledWarningSheet()
     }
 
     enum BackupSubscriptionLoadingState {
@@ -1358,7 +1414,13 @@ private class BackupSettingsViewModel: ObservableObject {
     /// the server side capacity all local attachments consume (meaning that's how many bytes
     /// the user has to delete to go back under storage quota).
     @Published var mediaTierCapacityOverflow: UInt64?
+    /// Indicates that the user's Backup has failed recently, and we should show
+    /// a corresponding error.
     @Published var hasBackupFailed: Bool
+    /// Indicates that the "Background App Refresh" permission is disabled, and
+    /// we should show a corresponding error. (This prevents `BGProcessingTask`
+    /// from running.)
+    @Published var isBackgroundAppRefreshDisabled: Bool
 
     weak var actionsDelegate: ActionsDelegate?
 
@@ -1376,6 +1438,7 @@ private class BackupSettingsViewModel: ObservableObject {
         shouldAllowBackupUploadsOnCellular: Bool,
         mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
+        isBackgroundAppRefreshDisabled: Bool,
     ) {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
 
@@ -1395,6 +1458,7 @@ private class BackupSettingsViewModel: ObservableObject {
 
         self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
         self.hasBackupFailed = hasBackupFailed
+        self.isBackgroundAppRefreshDisabled = isBackgroundAppRefreshDisabled
     }
 
     // MARK: -
@@ -1503,6 +1567,10 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func showBackupIAPNotFoundLocallySheet() {
         actionsDelegate?.showBackupIAPNotFoundLocallySheet()
+    }
+
+    func showBackgroundAppRefreshDisabledWarningSheet() {
+        actionsDelegate?.showBackgroundAppRefreshDisabledWarningSheet()
     }
 }
 
@@ -1635,18 +1703,40 @@ struct BackupSettingsView: View {
             switch contents {
             case .enabled:
                 SignalSection {
+                    if viewModel.isBackgroundAppRefreshDisabled {
+                        Label {
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE",
+                                comment: "Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions."
+                            ))
+                            .appendLink(
+                                OWSLocalizedString(
+                                    "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE_UPDATE_NOW",
+                                    comment: "Add-on to a message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions."
+                                ),
+                                useBold: true,
+                                tint: .Signal.label,
+                                action: {
+                                    viewModel.showBackgroundAppRefreshDisabledWarningSheet()
+                                },
+                            )
+                            .font(.subheadline)
+                            .multilineTextAlignment(.leading)
+                        } icon: {
+                            YellowBadgeView()
+                        }
+                    }
+
                     if viewModel.hasBackupFailed {
                         Label {
                             Text(OWSLocalizedString(
                                 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE",
                                 comment: "Message describing to the user that the last backup failed."
                             ))
-                            .font(.footnote)
+                            .font(.subheadline)
                             .multilineTextAlignment(.leading)
                         } icon: {
-                            Circle()
-                                .frame(width: 10, height: 10)
-                                .foregroundStyle(Color.Signal.yellow)
+                            YellowBadgeView()
                         }
                     }
 
@@ -1904,6 +1994,19 @@ struct BackupSettingsView: View {
                 .foregroundStyle(Color.Signal.label)
             }
         )
+    }
+}
+
+private struct YellowBadgeView: View {
+    var body: some View {
+        VStack {
+            Spacer().frame(height: 6)
+            Circle()
+                .frame(width: 10, height: 10)
+                .foregroundStyle(Color.Signal.yellow)
+            Spacer()
+        }
+        .frame(maxHeight: .infinity)
     }
 }
 
@@ -2846,6 +2949,7 @@ private extension BackupSettingsViewModel {
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
         mediaTierCapacityOverflow: UInt64? = nil,
         hasBackupFailed: Bool = false,
+        isBackgroundAppRefreshDisabled: Bool = false,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
             func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
@@ -2870,6 +2974,7 @@ private extension BackupSettingsViewModel {
 
             func showBackupSubscriptionAlreadyRedeemedSheet() { print("Showing Backup subscription already redeemed sheet!") }
             func showBackupIAPNotFoundLocallySheet() { print("Showing Backup IAP not found locally sheet!") }
+            func showBackgroundAppRefreshDisabledWarningSheet() { print("Showing Background App Refresh warning sheet!") }
         }
 
         let viewModel = BackupSettingsViewModel(
@@ -2901,6 +3006,7 @@ private extension BackupSettingsViewModel {
             shouldAllowBackupUploadsOnCellular: false,
             mediaTierCapacityOverflow: mediaTierCapacityOverflow,
             hasBackupFailed: hasBackupFailed,
+            isBackgroundAppRefreshDisabled: isBackgroundAppRefreshDisabled,
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate
@@ -3004,6 +3110,14 @@ private extension BackupSettingsViewModel {
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .paidAsTester(optimizeLocalStorage: false),
         mediaTierCapacityOverflow: 1_000_000_000,
+    ))
+}
+
+#Preview("Background App Refresh Disabled") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
+        isBackgroundAppRefreshDisabled: true,
     ))
 }
 
