@@ -117,6 +117,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             extendedLayoutIncludesOpaqueBars = true
         }
 
+        guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else {
+            self._viewWillAppear(animated)
+            return
+        }
+
         // iOS 26.1 introduced an egregious bug where view controller lifecycle
         // functions are called inside the push/pop animation blocks when using
         // UITabViewController. In practice, this means that changes to the chat
