@@ -199,17 +199,6 @@ public enum OWSMediaUtils {
         return true
     }
 
-    public static func videoResolution(url: URL) -> CGSize {
-        var maxTrackSize = CGSize.zero
-        let asset = AVURLAsset(url: url)
-        for track: AVAssetTrack in asset.tracks(withMediaType: .video) {
-            let trackSize: CGSize = track.naturalSize
-            maxTrackSize.width = max(maxTrackSize.width, trackSize.width)
-            maxTrackSize.height = max(maxTrackSize.height, trackSize.height)
-        }
-        return maxTrackSize
-    }
-
     // MARK: Constants
 
     /**
