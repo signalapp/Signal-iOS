@@ -1,1 +1,1 @@
-• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though
+• I denne oppdateringen har vi rettet opp i en feil som førte til at skjermen noen ganger blinket når det ble trykket på en video eller et bilde.

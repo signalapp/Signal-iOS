@@ -926,7 +926,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Carga de archivos en pausa: esperando red Wi-Fi…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because the user is out of remote storage space. Embeds 1:{{ total storage space provided, e.g. 100 GB }}; 2:{{ space the user needs to free up by deleting media, e.g. 1 GB }}. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "Has alcanzado el límite de almacenamiento (%1$@) incluido en tu plan de copias de seguridad. Para hacer copias de seguridad de nuevos chats y archivos, libera %2$@ de espacio en Signal y toca “Iniciar copia”.";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_OUT_OF_STORAGE_SPACE_FORMAT" = "Has alcanzado el límite de almacenamiento (%1$@) incluido en tu plan de copias de seguridad. Para hacer copias de seguridad de nuevos chats y archivos, libera %2$@ de espacio en Signal y toca \"Iniciar copia\".";
 
 /* Subtitle for a progress bar tracking active uploading. Embeds 1:{{ the amount uploaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to upload as a file size, e.g. 1 GB }}; 3:{{ the percentage uploaded as a percent, e.g. 40% }}. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "Subiendo %1$@ de %2$@ (%3$@)";
@@ -1667,7 +1667,7 @@
 "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "Cambiar plan";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "¿Volver al plan gratuito?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "¿Cambiar al plan gratuito?";
 
 /* Title for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "Gratis";
@@ -5789,10 +5789,10 @@
 "OPEN_SETTINGS_BUTTON" = "Ajustes";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal ya no funciona en este dispositivo. Para seguir usando Signal, actualiza tu dispositivo a una versión más reciente de iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal ya no es compatible con este dispositivo. Para seguir usando Signal, actualiza tu dispositivo a una versión más reciente de iOS.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal ya no funciona en este dispositivo. Para seguir usando Signal, cambia tu dispositivo por otro más nuevo.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal ya no es compatible con este dispositivo. Para seguir usando Signal, cambia tu dispositivo por otro más nuevo.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
 "OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Actualizar ahora";
@@ -6917,13 +6917,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "¿Necesitas ayuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta. Si tienes activadas las Copias Seguras de Signal, puedes seguir con tu clave de recuperación.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, deberás esperar 7 días para volver a registrar tu cuenta. Si tienes activadas las Copias Seguras de Signal, puedes continuar con tu clave de recuperación.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes guardados, como tu información de perfil. Si tienes activadas las Copias Seguras de Signal, puedes seguir con tu clave de recuperación.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes guardados, como tu información de perfil. Si tienes activadas las Copias Seguras de Signal, puedes continuar con tu clave de recuperación.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, puedes crear uno nuevo. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil. Si tienes activadas las Copias Seguras de Signal, puedes seguir con tu clave de recuperación.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Tu PIN es un código numérico o alfanumérico de 4 o más caracteres que has creado. Si olvidas tu PIN, puedes crear uno nuevo. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil. Si tienes activadas las Copias Seguras de Signal, puedes continuar con tu clave de recuperación.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";

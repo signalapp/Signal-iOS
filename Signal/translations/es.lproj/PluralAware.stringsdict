@@ -346,7 +346,7 @@
 			<key>one</key>
 			<string>Si cambias de plan, todos tus mensajes de texto y el último día de archivos multimedia se incluirán en tu copia de seguridad.</string>
 			<key>other</key>
-			<string>Si cambias de plan, todos tus mensajes de texto y los últimos %1$ddías de archivos multimedia se incluirán en tu copia de seguridad.</string>
+			<string>Si cambias de plan, todos tus mensajes de texto y los últimos %1$d días de archivos multimedia se incluirán en tu copia de seguridad.</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d</key>
@@ -1635,9 +1635,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este archivo no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de %1$d día de antigüedad.</string>
+			<string>Este documento no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de %1$d día de antigüedad.</string>
 			<key>other</key>
-			<string>Este archivo no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de %1$d días de antigüedad.</string>
+			<string>Este documento no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de %1$d días de antigüedad.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>

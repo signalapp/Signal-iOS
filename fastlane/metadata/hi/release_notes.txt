@@ -1,1 +1,1 @@
-• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though
+• इस अपडेट में हमने वह छोटी-सी गड़बड़ी ठीक कर दी है जिसकी वजह से कभी-कभी वीडियो या तस्वीर पर टैप करने पर स्क्रीन झिलमिला उठती थी। हालांकि, अगर आप अपने दोस्त का ऐसा कोई वीडियो देखें जिसमें बर्थडे केक की मैजिक मोमबत्तियां बुझाने का दृश्य हो, तो स्क्रीन अब भी थोड़ी झिलमिला सकती है, मगर मज़ा भी तो इसी का है

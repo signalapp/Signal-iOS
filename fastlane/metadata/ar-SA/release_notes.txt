@@ -1,1 +1,1 @@
-• This update fixes a small bug that sometimes caused the screen to briefly flash after tapping on a video or picture. Your screen may still flicker if you open a video of your friend trying to blow out the trick candles on their birthday cake though
+• يُصلِح هذا التحديث خطًأ بسيطًا كان يتسبب أحيانًا في وميض الشاشة لفترة وجيزة بعد النقر على فيديو أو صورة. ومع ذلك، قد تستمر شاشتك في الوميض إذا قُمتَ بفتح مقطع فيديو لصديقك وهو يحاول إطفاء شموع كعكة عيد ميلاده.

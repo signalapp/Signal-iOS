@@ -779,7 +779,7 @@
 "BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_MESSAGE" = "Dein Backup wird gelöscht und es werden keine neuen Backups erstellt.";
 
 /* Title for an action sheet confirming the user wants to disable Backups. */
-"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Backups ausschalten und löschen?";
+"BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "Backups deaktivieren und löschen?";
 
 /* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
 "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "Du hast Backup-Medien, die nicht auf diesem Gerät gespeichert sind. Das Herunterladen deines Backups kann eine Weile dauern. Lass Signal einfach weiter laufen, damit der Download nicht unterbrochen wird.";
