@@ -72,7 +72,7 @@ extension CVUpdate {
         let loadType = loadRequest.loadType
         let oldStyle = prevRenderState.conversationStyle
         let newStyle = renderState.conversationStyle
-        let didStyleChange = !newStyle.isEqualForCellRendering(oldStyle)
+        let didStyleChange = newStyle != oldStyle
 
         if case .loadInitialMapping = loadType {
             // Don't do an incremental update for the initial load.

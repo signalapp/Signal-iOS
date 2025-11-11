@@ -66,7 +66,7 @@ public class CVRenderItem: NSObject {
         guard itemViewState == other.itemViewState else {
             return .appearanceChanged
         }
-        guard itemModel.conversationStyle.isEqualForCellRendering(other.itemModel.conversationStyle) else {
+        guard itemModel.conversationStyle == other.itemModel.conversationStyle else {
             return .appearanceChanged
         }
         guard cellSize == other.cellSize else {

@@ -212,8 +212,7 @@ public class CVLoader: NSObject {
         let conversationStyle = loadContext.conversationStyle
 
         // Don't cache in the reset() case.
-        let canReuseState = (loadRequest.canReuseComponentStates &&
-                                conversationStyle.isEqualForCellRendering(prevRenderState.conversationStyle))
+        let canReuseState = loadRequest.canReuseComponentStates && conversationStyle == prevRenderState.conversationStyle
 
         var itemModelBuilder = CVItemModelBuilder(loadContext: loadContext)
 

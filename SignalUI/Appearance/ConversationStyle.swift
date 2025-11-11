@@ -7,7 +7,7 @@ public import SignalServiceKit
 
 // An immutable snapshot of the core styling
 // state used by CVC for a given load/render cycle.
-public class ConversationStyle: NSObject {
+public struct ConversationStyle {
 
     public enum `Type`: UInt {
         // The style used from initialization until presentation begins.
@@ -169,8 +169,6 @@ public class ConversationStyle: NSObject {
 
         let kMaxAudioMessageWidth: CGFloat = 244
         maxAudioMessageWidth = floor(min(maxMessageWidth, kMaxAudioMessageWidth))
-
-        super.init()
     }
 
     // MARK: Colors
@@ -278,29 +276,33 @@ public class ConversationStyle: NSObject {
     public static var searchMatchHighlightColor: UIColor {
         return UIColor.yellow
     }
+}
 
-    public func isEqualForCellRendering(_ other: ConversationStyle) -> Bool {
+extension ConversationStyle: Equatable {
+    public static func == (lhs: ConversationStyle, rhs: ConversationStyle) -> Bool {
         // We need to compare any state that could affect
         // how we render view appearance.
-        (type.isValid == other.type.isValid &&
-            viewWidth == other.viewWidth &&
-            dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
-            isDarkThemeEnabled == other.isDarkThemeEnabled &&
-            hasWallpaper == other.hasWallpaper &&
-            isWallpaperPhoto == other.isWallpaperPhoto &&
-            maxMessageWidth == other.maxMessageWidth &&
-            maxMediaMessageWidth == other.maxMediaMessageWidth &&
-            textInsets == other.textInsets &&
-            gutterLeading == other.gutterLeading &&
-            gutterTrailing == other.gutterTrailing &&
-            fullWidthGutterLeading == other.fullWidthGutterLeading &&
-            fullWidthGutterTrailing == other.fullWidthGutterTrailing &&
-            textInsets == other.textInsets &&
-            lastTextLineAxis == other.lastTextLineAxis &&
-            chatColorSetting == other.chatColorSetting)
+        (lhs.type.isValid == rhs.type.isValid &&
+         lhs.viewWidth == rhs.viewWidth &&
+         lhs.dynamicBodyTypePointSize == rhs.dynamicBodyTypePointSize &&
+         lhs.isDarkThemeEnabled == rhs.isDarkThemeEnabled &&
+         lhs.hasWallpaper == rhs.hasWallpaper &&
+         lhs.isWallpaperPhoto == rhs.isWallpaperPhoto &&
+         lhs.maxMessageWidth == rhs.maxMessageWidth &&
+         lhs.maxMediaMessageWidth == rhs.maxMediaMessageWidth &&
+         lhs.textInsets == rhs.textInsets &&
+         lhs.gutterLeading == rhs.gutterLeading &&
+         lhs.gutterTrailing == rhs.gutterTrailing &&
+         lhs.fullWidthGutterLeading == rhs.fullWidthGutterLeading &&
+         lhs.fullWidthGutterTrailing == rhs.fullWidthGutterTrailing &&
+         lhs.textInsets == rhs.textInsets &&
+         lhs.lastTextLineAxis == rhs.lastTextLineAxis &&
+         lhs.chatColorSetting == rhs.chatColorSetting)
     }
+}
 
-    public override var debugDescription: String {
+extension ConversationStyle: CustomDebugStringConvertible {
+    public var debugDescription: String {
         "[" +
             "type.isValid: \(type.isValid), " +
             "viewWidth: \(viewWidth), " +
@@ -323,7 +325,6 @@ public class ConversationStyle: NSObject {
 }
 
 extension ConversationStyle {
-
     public func quotedReplyHighlightColor() -> UIColor {
         UIColor.init(rgbHex: 0xB5B5B5)
     }

@@ -469,7 +469,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public func update(conversationStyle: ConversationStyle) {
         AssertIsOnMainThread()
 
-        guard !self.conversationStyle.isEqualForCellRendering(conversationStyle) else {
+        guard self.conversationStyle != conversationStyle else {
             return
         }
 
@@ -544,10 +544,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         static func == (lhs: State, rhs: State) -> Bool {
             // Comparing the layoutItems is expensive. We can avoid that by
             // comparing renderStateIds.
-            (lhs.conversationStyle.isEqualForCellRendering(rhs.conversationStyle) &&
-                lhs.renderStateId == rhs.renderStateId &&
-                lhs.layoutHeaderHeight == rhs.layoutHeaderHeight &&
-                lhs.layoutFooterHeight == rhs.layoutFooterHeight)
+            (lhs.conversationStyle == rhs.conversationStyle &&
+             lhs.renderStateId == rhs.renderStateId &&
+             lhs.layoutHeaderHeight == rhs.layoutHeaderHeight &&
+             lhs.layoutFooterHeight == rhs.layoutFooterHeight)
         }
     }
 

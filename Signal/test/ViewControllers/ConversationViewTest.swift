@@ -39,9 +39,9 @@ class ConversationViewTest: SignalBaseTest {
         XCTAssertFalse(style2.isDarkThemeEnabled)
         XCTAssertFalse(style3.isDarkThemeEnabled)
 
-        XCTAssertTrue(style1.isEqualForCellRendering(style2))
-        XCTAssertFalse(style1.isEqualForCellRendering(style3))
-        XCTAssertFalse(style2.isEqualForCellRendering(style3))
+        XCTAssertTrue(style1 == style2)
+        XCTAssertFalse(style1 == style3)
+        XCTAssertFalse(style2 == style3)
 
         Theme.setIsDarkThemeEnabledForTests(true)
         XCTAssertTrue(Theme.isDarkThemeEnabled)
@@ -58,12 +58,12 @@ class ConversationViewTest: SignalBaseTest {
         XCTAssertFalse(style3.isDarkThemeEnabled)
         XCTAssertTrue(style4.isDarkThemeEnabled)
 
-        XCTAssertTrue(style1.isEqualForCellRendering(style2))
-        XCTAssertFalse(style1.isEqualForCellRendering(style3))
-        XCTAssertFalse(style2.isEqualForCellRendering(style3))
+        XCTAssertTrue(style1 == style2)
+        XCTAssertFalse(style1 == style3)
+        XCTAssertFalse(style2 == style3)
 
-        XCTAssertFalse(style4.isEqualForCellRendering(style1))
-        XCTAssertFalse(style4.isEqualForCellRendering(style2))
-        XCTAssertFalse(style4.isEqualForCellRendering(style3))
+        XCTAssertFalse(style4 == style1)
+        XCTAssertFalse(style4 == style2)
+        XCTAssertFalse(style4 == style3)
     }
 }
