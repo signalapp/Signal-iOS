@@ -689,8 +689,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             parseEntitlementExpirationBlock: { accountEntitlements, _ in
                 return accountEntitlements.backup?.expirationSeconds
             },
-            saveRedemptionJobBlock: { subscriberId, _, tx -> BackupSubscriptionRedemptionContext in
-                let redemptionContext = BackupSubscriptionRedemptionContext(subscriberId: subscriberId)
+            saveRedemptionJobBlock: { subscriberId, subscription, tx -> BackupSubscriptionRedemptionContext in
+                let redemptionContext = BackupSubscriptionRedemptionContext(
+                    subscriberId: subscriberId,
+                    subscriptionEndOfCurrentPeriod: subscription.endOfCurrentPeriod,
+                )
                 redemptionContext.upsert(tx: tx)
                 return redemptionContext
             },

@@ -19,6 +19,8 @@ final class ChatListSettingsButtonState {
     var hasConsumedMediaTierCapacity: Bool = false
     var showBackupsFailedAvatarBadge: Bool = false
     var showBackupsFailedMenuItemBadge: Bool = false
+    var showBackupsSubscriptionAlreadyRedeemedAvatarBadge: Bool = false
+    var showBackupsSubscriptionAlreadyRedeemedMenuItem: Bool = false
 
     weak var delegate: ChatListSettingsButtonDelegate?
 
@@ -30,6 +32,8 @@ final class ChatListSettingsButtonState {
         showBackupsFailedAvatarBadge: Bool? = nil,
         showBackupsFailedMenuItemBadge: Bool? = nil,
         showBackupsFailedMenuItem: Bool? = nil,
+        showBackupsSubscriptionAlreadyRedeemedAvatarBadge: Bool? = nil,
+        showBackupsSubscriptionAlreadyRedeemedMenuItem: Bool? = nil,
     ) {
         var didUpdate = false
         if let hasInboxChats {
@@ -59,6 +63,14 @@ final class ChatListSettingsButtonState {
         if let showBackupsFailedMenuItem {
             didUpdate = didUpdate || self.showBackupsFailedMenuItem != showBackupsFailedMenuItem
             self.showBackupsFailedMenuItem = showBackupsFailedMenuItem
+        }
+        if let showBackupsSubscriptionAlreadyRedeemedAvatarBadge {
+            didUpdate = didUpdate || self.showBackupsSubscriptionAlreadyRedeemedAvatarBadge != showBackupsSubscriptionAlreadyRedeemedAvatarBadge
+            self.showBackupsSubscriptionAlreadyRedeemedAvatarBadge = showBackupsSubscriptionAlreadyRedeemedAvatarBadge
+        }
+        if let showBackupsSubscriptionAlreadyRedeemedMenuItem {
+            didUpdate = didUpdate || self.showBackupsSubscriptionAlreadyRedeemedMenuItem != showBackupsSubscriptionAlreadyRedeemedMenuItem
+            self.showBackupsSubscriptionAlreadyRedeemedMenuItem = showBackupsSubscriptionAlreadyRedeemedMenuItem
         }
         if didUpdate {
             delegate?.didUpdateButton(self)

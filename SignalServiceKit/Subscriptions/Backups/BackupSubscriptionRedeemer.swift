@@ -18,6 +18,7 @@ class BackupSubscriptionRedeemer {
 
     private let authCredentialStore: AuthCredentialStore
     private let backupPlanManager: BackupPlanManager
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let db: any DB
     private let logger: PrefixedLogger
     private let reachabilityManager: SSKReachabilityManager
@@ -31,6 +32,7 @@ class BackupSubscriptionRedeemer {
     init(
         authCredentialStore: AuthCredentialStore,
         backupPlanManager: BackupPlanManager,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
         reachabilityManager: SSKReachabilityManager,
@@ -38,6 +40,7 @@ class BackupSubscriptionRedeemer {
     ) {
         self.authCredentialStore = authCredentialStore
         self.backupPlanManager = backupPlanManager
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.db = db
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.reachabilityManager = reachabilityManager
@@ -120,6 +123,10 @@ class BackupSubscriptionRedeemer {
                     /// may now be able to fetch credentials with a higher level
                     /// of access than we had cached.
                     authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+
+                    /// We've successfully redeemed, so any "already redeemed"
+                    /// errors are by definition obsolete.
+                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
                 }
 
                 logger.info("Redemption successful!")
@@ -152,9 +159,8 @@ class BackupSubscriptionRedeemer {
             await waitingTask.value
             try await redeem(context: context)
 
-        case .redemptionUnsuccessful, .assertion:
-            owsFailDebug("Job encountered unexpected terminal error!")
-
+        case .redemptionUnsuccessful:
+            Logger.warn("Failed to redeem subscription.")
             await db.awaitableWrite { context.delete(tx: $0) }
             throw TerminalRedemptionError()
         }
@@ -168,7 +174,6 @@ class BackupSubscriptionRedeemer {
         case needsReattempt
         case paymentStillProcessing
         case redemptionUnsuccessful
-        case assertion
     }
 
     /// Performs the steps required to redeem a Backup subscription.
@@ -238,22 +243,32 @@ class BackupSubscriptionRedeemer {
             } catch let error as ReceiptCredentialRequestError {
                 switch error.errorCode {
                 case .paymentIntentRedeemed:
+                    /// This error (a 409) indicates that we've already made the
+                    /// maximum number of unique receipt credential requests for
+                    /// the current "invoice", or subscription period. If we get
+                    /// here, we're dead-ended: we won't be able to redeem the
+                    /// subscription for this period.
+                    ///
+                    /// Accordingly, we persist that we hit this error (so we
+                    /// can show appropriate error UX) and treat this as a
+                    /// permanent failure.
+                    ///
+                    /// We only attempt redemption if our Backup entitlement
+                    /// suggests we haven't yet redeemed for this subscription
+                    /// period, and we're careful to only use one receipt
+                    /// credential request through a given period's redemption.
+                    /// Consequently, the most likely way we'll end up here is
+                    /// if multiple Signal accounts are trying to share the same
+                    /// IAP subscription.
                     logger.warn("Subscription had already been redeemed for this period!")
 
-                    /// This error (a 409) indicates that we've already redeemed
-                    /// a receipt credential for the current "invoice", or
-                    /// subscription period.
-                    ///
-                    /// We end up here if for whatever reason we don't know that
-                    /// we've already redeemed for this subscription period. For
-                    /// example, we may have redeemed on a previous install and
-                    /// are missing the latest-redeemed transaction ID on this
-                    /// install.
-                    ///
-                    /// Regardless, we now know that we've redeemed for this
-                    /// subscription period, so there's nothing left to do and
-                    /// we can treat this as a success.
-                    return .success
+                    await db.awaitableWrite { tx in
+                        backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionAlreadyRedeemed(
+                            endOfCurrentPeriod: context.subscriptionEndOfCurrentPeriod ?? .distantPast,
+                            tx: tx,
+                        )
+                    }
+                    return .redemptionUnsuccessful
                 case .paymentStillProcessing:
                     return .paymentStillProcessing
                 case
@@ -261,6 +276,10 @@ class BackupSubscriptionRedeemer {
                         .localValidationFailed,
                         .serverValidationFailed,
                         .paymentNotFound:
+                    owsFailDebug(
+                        "Unexpected error code requesting receipt credentials! \(error.errorCode)",
+                        logger: logger,
+                    )
                     return .redemptionUnsuccessful
                 }
             } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
@@ -270,7 +289,7 @@ class BackupSubscriptionRedeemer {
                     "Unexpected error requesting receipt credential: \(error)",
                     logger: logger
                 )
-                return .assertion
+                return .redemptionUnsuccessful
             }
 
             await db.awaitableWrite { tx in
@@ -292,7 +311,7 @@ class BackupSubscriptionRedeemer {
                     "Failed to generate receipt credential presentation: \(error)",
                     logger: logger
                 )
-                return .assertion
+                return .redemptionUnsuccessful
             }
 
             let response: HTTPResponse
@@ -327,7 +346,7 @@ class BackupSubscriptionRedeemer {
                     "Unexpected error: \(error)",
                     logger: logger
                 )
-                return .assertion
+                return .redemptionUnsuccessful
             }
 
             switch response.responseStatusCode {
@@ -340,7 +359,7 @@ class BackupSubscriptionRedeemer {
                     "Unexpected response status code: \(response.responseStatusCode)",
                     logger: logger
                 )
-                return .assertion
+                return .redemptionUnsuccessful
             }
         }
     }

@@ -172,8 +172,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
-        // Update Backup error state
+        // Populate Backups error states
         updateBackupFailureAlertsWithSneakyTransaction()
+        updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
         updateHasConsumedMediaTierCapacityWithSneakyTransaction()
 
         // During main app launch, the chat list becomes visible _before_
@@ -456,6 +457,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private func settingsBarButtonItem() -> UIBarButtonItem {
         let backupSettingsStore = BackupSettingsStore()
+        let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
         let db = SSKEnvironment.shared.databaseStorageRef
 
         let badgeColor: UIColor?
@@ -467,6 +469,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     backupSettingsStore.setErrorBadgeMuted(target: .chatListAvatar, tx: tx)
                 }
                 self?.updateBackupFailureAlertsWithSneakyTransaction()
+            }
+        } else if viewState.settingsButtonCreator.showBackupsSubscriptionAlreadyRedeemedAvatarBadge {
+            badgeColor = .Signal.yellow
+            onDidDismissContextMenu = { [weak self] in
+                db.write { tx in
+                    backupSubscriptionIssueStore.setDidAckIAPSubscriptionAlreadyRedeemedChatListBadge(tx: tx)
+                }
+                self?.updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
             }
         } else if viewState.settingsButtonCreator.hasUnreadPaymentNotification {
             badgeColor = .Signal.accent
@@ -487,7 +497,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 var contextMenuActions: [UIMenuElement] = []
 
                 if viewState.settingsButtonCreator.showBackupsFailedMenuItem {
-                    var image = Theme.iconImage(.backup).withTintColor(UIColor.Signal.label)
+                    var image = Theme.iconImage(.backup).withTintColor(.Signal.label)
                     if viewState.settingsButtonCreator.showBackupsFailedMenuItemBadge {
                         image = image.withBadge(
                             color: UIColor.Signal.yellow,
@@ -513,11 +523,39 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                             )
                         ])
                     )
-                } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
-                    let image = Theme.iconImage(.backup).withBadge(
-                        color: UIColor.Signal.red,
-                        badgeSize: .square(8.5)
+                } else if viewState.settingsButtonCreator.showBackupsSubscriptionAlreadyRedeemedMenuItem {
+                    let image = Theme.iconImage(.backup)
+                        .withTintColor(.Signal.label)
+                        .withBadge(
+                            color: .Signal.yellow,
+                            badgeSize: .square(8.5)
+                        )
+
+                    contextMenuActions.append(
+                        UIMenu(options: .displayInline, children: [
+                            UIAction(
+                                title: OWSLocalizedString(
+                                    "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM",
+                                    comment: "Title for the conversation list's failed to redeem backup subscription context menu action.",
+                                ),
+                                image: image,
+                                handler: { [weak self] _ in
+                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    db.write { tx in
+                                        backupSubscriptionIssueStore.setDidAckIAPSubscriptionAlreadyRedeemedChatListMenuItem(tx: tx)
+                                    }
+                                    self?.updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx()
+                                }
+                            )
+                        ])
                     )
+                } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
+                    let image = Theme.iconImage(.backup)
+                        .withTintColor(.Signal.label)
+                        .withBadge(
+                            color: .Signal.red,
+                            badgeSize: .square(8.5)
+                        )
                     contextMenuActions.append(
                         UIMenu(options: [.displayInline], children: [
                             UIAction(

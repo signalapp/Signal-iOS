@@ -922,6 +922,21 @@
 /* Title for a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Skip Download?";
 
+/* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Details";
+
+/* Title for notice that the user's Backups subscription couldn't be redeemed. */
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "Couldn't redeem your backups subscription";
+
+/* Body for a sheet explaining that the user's Backups subscription was already redeemed. */
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "Too many devices have tried to redeem your subscription this month.\n\nYou may have re-registered your Signal account too many times, or have too many devices using the same subscription.";
+
+/* Button for a sheet explaining that the user's Backups subscription was already redeemed. */
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "Got It";
+
+/* Title for a sheet explaining that the user's Backups subscription was already redeemed. */
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "Couldn't redeem your backups subscription";
+
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "Media upload paused: device has low battery";
 
@@ -4335,6 +4350,9 @@
 
 /* Title for the conversation list's backup storage full context menu action. */
 "HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "Backup Storage Full";
+
+/* Title for the conversation list's failed to redeem backup subscription context menu action. */
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "Backup Subscription Error";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";

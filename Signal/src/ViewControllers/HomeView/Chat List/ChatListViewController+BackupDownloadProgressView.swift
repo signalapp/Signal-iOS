@@ -813,7 +813,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             var sheet: HeroSheetViewController?
             sheet = HeroSheetViewController(
                 hero: .circleIcon(
-                    icon: UIImage(named: "backup-error-display-bold")!.withRenderingMode(.alwaysTemplate),
+                    icon: .backupErrorDisplayBold,
                     iconSize: 40,
                     tintColor: UIColor.Signal.orange,
                     backgroundColor: UIColor.color(rgbHex: 0xF9E4B6)

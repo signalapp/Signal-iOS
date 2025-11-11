@@ -28,6 +28,7 @@ class BackupSettingsViewController:
     private let backupFailureStateManager: BackupFailureStateManager
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
+    private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let db: DB
     private let deviceSleepManager: DeviceSleepManager
@@ -61,6 +62,7 @@ class BackupSettingsViewController:
             backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: BackupSettingsStore(),
+            backupSubscriptionIssueStore: BackupSubscriptionIssueStore(),
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
@@ -84,6 +86,7 @@ class BackupSettingsViewController:
         backupFailureStateManager: BackupFailureStateManager,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
+        backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
@@ -112,6 +115,7 @@ class BackupSettingsViewController:
         self.backupFailureStateManager = backupFailureStateManager
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
+        self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.db = db
         self.deviceSleepManager = deviceSleepManager
@@ -123,6 +127,7 @@ class BackupSettingsViewController:
             let viewModel = BackupSettingsViewModel(
                 backupSubscriptionConfiguration: subscriptionConfigManager.backupConfigurationOrDefault(tx: tx),
                 backupSubscriptionLoadingState: .loading,
+                backupSubscriptionAlreadyRedeemed: backupSubscriptionIssueStore.shouldShowIAPSubscriptionAlreadyRedeemedWarning(tx: tx),
                 backupPlan: backupPlanManager.backupPlan(tx: tx),
                 failedToDisableBackupsRemotely: backupDisablingManager.disableRemotelyFailed(tx: tx),
                 latestBackupExportProgressUpdate: nil,
@@ -134,9 +139,9 @@ class BackupSettingsViewController:
                 mediaTierCapacityOverflow: Self.getMediaTierCapacityOverflow(
                     backupAttachmentUploadStore: backupAttachmentUploadStore,
                     backupSettingsStore: backupSettingsStore,
-                    tx: tx
+                    tx: tx,
                 ),
-                hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx)
+                hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
             )
 
             return viewModel
@@ -1167,6 +1172,37 @@ class BackupSettingsViewController:
             }
         }
     }
+
+    // MARK: -
+
+    fileprivate func showBackupSubscriptionAlreadyRedeemedSheet() {
+        let alreadyRedeemedSheet = HeroSheetViewController(
+            hero: .circleIcon(icon: .backupErrorBold, iconSize: 40, tintColor: .orange, backgroundColor: UIColor(rgbHex: 0xF9E4B6)),
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE",
+                comment: "Title for a sheet explaining that the user's Backups subscription was already redeemed.",
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY",
+                comment: "Body for a sheet explaining that the user's Backups subscription was already redeemed.",
+            ),
+            primaryButton: .dismissing(title: OWSLocalizedString(
+                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON",
+                comment: "Button for a sheet explaining that the user's Backups subscription was already redeemed.",
+            )),
+            secondaryButton: HeroSheetViewController.Button(
+                title: CommonStrings.learnMore,
+                style: .secondary,
+                action: .custom({ sheet in
+                    sheet.dismiss(animated: true) {
+                        CurrentAppContext().open(URL.Support.backups, completion: nil)
+                    }
+                }),
+            )
+        )
+
+        present(alreadyRedeemedSheet, animated: true)
+    }
 }
 
 // MARK: -
@@ -1194,6 +1230,8 @@ private class BackupSettingsViewModel: ObservableObject {
         func setShouldAllowBackupDownloadsOnCellular()
 
         func showViewRecoveryKey()
+
+        func showBackupSubscriptionAlreadyRedeemedSheet()
     }
 
     enum BackupSubscriptionLoadingState {
@@ -1215,6 +1253,8 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var backupSubscriptionConfiguration: BackupSubscriptionConfiguration
 
     @Published var backupSubscriptionLoadingState: BackupSubscriptionLoadingState
+    @Published var backupSubscriptionAlreadyRedeemed: Bool
+
     @Published var backupPlan: BackupPlan
     @Published var failedToDisableBackupsRemotely: Bool
 
@@ -1236,6 +1276,7 @@ private class BackupSettingsViewModel: ObservableObject {
     init(
         backupSubscriptionConfiguration: BackupSubscriptionConfiguration,
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
+        backupSubscriptionAlreadyRedeemed: Bool,
         backupPlan: BackupPlan,
         failedToDisableBackupsRemotely: Bool,
         latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>?,
@@ -1250,6 +1291,8 @@ private class BackupSettingsViewModel: ObservableObject {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
 
         self.backupSubscriptionLoadingState = backupSubscriptionLoadingState
+        self.backupSubscriptionAlreadyRedeemed = backupSubscriptionAlreadyRedeemed
+
         self.backupPlan = backupPlan
         self.failedToDisableBackupsRemotely = failedToDisableBackupsRemotely
 
@@ -1365,6 +1408,12 @@ private class BackupSettingsViewModel: ObservableObject {
     func showViewRecoveryKey() {
         actionsDelegate?.showViewRecoveryKey()
     }
+
+    // MARK: -
+
+    func showBackupSubscriptionAlreadyRedeemedSheet() {
+        actionsDelegate?.showBackupSubscriptionAlreadyRedeemedSheet()
+    }
 }
 
 // MARK: -
@@ -1420,6 +1469,37 @@ struct BackupSettingsView: View {
                 }
                 .padding(.vertical, 2)
                 .foregroundColor(Color.Signal.label)
+            }
+
+            if viewModel.backupSubscriptionAlreadyRedeemed {
+                SignalSection {
+                    HStack(alignment: .center, spacing: 16) {
+                        Image(.backupErrorBold)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.Signal.orange)
+
+                        Text(OWSLocalizedString(
+                            "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE",
+                            comment: "Title for notice that the user's Backups subscription couldn't be redeemed."
+                        ))
+                        .font(.subheadline)
+                        .foregroundColor(Color.Signal.label)
+
+                        Button {
+                            viewModel.showBackupSubscriptionAlreadyRedeemedSheet()
+                        } label: {
+                            Text(OWSLocalizedString(
+                                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON",
+                                comment: "Title for detail button in notice that the user's Backups subscription couldn't be redeemed."
+                            ))
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.Signal.label)
+                        }
+                    }
+                }
+                .listRowBackground(Color.Signal.quaternaryFill)
             }
 
             SignalSection {
@@ -2551,12 +2631,13 @@ private struct BackupViewKeyView: View {
 
 private extension BackupSettingsViewModel {
     static func forPreview(
+        backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
         backupPlan: BackupPlan,
+        backupSubscriptionAlreadyRedeemed: Bool = false,
         failedToDisableBackupsRemotely: Bool = false,
         latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>? = nil,
         latestBackupAttachmentDownloadUpdateState: BackupSettingsAttachmentDownloadTracker.DownloadUpdate.State? = nil,
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
-        backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
             func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
@@ -2579,6 +2660,8 @@ private extension BackupSettingsViewModel {
             func setShouldAllowBackupDownloadsOnCellular() { print("Downloads on cellular: true") }
 
             func showViewRecoveryKey() { print("Showing View Recovery Key!") }
+
+            func showBackupSubscriptionAlreadyRedeemedSheet() { print("Showing Backup subscription already redeemed sheet!") }
         }
 
         let viewModel = BackupSettingsViewModel(
@@ -2587,6 +2670,7 @@ private extension BackupSettingsViewModel {
                 freeTierMediaDays: 45,
             ),
             backupSubscriptionLoadingState: backupSubscriptionLoadingState,
+            backupSubscriptionAlreadyRedeemed: backupSubscriptionAlreadyRedeemed,
             backupPlan: backupPlan,
             failedToDisableBackupsRemotely: failedToDisableBackupsRemotely,
             latestBackupExportProgressUpdate: latestBackupExportProgressUpdate,
@@ -2620,68 +2704,79 @@ private extension BackupSettingsViewModel {
 
 #Preview("Plan: Free") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Plan: Free For Testers") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .paidAsTester(optimizeLocalStorage: false),
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Plan: Paid") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .paid(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .loaded(.paid(
             price: FiatMoney(currencyCode: "USD", value: 1.99),
             renewalDate: Date().addingTimeInterval(.week)
         )),
+        backupPlan: .paid(optimizeLocalStorage: false),
     ))
 }
 
 #Preview("Plan: Expiring") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .loaded(.paidButExpiring(
             expirationDate: Date().addingTimeInterval(.week)
-        ))
+        )),
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
     ))
 }
 
 #Preview("Plan: Expired") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
         backupSubscriptionLoadingState: .loaded(.paidButExpired(
             expirationDate: Date().addingTimeInterval(-1 * .week)
-        ))
+        )),
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
     ))
 }
 
 #Preview("Plan: Failed to Renew") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFailedToRenew),
         backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
-        backupSubscriptionLoadingState: .loaded(.paidButFailedToRenew)
+    ))
+}
+
+#Preview("Plan: Already Redeemed") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paid(
+            price: FiatMoney(currencyCode: "USD", value: 1.99),
+            renewalDate: Date().addingTimeInterval(.week),
+        )),
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
+        backupSubscriptionAlreadyRedeemed: true,
     ))
 }
 
 #Preview("Plan: Network Error") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .networkError,
         backupPlan: .paid(optimizeLocalStorage: false),
-        backupSubscriptionLoadingState: .networkError
     ))
 }
 
 #Preview("Plan: Generic Error") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .genericError,
         backupPlan: .paid(optimizeLocalStorage: false),
-        backupSubscriptionLoadingState: .genericError
     ))
 }
 
-extension OWSSequentialProgress<BackupExportJobStep> {
+private extension OWSSequentialProgress<BackupExportJobStep> {
     static func forPreview(
         _ step: BackupExportJobStep,
         _ progress: Float
@@ -2703,191 +2798,191 @@ extension OWSSequentialProgress<BackupExportJobStep> {
 
 #Preview("Manual Backup: Backup Export") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.backupExport, 0.33),
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Manual Backup: Listing Media") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.listMedia, 0.50),
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Manual Backup: Media Upload") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .running,
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Manual Backup: Media Upload Paused (Low Battery)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Manual Backup: Media Upload Paused (Low Power Mode)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedLowPowerMode,
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Manual Backup: Media Upload Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Manual Backup: Media Upload Paused (Internet)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedNeedsInternet,
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Manual Backup: Offloading") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
         backupPlan: .free,
         latestBackupExportProgressUpdate: .forPreview(.offloading, 0.90),
-        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters)
     ))
 }
 
 #Preview("Downloads: Suspended") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .paid(optimizeLocalStorage: false),
-        latestBackupAttachmentDownloadUpdateState: .suspended,
         backupSubscriptionLoadingState: .loaded(.paid(
             price: FiatMoney(currencyCode: "USD", value: 1.99),
             renewalDate: Date().addingTimeInterval(.week)
-        ))
+        )),
+        backupPlan: .paid(optimizeLocalStorage: false),
+        latestBackupAttachmentDownloadUpdateState: .suspended,
     ))
 }
 
 #Preview("Downloads: Suspended w/o Paid Plan") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .suspended,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Running") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .running,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Paused (Low Battery)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowBattery,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Paused (Low Power Mode)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedLowPowerMode,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsWifi,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Paused (Internet)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Downloads: Disk Space Error") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentDownloadUpdateState: .outOfDiskSpace(bytesRequired: 200_000_000),
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Uploads: Running") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .running,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Uploads: Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Uploads: Paused (Battery)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .free,
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
-        backupSubscriptionLoadingState: .loaded(.free)
     ))
 }
 
 #Preview("Disabling: Success") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .disabled,
         backupSubscriptionLoadingState: .loaded(.free),
+        backupPlan: .disabled,
     ))
 }
 
 #Preview("Disabling: Remotely") {
     BackupSettingsView(viewModel: .forPreview(
-        backupPlan: .disabling,
         backupSubscriptionLoadingState: .loaded(.free),
+        backupPlan: .disabling,
     ))
 }
 
 #Preview("Disabling: Remotely (w/ Downloads)") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .disabling,
         latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
-        backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
 
 #Preview("Disabling: Remotely Failed") {
     BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
         backupPlan: .disabled,
         failedToDisableBackupsRemotely: true,
-        backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
 

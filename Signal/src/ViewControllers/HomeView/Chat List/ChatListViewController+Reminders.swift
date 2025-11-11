@@ -271,6 +271,24 @@ extension ChatListViewController {
         }
     }
 
+    public func updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx() {
+        typealias BackupSubscriptionFailedToRedeemAlertType = CLVViewState.BackupSubscriptionFailedToRedeemAlertType
+
+        let db = DependenciesBridge.shared.db
+        let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
+
+        viewState.backupSubscriptionFailedToRedeemAlerts = db.read { tx in
+            var alerts = Set<BackupSubscriptionFailedToRedeemAlertType>()
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionFailedToRenewChatListBadge(tx: tx) {
+                alerts.insert(.avatarBadge)
+            }
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionFailedToRenewChatListMenuItem(tx: tx) {
+                alerts.insert(.menuItem)
+            }
+            return alerts
+        }
+    }
+
     public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
         let backupSettingsStore = BackupSettingsStore()
         viewState.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in

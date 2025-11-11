@@ -53,10 +53,16 @@ final class BackupSubscriptionRedemptionContext: Codable {
     }
 
     let subscriberId: Data
+    /// `nil` for legacy contexts.
+    let subscriptionEndOfCurrentPeriod: Date?
     var attemptState: RedemptionAttemptState
 
-    init(subscriberId: Data) {
+    init(
+        subscriberId: Data,
+        subscriptionEndOfCurrentPeriod: Date,
+    ) {
         self.subscriberId = subscriberId
+        self.subscriptionEndOfCurrentPeriod = subscriptionEndOfCurrentPeriod
         self.attemptState = .unattempted
     }
 
@@ -101,6 +107,7 @@ final class BackupSubscriptionRedemptionContext: Codable {
 
     private enum CodingKeys: String, CodingKey {
         case subscriberId
+        case subscriptionEndOfCurrentPeriod
         case receiptCredentialRequest
         case receiptCredentialRequestContext
         case receiptCredential
@@ -110,6 +117,7 @@ final class BackupSubscriptionRedemptionContext: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.subscriberId = try container.decode(Data.self, forKey: .subscriberId)
+        self.subscriptionEndOfCurrentPeriod = try container.decodeIfPresent(Date.self, forKey: .subscriptionEndOfCurrentPeriod)
 
         if
             let requestData = try container.decodeIfPresent(Data.self, forKey: .receiptCredentialRequest),
@@ -134,6 +142,7 @@ final class BackupSubscriptionRedemptionContext: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(subscriberId, forKey: .subscriberId)
+        try container.encodeIfPresent(subscriptionEndOfCurrentPeriod, forKey: .subscriptionEndOfCurrentPeriod)
 
         switch attemptState {
         case .receiptCredentialRequesting(let request, let context):
