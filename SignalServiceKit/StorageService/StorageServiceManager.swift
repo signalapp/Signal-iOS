@@ -577,7 +577,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         updateManagerState { managerState in
             managerState.pendingRestoreCompletionFutures.append(future)
         }
-        try await promise.awaitable()
+        try await promise.awaitableWithUncooperativeCancellationHandling()
     }
 
     public func resetLocalData(transaction: DBWriteTransaction) {

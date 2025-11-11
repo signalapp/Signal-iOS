@@ -554,7 +554,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         /// Wait on any in-progress restores, since there's a chance we're
         /// restoring subscriber data.
-        try? await storageServiceManager.waitForPendingRestores()
+        do {
+            try await storageServiceManager.waitForPendingRestores()
+        } catch let error as CancellationError {
+            throw error
+        } catch {
+            // ignore other errors; we want to proceed if we couldn't restore
+        }
 
         let (
             isRegisteredPrimaryDevice,
