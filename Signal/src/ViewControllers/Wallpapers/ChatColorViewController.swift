@@ -386,12 +386,16 @@ private class ChatColorPicker: UIView {
                                              spacing: 28,
                                              layoutMargins: .zero)
 
-        let rowWidth: CGFloat = max(0,
-                                    chatColorViewController.view.width - CGFloat(
-                                            OWSTableViewController2.cellHInnerMargin * 2 +
-                                            hStackConfig.layoutMargins.totalWidth +
-                                            vStackConfig.layoutMargins.totalWidth
-        ))
+        let rowWidth: CGFloat = max(
+            0,
+            chatColorViewController.view.width -
+            chatColorViewController.view.safeAreaInsets.totalWidth -
+            CGFloat(
+                OWSTableViewController2.cellHInnerMargin * 2 +
+                hStackConfig.layoutMargins.totalWidth +
+                vStackConfig.layoutMargins.totalWidth
+            )
+        )
         let optionViewInnerSize: CGFloat = 56
         let optionViewSelectionThickness: CGFloat = 4
         let optionViewSelectionSpacing: CGFloat = 2

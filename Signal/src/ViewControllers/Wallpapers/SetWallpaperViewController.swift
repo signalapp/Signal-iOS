@@ -50,7 +50,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        let referenceSize = view.bounds.size
+        let referenceSize = view.bounds.size - CGSize(width: view.safeAreaInsets.totalWidth, height: 0)
         guard referenceSize != previousReferenceSize else { return }
         previousReferenceSize = referenceSize
         updateCollectionViewSize(reference: referenceSize)
@@ -60,7 +60,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate { _ in
-            self.updateCollectionViewSize(reference: size)
+            self.updateCollectionViewSize(reference: size - CGSize(width: self.view.safeAreaInsets.totalWidth, height: 0))
         } completion: { _ in
 
         }
