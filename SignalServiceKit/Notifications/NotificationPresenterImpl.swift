@@ -83,6 +83,7 @@ public struct AppNotificationUserInfo {
     public var storyMessageId: String?
     public var storyTimestamp: UInt64?
     public var threadId: String?
+    public var voteAuthorServiceIdBinary: Data?
 
     public init() {
     }
@@ -110,6 +111,7 @@ public struct AppNotificationUserInfo {
         self.storyMessageId = userInfo[UserInfoKey.storyMessageId] as? String
         self.storyTimestamp = userInfo[UserInfoKey.storyTimestamp] as? UInt64
         self.threadId = userInfo[UserInfoKey.threadId] as? String
+        self.voteAuthorServiceIdBinary = userInfo[UserInfoKey.voteAuthorServiceIdBinary] as? Data
     }
 
     private enum UserInfoKey {
@@ -123,6 +125,7 @@ public struct AppNotificationUserInfo {
         public static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
         public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
         public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
+        public static let voteAuthorServiceIdBinary = "Signal.AppNotificationsUserInfoKey.voteAuthorServiceIdBinary"
     }
 
     func build() -> [String: Any] {
@@ -156,6 +159,9 @@ public struct AppNotificationUserInfo {
         }
         if let threadId {
             result[UserInfoKey.threadId] = threadId
+        }
+        if let voteAuthorServiceIdBinary {
+            result[UserInfoKey.voteAuthorServiceIdBinary] = voteAuthorServiceIdBinary
         }
         return result
     }
@@ -727,10 +733,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
         var userInfo = AppNotificationUserInfo()
         let threadUniqueId = thread.uniqueId
         userInfo.threadId = threadUniqueId
+        userInfo.voteAuthorServiceIdBinary = voteAuthor.serviceIdBinary
+        userInfo.messageId = message.uniqueId
 
         let intent = thread.generateSendMessageIntent(context: .senderAddress(SignalServiceAddress(voteAuthor)), transaction: transaction)
 
         enqueueNotificationAction(afterCommitting: transaction) {
+            if await self.presenter.existingPollVoteNotification(author: voteAuthor.serviceIdBinary, pollId: message.uniqueId) {
+                return
+            }
+
             await self.notifyViaPresenter(
                 category: .pollVoteNotification,
                 title: notificationTitle,

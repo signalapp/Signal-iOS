@@ -377,6 +377,21 @@ public class UserNotificationPresenter {
         self.cancelSync(notificationRequests: await getNotificationsRequests(), matching: cancellation)
     }
 
+    func existingPollVoteNotification(author: Data, pollId: String) async -> Bool {
+        let notificationRequests = await getNotificationsRequests()
+        for request in notificationRequests {
+            let userInfo = AppNotificationUserInfo(request.content.userInfo)
+            if let requestPollAuthor = userInfo.voteAuthorServiceIdBinary,
+               let requestPollId = userInfo.messageId,
+               requestPollAuthor == author,
+               requestPollId == pollId
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     @discardableResult
     private func cancelSync(
         notificationRequests: [UNNotificationRequest],
