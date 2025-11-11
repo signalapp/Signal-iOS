@@ -2023,19 +2023,6 @@ private struct ReenableBackupsButton: View {
     }
 }
 
-private struct YellowBadgeView: View {
-    var body: some View {
-        VStack {
-            Spacer().frame(height: 6)
-            Circle()
-                .frame(width: 10, height: 10)
-                .foregroundStyle(Color.Signal.yellow)
-            Spacer()
-        }
-        .frame(maxHeight: .infinity)
-    }
-}
-
 // MARK: -
 
 private struct BackupExportProgressView: View {
