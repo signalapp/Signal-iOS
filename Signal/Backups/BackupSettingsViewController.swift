@@ -1432,6 +1432,38 @@ struct BackupSettingsView: View {
 
             switch contents {
             case .enabled:
+                if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
+                    SignalSection {
+                        BackupAttachmentDownloadProgressView(
+                            backupPlan: viewModel.backupPlan,
+                            latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
+                            viewModel: viewModel,
+                        )
+                    }
+                }
+
+            case .disablingDownloadsRunning(let lastDownloadUpdate):
+                SignalSection {
+                    BackupAttachmentDownloadProgressView(
+                        backupPlan: viewModel.backupPlan,
+                        latestDownloadUpdate: lastDownloadUpdate,
+                        viewModel: viewModel
+                    )
+                } header: {
+                    Text(OWSLocalizedString(
+                        "BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION",
+                        comment: "Description for a progress view tracking media being downloaded in service of disabling Backups."
+                    ))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+                }
+
+            case .disabled, .disabling, .disabledFailedToDisableRemotely:
+                EmptyView()
+            }
+
+            switch contents {
+            case .enabled:
                 SignalSection {
                     if viewModel.hasBackupFailed {
                         Label {
@@ -1509,20 +1541,6 @@ struct BackupSettingsView: View {
                             viewModel.suspendUploads()
                         }
                     } else {
-                        if let latestBackupAttachmentDownloadUpdate = viewModel.latestBackupAttachmentDownloadUpdate {
-                            switch contents {
-                            case .disabling, .disablingDownloadsRunning:
-                                // We'll show a download progress bar below if necessary.
-                                EmptyView()
-                            case .enabled, .disabled, .disabledFailedToDisableRemotely:
-                                BackupAttachmentDownloadProgressView(
-                                    backupPlan: viewModel.backupPlan,
-                                    latestDownloadUpdate: latestBackupAttachmentDownloadUpdate,
-                                    viewModel: viewModel,
-                                )
-                            }
-                        }
-
                         PerformManualBackupButton {
                             viewModel.performManualBackup()
                         }
@@ -1600,22 +1618,10 @@ struct BackupSettingsView: View {
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 }
 
-            case .disablingDownloadsRunning(let lastDownloadUpdate):
-                SignalSection {
-                    BackupAttachmentDownloadProgressView(
-                        backupPlan: viewModel.backupPlan,
-                        latestDownloadUpdate: lastDownloadUpdate,
-                        viewModel: viewModel
-                    )
-                } header: {
-                    Text(OWSLocalizedString(
-                        "BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION",
-                        comment: "Description for a progress view tracking media being downloaded in service of disabling Backups."
-                    ))
-                    .font(.subheadline)
-                    .foregroundStyle(Color.Signal.secondaryLabel)
-                }
-
+            case .disablingDownloadsRunning:
+                // Download progress is shown in the section above this, so don't show
+                // anything here until the downloads complete.
+                EmptyView()
             case .disabling:
                 SignalSection {
                     VStack(alignment: .leading) {
@@ -2865,6 +2871,14 @@ extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Disabling: Remotely") {
     BackupSettingsView(viewModel: .forPreview(
         backupPlan: .disabling,
+        backupSubscriptionLoadingState: .loaded(.free),
+    ))
+}
+
+#Preview("Disabling: Remotely (w/ Downloads)") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupPlan: .disabling,
+        latestBackupAttachmentDownloadUpdateState: .pausedNeedsInternet,
         backupSubscriptionLoadingState: .loaded(.free),
     ))
 }
