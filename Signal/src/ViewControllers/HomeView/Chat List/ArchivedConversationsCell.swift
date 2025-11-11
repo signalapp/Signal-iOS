@@ -38,6 +38,10 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
     private func commonInit() {
         selectionStyle = .none
 
+        var configuration = UIBackgroundConfiguration.clear()
+        configuration.backgroundColor = .Signal.background
+        backgroundConfiguration = configuration
+
         disclosureImageView.tintColor = .Signal.label
         disclosureImageView.setContentHuggingHigh()
         disclosureImageView.setCompressionResistanceHigh()
@@ -50,15 +54,13 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
         let stackView = UIStackView(arrangedSubviews: [ label, disclosureImageView ])
         stackView.axis = .horizontal
         stackView.spacing = 5
-        // If alignment isn't set, UIStackView uses the height of
-        // disclosureImageView, even if label has a higher desired height.
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(stackView)
         contentView.addConstraints([
             stackView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
             stackView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.layoutMarginsGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.layoutMarginsGuide.trailingAnchor),
+            stackView.centerXAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
         ])
 
