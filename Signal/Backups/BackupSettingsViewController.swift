@@ -174,7 +174,7 @@ class BackupSettingsViewController:
         case nil:
             break
         case .presentWelcomeToBackupsSheet:
-            presentWelcomeToBackupsSheet()
+            presentWelcomeToBackupsSheetIfNecessary()
         }
     }
 
@@ -526,20 +526,28 @@ class BackupSettingsViewController:
             )
 
             navigationController?.popToViewController(self, animated: true) { [self] in
-                presentWelcomeToBackupsSheet()
+                presentWelcomeToBackupsSheetIfNecessary()
             }
         } catch {
             error.showActionSheet(from: fromViewController)
         }
     }
 
-    private func presentWelcomeToBackupsSheet() {
+    private func presentWelcomeToBackupsSheetIfNecessary() {
+        let hasNeverRunBackups = db.read { tx in
+            backupSettingsStore.firstBackupDate(tx: tx) == nil
+        }
+
+        if hasNeverRunBackups {
+            _presentWelcomeToBackupsSheet()
+        }
+    }
+
+    private func _presentWelcomeToBackupsSheet() {
         final class WelcomeToBackupsSheet: HeroSheetViewController {
             override var canBeDismissed: Bool { false }
 
-            init(
-                onConfirm: @escaping () -> Void,
-            ) {
+            init(onConfirm: @escaping () -> Void) {
                 super.init(
                     hero: .image(.backupsSubscribed),
                     title: OWSLocalizedString(
@@ -550,10 +558,10 @@ class BackupSettingsViewController:
                         "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
                         comment: "Message for a sheet shown after the user enables backups."
                     ),
-                    primary: .button(HeroSheetViewController.Button(
+                    primaryButton: HeroSheetViewController.Button(
                         title: CommonStrings.okButton,
                         action: { _ in onConfirm() }
-                    )),
+                    ),
                 )
             }
         }
