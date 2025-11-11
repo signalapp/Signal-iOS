@@ -223,60 +223,26 @@ extension UIImage {
 
     public func withBadge(
         color: UIColor,
-        badgeSize: CGSize,
-        borderColor: UIColor = .white
+        badgeSize: CGSize = .square(8.5),
     ) -> UIImage {
-        let newSize = CGSize(width: size.width + (badgeSize.width / 2.0), height: size.height + (badgeSize.height / 2.0))
-        let render = UIGraphicsImageRenderer(size: newSize)
-        return render.image { _ in
-            let iconTintedImage = withRenderingMode(.alwaysTemplate)
-            iconTintedImage.draw(at: .zero)
-            Self.renderBadge(
-                size: badgeSize,
-                origin: CGPoint(x: size.width - badgeSize.width, y: 0),
-                color: color,
-                borderColor: borderColor
-            )
+        let newSize = CGSize(
+            width: size.width + (badgeSize.width / 2.0),
+            height: size.height + (badgeSize.height / 2.0),
+        )
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { context in
+            // Draw the image
+            draw(at: .zero)
+
+            // Draw the badge in the top-right corner, over the image
+            let badgeOrigin = CGPoint(x: size.width - badgeSize.width, y: 0)
+            let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
+            let badgePath = UIBezierPath(ovalIn: badgeRect)
+            color.setFill()
+            badgePath.fill()
         }
         .withRenderingMode(.alwaysOriginal)
-    }
-
-    public static func buildBadgeImage(
-        size: CGSize,
-        color: UIColor,
-        borderColor: UIColor = .white
-    ) -> UIImage {
-        let render = UIGraphicsImageRenderer(size: size)
-        return render.image { _ in
-            renderBadge(
-                size: size,
-                origin: .zero,
-                color: color,
-                borderColor: borderColor
-            )
-        }.withRenderingMode(.alwaysOriginal)
-    }
-
-    private static func renderBadge(
-        size: CGSize,
-        origin: CGPoint = CGPoint.zero,
-        color: UIColor,
-        borderColor: UIColor = .white
-    ) {
-        let borderWidth = 1.0
-        let badgeSize = CGSize(
-            width: max(0, size.width - (borderWidth * 2.0)),
-            height: max(0, size.height - (borderWidth * 2.0))
-        )
-        let badgeOrigin = CGPoint(x: origin.x + borderWidth, y: origin.y + borderWidth)
-        let badgeRect = CGRect(origin: badgeOrigin, size: badgeSize)
-        let badgePath = UIBezierPath(ovalIn: badgeRect)
-
-        color.setFill()
-        badgePath.fill()
-
-        borderColor.setStroke()
-        badgePath.stroke()
     }
 
     var withNativeScale: UIImage {

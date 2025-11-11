@@ -1265,6 +1265,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var lastBackupDate: Date?
     @Published var lastBackupSizeBytes: UInt64?
     @Published var shouldAllowBackupUploadsOnCellular: Bool
+
     /// Nil means has not consumed capacity; non-nil value represents the total byte count over
     /// the server side capacity all local attachments consume (meaning that's how many bytes
     /// the user has to delete to go back under storage quota).
@@ -1303,6 +1304,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.lastBackupDate = lastBackupDate
         self.lastBackupSizeBytes = lastBackupSizeBytes
         self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
+
         self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
         self.hasBackupFailed = hasBackupFailed
     }
@@ -1554,12 +1556,9 @@ struct BackupSettingsView: View {
                             .font(.footnote)
                             .multilineTextAlignment(.leading)
                         } icon: {
-                            Image(
-                                uiImage: UIImage.buildBadgeImage(
-                                    size: .square(10),
-                                    color: UIColor.Signal.yellow
-                                )
-                            )
+                            Circle()
+                                .frame(width: 10, height: 10)
+                                .foregroundStyle(Color.Signal.yellow)
                         }
                     }
 
@@ -1603,9 +1602,7 @@ struct BackupSettingsView: View {
                                 .monospacedDigit()
                                 .multilineTextAlignment(.leading)
                             } icon: {
-                                Image(
-                                    uiImage: UIImage(named: "error-circle-fill-compact")!
-                                )
+                                Image(.errorCircleFillCompact)
                             }
                         }
                         VStack(alignment: .leading) {
@@ -2629,6 +2626,26 @@ private struct BackupViewKeyView: View {
 
 #if DEBUG
 
+private extension OWSSequentialProgress<BackupExportJobStep> {
+    static func forPreview(
+        _ step: BackupExportJobStep,
+        _ progress: Float
+    ) -> OWSSequentialProgress<BackupExportJobStep> {
+        return OWSProgress(
+            completedUnitCount: UInt64(progress * 100),
+            totalUnitCount: 100,
+            childProgresses: [
+                step.rawValue: [OWSProgress.ChildProgress(
+                    completedUnitCount: 1,
+                    totalUnitCount: 2,
+                    label: step.rawValue,
+                    parentLabel: nil
+                )]
+            ]
+        ).sequential(BackupExportJobStep.self)
+    }
+}
+
 private extension BackupSettingsViewModel {
     static func forPreview(
         backupSubscriptionLoadingState: BackupSubscriptionLoadingState,
@@ -2638,6 +2655,8 @@ private extension BackupSettingsViewModel {
         latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>? = nil,
         latestBackupAttachmentDownloadUpdateState: BackupSettingsAttachmentDownloadTracker.DownloadUpdate.State? = nil,
         latestBackupAttachmentUploadUpdateState: BackupSettingsAttachmentUploadTracker.UploadUpdate.State? = nil,
+        mediaTierCapacityOverflow: UInt64? = nil,
+        hasBackupFailed: Bool = false,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
             func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
@@ -2691,8 +2710,8 @@ private extension BackupSettingsViewModel {
             lastBackupDate: Date().addingTimeInterval(-1 * .day),
             lastBackupSizeBytes: 2_400_000_000,
             shouldAllowBackupUploadsOnCellular: false,
-            mediaTierCapacityOverflow: nil,
-            hasBackupFailed: false
+            mediaTierCapacityOverflow: mediaTierCapacityOverflow,
+            hasBackupFailed: hasBackupFailed,
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate
@@ -2776,24 +2795,20 @@ private extension BackupSettingsViewModel {
     ))
 }
 
-private extension OWSSequentialProgress<BackupExportJobStep> {
-    static func forPreview(
-        _ step: BackupExportJobStep,
-        _ progress: Float
-    ) -> OWSSequentialProgress<BackupExportJobStep> {
-        return OWSProgress(
-            completedUnitCount: UInt64(progress * 100),
-            totalUnitCount: 100,
-            childProgresses: [
-                step.rawValue: [OWSProgress.ChildProgress(
-                    completedUnitCount: 1,
-                    totalUnitCount: 2,
-                    label: step.rawValue,
-                    parentLabel: nil
-                )]
-            ]
-        ).sequential(BackupExportJobStep.self)
-    }
+#Preview("Failed Backup") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.free),
+        backupPlan: .free,
+        hasBackupFailed: true,
+    ))
+}
+
+#Preview("Out of Quota") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
+        mediaTierCapacityOverflow: 1_000_000_000,
+    ))
 }
 
 #Preview("Manual Backup: Backup Export") {
@@ -2815,7 +2830,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Media Upload") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .running,
     ))
@@ -2824,7 +2839,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Media Upload Paused (Low Battery)") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedLowBattery,
     ))
@@ -2833,7 +2848,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Media Upload Paused (Low Power Mode)") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedLowPowerMode,
     ))
@@ -2842,7 +2857,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Media Upload Paused (WiFi)") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedNeedsWifi,
     ))
@@ -2851,7 +2866,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Media Upload Paused (Internet)") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.attachmentUpload, 0.80),
         latestBackupAttachmentUploadUpdateState: .pausedNeedsInternet,
     ))
@@ -2860,7 +2875,7 @@ private extension OWSSequentialProgress<BackupExportJobStep> {
 #Preview("Manual Backup: Offloading") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .loaded(.paidButFreeForTesters),
-        backupPlan: .free,
+        backupPlan: .paidAsTester(optimizeLocalStorage: false),
         latestBackupExportProgressUpdate: .forPreview(.offloading, 0.90),
     ))
 }

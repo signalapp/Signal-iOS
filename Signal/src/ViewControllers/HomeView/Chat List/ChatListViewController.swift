@@ -499,10 +499,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 if viewState.settingsButtonCreator.showBackupsFailedMenuItem {
                     var image = Theme.iconImage(.backup).withTintColor(.Signal.label)
                     if viewState.settingsButtonCreator.showBackupsFailedMenuItemBadge {
-                        image = image.withBadge(
-                            color: UIColor.Signal.yellow,
-                            badgeSize: .square(8.5)
-                        )
+                        image = image.withBadge(color: .Signal.yellow)
                     }
 
                     contextMenuActions.append(
@@ -526,10 +523,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 } else if viewState.settingsButtonCreator.showBackupsSubscriptionAlreadyRedeemedMenuItem {
                     let image = Theme.iconImage(.backup)
                         .withTintColor(.Signal.label)
-                        .withBadge(
-                            color: .Signal.yellow,
-                            badgeSize: .square(8.5)
-                        )
+                        .withBadge(color: .Signal.yellow)
 
                     contextMenuActions.append(
                         UIMenu(options: .displayInline, children: [
@@ -552,10 +546,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 } else if viewState.settingsButtonCreator.hasConsumedMediaTierCapacity {
                     let image = Theme.iconImage(.backup)
                         .withTintColor(.Signal.label)
-                        .withBadge(
-                            color: .Signal.red,
-                            badgeSize: .square(8.5)
-                        )
+                        .withBadge(color: .Signal.red)
+
                     contextMenuActions.append(
                         UIMenu(options: [.displayInline], children: [
                             UIAction(

@@ -151,8 +151,6 @@ public extension UIView {
     func addCircleBadge(color: UIColor) {
         let badge = OWSLayerView.circleView(size: 12)
         badge.backgroundColor = color
-        badge.layer.borderColor = UIColor.ows_white.cgColor
-        badge.layer.borderWidth = 1
         self.addSubview(badge)
         badge.autoPinEdge(toSuperviewEdge: .top, withInset: -3)
         badge.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
