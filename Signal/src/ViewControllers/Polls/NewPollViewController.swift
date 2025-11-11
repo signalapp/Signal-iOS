@@ -218,11 +218,13 @@ struct NewPollView: View {
             let remainingChars = PollResizingTextEditor.characterLimit - option.text.count
             let displayRemainingChars = remainingChars <= 20 ? NewPollView.localizedNumber(from: remainingChars) : ""
             let countdownColor = remainingChars <= 5 ? Color.Signal.red : Color.Signal.tertiaryLabel
+            let shouldHaveEmptyPlaceholder = totalCount > 2 && optionIndex != totalCount - 1
+            let placeholder = shouldHaveEmptyPlaceholder ? "" : localizedOptionPlaceholderText(index: optionIndex + 1)
 
             HStack {
                 PollResizingTextEditor(
                     text: $option.text,
-                    placeholder: localizedOptionPlaceholderText(index: optionIndex + 1),
+                    placeholder: placeholder,
                     onSubmit: onSubmit,
                     optionFieldFocus: focusedField,
                     optionFieldId: option.id,
@@ -459,7 +461,7 @@ struct NewPollView: View {
 
     private func onChange() {
         // Filter out all blank fields since user may have deleted a middle option.
-        var filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
+        let filteredPollOptions = pollOptions.filter({ !$0.text.stripped.isEmpty })
 
         if filteredPollOptions.count >= 10 {
             return
@@ -479,9 +481,11 @@ struct NewPollView: View {
 
         // Add back a blank field at the end since we aren't at the option limit.
         // Note this will call onChange() again since we are changing the pollOptions array.
-        filteredPollOptions.append(NewOption(text: ""))
         let oldPollRowCount = pollOptions.count
-        pollOptions = filteredPollOptions
+        withAnimation {
+            pollOptions = filteredPollOptions
+            pollOptions.append(NewOption(text: ""))
+        }
 
         // Re-focus latest row if this is a deletion so we don't lose
         // first responder status.
