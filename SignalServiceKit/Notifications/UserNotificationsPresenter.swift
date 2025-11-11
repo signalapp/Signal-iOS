@@ -302,6 +302,18 @@ public class UserNotificationPresenter {
         await cancel(cancellation: .storyMessage(storyMessageUniqueId))
     }
 
+    func cancelPendingNotificationsForBackupsEnabled() async {
+        let backupsEnabledRequests = await Self.notificationCenter
+            .pendingNotificationRequests()
+            .filter {
+                $0.content.categoryIdentifier == AppNotificationCategory.backupsEnabled.identifier
+            }
+
+        Self.notificationCenter.removePendingNotificationRequests(
+            withIdentifiers: backupsEnabledRequests.map(\.identifier),
+        )
+    }
+
     public func clearAllNotifications() {
         Logger.info("Clearing all notifications")
 

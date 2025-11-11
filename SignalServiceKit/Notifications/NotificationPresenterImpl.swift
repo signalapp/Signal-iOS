@@ -1184,6 +1184,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         var userInfo = AppNotificationUserInfo()
         userInfo.defaultAction = .showBackupsSettings
         enqueueNotificationAction {
+            await self.presenter.cancelPendingNotificationsForBackupsEnabled()
+
             await self.notifyViaPresenter(
                 category: .backupsEnabled,
                 title: ResolvableValue(resolvedValue: OWSLocalizedString(
