@@ -530,6 +530,8 @@ public final class MessageReceiver {
                                 targetPollTimestamp: targetMessage.timestamp,
                                 pollQuestion: pollQuestion,
                                 terminateAuthor: localIdentifiers.aci,
+                                expireTimer: dataMessage.expireTimer,
+                                expireTimerVersion: dataMessage.expireTimerVersion,
                                 tx: tx
                             )
                         }
@@ -1251,6 +1253,8 @@ public final class MessageReceiver {
                             targetPollTimestamp: pollTerminate.targetSentTimestamp,
                             pollQuestion: question,
                             terminateAuthor: envelope.sourceAci,
+                            expireTimer: dataMessage.expireTimer,
+                            expireTimerVersion: dataMessage.expireTimerVersion,
                             tx: tx
                         )
                     } else {

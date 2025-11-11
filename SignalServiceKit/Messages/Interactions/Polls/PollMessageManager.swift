@@ -260,12 +260,15 @@ public class PollMessageManager {
                 throw OWSAssertionError("User not registered")
             }
 
+            let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
             insertInfoMessageForEndPoll(
                 timestamp: Date().ows_millisecondsSince1970,
                 groupThread: thread,
                 targetPollTimestamp: targetPoll.timestamp,
                 pollQuestion: poll.question,
                 terminateAuthor: localAci,
+                expireTimer: dmConfig.durationSeconds,
+                expireTimerVersion: dmConfig.timerVersion,
                 tx: tx
             )
         }
@@ -277,6 +280,8 @@ public class PollMessageManager {
         targetPollTimestamp: UInt64,
         pollQuestion: String,
         terminateAuthor: Aci,
+        expireTimer: UInt32?,
+        expireTimerVersion: UInt32?,
         tx: DBWriteTransaction
     ) {
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
@@ -286,15 +291,18 @@ public class PollMessageManager {
             timestamp: Int64(targetPollTimestamp)
         )
 
-        let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx)
+        var timerVersion: NSNumber?
+        if let expireTimerVersion {
+            timerVersion = NSNumber(value: expireTimerVersion)
+        }
 
         let infoMessage = TSInfoMessage(
             thread: groupThread,
             timestamp: timestamp,
             serverGuid: nil,
             messageType: .typeEndPoll,
-            expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
-            expiresInSeconds: dmConfig.durationSeconds,
+            expireTimerVersion: timerVersion,
+            expiresInSeconds: expireTimer ?? 0,
             infoMessageUserInfo: userInfoForNewMessage
         )
 
