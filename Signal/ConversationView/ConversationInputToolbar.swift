@@ -2143,6 +2143,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }
 
     private func updateSuggestedStickers(animated: Bool) {
+        // Skip this until we are in the view hierarchy.
+        guard superview != nil else { return }
+
         let suggestedStickerEmoji = StickerManager.suggestedStickerEmoji(chatBoxText: inputTextView.trimmedText)
         guard currentSuggestedStickerEmoji != suggestedStickerEmoji else { return }
         currentSuggestedStickerEmoji = suggestedStickerEmoji
