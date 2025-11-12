@@ -1024,7 +1024,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         static let iconSize: CGFloat = 24
 
         static var titleLabelFont: UIFont { .dynamicTypeSubheadlineClamped.bold() }
-        static var subtitleLabelFont: UIFont { .dynamicTypeSubheadlineClamped }
+        static var subtitleLabelFont: UIFont { .dynamicTypeSubheadlineClamped.monospaced() }
 
         static var diskSpaceLabelFont: UIFont { .dynamicTypeSubheadlineClamped }
 
