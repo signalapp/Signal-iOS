@@ -78,18 +78,19 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         let initialMaxFileSize = UInt32(CGFloat(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes) * 0.8)
         return try backupThumbnailData(
             image: image,
-            targetMaxFileSize: initialMaxFileSize
+            targetMaxFileSize: initialMaxFileSize,
+            targetMaxPixelSize: AttachmentThumbnailQuality.backupThumbnailDimensionPixels
         )
     }
 
     private func backupThumbnailData(
         image: UIImage,
-        targetMaxFileSize: UInt32
+        targetMaxFileSize: UInt32,
+        targetMaxPixelSize: CGFloat
     ) throws -> Data {
-        let maxPixelSize = AttachmentThumbnailQuality.backupThumbnailDimensionPixels
         let targetSize: CGSize
-        if image.pixelSize.largerAxis > maxPixelSize {
-            let scaleRatio = maxPixelSize / image.pixelSize.largerAxis
+        if image.pixelSize.largerAxis > targetMaxPixelSize {
+            let scaleRatio = targetMaxPixelSize / image.pixelSize.largerAxis
             targetSize = CGSize(
                 width: image.size.width * scaleRatio,
                 height: image.size.height * scaleRatio
@@ -110,13 +111,26 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             throw OWSAssertionError("Unable to generate webp")
         }
         if data.count > AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
-            if targetMaxFileSize < 256 {
+            let nextTargetMaxPixelSize = targetMaxPixelSize * 0.5
+            let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.25)
+            if
+                nextTargetMaxFileSize < AttachmentThumbnailQuality.backupThumbnailMinSizeBytes &&
+                nextTargetMaxPixelSize < AttachmentThumbnailQuality.backupThumbnailMinPixelSize
+            {
                 throw OWSAssertionError("Generated thumbnail too large")
-            } else {
-                let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.25)
+            } else if nextTargetMaxFileSize < AttachmentThumbnailQuality.backupThumbnailMinSizeBytes {
+                // If the next decrement of the file size is below the min size,
+                // start to scale down the pixel size of the image
                 return try backupThumbnailData(
                     image: image,
-                    targetMaxFileSize: nextTargetMaxFileSize
+                    targetMaxFileSize: targetMaxFileSize,
+                    targetMaxPixelSize: nextTargetMaxPixelSize
+                )
+            } else {
+                return try backupThumbnailData(
+                    image: image,
+                    targetMaxFileSize: nextTargetMaxFileSize,
+                    targetMaxPixelSize: targetMaxPixelSize
                 )
             }
         }
