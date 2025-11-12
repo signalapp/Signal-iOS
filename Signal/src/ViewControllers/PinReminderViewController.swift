@@ -16,7 +16,25 @@ public class PinReminderViewController: OWSViewController {
 
     private let completionHandler: ((PinReminderResult) -> Void)?
 
-    private let containerView = UIView()
+    private let contentView = UIView()
+    private var contentViewBottomEdgeConstraint: NSLayoutConstraint?
+
+    private lazy var backgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .Signal.groupedBackground
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            view.cornerConfiguration = .corners(
+                topLeftRadius: .containerConcentric(minimum: 40),
+                topRightRadius: .containerConcentric(minimum: 40),
+                bottomLeftRadius: .none,
+                bottomRightRadius: .none
+            )
+        }
+#endif
+        return view
+    }()
+
     private lazy var pinTextField: UITextField = {
         let textField = UITextField()
         textField.textColor = .Signal.label
@@ -91,39 +109,32 @@ public class PinReminderViewController: OWSViewController {
 
         view.backgroundColor = .clear
 
-        containerView.backgroundColor = .Signal.groupedBackground
-        containerView.preservesSuperviewLayoutMargins = true
-#if compiler(>=6.2)
-        if #available(iOS 26, *) {
-            containerView.cornerConfiguration = .corners(
-                topLeftRadius: .containerConcentric(minimum: 40),
-                topRightRadius: .containerConcentric(minimum: 40),
-                bottomLeftRadius: .none,
-                bottomRightRadius: .none
-            )
-        }
-#endif
-        view.addSubview(containerView)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(contentView)
 
-        // We want the background to extend to the bottom of the screen
-        // behind the safe area, so we add that inset to our bottom inset
-        // instead of pinning this view to the safe area
-        let safeAreaBackdrop = UIView()
-        safeAreaBackdrop.backgroundColor = .Signal.groupedBackground
-        view.addSubview(safeAreaBackdrop)
+        // Final layout frame of the keyboardLayoutGuide` when the VC is dismissed, is `CGRect.zero`.
+        // That causes the entire content to jump above the top edge of the screen and then animate all the way down.
+        // The workaround is in `viewWillDisappear` to:
+        //  • remove constraint to `keyboardLayoutGuide`.
+        //  • constrain bottom edge of the `contentView` to bottom edge of view controller's view using current offset.
+        // All this works as long as view controller is presented modally
+        // and `viewWillDisappear` is guaranteed to be only called once.
+        contentViewBottomEdgeConstraint = contentView.bottomAnchor.constraint(
+            equalTo: keyboardLayoutGuide.topAnchor,
+            constant: -16
+        )
 
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        safeAreaBackdrop.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            safeAreaBackdrop.topAnchor.constraint(equalTo: containerView.bottomAnchor),
-            safeAreaBackdrop.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            safeAreaBackdrop.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            // We don't know the safe area insets, so just guess a big number that will extend off screen
-            safeAreaBackdrop.heightAnchor.constraint(equalToConstant: 150),
+            contentView.topAnchor.constraint(equalTo: backgroundView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentViewBottomEdgeConstraint!,
         ])
 
         // UI Elements
@@ -221,13 +232,13 @@ public class PinReminderViewController: OWSViewController {
         stackView.setCustomSpacing(24, after: explanationLabel)
         stackView.preservesSuperviewLayoutMargins = true
         stackView.isLayoutMarginsRelativeArrangement = true
-        containerView.addSubview(stackView)
+        contentView.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             // top edge of the stack view will be defined later in relation to ( X ) button.
-            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
-            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
 
         // Close button at the top.
@@ -257,13 +268,17 @@ public class PinReminderViewController: OWSViewController {
         )
         dismissButton.configuration?.image = Theme.iconImage(.buttonX)
         dismissButton.configuration?.imageColorTransformer = .init { _ in buttonImageColor }
-        containerView.addSubview(dismissButton)
+        contentView.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        // 16 or 20 depending on device
+        // We want to aling trailing edge of the (X) button with the trailing edge or the text field
+        // and have identical margin on the top and on the side.
+        let dismissButtonMargin = OWSTableViewController2.cellHInnerMargin
         NSLayoutConstraint.activate([
             dismissButton.widthAnchor.constraint(equalToConstant: 44),
             dismissButton.heightAnchor.constraint(equalToConstant: 44),
-            dismissButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
-            dismissButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            dismissButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: dismissButtonMargin),
+            dismissButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -dismissButtonMargin),
             dismissButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
         ])
 
@@ -289,6 +304,7 @@ public class PinReminderViewController: OWSViewController {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        pinContentView()
         pinTextField.resignFirstResponder()
     }
 
@@ -296,26 +312,37 @@ public class PinReminderViewController: OWSViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
+    // See comment in `viewDidLoad`.
+    private func pinContentView() {
+        contentViewBottomEdgeConstraint?.isActive = false
+        NSLayoutConstraint.activate([
+            contentView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor,
+                constant: contentView.frame.maxY - view.bounds.maxY
+            )
+        ])
+    }
+
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         if #unavailable(iOS 26) {
-            updateContainerViewCornerRadius()
+            updateBackgroundCornerRadius()
         }
     }
 
     @available(iOS, deprecated: 26.0)
-    private func updateContainerViewCornerRadius() {
+    private func updateBackgroundCornerRadius() {
         let cornerRadius: CGFloat = 16
         let path = UIBezierPath(
-            roundedRect: containerView.bounds,
+            roundedRect: backgroundView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
             cornerRadii: CGSize(square: cornerRadius)
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath
-        containerView.layer.mask = shapeLayer
-    }
+        backgroundView.layer.mask = shapeLayer
+   }
 
     // MARK: - Events
 
