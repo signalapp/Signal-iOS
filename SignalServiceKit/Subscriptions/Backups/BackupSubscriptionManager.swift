@@ -445,6 +445,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 // the "grace period" during which the entitlement persists
                 // after the subscription period ends has now elapsed
                 // without the user fixing the renewal issue.
+                logger.warn("Backup entitlement missing or expired: downgrading to free tier.")
                 return .toFreeTier
             }
 
@@ -466,6 +467,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 // yet, Chat Service will return the `.canceled` status.
                 //
                 // If the subscription has expired, downgrade to free.
+                logger.warn("IAP subscription missing or expired: downgrading to free tier.")
                 return .toFreeTier
             case .active, .pastDue, .unrecognized:
                 subscriptionCancelAtEndOfPeriod = subscription!.cancelAtEndOfPeriod
@@ -479,6 +481,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 subscriptionCancelAtEndOfPeriod
             {
                 // We're on the paid tier, but our subscription won't renew.
+                logger.warn("IAP subscription not renewing: downgrading to expiring soon.")
                 return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)
             }
 
