@@ -60,12 +60,6 @@ public enum BuildFlags {
     public static let runTSAttachmentMigrationInMainAppBackground = true
     public static let runTSAttachmentMigrationBlockingOnLaunch = true
 
-    public static let useNewConversationLoadIndex = true
-
-    public static let libsignalEnforceMinTlsVersion = false
-
-    public static let moveDraftsUpChatList = true
-
     public static let useLowerDefaultListMediaRefreshInterval = build <= .beta
 
     /// We are still making Xcode 16 builds as of writing this, and some iOS 26

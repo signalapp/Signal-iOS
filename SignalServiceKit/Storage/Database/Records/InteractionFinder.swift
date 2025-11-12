@@ -1200,18 +1200,11 @@ public class InteractionFinder: NSObject {
             limit: limit
         )
 
-        let indexedBy: String
-        if BuildFlags.useNewConversationLoadIndex {
-            indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
-        } else {
-            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")
-        }
-
         let uniqueIds = try String.fetchAll(
             tx.database,
             sql: """
                 SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
-                \(indexedBy)
+                INDEXED BY index_interactions_on_threadUniqueId_and_id
                 \(rowIdClause)
                 """,
             arguments: arguments
@@ -1356,10 +1349,8 @@ public class InteractionFinder: NSObject {
 
         let indexedBy: String
         switch additionalFiltering {
-        case .filterForConversationView where BuildFlags.useNewConversationLoadIndex:
-            indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         case .filterForConversationView:
-            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")
+            indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         case .filterForIncomingMessages:
             indexedBy = DEBUG_INDEXED_BY("index_interactions_on_recordType_and_threadUniqueId_and_errorType")
         case .filterForOutgoingMessages:
