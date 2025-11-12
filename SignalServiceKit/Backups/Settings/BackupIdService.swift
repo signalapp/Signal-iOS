@@ -22,6 +22,15 @@ public protocol BackupIdService {
         key: MessageRootBackupKey,
         auth: ChatServiceAuth
     ) async throws
+
+    func fetchBackupIDLimits(
+        auth: ChatServiceAuth
+    ) async throws -> BackupIdLimits
+}
+
+public struct BackupIdLimits: Decodable {
+    public let hasPermitsRemaining: Bool
+    public let retryAfterSeconds: Int
 }
 
 // MARK: -
@@ -122,6 +131,19 @@ final class BackupIdServiceImpl: BackupIdService {
         )
     }
 
+    func fetchBackupIDLimits(
+        auth: ChatServiceAuth
+    ) async throws -> BackupIdLimits {
+        let response = try await networkManager.asyncRequest(.fetchBackupIdLimits(auth: auth))
+        guard let jsonData = response.responseBodyData else {
+            throw OWSAssertionError("Missing or invalid JSON!")
+        }
+        return try JSONDecoder().decode(
+            BackupIdLimits.self,
+            from: jsonData
+        )
+    }
+
     private func registerBackupId(
         localAci: Aci,
         messageBackupKey: MessageRootBackupKey,
@@ -172,6 +194,18 @@ private extension TSRequest {
         request.auth = .identified(auth)
         return request
     }
+
+    static func fetchBackupIdLimits(
+        auth: ChatServiceAuth
+    ) -> TSRequest {
+        var request = TSRequest(
+            url: URL(string: "v1/archives/backupid/limits")!,
+            method: "GET",
+            parameters: nil
+        )
+        request.auth = .identified(auth)
+        return request
+    }
 }
 
 // MARK: -
@@ -179,6 +213,10 @@ private extension TSRequest {
 #if TESTABLE_BUILD
 
 class MockBackupIdService: BackupIdService {
+    func fetchBackupIDLimits(auth: ChatServiceAuth) async throws -> BackupIdLimits {
+        fatalError("Not implemented")
+    }
+
     func updateMessageBackupIdForRegistration(key: MessageRootBackupKey, auth: ChatServiceAuth) async throws {
         // Do nothing
     }

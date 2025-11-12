@@ -26,6 +26,7 @@ class BackupSettingsViewController:
     private let backupEnablingManager: BackupEnablingManager
     private let backupExportJobRunner: BackupExportJobRunner
     private let backupFailureStateManager: BackupFailureStateManager
+    private let backupIdService: BackupIdService
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
@@ -60,6 +61,7 @@ class BackupSettingsViewController:
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
             backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
+            backupIdService: DependenciesBridge.shared.backupIdService,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: BackupSettingsStore(),
             backupSubscriptionIssueStore: BackupSubscriptionIssueStore(),
@@ -84,6 +86,7 @@ class BackupSettingsViewController:
         backupEnablingManager: BackupEnablingManager,
         backupExportJobRunner: BackupExportJobRunner,
         backupFailureStateManager: BackupFailureStateManager,
+        backupIdService: BackupIdService,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
@@ -113,6 +116,7 @@ class BackupSettingsViewController:
         self.backupEnablingManager = backupEnablingManager
         self.backupExportJobRunner = backupExportJobRunner
         self.backupFailureStateManager = backupFailureStateManager
+        self.backupIdService = backupIdService
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
@@ -1109,18 +1113,21 @@ class BackupSettingsViewController:
             onCreateNewKeyPressed: { [weak self] recordKeyViewController in
                 guard let self else { return }
 
-                // If appropriate, the warning sheet will let the user continue
-                // in a "create new AEP" flow.
-                showCreateNewRecoveryKeyWarningSheet(fromViewController: recordKeyViewController)
+                Task {
+                    // If appropriate, the warning sheet will let the user continue
+                    // in a "create new AEP" flow.
+                    await self.showCreateNewRecoveryKeyWarningSheet(fromViewController: recordKeyViewController)
+                }
             },
         )
 
         navigationController?.pushViewController(recordKeyViewController, animated: true)
     }
 
+    @MainActor
     private func showCreateNewRecoveryKeyWarningSheet(
         fromViewController: BackupRecordKeyViewController,
-    ) {
+    ) async {
         let (
             currentBackupPlan,
             isRegisteredPrimaryDevice,
@@ -1142,6 +1149,70 @@ class BackupSettingsViewController:
             return
         }
 
+        let showCreateKeySheet = {
+            self._showCreateNewRecoveryKeyWarningSheet(
+                fromViewController: fromViewController,
+                currentBackupPlan: currentBackupPlan
+            )
+        }
+
+        // Check if we've hit the limit for registering new backupIDs and warn the user
+        if
+            let limits = try? await backupIdService.fetchBackupIDLimits(auth: .implicit()),
+            !limits.hasPermitsRemaining
+        {
+            let bodyText = String(
+                format: OWSLocalizedString(
+                    "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY",
+                    comment: "Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}"
+                ),
+                DateUtil.formatDuration(
+                    seconds: UInt32(clamping: limits.retryAfterSeconds),
+                    useShortFormat: false
+                )
+            )
+            let actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE",
+                    comment: "Title for a sheet warning users they've reached a rate limit for creating Recovery Key."
+                ),
+                message: bodyText
+           )
+
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION",
+                    comment: "Action in an action sheet allowing to continue to rotate their key"
+                ),
+                style: .destructive,
+                handler: { _ in
+                    showCreateKeySheet()
+                }
+            ))
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.learnMore,
+                handler: { _ in
+                    CurrentAppContext().open(
+                        URL.Support.backups,
+                        completion: nil
+                    )
+                }
+            ))
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.okButton,
+                handler: { _ in }
+            ))
+
+            presentActionSheet(actionSheet)
+        } else {
+            showCreateKeySheet()
+        }
+    }
+
+    private func _showCreateNewRecoveryKeyWarningSheet(
+        fromViewController: BackupRecordKeyViewController,
+        currentBackupPlan: BackupPlan
+    ) {
         let primaryButtonTitle: String
         switch currentBackupPlan {
         case .disabling:

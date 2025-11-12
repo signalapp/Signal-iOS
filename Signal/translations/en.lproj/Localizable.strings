@@ -787,6 +787,15 @@
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
 
+/* Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "If you create a new recovery key, you will not be able to enable backups for %1$@. The number of keys you can create is limited to prevent abuse.";
+
+/* Action in an action sheet allowing to continue to rotate their key */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "Create New Key";
+
+/* Title for a sheet warning users they've reached a rate limit for creating Recovery Key. */
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "Recovery Key Limit Reached";
+
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "New key created!";
 
@@ -1713,6 +1722,12 @@
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Something went wrong redeeming your purchase. Please contact support.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Because you reached your limit of new recovery keys, to prevent abuse you will not be able to enable backups for %1$@. Wait %1$@ and try again.";
+
+/* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "Couldn't Enable Backups";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Current plan";
