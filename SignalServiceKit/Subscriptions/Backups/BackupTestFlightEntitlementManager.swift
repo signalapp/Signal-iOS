@@ -266,7 +266,11 @@ private struct AppAttestManager {
         self.networkManager = networkManager
     }
 
-    private func parseDCError(_ dcError: DCError) -> AttestationError {
+    private func parseDCError(
+        _ dcError: DCError,
+        function: String = #function,
+        line: Int = #line,
+    ) -> AttestationError {
         switch dcError.code {
         case .featureUnsupported:
             return .notSupported
@@ -275,7 +279,7 @@ private struct AppAttestManager {
         case .unknownSystemFailure, .invalidInput, .invalidKey:
             fallthrough
         @unknown default:
-            owsFailDebug("Unexpected DCError code: \(dcError.code)", logger: logger)
+            owsFailDebug("Unexpected DCError code: \(dcError.code)", logger: logger, function: function, line: line)
             return .genericError
         }
     }
