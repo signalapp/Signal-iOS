@@ -492,6 +492,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         return view
     }()
 
+    private var glassContainerView: UIView?
+
     /// Whole-width container that contains (+) button, text input part and Send button.
     private let contentView = UIView()
 
@@ -500,7 +502,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     @available(iOS 26, *)
     func setScrollEdgeElementContainerInteraction(_ interaction: UIInteraction) {
-        contentView.addInteraction(interaction)
+        owsAssertBeta(glassContainerView != nil)
+        glassContainerView?.addInteraction(interaction)
     }
 
     private var isConfigurationComplete = false
@@ -531,6 +534,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             ])
 
             contentViewSuperview = glassContainerView.contentView
+            self.glassContainerView = glassContainerView
 #else
             contentViewSuperview = self
 #endif
@@ -686,11 +690,13 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 #else
             backgroundView = UIView()
 #endif
+            messageContentView.addSubview(backgroundView)
         } else {
             backgroundView = UIView()
             backgroundView.backgroundColor = UIColor.Signal.tertiaryFill
             backgroundView.layer.cornerRadius = 20
 
+            messageContentView.addSubview(backgroundView)
             messageContentView.addSubview(messageComponentsView)
         }
 
@@ -699,7 +705,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         messageContentView.directionalLayoutMargins = .init(hMargin: hMargin, vMargin: vMargin)
         messageContentView.semanticContentAttribute = .forceLeftToRight
 
-        messageContentView.insertSubview(backgroundView, at: 0)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         messageComponentsView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -721,10 +726,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         if iOS26Layout {
             inputTextView.inFieldButtonsAreaWidth = 3 * LayoutMetrics.initialTextBoxHeight
 
-            messageContentView.addSubview(stickerButton)
-            messageContentView.addSubview(keyboardButton)
-            messageContentView.addSubview(cameraButton)
-            messageContentView.addSubview(voiceNoteButton)
+            inputTextViewContainer.addSubview(stickerButton)
+            inputTextViewContainer.addSubview(keyboardButton)
+            inputTextViewContainer.addSubview(cameraButton)
+            inputTextViewContainer.addSubview(voiceNoteButton)
 
             stickerButton.translatesAutoresizingMaskIntoConstraints = false
             keyboardButton.translatesAutoresizingMaskIntoConstraints = false
@@ -745,8 +750,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         } else {
             inputTextView.inFieldButtonsAreaWidth = 1 * LayoutMetrics.initialTextBoxHeight
 
-            messageContentView.addSubview(stickerButton)
-            messageContentView.addSubview(keyboardButton)
+            inputTextViewContainer.addSubview(stickerButton)
+            inputTextViewContainer.addSubview(keyboardButton)
 
             stickerButton.translatesAutoresizingMaskIntoConstraints = false
             keyboardButton.translatesAutoresizingMaskIntoConstraints = false
@@ -3260,7 +3265,7 @@ extension UIColor {
     }
 
     // Change this to false to resolve each color used to current interface style.
-    private static let useDynamicColors: Bool = false
+    private static let useDynamicColors: Bool = true
 
     func resolvedForInputToolbar() -> UIColor {
         guard !Self.useDynamicColors else { return self }
