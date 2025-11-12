@@ -20,19 +20,21 @@ public class StickerKeyboard: CustomKeyboard {
 
         super.init()
 
-        var backgroundColor = UIColor.Signal.background
-#if compiler(>=6.2)
-        if #available(iOS 26.0, *) {
+        let topInset: CGFloat
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            topInset = 24
             backgroundColor = .clear
+        } else {
+            topInset = 0
+            backgroundColor = .Signal.background
         }
-#endif
-        self.backgroundColor = backgroundColor
 
         let stackView = UIStackView(arrangedSubviews: [ headerView, stickerPickerPageView ])
         contentView.addSubview(stackView)
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.autoPinEdges(toSuperviewEdgesExcludingEdge: .top)
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
 
         headerView.delegate = self
     }
