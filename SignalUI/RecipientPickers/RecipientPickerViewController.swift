@@ -69,22 +69,16 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         updateSignalConnections()
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
-        // Stack View
-        signalContactsStackView.isHidden = isNoContactsModeActive
-        view.addSubview(signalContactsStackView)
-        signalContactsStackView.autoPinEdgesToSuperviewEdges()
-
-        // Search Bar
-        signalContactsStackView.addArrangedSubview(searchBar)
-
-        // Custom Header Views
-        if let customHeaderViews = delegate?.recipientPickerCustomHeaderViews() {
-            customHeaderViews.forEach { signalContactsStackView.addArrangedSubview($0) }
-        }
+        let navigationItem = (parent ?? self).navigationItem
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
 
         // Table View
         addChild(tableViewController)
-        signalContactsStackView.addArrangedSubview(tableViewController.view)
+        view.addSubview(tableViewController.view)
+        tableViewController.view.isHidden = isNoContactsModeActive
+        tableViewController.view.autoPinEdgesToSuperviewEdges()
+        tableViewController.didMove(toParent: self)
 
         // "No Signal Contacts"
         noSignalContactsView.isHidden = !isNoContactsModeActive
@@ -96,7 +90,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         // Pull to Refresh
         let refreshControl = UIRefreshControl()
         refreshControl.tintColor = .gray
-        refreshControl.accessibilityIdentifier = "RecipientPickerViewController.pullToRefreshView"
         refreshControl.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
@@ -116,16 +109,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         showContactAppropriateViews()
     }
 
-    public override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-        updateSearchBarMargins()
-    }
-
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateSearchBarMargins()
-    }
-
     public override func themeDidChange() {
         super.themeDidChange()
         applyTheme()
@@ -139,7 +122,21 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     private static let minimumSearchLength = 1
 
-    private var searchText: String { searchBar.text?.stripped ?? "" }
+    private lazy var searchController: UISearchController = {
+        let controller = UISearchController(searchResultsController: nil)
+        controller.obscuresBackgroundDuringPresentation = false
+        controller.hidesNavigationBarDuringPresentation = false
+        controller.searchResultsUpdater = self
+        controller.searchBar.placeholder = OWSLocalizedString(
+            "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+            comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
+        )
+        return controller
+    }()
+
+    private var searchText: String {
+        searchController.searchBar.text?.stripped ?? ""
+    }
 
     private var lastSearchText: String?
     private var lastSearchTask: Task<Void, Never>?
@@ -199,17 +196,8 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         }
     }
 
-    private func updateSearchBarMargins() {
-        // This should ideally compute the insets for self.tableView, but that
-        // view's size hasn't been updated when the viewDidLayoutSubviews method is
-        // called. As a quick fix, use self.view's size, which matches the eventual
-        // width of self.tableView. (A more complete fix would likely add a
-        // callback when self.tableView’s size is available.)
-        searchBar.layoutMargins = OWSTableViewController2.cellOuterInsets(in: view)
-    }
-
     internal func clearSearchText() {
-        searchBar.text = ""
+        searchController.searchBar.text = ""
         searchTextDidChange()
     }
 
@@ -219,7 +207,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         didSet {
             guard oldValue != isNoContactsModeActive else { return }
 
-            signalContactsStackView.isHidden = isNoContactsModeActive
+            tableViewController.view.isHidden = isNoContactsModeActive
             noSignalContactsView.isHidden = !isNoContactsModeActive
 
             updateTableContents()
@@ -227,28 +215,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     }
 
     private let collation = UILocalizedIndexedCollation.current()
-
-    private lazy var signalContactsStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        return stackView
-    }()
-
-    private lazy var searchBar: OWSSearchBar = {
-        let searchBar = OWSSearchBar()
-        searchBar.delegate = self
-        searchBar.placeholder = OWSLocalizedString(
-            "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-            comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
-        )
-        searchBar.accessibilityIdentifier = "RecipientPickerViewController.searchBar"
-        searchBar.textField?.accessibilityIdentifier = "RecipientPickerViewController.contact_search"
-        searchBar.sizeToFit()
-        searchBar.setCompressionResistanceVerticalHigh()
-        searchBar.setContentHuggingVerticalHigh()
-        return searchBar
-    }()
 
     private lazy var tableViewController: OWSTableViewController2 = {
         let viewController = OWSTableViewController2()
@@ -264,11 +230,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     private lazy var noSignalContactsView = createNoSignalContactsView()
 
-    private var tableView: UITableView { tableViewController.tableView }
+    var tableView: UITableView { tableViewController.tableView }
 
     private func applyTheme() {
         tableViewController.applyTheme(to: self)
-        searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
         tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor
         if let owsNavigationController = navigationController as? OWSNavigationController {
             owsNavigationController.updateNavbarAppearance()
@@ -501,32 +466,14 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 }
 
 extension RecipientPickerViewController: OWSTableViewControllerDelegate {
-
     public func tableViewWillBeginDragging(_ tableView: UITableView) {
-        searchBar.resignFirstResponder()
+        searchController.searchBar.resignFirstResponder()
         delegate?.recipientPickerTableViewWillBeginDragging(self)
     }
 }
 
-extension RecipientPickerViewController: UISearchBarDelegate {
-
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchTextDidChange()
-    }
-
-    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchTextDidChange()
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchTextDidChange()
-    }
-
-    public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
-        searchTextDidChange()
-    }
-
-    public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+extension RecipientPickerViewController: UISearchResultsUpdating {
+    public func updateSearchResults(for searchController: UISearchController) {
         searchTextDidChange()
     }
 }

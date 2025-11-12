@@ -71,10 +71,15 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     // MARK: - View Lifecycle
 
+    private var viewHasAppeared = false
+
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewHasAppeared = true
+    }
+
     open override func viewDidLoad() {
         super.viewDidLoad()
-
-        // First section.
 
         memberBar.delegate = self
 
@@ -91,14 +96,51 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
+        recipientPicker.didMove(toParent: self)
+
+        let topStackView = UIStackView()
+        topStackView.axis = .vertical
+        topStackView.alignment = .fill
+        topStackView.addArrangedSubviews([memberBar, memberCountWrapper])
+        view.addSubview(topStackView)
+
+        // Layout
 
         recipientPicker.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            recipientPicker.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            recipientPicker.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            recipientPicker.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            recipientPicker.view.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
+        topStackView.autoPinEdges(toSuperviewSafeAreaExcludingEdge: .bottom)
+        // Remove this property and just `else` directly once all builds are on Xcode 26
+        var isLayedOut = false
+
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            // topStackView overlaps the table with an edge effect
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.scrollView = recipientPicker.tableView
+            interaction.edge = .top
+            topStackView.addInteraction(interaction)
+
+            NSLayoutConstraint.activate([
+                recipientPicker.view.topAnchor.constraint(equalTo: view.topAnchor),
+                recipientPicker.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                recipientPicker.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                recipientPicker.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
+
+            isLayedOut = true
+        }
+#endif
+
+        if !isLayedOut {
+            // topStackView is above the table
+            NSLayoutConstraint.activate([
+                recipientPicker.view.topAnchor.constraint(equalTo: topStackView.bottomAnchor),
+                recipientPicker.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                recipientPicker.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                recipientPicker.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
+
+            isLayedOut = true
+        }
 
         updateMemberCount()
     }
@@ -411,10 +453,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         return NSAttributedString(string: bioForDisplay)
     }
 
-    public func recipientPickerCustomHeaderViews() -> [UIView] {
-        return [memberBar, memberCountWrapper]
-    }
-
     public var shouldShowQRCodeButton: Bool {
         // The QR code scanner is in the main app target, which itself adds
         // MemberViewUsernameQRCodeScannerPresenter conformance to
@@ -445,4 +483,26 @@ extension BaseMemberViewController {
 // MARK: -
 
 extension BaseMemberViewController: NewMembersBarDelegate {
+    public func newMembersBarHeightDidChange(to height: CGFloat) {
+        guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return }
+        let tableView = recipientPicker.tableView
+        UIView.animate(withDuration: 0.3) {
+            let change = tableView.contentInset.top - height
+            if self.viewHasAppeared {
+                // When hiding the member bar while scrolled to the top, setting
+                // the content offset after the inset will scroll the table down
+                // beyond the height of the bar instead of staying at the top.
+                tableView.contentOffset.y += change
+                tableView.contentInset.top = height
+                tableView.verticalScrollIndicatorInsets.top = height
+            } else {
+                // If the member bar is showing from initial load and content
+                // offset is set before the inset, the refresh control will
+                // show when it isn't supposed to.
+                tableView.contentInset.top = height
+                tableView.verticalScrollIndicatorInsets.top = height
+                tableView.contentOffset.y += change
+            }
+        }
+    }
 }

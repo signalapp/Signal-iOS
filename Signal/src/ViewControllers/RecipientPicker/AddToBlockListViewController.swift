@@ -27,12 +27,8 @@ class AddToBlockListViewController: RecipientPickerContainerViewController {
             comment: "A label for the block button in the block list view"
         )
         recipientPicker.delegate = self
-        addChild(recipientPicker)
-        view.addSubview(recipientPicker.view)
-        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
-        recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
-        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
+
+        addRecipientPicker()
     }
 
     func block(address: SignalServiceAddress) {

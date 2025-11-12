@@ -14,6 +14,7 @@ public struct NewMember {
 // MARK: -
 
 public protocol NewMembersBarDelegate: NewMemberCellDelegate {
+    func newMembersBarHeightDidChange(to height: CGFloat)
 }
 
 // MARK: -
@@ -53,6 +54,7 @@ public class NewMembersBar: UIView {
 
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.clipsToBounds = false
 
         collectionView.register(NewMemberCell.self, forCellWithReuseIdentifier: NewMemberCell.reuseIdentifier)
         collectionView.backgroundColor = .clear
@@ -80,9 +82,9 @@ public class NewMembersBar: UIView {
             superview?.layoutIfNeeded()
             collectionView.alpha = desiredHeight == 0 ? 1 : 0
             heightConstraint.constant = desiredHeight
-            UIView.animate(withDuration: 0.25) { [weak self] in
-                self?.collectionView.alpha = desiredHeight == 0 ? 0 : 1
-                self?.superview?.layoutIfNeeded()
+            self.delegate?.newMembersBarHeightDidChange(to: desiredHeight)
+            UIView.animate(withDuration: 0.25) {
+                self.collectionView.alpha = desiredHeight == 0 ? 0 : 1
             }
         }
     }
@@ -165,8 +167,6 @@ private class NewMemberCell: UICollectionViewCell {
 
     static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.customDiameter(32)
     static let vMargin: CGFloat = 6
-    static let removeButtonXSize: CGFloat = 12
-    static let removeButtonInset: CGFloat = 5
     // Don't use dynamic type in these cells.
     static var nameFont = UIFont.regularFont(ofSize: 15)
 
@@ -175,39 +175,41 @@ private class NewMemberCell: UICollectionViewCell {
 
         self.layoutMargins = .zero
         contentView.layoutMargins = .zero
-        contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
+
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+#if compiler(>=6.2)
+            let glassView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            glassView.cornerConfiguration = .capsule()
+            backgroundView = glassView
+#endif
+        } else {
+            contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
+        }
 
         textLabel.font = NewMemberCell.nameFont
         textLabel.textColor = Theme.primaryTextColor
         textLabel.numberOfLines = 1
         textLabel.lineBreakMode = .byTruncatingTail
 
-        let removeButton = UIButton(type: .custom)
-        removeButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.primaryTextColor)
-        // Extend the hot area of the remove button.
-        removeButton.ows_imageEdgeInsets = UIEdgeInsets(
-            top: Self.removeButtonInset,
-            left: Self.removeButtonInset,
-            bottom: Self.removeButtonInset,
-            right: Self.removeButtonInset
-        )
+        let removeButton = UIButton()
+        removeButton.setImage(UIImage(named: "x-compact"), for: .normal)
+        removeButton.tintColor = .Signal.label
         removeButton.addTarget(self, action: #selector(removeButtonWasPressed), for: .touchUpInside)
-        let buttonSize = Self.removeButtonXSize + 2 * Self.removeButtonInset
-        removeButton.autoSetDimensions(to: CGSize(square: buttonSize))
-        removeButton.setContentHuggingHigh()
 
         contentView.addSubview(avatarView)
         avatarView.autoPinEdge(toSuperviewEdge: .leading)
         avatarView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
         avatarView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        avatarView.autoVCenterInSuperview()
 
         let stackView = UIStackView(arrangedSubviews: [
             textLabel,
             removeButton
         ])
         stackView.axis = .horizontal
+        stackView.spacing = 8
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(top: Self.vMargin, leading: 4, bottom: Self.vMargin, trailing: 2)
+        stackView.layoutMargins = UIEdgeInsets(top: Self.vMargin, leading: 4, bottom: Self.vMargin, trailing: 8)
         stackView.isLayoutMarginsRelativeArrangement = true
         contentView.addSubview(stackView)
         stackView.autoPinLeading(toTrailingEdgeOf: avatarView)

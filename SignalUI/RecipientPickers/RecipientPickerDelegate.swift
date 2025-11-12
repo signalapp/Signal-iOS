@@ -45,8 +45,6 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
 
     func recipientPickerNewGroupButtonWasPressed()
 
-    func recipientPickerCustomHeaderViews() -> [UIView]
-
     var shouldShowQRCodeButton: Bool { get }
     func openUsernameQRCodeScanner()
 }
@@ -78,8 +76,6 @@ public extension RecipientPickerDelegate {
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}
-
-    func recipientPickerCustomHeaderViews() -> [UIView] { [] }
 }
 
 public class PickedRecipient: Hashable {

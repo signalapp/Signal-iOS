@@ -23,4 +23,11 @@ open class RecipientPickerContainerViewController: OWSViewController, OWSNavigat
     public var childForOWSNavigationConfiguration: OWSNavigationChildController? {
         return recipientPicker
     }
+
+    public func addRecipientPicker() {
+        addChild(recipientPicker)
+        view.addSubview(recipientPicker.view)
+        recipientPicker.view.autoPinEdgesToSuperviewEdges()
+        recipientPicker.didMove(toParent: self)
+    }
 }
