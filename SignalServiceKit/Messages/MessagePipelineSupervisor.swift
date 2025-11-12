@@ -58,7 +58,7 @@ public class MessagePipelineSupervisor: NSObject {
             case .linkNsync:
                 return "Link'N'Sync"
             case .backupBGProcessingTask:
-                return "Backup BGProcessingTask"
+                return "BackupBGProcessingTask"
             }
         }
     }

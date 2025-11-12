@@ -37,10 +37,10 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
 
     // MARK: - BGProcessingTaskRunner
 
-    public static let taskIdentifier = "BackupBGProcessingTaskRunner"
-
-    public static let requiresNetworkConnectivity = true
-    public static let requiresExternalPower = true
+    static let taskIdentifier = "BackupBGProcessingTaskRunner"
+    static let logPrefix: String? = "[Backups][ExportJob]"
+    static let requiresNetworkConnectivity = true
+    static let requiresExternalPower = true
 
     func run() async throws {
         try await runWithChatConnection(

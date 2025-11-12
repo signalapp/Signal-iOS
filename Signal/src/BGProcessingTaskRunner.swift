@@ -23,6 +23,9 @@ public protocol BGProcessingTaskRunner {
     /// MUST be defined in Info.plist under the "Permitted background task scheduler identifiers" key.
     static var taskIdentifier: String { get }
 
+    /// Prefix for any logs related to the BGProcessingTask itself.
+    static var logPrefix: String? { get }
+
     /// If true, informs iOS that we require a network connection to perform the task.
     static var requiresNetworkConnectivity: Bool { get }
 
@@ -43,7 +46,9 @@ public protocol BGProcessingTaskRunner {
 }
 
 extension BGProcessingTaskRunner where Self: Sendable {
-    private var logger: PrefixedLogger { PrefixedLogger(prefix: Self.taskIdentifier) }
+    private var logger: PrefixedLogger {
+        PrefixedLogger(prefix: Self.logPrefix ?? "", suffix: "[\(Self.taskIdentifier)]")
+    }
 
     /// Must be called synchronously within appDidFinishLaunching for every BGProcessingTask
     /// regardless of whether we eventually schedule and run it or not.
@@ -63,25 +68,33 @@ extension BGProcessingTaskRunner where Self: Sendable {
                     await withCheckedContinuation { continuation in
                         appReadiness.runNowOrWhenAppDidBecomeReadyAsync { continuation.resume() }
                     }
+
                     do {
+                        logger.info("Starting...")
                         try await self.run()
                         bgTask.setTaskCompleted(success: true)
+                        logger.info("Success!")
                     } catch is CancellationError {
                         // Apple WWDC talk specifies tasks must be completed even if the expiration
                         // handler is called.
                         // Re-schedule so we try to run it again if needed.
                         let startCondition = self.startCondition()
-                        if startCondition != .never {
-                            logger.warn("Rescheduling because it was canceled.")
+                        switch startCondition {
+                        case .never:
+                            logger.warn("Cancelled: not rescheduling.")
+                        case .asSoonAsPossible, .after:
+                            logger.warn("Cancelled: rescheduling.")
                             await self.scheduleBGProcessingTask(startCondition: startCondition)
                         }
+
                         bgTask.setTaskCompleted(success: false)
                     } catch {
+                        logger.warn("Failed with error. \(error)")
                         bgTask.setTaskCompleted(success: false)
                     }
                 }
                 bgTask.expirationHandler = {
-                    logger.warn("Timed out; cancelling.")
+                    logger.warn("Canceling due to expiration.")
                     // WWDC talk says we get a grace period after the expiration handler
                     // is called; use it to cleanly cancel the task.
                     task.cancel()

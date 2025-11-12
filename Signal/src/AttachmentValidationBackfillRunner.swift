@@ -26,10 +26,10 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
 
     // MARK: - BGProcessingTaskRunner
 
-    public static let taskIdentifier = "AttachmentValidationBackfillMigrator"
-
-    public static let requiresNetworkConnectivity = false
-    public static let requiresExternalPower = false
+    static let taskIdentifier = "AttachmentValidationBackfillMigrator"
+    static let logPrefix: String? = nil
+    static let requiresNetworkConnectivity = false
+    static let requiresExternalPower = false
 
     func run() async throws {
         try await self.runInBatches(
@@ -38,7 +38,7 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
         )
     }
 
-    public func startCondition() -> BGProcessingTaskStartCondition {
+    func startCondition() -> BGProcessingTaskStartCondition {
         return db.read { tx in
             do {
                 if try store.needsToRun(tx: tx) {

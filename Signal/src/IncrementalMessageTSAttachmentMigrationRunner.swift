@@ -28,10 +28,10 @@ class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunner {
 
     // MARK: - BGProcessingTaskRunner
 
-    public static let taskIdentifier = "MessageAttachmentMigrationTask"
-
-    public static let requiresNetworkConnectivity = false
-    public static let requiresExternalPower = false
+    static let taskIdentifier = "MessageAttachmentMigrationTask"
+    static let logPrefix: String? = nil
+    static let requiresNetworkConnectivity = false
+    static let requiresExternalPower = false
 
     func run() async throws {
         let logger = MigrationLogger(appContext: appContext, store: store)
