@@ -235,7 +235,7 @@ public class RemoteConfig {
 
     public var backupListMediaDefaultRefreshIntervalMs: UInt64 {
         let defaultValue: UInt64
-        if BuildFlags.useLowerDefaultListMediaRefreshInterval {
+        if BuildFlags.Backups.useLowerDefaultListMediaRefreshInterval {
             defaultValue = .dayInMs
         } else {
             defaultValue = .dayInMs * 30
@@ -285,12 +285,8 @@ public class RemoteConfig {
         return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
-    public var allowBackupSettings: Bool {
-        if BuildFlags.Backups.alwaysShowSettings {
-            return true
-        }
-
-        return BuildFlags.Backups.supported && isEnabled(.allowBackupSettings)
+    public var backupSettingsKillSwitch: Bool {
+        return isEnabled(.backupSettingsKillSwitch)
     }
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -511,7 +507,7 @@ public class RemoteConfig {
 // MARK: - IsEnabledFlag
 
 private enum IsEnabledFlag: String, FlagType {
-    case allowBackupSettings = "ios.allowBackups"
+    case backupSettingsKillSwitch = "ios.backupSettingsKillSwitch"
     case applePayGiftDonationKillSwitch = "ios.applePayGiftDonationKillSwitch"
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
@@ -540,7 +536,7 @@ private enum IsEnabledFlag: String, FlagType {
 
     var isHotSwappable: Bool {
         switch self {
-        case .allowBackupSettings: true
+        case .backupSettingsKillSwitch: true
         case .applePayGiftDonationKillSwitch: false
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false

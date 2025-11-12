@@ -194,9 +194,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     }
 
     private func _queryListMediaIfNeeded() async throws -> ListMediaIntegrityCheckResult? {
-        guard BuildFlags.Backups.supported else {
-            return nil
-        }
         let (
             isPrimaryDevice,
             localAci,
@@ -1135,10 +1132,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         remoteConfig: RemoteConfig,
         tx: DBReadTransaction
     ) -> Bool {
-        guard BuildFlags.Backups.supported else {
-            return false
-        }
-
         switch currentBackupPlan {
         case .disabled:
             return false

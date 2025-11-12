@@ -127,10 +127,17 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
-        let isPrimaryDevice = DependenciesBridge.shared.db.read { tx in
-            return DependenciesBridge.shared.tsAccountManager
-                .registrationState(tx: tx)
-                .isPrimaryDevice == true
+        let backupSettingsStore = BackupSettingsStore()
+        let db = DependenciesBridge.shared.db
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let (
+            isPrimaryDevice,
+            haveBackupsEverBeenEnabled
+        ): (Bool, Bool) = db.read { tx in
+            return (
+                tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
+                backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
+            )
         }
 
         let contents = OWSTableContents()
@@ -241,10 +248,21 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if
-            isPrimaryDevice,
-            RemoteConfig.current.allowBackupSettings
-        {
+
+        let shouldShowBackupSettings: Bool = {
+            guard isPrimaryDevice else {
+                return false
+            }
+
+            if haveBackupsEverBeenEnabled {
+                return true
+            } else if RemoteConfig.current.backupSettingsKillSwitch {
+                return false
+            }
+
+            return true
+        }()
+        if shouldShowBackupSettings {
             section2.add(.disclosureItem(
                 icon: .backup,
                 withText: OWSLocalizedString(

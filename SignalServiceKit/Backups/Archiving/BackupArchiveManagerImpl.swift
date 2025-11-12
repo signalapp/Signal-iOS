@@ -341,11 +341,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
     ) async throws -> URL {
-        guard BuildFlags.Backups.supported else {
-            owsFailDebug("Should not be able to use backups!")
-            throw NotImplementedError()
-        }
-
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
 
         // For the integration tests, don't filter out any content. The premise
@@ -798,11 +793,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
     ) async throws {
-        guard BuildFlags.Backups.supported else {
-            owsFailDebug("Should not be able to use backups!")
-            throw NotImplementedError()
-        }
-
         try await _importBackup(
             fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,

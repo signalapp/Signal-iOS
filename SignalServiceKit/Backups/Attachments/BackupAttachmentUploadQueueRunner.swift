@@ -126,9 +126,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             logString = "thumbnail"
         }
 
-        guard BuildFlags.Backups.supported else {
-            return
-        }
         let (isRegisteredPrimary, localAci, backupPlan, backupKey) = db.read { tx in
             (
                 self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
@@ -307,10 +304,6 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            guard BuildFlags.Backups.supported else {
-                return .cancelled
-            }
-
             struct ExplicitlySuspendedError: Error {}
             struct NeedsBatteryError: Error {}
             struct NeedsInternetError: Error {}

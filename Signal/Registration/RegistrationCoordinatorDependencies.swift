@@ -14,7 +14,6 @@ public struct RegistrationCoordinatorDependencies {
     public let backupIdService: BackupIdService
     public let backupNonceStore: BackupNonceMetadataStore
     public let backupRequestManager: BackupRequestManager
-    public let buildFlags: RegistrationCoordinatorImpl.Shims.BuildFlags
     public let changeNumberPniManager: ChangePhoneNumberPniManager
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
@@ -58,7 +57,6 @@ public struct RegistrationCoordinatorDependencies {
             backupIdService: DependenciesBridge.shared.backupIdService,
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: DependenciesBridge.shared.backupRequestManager,
-            buildFlags: RegistrationCoordinatorImpl.Wrappers.BuildFlags(),
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(SSKEnvironment.shared.contactManagerImplRef),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),

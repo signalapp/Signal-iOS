@@ -11,7 +11,6 @@ public import SignalServiceKit
 extension RegistrationCoordinatorImpl {
 
     public enum Shims {
-        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsShim
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceShim
@@ -30,7 +29,6 @@ extension RegistrationCoordinatorImpl {
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientShim
     }
     public enum Wrappers {
-        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsWrapper
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceWrapper
@@ -159,19 +157,7 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
     }
 }
 
-// MARK: - BuildFlags
-
-public protocol _RegistrationCoordinator_BuildFlagsShim {
-
-    var backupSupported: Bool { get }
-}
-
-public class _RegistrationCoordinator_BuildFlagsWrapper: _RegistrationCoordinator_BuildFlagsShim {
-
-    public init() {}
-
-    public var backupSupported: Bool { BuildFlags.Backups.alwaysShowSettings }
-}
+// MARK: - IdentityManager
 
 public protocol _RegistrationCoordinator_IdentityManagerShim {
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)

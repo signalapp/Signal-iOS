@@ -1890,7 +1890,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && persistedState.restoreMethod == nil {
-            if deps.buildFlags.backupSupported {
+            if BuildFlags.Backups.registrationFlow {
                 return .chooseRestoreMethod(.unspecified)
             } else if !persistedState.hasDeclinedTransfer {
                 return .transferSelection
@@ -2440,7 +2440,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            if deps.buildFlags.backupSupported {
+            if BuildFlags.Backups.registrationFlow {
                 return .chooseRestoreMethod(.unspecified)
             } else {
                 return .transferSelection
@@ -2761,7 +2761,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
-            if deps.buildFlags.backupSupported {
+            if BuildFlags.Backups.registrationFlow {
                 return .chooseRestoreMethod(.unspecified)
             } else {
                 return .transferSelection
@@ -4968,7 +4968,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             return
-                deps.buildFlags.backupSupported
+                BuildFlags.Backups.registrationFlow
                 && inMemoryState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
                 && inMemoryState.backupRestoreState == .none

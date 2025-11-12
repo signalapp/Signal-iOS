@@ -11,7 +11,6 @@ import LibSignalClient
 extension RegistrationCoordinatorImpl {
 
     public enum TestMocks {
-        public typealias BuildFlags = _RegistrationCoordinator_BuildFlagsMock
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias DeviceTransferService = _RegistrationCoordinator_DeviceTransferServiceMock
@@ -47,7 +46,7 @@ public class _RegistrationCoordinator_ContactsManagerMock: _RegistrationCoordina
     }
 }
 
-// MARK: CNContacts
+// MARK: - CNContacts
 
 public class _RegistrationCoordinator_CNContactsStoreMock: _RegistrationCoordinator_CNContactsStoreShim {
 
@@ -64,7 +63,7 @@ public class _RegistrationCoordinator_CNContactsStoreMock: _RegistrationCoordina
     }
 }
 
-// MARK: DeviceTransferService
+// MARK: - DeviceTransferService
 
 public class _RegistrationCoordinator_DeviceTransferServiceMock: _RegistrationCoordinator_DeviceTransferServiceShim {
     public func startAcceptingTransfersFromOldDevices(mode: Signal.DeviceTransferService.TransferMode) throws -> URL {
@@ -79,6 +78,8 @@ public class _RegistrationCoordinator_DeviceTransferServiceMock: _RegistrationCo
 
     public func cancelTransferFromOldDevice() { }
 }
+
+// MARK: - ExperienceUpgradeManager
 
 public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordinator_ExperienceManagerShim {
 
@@ -99,13 +100,6 @@ public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordi
         didEnableAllGetStartedCards = true
         enableAllGetStartedCardsMock?()
     }
-}
-
-public class _RegistrationCoordinator_BuildFlagsMock: _RegistrationCoordinator_BuildFlagsShim {
-
-    public init() {}
-
-    public var backupSupported: Bool { false }
 }
 
 // MARK: - IdentityManager

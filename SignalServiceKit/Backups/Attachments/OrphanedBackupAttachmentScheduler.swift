@@ -53,9 +53,6 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
         withMediaName mediaName: String,
         tx: DBWriteTransaction
     ) {
-        guard BuildFlags.Backups.supported else {
-            return
-        }
         try! OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .deleteAll(tx.database)

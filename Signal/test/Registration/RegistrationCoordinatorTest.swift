@@ -19,7 +19,6 @@ public class RegistrationCoordinatorTest {
     private var date: Date { self.stubs.date }
 
     private var appExpiry: AppExpiry!
-    private var buildFlags: RegistrationCoordinatorImpl.TestMocks.BuildFlags!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var dateProvider: DateProvider!
@@ -62,7 +61,6 @@ public class RegistrationCoordinatorTest {
         db = InMemoryDB()
 
         appExpiry = .forUnitTests()
-        buildFlags = RegistrationCoordinatorImpl.TestMocks.BuildFlags()
         accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         let preKeyStore = PreKeyStore()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -112,7 +110,6 @@ public class RegistrationCoordinatorTest {
             backupIdService: MockBackupIdService(),
             backupNonceStore: BackupNonceMetadataStore(),
             backupRequestManager: BackupRequestManagerMock(),
-            buildFlags: buildFlags,
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,

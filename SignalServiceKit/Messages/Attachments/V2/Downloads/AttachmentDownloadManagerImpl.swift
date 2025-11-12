@@ -262,19 +262,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) {
         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
         let isEligibleToDownloadFromMediaTier: Bool
-        if BuildFlags.Backups.supported {
-            switch backupPlan {
-            case .disabled, .disabling:
-                isEligibleToDownloadFromMediaTier = false
-            case .free:
-                // We still might attempt media tier downloads
-                // while currently free tier.
-                isEligibleToDownloadFromMediaTier = true
-            case .paid, .paidExpiringSoon, .paidAsTester:
-                isEligibleToDownloadFromMediaTier = true
-            }
-        } else {
+        switch backupPlan {
+        case .disabled, .disabling:
             isEligibleToDownloadFromMediaTier = false
+        case .free:
+            // We still might attempt media tier downloads
+            // while currently free tier.
+            isEligibleToDownloadFromMediaTier = true
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            isEligibleToDownloadFromMediaTier = true
         }
 
         var didEnqueueAnyDownloads = false

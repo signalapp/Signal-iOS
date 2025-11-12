@@ -63,10 +63,6 @@ public final class BackupRefreshManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
     ) async throws {
-        guard BuildFlags.Backups.supported else {
-            return
-        }
-
         guard needsBackupRefresh() else {
             return
         }

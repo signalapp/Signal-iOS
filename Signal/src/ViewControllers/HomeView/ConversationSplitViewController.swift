@@ -739,7 +739,8 @@ private class NoSelectedConversationViewController: OWSViewController {
 extension ConversationSplitViewController: DeviceTransferServiceObserver {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if !BuildFlags.Backups.alwaysShowSettings {
+
+        if !BuildFlags.Backups.registrationFlow {
             AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
             AppEnvironment.shared.deviceTransferServiceRef.startListeningForNewDevices()
         }
@@ -756,7 +757,7 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if !BuildFlags.Backups.alwaysShowSettings {
+        if !BuildFlags.Backups.registrationFlow {
             AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
             AppEnvironment.shared.deviceTransferServiceRef.stopListeningForNewDevices()
         }

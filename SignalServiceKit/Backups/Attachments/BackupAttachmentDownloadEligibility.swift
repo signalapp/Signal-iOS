@@ -152,9 +152,6 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         backupPlan: BackupPlan
     ) rethrows -> QueuedBackupAttachmentDownload.State? {
-        guard BuildFlags.Backups.supported else {
-            return nil
-        }
         guard attachment.asStream() == nil else {
             return .done
         }
@@ -217,9 +214,6 @@ public struct BackupAttachmentDownloadEligibility {
         attachmentTimestamp getAttachmentTimestamp: @autoclosure () throws -> UInt64?,
         currentTimestamp: UInt64,
     ) rethrows -> QueuedBackupAttachmentDownload.State? {
-        guard BuildFlags.Backups.supported else {
-            return nil
-        }
         if attachment.mediaName == nil {
             return nil
         }

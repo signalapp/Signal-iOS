@@ -75,10 +75,6 @@ final class BackupIdServiceImpl: BackupIdService {
         localAci: Aci,
         auth: ChatServiceAuth
     ) async throws {
-        guard BuildFlags.Backups.supported else {
-            return
-        }
-
         let (
             haveSetBackupId,
             isRegisteredPrimaryDevice,
@@ -119,10 +115,6 @@ final class BackupIdServiceImpl: BackupIdService {
         key: MessageRootBackupKey,
         auth: ChatServiceAuth
     ) async throws {
-        guard BuildFlags.Backups.supported else {
-            return
-        }
-
         try await registerBackupId(
             localAci: key.aci,
             messageBackupKey: key,
