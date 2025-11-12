@@ -35,6 +35,7 @@ open class HeroSheetViewController: StackSheetViewController {
         public enum Style {
             case primary
             case secondary
+            case secondaryDestructive
         }
 
         fileprivate let title: String
@@ -62,6 +63,11 @@ open class HeroSheetViewController: StackSheetViewController {
 
             case .secondary:
                 return .largeSecondary(title: title)
+
+            case .secondaryDestructive:
+                var config: UIButton.Configuration = .largeSecondary(title: title)
+                config.baseForegroundColor = .Signal.red
+                return config
             }
         }
     }

@@ -7297,6 +7297,30 @@
 /* Configure reactions reset button text */
 "RESET" = "Reset";
 
+/* Body for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+
+/* Button for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "Continue Restoring";
+
+/* Button for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON" = "Cancel Restore";
+
+/* Title for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "Your Media is Restoring";
+
+/* Message for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+
+/* Button for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "Continue Restoring";
+
+/* Button for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "Cancel Restore";
+
+/* Title for a sheet allowing users to cancel an in-progress media restore. */
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "Cancel Media Restore?";
+
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "Details";
 

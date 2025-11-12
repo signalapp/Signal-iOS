@@ -1433,13 +1433,15 @@ extension ChatListViewController {
     }
 }
 
-// MARK: -
+// MARK: - ThreadSwipeHandler
 
 extension ChatListViewController: ThreadSwipeHandler {
     func updateUIAfterSwipeAction() {
         updateViewState()
     }
 }
+
+// MARK: - GetStartedBannerViewControllerDelegate
 
 extension ChatListViewController: GetStartedBannerViewControllerDelegate {
     func presentGetStartedBannerIfNecessary() {

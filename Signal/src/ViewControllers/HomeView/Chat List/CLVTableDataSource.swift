@@ -314,10 +314,10 @@ extension CLVTableDataSource: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .backupDownloadProgressView, .inboxFilterFooter:
+        case .reminders, .inboxFilterFooter:
             return nil
 
-        case .archiveButton:
+        case .backupDownloadProgressView, .archiveButton:
             return indexPath
 
         case .pinned, .unpinned:
@@ -358,9 +358,13 @@ extension CLVTableDataSource: UITableViewDelegate {
         let sectionType = renderState.sections[indexPath.section].type
 
         switch sectionType {
-        case .reminders, .backupDownloadProgressView, .inboxFilterFooter:
+        case .reminders, .inboxFilterFooter:
             owsFailDebug("Unexpected selection in section \(sectionType)")
             tableView.deselectRow(at: indexPath, animated: false)
+
+        case .backupDownloadProgressView:
+            tableView.deselectRow(at: indexPath, animated: false)
+            viewController.handleBackupDownloadProgressViewTapped()
 
         case .pinned, .unpinned:
             guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {

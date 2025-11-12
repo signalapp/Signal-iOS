@@ -33,7 +33,11 @@ public class CLVBackupDownloadProgressView {
         }
     }
 
-    public let backupDownloadProgressViewCell = UITableViewCell()
+    public let backupDownloadProgressViewCell: UITableViewCell = {
+        let cell = UITableViewCell()
+        cell.backgroundColor = .Signal.background
+        return cell
+    }()
 
     fileprivate let backupAttachmentDownloadProgressView: BackupAttachmentDownloadProgressView
 
@@ -213,6 +217,97 @@ public class CLVBackupDownloadProgressView {
         }
     }
 }
+
+// MARK: -
+
+extension ChatListViewController {
+    func handleBackupDownloadProgressViewTapped() {
+        let db = DependenciesBridge.shared.db
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let isPrimaryDevice = db.read { tx in
+            tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false
+        }
+
+        if isPrimaryDevice {
+            showAppSettings(mode: .backups)
+        } else {
+            showCancelBackupDownloadsHeroSheet()
+        }
+    }
+
+    private func showCancelBackupDownloadsHeroSheet() {
+        let cancelDownloadsSheet = HeroSheetViewController(
+            hero: .image(.backupsLogo),
+            title: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE",
+                comment: "Title for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+            body: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY",
+                comment: "Body for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+            primaryButton: .dismissing(title: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON",
+                comment: "Button for a sheet allowing users to cancel an in-progress media restore.",
+            )),
+            secondaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON",
+                    comment: "Button for a sheet allowing users to cancel an in-progress media restore.",
+                ),
+                style: .secondaryDestructive,
+                action: .custom({ sheet in
+                    sheet.dismiss(animated: true) { [weak self] in
+                        self?.showCancelBackupDownloadsConfirmationActionSheet()
+                    }
+                }),
+            ),
+        )
+
+        present(cancelDownloadsSheet, animated: true)
+    }
+
+    private func showCancelBackupDownloadsConfirmationActionSheet() {
+        let backupSettingsStore = BackupSettingsStore()
+        let db = DependenciesBridge.shared.db
+
+        let confirmationActionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE",
+                comment: "Title for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+            message: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE",
+                comment: "Message for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+        )
+        confirmationActionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON",
+                comment: "Button for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+            style: .default,
+        ))
+        confirmationActionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON",
+                comment: "Button for a sheet allowing users to cancel an in-progress media restore.",
+            ),
+            style: .destructive,
+            handler: { _ in
+                db.write { tx in
+                    backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+                }
+            },
+        ))
+
+        confirmationActionSheet.isCancelable = true
+        presentActionSheet(confirmationActionSheet)
+    }
+}
+
+// MARK: -
 
 private class BackupAttachmentDownloadProgressView: UIView {
 
