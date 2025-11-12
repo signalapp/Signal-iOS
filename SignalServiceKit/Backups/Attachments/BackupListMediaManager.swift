@@ -97,12 +97,12 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
+    private let kvStore: KeyValueStore
     private let notificationPresenter: NotificationPresenter
     private let orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore
     private let remoteConfigManager: RemoteConfigManager
+    private let serialTaskQueue: SerialTaskQueue
     private let tsAccountManager: TSAccountManager
-
-    private let kvStore: KeyValueStore
 
     public init(
         accountKeyStore: AccountKeyStore,
@@ -142,6 +142,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         self.notificationPresenter = notificationPresenter
         self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         self.remoteConfigManager = remoteConfigManager
+        self.serialTaskQueue = SerialTaskQueue()
         self.tsAccountManager = tsAccountManager
 
         NotificationCenter.default.addObserver(
@@ -151,8 +152,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             object: nil
         )
     }
-
-    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     public func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
         let currentUploadEra = self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
@@ -167,10 +166,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
     }
 
     public func queryListMediaIfNeeded() async throws {
-        let task = Task {
-            // Enqueue in a concurrent(1) task queue; we only want to run one of these at a time.
-            try await taskQueue.run { [weak self] in
-                try await self?._queryListMediaIfNeeded()
+        let task = serialTaskQueue.enqueue {
+            // List-media is a dependency of lots of Backups-related operations,
+            // which means we might have many callers calling us repeatedly. To
+            // that end, make sure we internally retry network errors so we back
+            // off a healthy amount for each of those callers.
+            try await Retry.performWithBackoff(
+                maxAttempts: 5,
+                isRetryable: { $0.isNetworkFailureOrTimeout || $0.is5xxServiceResponse }
+            ) {
+                try await self._queryListMediaIfNeeded()
             }
         }
         let backgroundTask = OWSBackgroundTask(label: #function) { [task] status in
