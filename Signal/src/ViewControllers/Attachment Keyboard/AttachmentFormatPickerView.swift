@@ -260,17 +260,16 @@ class AttachmentFormatPickerView: UIView {
             } else {
                 button = ShrinkingOnTapButton(configuration: .gray())
                 button.configuration?.background.backgroundColorTransformer = UIConfigurationColorTransformer { [weak button] _ in
+                    let baseColor = UIColor.Signal.secondaryFill
                     guard let button, button.isHighlighted else {
-                        return .Signal.secondaryFill
+                        return baseColor
                     }
                     // Tinted color for "highlighted" state.
                     let tintColor = button.traitCollection.userInterfaceStyle == .dark ? UIColor.white : UIColor.black
-                    return .Signal.secondaryFill.blended(with: tintColor, alpha: 0.1)
+                    return baseColor.blended(with: tintColor, alpha: 0.1)
                 }
             }
-            button.configuration?.imageColorTransformer = UIConfigurationColorTransformer { _ in
-                return .Signal.label
-            }
+            button.configuration?.baseForegroundColor = .Signal.label
             button.configuration?.cornerStyle = .capsule
             return button
         }()
@@ -290,7 +289,11 @@ class AttachmentFormatPickerView: UIView {
         private let textLabel: UILabel = {
             let label = UILabel()
             label.font = .dynamicTypeFootnoteClamped.medium()
-            label.textColor = .Signal.secondaryLabel
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+                label.textColor = .Signal.label
+            } else {
+                label.textColor = .Signal.secondaryLabel
+            }
             label.textAlignment = .center
             label.numberOfLines = 2
             label.adjustsFontSizeToFitWidth = true

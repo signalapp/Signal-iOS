@@ -362,7 +362,7 @@ private class RecentPhotoCell: UICollectionViewCell {
 
         super.init(frame: frame)
 
-        clipsToBounds = true
+        contentView.clipsToBounds = true
 
         imageView.contentMode = .scaleAspectFill
         contentView.addSubview(imageView)
@@ -375,6 +375,12 @@ private class RecentPhotoCell: UICollectionViewCell {
 
         contentView.addSubview(loadingIndicator)
         loadingIndicator.autoCenterInSuperview()
+
+#if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            contentView.cornerConfiguration = .uniformCorners(radius: .fixed(36))
+        }
+#endif
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -382,22 +388,18 @@ private class RecentPhotoCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var frame: CGRect {
-        didSet {
-            updateCornerRadius()
-        }
-    }
-
     override var bounds: CGRect {
         didSet {
+            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { return }
             updateCornerRadius()
         }
     }
 
+    @available(iOS, deprecated: 26)
     private func updateCornerRadius() {
         let cellSize = min(bounds.width, bounds.height)
         guard cellSize > 0 else { return }
-        layer.cornerRadius = (cellSize * 13 / 84).rounded()
+        contentView.layer.cornerRadius = (cellSize * 13 / 84).rounded()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

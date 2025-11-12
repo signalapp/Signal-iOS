@@ -45,15 +45,14 @@ class AttachmentKeyboard: CustomKeyboard {
 
         super.init()
 
-        var topInset: CGFloat = 12
-        var backgroundColor = UIColor.Signal.background
-#if compiler(>=6.2)
-        if #available(iOS 26.0, *) {
+        let topInset: CGFloat
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            topInset = 40
             backgroundColor = .clear
-            topInset = 4
+        } else {
+            topInset = 12
+            backgroundColor = UIColor.Signal.background
         }
-#endif
-        self.backgroundColor = backgroundColor
 
         let stackView = UIStackView(arrangedSubviews: [
             limitedPhotoPermissionsView,
