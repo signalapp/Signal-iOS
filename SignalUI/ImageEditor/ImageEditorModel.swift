@@ -38,6 +38,7 @@ protocol ImageEditorModelObserver: AnyObject {
 
 // MARK: -
 
+// Should be @MainActor.
 class ImageEditorModel: NSObject {
 
     let srcImagePath: String

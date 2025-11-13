@@ -726,15 +726,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         videoEditorModel: VideoEditorModel,
     ) async throws -> SignalAttachment {
         assert(videoEditorModel.needsRender)
-        let result = try await videoEditorModel.ensureCurrentRender().render()
-        let filePath = try result.consumeResultPath()
-        guard let fileExtension = filePath.fileExtension else {
-            throw OWSAssertionError("Missing fileExtension.")
-        }
+        let fileUrl = try await videoEditorModel.render()
+        let fileExtension = fileUrl.pathExtension
         guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        let dataSource = try DataSourcePath(filePath: filePath, shouldDeleteOnDeallocation: true)
+        let dataSource = try DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.sourceFilename
         if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {

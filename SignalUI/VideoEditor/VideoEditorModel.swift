@@ -12,9 +12,8 @@ protocol VideoEditorModelObserver: AnyObject {
 
 // MARK: -
 
+// Should be @MainActor.
 class VideoEditorModel: NSObject {
-
-    private let lock = UnfairLock()
 
     let srcVideoPath: String
 
@@ -110,8 +109,6 @@ class VideoEditorModel: NSObject {
         let maxValue: TimeInterval = min(untrimmedDurationSeconds, trimmedEndSeconds) - minimumDurationSeconds
         trimmedStartSeconds = max(minValue, min(maxValue, value))
 
-        clearRender()
-
         fireModelDidChange()
     }
 
@@ -124,8 +121,6 @@ class VideoEditorModel: NSObject {
         let minValue: TimeInterval = max(0, trimmedStartSeconds) + minimumDurationSeconds
         let maxValue: TimeInterval = untrimmedDurationSeconds
         trimmedEndSeconds = max(minValue, min(maxValue, value))
-
-        clearRender()
 
         fireModelDidChange()
     }
@@ -151,225 +146,37 @@ class VideoEditorModel: NSObject {
     // MARK: - Rendering
 
     var needsRender: Bool { isTrimmed }
-    fileprivate var currentRender: Render?
 
-    // Whenever the model state changes, we need to discard any ongoing render.
-    private func clearRender() {
-        lock.withLock {
-            currentRender?.cancel()
-            currentRender = nil
-        }
-    }
+    @MainActor
+    func render() async throws -> URL {
+        owsPrecondition(self.needsRender)
 
-    // This method can be used to access the rendered output.
-    func ensureCurrentRender() -> Render {
-        return lock.withLock {
-            if let render = self.currentRender {
-                return render
-            } else {
-                let render = Render(model: self)
-                self.currentRender = render
-                return render
-            }
-        }
-    }
-}
+        let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
+        let exportUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
 
-extension VideoEditorModel {
-    // Represents an attempt to render the output.
-    // Contains a copy of the model state at the
-    // time the render is enqueued.
-    class Render {
-        private enum ExportState {
-            case ready
-            case exporting(Task<Result, any Error>)
-            case failed(any Error)
-            case finished(Result)
-
-            mutating func cancel() -> Task<Result, any Error>? {
-                switch self {
-                case .exporting(let task):
-                    self = .ready
-                    return task
-                case .ready, .failed, .finished:
-                    return nil
-                }
-            }
+        guard let session = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+            throw OWSAssertionError("couldn't create export session")
         }
 
-        fileprivate let srcVideoPath: String
-        fileprivate let untrimmedDuration: CMTime
-        fileprivate let trimmedStartSeconds: TimeInterval
-        fileprivate let trimmedDurationSeconds: TimeInterval
-        fileprivate let isTrimmed: Bool
+        // This will ensure that the MP4 moov atom (movie atom)
+        // is located at the beginning of the file. That may help
+        // recipients validate incoming videos.
+        session.shouldOptimizeForNetworkUse = true
+        // Preserve the original timescale.
+        let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+        let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+        let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
+        session.timeRange = cmRange
 
-        // Until the render is consumed, it is the responsibility of this
-        // class to clean up its temp files.
-        private var lock = UnfairLock()
-        private var exportState = ExportState.ready
+        try await session.exportAsync(to: exportUrl, as: .mp4)
 
-        class Result {
-            private let lock = UnfairLock()
-            private let path: String
-
-            // While the Result owns the resulting file, it is its responsibility to clean
-            // it up on deinit. Ownership can be relinquished to a caller of consumeResultPath()
-            private var isOwned = false
-
-            fileprivate init(path: String, owned: Bool = true) {
-                self.path = path
-                self.isOwned = owned
-            }
-
-            deinit {
-                guard isOwned else { return }
-
-                do {
-                    try FileManager.default.removeItem(at: URL(fileURLWithPath: path))
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
-
-            /// Returns an unowned reference to the render output file. This path is valid as long as the `Result`
-            /// is valid and file has not been consumed by `consumeResultPath()`. Caller should make a copy
-            /// of this file if they'd like the render result to outlive these events.
-            func getResultPath() -> String {
-                lock.withLock {
-                    // Something else has already taken ownership of this file
-                    // It's probably still valid, but worth flagging as an issue.
-                    owsAssertDebug(isOwned, "Result file externally owned")
-                }
-                return path
-            }
-
-            /// Returns a path to the render result. Receiver is responsible for deleting the resulting file
-            /// This should be called once at most
-            func consumeResultPath() throws -> String {
-                // Since the path is being consumed, we no longer own it.
-                // If we didn't already own it, we should make a copy of the unowned filepath
-                // It's incorrect and worthy of a failDebug, but it's also probably still valid.
-                // In that case, we make a copy so that the receiver can take ownership
-                let shouldCopy: Bool = lock.withLock {
-                    owsAssertDebug(isOwned, "Result file externally owned")
-                    let wasAlreadyOwned = isOwned
-                    isOwned = false
-                    return !wasAlreadyOwned
-                }
-
-                if shouldCopy {
-                    let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
-                    try FileManager.default.copyItem(atPath: path, toPath: dstFilePath)
-                    return dstFilePath
-                } else {
-                    return path
-                }
-            }
-        }
-
-        init(model: VideoEditorModel) {
-            self.srcVideoPath = model.srcVideoPath
-            self.untrimmedDuration = model.untrimmedDuration
-            self.trimmedStartSeconds = model.trimmedStartSeconds
-            self.trimmedDurationSeconds = model.trimmedDurationSeconds
-            self.isTrimmed = model.isTrimmed
-        }
-
-        func render() async throws -> Result {
-            enum CurrentExport {
-                case exporting(Task<Result, any Error>)
-                case finished(Swift.Result<Result, any Error>)
-
-                var result: Result {
-                    get async throws {
-                        switch self {
-                        case .exporting(let task):
-                            return try await task.value
-                        case .finished(let result):
-                            return try result.get()
-                        }
-                    }
-                }
-            }
-
-            let export = lock.withLock { () -> CurrentExport in
-                switch exportState {
-                case .finished(let result):
-                    return .finished(.success(result))
-                case .exporting(let task):
-                    return .exporting(task)
-                case .failed(let error):
-                    return .finished(.failure(error))
-                case .ready:
-                    break
-                }
-
-                let task = Task {
-                    do {
-                        let result = try await _render()
-                        lock.withLock { exportState = .finished(result) }
-                        return result
-                    } catch let error as CancellationError {
-                        lock.withLock { exportState = .ready }
-                        throw error
-                    } catch {
-                        owsFailDebug("Export failed: \(error)")
-                        lock.withLock { exportState = .failed(error) }
-                        throw error
-                    }
-                }
-                self.exportState = .exporting(task)
-                return .exporting(task)
-            }
-
-            return try await export.result
-        }
-
-        nonisolated private func _render() async throws -> Result {
-            guard isTrimmed else {
-                // Video editor has no changes.
-                owsFailDebug("calling no-op render. Instead copy the file.")
-
-                // Since we haven't trimmed, there's nothing to render. Callers shouldn't get here, but
-                // just in case we'll return an unowned Result. The implementation of Result ensures that
-                // a new copy of the srcVideoPath is made for any consume requests to maintain the ownership contract.
-                return Result(path: srcVideoPath, owned: false)
-            }
-
-            let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
-            let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
-
-            guard let session = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-                throw OWSAssertionError("Could not create export session.")
-            }
-
-            let exportURL = URL(fileURLWithPath: dstFilePath)
-
-            // This will ensure that the MP4 moov atom (movie atom)
-            // is located at the beginning of the file. That may help
-            // recipients validate incoming videos.
-            session.shouldOptimizeForNetworkUse = true
-            // Preserve the original timescale.
-            let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-            let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-            let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
-            session.timeRange = cmRange
-
-            try await session.exportAsync(to: exportURL, as: .mp4)
-
-            switch (session.status, session.outputURL?.path) {
-            case (.completed, let path?):
-                return Result(path: path, owned: true)
-            case (.cancelled, _):
-                throw CancellationError()
-            default:
-                throw session.error ?? OWSAssertionError("Status \(session.status)")
-            }
-        }
-
-        func cancel() {
-            let currentExport = lock.withLock { exportState.cancel() }
-            currentExport?.cancel()
+        switch session.status {
+        case .completed:
+            return exportUrl
+        case .cancelled:
+            throw CancellationError()
+        default:
+            throw session.error ?? OWSAssertionError("status \(session.status)")
         }
     }
 }

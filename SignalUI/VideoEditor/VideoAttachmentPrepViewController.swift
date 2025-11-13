@@ -203,10 +203,6 @@ extension VideoAttachmentPrepViewController: VideoTimelineViewDelegate {
     func videoTimelineViewDidEndTrimming(_ view: VideoTimelineView) {
         editorView.isTrimmingVideo = false
         editorView.ensureSeekReflectsTrimming()
-
-        if model.needsRender {
-            _ = model.ensureCurrentRender()
-        }
     }
 
     func videoTimelineViewWillBeginScrubbing(_ view: VideoTimelineView) {
