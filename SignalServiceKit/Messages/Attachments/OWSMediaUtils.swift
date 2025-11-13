@@ -93,22 +93,6 @@ public enum OWSMediaUtils {
         return try thumbnail(forImage: stillImage, maxDimensionPoints: maxDimensionPoints)
     }
 
-    public static func thumbnail(forVideoAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-        guard isVideoOfValidContentTypeAndSize(path: path) else {
-            throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
-        }
-
-        let scale = UIScreen.main.scale
-        let maxDimensionPixels = maxDimensionPoints * scale
-        let maxSizePixels = CGSize(width: maxDimensionPixels, height: maxDimensionPixels)
-        let url = URL(fileURLWithPath: path)
-        let asset = AVURLAsset(url: url, options: nil)
-        guard isValidVideo(asset: asset) else {
-            throw OWSMediaError.failure(description: "Invalid video.")
-        }
-        return try thumbnail(forVideo: asset, maxSizePixels: maxSizePixels)
-    }
-
     public static let videoStillFrameMimeType = MimeType.imageJpeg
 
     public static func thumbnail(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> UIImage {
@@ -119,15 +103,6 @@ public enum OWSMediaUtils {
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
         let image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
         return image
-    }
-
-    public static func thumbnailData(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> Data {
-        let image = try thumbnail(forVideo: asset, maxSizePixels: maxSizePixels)
-        owsAssertDebug(Self.videoStillFrameMimeType == MimeType.imageJpeg)
-        guard let data = image.jpegData(compressionQuality: 0.8) else {
-            throw OWSAssertionError("Unable to serialize image!")
-        }
-        return data
     }
 
     public static func isValidVideo(path: String) -> Bool {
