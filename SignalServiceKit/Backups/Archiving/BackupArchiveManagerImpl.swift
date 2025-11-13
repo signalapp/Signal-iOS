@@ -239,7 +239,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
 
             backupSettingsStore.setLastBackupDetails(
-                date: dateProvider(),
+                date: metadata.exportStartTimestamp,
                 backupFileSizeBytes: backupFileSizeBytes,
                 backupMediaSizeBytes: backupMediaSizeBytes,
                 tx: tx,
@@ -269,11 +269,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupPurpose: BackupExportPurpose,
         progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
+        let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
+        let startTimestamp = dateProvider()
+
+        // Filter included content according to the purpose of this backup.
         let includedContentFilter = BackupArchive.IncludedContentFilter(
             backupPurpose: backupPurpose.libsignalPurpose
         )
-
-        let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
 
         switch backupPurpose {
         case .remoteExport(let key, let chatAuth):
@@ -314,12 +316,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let metadata = try await _exportBackup(
             localIdentifiers: localIdentifiers,
             backupPurpose: backupPurpose.libsignalPurpose,
+            startTimestamp: startTimestamp,
             includedContentFilter: includedContentFilter,
             progressSink: progressSink,
             attachmentByteCounter: attachmentByteCounter,
             benchTitle: "Export encrypted Backup",
             openOutputStreamBlock: { exportProgress, tx in
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
+                    startTimestamp: startTimestamp,
                     encryptionMetadata: encryptionMetadata,
                     exportProgress: exportProgress,
                     attachmentByteCounter: attachmentByteCounter,
@@ -342,6 +346,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
     ) async throws -> URL {
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
+        let startTimestamp = dateProvider()
 
         // For the integration tests, don't filter out any content. The premise
         // of the tests is to verify that round-tripping a Backup file is
@@ -353,6 +358,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         return try await _exportBackup(
             localIdentifiers: localIdentifiers,
             backupPurpose: .remoteBackup,
+            startTimestamp: startTimestamp,
             includedContentFilter: includedContentFilter,
             progressSink: nil,
             attachmentByteCounter: attachmentByteCounter,
@@ -369,6 +375,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func _exportBackup<OutputStreamMetadata>(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
+        startTimestamp: Date,
         includedContentFilter: BackupArchive.IncludedContentFilter,
         progressSink: OWSProgressSink?,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
@@ -412,7 +419,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         try await oversizeTextArchiver.populateTableIncrementally(progress: prepareOversizeTextAttachmentsProgressSink)
 
-        let mediaRootBackupKey = await db.awaitableWrite { tx in
+        // Before we export, we need to make sure we have an MRBK – the export
+        // will refetch this, and throw if it's missing.
+        _ = await db.awaitableWrite { tx in
             localStorage.getOrGenerateMediaRootBackupKey(tx: tx)
         }
 
@@ -435,8 +444,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 try self._exportBackup(
                     outputStream: outputStream,
                     localIdentifiers: localIdentifiers,
-                    mediaRootBackupKey: mediaRootBackupKey,
                     backupPurpose: backupPurpose,
+                    startTimestamp: startTimestamp,
                     attachmentByteCounter: attachmentByteCounter,
                     includedContentFilter: includedContentFilter,
                     currentAppVersion: appVersion.currentAppVersion,
@@ -452,14 +461,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         }
     }
 
-    /// parameter mediaRootBackupKey - required to enforce that before this method opens its read tx,
-    /// a separate write tx must be used to generate and store a MRBK. The parameter is unused and the
-    /// MRBK is refetched (and this method will throw an error if it is unset).
     private func _exportBackup(
         outputStream stream: BackupArchiveProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
-        mediaRootBackupKey mediaRootBackupKeyParam: MediaRootBackupKey,
         backupPurpose: MessageBackupPurpose,
+        startTimestamp: Date,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         includedContentFilter: BackupArchive.IncludedContentFilter,
         currentAppVersion: String,
@@ -472,7 +478,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             memorySampler: memorySampler
         )
 
-        let startTimestampMs = dateProvider().ows_millisecondsSince1970
+        let startTimestampMs = startTimestamp.ows_millisecondsSince1970
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"

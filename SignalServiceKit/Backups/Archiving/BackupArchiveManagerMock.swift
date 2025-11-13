@@ -36,14 +36,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         return Upload.Result(
             cdnKey: "cdnKey",
             cdnNumber: 1,
-            localUploadMetadata: .init(
-                fileUrl: URL(string: "file://")!,
-                digest: Data(),
-                encryptedDataLength: 0,
-                plaintextDataLength: 0,
-                attachmentByteSize: metadata.attachmentByteSize,
-                nonceMetadata: metadata.nonceMetadata,
-            ),
+            localUploadMetadata: metadata,
             beginTimestamp: 0,
             finishTimestamp: Date().ows_millisecondsSince1970
         )
@@ -57,6 +50,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
         return Upload.EncryptedBackupUploadMetadata(
+            exportStartTimestamp: Date(),
             fileUrl: URL(string: "file://")!,
             digest: Data(),
             encryptedDataLength: 0,

@@ -110,6 +110,9 @@ public enum Upload {
     }
 
     public struct EncryptedBackupUploadMetadata: UploadMetadata {
+        /// When we started the export of this backup.
+        public let exportStartTimestamp: Date
+
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
         public let fileUrl: URL
 
