@@ -140,7 +140,8 @@ class BackupExportJobImpl: BackupExportJob {
     private func _exportAndUploadBackup(
         mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
-        logger.info("\(mode)")
+        let logger = logger.suffixed(with: "[\(mode)]")
+        logger.info("Starting...")
 
         await db.awaitableWrite {
             self.backupSettingsStore.setIsBackupUploadQueueSuspended(false, tx: $0)
@@ -195,11 +196,9 @@ class BackupExportJobImpl: BackupExportJob {
         }
 
         let progress: OWSSequentialProgressRootSink<BackupExportJobStep>?
-        let suspensionHandle: MessagePipelineSuspensionHandle?
         switch mode {
         case .manual(let _progress):
             progress = _progress
-            suspensionHandle = nil
 
             // These steps should, on the free tier, be no-ops. We'll still run
             // them below, but as a nicety exclude them from progress reporting.
@@ -216,13 +215,6 @@ class BackupExportJobImpl: BackupExportJob {
             }
         case .bgProcessingTask:
             progress = nil
-            suspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(
-                for: .backupBGProcessingTask
-            )
-        }
-
-        defer {
-            suspensionHandle?.invalidate()
         }
 
         do {
