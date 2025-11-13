@@ -99,8 +99,8 @@ extension ChatListViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(backupDidRun),
-            name: .backupExportJobDidRun,
+            selector: #selector(lastBackupDetailsDidChange),
+            name: .lastBackupDetailsDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -157,7 +157,7 @@ extension ChatListViewController {
     // MARK: -
 
     @objc
-    private func backupDidRun(_ notification: NSNotification) {
+    private func lastBackupDetailsDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
         updateBackupFailureAlertsWithSneakyTransaction()
     }

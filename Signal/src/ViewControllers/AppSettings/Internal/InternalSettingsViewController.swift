@@ -128,12 +128,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let backupsSection = OWSTableSection(title: "Backups")
 
-        let (
-            lastBackupFileSizeBytes,
-        ) = DependenciesBridge.shared.db.read { tx in
-            return (
-                BackupSettingsStore().lastBackupFileSizeBytes(tx: tx)
-            )
+        let backupSettingsStore = BackupSettingsStore()
+        let db = DependenciesBridge.shared.db
+        let lastBackupDetails = db.read { tx in
+            return backupSettingsStore.lastBackupDetails(tx: tx)
         }
 
         if mode != .registration {
@@ -187,7 +185,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         })
         backupsSection.add(.copyableItem(
             label: "Last Backup chats/messages file size",
-            value: lastBackupFileSizeBytes.flatMap { ByteCountFormatter().string(for: $0) }
+            value: lastBackupDetails.flatMap { ByteCountFormatter().string(for: $0.backupFileSizeBytes) }
         ))
 
         if backupsSection.items.isEmpty.negated {

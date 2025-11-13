@@ -5,13 +5,6 @@
 
 import LibSignalClient
 
-public struct MostRecentlyEnabledBackupsDetails: Codable {
-    public let enabledTime: Date
-    public let notificationDelay: TimeInterval
-
-    public var shouldRemindUserAfter: Date { enabledTime.addingTimeInterval(notificationDelay) }
-}
-
 public enum BackupPlan: RawRepresentable {
     case disabled
     case disabling
@@ -139,16 +132,23 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
+    public struct LastBackupEnabledDetails: Codable {
+        public let enabledTime: Date
+        public let notificationDelay: TimeInterval
+
+        public var shouldRemindUserAfter: Date { enabledTime.addingTimeInterval(notificationDelay) }
+    }
+
     public func lastBackupEnabledDetails(
         tx: DBReadTransaction
-    ) -> MostRecentlyEnabledBackupsDetails? {
+    ) -> LastBackupEnabledDetails? {
         do {
             return try kvStore.getCodableValue(
                 forKey: Keys.lastBackupEnabledDetails,
                 transaction: tx
             )
         } catch {
-            owsFailDebug("Failed to get MostRecentlyEnabledBackupsDetails \(error)")
+            owsFailDebug("Failed to get LastBackupEnabledDetails \(error)")
             return nil
         }
     }
@@ -160,7 +160,7 @@ public struct BackupSettingsStore {
     ) {
         do {
             try kvStore.setCodable(
-                MostRecentlyEnabledBackupsDetails(
+                LastBackupEnabledDetails(
                     enabledTime: backupsEnabledTime,
                     notificationDelay: notificationDelay
                 ),
@@ -168,7 +168,7 @@ public struct BackupSettingsStore {
                 transaction: tx
             )
         } catch {
-            owsFailDebug("Failed to set MostRecentlyEnabledBackupsDetails")
+            owsFailDebug("Failed to set LastBackupEnabledDetails")
         }
     }
 
@@ -181,34 +181,62 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    public func firstBackupDate(tx: DBReadTransaction) -> Date? {
-        return kvStore.getDate(Keys.firstBackupDate, transaction: tx)
-    }
+    public struct LastBackupDetails {
+        /// The date of our last backup.
+        public let date: Date
+        /// The size of our most recent Backup proto file.
+        public let backupFileSizeBytes: UInt64
+        /// The total size of our most recent backup, including the Backup proto
+        /// file and all backed-up media. Only set if we're on the paid tier.
+        public let backupTotalSizeBytes: UInt64?
 
-    private func setFirstBackupDate(_ firstBackupDate: Date?, tx: DBWriteTransaction) {
-        if let firstBackupDate {
-            kvStore.setDate(firstBackupDate, key: Keys.firstBackupDate, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Keys.firstBackupDate, transaction: tx)
+        public init(date: Date, backupFileSizeBytes: UInt64, backupTotalSizeBytes: UInt64?) {
+            self.date = date
+            self.backupFileSizeBytes = backupFileSizeBytes
+            self.backupTotalSizeBytes = backupTotalSizeBytes
         }
     }
 
-    // MARK: -
+    public func lastBackupDetails(tx: DBReadTransaction) -> LastBackupDetails? {
+        guard
+            let lastBackupDate = kvStore.getDate(Keys.lastBackupDate, transaction: tx),
+            let backupFileSizeBytes = kvStore.getUInt64(Keys.lastBackupFileSizeBytes, transaction: tx)
+        else {
+            return nil
+        }
 
-    public func lastBackupDate(tx: DBReadTransaction) -> Date? {
-        return kvStore.getDate(Keys.lastBackupDate, transaction: tx)
+        let backupTotalSizeBytes: UInt64?
+        switch backupPlan(tx: tx) {
+        case .disabled, .disabling, .free:
+            backupTotalSizeBytes = nil
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            backupTotalSizeBytes = kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
+        }
+
+        return LastBackupDetails(
+            date: lastBackupDate,
+            backupFileSizeBytes: backupFileSizeBytes,
+            backupTotalSizeBytes: backupTotalSizeBytes,
+        )
     }
 
-    public func setLastBackupDate(_ lastBackupDate: Date, tx: DBWriteTransaction) {
-        kvStore.setDate(lastBackupDate, key: Keys.lastBackupDate, transaction: tx)
+    public func setLastBackupDetails(
+        date: Date,
+        backupFileSizeBytes: UInt64,
+        backupMediaSizeBytes: UInt64,
+        tx: DBWriteTransaction,
+    ) {
+        kvStore.setDate(date, key: Keys.lastBackupDate, transaction: tx)
+        kvStore.setUInt64(backupFileSizeBytes, key: Keys.lastBackupFileSizeBytes, transaction: tx)
+        kvStore.setUInt64(backupFileSizeBytes + backupMediaSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
 
         if firstBackupDate(tx: tx) == nil {
-            setFirstBackupDate(lastBackupDate, tx: tx)
+            setFirstBackupDate(date, tx: tx)
         }
 
-        setLastBackupRefreshDate(lastBackupDate, tx: tx)
+        setLastBackupRefreshDate(date, tx: tx)
 
-        // Clear any persisted error state
+        // We did a backup, so clear all error state.
         errorStateStore.removeAll(transaction: tx)
 
         tx.addSyncCompletion {
@@ -216,9 +244,11 @@ public struct BackupSettingsStore {
         }
     }
 
-    public func resetLastBackupDate(tx: DBWriteTransaction) {
+    public func resetLastBackupDetails(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Keys.lastBackupDate, transaction: tx)
-        setFirstBackupDate(nil, tx: tx)
+        kvStore.removeValue(forKey: Keys.lastBackupFileSizeBytes, transaction: tx)
+        kvStore.removeValue(forKey: Keys.lastBackupSizeBytes, transaction: tx)
+        setLastBackupRefreshDate(nil, tx: tx)
 
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: .lastBackupDetailsDidChange, object: nil)
@@ -227,36 +257,12 @@ public struct BackupSettingsStore {
 
     // MARK: -
 
-    /// THe size of the user's most recent Backup proto file.
-    public func lastBackupFileSizeBytes(tx: DBReadTransaction) -> UInt64? {
-        return kvStore.getUInt64(Keys.lastBackupFileSizeBytes, transaction: tx)
+    public func firstBackupDate(tx: DBReadTransaction) -> Date? {
+        return kvStore.getDate(Keys.firstBackupDate, transaction: tx)
     }
 
-    /// The total size of a user's most recent Backup, including their Backup
-    /// proto file and backed-up media.
-    ///
-    /// Only relevant on the paid tier.
-    public func lastBackupSizeBytes(tx: DBReadTransaction) -> UInt64? {
-        switch backupPlan(tx: tx) {
-        case .disabled, .disabling, .free:
-            return nil
-        case .paid, .paidExpiringSoon, .paidAsTester:
-            return kvStore.getUInt64(Keys.lastBackupSizeBytes, transaction: tx)
-        }
-    }
-
-    public func setLastBackupSizeBytes(
-        backupFileSizeBytes: UInt64,
-        backupMediaSizeBytes: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        kvStore.setUInt64(backupFileSizeBytes, key: Keys.lastBackupFileSizeBytes, transaction: tx)
-        kvStore.setUInt64(backupFileSizeBytes + backupMediaSizeBytes, key: Keys.lastBackupSizeBytes, transaction: tx)
-    }
-
-    public func resetLastBackupSizeBytes(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: Keys.lastBackupFileSizeBytes, transaction: tx)
-        kvStore.removeValue(forKey: Keys.lastBackupSizeBytes, transaction: tx)
+    private func setFirstBackupDate(_ firstBackupDate: Date, tx: DBWriteTransaction) {
+        kvStore.setDate(firstBackupDate, key: Keys.firstBackupDate, transaction: tx)
     }
 
     // MARK: -
@@ -420,8 +426,12 @@ public struct BackupSettingsStore {
         return kvStore.getDate(Keys.lastBackupRefreshDate, transaction: tx)
     }
 
-    public func setLastBackupRefreshDate(_ lastBackupRefreshDate: Date, tx: DBWriteTransaction) {
-        kvStore.setDate(lastBackupRefreshDate, key: Keys.lastBackupRefreshDate, transaction: tx)
+    public func setLastBackupRefreshDate(_ lastBackupRefreshDate: Date?, tx: DBWriteTransaction) {
+        if let lastBackupRefreshDate {
+            kvStore.setDate(lastBackupRefreshDate, key: Keys.lastBackupRefreshDate, transaction: tx)
+        } else {
+            kvStore.removeValue(forKey: Keys.lastBackupRefreshDate, transaction: tx)
+        }
     }
 }
 

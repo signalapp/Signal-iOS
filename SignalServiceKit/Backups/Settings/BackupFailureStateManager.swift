@@ -85,8 +85,8 @@ public class BackupFailureStateManager {
         // Get the last successful backup, or if it's never succeeded the last
         // time backups were enabled.
         let lastBackupDate: Date? = {
-            if let lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx) {
-                return lastBackupDate
+            if let lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx) {
+                return lastBackupDetails.date
             }
 
             if let lastBackupEnabledTime = backupSettingsStore.lastBackupEnabledDetails(tx: tx)?.enabledTime {

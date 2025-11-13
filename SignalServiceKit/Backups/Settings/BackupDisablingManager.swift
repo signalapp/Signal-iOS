@@ -213,8 +213,7 @@ public final class BackupDisablingManager {
                 try backupPlanManager.setBackupPlan(.disabled, tx: tx)
 
                 // Wipe these, which are now outdated.
-                backupSettingsStore.resetLastBackupDate(tx: tx)
-                backupSettingsStore.resetLastBackupSizeBytes(tx: tx)
+                backupSettingsStore.resetLastBackupDetails(tx: tx)
                 backupSettingsStore.resetShouldAllowBackupUploadsOnCellular(tx: tx)
 
                 // With Backups disabled, these credentials are no longer valid

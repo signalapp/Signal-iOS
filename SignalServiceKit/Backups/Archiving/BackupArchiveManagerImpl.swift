@@ -238,11 +238,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 backupMediaSizeBytes = 0
             }
 
-            backupSettingsStore.setLastBackupDate(dateProvider(), tx: tx)
-            backupSettingsStore.setLastBackupSizeBytes(
+            backupSettingsStore.setLastBackupDetails(
+                date: dateProvider(),
                 backupFileSizeBytes: backupFileSizeBytes,
                 backupMediaSizeBytes: backupMediaSizeBytes,
-                tx: tx
+                tx: tx,
             )
 
             if let nonceMetadata = metadata.nonceMetadata {
@@ -1353,14 +1353,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
             // Populate "last Backup" details, since otherwise they'll be blank
             // and imply the user has no Backup.
-            backupSettingsStore.setLastBackupDate(
-                Date(millisecondsSince1970: backupInfo.backupTimeMs),
-                tx: tx
-            )
-            backupSettingsStore.setLastBackupSizeBytes(
+            backupSettingsStore.setLastBackupDetails(
+                date: Date(millisecondsSince1970: backupInfo.backupTimeMs),
                 backupFileSizeBytes: inputFileSize,
                 backupMediaSizeBytes: attachmentByteCounter.attachmentByteSize(),
-                tx: tx
+                tx: tx,
             )
 
             tx.addSyncCompletion { [

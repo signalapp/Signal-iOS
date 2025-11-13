@@ -137,8 +137,7 @@ class BackupSettingsViewController:
                 latestBackupExportProgressUpdate: nil,
                 latestBackupAttachmentDownloadUpdate: nil,
                 latestBackupAttachmentUploadUpdate: nil,
-                lastBackupDate: backupSettingsStore.lastBackupDate(tx: tx),
-                lastBackupSizeBytes: backupSettingsStore.lastBackupSizeBytes(tx: tx),
+                lastBackupDetails: backupSettingsStore.lastBackupDetails(tx: tx),
                 shouldAllowBackupUploadsOnCellular: backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
                 mediaTierCapacityOverflow: Self.getMediaTierCapacityOverflow(
                     backupAttachmentUploadStore: backupAttachmentUploadStore,
@@ -258,8 +257,6 @@ class BackupSettingsViewController:
                         }
 
                         db.read { tx in
-                            self.viewModel.lastBackupDate = self.backupSettingsStore.lastBackupDate(tx: tx)
-                            self.viewModel.lastBackupSizeBytes = self.backupSettingsStore.lastBackupSizeBytes(tx: tx)
                             self.viewModel.hasBackupFailed = self.backupFailureStateManager.hasFailedBackup(tx: tx)
                         }
                     }
@@ -405,8 +402,7 @@ class BackupSettingsViewController:
         db.read { tx in
             viewModel.backupPlan = backupPlanManager.backupPlan(tx: tx)
             viewModel.failedToDisableBackupsRemotely = backupDisablingManager.disableRemotelyFailed(tx: tx)
-            viewModel.lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
-            viewModel.lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+            viewModel.lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
             viewModel.shouldAllowBackupUploadsOnCellular = backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx)
         }
 
@@ -429,8 +425,7 @@ class BackupSettingsViewController:
 
     private func _lastBackupDetailsDidChange() {
         db.read { tx in
-            viewModel.lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
-            viewModel.lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+            viewModel.lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
         }
     }
 
@@ -1501,8 +1496,7 @@ private class BackupSettingsViewModel: ObservableObject {
     @Published var latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?
     @Published var latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?
 
-    @Published var lastBackupDate: Date?
-    @Published var lastBackupSizeBytes: UInt64?
+    @Published var lastBackupDetails: BackupSettingsStore.LastBackupDetails?
     @Published var shouldAllowBackupUploadsOnCellular: Bool
 
     /// Nil means has not consumed capacity; non-nil value represents the total byte count over
@@ -1528,8 +1522,7 @@ private class BackupSettingsViewModel: ObservableObject {
         latestBackupExportProgressUpdate: OWSSequentialProgress<BackupExportJobStep>?,
         latestBackupAttachmentDownloadUpdate: BackupSettingsAttachmentDownloadTracker.DownloadUpdate?,
         latestBackupAttachmentUploadUpdate: BackupSettingsAttachmentUploadTracker.UploadUpdate?,
-        lastBackupDate: Date?,
-        lastBackupSizeBytes: UInt64?,
+        lastBackupDetails: BackupSettingsStore.LastBackupDetails?,
         shouldAllowBackupUploadsOnCellular: Bool,
         mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
@@ -1547,8 +1540,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.latestBackupAttachmentDownloadUpdate = latestBackupAttachmentDownloadUpdate
         self.latestBackupAttachmentUploadUpdate = latestBackupAttachmentUploadUpdate
 
-        self.lastBackupDate = lastBackupDate
-        self.lastBackupSizeBytes = lastBackupSizeBytes
+        self.lastBackupDetails = lastBackupDetails
         self.shouldAllowBackupUploadsOnCellular = shouldAllowBackupUploadsOnCellular
 
         self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
@@ -1904,8 +1896,7 @@ struct BackupSettingsView: View {
 
                 SignalSection {
                     BackupDetailsView(
-                        lastBackupDate: viewModel.lastBackupDate,
-                        lastBackupSizeBytes: viewModel.lastBackupSizeBytes,
+                        lastBackupDetails: viewModel.lastBackupDetails,
                         shouldAllowBackupUploadsOnCellular: viewModel.shouldAllowBackupUploadsOnCellular,
                         viewModel: viewModel,
                     )
@@ -2915,15 +2906,14 @@ private struct BackupSubscriptionLoadedView: View {
 // MARK: -
 
 private struct BackupDetailsView: View {
-    let lastBackupDate: Date?
-    let lastBackupSizeBytes: UInt64?
+    let lastBackupDetails: BackupSettingsStore.LastBackupDetails?
     let shouldAllowBackupUploadsOnCellular: Bool
     let viewModel: BackupSettingsViewModel
 
     var body: some View {
         HStack {
             let lastBackupMessage: String? = {
-                guard let lastBackupDate else {
+                guard let lastBackupDate = lastBackupDetails?.date else {
                     return nil
                 }
 
@@ -2965,7 +2955,7 @@ private struct BackupDetailsView: View {
             }
         }
 
-        if let lastBackupSizeBytes {
+        if let lastBackupSizeBytes = lastBackupDetails?.backupTotalSizeBytes {
             HStack {
                 Text(OWSLocalizedString(
                     "BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL",
@@ -3102,8 +3092,11 @@ private extension BackupSettingsViewModel {
                     totalBytesToUpload: 1_600_000_000,
                 )
             },
-            lastBackupDate: Date().addingTimeInterval(-1 * .day),
-            lastBackupSizeBytes: 2_400_000_000,
+            lastBackupDetails: BackupSettingsStore.LastBackupDetails(
+                date: Date().addingTimeInterval(-1 * .day),
+                backupFileSizeBytes: 40_000_000,
+                backupTotalSizeBytes: 2_400_000_000,
+            ),
             shouldAllowBackupUploadsOnCellular: false,
             mediaTierCapacityOverflow: mediaTierCapacityOverflow,
             hasBackupFailed: hasBackupFailed,

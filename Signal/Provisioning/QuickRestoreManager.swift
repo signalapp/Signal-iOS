@@ -89,8 +89,9 @@ public class QuickRestoreManager {
             let lastBackupTime: UInt64?
             let lastBackupSizeBytes: UInt64?
             if backupTier != nil {
-                lastBackupTime = backupSettingsStore.lastBackupDate(tx: tx)?.ows_millisecondsSince1970
-                lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
+                let lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
+                lastBackupTime = lastBackupDetails?.date.ows_millisecondsSince1970
+                lastBackupSizeBytes = lastBackupDetails?.backupTotalSizeBytes
             } else {
                 lastBackupTime = nil
                 lastBackupSizeBytes = nil

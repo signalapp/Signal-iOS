@@ -70,12 +70,6 @@ public protocol BackupExportJob {
 
 // MARK: -
 
-extension NSNotification.Name {
-    public static let backupExportJobDidRun = Notification.Name("BackupExportJob.backupExportJobDidRun")
-}
-
-// MARK: -
-
 class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
     private let backupArchiveManager: BackupArchiveManager
@@ -146,12 +140,6 @@ class BackupExportJobImpl: BackupExportJob {
     private func _exportAndUploadBackup(
         mode: BackupExportJobMode
     ) async throws(BackupExportJobError) {
-        defer {
-            NotificationCenter.default.postOnMainThread(
-                name: .backupExportJobDidRun,
-                object: nil
-            )
-        }
         logger.info("\(mode)")
 
         await db.awaitableWrite {
