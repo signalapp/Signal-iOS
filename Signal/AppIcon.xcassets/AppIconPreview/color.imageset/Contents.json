@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "SignalColor_60x60.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "SignalColor_120x120.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "SignalColor_180x180.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "SignalColor-180x180.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

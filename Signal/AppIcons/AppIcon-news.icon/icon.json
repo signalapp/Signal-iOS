@@ -1,0 +1,90 @@
+{
+  "fill" : {
+    "solid" : "srgb:0.35294,0.71765,0.29412,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "srgb:0.60392,0.64706,0.67059,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.30153,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "image-name" : "news-text.svg",
+          "name" : "news-text"
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "gray:0.91866,1.00000"
+              }
+            }
+          ],
+          "image-name" : "news-top.svg",
+          "name" : "news-top"
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "srgb:0.29020,0.61176,0.23529,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.50000,1.00000"
+              }
+            }
+          ],
+          "image-name" : "news-right.svg",
+          "name" : "news-right"
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.80300,1.00000"
+              }
+            }
+          ],
+          "image-name" : "news-left.svg",
+          "name" : "news-left"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.4
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "iOS"
+    ]
+  }
+}

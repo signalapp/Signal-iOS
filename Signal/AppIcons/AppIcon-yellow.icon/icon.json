@@ -1,0 +1,99 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:1.00000,0.87451,0.41961,1.00000",
+          "srgb:1.00000,0.54510,0.01176,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.20000,0.16078,0.01961,1.00000",
+          "srgb:0.13725,0.07843,0.01176,1.00000"
+        ]
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:1.00000,0.87451,0.41961,1.00000",
+                  "srgb:1.00000,0.54510,0.01176,1.00000"
+                ]
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "linear-gradient" : [
+                  "gray:1.00000,1.00000",
+                  "gray:0.59646,1.00000"
+                ]
+              }
+            }
+          ],
+          "image-name" : "chat.svg",
+          "name" : "chat",
+          "opacity-specializations" : [
+            {
+              "value" : 0.88
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.88
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.88
+            }
+          ]
+        },
+        {
+          "blend-mode" : "overlay",
+          "fill" : {
+            "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+          },
+          "glass" : false,
+          "image-name" : "yellow-stripes.svg",
+          "name" : "yellow-stripes",
+          "opacity-specializations" : [
+            {
+              "value" : 0.12
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.04
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.04
+            }
+          ]
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.2
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "iOS"
+    ]
+  }
+}

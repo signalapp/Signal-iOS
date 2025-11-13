@@ -1,0 +1,98 @@
+{
+  "fill" : {
+    "solid" : "srgb:1.00000,0.85490,0.37647,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.20499,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "image-name" : "notes-squiggle.svg",
+          "name" : "notes-squiggle"
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "linear-gradient" : [
+                  "gray:0.79767,1.00000",
+                  "gray:0.64866,1.00000"
+                ]
+              }
+            }
+          ],
+          "hidden" : false,
+          "image-name" : "notes-top.svg",
+          "name" : "notes-top"
+        },
+        {
+          "blend-mode-specializations" : [
+            {
+              "value" : "overlay"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "overlay"
+            },
+            {
+              "appearance" : "tinted",
+              "value" : "overlay"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "srgb:0.93333,0.83922,0.45098,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.94624,1.00000"
+              }
+            }
+          ],
+          "hidden" : false,
+          "image-name" : "notes-bottom.svg",
+          "name" : "notes-bottom",
+          "opacity" : 0.96
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.29895,1.00000"
+              }
+            }
+          ],
+          "image-name" : "notes-middle.svg",
+          "name" : "notes-middle"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.2
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "iOS"
+    ]
+  }
+}

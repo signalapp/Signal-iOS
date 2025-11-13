@@ -71,9 +71,23 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func buildIconSelectionCell() -> UITableViewCell {
+        let isiOS26 = if #available(iOS 26.0, *) { true } else { false }
+        let iconSize: CGFloat = switch (
+            UIDevice.current.isNarrowerThanIPhone6,
+            UIDevice.current.isPlusSizePhone,
+            isiOS26
+        ) {
+        case (true, _, false): 56
+        case (true, _, true): 61.5
+        case (_, true, false): 64
+        case (_, true, true): 68
+        case (_, _, false): 60
+        case (_, _, true): 64
+        }
+
         let rows = Self.customIcons.map { row in
             let icons = row.map { icon in
-                IconButton(icon: icon) { [weak self] in
+                IconButton(icon: icon, iconSize: iconSize) { [weak self] in
                     self?.didTapIcon(icon)
                 }
             }
@@ -89,23 +103,6 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         stackView.spacing = 32
         stackView.distribution = .fillEqually
         stackView.alignment = .fill
-
-        let iconSize: CGFloat
-        if UIDevice.current.isNarrowerThanIPhone6 {
-            iconSize = 56
-        } else {
-            iconSize = 60
-        }
-
-        stackView.arrangedSubviews
-            .compactMap { $0 as? UIStackView }
-            .flatMap(\.arrangedSubviews)
-            .forEach { view in
-                if view is SpacerView {
-                    return
-                }
-                view.autoSetDimensions(to: .square(iconSize))
-            }
 
         self.stackView = stackView
         let cell = OWSTableItem.newCell()
@@ -149,22 +146,21 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
     }
 
     private class IconButton: UIView {
-        static let iconCornerRadius: CGFloat = 12
-        static let selectedOutlineCornerRadius: CGFloat = 16
-
-        let icon: AppIcon?
+        private let icon: AppIcon?
+        private let iconSize: CGFloat
         private let button: UIView
         private let selectedOutlineView: UIView
 
-        init(icon: AppIcon, action: @escaping () -> Void) {
+        init(icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) {
             self.icon = icon
-            self.button = Self.makeButton(for: icon, action: action)
+            self.iconSize = iconSize
+            self.button = Self.makeButton(for: icon, iconSize: iconSize, action: action)
             self.selectedOutlineView = UIView.container()
             super.init(frame: .zero)
 
             self.addSubview(selectedOutlineView)
             selectedOutlineView.autoPinEdgesToSuperviewEdges()
-            selectedOutlineView.layer.cornerRadius = Self.selectedOutlineCornerRadius
+            selectedOutlineView.layer.cornerRadius = iconSize * 0.24 * (4/3)
             selectedOutlineView.layer.cornerCurve = .continuous
             let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
             selectedOutlineView.layer.borderColor = borderColor.cgColor
@@ -189,22 +185,11 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             }
         }
 
-        private static func makeButton(for icon: AppIcon, action: @escaping () -> Void) -> UIView {
+        private static func makeButton(for icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) -> UIView {
             let image = UIImage(resource: icon.previewImageResource)
             let button = OWSButton(block: action)
             button.setImage(image, for: .normal)
-            button.clipsToBounds = true
-            button.layer.cornerRadius = iconCornerRadius
-            button.layer.cornerCurve = .continuous
-
-            if icon.shouldShowShadow {
-                let backgroundView = UIView.container()
-                backgroundView.setShadow(radius: 1, opacity: 0.24, offset: .zero, color: .ows_black)
-                backgroundView.addSubview(button)
-                button.autoPinEdgesToSuperviewEdges()
-                return backgroundView
-            }
-
+            button.autoSetDimensions(to: .square(iconSize))
             return button
         }
     }

@@ -1686,6 +1686,18 @@
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
 		B909C1592AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */; };
+		B91751C32EC5527B00FF7A9C /* AppIcon-news.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */; };
+		B91751C72EC552DD00FF7A9C /* AppIcon-bubbles.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751C62EC552DD00FF7A9C /* AppIcon-bubbles.icon */; };
+		B91751C92EC5530500FF7A9C /* AppIcon-wave.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751C82EC5530500FF7A9C /* AppIcon-wave.icon */; };
+		B91751CB2EC553AB00FF7A9C /* AppIcon-chat.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751CA2EC553AB00FF7A9C /* AppIcon-chat.icon */; };
+		B91751CD2EC553F800FF7A9C /* AppIcon-notes.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751CC2EC553F800FF7A9C /* AppIcon-notes.icon */; };
+		B91751CF2EC5541700FF7A9C /* AppIcon-color.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751CE2EC5541700FF7A9C /* AppIcon-color.icon */; };
+		B91751D12EC5542B00FF7A9C /* AppIcon-dark.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D02EC5542B00FF7A9C /* AppIcon-dark.icon */; };
+		B91751D32EC5544100FF7A9C /* AppIcon-dark-variant.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D22EC5544100FF7A9C /* AppIcon-dark-variant.icon */; };
+		B91751D52EC5545200FF7A9C /* AppIcon-white.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D42EC5545200FF7A9C /* AppIcon-white.icon */; };
+		B91751D72EC5546800FF7A9C /* AppIcon-weather.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D62EC5546800FF7A9C /* AppIcon-weather.icon */; };
+		B91751D92EC5548500FF7A9C /* AppIcon-yellow.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D82EC5548500FF7A9C /* AppIcon-yellow.icon */; };
+		B91751DB2EC5556B00FF7A9C /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751DA2EC5556B00FF7A9C /* AppIcon.icon */; };
 		B91ACD9E2A797698000CFBC7 /* StickerPickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */; };
 		B9291BFC2B6058AE006BC25F /* ContactAboutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */; };
 		B92E76A92B647E780095C4DF /* StackSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92E76A82B647E780095C4DF /* StackSheetViewController.swift */; };
@@ -5659,6 +5671,18 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B7DF4FBE40A1DE0CD288E0EB /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSettingsTableViewController.swift; sourceTree = "<group>"; };
+		B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-news.icon"; sourceTree = "<group>"; };
+		B91751C62EC552DD00FF7A9C /* AppIcon-bubbles.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-bubbles.icon"; sourceTree = "<group>"; };
+		B91751C82EC5530500FF7A9C /* AppIcon-wave.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-wave.icon"; sourceTree = "<group>"; };
+		B91751CA2EC553AB00FF7A9C /* AppIcon-chat.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-chat.icon"; sourceTree = "<group>"; };
+		B91751CC2EC553F800FF7A9C /* AppIcon-notes.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-notes.icon"; sourceTree = "<group>"; };
+		B91751CE2EC5541700FF7A9C /* AppIcon-color.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-color.icon"; sourceTree = "<group>"; };
+		B91751D02EC5542B00FF7A9C /* AppIcon-dark.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-dark.icon"; sourceTree = "<group>"; };
+		B91751D22EC5544100FF7A9C /* AppIcon-dark-variant.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-dark-variant.icon"; sourceTree = "<group>"; };
+		B91751D42EC5545200FF7A9C /* AppIcon-white.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-white.icon"; sourceTree = "<group>"; };
+		B91751D62EC5546800FF7A9C /* AppIcon-weather.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-weather.icon"; sourceTree = "<group>"; };
+		B91751D82EC5548500FF7A9C /* AppIcon-yellow.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-yellow.icon"; sourceTree = "<group>"; };
+		B91751DA2EC5556B00FF7A9C /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerKeyboard.swift; sourceTree = "<group>"; };
 		B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAboutSheet.swift; sourceTree = "<group>"; };
 		B92E76A82B647E780095C4DF /* StackSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSheetViewController.swift; sourceTree = "<group>"; };
@@ -11168,6 +11192,25 @@
 			name = Translations;
 			sourceTree = "<group>";
 		};
+		B91751C52EC552B100FF7A9C /* AppIcons */ = {
+			isa = PBXGroup;
+			children = (
+				B91751C62EC552DD00FF7A9C /* AppIcon-bubbles.icon */,
+				B91751CA2EC553AB00FF7A9C /* AppIcon-chat.icon */,
+				B91751CE2EC5541700FF7A9C /* AppIcon-color.icon */,
+				B91751D22EC5544100FF7A9C /* AppIcon-dark-variant.icon */,
+				B91751D02EC5542B00FF7A9C /* AppIcon-dark.icon */,
+				B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */,
+				B91751CC2EC553F800FF7A9C /* AppIcon-notes.icon */,
+				B91751C82EC5530500FF7A9C /* AppIcon-wave.icon */,
+				B91751D62EC5546800FF7A9C /* AppIcon-weather.icon */,
+				B91751D42EC5545200FF7A9C /* AppIcon-white.icon */,
+				B91751D82EC5548500FF7A9C /* AppIcon-yellow.icon */,
+				B91751DA2EC5556B00FF7A9C /* AppIcon.icon */,
+			);
+			path = AppIcons;
+			sourceTree = "<group>";
+		};
 		B9327B3B2BBB77B800CCDBBA /* NicknameRecord */ = {
 			isa = PBXGroup;
 			children = (
@@ -11436,6 +11479,7 @@
 			isa = PBXGroup;
 			children = (
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
+				B91751C52EC552B100FF7A9C /* AppIcons */,
 				5045F44129E0DAA400058E5F /* AppLaunch */,
 				661AEE462C2088DF0046B1D8 /* Attachments */,
 				D9F96EDB2D824E6900466C6A /* Avatars */,
@@ -15170,6 +15214,18 @@
 				34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */,
 				34848D6025D43ADD00E5034B /* activate-payments.json in Resources */,
 				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
+				B91751C72EC552DD00FF7A9C /* AppIcon-bubbles.icon in Resources */,
+				B91751CB2EC553AB00FF7A9C /* AppIcon-chat.icon in Resources */,
+				B91751CF2EC5541700FF7A9C /* AppIcon-color.icon in Resources */,
+				B91751D32EC5544100FF7A9C /* AppIcon-dark-variant.icon in Resources */,
+				B91751D12EC5542B00FF7A9C /* AppIcon-dark.icon in Resources */,
+				B91751C32EC5527B00FF7A9C /* AppIcon-news.icon in Resources */,
+				B91751CD2EC553F800FF7A9C /* AppIcon-notes.icon in Resources */,
+				B91751C92EC5530500FF7A9C /* AppIcon-wave.icon in Resources */,
+				B91751D72EC5546800FF7A9C /* AppIcon-weather.icon in Resources */,
+				B91751D52EC5545200FF7A9C /* AppIcon-white.icon in Resources */,
+				B91751D92EC5548500FF7A9C /* AppIcon-yellow.icon in Resources */,
+				B91751DB2EC5556B00FF7A9C /* AppIcon.icon in Resources */,
 				052D17882C7E34D00023D56F /* AppIcon.xcassets in Resources */,
 				88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
@@ -20196,6 +20252,7 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
@@ -20449,6 +20506,7 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
@@ -20805,6 +20863,7 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
@@ -20845,6 +20904,7 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Signal/Signal-AppStore.entitlements";

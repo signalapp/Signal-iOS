@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "Waves_60x60.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "Waves_120x120.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "Waves_180x180.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "Waves-180x180.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
