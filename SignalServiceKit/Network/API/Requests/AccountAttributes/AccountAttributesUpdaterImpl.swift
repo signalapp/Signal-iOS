@@ -71,13 +71,21 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
     public func updateAccountAttributes(authedAccount: AuthedAccount) async throws {
         await db.awaitableWrite { tx in
-            self.kvStore.setDate(self.dateProvider(), key: Keys.latestUpdateRequestDate, transaction: tx)
+            self.kvStore.setData(
+                Randomness.generateRandomBytes(16),
+                key: Keys.latestUpdateRequestToken,
+                transaction: tx,
+            )
         }
         try await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
     }
 
     public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, tx: DBWriteTransaction) {
-        self.kvStore.setDate(self.dateProvider(), key: Keys.latestUpdateRequestDate, transaction: tx)
+        self.kvStore.setData(
+            Randomness.generateRandomBytes(16),
+            key: Keys.latestUpdateRequestToken,
+            transaction: tx,
+        )
         tx.addSyncCompletion {
             Task {
                 try await self.updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
@@ -112,7 +120,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             case no
             case yes(
                 currentDeviceCapabilities: AccountAttributes.Capabilities,
-                lastAttributeRequestDate: Date?,
+                lastAttributeRequestToken: Data?,
                 registrationState: TSRegistrationState,
                 aciRegistrationId: UInt32,
                 pniRegistrationId: UInt32
@@ -138,11 +146,11 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             let currentDeviceCapabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
 
             // Check if there's been a request for an attributes update.
-            let lastAttributeRequestDate = self.kvStore.getDate(Keys.latestUpdateRequestDate, transaction: tx)
-            if lastAttributeRequestDate != nil {
+            let lastAttributeRequestToken = self.kvStore.getData(Keys.latestUpdateRequestToken, transaction: tx)
+            if lastAttributeRequestToken != nil {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
-                    lastAttributeRequestDate: lastAttributeRequestDate,
+                    lastAttributeRequestToken: lastAttributeRequestToken,
                     registrationState: registrationState,
                     aciRegistrationId: aciRegistrationId,
                     pniRegistrationId: pniRegistrationId
@@ -159,7 +167,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             if lastUpdateDeviceCapabilities != currentDeviceCapabilities.requestParameters {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
-                    lastAttributeRequestDate: lastAttributeRequestDate,
+                    lastAttributeRequestToken: lastAttributeRequestToken,
                     registrationState: registrationState,
                     aciRegistrationId: aciRegistrationId,
                     pniRegistrationId: pniRegistrationId
@@ -170,7 +178,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             if lastUpdateAppVersion != currentAppVersion {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
-                    lastAttributeRequestDate: lastAttributeRequestDate,
+                    lastAttributeRequestToken: lastAttributeRequestToken,
                     registrationState: registrationState,
                     aciRegistrationId: aciRegistrationId,
                     pniRegistrationId: pniRegistrationId
@@ -183,7 +191,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             return
         case let .yes(
             currentDeviceCapabilities,
-            lastAttributeRequestDate,
+            lastAttributeRequestToken,
             registrationState,
             aciRegistrationId,
             pniRegistrationId
@@ -231,10 +239,10 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 // Clear the update request unless a new update has been requested
                 // while this update was in flight.
                 if
-                    let lastAttributeRequestDate,
-                    lastAttributeRequestDate == self.kvStore.getDate(Keys.latestUpdateRequestDate, transaction: tx)
+                    let lastAttributeRequestToken,
+                    lastAttributeRequestToken == self.kvStore.getData(Keys.latestUpdateRequestToken, transaction: tx)
                 {
-                    self.kvStore.removeValue(forKey: Keys.latestUpdateRequestDate, transaction: tx)
+                    self.kvStore.removeValue(forKey: Keys.latestUpdateRequestToken, transaction: tx)
                 }
             }
 
@@ -247,7 +255,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     }
 
     private enum Keys {
-        static let latestUpdateRequestDate = "latestUpdateRequestDate"
+        static let latestUpdateRequestToken = "latestUpdateRequestDate"
         static let lastUpdateDeviceCapabilities = "lastUpdateDeviceCapabilities"
         static let lastUpdateAppVersion = "lastUpdateAppVersion"
     }
