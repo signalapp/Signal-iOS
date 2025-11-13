@@ -52,6 +52,7 @@ public enum BackupPlan: RawRepresentable {
 // MARK: -
 
 extension NSNotification.Name {
+    public static let lastBackupDetailsDidChange = Notification.Name("BackupSettingsStore.lastBackupDetailsDidChange")
     public static let backupAttachmentDownloadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentDownloadQueueSuspensionStatusDidChange")
     public static let backupAttachmentUploadQueueSuspensionStatusDidChange = Notification.Name("BackupSettingsStore.backupAttachmentUploadQueueSuspensionStatusDidChange")
     public static let hasConsumedMediaTierCapacityStatusDidChange = Notification.Name("BackupSettingsStore.hasConsumedMediaTierCapacityStatusDidChange")
@@ -209,11 +210,19 @@ public struct BackupSettingsStore {
 
         // Clear any persisted error state
         errorStateStore.removeAll(transaction: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: .lastBackupDetailsDidChange, object: nil)
+        }
     }
 
     public func resetLastBackupDate(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Keys.lastBackupDate, transaction: tx)
         setFirstBackupDate(nil, tx: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: .lastBackupDetailsDidChange, object: nil)
+        }
     }
 
     // MARK: -
