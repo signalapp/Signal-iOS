@@ -295,6 +295,16 @@ class BackupSettingsViewController:
             },
             Task.detached { [weak self] in
                 for await _ in NotificationCenter.default.notifications(
+                    named: .lastBackupDetailsDidChange,
+                ) {
+                    await MainActor.run { [weak self] in
+                        guard let self else { return }
+                        _lastBackupDetailsDidChange()
+                    }
+                }
+            },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
                     named: .shouldAllowBackupUploadsOnCellularChanged
                 ) {
                     await MainActor.run { [weak self] in
@@ -414,6 +424,13 @@ class BackupSettingsViewController:
             showDisablingBackupsFailedSheet()
         case .disabled, .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             break
+        }
+    }
+
+    private func _lastBackupDetailsDidChange() {
+        db.read { tx in
+            viewModel.lastBackupDate = backupSettingsStore.lastBackupDate(tx: tx)
+            viewModel.lastBackupSizeBytes = backupSettingsStore.lastBackupSizeBytes(tx: tx)
         }
     }
 
