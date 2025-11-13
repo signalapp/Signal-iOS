@@ -183,28 +183,33 @@ class StoryPageViewController: UIPageViewController {
     private struct MuteStatus {
         let isMuted: Bool
         let shouldInitialRingerStateSetMuteState: Bool
-        let appForegroundTime: Date
     }
 
     // Once unmuted, stays that way until the app is backgrounded.
-    private static var muteStatus: MuteStatus?
+    private static var muteStatus: MuteStatus? {
+        didSet {
+            if muteStatus != nil, muteStatusObserver == nil {
+                muteStatusObserver = NotificationCenter.default.addObserver(
+                    forName: UIApplication.willEnterForegroundNotification,
+                    object: nil,
+                    queue: nil,
+                    using: { _ in muteStatus = nil },
+                )
+            }
+        }
+    }
+
+    private static var muteStatusObserver: (any NSObjectProtocol)?
 
     private var isMuted: Bool {
         get {
-            let appForegroundTime = CurrentAppContext().appForegroundTime
-            if
-                let muteStatus = Self.muteStatus,
-                // Mute status is only valid for one foregroundind session,
-                // dedupe by timestamp.
-                muteStatus.appForegroundTime == appForegroundTime
-            {
+            if let muteStatus = Self.muteStatus {
                 return muteStatus.isMuted
             }
             // Start muted, but let the ringer change the setting.
             let muteStatus = MuteStatus(
                 isMuted: true,
                 shouldInitialRingerStateSetMuteState: true,
-                appForegroundTime: CurrentAppContext().appForegroundTime
             )
             Self.muteStatus = muteStatus
             return muteStatus.isMuted
@@ -213,7 +218,6 @@ class StoryPageViewController: UIPageViewController {
             Self.muteStatus = MuteStatus(
                 isMuted: newValue,
                 shouldInitialRingerStateSetMuteState: false,
-                appForegroundTime: CurrentAppContext().appForegroundTime
             )
             viewControllers?.forEach {
                 ($0 as? StoryContextViewController)?.updateMuteState()

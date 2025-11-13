@@ -19,8 +19,6 @@ class NSEContext: NSObject, AppContext {
     func canPresentNotifications() -> Bool { true }
 
     let appLaunchTime = Date()
-    // In NSE foreground and launch are the same.
-    var appForegroundTime: Date { return appLaunchTime }
 
     func appDocumentDirectoryPath() -> String {
         guard let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {

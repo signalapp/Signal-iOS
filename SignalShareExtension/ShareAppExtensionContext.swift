@@ -16,8 +16,6 @@ final class ShareAppExtensionContext: NSObject {
 
     let appLaunchTime = Date()
 
-    let appForegroundTime = Date()
-
     private var notificationCenterObservers = [NSObjectProtocol]()
 
     static private let isRTL: Bool = {

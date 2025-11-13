@@ -84,9 +84,6 @@ public protocol AppContext {
 
     var appLaunchTime: Date { get }
 
-    /// Will be updated every time the app is foregrounded.
-    var appForegroundTime: Date { get }
-
     func appDocumentDirectoryPath() -> String
 
     func appSharedDataDirectoryPath() -> String

@@ -24,7 +24,6 @@ public class TestAppContext: NSObject, AppContext {
 
     public var mainWindow: UIWindow?
     public let appLaunchTime: Date
-    public let appForegroundTime: Date
 
     public override init() {
         // Avoid using OWSTemporaryDirectory(); it can consult the current app context.
@@ -41,7 +40,6 @@ public class TestAppContext: NSObject, AppContext {
         self.internalAppUserDefaults = UserDefaults()
         let launchDate = Date()
         self.appLaunchTime = launchDate
-        self.appForegroundTime = launchDate
 
         super.init()
     }
