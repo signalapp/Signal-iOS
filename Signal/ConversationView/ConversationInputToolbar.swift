@@ -141,6 +141,33 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
     }
 
+    public override func willMove(toSuperview newSuperview: UIView?) {
+        super.willMove(toSuperview: newSuperview)
+
+        // Suggested sticker panel is placed outside of ConversationInputToolbar
+        // and need to be removed manually.
+        if newSuperview == nil, !isStickerPanelHidden {
+            stickerPanel.removeFromSuperview()
+        }
+    }
+
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+
+        guard superview != nil else { return }
+
+        // Show suggested stickers for the draft as soon as we are placed in the view hierarchy.
+        updateSuggestedStickers(animated: false)
+
+        // Probably because of a regression in iOS 26 `keyboardLayoutGuide`,
+        // if first accessed in `calculateCustomKeyboardHeight`, would have an
+        // incorrect height of 34 dp (amount of bottom safe area).
+        // Accessing the layout guide before somehow fixes that issue.
+        if #available(iOS 26, *) {
+            _ = keyboardLayoutGuide
+        }
+    }
+
     func update(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
         if #available(iOS 26, *), let sendButton = trailingEdgeControl as? UIButton {
@@ -3126,17 +3153,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
             animator.startAnimation()
         } else {
             invalidateIntrinsicContentSize()
-        }
-    }
-
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        // Probably because of a regression in iOS 26 `keyboardLayoutGuide`,
-        // if first accessed in `calculateCustomKeyboardHeight`, would have an
-        // incorrect height of 34 dp (amount of bottom safe area).
-        // Accessing the layout guide before somehow fixes that issue.
-        if #available(iOS 26, *), superview != nil {
-            _ = keyboardLayoutGuide
         }
     }
 
