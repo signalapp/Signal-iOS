@@ -29,8 +29,8 @@ public class ViewOnceMessages: NSObject {
         Task {
             while true {
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                var afterRowId: Int64?
                 while true {
-                    var afterRowId: Int64?
                     await databaseStorage.awaitableWrite { tx in
                         let messages: [TSMessage]
                         (messages, afterRowId) = ViewOnceMessageFinder().fetchSomeIncompleteViewOnceMessages(after: afterRowId, limit: 100, tx: tx)
