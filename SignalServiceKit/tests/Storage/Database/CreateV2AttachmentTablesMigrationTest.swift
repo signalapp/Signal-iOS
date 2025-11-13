@@ -422,8 +422,6 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func runMigration() throws {
         try db.write { tx in
-            let tx = tx
-
             // We need a messages and threads table for the foreign keys in
             // the attachments tables.
             // But only create a very minimal table, we don't need other fields
@@ -451,8 +449,6 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func runOriginalAttachmentIdForQuotedReplyMigration() throws {
         try db.write { tx in
-            let tx = tx
-
             // Create the attachment tables, indexes, triggers.
             _ = try GRDBSchemaMigrator.addOriginalAttachmentIdForQuotedReplyColumn(tx)
         }

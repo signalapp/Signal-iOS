@@ -132,7 +132,7 @@ class _IncomingCallLogEventSyncMessageManagerImpl_DeleteAllCallsJobQueue_Wrapper
         deleteAllCallsJobQueue.addJob(
             sendDeleteAllSyncMessage: false,
             deleteAllBefore: deleteAllBefore,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 }

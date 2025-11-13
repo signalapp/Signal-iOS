@@ -110,7 +110,7 @@ public class InteractionStoreImpl: InteractionStore {
         tx: DBReadTransaction
     ) -> TSInteraction? {
         return InteractionFinder.fetch(
-            rowId: interactionRowId, transaction: SDSDB.shimOnlyBridge(tx)
+            rowId: interactionRowId, transaction: tx
         )
     }
 
@@ -118,7 +118,7 @@ public class InteractionStoreImpl: InteractionStore {
         uniqueId: String,
         tx: DBReadTransaction
     ) -> TSInteraction? {
-        return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: tx)
     }
 
     public func findMessage(
@@ -131,7 +131,7 @@ public class InteractionStoreImpl: InteractionStore {
             withTimestamp: timestamp,
             threadId: threadId,
             author: author,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -141,7 +141,7 @@ public class InteractionStoreImpl: InteractionStore {
     ) throws -> [TSInteraction] {
         return try InteractionFinder.fetchInteractions(
             timestamp: timestamp,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -169,13 +169,13 @@ public class InteractionStoreImpl: InteractionStore {
         rowId: Int64,
         tx: DBReadTransaction
     ) -> Bool {
-        return message.insertedMessageHasRenderableContent(rowId: rowId, tx: SDSDB.shimOnlyBridge(tx))
+        return message.insertedMessageHasRenderableContent(rowId: rowId, tx: tx)
     }
 
     // MARK: -
 
     public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
-        interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        interaction.anyInsert(transaction: tx)
     }
 
     public func updateInteraction<InteractionType: TSInteraction>(
@@ -183,7 +183,7 @@ public class InteractionStoreImpl: InteractionStore {
         tx: DBWriteTransaction,
         block: (InteractionType) -> Void
     ) {
-        interaction.anyUpdate(transaction: SDSDB.shimOnlyBridge(tx)) { interaction in
+        interaction.anyUpdate(transaction: tx) { interaction in
             guard let interaction = interaction as? InteractionType else {
                 owsFailBeta("Interaction of unexpected type! \(type(of: interaction))")
                 return
@@ -204,7 +204,7 @@ public class InteractionStoreImpl: InteractionStore {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -220,7 +220,7 @@ public class InteractionStoreImpl: InteractionStore {
             amount: amount,
             fee: fee,
             note: note,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -229,7 +229,7 @@ public class InteractionStoreImpl: InteractionStore {
         from sender: SignalServiceAddress,
         tx: DBWriteTransaction
     ) {
-        interaction.insertOrReplacePlaceholder(from: sender, transaction: SDSDB.shimOnlyBridge(tx))
+        interaction.insertOrReplacePlaceholder(from: sender, transaction: tx)
     }
 
     // MARK: - TSOutgoingMessage state updates
@@ -243,7 +243,7 @@ public class InteractionStoreImpl: InteractionStore {
         message.updateRecipientsFromNonLocalDevice(
             recipientStates,
             isSentUpdate: isSentUpdate,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 

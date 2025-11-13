@@ -10,8 +10,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         _ model: Model,
         transaction: DBWriteTransaction
     ) {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
         guard model.shouldBeSaved else {
             Logger.warn("Skipping delete of \(Model.self).")
             return

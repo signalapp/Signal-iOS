@@ -228,6 +228,6 @@ public class _MessageStickerManager_StickerManagerWrapper: _MessageStickerManage
     public init() {}
 
     public func fetchInstalledSticker(stickerInfo: StickerInfo, tx: DBReadTransaction) -> InstalledSticker? {
-        StickerManager.fetchInstalledSticker(stickerInfo: stickerInfo, transaction: SDSDB.shimOnlyBridge(tx))
+        StickerManager.fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx)
     }
 }

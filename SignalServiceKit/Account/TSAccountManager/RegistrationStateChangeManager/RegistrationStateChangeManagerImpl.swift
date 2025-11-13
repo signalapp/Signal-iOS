@@ -479,7 +479,7 @@ public class _RegistrationStateChangeManagerImpl_PaymentsEventsWrapper: _Registr
     }
 
     public func clearState(tx: DBWriteTransaction) {
-        paymentsEvents.clearState(transaction: SDSDB.shimOnlyBridge(tx))
+        paymentsEvents.clearState(transaction: tx)
     }
 }
 
@@ -499,7 +499,7 @@ public class _RegistrationStateChangeManagerImpl_SenderKeyStoreWrapper: _Registr
     }
 
     public func resetSenderKeyStore(tx: DBWriteTransaction) {
-        senderKeyStore.resetSenderKeyStore(transaction: SDSDB.shimOnlyBridge(tx))
+        senderKeyStore.resetSenderKeyStore(transaction: tx)
     }
 }
 

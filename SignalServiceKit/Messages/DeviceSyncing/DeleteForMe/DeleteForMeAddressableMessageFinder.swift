@@ -45,7 +45,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
             withTimestamp: addressableMessage.sentTimestamp,
             threadId: threadUniqueId,
             author: authorAddress,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -58,7 +58,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
         do {
             try DeleteForMeMostRecentAddressableMessageCursor(
                 threadUniqueId: threadUniqueId,
-                sdsTx: SDSDB.shimOnlyBridge(tx)
+                sdsTx: tx
             ).iterate { interaction in
                 owsPrecondition(
                     interaction is TSIncomingMessage || interaction is TSOutgoingMessage,

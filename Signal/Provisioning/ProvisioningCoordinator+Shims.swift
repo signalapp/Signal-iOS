@@ -46,7 +46,7 @@ public class _ProvisioningCoordinator_MessageFactoryWrapper: _ProvisioningCoordi
         tx: DBWriteTransaction
     ) {
         let infoMessage = TSInfoMessage(thread: thread, messageType: messageType)
-        infoMessage.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        infoMessage.anyInsert(transaction: tx)
     }
 }
 
@@ -72,7 +72,7 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
     }
 
     public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        return profileManager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx))
+        return profileManager.localUserProfile(tx: tx)
     }
 
     public func setLocalProfileKey(
@@ -83,7 +83,7 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
         profileManager.setLocalProfileKey(
             key,
             userProfileWriter: userProfileWriter,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }
@@ -128,7 +128,7 @@ public class _ProvisioningCoordinator_ReceiptManagerWrapper: _ProvisioningCoordi
     }
 
     public func setAreReadReceiptsEnabled(_ areEnabled: Bool, tx: DBWriteTransaction) {
-        receiptManager.setAreReadReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
+        receiptManager.setAreReadReceiptsEnabled(areEnabled, transaction: tx)
     }
 }
 
@@ -152,7 +152,7 @@ public class _ProvisioningCoordinator_SyncManagerWrapper: _ProvisioningCoordinat
     }
 
     public func sendKeysSyncRequestMessage(tx: DBWriteTransaction) {
-        syncManager.sendKeysSyncRequestMessage(transaction: SDSDB.shimOnlyBridge(tx))
+        syncManager.sendKeysSyncRequestMessage(transaction: tx)
     }
 
     public func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(
@@ -179,6 +179,6 @@ public class _ProvisioningCoordinator_UDManagerWrapper: _ProvisioningCoordinator
     public init(_ manager: OWSUDManager) { self.manager = manager }
 
     public func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool {
-        return manager.shouldAllowUnrestrictedAccessLocal(transaction: SDSDB.shimOnlyBridge(tx))
+        return manager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
     }
 }

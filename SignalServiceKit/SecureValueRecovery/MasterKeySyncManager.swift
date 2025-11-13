@@ -135,10 +135,10 @@ class _MasterKeySyncManagerImpl_SyncManager_Wrapper: _MasterKeySyncManagerImpl_S
     }
 
     func sendKeysSyncMessage(tx: DBWriteTransaction) {
-        syncManager.sendKeysSyncMessage(tx: SDSDB.shimOnlyBridge(tx))
+        syncManager.sendKeysSyncMessage(tx: tx)
     }
 
     func sendKeysSyncRequestMessage(tx: DBWriteTransaction) {
-        syncManager.sendKeysSyncRequestMessage(transaction: SDSDB.shimOnlyBridge(tx))
+        syncManager.sendKeysSyncRequestMessage(transaction: tx)
     }
 }

@@ -10,7 +10,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         _ model: Model,
         transaction: DBWriteTransaction
     ) {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
         saveModelToDatabase(model, saveMode: .insert, transaction: transaction)
     }
 
@@ -77,7 +76,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             block(dbCopy)
         }
 
-        saveModelToDatabase(dbCopy, saveMode: .update, transaction: SDSDB.shimOnlyBridge(transaction))
+        saveModelToDatabase(dbCopy, saveMode: .update, transaction: transaction)
     }
 
     /// Immediately persist the given model.
@@ -92,7 +91,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         _ model: Model,
         transaction: DBWriteTransaction
     ) {
-        saveModelToDatabase(model, saveMode: .update, transaction: SDSDB.shimOnlyBridge(transaction))
+        saveModelToDatabase(model, saveMode: .update, transaction: transaction)
     }
 }
 

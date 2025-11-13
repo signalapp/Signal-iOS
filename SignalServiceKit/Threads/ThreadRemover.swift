@@ -97,7 +97,7 @@ class _ThreadRemoverImpl_ThreadReadCacheWrapper: _ThreadRemoverImpl_ThreadReadCa
         self.threadReadCache = threadReadCache
     }
     func didRemove(thread: TSThread, tx: DBWriteTransaction) {
-        threadReadCache.didRemove(thread: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        threadReadCache.didRemove(thread: thread, transaction: tx)
     }
 }
 
@@ -111,7 +111,7 @@ class _ThreadRemoverImpl_DatabaseStorageWrapper: _ThreadRemoverImpl_DatabaseStor
         self.databaseStorage = databaseStorage
     }
     func updateIdMapping(thread: TSThread, tx: DBWriteTransaction) {
-        databaseStorage.updateIdMapping(thread: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        databaseStorage.updateIdMapping(thread: thread, transaction: tx)
     }
 }
 

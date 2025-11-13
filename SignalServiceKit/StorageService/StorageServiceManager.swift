@@ -201,13 +201,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 {
         return StorageServiceOperation.State.current(
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         ).manifestVersion
     }
 
     public func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool {
         return StorageServiceOperation.State.current(
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         ).manifestRecordIkm != nil
     }
 

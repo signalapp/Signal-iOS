@@ -202,7 +202,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
         guard
             let mostRecentInteraction = InteractionFinder(threadUniqueId: contactThread.uniqueId)
-                .mostRecentInteraction(transaction: SDSDB.shimOnlyBridge(tx))
+                .mostRecentInteraction(transaction: tx)
         else {
             /// Weird, because we should at least have a "contact hidden" info
             /// message. Not impossible, though, since we might have deleted the
@@ -319,11 +319,11 @@ private extension RecipientHidingManagerImpl {
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
         if let thread = TSContactThread.getWithContactAddress(
             recipient.address,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         ) {
             Logger.info("[Recipient hiding][side effects] Posting TSInfoMessage.")
             let infoMessage: TSInfoMessage = .makeForContactHidden(contactThread: thread)
-            infoMessage.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            infoMessage.anyInsert(transaction: tx)
 
             // Delete any send message intents.
             Logger.info("[Recipient hiding][side effects] Deleting INIntents.")
@@ -335,7 +335,7 @@ private extension RecipientHidingManagerImpl {
             profileManager.removeUser(
                 fromProfileWhitelist: recipient.address,
                 userProfileWriter: .localUser,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
             let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
@@ -352,7 +352,7 @@ private extension RecipientHidingManagerImpl {
         // from the recipient; delete any existing ones we already have.
         if let aci = recipient.aci {
             Logger.info("[Recipient hiding][side effects] Delete stories from removed user.")
-            StoryManager.deleteAllStories(forSender: aci, tx: SDSDB.shimOnlyBridge(tx))
+            StoryManager.deleteAllStories(forSender: aci, tx: tx)
         }
 
         if
@@ -362,7 +362,7 @@ private extension RecipientHidingManagerImpl {
             !GroupManager.hasMutualGroupThread(
                 with: recipientServiceId,
                 localAci: localAci,
-                tx: SDSDB.shimOnlyBridge(tx)
+                tx: tx
             )
         {
             // Profile key rotations should only be initiated by the primary device
@@ -370,7 +370,7 @@ private extension RecipientHidingManagerImpl {
             // members are authorized to have profile keys of all group members).
             Logger.info("[Recipient hiding][side effects] Rotate profile key.")
             self.profileManager.rotateProfileKeyUponRecipientHide(
-                withTx: SDSDB.shimOnlyBridge(tx)
+                withTx: tx
             )
             // A nice-to-have was to throw out the other user's profile key if we're
             // not in a group with them. Product said this was not strictly necessary.
@@ -401,7 +401,7 @@ private extension RecipientHidingManagerImpl {
             profileManager.addUser(
                 toProfileWhitelist: recipient.address,
                 userProfileWriter: .localUser,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
@@ -410,14 +410,14 @@ private extension RecipientHidingManagerImpl {
         if
             let thread = TSContactThread.getWithContactAddress(
                 recipient.address,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             ),
-            let profileKey = profileManager.localProfileKey(tx: SDSDB.shimOnlyBridge(tx))
+            let profileKey = profileManager.localProfileKey(tx: tx)
         {
             let profileKeyMessage = OWSProfileKeyMessage(
                 thread: thread,
                 profileKey: profileKey.serialize(),
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")
             let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -425,7 +425,7 @@ private extension RecipientHidingManagerImpl {
             )
             self.messageSenderJobQueue.add(
                 message: preparedMessage,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
         }
     }

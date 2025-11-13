@@ -894,7 +894,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     forCallRecords: callRecords,
                     upcomingCallLinkRowId: nil,
                     deps: capturedDeps,
-                    tx: SDSDB.shimOnlyBridge(tx)
+                    tx: tx
                 )
             },
             callViewModelForUpcomingCallLink: { callLinkRowId, tx in
@@ -902,13 +902,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     forCallRecords: [],
                     upcomingCallLinkRowId: callLinkRowId,
                     deps: capturedDeps,
-                    tx: SDSDB.shimOnlyBridge(tx)
+                    tx: tx
                 )
             },
             fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
                 return capturedDeps.callRecordStore.fetch(
                     callRecordId: callRecordId,
-                    tx: SDSDB.shimOnlyBridge(tx)
+                    tx: tx
                 ).unwrapped
             },
             shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls && onlyMatchThreadRowIds == nil

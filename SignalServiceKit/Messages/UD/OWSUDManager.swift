@@ -318,7 +318,7 @@ public class OWSUDManagerImpl: OWSUDManager {
     }
 
     public func removeSenderCertificates(tx: DBWriteTransaction) {
-        removeSenderCertificates(transaction: SDSDB.shimOnlyBridge(tx))
+        removeSenderCertificates(transaction: tx)
     }
 
     private func senderCertificateKey(aciOnly: Bool) -> String {

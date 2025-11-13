@@ -34,22 +34,20 @@ public struct AccountAttributesGenerator {
     ) -> AccountAttributes {
         owsAssertDebug(tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true)
 
-        let sdsTx: DBReadTransaction = SDSDB.shimOnlyBridge(tx)
-
         let isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx: tx)
 
-        guard let profileKey = profileManager.localUserProfile(tx: sdsTx)?.profileKey else {
+        guard let profileKey = profileManager.localUserProfile(tx: tx)?.profileKey else {
             owsFail("Couldn't fetch local profile key.")
         }
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
 
-        let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: sdsTx)
+        let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
         let hasSVRBackups = svrLocalStorage.getIsMasterKeyBackedUp(tx)
 
         let reglockToken: String?
         if
             let _reglockToken = accountKeyStore.getMasterKey(tx: tx)?.data(for: .registrationLock),
-            ows2FAManager.isRegistrationLockV2Enabled(transaction: sdsTx)
+            ows2FAManager.isRegistrationLockV2Enabled(transaction: tx)
         {
             reglockToken = _reglockToken.canonicalStringRepresentation
         } else {

@@ -123,7 +123,7 @@ public class BlockingManager {
     }
 
     public func addBlockedAci(_ aci: Aci, blockMode: BlockMode, tx: DBWriteTransaction) {
-        self.addBlockedAddress(SignalServiceAddress(aci), blockMode: blockMode, transaction: SDSDB.shimOnlyBridge(tx))
+        self.addBlockedAddress(SignalServiceAddress(aci), blockMode: blockMode, transaction: tx)
     }
 
     public func addBlockedAddress(

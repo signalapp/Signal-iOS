@@ -109,7 +109,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         guard
             let config = OWSDisappearingMessagesConfiguration.anyFetch(
                 uniqueId: scope.persistenceKey,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
         else {
             return nil
@@ -147,13 +147,13 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
             : oldConfiguration.copy(withIsEnabled: false, timerVersion: newVersion)
         )
         if newConfiguration.grdbId == nil || newConfiguration != oldConfiguration {
-            newConfiguration.anyUpsert(transaction: SDSDB.shimOnlyBridge(tx))
+            newConfiguration.anyUpsert(transaction: tx)
         }
         return (oldConfiguration, newConfiguration)
     }
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
-        fetch(for: .thread(thread), tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        fetch(for: .thread(thread), tx: tx)?.anyRemove(transaction: tx)
     }
 
     func resetAllDMTimerVersions(tx: DBWriteTransaction) throws {

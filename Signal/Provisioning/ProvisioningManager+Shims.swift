@@ -30,7 +30,7 @@ public class _ProvisioningManager_ReceiptManagerWrapper: _ProvisioningManager_Re
     }
 
     public func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool {
-        return OWSReceiptManager.areReadReceiptsEnabled(transaction: SDSDB.shimOnlyBridge(tx))
+        return OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
     }
 }
 
@@ -46,7 +46,7 @@ public class _ProvisioningManager_ProfileManagerWrapper: _ProvisioningManager_Pr
     }
 
     public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        return profileManager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx))
+        return profileManager.localUserProfile(tx: tx)
     }
 }
 

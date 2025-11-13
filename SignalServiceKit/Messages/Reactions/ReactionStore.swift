@@ -49,26 +49,26 @@ public class ReactionStoreImpl: ReactionStore {
         tx: DBReadTransaction
     ) -> OWSReaction? {
         ReactionFinder(uniqueMessageId: messageId)
-            .reaction(for: aci, tx: SDSDB.shimOnlyBridge(tx))
+            .reaction(for: aci, tx: tx)
     }
 
     public func allReactions(messageId: MessageId, tx: DBReadTransaction) -> [OWSReaction] {
         ReactionFinder(uniqueMessageId: messageId)
-            .allReactions(transaction: SDSDB.shimOnlyBridge(tx))
+            .allReactions(transaction: tx)
     }
 
     public func unreadReactions(messageId: MessageId, tx: DBReadTransaction) -> [OWSReaction] {
         ReactionFinder(uniqueMessageId: messageId)
-            .unreadReactions(transaction: SDSDB.shimOnlyBridge(tx))
+            .unreadReactions(transaction: tx)
     }
 
     public func allUniqueIds(messageId: MessageId, tx: DBReadTransaction) -> [String] {
         ReactionFinder(uniqueMessageId: messageId)
-            .allUniqueIds(transaction: SDSDB.shimOnlyBridge(tx))
+            .allUniqueIds(transaction: tx)
     }
 
     public func deleteAllReactions(messageId: MessageId, tx: DBWriteTransaction) {
         ReactionFinder(uniqueMessageId: messageId)
-            .deleteAllReactions(transaction: SDSDB.shimOnlyBridge(tx))
+            .deleteAllReactions(transaction: tx)
     }
 }

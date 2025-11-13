@@ -995,7 +995,6 @@
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
-		6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF8A297B6FA800F96CFD /* SDSDB.swift */; };
 		6674807C2E32EA52004DA6E9 /* Optional+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */; };
 		6674807E2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
@@ -4977,7 +4976,6 @@
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
-		6673FF8A297B6FA800F96CFD /* SDSDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSDB.swift; sourceTree = "<group>"; };
 		6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+SSK.swift"; sourceTree = "<group>"; };
 		6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingPaymentMessage.swift; sourceTree = "<group>"; };
 		6675F64C2925C012007A311E /* APNSRotationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStore.swift; sourceTree = "<group>"; };
@@ -9768,7 +9766,6 @@
 			children = (
 				6673FF86297B694C00F96CFD /* DB.swift */,
 				6673FF88297B6AF800F96CFD /* DBTransaction.swift */,
-				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
 			);
 			path = V2;
 			sourceTree = "<group>";
@@ -18583,7 +18580,6 @@
 				72A132A72CA25EF0000ACED6 /* SDSCrossProcess.swift in Sources */,
 				F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */,
 				F9C5CD1A289453B300548EEE /* SDSDatabaseStorage.swift in Sources */,
-				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,

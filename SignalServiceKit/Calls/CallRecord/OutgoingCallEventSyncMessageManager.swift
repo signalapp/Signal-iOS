@@ -102,8 +102,6 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         outgoingCallEvent callEvent: OutgoingCallEvent,
         tx syncTx: DBWriteTransaction
     ) {
-        let syncTx = SDSDB.shimOnlyBridge(syncTx)
-
         if appReadiness.isAppReady {
             logger.info("Enqueuing call event sync message: \(callEvent.callType), \(callEvent.eventDirection), \(callEvent.eventType).")
 

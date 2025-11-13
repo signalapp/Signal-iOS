@@ -71,7 +71,7 @@ final class AdHocCallStateObserver {
                 }
                 if callLink.adminPasskey == nil, !callLink.isDeleted {
                     let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
-                    updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: SDSDB.shimOnlyBridge(tx))
+                    updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: tx)
                 }
                 try adHocCallRecordManager.createOrUpdateRecord(
                     callId: callIdFromEra(eraId),

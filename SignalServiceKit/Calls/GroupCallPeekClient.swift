@@ -43,7 +43,7 @@ public class GroupCallPeekClient {
     @MainActor
     public func fetchPeekInfo(groupId: GroupIdentifier) async throws -> PeekInfo {
         let secretParams = try self.db.read { tx in
-            let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: SDSDB.shimOnlyBridge(tx))
+            let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
             return try (groupThread?.groupModel as? TSGroupModelV2)?.secretParams()
         }
         guard let secretParams else {
@@ -83,7 +83,7 @@ public class GroupCallPeekClient {
     }
 
     public func groupMemberInfo(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) throws -> [GroupMemberInfo] {
-        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: SDSDB.shimOnlyBridge(tx))
+        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
         guard let groupModel = groupThread?.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Expected V2 group model!")
         }

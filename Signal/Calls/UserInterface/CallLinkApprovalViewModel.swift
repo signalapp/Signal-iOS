@@ -78,7 +78,7 @@ class CallLinkApprovalViewModel: ObservableObject {
         let names = self.deps.db.read { tx in
             self.deps.contactsManager.displayNames(
                 for: acis.map(SignalServiceAddress.init),
-                tx: SDSDB.shimOnlyBridge(tx)
+                tx: tx
             )
         }.map { displayName in
             displayName.resolvedValue(config: nameConfig, useShortNameIfAvailable: false)

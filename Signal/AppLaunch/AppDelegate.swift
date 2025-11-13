@@ -655,7 +655,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 SSKEnvironment.shared.udManagerRef.setPhoneNumberSharingMode(
                     .nobody,
                     updateStorageServiceAndProfile: true,
-                    tx: SDSDB.shimOnlyBridge(tx)
+                    tx: tx
                 )
             }
         }

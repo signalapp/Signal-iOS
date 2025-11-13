@@ -239,10 +239,10 @@ public class _BackupArchiveFullTextSearchIndexerImpl_FullTextSearchIndexerWrappe
     public init() {}
 
     public func insert(_ message: TSMessage, tx: DBWriteTransaction) throws {
-        try FullTextSearchIndexer.insert(message, tx: SDSDB.shimOnlyBridge(tx))
+        try FullTextSearchIndexer.insert(message, tx: tx)
     }
 
     public func update(_ message: TSMessage, tx: DBWriteTransaction) throws {
-        try FullTextSearchIndexer.update(message, tx: SDSDB.shimOnlyBridge(tx))
+        try FullTextSearchIndexer.update(message, tx: tx)
     }
 }

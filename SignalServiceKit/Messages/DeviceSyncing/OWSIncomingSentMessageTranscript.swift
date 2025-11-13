@@ -375,7 +375,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         } else if let recipientAddress {
             let thread = TSContactThread.getOrCreateThread(
                 withContactAddress: recipientAddress,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             return .contact(
                 thread,

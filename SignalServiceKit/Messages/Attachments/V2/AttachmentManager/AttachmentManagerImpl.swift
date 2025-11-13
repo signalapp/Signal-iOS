@@ -1348,6 +1348,6 @@ public class _AttachmentManagerImpl_StickerManagerWrapper: _AttachmentManagerImp
     public init() {}
 
     public func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker? {
-        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: SDSDB.shimOnlyBridge(tx))
+        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: tx)
     }
 }

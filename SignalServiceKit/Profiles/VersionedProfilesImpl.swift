@@ -359,7 +359,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
     }
 
     public func clearProfileKeyCredentials(tx: DBWriteTransaction) {
-        clearProfileKeyCredentials(transaction: SDSDB.shimOnlyBridge(tx))
+        clearProfileKeyCredentials(transaction: tx)
     }
 }
 

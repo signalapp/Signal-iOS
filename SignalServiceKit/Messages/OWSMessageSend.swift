@@ -36,7 +36,7 @@ final class SealedSenderParameters {
     /// Fetches a group ID to attache to the message envelope, to assist error
     /// handling in the case of decryption error.
     func envelopeGroupId(tx: DBReadTransaction) -> Data? {
-        return message.envelopeGroupIdWithTransaction(SDSDB.shimOnlyBridge(tx))
+        return message.envelopeGroupIdWithTransaction(tx)
     }
 }
 

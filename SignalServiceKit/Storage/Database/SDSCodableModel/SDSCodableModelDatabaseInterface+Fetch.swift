@@ -44,13 +44,9 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         arguments: StatementArguments,
         transaction: DBReadTransaction
     ) -> Model? {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
-        let grdbTransaction = transaction
-
         do {
             let model = try modelType.fetchOne(
-                grdbTransaction.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             )
@@ -71,8 +67,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction
     ) -> [Model] {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
         do {
             let sql: String = """
                 SELECT * FROM \(modelType.databaseTableName)
@@ -97,8 +91,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction
     ) -> UInt {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
         return modelType.ows_fetchCount(transaction.database)
     }
 }

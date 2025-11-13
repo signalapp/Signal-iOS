@@ -53,11 +53,11 @@ public enum JobAttemptResult<Success> {
         tx: DBWriteTransaction
     ) -> JobAttemptResult {
         if jobRecord.failureCount < retryLimit, error.isRetryable {
-            jobRecord.addFailure(tx: SDSDB.shimOnlyBridge(tx))
+            jobRecord.addFailure(tx: tx)
             let delay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount, maxAverageBackoff: 14.1 * .minute)
             return .retryAfter(delay, canRetryEarly: true)
         } else {
-            jobRecord.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+            jobRecord.anyRemove(transaction: tx)
             return .finished(.failure(error))
         }
     }

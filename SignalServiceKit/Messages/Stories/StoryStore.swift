@@ -70,13 +70,13 @@ public class StoryStoreImpl: StoryStore {
         rowId storyMessageRowId: Int64,
         tx: DBReadTransaction
     ) -> StoryMessage? {
-        return StoryMessage.anyFetch(rowId: storyMessageRowId, transaction: SDSDB.shimOnlyBridge(tx))
+        return StoryMessage.anyFetch(rowId: storyMessageRowId, transaction: tx)
     }
 
     public func getOrCreateStoryContextAssociatedData(for aci: Aci, tx: DBReadTransaction) -> StoryContextAssociatedData {
         return StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .contact(contactAci: aci),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -86,7 +86,7 @@ public class StoryStoreImpl: StoryStore {
     ) -> StoryContextAssociatedData {
         return StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .group(groupId: groupThread.groupId),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -105,15 +105,15 @@ public class StoryStoreImpl: StoryStore {
             lastReceivedTimestamp: lastReceivedTimestamp,
             lastReadTimestamp: lastReadTimestamp,
             lastViewedTimestamp: lastViewedTimestamp,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
     public func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread {
-        return TSPrivateStoryThread.getOrCreateMyStory(transaction: SDSDB.shimOnlyBridge(tx))
+        return TSPrivateStoryThread.getOrCreateMyStory(transaction: tx)
     }
 
     public func insert(storyThread: TSPrivateStoryThread, tx: DBWriteTransaction) {
-        storyThread.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        storyThread.anyInsert(transaction: tx)
     }
 }

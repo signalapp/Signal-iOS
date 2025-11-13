@@ -138,9 +138,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         logger.info("Deleted \(deletedCount) messages for thread \(threadUniqueId), isFullThreadDelete \(fullThreadDeletionAnchorMessageRowId != nil).")
 
         await db.awaitableWrite { tx in
-            let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
-
-            jobRecord.anyRemove(transaction: sdsTx)
+            jobRecord.anyRemove(transaction: tx)
 
             guard
                 let fullThreadDeletionAnchorMessageRowId,
@@ -175,7 +173,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
             ) {
                 self.logger.warn("Not doing thread soft-delete – thread contains addressable messages after delete.")
             } else if InteractionFinder(threadUniqueId: threadUniqueId)
-                .mostRecentRowId(tx: sdsTx) > fullThreadDeletionAnchorMessageRowId
+                .mostRecentRowId(tx: tx) > fullThreadDeletionAnchorMessageRowId
             {
                 self.logger.warn("Not doing thread soft-delete – most recent row ID was newer than when we started delete.")
             } else {

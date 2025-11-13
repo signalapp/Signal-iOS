@@ -300,9 +300,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
         timestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
-        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: sdsTx) else {
+        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
             return
         }
 
@@ -314,7 +312,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
                 timestamp: timestamp
             ),
             localThread: localThread,
-            tx: sdsTx
+            tx: tx
         )
 
         let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -322,7 +320,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
         )
         messageSenderJobQueue.add(
             message: preparedMessage,
-            transaction: sdsTx
+            transaction: tx
         )
     }
 }

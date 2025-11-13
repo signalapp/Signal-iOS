@@ -384,7 +384,7 @@ class EditManagerTests: SSKBaseTest {
             _ builder: TSOutgoingMessageBuilder,
             tx: DBReadTransaction
         ) -> TSOutgoingMessage {
-            return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+            return builder.build(transaction: tx)
         }
 
         var isContactShare = false

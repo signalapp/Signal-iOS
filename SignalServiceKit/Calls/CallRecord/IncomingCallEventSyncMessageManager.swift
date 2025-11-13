@@ -657,8 +657,6 @@ final class _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl: _IncomingCa
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        let tx = SDSDB.shimOnlyBridge(tx)
-
         if !callInteraction.wasRead {
             callInteraction.markAsRead(
                 atTimestamp: syncMessageTimestamp,

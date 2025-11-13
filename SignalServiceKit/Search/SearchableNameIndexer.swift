@@ -209,10 +209,10 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
 
     func indexEverything(tx: DBWriteTransaction) {
         indexThreads(tx: tx)
-        SignalAccount.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { signalAccount, _ in
+        SignalAccount.anyEnumerate(transaction: tx) { signalAccount, _ in
             insert(signalAccount, tx: tx)
         }
-        OWSUserProfile.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { userProfile, _ in
+        OWSUserProfile.anyEnumerate(transaction: tx) { userProfile, _ in
             insert(userProfile, tx: tx)
         }
         signalRecipientStore.enumerateAll(tx: tx) { signalRecipient in
@@ -227,7 +227,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
     }
 
     func indexThreads(tx: DBWriteTransaction) {
-        TSThread.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { thread, _ in
+        TSThread.anyEnumerate(transaction: tx) { thread, _ in
             insert(thread, tx: tx)
         }
     }

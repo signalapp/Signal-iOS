@@ -42,7 +42,6 @@ public class NameResolverImpl: NameResolver {
     }
 
     public func displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName {
-        let tx = SDSDB.shimOnlyBridge(tx)
         checkTransaction(transaction: tx)
         return cachedValue(
             for: address,

@@ -336,7 +336,7 @@ public class MessageSenderJobQueue {
             if CurrentAppContext().isMainApp {
                 do {
                     let jobRecords = try await jobRecordFinder.loadRunnableJobs(updateRunnableJobRecord: { jobRecord, tx in
-                        self.didMarkAsReady(oldJobRecord: jobRecord, transaction: SDSDB.shimOnlyBridge(tx))
+                        self.didMarkAsReady(oldJobRecord: jobRecord, transaction: tx)
                     })
                     let jobRecordUniqueIds = Set(jobRecords.lazy.map(\.uniqueId))
                     self.state.update {

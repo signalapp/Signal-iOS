@@ -201,7 +201,7 @@ private class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper
             forPreviewableInteraction: groupCallInteraction,
             thread: groupThread,
             wantsSound: true,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }

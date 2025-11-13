@@ -154,64 +154,62 @@ public class ThreadStoreImpl: ThreadStore {
     public init() {}
 
     public func enumerateNonStoryThreads(tx: DBReadTransaction, block: (TSThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateNonStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
+        return try ThreadFinder().enumerateNonStoryThreads(transaction: tx, block: block)
     }
 
     public func enumerateStoryThreads(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
+        return try ThreadFinder().enumerateStoryThreads(transaction: tx, block: block)
     }
 
     public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateGroupThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
+        return try ThreadFinder().enumerateGroupThreads(transaction: tx, block: block)
     }
 
     public func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread? {
-        return ThreadFinder().fetch(rowId: rowId, tx: SDSDB.shimOnlyBridge(tx))
+        return ThreadFinder().fetch(rowId: rowId, tx: tx)
     }
 
     public func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
-        TSThread.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        TSThread.anyFetch(uniqueId: uniqueId, transaction: tx)
     }
 
     public func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
-        ContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        ContactThreadFinder().contactThreads(for: serviceId, tx: tx)
     }
 
     public func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
-        ContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+        ContactThreadFinder().contactThreads(for: phoneNumber, tx: tx)
     }
 
     public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
-        TSGroupThread.fetch(groupId: groupId, transaction: SDSDB.shimOnlyBridge(tx))
+        TSGroupThread.fetch(groupId: groupId, transaction: tx)
     }
 
     public func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool {
-        ThreadFinder().hasPendingMessageRequest(thread: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        ThreadFinder().hasPendingMessageRequest(thread: thread, transaction: tx)
     }
 
     public func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread? {
-        return TSContactThread.getOrCreateLocalThread(transaction: SDSDB.shimOnlyBridge(tx))
+        return TSContactThread.getOrCreateLocalThread(transaction: tx)
     }
 
     public func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread {
-        return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
+        return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
     }
 
     public func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
         let newGroupThread = TSGroupThread(groupModel: groupModel)
-        newGroupThread.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        newGroupThread.anyInsert(transaction: tx)
         return newGroupThread
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
-        let tx = SDSDB.shimOnlyBridge(tx)
-
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
         tx.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [thread.uniqueId])
     }
 
     public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
-        thread.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+        thread.anyOverwritingUpdate(transaction: tx)
     }
 
     public func update(
@@ -222,7 +220,7 @@ public class ThreadStoreImpl: ThreadStore {
     ) {
         groupThread.updateWithStorySendEnabled(
             storySendEnabled,
-            transaction: SDSDB.shimOnlyBridge(tx),
+            transaction: tx,
             updateStorageService: updateStorageService
         )
     }
@@ -232,7 +230,7 @@ public class ThreadStoreImpl: ThreadStore {
         with groupModel: TSGroupModel,
         tx: DBWriteTransaction
     ) {
-        groupThread.update(with: groupModel, transaction: SDSDB.shimOnlyBridge(tx))
+        groupThread.update(with: groupModel, transaction: tx)
     }
 
     public func update(
@@ -240,11 +238,11 @@ public class ThreadStoreImpl: ThreadStore {
         withShouldThreadBeVisible shouldBeVisible: Bool,
         tx: DBWriteTransaction
     ) {
-        thread.updateWithShouldThreadBeVisible(shouldBeVisible, transaction: SDSDB.shimOnlyBridge(tx))
+        thread.updateWithShouldThreadBeVisible(shouldBeVisible, transaction: tx)
     }
 
     public func fetchOrDefaultAssociatedData(for thread: TSThread, tx: DBReadTransaction) -> ThreadAssociatedData {
-        return ThreadAssociatedData.fetchOrDefault(for: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        return ThreadAssociatedData.fetchOrDefault(for: thread, transaction: tx)
     }
 
     public func updateAssociatedData(
@@ -262,7 +260,7 @@ public class ThreadStoreImpl: ThreadStore {
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
             updateStorageService: updateStorageService,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -275,7 +273,7 @@ public class ThreadStoreImpl: ThreadStore {
         thread.updateWithMentionNotificationMode(
             mode,
             wasLocallyInitiated: wasLocallyInitiated,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }

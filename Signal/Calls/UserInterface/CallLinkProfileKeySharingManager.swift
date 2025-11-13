@@ -37,7 +37,7 @@ public class CallLinkProfileKeySharingManager {
                 let address = SignalServiceAddress(aci)
                 let isBlocked = blockingManager.isAddressBlocked(
                     address,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
 
                 let isEligible = !isLocal && !isBlocked
@@ -55,7 +55,7 @@ public class CallLinkProfileKeySharingManager {
         self.consideredAcis.formUnion(eligibleAcisNotSentProfileKeyYet)
         db.asyncWrite { tx in
             let profileManager = SSKEnvironment.shared.profileManagerRef
-            let profileKey = profileManager.localProfileKey(tx: SDSDB.shimOnlyBridge(tx))!
+            let profileKey = profileManager.localProfileKey(tx: tx)!
             for aci in eligibleAcisNotSentProfileKeyYet {
                 self.sendProfileKey(profileKey, toAci: aci, tx: tx)
             }
@@ -67,7 +67,7 @@ public class CallLinkProfileKeySharingManager {
         let profileKeyMessage = OWSProfileKeyMessage(
             thread: thread,
             profileKey: profileKey.serialize(),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: profileKeyMessage
@@ -75,7 +75,7 @@ public class CallLinkProfileKeySharingManager {
         let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,
             message: preparedMessage,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
         Task { @MainActor in
             do {

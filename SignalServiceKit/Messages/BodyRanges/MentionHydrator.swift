@@ -41,7 +41,7 @@ public class ContactsMentionHydrator {
         let address = SignalServiceAddress(mentionAci)
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: address,
-            tx: SDSDB.shimOnlyBridge(transaction)
+            tx: transaction
         ).resolvedValue()
         return (address, displayName)
     }

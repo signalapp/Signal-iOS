@@ -345,7 +345,7 @@ class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operatio
     }
 
     func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey] {
-        db.read { tx in udManager.fetchAllAciUakPairs(tx: SDSDB.shimOnlyBridge(tx)) }
+        db.read { tx in udManager.fetchAllAciUakPairs(tx: tx) }
     }
 }
 

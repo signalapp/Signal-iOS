@@ -49,7 +49,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
                 ViewOnceMessages.markAsComplete(
                     message: message,
                     sendSyncMessages: true,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             }
         }

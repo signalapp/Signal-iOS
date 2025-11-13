@@ -48,11 +48,11 @@ public class _SVR2_OWS2FAManagerWrapper: SVR2.Shims.OWS2FAManager {
     public init(_ manager: OWS2FAManager) { self.manager = manager }
 
     public func pinCode(transaction: DBReadTransaction) -> String? {
-        return manager.pinCode(transaction: SDSDB.shimOnlyBridge(transaction))
+        return manager.pinCode(transaction: transaction)
     }
 
     public func markDisabled(transaction: DBWriteTransaction) {
-        manager.markDisabled(transaction: SDSDB.shimOnlyBridge(transaction))
+        manager.markDisabled(transaction: transaction)
     }
 }
 

@@ -259,11 +259,10 @@ public final class OWSDisappearingMessagesJob: NSObject {
     }
 
     private func deleteSomeExpiredMessages(tx: DBWriteTransaction) throws -> Int {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
         let now = Date.ows_millisecondTimestamp()
-        let rowIds = try InteractionFinder.fetchSomeExpiredMessageRowIds(now: now, limit: Constants.fetchCount, tx: sdsTx)
+        let rowIds = try InteractionFinder.fetchSomeExpiredMessageRowIds(now: now, limit: Constants.fetchCount, tx: tx)
         for rowId in rowIds {
-            guard let message = InteractionFinder.fetch(rowId: rowId, transaction: sdsTx) else {
+            guard let message = InteractionFinder.fetch(rowId: rowId, transaction: tx) else {
                 // We likely hit a database error that's not exposed to us. It's important
                 // that we stop in this case to avoid infinite loops.
                 throw OWSAssertionError("Couldn't fetch message that must exist.")
@@ -282,7 +281,6 @@ public final class OWSDisappearingMessagesJob: NSObject {
     }
 
     private func deleteSomeExpiredStories(tx: DBWriteTransaction) throws -> Int {
-        let tx = SDSDB.shimOnlyBridge(tx)
         let now = Date.ows_millisecondTimestamp()
         let storyMessages = try StoryFinder.fetchSomeExpiredStories(now: now, limit: Constants.fetchCount, tx: tx)
         for storyMessage in storyMessages {

@@ -113,7 +113,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             boostPaymentIntentID: boostPaymentIntentID
         )
 
-        jobRecord.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        jobRecord.anyInsert(transaction: tx)
 
         return jobRecord
     }
@@ -160,7 +160,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             boostPaymentIntentID: String() // Unused
         )
 
-        jobRecord.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        jobRecord.anyInsert(transaction: tx)
 
         return jobRecord
     }

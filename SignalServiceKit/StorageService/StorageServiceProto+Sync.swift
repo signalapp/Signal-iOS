@@ -519,10 +519,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let anyAddress = SignalServiceAddress(serviceIds.aciOrElsePni)
 
         // Gather some local contact state to do comparisons against.
-        let localIsBlocked = blockingManager.isAddressBlocked(anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        let localIsBlocked = blockingManager.isAddressBlocked(anyAddress, transaction: tx)
         let localIsHidden = recipientHidingManager.isHiddenAddress(anyAddress, tx: tx)
-        let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
-        let localUserProfile = profileManager.userProfile(for: anyAddress, tx: SDSDB.shimOnlyBridge(tx))
+        let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: tx)
+        let localUserProfile = profileManager.userProfile(for: anyAddress, tx: tx)
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
@@ -595,9 +595,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // If our local blocked state differs from the service state, use the service's value.
         if record.blocked != localIsBlocked {
             if record.blocked {
-                blockingManager.addBlockedAddress(anyAddress, blockMode: .remote, transaction: SDSDB.shimOnlyBridge(tx))
+                blockingManager.addBlockedAddress(anyAddress, blockMode: .remote, transaction: tx)
             } else {
-                blockingManager.removeBlockedAddress(anyAddress, wasLocallyInitiated: false, transaction: SDSDB.shimOnlyBridge(tx))
+                blockingManager.removeBlockedAddress(anyAddress, wasLocallyInitiated: false, transaction: tx)
             }
         }
 
@@ -629,39 +629,39 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 profileManager.addUser(
                     toProfileWhitelist: anyAddress,
                     userProfileWriter: .storageService,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             } else {
                 profileManager.removeUser(
                     fromProfileWhitelist: anyAddress,
                     userProfileWriter: .storageService,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             }
         }
 
-        let localThread = TSContactThread.getOrCreateThread(withContactAddress: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
-        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: SDSDB.shimOnlyBridge(tx))
+        let localThread = TSContactThread.getOrCreateThread(withContactAddress: anyAddress, transaction: tx)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: tx)
 
         if record.archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: tx)
         }
 
         if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: tx)
         }
 
         if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: tx)
         }
 
         if let aci = serviceIds.aci {
             let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
                 sourceContext: .contact(contactAci: aci),
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             if record.hideStory != localStoryContextAssociatedData.isHidden {
-                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: SDSDB.shimOnlyBridge(tx))
+                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: tx)
             }
         }
 
@@ -739,7 +739,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         let localAccount = contactsManager.fetchSignalAccount(
             forPhoneNumber: phoneNumber,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
 
         if isPrimaryDevice {
@@ -802,15 +802,15 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             // case and `didModifySignalAccount` will remain false.
             var didModifySignalAccount = false
             if let localAccount {
-                localAccount.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+                localAccount.anyRemove(transaction: tx)
                 didModifySignalAccount = true
             }
             if let newAccount {
-                newAccount.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+                newAccount.anyInsert(transaction: tx)
                 didModifySignalAccount = true
             }
             if didModifySignalAccount {
-                contactsManager.didUpdateSignalAccounts(transaction: SDSDB.shimOnlyBridge(tx))
+                contactsManager.didUpdateSignalAccounts(transaction: tx)
             }
             let aciToUpdate = SignalAccount.aciForPhoneNumberVisibilityUpdate(
                 oldAccount: localAccount,

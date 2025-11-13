@@ -54,7 +54,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             withTimestamp: timestamp,
             threadId: thread.uniqueId,
             author: .init(quoteAuthor),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
         switch originalMessage {
         case .some(let originalMessage):
@@ -666,7 +666,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     withTimestamp: originalMessageTimestamp,
                     threadId: draft.threadUniqueId,
                     author: draft.originalMessageAuthorAddress,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             else {
                 return (nil, nil)
@@ -734,7 +734,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 withTimestamp: originalMessageTimestamp,
                 threadId: draft.threadUniqueId,
                 author: draft.originalMessageAuthorAddress,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
         else {
             return .withoutFinalizer(TSQuotedMessage(

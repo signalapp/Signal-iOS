@@ -2658,7 +2658,7 @@ public class _AttachmentDownloadManagerImpl_ProfileManagerWrapper: _AttachmentDo
     }
 
     public func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool {
-        profileManager.isThread(inProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
     }
 }
 
@@ -2673,7 +2673,7 @@ public class _AttachmentDownloadManagerImpl_StickerManagerWrapper: _AttachmentDo
     public init() {}
 
     public func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker? {
-        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: SDSDB.shimOnlyBridge(tx))
+        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: tx)
     }
 
     public func stickerDataUrl(forInstalledSticker: InstalledSticker, verifyExists: Bool) -> URL? {

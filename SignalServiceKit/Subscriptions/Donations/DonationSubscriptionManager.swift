@@ -429,7 +429,7 @@ public enum DonationSubscriptionManager {
             let donationSubscriptionManager: DonationSubscriptionManager.Type
 
             func subscriberId(tx: DBReadTransaction) -> Data? {
-                return donationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
+                return donationSubscriptionManager.getSubscriberID(transaction: tx)
             }
 
             func getLastRedemptionNecessaryCheck(tx: DBReadTransaction) -> Date? {

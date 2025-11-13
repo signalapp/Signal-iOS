@@ -68,6 +68,6 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
             return
         }
 
-        groupThread.update(with: newGroupModel, transaction: SDSDB.shimOnlyBridge(tx))
+        groupThread.update(with: newGroupModel, transaction: tx)
     }
 }

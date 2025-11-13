@@ -54,7 +54,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
     }
 
     public func removeJob(_ jobRecord: JobRecordType, tx: DBWriteTransaction) {
-        jobRecord.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        jobRecord.anyRemove(transaction: tx)
     }
 
     public func loadRunnableJobs(updateRunnableJobRecord: @escaping (JobRecordType, DBWriteTransaction) -> Void) async throws -> [JobRecordType] {

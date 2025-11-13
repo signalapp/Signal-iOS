@@ -466,17 +466,15 @@ final class _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Wrapper
         localThread: TSContactThread,
         tx: DBWriteTransaction
     ) {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
         guard let syncMessage = DeleteForMeOutgoingSyncMessage(
             contents: contents,
             localThread: localThread,
-            tx: sdsTx
+            tx: tx
         ) else { return }
 
         messageSenderJobQueue.add(
             message: .preprepared(transientMessageWithoutAttachments: syncMessage),
-            transaction: sdsTx
+            transaction: tx
         )
     }
 }

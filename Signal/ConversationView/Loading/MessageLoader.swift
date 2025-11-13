@@ -366,7 +366,7 @@ class MessageLoader {
 
 extension InteractionReadCache: MessageLoaderInteractionFetcher {
     func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
-        return getInteractionsIfInCache(for: Array(uniqueIds), transaction: SDSDB.shimOnlyBridge(tx))
+        return getInteractionsIfInCache(for: Array(uniqueIds), transaction: tx)
     }
 }
 
@@ -376,7 +376,7 @@ class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
     func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
         let fetchedInteractions = InteractionFinder.interactions(
             withInteractionIds: Set(uniqueIds),
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
         return Dictionary(uniqueKeysWithValues: fetchedInteractions.lazy.map { ($0.uniqueId, $0) })
     }
@@ -399,7 +399,7 @@ class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
         try interactionFinder.fetchUniqueIdsForConversationView(
             rowIdFilter: filter,
             limit: limit,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 }

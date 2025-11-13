@@ -540,7 +540,7 @@ extension OWSProfileManager: ProfileManager {
     ) -> Promise<Void> {
         Logger.info("")
 
-        let profileChanges = currentPendingProfileChanges(tx: SDSDB.shimOnlyBridge(tx))
+        let profileChanges = currentPendingProfileChanges(tx: tx)
         return updateLocalProfile(
             profileGivenName: .noChange,
             profileFamilyName: .noChange,
@@ -551,7 +551,7 @@ extension OWSProfileManager: ProfileManager {
             unsavedRotatedProfileKey: unsavedRotatedProfileKey,
             userProfileWriter: profileChanges?.userProfileWriter ?? .reupload,
             authedAccount: authedAccount,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 
@@ -969,7 +969,7 @@ extension OWSProfileManager: ProfileManager {
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,
             userProfileWriter: userProfileWriter,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
 
         if onlyFillInIfMissing, userProfile.profileKey != nil {
@@ -983,14 +983,14 @@ extension OWSProfileManager: ProfileManager {
         if let aci = serviceId as? Aci {
             // Whenever a user's profile key changes, we need to fetch a new
             // profile key credential for them.
-            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
+            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: aci, transaction: tx)
         }
 
         // If this is the profile for the local user, we always want to defer to local state
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
             if let aci = serviceId as? Aci {
-                SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(.unknown, for: aci, tx: SDSDB.shimOnlyBridge(tx))
+                SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(.unknown, for: aci, tx: tx)
             }
             if shouldFetchProfile {
                 tx.addSyncCompletion {
@@ -1003,7 +1003,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -1568,7 +1568,7 @@ extension OWSProfileManager: ProfileManager {
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,
             userProfileWriter: userProfileWriter,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
 
         // lastMessagingDate is coarse; we don't need to track every single message
@@ -1581,7 +1581,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             lastMessagingDate: .setTo(Date()),
             userProfileWriter: userProfileWriter,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }

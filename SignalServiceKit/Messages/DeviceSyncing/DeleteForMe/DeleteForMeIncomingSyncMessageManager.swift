@@ -293,7 +293,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             anchorMessageRowId: localAnchorMessage.sqliteRowId!,
             isFullThreadDelete: isFullDelete,
             threadUniqueId: conversation.threadUniqueId,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 

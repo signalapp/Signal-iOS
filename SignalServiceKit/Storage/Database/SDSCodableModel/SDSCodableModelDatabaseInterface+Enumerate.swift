@@ -18,7 +18,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         batchingPreference: BatchingPreference,
         block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
             modelType: modelType,
@@ -39,7 +38,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         batchingPreference: BatchingPreference,
         block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
             modelType: modelType,

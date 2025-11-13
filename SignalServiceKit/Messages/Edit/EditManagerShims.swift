@@ -65,7 +65,7 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
             thread: thread,
             targetMessageTimestamp: targetMessageTimestamp,
             editMessage: editMessage,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
@@ -73,7 +73,7 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         _ builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
-        return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+        return builder.build(transaction: tx)
     }
 
     public func isMessageContactShare(_ message: TSMessage) -> Bool {
@@ -87,7 +87,7 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
     ) {
         message.updateWithRecipientAddressStates(
             recipientAddressStates,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 
@@ -95,14 +95,14 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         _ message: TSMessage,
         tx: DBWriteTransaction
     ) {
-        message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        message.anyInsert(transaction: tx)
     }
 
     public func overwritingUpdate(
         _ message: TSMessage,
         tx: DBWriteTransaction
     ) {
-        message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+        message.anyOverwritingUpdate(transaction: tx)
     }
 }
 
@@ -134,7 +134,7 @@ public struct _EditManagerImpl_ReceiptManagerWrapper: EditManagerImpl.Shims.Rece
             message,
             thread: thread,
             circumstance: circumstance,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }

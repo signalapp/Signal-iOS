@@ -359,7 +359,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
                 ExperienceUpgradeManager.clearExperienceUpgrade(
                     .newLinkedDeviceNotification,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: tx
                 )
             }
         }

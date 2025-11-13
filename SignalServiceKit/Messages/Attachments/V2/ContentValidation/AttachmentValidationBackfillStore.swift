@@ -17,7 +17,7 @@ public class AttachmentValidationBackfillStore {
         if backfillsThatNeedEnqueuing(tx: tx).isEmpty.negated {
             return true
         }
-        if try getNextAttachmentIdBatch(tx: SDSDB.shimOnlyBridge(tx)).isEmpty.negated {
+        if try getNextAttachmentIdBatch(tx: tx).isEmpty.negated {
             return true
         }
         return false

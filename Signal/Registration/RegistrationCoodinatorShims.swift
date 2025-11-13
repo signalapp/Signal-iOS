@@ -149,11 +149,11 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
     public init() {}
 
     public func clearIntroducingPinsExperience(_ tx: DBWriteTransaction) {
-        ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge(tx))
+        ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: tx)
     }
 
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {
-        GetStartedBannerViewController.enableAllCards(writeTx: SDSDB.shimOnlyBridge(tx))
+        GetStartedBannerViewController.enableAllCards(writeTx: tx)
     }
 }
 
@@ -246,27 +246,27 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
     public init(_ manager: OWS2FAManager) { self.manager = manager }
 
     public func pinCode(_ tx: DBReadTransaction) -> String? {
-        return manager.pinCode(transaction: SDSDB.shimOnlyBridge(tx))
+        return manager.pinCode(transaction: tx)
     }
 
     public func clearLocalPinCode(_ tx: DBWriteTransaction) {
-        return manager.clearLocalPinCode(transaction: SDSDB.shimOnlyBridge(tx))
+        return manager.clearLocalPinCode(transaction: tx)
     }
 
     public func isReglockEnabled(_ tx: DBReadTransaction) -> Bool {
-        return manager.isRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
+        return manager.isRegistrationLockV2Enabled(transaction: tx)
     }
 
     public func markPinEnabled(pin: String, resetReminderInterval: Bool, tx: DBWriteTransaction) {
         manager.markEnabled(
             pin: pin,
             resetReminderInterval: resetReminderInterval,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 
     public func markRegistrationLockEnabled(_ tx: DBWriteTransaction) {
-        manager.markRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
+        manager.markRegistrationLockV2Enabled(transaction: tx)
     }
 }
 
@@ -296,7 +296,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     public init(_ manager: ProfileManager) { self.manager = manager }
 
     public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        return manager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx))
+        return manager.localUserProfile(tx: tx)
     }
 
     public func updateLocalProfile(
@@ -316,7 +316,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             unsavedRotatedProfileKey: nil,
             userProfileWriter: .registration,
             authedAccount: authedAccount,
-            tx: SDSDB.shimOnlyBridge(tx)
+            tx: tx
         )
     }
 
@@ -414,11 +414,11 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
     public init(_ manager: OWSReceiptManager) { self.manager = manager }
 
     public func setAreReadReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
-        manager.setAreReadReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
+        manager.setAreReadReceiptsEnabled(areEnabled, transaction: tx)
     }
 
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
-        StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
+        StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: tx)
     }
 }
 
@@ -514,7 +514,7 @@ public class _RegistrationCoordinator_UDManagerWrapper: _RegistrationCoordinator
     public init(_ manager: OWSUDManager) { self.manager = manager }
 
     public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
-        return manager.shouldAllowUnrestrictedAccessLocal(transaction: SDSDB.shimOnlyBridge(transaction))
+        return manager.shouldAllowUnrestrictedAccessLocal(transaction: transaction)
     }
 }
 

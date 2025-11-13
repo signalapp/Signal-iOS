@@ -167,7 +167,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 interaction: interaction,
                 knownAssociatedCallRecord: nil,
                 sideEffects: sideEffects,
-                tx: SDSDB.shimOnlyBridge(tx)
+                tx: tx
             )
         }
 
@@ -197,7 +197,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 interaction: associatedInteraction,
                 knownAssociatedCallRecord: callRecord,
                 sideEffects: sideEffects,
-                tx: SDSDB.shimOnlyBridge(tx)
+                tx: tx
             )
         }
 

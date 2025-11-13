@@ -18,9 +18,7 @@ public protocol BadgeCountFetcher {
 
 class BadgeCountFetcherImpl: BadgeCountFetcher {
     public func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
-        let unreadInteractionCount = InteractionFinder.unreadCountInAllThreads(transaction: sdsTx)
+        let unreadInteractionCount = InteractionFinder.unreadCountInAllThreads(transaction: tx)
         let unreadMissedCallCount = DependenciesBridge.shared.callRecordMissedCallManager.countUnreadMissedCalls(tx: tx)
 
         return BadgeCount(

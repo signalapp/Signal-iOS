@@ -54,8 +54,6 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
         // the next time we call buildSignalAccounts, but we also need to fix them
         // now to ensure we don't keep around stale system contact references.
 
-        let tx = SDSDB.shimOnlyBridge(tx)
-
         let oldPhoneNumber = mergedRecipient.oldRecipient?.phoneNumber?.stringValue
         let newPhoneNumber = mergedRecipient.newRecipient.phoneNumber?.stringValue
 

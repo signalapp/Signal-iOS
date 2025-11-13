@@ -288,7 +288,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             let paymentNotification = message.paymentNotification,
             let model = PaymentFinder.paymentModels(
                 forMcReceiptData: paymentNotification.mcReceiptData,
-                transaction: SDSDB.shimOnlyBridge(context.tx)
+                transaction: context.tx
             ).first
         else {
             return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])

@@ -29,7 +29,7 @@ class StaleProfileFetcher {
                 return []
             }
             var staleServiceIds = [ServiceId]()
-            Self.enumerateMissingAndStaleUserProfiles(now: Date(), tx: SDSDB.shimOnlyBridge(tx)) { userProfile in
+            Self.enumerateMissingAndStaleUserProfiles(now: Date(), tx: tx) { userProfile in
                 switch userProfile.internalAddress {
                 case .localUser:
                     // Ignore the local user.

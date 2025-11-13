@@ -100,9 +100,6 @@ public class EditMessageStoreImpl: EditMessageStore {
             owsFailDebug("Received invalid timestamp!")
             return nil
         }
-
-        let transaction = SDSDB.shimOnlyBridge(tx)
-
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -114,11 +111,11 @@ public class EditMessageStoreImpl: EditMessageStore {
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: [timestamp, authorAci?.serviceIdUppercaseString],
-            transaction: transaction
+            transaction: tx
         )
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
-            guard let thread = outgoingMessage.thread(tx: transaction) else {
+            guard let thread = outgoingMessage.thread(tx: tx) else {
                 Logger.warn("No thread for message")
                 return nil
             }
@@ -127,7 +124,7 @@ public class EditMessageStoreImpl: EditMessageStore {
                 thread: thread
             ))
         case (let incomingMessage as TSIncomingMessage, let authorAci?):
-            guard let thread = incomingMessage.thread(tx: transaction) else {
+            guard let thread = incomingMessage.thread(tx: tx) else {
                 Logger.warn("No thread for message")
                 return nil
             }
@@ -148,7 +145,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         fromEdit edit: TSMessage,
         tx: DBReadTransaction
     ) -> TSMessage? {
-        let transaction = SDSDB.shimOnlyBridge(tx)
+        let transaction = tx
 
         let sql = """
                 SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -217,7 +214,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         return records.map { record -> (EditRecord, MessageType?) in
             let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                transaction: tx
             )
             guard let message = interaction as? MessageType else {
                 owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")

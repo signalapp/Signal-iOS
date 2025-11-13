@@ -58,7 +58,7 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
                 return userProfile?.isPhoneNumberShared ?? (userProfile?.givenName == nil)
             },
             isSystemContact: {
-                contactsManager.fetchSignalAccount(forPhoneNumber: $0, transaction: SDSDB.shimOnlyBridge(tx)) != nil
+                contactsManager.fetchSignalAccount(forPhoneNumber: $0, transaction: tx) != nil
             }
         )
     }
@@ -67,10 +67,10 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
         return BulkPhoneNumberVisibilityFetcher(
             localAci: tsAccountManager.localIdentifiers(tx: tx)?.aci,
             acisWithHiddenPhoneNumbers: Set(
-                try UserProfileFinder().fetchAcisWithHiddenPhoneNumbers(tx: SDSDB.shimOnlyBridge(tx))
+                try UserProfileFinder().fetchAcisWithHiddenPhoneNumbers(tx: tx)
             ),
             phoneNumbersWithSystemContacts: Set(
-                try SignalAccountFinder().fetchPhoneNumbers(tx: SDSDB.shimOnlyBridge(tx))
+                try SignalAccountFinder().fetchPhoneNumbers(tx: tx)
             )
         )
     }

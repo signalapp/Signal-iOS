@@ -42,7 +42,7 @@ public class _EditManagerAttachmentsImpl_TSMessageStoreWrapper: EditManagerAttac
         with quotedReply: TSQuotedMessage,
         tx: DBWriteTransaction
     ) {
-        message.update(with: quotedReply, transaction: SDSDB.shimOnlyBridge(tx))
+        message.update(with: quotedReply, transaction: tx)
     }
 
     public func update(
@@ -50,6 +50,6 @@ public class _EditManagerAttachmentsImpl_TSMessageStoreWrapper: EditManagerAttac
         with linkPreview: OWSLinkPreview,
         tx: DBWriteTransaction
     ) {
-        message.update(with: linkPreview, transaction: SDSDB.shimOnlyBridge(tx))
+        message.update(with: linkPreview, transaction: tx)
     }
 }

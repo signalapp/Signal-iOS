@@ -275,8 +275,6 @@ private struct DeviceNameChangeSyncMessageSender {
         forDeviceId deviceId: UInt32,
         tx: DBWriteTransaction
     ) {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
         guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
             owsFailDebug("Failed to create local thread!")
             return
@@ -285,12 +283,12 @@ private struct DeviceNameChangeSyncMessageSender {
         let outgoingSyncMessage = OutgoingDeviceNameChangeSyncMessage(
             deviceId: deviceId,
             localThread: localThread,
-            tx: sdsTx
+            tx: tx
         )
 
         messageSenderJobQueue.add(
             message: .preprepared(transientMessageWithoutAttachments: outgoingSyncMessage),
-            transaction: sdsTx
+            transaction: tx
         )
     }
 }

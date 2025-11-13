@@ -221,8 +221,6 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         logger.info("Deleted \(deletedCount) calls.")
 
         await db.awaitableWrite { tx in
-            let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
-
             if jobRecord.sendDeleteAllSyncMessage {
                 self.logger.info("Sending delete-all-calls sync message.")
 
@@ -230,11 +228,11 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                     callId: jobRecord.deleteAllBeforeCallId,
                     conversationId: jobRecord.deleteAllBeforeConversationId,
                     beforeTimestamp: deleteBeforeTimestamp,
-                    tx: sdsTx
+                    tx: tx
                 )
             }
 
-            jobRecord.anyRemove(transaction: sdsTx)
+            jobRecord.anyRemove(transaction: tx)
         }
     }
 

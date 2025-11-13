@@ -138,7 +138,7 @@ class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
         let interactionFinder = InteractionFinder(threadUniqueId: groupThreadId)
         return interactionFinder.latestInteraction(
             from: groupMemberAddress,
-            transaction: SDSDB.shimOnlyBridge(transaction)
+            transaction: transaction
         )?.timestamp
     }
 

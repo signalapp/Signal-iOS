@@ -320,9 +320,9 @@ final class ThreadMerger {
 class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {
         let threadPair = MergePair<TSContactThread>(fromValue: thread, intoValue: targetThread)
-        mergeInteractions(threadPair, tx: SDSDB.shimOnlyBridge(tx))
-        mergeReceiptsPendingMessageRequest(threadPair, tx: SDSDB.shimOnlyBridge(tx))
-        mergeMessageSendLogPayloads(threadPair, tx: SDSDB.shimOnlyBridge(tx))
+        mergeInteractions(threadPair, tx: tx)
+        mergeReceiptsPendingMessageRequest(threadPair, tx: tx)
+        mergeMessageSendLogPayloads(threadPair, tx: tx)
         mergeMessageAttachmentReferences(threadPair, tx: tx)
         // We might have changed something in the cache -- evacuate it.
         SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
@@ -399,7 +399,7 @@ protocol _ThreadMerger_DisappearingMessagesConfigurationManagerShim {
 
 class _ThreadMerger_DisappearingMessagesConfigurationManagerWrapper: _ThreadMerger_DisappearingMessagesConfigurationManagerShim {
     func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
-        GroupManager.localUpdateDisappearingMessageToken(token, inContactThread: thread, tx: SDSDB.shimOnlyBridge(tx))
+        GroupManager.localUpdateDisappearingMessageToken(token, inContactThread: thread, tx: tx)
     }
 }
 
@@ -434,7 +434,7 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
             updateStorageService: updateStorageService,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }

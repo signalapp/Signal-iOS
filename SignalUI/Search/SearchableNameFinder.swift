@@ -80,7 +80,7 @@ public class SearchableNameFinder {
                 owsFailDebug("Unexpected match of type \(type(of: indexableName))")
             }
         }
-        return contactMatches.matchedAddresses(contactManager: contactManager, tx: SDSDB.shimOnlyBridge(tx))
+        return contactMatches.matchedAddresses(contactManager: contactManager, tx: tx)
     }
 }
 

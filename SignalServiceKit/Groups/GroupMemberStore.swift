@@ -19,15 +19,15 @@ public protocol GroupMemberStore {
 
 class GroupMemberStoreImpl: GroupMemberStore {
     func insert(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {
-        groupMember.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        groupMember.anyInsert(transaction: tx)
     }
 
     func update(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {
-        groupMember.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+        groupMember.anyOverwritingUpdate(transaction: tx)
     }
 
     func remove(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {
-        groupMember.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+        groupMember.anyRemove(transaction: tx)
     }
 
     func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {

@@ -153,7 +153,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
             tx: tx
         )
 
-        thread.anyUpdate(transaction: SDSDB.shimOnlyBridge(tx)) { thread in
+        thread.anyUpdate(transaction: tx) { thread in
             thread.messageDraft = nil
             thread.shouldThreadBeVisible = false
         }
@@ -179,8 +179,6 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         syncMessageContext: SyncMessageContext?,
         tx: DBWriteTransaction
     ) {
-        let sdsTx = SDSDB.shimOnlyBridge(tx)
-
         do {
             var moreInteractionsRemaining = true
             while moreInteractionsRemaining {
@@ -190,7 +188,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                     ).fetchAllInteractions(
                         rowIdFilter: .newest,
                         limit: Constants.interactionDeletionBatchSize,
-                        tx: sdsTx
+                        tx: tx
                     )
 
                     if let syncMessageContext {
@@ -219,7 +217,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         /// Because we skipped updating the thread for each deleted interaction,
         /// now that we're done deleting we'll do a one-time update of
         /// properties on the thread.
-        thread.anyUpdate(transaction: sdsTx) { thread in
+        thread.anyUpdate(transaction: tx) { thread in
             thread.lastInteractionRowId = 0
             thread.lastDraftInteractionRowId = 0
             thread.lastDraftUpdateTimestamp = 0
@@ -252,11 +250,11 @@ final class _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper: _ThreadSoftDelete
     init() {}
 
     func deleteAllStories(contactAci: Aci, tx: DBWriteTransaction) {
-        StoryManager.deleteAllStories(forSender: contactAci, tx: SDSDB.shimOnlyBridge(tx))
+        StoryManager.deleteAllStories(forSender: contactAci, tx: tx)
     }
 
     func deleteAllStories(groupId: Data, tx: DBWriteTransaction) {
-        StoryManager.deleteAllStories(forGroupId: groupId, tx: SDSDB.shimOnlyBridge(tx))
+        StoryManager.deleteAllStories(forGroupId: groupId, tx: tx)
     }
 }
 

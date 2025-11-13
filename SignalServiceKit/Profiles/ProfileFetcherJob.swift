@@ -355,7 +355,7 @@ public class ProfileFetcherJob {
         }
         let profileAddress = SignalServiceAddress(fetchedProfile.profile.serviceId)
         let didAlreadyDownloadAvatar = db.read { tx -> Bool in
-            let userProfile = profileManager.userProfile(for: profileAddress, tx: SDSDB.shimOnlyBridge(tx))
+            let userProfile = profileManager.userProfile(for: profileAddress, tx: tx)
             guard let userProfile else {
                 return false
             }
@@ -424,7 +424,7 @@ public class ProfileFetcherJob {
             let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
             let persistedBadgeIds: [String] = badgeModels.compactMap {
                 do {
-                    try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: SDSDB.shimOnlyBridge(transaction))
+                    try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: transaction)
                     return $0.id
                 } catch {
                     owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
@@ -442,7 +442,7 @@ public class ProfileFetcherJob {
             do {
                 avatarFilename = try OWSUserProfile.consumeTemporaryAvatarFileUrl(
                     avatarDownloadResult.localFileUrl,
-                    tx: SDSDB.shimOnlyBridge(transaction)
+                    tx: transaction
                 )
             } catch {
                 Logger.warn("Couldn't move downloaded avatar: \(error)")
@@ -458,7 +458,7 @@ public class ProfileFetcherJob {
                     profileBadges: profileBadgeMetadata,
                     lastFetchDate: Date(),
                     userProfileWriter: .profileFetch,
-                    tx: SDSDB.shimOnlyBridge(transaction)
+                    tx: transaction
                 )
             }
 
@@ -480,7 +480,7 @@ public class ProfileFetcherJob {
             self.paymentsHelper.setArePaymentsEnabled(
                 for: serviceId,
                 hasPaymentsEnabled: paymentAddress != nil,
-                transaction: SDSDB.shimOnlyBridge(transaction)
+                transaction: transaction
             )
         }
     }

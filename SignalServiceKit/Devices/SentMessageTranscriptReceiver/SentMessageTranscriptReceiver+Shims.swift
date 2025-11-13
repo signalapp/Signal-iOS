@@ -42,7 +42,7 @@ public class _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper: _Sen
         SSKEnvironment.shared.disappearingMessagesJobRef.startAnyExpiration(
             for: message,
             expirationStartedAt: expirationStartedAt,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }
@@ -67,7 +67,7 @@ public class _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper: _SentMes
     }
 
     public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-        earlyMessageManager.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: SDSDB.shimOnlyBridge(tx))
+        earlyMessageManager.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: tx)
     }
 }
 
@@ -100,7 +100,7 @@ public class _SentMessageTranscriptReceiver_GroupManagerWrapper: _SentMessageTra
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: changeAuthor,
             localIdentifiers: localIdentifiers,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }
@@ -135,7 +135,7 @@ public class _SentMessageTranscriptReceiver_PaymentsHelperWrapper: _SentMessageT
             thread: thread,
             paymentNotification: paymentNotification,
             messageTimestamp: messageTimestamp,
-            transaction: SDSDB.shimOnlyBridge(tx)
+            transaction: tx
         )
     }
 }
@@ -156,6 +156,6 @@ public class _SentMessageTranscriptReceiver_ViewOnceMessagesWrapper: _SentMessag
     public init() {}
 
     public func markAsComplete(message: TSMessage, sendSyncMessages: Bool, tx: DBWriteTransaction) {
-        ViewOnceMessages.markAsComplete(message: message, sendSyncMessages: sendSyncMessages, transaction: SDSDB.shimOnlyBridge(tx))
+        ViewOnceMessages.markAsComplete(message: message, sendSyncMessages: sendSyncMessages, transaction: tx)
     }
 }

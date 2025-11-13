@@ -118,7 +118,7 @@ final class LocalProfileChecker {
 
         var mustReuploadAvatar = false
         let shouldReuploadProfile = db.read { tx in
-            guard let localProfile = profileManager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx)) else {
+            guard let localProfile = profileManager.localUserProfile(tx: tx) else {
                 return false
             }
             guard let decryptedProfile = mostRecentRemoteProfile.decryptedProfile else {
