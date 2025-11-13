@@ -253,7 +253,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let db = databaseStorage
-        let dbFileSizeProvider = SDSDBFileSizeProvider(databaseStorage: databaseStorage)
 
         let networkManager = testDependencies.networkManager ?? NetworkManager(
             appReadiness: appReadiness,
@@ -1461,7 +1460,6 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             dateProviderMonotonic: dateProviderMonotonic,
             db: db,
-            dbFileSizeProvider: dbFileSizeProvider,
             disappearingMessagesJob: disappearingMessagesJob,
             distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,

@@ -9,15 +9,6 @@ extension BackupArchive {
 
     /// A `Bencher` specialized for measuring Backup archiving.
     class ArchiveBencher: Bencher {
-        override init(
-            dateProviderMonotonic: @escaping DateProviderMonotonic,
-            memorySampler: any MemorySampler
-        ) {
-            super.init(
-                dateProviderMonotonic: dateProviderMonotonic,
-                memorySampler: memorySampler
-            )
-        }
 
         /// Given a block that does an enumeration over db objects, wraps that enumeration to instead take
         /// a closure with a FrameBencher that also measures the time spent enumerating.
@@ -87,43 +78,8 @@ extension BackupArchive {
             case RecreateInteractionIndexes
         }
 
-        private let dbFileSizeBencher: DBFileSizeBencher?
-
         private var preFrameRestoreMetrics = [PreFrameRestoreAction: Metrics]()
         private var postFrameRestoreMetrics = [PostFrameRestoreAction: Metrics]()
-
-        init(
-            dateProviderMonotonic: @escaping DateProviderMonotonic,
-            dbFileSizeProvider: any DBFileSizeProvider,
-            memorySampler: any MemorySampler
-        ) {
-            self.dbFileSizeBencher = if BuildFlags.Backups.detailedBenchLogging {
-                DBFileSizeBencher(dateProvider: dateProviderMonotonic, dbFileSizeProvider: dbFileSizeProvider)
-            } else {
-                nil
-            }
-
-            super.init(
-                dateProviderMonotonic: dateProviderMonotonic,
-                memorySampler: memorySampler
-            )
-        }
-
-        override fileprivate func frameBencherDidProcessFrame(
-            _ frameBencher: BackupArchive.Bencher.FrameBencher,
-            frame: BackupProto_Frame,
-            frameProcessingDurationNanos: UInt64,
-            enumerationStepDurationNanos: UInt64?
-        ) {
-            super.frameBencherDidProcessFrame(
-                frameBencher,
-                frame: frame,
-                frameProcessingDurationNanos: frameProcessingDurationNanos,
-                enumerationStepDurationNanos: enumerationStepDurationNanos,
-            )
-
-            dbFileSizeBencher?.logIfNecessary(totalFramesProcessed: totalFramesProcessed)
-        }
 
         override func logResults() {
             logger.info("Pre-Frame Restore Metrics:")
@@ -138,8 +94,6 @@ extension BackupArchive {
                 logMetrics(metrics, typeString: action.rawValue)
             }
         }
-
-        // MARK: -
 
         func benchPreFrameRestoreAction<T>(_ action: PreFrameRestoreAction, _ block: () throws -> T) rethrows -> T {
             return try benchAction(action, actionMetricsKeyPath: \.preFrameRestoreMetrics, block: block)
@@ -167,49 +121,6 @@ extension BackupArchive {
 
             return result
         }
-
-        class DBFileSizeBencher {
-            private let dateProvider: DateProviderMonotonic
-            private let dbFileSizeProvider: DBFileSizeProvider
-            private let logger: PrefixedLogger
-
-#if DEBUG
-            private let secondsBetweenLogs: TimeInterval = 2
-#else
-            private let secondsBetweenLogs: TimeInterval = 15
-#endif
-
-            /// The last time we logged.
-            private var lastLogDate: MonotonicDate?
-            /// The number of total frames the last time we logged.
-            private var lastTotalFramesProcessed: UInt64?
-
-            init(
-                dateProvider: @escaping DateProviderMonotonic,
-                dbFileSizeProvider: DBFileSizeProvider
-            ) {
-                self.dateProvider = dateProvider
-                self.dbFileSizeProvider = dbFileSizeProvider
-                self.logger = PrefixedLogger(prefix: "[Backups]")
-            }
-
-            func logIfNecessary(totalFramesProcessed: UInt64) {
-                if
-                    let lastLogDate,
-                    dateProvider() - lastLogDate < MonotonicDuration(clampingSeconds: secondsBetweenLogs)
-                {
-                    // Bail if we logged recently.
-                    return
-                }
-
-                let dbFileSize = dbFileSizeProvider.getDatabaseFileSize()
-                let walFileSize = dbFileSizeProvider.getDatabaseWALFileSize()
-                logger.info("{DB:\(dbFileSize), WAL:\(walFileSize), frames:\(totalFramesProcessed), framesDelta:\(totalFramesProcessed - (lastTotalFramesProcessed ?? 0))}")
-
-                lastLogDate = dateProvider()
-                lastTotalFramesProcessed = totalFramesProcessed
-            }
-        }
     }
 
     // MARK: -
@@ -225,7 +136,7 @@ extension BackupArchive {
         fileprivate var totalFramesProcessed: UInt64 = 0
         fileprivate var frameProcessingMetrics = [FrameType: Metrics]()
 
-        fileprivate init(
+        init(
             dateProviderMonotonic: @escaping DateProviderMonotonic,
             memorySampler: MemorySampler
         ) {

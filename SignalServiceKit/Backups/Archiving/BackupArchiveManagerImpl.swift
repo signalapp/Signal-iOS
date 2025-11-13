@@ -54,7 +54,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let dateProvider: DateProvider
     private let dateProviderMonotonic: DateProviderMonotonic
     private let db: any DB
-    private let dbFileSizeProvider: DBFileSizeProvider
     private let disappearingMessagesJob: OWSDisappearingMessagesJob
     private let distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver
     private let encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider
@@ -97,7 +96,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         dateProvider: @escaping DateProvider,
         dateProviderMonotonic: @escaping DateProviderMonotonic,
         db: any DB,
-        dbFileSizeProvider: DBFileSizeProvider,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver,
         encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider,
@@ -136,7 +134,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.dateProvider = dateProvider
         self.dateProviderMonotonic = dateProviderMonotonic
         self.db = db
-        self.dbFileSizeProvider = dbFileSizeProvider
         self.disappearingMessagesJob = disappearingMessagesJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedStreamProvider = encryptedStreamProvider
@@ -408,11 +405,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             migrateAttachmentsProgressSink = nil
             prepareOversizeTextAttachmentsProgressSink = nil
             exportProgress = nil
-        }
-
-        let messageProcessingSuspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(for: .backup)
-        defer {
-            messageProcessingSuspensionHandle.invalidate()
         }
 
         await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
@@ -888,11 +880,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             finalizeProgress = nil
         }
 
-        let messageProcessingSuspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(for: .backup)
-        defer {
-            messageProcessingSuspensionHandle.invalidate()
-        }
-
         await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
 
         let backupInfo = try await db.awaitableWriteWithRollbackIfThrows { tx in
@@ -952,7 +939,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     ) throws -> BackupProto_BackupInfo {
         let bencher = BackupArchive.RestoreBencher(
             dateProviderMonotonic: dateProviderMonotonic,
-            dbFileSizeProvider: dbFileSizeProvider,
             memorySampler: memorySampler
         )
 
