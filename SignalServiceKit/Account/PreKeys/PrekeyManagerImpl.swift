@@ -103,22 +103,12 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
-        let shouldCheckPniState = hasPniIdentityKey(tx: tx)
-        let needPreKeyRotation =
+        return (
             needsSignedPreKeyRotation(identity: .aci, tx: tx)
-            || (
-                shouldCheckPniState
-                && needsSignedPreKeyRotation(identity: .pni, tx: tx)
-            )
-
-        let needLastResortKeyRotation =
-            needsLastResortPreKeyRotation(identity: .aci, tx: tx)
-            || (
-                shouldCheckPniState
-                && needsLastResortPreKeyRotation(identity: .pni, tx: tx)
-            )
-
-        return needPreKeyRotation || needLastResortKeyRotation
+            || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+            || needsLastResortPreKeyRotation(identity: .aci, tx: tx)
+            || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+        )
     }
 
     private func refreshOneTimePreKeysCheckDidSucceed() {
@@ -172,13 +162,11 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        let shouldPerformPniOp = shouldCheckPniPreKeys && hasPniIdentityKey(tx: tx)
-
         return Self.taskQueue.enqueue { [self, chatConnectionManager, taskManager, targets] in
             try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldPerformPniOp {
+            if shouldCheckPniPreKeys {
                 try Task.checkCancellation()
                 try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
                 try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
