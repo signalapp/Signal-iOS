@@ -308,6 +308,7 @@ public struct CVLongPressHandler {
         case paymentMessage
         case poll
         case bodyText(item: CVTextLabel.Item)
+        case bottomButtonOrLabel
     }
     let gestureLocation: GestureLocation
 
@@ -355,6 +356,13 @@ public struct CVLongPressHandler {
             delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
         case .bodyText:
             break
+        case .bottomButtonOrLabel:
+            // Bottom buttons are considered separate subcomponents, but may be associated
+            // with another subcomponent type.
+            if let message = itemViewModel.interaction as? TSMessage, message.isPoll {
+                delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+                return
+            }
         }
     }
 

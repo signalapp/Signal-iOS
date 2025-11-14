@@ -1846,7 +1846,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .quotedReply: .quotedReply,
             .paymentAttachment: .paymentMessage,
             .archivedPaymentAttachment: .paymentMessage,
-            .poll: .poll
+            .poll: .poll,
+            .bottomButtons: .bottomButtonOrLabel,
+            .bottomLabel: .bottomButtonOrLabel,
             // TODO: linkPreview?
         ]
         // Recognize the correct message type when tapping next to the message itself
