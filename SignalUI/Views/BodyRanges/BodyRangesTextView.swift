@@ -59,6 +59,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         delegate = self
         editableBody.editableBodyDelegate = self
         textAlignment = .natural
+        enablesReturnKeyAutomatically = true
     }
 
     public override var layoutManager: NSLayoutManager {
