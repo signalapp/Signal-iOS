@@ -1388,7 +1388,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         if isPastRegistration {
                             try await backgroundFetcher.waitUntil(deadline: waitDeadline)
                         } else {
-                            try await Task.sleep(nanoseconds: (waitDeadline - MonotonicDate()).nanoseconds)
+                            let now = MonotonicDate()
+                            if now < waitDeadline {
+                                try await Task.sleep(nanoseconds: (waitDeadline - now).nanoseconds)
+                            }
                         }
                     } catch {
                         // We were canceled, either because we entered the foreground or our
