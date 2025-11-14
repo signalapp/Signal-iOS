@@ -1223,19 +1223,21 @@ public class SignalAttachment: NSObject {
             mp4Filename = nil
         }
 
+        let dataSource: DataSourcePath
         do {
-            let dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
-            dataSource.sourceFilename = mp4Filename
-
-            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
-            if dataSource.dataLength > OWSMediaUtils.kMaxFileSizeVideo {
-                throw SignalAttachmentError.fileSizeTooLarge
-            }
-            return attachment
+            dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
         } catch {
+            // TODO: Remove this; it's dead code.
             owsFailDebug("Failed to build data source for exported video URL")
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }
+        dataSource.sourceFilename = mp4Filename
+
+        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
+        if dataSource.dataLength > OWSMediaUtils.kMaxFileSizeVideo {
+            throw SignalAttachmentError.fileSizeTooLarge
+        }
+        return attachment
     }
 
     public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
