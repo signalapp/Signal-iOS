@@ -282,6 +282,16 @@ class BackupSettingsViewController:
             },
             Task.detached { [weak self] in
                 for await _ in NotificationCenter.default.notifications(
+                    named: .OWSApplicationDidBecomeActive,
+                ) {
+                    await MainActor.run { [weak self] in
+                        guard let self else { return }
+                        loadBackupSubscription()
+                    }
+                }
+            },
+            Task.detached { [weak self] in
+                for await _ in NotificationCenter.default.notifications(
                     named: .backupPlanChanged
                 ) {
                     await MainActor.run { [weak self] in
@@ -726,8 +736,13 @@ class BackupSettingsViewController:
                 return
             }
 
-            withAnimation {
-                viewModel.backupSubscriptionLoadingState = .loading
+            switch viewModel.backupSubscriptionLoadingState {
+            case .loading, .loaded:
+                break
+            case .networkError, .genericError:
+                withAnimation {
+                    viewModel.backupSubscriptionLoadingState = .loading
+                }
             }
 
             let newLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
@@ -1466,8 +1481,8 @@ private class BackupSettingsViewModel: ObservableObject {
         func showBackgroundAppRefreshDisabledWarningSheet()
     }
 
-    enum BackupSubscriptionLoadingState {
-        enum LoadedBackupSubscription {
+    enum BackupSubscriptionLoadingState: Equatable {
+        enum LoadedBackupSubscription: Equatable {
             case freeAndEnabled
             case freeAndDisabled
             case paidButFreeForTesters
