@@ -73,9 +73,7 @@ public struct BackupArchiveImportFramesProgress {
         sink: OWSProgressSink,
         fileUrl: URL
     ) async throws -> Self {
-        guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
-            throw OWSAssertionError("Unable to read file size")
-        }
+        let totalByteCount = try OWSFileSystem.fileSize(of: fileUrl)
 
         let progressSource = await sink.addSource(
             withLabel: "Backup Import: Frame Restore",

@@ -905,27 +905,15 @@ extension GRDBDatabaseStorageAdapter {
 
 extension GRDBDatabaseStorageAdapter {
     var databaseFileSize: UInt64 {
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: databaseFilePath) else {
-            owsFailDebug("Could not determine file size.")
-            return 0
-        }
-        return fileSize.uint64Value
+        return (try? OWSFileSystem.fileSize(ofPath: databaseFilePath)) ?? 0
     }
 
     var databaseWALFileSize: UInt64 {
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: databaseWALFilePath) else {
-            owsFailDebug("Could not determine file size.")
-            return 0
-        }
-        return fileSize.uint64Value
+        return (try? OWSFileSystem.fileSize(ofPath: databaseWALFilePath)) ?? 0
     }
 
     var databaseSHMFileSize: UInt64 {
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: databaseSHMFilePath) else {
-            owsFailDebug("Could not determine file size.")
-            return 0
-        }
-        return fileSize.uint64Value
+        return (try? OWSFileSystem.fileSize(ofPath: databaseSHMFilePath)) ?? 0
     }
 }
 

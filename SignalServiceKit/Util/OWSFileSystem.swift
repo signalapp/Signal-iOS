@@ -197,40 +197,13 @@ public enum OWSFileSystem {
         }
     }
 
-    public static func fileSize(ofPath filePath: String) -> NSNumber? {
-        do {
-            let attrs = try FileManager.default.attributesOfItem(atPath: filePath)
-            guard let result = attrs[.size] as? NSNumber else {
-                owsFail("file size attribute was not NSNumber")
-            }
-            return result
-        } catch {
-            Logger.error("Couldn't fetch file size: \(error)")
-            return nil
-        }
+    public static func fileSize(ofPath filePath: String) throws -> UInt64 {
+        let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+        return (attributes[.size] as! NSNumber).uint64Value
     }
 
-    public static func fileSize(of fileUrl: URL) -> NSNumber? {
-        Self.fileSize(ofPath: fileUrl.path)
-    }
-
-    public static func folderSizeRecursive(ofPath dirPath: String) -> NSNumber? {
-        do {
-            let filePaths = try Self.recursiveFilesInDirectory(dirPath)
-            var sum: UInt64 = 0
-            for filePath in filePaths {
-                guard let fileSize = fileSize(ofPath: filePath) else { return nil }
-                sum += fileSize.uint64Value
-            }
-            return NSNumber(value: sum)
-        } catch {
-            Logger.error("Couldn't fetch file sizes \(error)")
-            return nil
-        }
-    }
-
-    public static func folderSizeRecursive(of dirUrl: URL) -> NSNumber? {
-        return self.folderSizeRecursive(ofPath: dirUrl.path)
+    public static func fileSize(of fileUrl: URL) throws -> UInt64 {
+        return try fileSize(ofPath: fileUrl.path)
     }
 }
 

@@ -1775,10 +1775,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     downloadResponse = try await downloadTask!.value
                 }
                 let downloadUrl = downloadResponse.downloadUrl
-                guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
-                    throw OWSAssertionError("Could not determine attachment file size.")
-                }
-                guard fileSize.int64Value <= maxDownloadSizeBytes else {
+                let fileSize = try OWSFileSystem.fileSize(of: downloadUrl)
+                guard fileSize <= maxDownloadSizeBytes else {
                     throw OWSGenericError("Attachment download length exceeds max size.")
                 }
                 let tmpFile = OWSFileSystem.temporaryFileUrl()

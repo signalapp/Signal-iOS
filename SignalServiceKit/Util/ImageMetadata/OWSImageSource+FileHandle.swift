@@ -16,7 +16,7 @@ public struct FileHandleImageSource: OWSImageSource {
     }
 
     public init(fileUrl: URL) throws {
-        let byteLength = OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
+        let byteLength = Int((try? OWSFileSystem.fileSize(of: fileUrl)) ?? 0)
         let fileHandle = try FileHandle(forReadingFrom: fileUrl)
         self.init(fileHandle: fileHandle, byteLength: byteLength)
     }

@@ -403,7 +403,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             case .inMemory(let data):
                 return data.count
             case .unencryptedFile(let fileUrl):
-                return OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
+                return Int((try? OWSFileSystem.fileSize(of: fileUrl)) ?? 0)
             case .encryptedFile(_, _, let plaintextLength, _):
                 return Int(plaintextLength)
             }
@@ -848,18 +848,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 input: contentResult.input
             )
             let primaryFileDigest = primaryFileMetadata.digest
-            guard
-                let primaryPlaintextLength = UInt32.init(exactly: primaryFileMetadata.plaintextLength)
-            else {
+            let primaryPlaintextLength = UInt32(exactly: primaryFileMetadata.plaintextLength)
+            guard let primaryPlaintextLength else {
                 throw OWSAssertionError("File too large")
             }
-
-            guard
-                let primaryEncryptedLength = OWSFileSystem.fileSize(
-                    of: primaryPendingFile.tmpFileUrl
-                )?.uint32Value
-            else {
-                throw OWSAssertionError("Couldn't determine size")
+            let primaryEncryptedLength = UInt32(exactly: try OWSFileSystem.fileSize(of: primaryPendingFile.tmpFileUrl))
+            guard let primaryEncryptedLength else {
+                throw OWSAssertionError("file too large")
             }
             return PreparedContentResult(
                 contentResult: contentResult,
@@ -1057,12 +1052,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // If they don't match, re-encrypt the source to a new file
             // and pass back the updated encryption metadata
             if inputAttachmentKey.combinedKey == input.attachmentKey.combinedKey {
-
-                let encryptedLength = OWSFileSystem.fileSize(of: fileUrl).flatMap({ UInt64(exactly: $0.intValue) })
-                guard let encryptedLength else {
-                    throw OWSAssertionError("Unable to get file length")
-                }
-
+                let encryptedLength = try OWSFileSystem.fileSize(of: fileUrl)
                 let digest: Data
                 switch integrityCheckParam {
                 case .digestSHA256Ciphertext(let digestParam):

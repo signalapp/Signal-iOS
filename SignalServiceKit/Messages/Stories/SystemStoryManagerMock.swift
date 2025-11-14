@@ -88,8 +88,8 @@ public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesys
         return true
     }
 
-    public override class func fileSize(of: URL) -> NSNumber? {
-        return NSNumber(value: 100)
+    public override class func fileSize(of: URL) throws -> UInt64 {
+        return 100
     }
 
     public override class func deleteFile(url: URL) throws {

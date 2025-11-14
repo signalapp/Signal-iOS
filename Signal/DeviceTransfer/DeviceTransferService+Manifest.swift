@@ -16,28 +16,30 @@ extension DeviceTransferService {
         do {
             let database: DeviceTransferProtoFile = try {
                 let file = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseFilePath
-                guard let size = OWSFileSystem.fileSize(ofPath: file), size.uint64Value > 0 else {
-                    throw OWSAssertionError("Failed to calculate size of database \(file)")
+                let size = try OWSFileSystem.fileSize(ofPath: file)
+                guard size > 0 else {
+                    throw OWSAssertionError("database is empty")
                 }
-                estimatedTotalSize += size.uint64Value
+                estimatedTotalSize += size
                 let fileBuilder = DeviceTransferProtoFile.builder(
                     identifier: DeviceTransferService.databaseIdentifier,
                     relativePath: try pathRelativeToAppSharedDirectory(file),
-                    estimatedSize: size.uint64Value
+                    estimatedSize: size,
                 )
                 return fileBuilder.buildInfallibly()
             }()
 
             let wal: DeviceTransferProtoFile = try {
                 let file = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseWALFilePath
-                guard let size = OWSFileSystem.fileSize(ofPath: file), size.uint64Value > 0 else {
-                    throw OWSAssertionError("Failed to calculate size of database wal \(file)")
+                let size = try OWSFileSystem.fileSize(ofPath: file)
+                guard size > 0 else {
+                    throw OWSAssertionError("database wal is empty")
                 }
-                estimatedTotalSize += size.uint64Value
+                estimatedTotalSize += size
                 let fileBuilder = DeviceTransferProtoFile.builder(
                     identifier: DeviceTransferService.databaseWALIdentifier,
                     relativePath: try pathRelativeToAppSharedDirectory(file),
-                    estimatedSize: size.uint64Value
+                    estimatedSize: size,
                 )
                 return fileBuilder.buildInfallibly()
             }()
@@ -60,20 +62,18 @@ extension DeviceTransferService {
         }
 
         for file in filesToTransfer {
-            guard let size = OWSFileSystem.fileSize(ofPath: file) else {
-                throw OWSAssertionError("Failed to calculate size of file \(file)")
-            }
+            let size = try OWSFileSystem.fileSize(ofPath: file)
 
-            guard size.uint64Value > 0 else {
+            guard size > 0 else {
                 owsFailDebug("skipping empty file \(file)")
                 continue
             }
 
-            estimatedTotalSize += size.uint64Value
+            estimatedTotalSize += size
             let fileBuilder = DeviceTransferProtoFile.builder(
                 identifier: UUID().uuidString,
                 relativePath: try pathRelativeToAppSharedDirectory(file),
-                estimatedSize: size.uint64Value
+                estimatedSize: size,
             )
             manifestBuilder.addFiles(fileBuilder.buildInfallibly())
         }
@@ -151,13 +151,13 @@ extension DeviceTransferService {
             stopTransfer()
             return owsFailDebug("Received manifest in unexpected state \(transferState)")
         }
-        guard let fileSize = OWSFileSystem.fileSize(of: localURL) else {
+        guard let fileSize = (try? OWSFileSystem.fileSize(of: localURL)) else {
             stopTransfer()
             return owsFailDebug("Missing manifest file.")
         }
         // Not sure why this limit exists in the first place, but 1Gb should be
         // plenty high for file descriptors.
-        guard fileSize.uint64Value < 1024 * 1024 * 1024 else {
+        guard fileSize < 1024 * 1024 * 1024 else {
             stopTransfer()
             return owsFailDebug("Unexpectedly received a very large manifest \(fileSize)")
         }

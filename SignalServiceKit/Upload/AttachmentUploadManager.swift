@@ -452,8 +452,12 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 let attachmentFileUrl = AttachmentStream.absoluteAttachmentFileURL(
                     relativeFilePath: attachmentStream.localRelativeFilePath
                 )
-                let fileMissingOrEmpty = !OWSFileSystem.fileOrFolderExists(url: attachmentFileUrl)
-                    || (OWSFileSystem.fileSize(of: attachmentFileUrl)?.uint32Value ?? 0) == 0
+                let fileMissingOrEmpty: Bool
+                do {
+                    fileMissingOrEmpty = try OWSFileSystem.fileSize(of: attachmentFileUrl) == 0
+                } catch {
+                    fileMissingOrEmpty = true
+                }
 
                 try await db.awaitableWrite { tx in
                     // Clean up the upload record; if we failed to copy

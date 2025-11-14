@@ -149,11 +149,11 @@ public enum OWSMediaUtils {
     }
 
     public static func isVideoOfValidSize(path: String) -> Bool {
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: path) else {
+        guard let fileSize = (try? OWSFileSystem.fileSize(ofPath: path)) else {
             Logger.error("Media file has unknown length.")
             return false
         }
-        return fileSize.uintValue <= kMaxFileSizeVideo
+        return fileSize <= kMaxFileSizeVideo
     }
 
     public static func isValidVideo(asset: AVAsset) -> Bool {

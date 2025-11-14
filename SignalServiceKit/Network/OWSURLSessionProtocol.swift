@@ -279,16 +279,14 @@ extension OWSURLSessionProtocol {
             boundary: boundary,
             textParts: textParts
         )
-        guard let bodyFileSize = OWSFileSystem.fileSize(of: multipartBodyFileURL) else {
-            throw OWSAssertionError("Missing bodyFileSize.")
-        }
+        let bodyFileSize: UInt64 = try OWSFileSystem.fileSize(of: multipartBodyFileURL)
 
         var request = request
         request.httpMethod = HTTPMethod.post.methodName
         request.setValue(Self.userAgentHeaderValueSignalIos, forHTTPHeaderField: Self.userAgentHeaderKey)
         request.setValue(Self.acceptLanguageHeaderValue, forHTTPHeaderField: Self.acceptLanguageHeaderKey)
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue(String(format: "%llu", bodyFileSize.uint64Value), forHTTPHeaderField: "Content-Length")
+        request.setValue(String(format: "%llu", bodyFileSize), forHTTPHeaderField: "Content-Length")
 
         return try await performUpload(
             request: request,

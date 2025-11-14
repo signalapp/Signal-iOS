@@ -901,9 +901,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         throw OWSAssertionError("HMAC validation failed!")
                     }
 
-                    guard let inputFileSize = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
-                        throw OWSAssertionError("Failed to get size of file!")
-                    }
+                    let inputFileSize = try OWSFileSystem.fileSize(of: fileUrl)
 
                     return try self._importBackup(
                         inputStream: inputStream,
@@ -1497,7 +1495,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupEncryptionKey: MessageBackupKey,
         backupPurpose: MessageBackupPurpose
     ) async throws {
-        let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
+        let fileSize = (try? OWSFileSystem.fileSize(ofPath: fileUrl.path)) ?? 0
 
         do {
             let result = try validateMessageBackup(key: backupEncryptionKey, purpose: backupPurpose, length: fileSize) {

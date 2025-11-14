@@ -8,31 +8,49 @@ import GRDB
 import SignalServiceKit
 import SignalUI
 
+private func folderSizeRecursive(ofPath dirPath: String) -> UInt64? {
+    do {
+        let filePaths = try OWSFileSystem.recursiveFilesInDirectory(dirPath)
+        var sum: UInt64 = 0
+        for filePath in filePaths {
+            sum += try OWSFileSystem.fileSize(ofPath: filePath)
+        }
+        return sum
+    } catch {
+        Logger.error("Couldn't fetch file sizes \(error)")
+        return nil
+    }
+}
+
+private func folderSizeRecursive(of dirUrl: URL) -> UInt64? {
+    return folderSizeRecursive(ofPath: dirUrl.path)
+}
+
 class InternalDiskUsageViewController: OWSTableViewController2 {
 
     struct DiskUsage {
-        let dbSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseFileSize)
-        let dbWalSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseWALFileSize)
-        let dbShmSize = UInt(SSKEnvironment.shared.databaseStorageRef.databaseSHMFileSize)
-        let attachmentSize = OWSFileSystem.folderSizeRecursive(of: AttachmentStream.attachmentsDirectory())?.uintValue
-        let emojiCacheSize = OWSFileSystem.folderSizeRecursive(of: Emoji.cacheUrl)?.uintValue
-        let stickerCacheSize = OWSFileSystem.folderSizeRecursive(of: StickerManager.cacheDirUrl())?.uintValue
+        let dbSize = SSKEnvironment.shared.databaseStorageRef.databaseFileSize
+        let dbWalSize = SSKEnvironment.shared.databaseStorageRef.databaseWALFileSize
+        let dbShmSize = SSKEnvironment.shared.databaseStorageRef.databaseSHMFileSize
+        let attachmentSize = folderSizeRecursive(of: AttachmentStream.attachmentsDirectory())
+        let emojiCacheSize = folderSizeRecursive(of: Emoji.cacheUrl)
+        let stickerCacheSize = folderSizeRecursive(of: StickerManager.cacheDirUrl())
         let avatarCacheSize =
-            (OWSFileSystem.folderSizeRecursive(of: AvatarBuilder.avatarCacheDirectory)?.uintValue ?? 0)
-            + (OWSFileSystem.folderSizeRecursive(ofPath: OWSUserProfile.sharedDataProfileAvatarsDirPath)?.uintValue ?? 0)
-            + (OWSFileSystem.folderSizeRecursive(ofPath: OWSUserProfile.legacyProfileAvatarsDirPath)?.uintValue ?? 0)
-        let voiceMessageCacheSize = OWSFileSystem.folderSizeRecursive(of: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory)?.uintValue
-        let librarySize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appLibraryDirectoryPath())?.uintValue ?? 0
-        let libraryCachesSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.cachesDirectoryPath())?.uintValue ?? 0
-        let documentsSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appDocumentDirectoryPath())?.uintValue
-        let sharedDataSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSFileSystem.appSharedDataDirectoryPath())?.uintValue
+            (folderSizeRecursive(of: AvatarBuilder.avatarCacheDirectory) ?? 0)
+            + (folderSizeRecursive(ofPath: OWSUserProfile.sharedDataProfileAvatarsDirPath) ?? 0)
+            + (folderSizeRecursive(ofPath: OWSUserProfile.legacyProfileAvatarsDirPath) ?? 0)
+        let voiceMessageCacheSize = folderSizeRecursive(of: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory)
+        let librarySize = folderSizeRecursive(ofPath: OWSFileSystem.appLibraryDirectoryPath()) ?? 0
+        let libraryCachesSize = folderSizeRecursive(ofPath: OWSFileSystem.cachesDirectoryPath()) ?? 0
+        let documentsSize = folderSizeRecursive(ofPath: OWSFileSystem.appDocumentDirectoryPath())
+        let sharedDataSize = folderSizeRecursive(ofPath: OWSFileSystem.appSharedDataDirectoryPath())
 
-        let bundleSize = OWSFileSystem.folderSizeRecursive(ofPath: Bundle.main.bundlePath)?.uintValue
-        let tmpSize = OWSFileSystem.folderSizeRecursive(ofPath: OWSTemporaryDirectory())?.uintValue
+        let bundleSize = folderSizeRecursive(ofPath: Bundle.main.bundlePath)
+        let tmpSize = folderSizeRecursive(ofPath: OWSTemporaryDirectory())
     }
 
     let diskUsage: DiskUsage
-    let orphanedAttachmentByteCount: UInt
+    let orphanedAttachmentByteCount: UInt64
 
     public nonisolated static func build() async -> InternalDiskUsageViewController {
         await Task.yield()
@@ -49,7 +67,7 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
 
     private init(
         diskUsage: DiskUsage,
-        orphanedAttachmentByteCount: UInt,
+        orphanedAttachmentByteCount: UInt64,
     ) {
         self.diskUsage = diskUsage
         self.orphanedAttachmentByteCount = orphanedAttachmentByteCount
@@ -69,7 +87,7 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
 
         let byteCountFormatter = ByteCountFormatter()
 
-        let knownFilesSize: UInt = [UInt?](
+        let knownFilesSize: UInt64 = [UInt64?](
             arrayLiteral:
                 diskUsage.dbSize,
                 diskUsage.dbWalSize,
@@ -83,11 +101,11 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
             )
             .compacted()
             .reduce(0, +)
-        var totalFilesystemSize: UInt = [UInt?](
+        var totalFilesystemSize: UInt64 = [UInt64?](
             arrayLiteral:
                 diskUsage.librarySize,
                 diskUsage.documentsSize,
-                diskUsage.sharedDataSize
+                diskUsage.sharedDataSize,
             )
             .compacted()
             .reduce(0, +)
@@ -107,15 +125,15 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
         diskUsageSection.add(.copyableItem(label: "Ancillary files size", value: byteCountFormatter.string(for: totalFilesystemSize - knownFilesSize)))
 
         if TSConstants.isUsingProductionService {
-            let stagingSharedDataSize = OWSFileSystem.folderSizeRecursive(
+            let stagingSharedDataSize = folderSizeRecursive(
                 ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsStaging().applicationGroup)!.path
-            )?.uintValue
+            )
             diskUsageSection.add(.copyableItem(label: "Staging app group size", value: byteCountFormatter.string(for: stagingSharedDataSize)))
             totalFilesystemSize += stagingSharedDataSize ?? 0
         } else {
-            let prodSharedDataSize = OWSFileSystem.folderSizeRecursive(
+            let prodSharedDataSize = folderSizeRecursive(
                 ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsProduction().applicationGroup)!.path
-            )?.uintValue
+            )
             diskUsageSection.add(.copyableItem(label: "Prod app group size", value: byteCountFormatter.string(for: prodSharedDataSize)))
             totalFilesystemSize += prodSharedDataSize ?? 0
         }
@@ -135,7 +153,7 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private static func orphanAttachmentByteCount() -> UInt {
+    private static func orphanAttachmentByteCount() -> UInt64 {
         var attachmentDirFiles = Set(try! OWSFileSystem.recursiveFilesInDirectory(AttachmentStream.attachmentsDirectory().path))
         DependenciesBridge.shared.db.read { tx in
             let cursor = try! Attachment.Record
@@ -156,9 +174,9 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
         if attachmentDirFiles.isEmpty {
             return 0
         }
-        var byteCount: UInt = 0
+        var byteCount: UInt64 = 0
         for file in attachmentDirFiles {
-            byteCount += OWSFileSystem.fileSize(ofPath: file)?.uintValue ?? 0
+            byteCount += (try? OWSFileSystem.fileSize(ofPath: file)) ?? 0
         }
         return byteCount
     }

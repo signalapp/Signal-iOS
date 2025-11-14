@@ -181,7 +181,7 @@ extension TSAttachmentMigration {
         let byteLength: Int
 
         init(fileUrl: URL) throws {
-            self.byteLength = OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
+            self.byteLength = Int((try? OWSFileSystem.fileSize(of: fileUrl)) ?? 0)
             self.fileHandle = try FileHandle(forReadingFrom: fileUrl)
         }
 

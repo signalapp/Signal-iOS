@@ -1407,8 +1407,8 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
 
         if
-            let fileSize = OWSFileSystem.fileSize(of: assetWriter.outputURL)?.uintValue,
-            fileSize >= UInt(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
+            let fileSize = (try? OWSFileSystem.fileSize(of: assetWriter.outputURL)),
+            fileSize >= UInt64(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
         {
             Logger.warn("Stopping recording before hitting max file size")
             needsFinishAssetWriterSession = true

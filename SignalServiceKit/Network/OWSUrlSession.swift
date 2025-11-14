@@ -717,11 +717,14 @@ extension OWSURLSession {
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         if let maxResponseSize {
-            guard let fileSize = OWSFileSystem.fileSize(of: location) else {
-                taskDidFail(downloadTask, error: OWSAssertionError("Unknown download size."))
+            let fileSize: UInt64
+            do {
+                fileSize = try OWSFileSystem.fileSize(of: location)
+            } catch {
+                taskDidFail(downloadTask, error: error)
                 return
             }
-            guard fileSize.intValue <= maxResponseSize else {
+            guard fileSize <= maxResponseSize else {
                 taskDidFail(downloadTask, error: OWSURLSessionError.responseTooLarge)
                 return
             }

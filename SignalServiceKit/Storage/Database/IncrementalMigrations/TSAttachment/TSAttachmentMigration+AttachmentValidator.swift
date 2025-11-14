@@ -49,8 +49,8 @@ extension TSAttachmentMigration {
             renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?
         ) throws -> TSAttachmentMigration.PendingV2AttachmentFile {
-            let byteSize: Int = {
-                return OWSFileSystem.fileSize(of: unencryptedFileUrl)?.intValue ?? 0
+            let byteSize: UInt64 = {
+                return (try? OWSFileSystem.fileSize(of: unencryptedFileUrl)) ?? 0
             }()
             guard byteSize < 95 * 1000 * 1000 /* SignalAttachment.kMaxFileSizeGeneric */ else {
                 throw AttachmentTooLargeError()
@@ -59,7 +59,7 @@ extension TSAttachmentMigration {
             let attachmentKey = attachmentKey ?? .generate()
             let pendingAttachment = try validateContents(
                 unencryptedFileUrl: unencryptedFileUrl,
-                byteSize: byteSize,
+                byteSize: Int(byteSize),
                 reservedFileIds: reservedFileIds,
                 attachmentKey: attachmentKey,
                 mimeType: mimeType,
@@ -575,18 +575,14 @@ extension TSAttachmentMigration {
                 attachmentKey: attachmentKey,
             )
             let primaryFileDigest = primaryFileMetadata.digest
-            guard
-                let primaryPlaintextLength = UInt32.init(exactly: primaryFileMetadata.plaintextLength)
-            else {
+            let primaryPlaintextLength = UInt32(exactly: primaryFileMetadata.plaintextLength)
+            guard let primaryPlaintextLength else {
                 throw OWSAssertionError("File too large")
             }
 
-            guard
-                let primaryEncryptedLength = OWSFileSystem.fileSize(
-                    of: primaryPendingFile.tmpFileUrl
-                )?.uint32Value
-            else {
-                throw OWSAssertionError("Couldn't determine size")
+            let primaryEncryptedLength = UInt32(exactly: try OWSFileSystem.fileSize(of: primaryPendingFile.tmpFileUrl))
+            guard let primaryEncryptedLength else {
+                throw OWSAssertionError("file too large")
             }
 
             let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(

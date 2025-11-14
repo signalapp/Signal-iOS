@@ -14,8 +14,8 @@ public class OnboardingStoryManagerFilesystem {
         return OWSFileSystem.fileOrFolderExists(url: url)
     }
 
-    public class func fileSize(of url: URL) -> NSNumber? {
-        return OWSFileSystem.fileSize(of: url)
+    public class func fileSize(of url: URL) throws -> UInt64 {
+        return try OWSFileSystem.fileSize(of: url)
     }
 
     public class func deleteFile(url: URL) throws {
