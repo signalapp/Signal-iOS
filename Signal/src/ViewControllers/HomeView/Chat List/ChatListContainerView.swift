@@ -17,6 +17,15 @@ final class ChatListContainerView: UIView {
     private var observation: NSKeyValueObservation?
     private var _filterControl: ChatListFilterControl?
 
+    /// Set an extra padding on both sides of the table view.
+    /// This is used when chat list is displayed in split view controller's "sidbar".
+    var tableViewHorizontalInset: CGFloat = 0 {
+        didSet {
+            tableViewHorizontalEdgeConstraints.forEach { $0.constant = tableViewHorizontalInset }
+        }
+    }
+    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
+
     var filterControl: ChatListFilterControl? {
         _filterControl
     }
@@ -29,7 +38,12 @@ final class ChatListContainerView: UIView {
         super.init(frame: .zero)
 
         addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.autoPinHeight(toHeightOf: self)
+        tableViewHorizontalEdgeConstraints = [
+            tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: tableViewHorizontalInset),
+            trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: tableViewHorizontalInset),
+        ]
+        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
 
         let filterControl = ChatListFilterControl(container: self, scrollView: tableView)
         _filterControl = filterControl

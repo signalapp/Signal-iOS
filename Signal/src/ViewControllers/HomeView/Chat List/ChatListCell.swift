@@ -36,6 +36,9 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         }
     }
 
+    /// If set to `true` background in `selected` state would have rounded corners.
+    var useSidebarAppearance = false
+
     private var cvViews: [CVView] {
         [
             nameLabel,
@@ -192,7 +195,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            if traitCollection.userInterfaceIdiom == .pad {
+            if useSidebarAppearance {
                 configuration.cornerRadius = 24
             }
         } else {

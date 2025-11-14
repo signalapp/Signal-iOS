@@ -25,6 +25,9 @@ class CLVTableDataSource: NSObject {
 
     var renderState: CLVRenderState = .empty
 
+    /// Used to let  chat list cells know when they should use rounded corners for background in `selected` state,
+    var useSideBarChatListCellAppearance: Bool = false
+
     /// While table view selection is changing, i.e., between
     /// `tableView(_:willSelectRowAt:)` and `tableView(_:didSelectRowAt:)`,
     /// records the identifier of the newly selected thread, or `nil` if
@@ -609,6 +612,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         }
 
         cell.configure(cellContentToken: contentToken, spoilerAnimationManager: viewState.spoilerAnimationManager)
+        cell.useSidebarAppearance = useSideBarChatListCellAppearance
 
         if isConversationActive(threadUniqueId: contentToken.thread.uniqueId) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)

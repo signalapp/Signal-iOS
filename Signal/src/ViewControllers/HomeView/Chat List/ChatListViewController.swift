@@ -96,6 +96,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updateExpirationReminderView()
         updatePaymentReminderView()
         updateUsernameReminderView()
+        updateHorizontalLayoutMargins()
         observeNotifications()
         DependenciesBridge.shared.db.read { tx in
             self.viewState.backupDownloadProgressViewState.refetchDBState(tx: tx)
@@ -341,11 +342,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         // transition occurs. For iPhone, this moment is _during_ the
         // transition. We reload in the right places accordingly.
         if UIDevice.current.isIPad {
+            updateHorizontalLayoutMargins()
             reloadTableDataAndResetCellContentCache()
         }
 
         coordinator.animate { context in
             if !UIDevice.current.isIPad {
+                self.updateHorizontalLayoutMargins()
                 self.reloadTableDataAndResetCellContentCache()
             }
 
@@ -716,6 +719,19 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
             cell.ensureCellAnimations()
         }
+    }
+
+    private func updateHorizontalLayoutMargins() {
+        let useSidebarChatListCellAppearance: Bool
+        if let splitViewController = splitViewController, !splitViewController.isCollapsed {
+            useSidebarChatListCellAppearance = true
+        } else {
+            useSidebarChatListCellAppearance = false
+        }
+        // We need to add/remove horizotal padding around table view...
+        containerView.tableViewHorizontalInset = useSidebarChatListCellAppearance ? 16 : 0
+        // ... and tell ChatListCell to use rounded corners if there is non-zero padding.
+        tableDataSource.useSideBarChatListCellAppearance = useSidebarChatListCellAppearance
     }
 
     // MARK: UI Helpers

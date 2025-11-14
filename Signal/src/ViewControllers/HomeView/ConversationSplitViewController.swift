@@ -78,6 +78,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         delegate = self
         preferredDisplayMode = .oneBesideSecondary
         presentsWithGesture = false
+        preferredPrimaryColumnWidthFraction = 0.42
 
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         NotificationCenter.default.addObserver(
