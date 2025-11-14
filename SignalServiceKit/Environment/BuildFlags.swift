@@ -84,6 +84,11 @@ public enum BuildFlags {
     public static let serviceIdBinaryOneOf = !serviceIdStrings
 
     public static let serviceIdStrings = TSConstants.isUsingProductionService
+
+    public enum PinnedMessages {
+        public static let send = build <= .dev
+        public static let receive = build <= .dev
+    }
 }
 
 // MARK: -

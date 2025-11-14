@@ -335,6 +335,7 @@ public class GRDBSchemaMigrator {
         case uniquifyUsernameLookupRecord2
         case fixRevokedForRestoredCallLinks
         case fixNameForRestoredCallLinks
+        case addPinnedMessagesTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -450,7 +451,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 134
+    public static let grdbSchemaVersionLatest: UInt = 135
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4272,6 +4273,47 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.fixNameForRestoredCallLinks) { tx in
             try fixNameForRestoredCallLinks(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPinnedMessagesTable) { tx in
+            try tx.database.create(
+                table: "PinnedMessage"
+            ) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("interactionId", .integer)
+                    .notNull()
+                    .unique()
+                    .references(
+                        "model_TSInteraction",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("threadId", .integer)
+                    .notNull()
+                    .references(
+                        "model_TSThread",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade
+                    )
+                table.column("expiresAt", .integer)
+            }
+
+            try tx.database.create(
+                index: "index_PinnedMessage_on_threadId",
+                on: "PinnedMessage",
+                columns: ["threadId"]
+            )
+
+            try tx.database.create(
+                index: "partial_index_PinnedMessage_on_expiresAt",
+                on: "PinnedMessage",
+                columns: ["expiresAt"],
+                condition: Column("expiresAt") != nil
+            )
+
             return .success(())
         }
 

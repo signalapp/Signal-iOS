@@ -2568,3 +2568,37 @@ CREATE
         ON "UsernameLookupRecord"("username" COLLATE NOCASE
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "PinnedMessage" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"interactionId" INTEGER NOT NULL UNIQUE REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"threadId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,"expiresAt" INTEGER
+)
+;
+
+CREATE
+    INDEX "index_PinnedMessage_on_threadId"
+        ON "PinnedMessage"("threadId"
+)
+;
+
+CREATE
+    INDEX "partial_index_PinnedMessage_on_expiresAt"
+        ON "PinnedMessage"("expiresAt"
+)
+WHERE
+"expiresAt" IS NOT NULL
+;

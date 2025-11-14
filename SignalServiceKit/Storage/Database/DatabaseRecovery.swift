@@ -309,7 +309,8 @@ public extension DatabaseRecovery {
             "BackupOversizeTextCache",
             "Poll",
             "PollOption",
-            "PollVote"
+            "PollVote",
+            "PinnedMessage"
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
