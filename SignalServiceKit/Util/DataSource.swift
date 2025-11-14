@@ -33,10 +33,6 @@ public protocol DataSource: AnyObject {
 
     func writeTo(_ dstUrl: URL) throws
 
-    /// Faster than `writeTo(_:)`, but a DataSource can only be moved once,
-    /// and cannot be used after it's been moved.
-    func moveToUrlAndConsume(_ dstUrl: URL) throws
-
     func consumeAndDelete() throws
 }
 
@@ -158,29 +154,6 @@ public class DataSourceValue: DataSource {
         } catch {
             owsFailDebug("Could not write data to disk: \(error)")
             throw error
-        }
-    }
-
-    public func moveToUrlAndConsume(_ dstUrl: URL) throws {
-        try lock.withLock {
-            owsAssertDebug(!_isConsumed)
-            owsAssertDebug(!Thread.isMainThread)
-            // This method is meant to be fast. If _dataUrl is nil,
-            // we'll still lazily generate it and this method will work,
-            // but it will be slower than expected.
-            owsAssertDebug(_dataUrl != nil)
-
-            guard let dataUrl else {
-                throw OWSAssertionError("Missing data URL.")
-            }
-            _dataUrl = nil
-            _isConsumed = true
-            do {
-                try OWSFileSystem.moveFile(from: dataUrl, to: dstUrl)
-            } catch {
-                owsFailDebug("Could not write data with error: \(error)")
-                throw error
-            }
         }
     }
 
@@ -353,25 +326,6 @@ public class DataSourcePath: DataSource {
             try FileManager.default.copyItem(at: fileUrl, to: dstUrl)
         } catch {
             owsFailDebug("Could not write data with error: \(error)")
-        }
-    }
-
-    public func moveToUrlAndConsume(_ dstUrl: URL) throws {
-        try lock.withLock {
-            owsAssertDebug(!_isConsumed)
-            _isConsumed = true
-
-            do {
-                try OWSFileSystem.moveFile(from: fileUrl, to: dstUrl)
-            } catch {
-                Logger.error("File could not be moved. Copying instead. \(error)")
-                do {
-                    try FileManager.default.copyItem(at: fileUrl, to: dstUrl)
-                } catch {
-                    owsFailDebug("Could not write data with error: \(error)")
-                    throw error
-                }
-            }
         }
     }
 
