@@ -1397,9 +1397,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 },
                 completionHandler: { result in
                     switch result {
-                    case .finished, .interrupted:
+                    case .interrupted:
                         await backgroundFetcher.reset()
-                    case .expired:
+                    case .finished, .expired:
                         await backgroundFetcher.stopAndWaitBeforeSuspending()
                     }
                 },
