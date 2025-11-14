@@ -9,12 +9,16 @@
 /* Begin PBXBuildFile section */
 		041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */; };
 		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
+		0426758B2EC4D5C800124C5F /* PinnedMessageIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */; };
 		0436E4B02E5E2DC20011E125 /* OWSPollTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */; };
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		04472D5E2E8AD74200D69EE0 /* OutgoingPollVote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04472D5D2E8AD73A00D69EE0 /* OutgoingPollVote.swift */; };
 		044D77782E5E6D750048C21A /* PollVoteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D77772E5E6D700048C21A /* PollVoteRecord.swift */; };
 		044D84452E9FDDF00090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */; };
 		044D84472E9FEE010090BA64 /* BackupArchivePollArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */; };
+		045B40892EC67510002D3F9A /* PinnedMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */; };
+		045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */; };
+		045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
@@ -3867,12 +3871,16 @@
 /* Begin PBXFileReference section */
 		041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementMegaphone.swift; sourceTree = "<group>"; };
 		041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageIconView.swift; sourceTree = "<group>"; };
 		0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPollTest.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		04472D5D2E8AD73A00D69EE0 /* OutgoingPollVote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollVote.swift; sourceTree = "<group>"; };
 		044D77772E5E6D700048C21A /* PollVoteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteRecord.swift; sourceTree = "<group>"; };
 		044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollTerminateChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollArchiver.swift; sourceTree = "<group>"; };
+		045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManager.swift; sourceTree = "<group>"; };
+		045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageRecord.swift; sourceTree = "<group>"; };
+		045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManagerTest.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
@@ -7893,6 +7901,15 @@
 			path = Records;
 			sourceTree = "<group>";
 		};
+		045B408A2EC67BDB002D3F9A /* PinnedMessages */ = {
+			isa = PBXGroup;
+			children = (
+				045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */,
+				045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */,
+			);
+			path = PinnedMessages;
+			sourceTree = "<group>";
+		};
 		04A5736E2E4D4BCB0019651F /* Polls */ = {
 			isa = PBXGroup;
 			children = (
@@ -8849,6 +8866,7 @@
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */,
 				34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */,
+				0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */,
 				3470C8732554926200F5847C /* QuotedMessageView.swift */,
 				348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */,
 				D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */,
@@ -13463,6 +13481,7 @@
 				F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */,
 				F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */,
 				F9426237289B1B5500460798 /* OWSUDManagerTest.swift */,
+				045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */,
 				50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */,
 				F942622C289B1B5500460798 /* ReceiptSenderTest.swift */,
 				50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */,
@@ -13868,6 +13887,7 @@
 			children = (
 				664BA8482BB5DF44005638E0 /* ContactShare */,
 				669FAE162B7A8DA4009EE2FE /* LinkPreview */,
+				045B408A2EC67BDB002D3F9A /* PinnedMessages */,
 				04A5736E2E4D4BCB0019651F /* Polls */,
 				669FAE0C2B744BA4009EE2FE /* Quotes */,
 				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
@@ -17372,6 +17392,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				887889A52476E999001B5FCF /* PinConfirmationViewController.swift in Sources */,
+				0426758B2EC4D5C800124C5F /* PinnedMessageIconView.swift in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				881677C522DD2B21007BAF49 /* PinReminderViewController.swift in Sources */,
 				881D85B822D92C2B00E118DF /* PinSetupViewController.swift in Sources */,
@@ -18453,6 +18474,8 @@
 				F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */,
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,
 				50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */,
+				045B40892EC67510002D3F9A /* PinnedMessageManager.swift in Sources */,
+				045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */,
 				6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */,
 				F9C5CDEF289453B400548EEE /* PinnedThreadManagerImpl.swift in Sources */,
 				6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */,
@@ -19046,6 +19069,7 @@
 				F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */,
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,
 				F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */,
+				045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */,
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */,
 				50B62C762AB216E300705A89 /* PniSignatureProcessorTest.swift in Sources */,

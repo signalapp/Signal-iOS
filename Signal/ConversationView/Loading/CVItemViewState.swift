@@ -240,6 +240,11 @@ struct CVItemModelBuilder: CVItemBuilding {
             tapForMoreState = .none
         }
 
+        var isPinnedMessage: Bool = false
+        if let interactionId = interaction.grdbId?.int64Value {
+            isPinnedMessage = threadViewModel.pinnedMessageIds.contains(interactionId)
+        }
+
         if let paymentMessage = interaction as? OWSPaymentMessage {
             itemViewState.footerState = CVComponentFooter.buildPaymentState(
                 interaction: interaction,
@@ -251,6 +256,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             itemViewState.footerState = CVComponentFooter.buildState(
                 interaction: interaction,
                 tapForMoreState: tapForMoreState,
+                isPinnedMessage: isPinnedMessage,
                 transaction: transaction
             )
         }

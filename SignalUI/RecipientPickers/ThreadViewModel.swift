@@ -26,6 +26,8 @@ public class ThreadViewModel: NSObject {
     public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
+    public let pinnedMessageIds: [Int64]
+
     public var threadUniqueId: String {
         return threadRecord.uniqueId
     }
@@ -103,6 +105,13 @@ public class ThreadViewModel: NSObject {
 
         isBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
         isPinned = DependenciesBridge.shared.pinnedThreadStore.isThreadPinned(thread, tx: transaction)
+
+        if let threadId = thread.grdbId?.int64Value {
+            pinnedMessageIds = DependenciesBridge.shared.pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: transaction)
+        } else {
+            owsFailDebug("missing thread Id")
+            pinnedMessageIds = []
+        }
     }
 
     override public func isEqual(_ object: Any?) -> Bool {

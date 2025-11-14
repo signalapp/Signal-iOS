@@ -996,6 +996,8 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore
         )
 
+        let pinnedMessageManager = PinnedMessageManager()
+
         let storyRecipientStore = StoryRecipientStore()
         let storyRecipientManager = StoryRecipientManager(
             recipientDatabaseTable: recipientDatabaseTable,
@@ -1715,6 +1717,7 @@ extension AppSetup.GlobalsContinuation {
             archivedPaymentStore: archivedPaymentStore,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
+            pinnedMessageManager: pinnedMessageManager,
             pinnedThreadManager: pinnedThreadManager,
             pinnedThreadStore: pinnedThreadStore,
             pollMessageManager: pollMessageManager,

@@ -39,6 +39,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let accessibilityLabel: String?
         let tapForMoreState: TapForMoreState
         let displayEditedLabel: Bool
+        let isPinnedMessage: Bool
 
         struct Expiration: Equatable {
             let expirationTimestamp: UInt64
@@ -66,6 +67,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
     private var expiration: State.Expiration? {
         footerState.expiration
+    }
+    private var isPinnedMessage: Bool {
+        footerState.isPinnedMessage
     }
 
     let isOverlayingMedia: Bool
@@ -147,6 +151,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             textColor = Theme.secondaryTextAndIconColor
         } else {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+        }
+
+        if isPinnedMessage {
+            let pinIconView = componentView.pinnedImageView
+            pinIconView.configure(tintColor: textColor)
+            innerViews.append(pinIconView)
         }
 
         if displayEditedLabel {
@@ -259,12 +269,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 shouldUseLongFormat: false,
                 hasBodyAttachments: hasBodyAttachments
             )
+
             return State(
                 timestampText: timestampText,
                 statusIndicator: nil,
                 accessibilityLabel: nil,
                 tapForMoreState: tapForMoreState,
                 displayEditedLabel: false,
+                isPinnedMessage: false,
                 expiration: nil
             )
         }
@@ -344,6 +356,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             accessibilityLabel: accessibilityLabel,
             tapForMoreState: tapForMoreState,
             displayEditedLabel: false,
+            isPinnedMessage: false,
             expiration: expiration
         )
     }
@@ -376,6 +389,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     static func buildState(
         interaction: TSInteraction,
         tapForMoreState: TapForMoreState,
+        isPinnedMessage: Bool,
         transaction: DBReadTransaction
     ) -> State {
 
@@ -452,6 +466,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             accessibilityLabel: accessibilityLabel,
             tapForMoreState: tapForMoreState,
             displayEditedLabel: displayEditedLabel,
+            isPinnedMessage: isPinnedMessage,
             expiration: expiration
         )
     }
@@ -576,6 +591,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         // We always use a stretching spacer.
         outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
+        if footerState.isPinnedMessage {
+            let pinIconSize = PinnedMessageIconView.size
+            innerSubviewInfos.append(pinIconSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
+
         if displayEditedLabel {
             let editedLabelConfig = self.editedLabelConfig(textColor: .black)
             let editedLabelSize = CVText.measureLabel(config: editedLabelConfig, maxWidth: maxWidth)
@@ -677,6 +697,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let messageTimerView = MessageTimerView()
         fileprivate let smsLockIconView = SmsLockIconView()
         fileprivate let chatColorView = CVColorOrGradientView()
+        fileprivate let pinnedImageView = PinnedMessageIconView()
 
         public var isDedicatedCellView = false
 
@@ -706,6 +727,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             messageTimerView.removeFromSuperview()
 
             smsLockIconView.removeFromSuperview()
+            pinnedImageView.removeFromSuperview()
 
             chatColorView.reset()
             chatColorView.removeFromSuperview()
