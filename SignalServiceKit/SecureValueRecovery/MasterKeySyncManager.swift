@@ -30,13 +30,13 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     private let dateProvider: DateProvider
     private let keyValueStore: KeyValueStore
     private let svr: SecureValueRecovery
-    private let syncManager: Shims.SyncManager
+    private let syncManager: SyncManagerProtocolSwift
     private let tsAccountManager: TSAccountManager
 
     init(
         dateProvider: @escaping DateProvider,
         svr: SecureValueRecovery,
-        syncManager: Shims.SyncManager,
+        syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
@@ -98,47 +98,12 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
         }
 
         logger.info("Requesting keys sync message")
-        syncManager.sendKeysSyncRequestMessage(tx: tx)
+        syncManager.sendKeysSyncRequestMessage(transaction: tx)
 
         keyValueStore.setDate(
             dateProvider(),
             key: StoreConstants.lastKeysSyncRequestMessageDateKey,
             transaction: tx
         )
-    }
-}
-
-// MARK: - Dependencies
-
-extension MasterKeySyncManagerImpl {
-    enum Shims {
-        public typealias SyncManager = _MasterKeySyncManagerImpl_SyncManager_Shim
-    }
-
-    enum Wrappers {
-        public typealias SyncManager = _MasterKeySyncManagerImpl_SyncManager_Wrapper
-    }
-}
-
-// MARK: SyncManager
-
-protocol _MasterKeySyncManagerImpl_SyncManager_Shim {
-    func sendKeysSyncMessage(tx: DBWriteTransaction)
-    func sendKeysSyncRequestMessage(tx: DBWriteTransaction)
-}
-
-class _MasterKeySyncManagerImpl_SyncManager_Wrapper: _MasterKeySyncManagerImpl_SyncManager_Shim {
-    private let syncManager: SyncManagerProtocolSwift
-
-    init(_ syncManager: SyncManagerProtocolSwift) {
-        self.syncManager = syncManager
-    }
-
-    func sendKeysSyncMessage(tx: DBWriteTransaction) {
-        syncManager.sendKeysSyncMessage(tx: tx)
-    }
-
-    func sendKeysSyncRequestMessage(tx: DBWriteTransaction) {
-        syncManager.sendKeysSyncRequestMessage(transaction: tx)
     }
 }

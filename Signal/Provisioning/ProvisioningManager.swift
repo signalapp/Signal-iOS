@@ -15,7 +15,7 @@ public class ProvisioningManager {
     private let deviceProvisioningService: DeviceProvisioningService
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
-    private let profileManager: Shims.ProfileManager
+    private let profileManager: ProfileManager
     private let receiptManager: Shims.ReceiptManager
     private let tsAccountManager: TSAccountManager
 
@@ -26,7 +26,7 @@ public class ProvisioningManager {
         deviceProvisioningService: DeviceProvisioningService,
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
-        profileManager: Shims.ProfileManager,
+        profileManager: ProfileManager,
         receiptManager: Shims.ReceiptManager,
         tsAccountManager: TSAccountManager
     ) {

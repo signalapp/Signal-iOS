@@ -21,6 +21,7 @@ public protocol OWSIdentityManager {
     func recipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> OWSRecipientIdentity?
     func removeRecipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction)
 
+    func generateNewIdentityKeyPair() -> ECKeyPair
     func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
     func wipeIdentityKeysFromFailedProvisioning(tx: DBWriteTransaction)
@@ -187,12 +188,6 @@ private extension OWSIdentity {
     }
 }
 
-extension OWSIdentityManager {
-    func generateNewIdentityKeyPair() -> ECKeyPair {
-        ECKeyPair.generateKeyPair()
-    }
-}
-
 public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let aciProtocolStore: SignalProtocolStore
     private let appReadiness: AppReadiness
@@ -307,6 +302,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     // MARK: - Local Identity
+
+    public func generateNewIdentityKeyPair() -> ECKeyPair {
+        ECKeyPair.generateKeyPair()
+    }
 
     public func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
         return ownIdentityKeyValueStore.getObject(identity.persistenceKey, ofClass: ECKeyPair.self, transaction: tx)

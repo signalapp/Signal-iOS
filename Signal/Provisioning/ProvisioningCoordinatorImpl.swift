@@ -14,10 +14,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
     private let accountKeyStore: AccountKeyStore
-    private let messageFactory: Shims.MessageFactory
     private let networkManager: any NetworkManagerProtocol
     private let preKeyManager: PreKeyManager
-    private let profileManager: Shims.ProfileManager
+    private let profileManager: ProfileManager
     private let pushRegistrationManager: Shims.PushRegistrationManager
     private let receiptManager: Shims.ReceiptManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
@@ -26,10 +25,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
-    private let syncManager: Shims.SyncManager
+    private let syncManager: SyncManagerProtocol
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
-    private let udManager: Shims.UDManager
+    private let udManager: OWSUDManager
 
     init(
         chatConnectionManager: ChatConnectionManager,
@@ -37,10 +36,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
         accountKeyStore: AccountKeyStore,
-        messageFactory: Shims.MessageFactory,
         networkManager: any NetworkManagerProtocol,
         preKeyManager: PreKeyManager,
-        profileManager: Shims.ProfileManager,
+        profileManager: ProfileManager,
         pushRegistrationManager: Shims.PushRegistrationManager,
         receiptManager: Shims.ReceiptManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
@@ -49,17 +47,16 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
-        syncManager: Shims.SyncManager,
+        syncManager: SyncManagerProtocol,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
-        udManager: Shims.UDManager
+        udManager: OWSUDManager
     ) {
         self.chatConnectionManager = chatConnectionManager
         self.db = db
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
         self.accountKeyStore = accountKeyStore
-        self.messageFactory = messageFactory
         self.networkManager = networkManager
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
@@ -369,7 +366,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             self.profileManager.setLocalProfileKey(
                 provisionMessage.profileKey,
                 userProfileWriter: .linking,
-                tx: tx
+                transaction: tx
             )
 
             self.tsAccountManager.setRegistrationId(aciRegistrationId, for: .aci, tx: tx)
@@ -416,7 +413,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 self.profileManager.setLocalProfileKey(
                     Aes256Key.generateRandom(),
                     userProfileWriter: .linking,
-                    tx: tx
+                    transaction: tx
                 )
                 self.svr.clearKeys(transaction: tx)
 
@@ -576,7 +573,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let orderedThreadIds: [String]
         do {
             orderedThreadIds = try await syncManager
-                .sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeout: 60)
+                .sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60).awaitable()
         } catch {
             throw .genericError(error)
         }
@@ -590,7 +587,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                         owsFailDebug("thread was unexpectedly nil")
                         continue
                     }
-                    self.messageFactory.insertInfoMessage(into: thread, messageType: .syncedThread, tx: tx)
+                    let infoMessage = TSInfoMessage(thread: thread, messageType: .syncedThread)
+                    infoMessage.anyInsert(transaction: tx)
                 }
             }
         }
@@ -705,7 +703,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         tx: DBReadTransaction
     ) -> AccountAttributes {
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
-        let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(tx: tx)
+        let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
         // Linked-device provisioning uses the same AccountAttributes object as
         // primary-device registration; however, the reglock token is ignored by

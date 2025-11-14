@@ -528,3 +528,54 @@ extension Optional where Wrapped == PhoneNumberSharingMode {
         return self ?? .defaultValue
     }
 }
+
+public class OWSMockUDManager: OWSUDManager {
+
+    public var trustRoots: [LibSignalClient.PublicKey] = []
+
+    public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, for aci: LibSignalClient.Aci, tx: DBWriteTransaction) {
+    }
+
+    public func udAccessKey(for aci: LibSignalClient.Aci, tx: DBReadTransaction) -> SMKUDAccessKey? {
+        return nil
+    }
+
+    public func udAccess(for aci: LibSignalClient.Aci, tx: DBReadTransaction) -> OWSUDAccess? {
+        return nil
+    }
+
+    public func fetchAllAciUakPairs(tx: DBReadTransaction) -> [LibSignalClient.Aci: SMKUDAccessKey] {
+        return [:]
+    }
+
+    public func fetchSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificates {
+        fatalError("not implemented")
+    }
+
+    public func removeSenderCertificates(transaction: DBWriteTransaction) {
+    }
+
+    public func removeSenderCertificates(tx: DBWriteTransaction) {
+    }
+
+    public func shouldAllowUnrestrictedAccessLocal() -> Bool {
+        return true
+    }
+
+    public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
+        return true
+    }
+
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
+    }
+
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction) {
+    }
+
+    public func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
+        return nil
+    }
+
+    public func setPhoneNumberSharingMode(_ mode: PhoneNumberSharingMode, updateStorageServiceAndProfile: Bool, tx: DBWriteTransaction) {
+    }
+}

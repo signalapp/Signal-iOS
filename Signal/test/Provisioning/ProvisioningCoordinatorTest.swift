@@ -19,20 +19,19 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var chatConnectionManagerMock: ChatConnectionManagerMock!
     private var identityManagerMock: MockIdentityManager!
     private var accountKeyStore: AccountKeyStore!
-    private var messageFactoryMock: Mocks.MessageFactory!
     private var networkManagerMock: MockNetworkManager!
     private var prekeyManagerMock: MockPreKeyManager!
-    private var profileManagerMock: Mocks.ProfileManager!
+    private var profileManagerMock: OWSFakeProfileManager!
     private var pushRegistrationManagerMock: Mocks.PushRegistrationManager!
     private var receiptManagerMock: Mocks.ReceiptManager!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var signalServiceMock: OWSSignalServiceMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svrMock: SecureValueRecoveryMock!
-    private var syncManagerMock: Mocks.SyncManager!
+    private var syncManagerMock: OWSMockSyncManager!
     private var threadStoreMock: MockThreadStore!
     private var tsAccountManagerMock: MockTSAccountManager!
-    private var udManagerMock: Mocks.UDManager!
+    private var udManagerMock: OWSMockUDManager!
 
     public override func setUp() async throws {
 
@@ -53,7 +52,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.accountKeyStore = .init(
             backupSettingsStore: BackupSettingsStore(),
         )
-        self.messageFactoryMock = .init()
         self.networkManagerMock = .init()
         self.prekeyManagerMock = .init()
         self.profileManagerMock = .init()
@@ -75,7 +73,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             identityManager: identityManagerMock,
             linkAndSyncManager: MockLinkAndSyncManager(),
             accountKeyStore: accountKeyStore,
-            messageFactory: messageFactoryMock,
             networkManager: networkManagerMock,
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
@@ -169,7 +166,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         XCTAssert(didSetLocalIdentifiers)
         XCTAssert(prekeyManagerMock.didFinalizeRegistrationPrekeys)
         XCTAssertEqual(
-            profileManagerMock.localUserProfileMock?.profileKey,
+            profileManagerMock.localProfileKey,
             provisioningMessage.profileKey
         )
         XCTAssertEqual(

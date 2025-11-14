@@ -10,6 +10,7 @@ public import LibSignalClient
 
 open class MockIdentityManager: OWSIdentityManager {
     private let recipientIdFinder: RecipientIdFinder
+    public var generatedKeyPairs = [ECKeyPair]()
 
     init(recipientIdFinder: RecipientIdFinder) {
         self.recipientIdFinder = recipientIdFinder
@@ -55,6 +56,12 @@ open class MockIdentityManager: OWSIdentityManager {
             )
         }
         recipientIdentities[recipient.uniqueId] = nil
+    }
+
+    open func generateNewIdentityKeyPair() -> ECKeyPair {
+        let keyPair = ECKeyPair.generateKeyPair()
+        generatedKeyPairs.append(keyPair)
+        return keyPair
     }
 
     open func libSignalStore(for identity: OWSIdentity, tx: DBReadTransaction) throws -> IdentityStore { fatalError() }

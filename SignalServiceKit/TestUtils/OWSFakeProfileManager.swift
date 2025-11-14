@@ -11,6 +11,8 @@ import LibSignalClient
 class OWSFakeProfileManager {
     let badgeStore: BadgeStore = BadgeStore()
     var fakeUserProfiles: [SignalServiceAddress: OWSUserProfile]?
+    var localProfile: OWSUserProfile?
+    var localProfileKey: Aes256Key?
 
     private var recipientWhitelist: Set<SignalServiceAddress> = []
     private var threadWhitelist: Set<String> = []
@@ -18,7 +20,7 @@ class OWSFakeProfileManager {
 
 extension OWSFakeProfileManager: ProfileManagerProtocol {
     func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        owsFail("Not implemented.")
+        return localProfile
     }
 
     func userProfile(for addressParam: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
@@ -71,6 +73,10 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
             addUser(toProfileWhitelist: contactThread.contactAddress, userProfileWriter: userProfileWriter, transaction: transaction)
         }
+    }
+
+    func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
+        localProfileKey = key
     }
 
     func rotateProfileKeyUponRecipientHide(withTx tx: DBWriteTransaction) {

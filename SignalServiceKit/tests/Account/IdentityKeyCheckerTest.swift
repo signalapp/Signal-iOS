@@ -11,7 +11,7 @@ import XCTest
 final class IdentityKeyCheckerTest: XCTestCase {
     private var db: InMemoryDB!
     private var identityKeyChecker: IdentityKeyCheckerImpl!
-    private var identityManagerMock: IdentityManagerMock!
+    private var identityManagerMock: MockIdentityManager!
     private var profileFetcherMock: ProfileFetcherMock!
 
     private var identityKey1: ECKeyPair!
@@ -19,7 +19,16 @@ final class IdentityKeyCheckerTest: XCTestCase {
 
     override func setUp() {
         db = InMemoryDB()
-        identityManagerMock = IdentityManagerMock()
+        let recipientDbTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientDbTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
+        let recipientIdFinder = RecipientIdFinder(
+            recipientDatabaseTable: recipientDbTable,
+            recipientFetcher: recipientFetcher
+        )
+        identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
         profileFetcherMock = ProfileFetcherMock()
         identityKeyChecker = IdentityKeyCheckerImpl(
             db: db,
@@ -43,7 +52,7 @@ final class IdentityKeyCheckerTest: XCTestCase {
     }
 
     func testErrorMatchingIfProfileFetchFails() async {
-        identityManagerMock.pniKeyPair = identityKey1
+        identityManagerMock.identityKeyPairs[.pni] = identityKey1
         profileFetcherMock.profileFetchResult = .error()
 
         let result = await Result { try await checkForMatch() }
@@ -51,7 +60,7 @@ final class IdentityKeyCheckerTest: XCTestCase {
     }
 
     func testDoesNotMatchIfRemotePniIdentityKeyDiffers() async throws {
-        identityManagerMock.pniKeyPair = identityKey1
+        identityManagerMock.identityKeyPairs[.pni] = identityKey1
         profileFetcherMock.profileFetchResult = .value(identityKey2.identityKeyPair.identityKey)
 
         let result = try await checkForMatch()
@@ -59,7 +68,7 @@ final class IdentityKeyCheckerTest: XCTestCase {
     }
 
     func testMatchesIfRemotePniIdentityKeyMatches() async throws {
-        identityManagerMock.pniKeyPair = identityKey1
+        identityManagerMock.identityKeyPairs[.pni] = identityKey1
         profileFetcherMock.profileFetchResult = .value(identityKey1.identityKeyPair.identityKey)
 
         let result = try await checkForMatch()
@@ -68,20 +77,6 @@ final class IdentityKeyCheckerTest: XCTestCase {
 }
 
 // MARK: - Mocks
-
-// MARK: IdentityManager
-
-private class IdentityManagerMock: IdentityKeyCheckerImpl.Shims.IdentityManager {
-    var aciKeyPair: ECKeyPair?
-    var pniKeyPair: ECKeyPair?
-
-    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
-        switch identity {
-        case .aci: aciKeyPair
-        case .pni: pniKeyPair
-        }
-    }
-}
 
 // MARK: ProfileFetcher
 

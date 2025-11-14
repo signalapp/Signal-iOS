@@ -10,10 +10,10 @@ import XCTest
 @testable import SignalServiceKit
 
 class ChangePhoneNumberPniManagerTest: XCTestCase {
-    private var identityManagerMock: IdentityManagerMock!
+    private var identityManagerMock: MockIdentityManager!
     private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
     private var preKeyStoreMock: SignalServiceKit.PreKeyStore!
-    private var preKeyManagerMock: PreKeyManagerMock!
+    private var preKeyManagerMock: MockPreKeyManager!
     private var signedPreKeyStoreMock: SignedPreKeyStoreImpl!
     private var kyberPreKeyStoreMock: KyberPreKeyStoreImpl!
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
@@ -24,7 +24,16 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var changeNumberPniManager: ChangePhoneNumberPniManager!
 
     public override func setUp() {
-        identityManagerMock = .init()
+        let recipientDbTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientDbTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
+        let recipientIdFinder = RecipientIdFinder(
+            recipientDatabaseTable: recipientDbTable,
+            recipientFetcher: recipientFetcher
+        )
+        identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
         pniDistributionParameterBuilderMock = .init()
         preKeyManagerMock = .init()
         preKeyStoreMock = .init()
@@ -103,7 +112,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(
-            identityManagerMock.storedKeyPairs,
+            identityManagerMock.identityKeyPairs,
             [.pni: pendingState.pniIdentityKeyPair]
         )
 
@@ -160,37 +169,7 @@ private extension ChangePhoneNumberPni.GeneratePniIdentityResult {
 
 // MARK: IdentityManager
 
-private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.IdentityManager {
-    var generatedKeyPairs: [ECKeyPair] = []
-    var storedKeyPairs: [OWSIdentity: ECKeyPair] = [:]
-
-    func generateNewIdentityKeyPair() -> ECKeyPair {
-        let keyPair = ECKeyPair.generateKeyPair()
-        generatedKeyPairs.append(keyPair)
-        return keyPair
-    }
-
-    func setIdentityKeyPair(
-        _ keyPair: ECKeyPair?,
-        for identity: OWSIdentity,
-        tx _: DBWriteTransaction
-    ) {
-        storedKeyPairs[identity] = keyPair
-    }
-}
-
 // MARK: PreKeyManager
-
-private class PreKeyManagerMock: ChangePhoneNumberPniManagerImpl.Shims.PreKeyManager {
-    var attemptedRefreshes: [(OWSIdentity, Bool)] = []
-
-    func refreshOneTimePreKeys(
-        forIdentity identity: OWSIdentity,
-        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
-    ) {
-        attemptedRefreshes.append((identity, shouldRefreshSignedPreKey))
-    }
-}
 
 // MARK: PniDistributionParameterBuilder
 

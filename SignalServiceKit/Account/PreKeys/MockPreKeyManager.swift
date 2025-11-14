@@ -13,6 +13,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
     func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws { }
+    var attemptedRefreshes: [(OWSIdentity, Bool)] = []
 
     func createPreKeysForRegistration() -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
@@ -72,7 +73,9 @@ internal class MockPreKeyManager: PreKeyManager {
     }
 
     func rotateSignedPreKeysIfNeeded() -> Task<Void, Error> { Task {} }
-    func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
+    func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) {
+        attemptedRefreshes.append((identity, shouldRefreshSignedPreKey))
+    }
 
     func generateLastResortKyberPreKey(signedBy identityKey: PrivateKey) -> LibSignalClient.KyberPreKeyRecord {
         return KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: PreKeyId.random(), now: Date(), signedBy: identityKey)

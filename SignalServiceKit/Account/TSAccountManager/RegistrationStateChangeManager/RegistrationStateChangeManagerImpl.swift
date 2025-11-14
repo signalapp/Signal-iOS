@@ -30,7 +30,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let identityManager: OWSIdentityManager
     private let networkManager: NetworkManager
     private let notificationPresenter: any NotificationPresenter
-    private let paymentsEvents: Shims.PaymentsEvents
+    private let paymentsEvents: PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let senderKeyStore: Shims.SenderKeyStore
@@ -57,7 +57,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         identityManager: OWSIdentityManager,
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
-        paymentsEvents: Shims.PaymentsEvents,
+        paymentsEvents: PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         senderKeyStore: Shims.SenderKeyStore,
@@ -238,7 +238,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             // Don't reset payments state at this time.
         } else {
             // PaymentsEvents will dispatch this event to the appropriate singletons.
-            paymentsEvents.clearState(tx: tx)
+            paymentsEvents.clearState(transaction: tx)
         }
 
         tx.addSyncCompletion {
@@ -453,33 +453,11 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
 extension RegistrationStateChangeManagerImpl {
     public enum Shims {
-        public typealias PaymentsEvents = _RegistrationStateChangeManagerImpl_PaymentsEventsShim
         public typealias SenderKeyStore = _RegistrationStateChangeManagerImpl_SenderKeyStoreShim
     }
 
     public enum Wrappers {
-        public typealias PaymentsEvents = _RegistrationStateChangeManagerImpl_PaymentsEventsWrapper
         public typealias SenderKeyStore = _RegistrationStateChangeManagerImpl_SenderKeyStoreWrapper
-    }
-}
-
-// MARK: PaymentsEvents
-
-public protocol _RegistrationStateChangeManagerImpl_PaymentsEventsShim {
-
-    func clearState(tx: DBWriteTransaction)
-}
-
-public class _RegistrationStateChangeManagerImpl_PaymentsEventsWrapper: _RegistrationStateChangeManagerImpl_PaymentsEventsShim {
-
-    private let paymentsEvents: PaymentsEvents
-
-    public init(_ paymentsEvents: PaymentsEvents) {
-        self.paymentsEvents = paymentsEvents
-    }
-
-    public func clearState(tx: DBWriteTransaction) {
-        paymentsEvents.clearState(transaction: tx)
     }
 }
 

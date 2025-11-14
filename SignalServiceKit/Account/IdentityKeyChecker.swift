@@ -11,12 +11,12 @@ protocol IdentityKeyChecker {
 
 class IdentityKeyCheckerImpl: IdentityKeyChecker {
     private let db: any DB
-    private let identityManager: Shims.IdentityManager
+    private let identityManager: OWSIdentityManager
     private let profileFetcher: Shims.ProfileFetcher
 
     init(
         db: any DB,
-        identityManager: Shims.IdentityManager,
+        identityManager: OWSIdentityManager,
         profileFetcher: Shims.ProfileFetcher,
     ) {
         self.db = db
@@ -39,31 +39,11 @@ class IdentityKeyCheckerImpl: IdentityKeyChecker {
 
 extension IdentityKeyCheckerImpl {
     enum Shims {
-        typealias IdentityManager = _IdentityKeyCheckerImpl_IdentityManager_Shim
         typealias ProfileFetcher = _IdentityKeyCheckerImpl_ProfileFetcher_Shim
     }
 
     enum Wrappers {
-        typealias IdentityManager = _IdentityKeyCheckerImpl_IdentityManager_Wrapper
         typealias ProfileFetcher = _IdentityKeyCheckerImpl_ProfileFetcher_Wrapper
-    }
-}
-
-// MARK: IdentityManager
-
-protocol _IdentityKeyCheckerImpl_IdentityManager_Shim {
-    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
-}
-
-class _IdentityKeyCheckerImpl_IdentityManager_Wrapper: _IdentityKeyCheckerImpl_IdentityManager_Shim {
-    private let identityManager: OWSIdentityManager
-
-    init(_ identityManager: OWSIdentityManager) {
-        self.identityManager = identityManager
-    }
-
-    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
-        return identityManager.identityKeyPair(for: identity, tx: tx)
     }
 }
 

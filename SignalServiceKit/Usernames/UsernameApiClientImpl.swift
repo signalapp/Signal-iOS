@@ -6,9 +6,9 @@
 public import LibSignalClient
 
 public class UsernameApiClientImpl: UsernameApiClient {
-    private let networkManager: Shims.NetworkManager
+    private let networkManager: NetworkManager
 
-    init(networkManager: Shims.NetworkManager) {
+    init(networkManager: NetworkManager) {
         self.networkManager = networkManager
     }
 
@@ -211,33 +211,5 @@ public class UsernameApiClientImpl: UsernameApiClient {
                 throw error
             }
         }
-    }
-}
-
-// MARK: - Shims
-
-extension UsernameApiClientImpl {
-    enum Shims {
-        typealias NetworkManager = _UsernameApiClientImpl_NetworkManager_Shim
-    }
-
-    enum Wrappers {
-        typealias NetworkManager = _UsernameApiClientImpl_NetworkManager_Wrapper
-    }
-}
-
-protocol _UsernameApiClientImpl_NetworkManager_Shim {
-    func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse
-}
-
-class _UsernameApiClientImpl_NetworkManager_Wrapper: _UsernameApiClientImpl_NetworkManager_Shim {
-    private let networkManager: NetworkManager
-
-    init(networkManager: NetworkManager) {
-        self.networkManager = networkManager
-    }
-
-    func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse {
-        return try await networkManager.asyncRequest(request)
     }
 }

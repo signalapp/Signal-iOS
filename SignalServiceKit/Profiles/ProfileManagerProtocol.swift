@@ -26,6 +26,8 @@ public protocol ProfileManagerProtocol {
     func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
     func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
 
+    func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
+
     /// Rotates the local profile key. Intended specifically for the use case of recipient hiding.
     ///
     /// - parameter tx: the transaction to use for this operation

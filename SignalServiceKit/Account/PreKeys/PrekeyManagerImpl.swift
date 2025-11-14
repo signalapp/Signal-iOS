@@ -40,7 +40,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     private static let taskQueue = SerialTaskQueue()
 
     private let db: any DB
-    private let identityManager: PreKeyManagerImpl.Shims.IdentityManager
+    private let identityManager: OWSIdentityManager
     private let keyValueStore: KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
     private let chatConnectionManager: any ChatConnectionManager
@@ -52,7 +52,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         identityKeyMismatchManager: IdentityKeyMismatchManager,
-        identityManager: PreKeyManagerImpl.Shims.IdentityManager,
+        identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         preKeyTaskAPIClient: PreKeyTaskAPIClient,
         protocolStoreManager: SignalProtocolStoreManager,

@@ -95,7 +95,7 @@ public class AppEnvironment: NSObject {
             deviceProvisioningService: deviceProvisioningService,
             identityManager: DependenciesBridge.shared.identityManager,
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
-            profileManager: ProvisioningManager.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
+            profileManager: SSKEnvironment.shared.profileManagerRef,
             receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )

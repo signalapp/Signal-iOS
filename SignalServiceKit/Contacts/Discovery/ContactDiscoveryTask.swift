@@ -48,9 +48,10 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         }
 
         let discoveryResults = try await ContactDiscoveryV2Operation(
+            db: db,
             e164sToLookup: e164s,
             mode: mode,
-            udManager: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.UDManager(db: db, udManager: udManager),
+            udManager: udManager,
             connectionImpl: libsignalNet,
             remoteAttestation: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.RemoteAttestation()
         ).perform()

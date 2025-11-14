@@ -43,7 +43,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
-        profileManager: Shims.ProfileManager,
+        profileManager: ProfileManager,
         reachabilityManager: SSKReachabilityManager,
         remoteConfigManager: RemoteConfigManager,
         signalService: OWSSignalServiceProtocol,
@@ -1050,7 +1050,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let currentCallProvider: CurrentCallProvider
         private let db: any DB
         private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
-        private let profileManager: Shims.ProfileManager
+        private let profileManager: ProfileManager
         private let reachabilityManager: SSKReachabilityManager
         private let threadStore: ThreadStore
 
@@ -1060,7 +1060,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             currentCallProvider: CurrentCallProvider,
             db: any DB,
             mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
-            profileManager: Shims.ProfileManager,
+            profileManager: ProfileManager,
             reachabilityManager: SSKReachabilityManager,
             threadStore: ThreadStore
         ) {
@@ -1260,7 +1260,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             // check if the thread is whitelisted. We know we just received a message.
             // TODO: Mark the thread visible before this point to share more logic.
             guard thread.shouldThreadBeVisible else {
-                return !profileManager.isThread(inProfileWhitelist: thread, tx: tx)
+                return !profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
             }
 
             return threadStore.hasPendingMessageRequest(thread: thread, tx: tx)
@@ -2632,31 +2632,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
 extension AttachmentDownloadManagerImpl {
     public enum Shims {
-        public typealias ProfileManager = _AttachmentDownloadManagerImpl_ProfileManagerShim
         public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerShim
     }
 
     public enum Wrappers {
-        public typealias ProfileManager = _AttachmentDownloadManagerImpl_ProfileManagerWrapper
         public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerWrapper
-    }
-}
-
-public protocol _AttachmentDownloadManagerImpl_ProfileManagerShim {
-
-    func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool
-}
-
-public class _AttachmentDownloadManagerImpl_ProfileManagerWrapper: _AttachmentDownloadManagerImpl_ProfileManagerShim {
-
-    private let profileManager: ProfileManagerProtocol
-
-    public init(_ profileManager: ProfileManagerProtocol) {
-        self.profileManager = profileManager
-    }
-
-    public func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool {
-        profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
     }
 }
 

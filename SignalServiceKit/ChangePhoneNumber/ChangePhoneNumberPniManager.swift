@@ -99,21 +99,21 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let logger: PrefixedLogger = .init(prefix: "[CNPNI]")
 
     private let db: any DB
-    private let identityManager: Shims.IdentityManager
+    private let identityManager: OWSIdentityManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignedPreKeyStoreImpl
     private let pniKyberPreKeyStore: KyberPreKeyStoreImpl
-    private let preKeyManager: Shims.PreKeyManager
+    private let preKeyManager: PreKeyManager
     private let registrationIdGenerator: RegistrationIdGenerator
     private let tsAccountManager: TSAccountManager
 
     init(
         db: any DB,
-        identityManager: Shims.IdentityManager,
+        identityManager: OWSIdentityManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignedPreKeyStoreImpl,
         pniKyberPreKeyStore: KyberPreKeyStoreImpl,
-        preKeyManager: Shims.PreKeyManager,
+        preKeyManager: PreKeyManager,
         registrationIdGenerator: RegistrationIdGenerator,
         tsAccountManager: TSAccountManager
     ) {

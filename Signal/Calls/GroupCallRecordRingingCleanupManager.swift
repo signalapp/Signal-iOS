@@ -38,7 +38,7 @@ class GroupCallRecordRingingCleanupManager {
     private let db: any DB
     private let interactionStore: InteractionStore
     private let groupCallPeekClient: GroupCallPeekClient
-    private let notificationPresenter: Shims.NotificationPresenter
+    private let notificationPresenter: NotificationPresenter
     private let threadStore: ThreadStore
 
     init(
@@ -55,7 +55,7 @@ class GroupCallRecordRingingCleanupManager {
         self.db = db
         self.interactionStore = interactionStore
         self.groupCallPeekClient = groupCallPeekClient
-        self.notificationPresenter = Wrappers.NotificationPresenter(notificationPresenter: notificationPresenter)
+        self.notificationPresenter = notificationPresenter
         self.threadStore = threadStore
     }
 
@@ -155,53 +155,13 @@ class GroupCallRecordRingingCleanupManager {
                     continue
                 }
 
-                self.notificationPresenter.notifyUserGroupCallStarted(
-                    groupCallInteraction: groupCallInteraction,
-                    groupThread: groupThread,
-                    tx: tx
+                self.notificationPresenter.notifyUser(
+                    forPreviewableInteraction: groupCallInteraction,
+                    thread: groupThread,
+                    wantsSound: true,
+                    transaction: tx
                 )
             }
         }
-    }
-}
-
-// MARK: - Shims
-
-private extension GroupCallRecordRingingCleanupManager {
-    enum Shims {
-        typealias NotificationPresenter = GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim
-    }
-
-    enum Wrappers {
-        typealias NotificationPresenter = GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper
-    }
-}
-
-private protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
-    func notifyUserGroupCallStarted(
-        groupCallInteraction: OWSGroupCallMessage,
-        groupThread: TSGroupThread,
-        tx: DBWriteTransaction
-    )
-}
-
-private class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
-    private let notificationPresenter: any NotificationPresenter
-
-    init(notificationPresenter: any NotificationPresenter) {
-        self.notificationPresenter = notificationPresenter
-    }
-
-    func notifyUserGroupCallStarted(
-        groupCallInteraction: OWSGroupCallMessage,
-        groupThread: TSGroupThread,
-        tx: DBWriteTransaction
-    ) {
-        notificationPresenter.notifyUser(
-            forPreviewableInteraction: groupCallInteraction,
-            thread: groupThread,
-            wantsSound: true,
-            transaction: tx
-        )
     }
 }

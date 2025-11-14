@@ -84,6 +84,8 @@ extension LibSignalClient.CdsiLookup: ContactDiscoveryTokenResult {}
 
 final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnection> {
 
+    let db: DB
+
     let e164sToLookup: Set<E164>
 
     /// If non-nil, requests will include prevE164s & a token, so we'll only
@@ -95,20 +97,22 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
     /// consume too much quota without the user's consent.
     let persistentState: ContactDiscoveryV2PersistentState?
 
-    let udManager: Shims.UDManager
+    let udManager: OWSUDManager
 
     private let connectionImpl: ConnectionType
 
     private let remoteAttestation: Shims.RemoteAttestation
 
     convenience init(
+        db: any DB,
         e164sToLookup: Set<E164>,
         mode: ContactDiscoveryMode,
-        udManager: any Shims.UDManager,
+        udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
         remoteAttestation: any Shims.RemoteAttestation
     ) {
         self.init(
+            db: db,
             e164sToLookup: e164sToLookup,
             persistentState: mode == .oneOffUserRequest ? nil : ContactDiscoveryV2PersistentStateImpl(),
             udManager: udManager,
@@ -118,12 +122,14 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
     }
 
     init(
+        db: any DB,
         e164sToLookup: Set<E164>,
         persistentState: (any ContactDiscoveryV2PersistentState)?,
-        udManager: any Shims.UDManager,
+        udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
         remoteAttestation: any Shims.RemoteAttestation
     ) {
+        self.db = db
         self.e164sToLookup = e164sToLookup
         self.persistentState = persistentState
         self.udManager = udManager
@@ -171,7 +177,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             newE164s = e164sToLookup
         }
 
-        let acisAndAccessKeys = udManager.fetchAllAciUakPairsWithSneakyTransaction().map { aci, uak in
+        let acisAndAccessKeys = db.read(block: { tx in udManager.fetchAllAciUakPairs(tx: tx) }).map { aci, uak in
             LibSignalClient.AciAndAccessKey(aci: aci, accessKey: uak.keyData)
         }
 
@@ -321,31 +327,11 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
 
 extension ContactDiscoveryV2Operation {
     enum Shims {
-        typealias UDManager = _ContactDiscoveryV2Operation_UDManagerShim
         typealias RemoteAttestation = _ContactDiscoveryV2Operation_RemoteAttestationShim
     }
 
     enum Wrappers {
-        typealias UDManager = _ContactDiscoveryV2Operation_UDManagerWrapper
         typealias RemoteAttestation = _ContactDiscoveryV2Operation_RemoteAttestationWrapper
-    }
-}
-
-protocol _ContactDiscoveryV2Operation_UDManagerShim {
-    func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey]
-}
-
-class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operation_UDManagerShim {
-    private let db: any DB
-    private let udManager: OWSUDManager
-
-    init(db: any DB, udManager: OWSUDManager) {
-        self.db = db
-        self.udManager = udManager
-    }
-
-    func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey] {
-        db.read { tx in udManager.fetchAllAciUakPairs(tx: tx) }
     }
 }
 

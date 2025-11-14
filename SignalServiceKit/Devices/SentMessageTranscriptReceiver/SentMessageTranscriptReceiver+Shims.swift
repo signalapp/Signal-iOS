@@ -11,14 +11,12 @@ extension SentMessageTranscriptReceiverImpl {
         public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobShim
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerShim
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerShim
-        public typealias PaymentsHelper = _SentMessageTranscriptReceiver_PaymentsHelperShim
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesShim
     }
     public enum Wrappers {
         public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerWrapper
-        public typealias PaymentsHelper = _SentMessageTranscriptReceiver_PaymentsHelperWrapper
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesWrapper
     }
 }
@@ -100,41 +98,6 @@ public class _SentMessageTranscriptReceiver_GroupManagerWrapper: _SentMessageTra
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: changeAuthor,
             localIdentifiers: localIdentifiers,
-            transaction: tx
-        )
-    }
-}
-
-// MARK: - Payments Helper
-
-public protocol _SentMessageTranscriptReceiver_PaymentsHelperShim {
-
-    func processReceivedTranscriptPaymentNotification(
-        thread: TSThread,
-        paymentNotification: TSPaymentNotification,
-        messageTimestamp: UInt64,
-        tx: DBWriteTransaction
-    )
-}
-
-public class _SentMessageTranscriptReceiver_PaymentsHelperWrapper: _SentMessageTranscriptReceiver_PaymentsHelperShim {
-
-    private let paymentsHelper: PaymentsHelper
-
-    public init(_ paymentsHelper: PaymentsHelper) {
-        self.paymentsHelper = paymentsHelper
-    }
-
-    public func processReceivedTranscriptPaymentNotification(
-        thread: TSThread,
-        paymentNotification: TSPaymentNotification,
-        messageTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        paymentsHelper.processReceivedTranscriptPaymentNotification(
-            thread: thread,
-            paymentNotification: paymentNotification,
-            messageTimestamp: messageTimestamp,
             transaction: tx
         )
     }

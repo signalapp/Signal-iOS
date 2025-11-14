@@ -17,7 +17,7 @@ public class ProvisioningManagerTests {
     private var mockDeviceProvisioningService: MockDeviceProvisioningService!
     private var mockIdentityManager: MockIdentityManager!
     private var mockLinkAndSyncManager: MockLinkAndSyncManager!
-    private var mockProfileManager: ProvisioningManager.Mocks.ProfileManager!
+    private var mockProfileManager: OWSFakeProfileManager!
     private var mockReceiptManager: ProvisioningManager.Mocks.ReceiptManager!
     private var mockTsAccountManager: MockTSAccountManager!
 
@@ -31,7 +31,7 @@ public class ProvisioningManagerTests {
         self.deviceManager = MockDeviceManager()
         self.mockDeviceProvisioningService = MockDeviceProvisioningService()
         self.mockLinkAndSyncManager = MockLinkAndSyncManager()
-        self.mockProfileManager = ProvisioningManager.Mocks.ProfileManager()
+        self.mockProfileManager = OWSFakeProfileManager()
         self.mockReceiptManager = ProvisioningManager.Mocks.ReceiptManager()
         self.mockTsAccountManager = MockTSAccountManager()
 
@@ -77,7 +77,7 @@ public class ProvisioningManagerTests {
                 e164: myPhoneNumber
             )
         }
-        mockProfileManager.localUserProfile = OWSUserProfile(address: .localUser, profileKey: profileKey)
+        mockProfileManager.localProfile = OWSUserProfile(address: .localUser, profileKey: profileKey)
         mockReceiptManager.areReadReceiptsEnabledValue = readReceiptsEnabled
         mockDeviceProvisioningService.deviceProvisioningCodes.append(provisioningCode)
 

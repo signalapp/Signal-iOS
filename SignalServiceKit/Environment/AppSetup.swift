@@ -631,7 +631,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
-            profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
+            profileManager: profileManager,
             reachabilityManager: reachabilityManager,
             remoteConfigManager: remoteConfigManager,
             signalService: signalService,
@@ -1093,17 +1093,6 @@ extension AppSetup.GlobalsContinuation {
             registrationIdGenerator: RegistrationIdGenerator()
         )
 
-        let changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
-            db: db,
-            identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
-            registrationIdGenerator: RegistrationIdGenerator(),
-            tsAccountManager: tsAccountManager
-        )
-
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             accountKeyStore: accountKeyStore,
             appContext: appContext,
@@ -1121,7 +1110,7 @@ extension AppSetup.GlobalsContinuation {
             identityManager: identityManager,
             networkManager: networkManager,
             notificationPresenter: notificationPresenter,
-            paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
+            paymentsEvents: paymentsEvents,
             recipientManager: recipientManager,
             recipientMerger: recipientMerger,
             senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
@@ -1134,7 +1123,7 @@ extension AppSetup.GlobalsContinuation {
 
         let identityKeyChecker = IdentityKeyCheckerImpl(
             db: db,
-            identityManager: IdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
+            identityManager: identityManager,
             profileFetcher: IdentityKeyCheckerImpl.Wrappers.ProfileFetcher(networkManager: networkManager),
         )
         let identityKeyMismatchManager = IdentityKeyMismatchManagerImpl(
@@ -1164,12 +1153,23 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             identityKeyMismatchManager: identityKeyMismatchManager,
-            identityManager: PreKeyManagerImpl.Wrappers.IdentityManager(identityManager),
+            identityManager: identityManager,
             messageProcessor: messageProcessor,
             preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,
             remoteConfigProvider: remoteConfigManager,
             chatConnectionManager: chatConnectionManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            db: db,
+            identityManager: identityManager,
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            preKeyManager: preKeyManager,
+            registrationIdGenerator: RegistrationIdGenerator(),
             tsAccountManager: tsAccountManager
         )
 
@@ -1189,7 +1189,7 @@ extension AppSetup.GlobalsContinuation {
         let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStore()
 
         let usernameApiClient = UsernameApiClientImpl(
-            networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
+            networkManager: networkManager
         )
         let usernameEducationManager = UsernameEducationManagerImpl()
         let usernameLinkManager = UsernameLinkManagerImpl(
@@ -1223,7 +1223,7 @@ extension AppSetup.GlobalsContinuation {
         let masterKeySyncManager = MasterKeySyncManagerImpl(
             dateProvider: dateProvider,
             svr: svr,
-            syncManager: MasterKeySyncManagerImpl.Wrappers.SyncManager(syncManager),
+            syncManager: syncManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -1249,7 +1249,7 @@ extension AppSetup.GlobalsContinuation {
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             messageStickerManager: messageStickerManager,
-            paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
+            paymentsHelper: paymentsHelper,
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()

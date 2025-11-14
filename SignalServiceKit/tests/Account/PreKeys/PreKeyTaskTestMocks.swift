@@ -17,40 +17,7 @@ extension PreKeyTaskManager {
     enum Mocks {
         typealias APIClient = _PreKeyTaskManager_APIClientMock
         typealias DateProvider = _PreKeyTaskManager_DateProviderMock
-        typealias IdentityManager = _PreKeyTaskManager_IdentityManagerMock
         typealias IdentityKeyMismatchManager = _PreKeyTaskManager_IdentityKeyMismatchManagerMock
-    }
-}
-
-//
-//
-// MARK: - Mock Implementations
-//
-//
-
-class _PreKeyTaskManager_IdentityManagerMock: PreKeyManagerImpl.Shims.IdentityManager {
-
-    var aciKeyPair: ECKeyPair?
-    var pniKeyPair: ECKeyPair?
-
-    func identityKeyPair(for identity: OWSIdentity, tx: SignalServiceKit.DBReadTransaction) -> ECKeyPair? {
-        switch identity {
-        case .aci:
-            return aciKeyPair
-        case .pni:
-            return pniKeyPair
-        }
-    }
-
-    func generateNewIdentityKeyPair() -> ECKeyPair { ECKeyPair.generateKeyPair() }
-
-    func store(keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
-        switch identity {
-        case .aci:
-            aciKeyPair = keyPair
-        case .pni:
-            pniKeyPair = keyPair
-        }
     }
 }
 

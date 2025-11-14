@@ -23,7 +23,7 @@ internal struct PreKeyTaskManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let identityKeyMismatchManager: IdentityKeyMismatchManager
-    private let identityManager: PreKeyManagerImpl.Shims.IdentityManager
+    private let identityManager: OWSIdentityManager
     private let messageProcessor: MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
     private let remoteConfigProvider: any RemoteConfigProvider
@@ -34,7 +34,7 @@ internal struct PreKeyTaskManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         identityKeyMismatchManager: IdentityKeyMismatchManager,
-        identityManager: PreKeyManagerImpl.Shims.IdentityManager,
+        identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
         remoteConfigProvider: any RemoteConfigProvider,
@@ -268,8 +268,8 @@ internal struct PreKeyTaskManager {
             return identityKeyPair
         }
         let identityKeyPair = identityManager.generateNewIdentityKeyPair()
-        self.identityManager.store(
-            keyPair: identityKeyPair,
+        identityManager.setIdentityKeyPair(
+            identityKeyPair,
             for: identity,
             tx: tx
         )

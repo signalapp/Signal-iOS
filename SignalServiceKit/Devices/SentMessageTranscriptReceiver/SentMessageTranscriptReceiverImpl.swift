@@ -16,7 +16,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let interactionDeleteManager: InteractionDeleteManager
     private let interactionStore: InteractionStore
     private let messageStickerManager: MessageStickerManager
-    private let paymentsHelper: Shims.PaymentsHelper
+    private let paymentsHelper: PaymentsHelper
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
     private let viewOnceMessages: Shims.ViewOnceMessages
@@ -30,7 +30,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
         messageStickerManager: MessageStickerManager,
-        paymentsHelper: Shims.PaymentsHelper,
+        paymentsHelper: PaymentsHelper,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
         viewOnceMessages: Shims.ViewOnceMessages
@@ -109,7 +109,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 thread: paymentNotification.target.thread,
                 paymentNotification: paymentNotification.notification,
                 messageTimestamp: messageTimestamp,
-                tx: tx
+                transaction: tx
             )
             return .success(nil)
 

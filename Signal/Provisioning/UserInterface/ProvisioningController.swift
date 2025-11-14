@@ -40,10 +40,9 @@ class ProvisioningController: NSObject {
             identityManager: DependenciesBridge.shared.identityManager,
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
-            messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
             networkManager: SSKEnvironment.shared.networkManagerRef,
             preKeyManager: DependenciesBridge.shared.preKeyManager,
-            profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerImplRef),
+            profileManager: SSKEnvironment.shared.profileManagerImplRef,
             pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
             receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
@@ -52,10 +51,10 @@ class ProvisioningController: NSObject {
             signalService: SSKEnvironment.shared.signalServiceRef,
             storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             svr: DependenciesBridge.shared.svr,
-            syncManager: ProvisioningCoordinatorImpl.Wrappers.SyncManager(SSKEnvironment.shared.syncManagerRef),
+            syncManager: SSKEnvironment.shared.syncManagerRef,
             threadStore: ThreadStoreImpl(),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            udManager: ProvisioningCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef)
+            udManager: SSKEnvironment.shared.udManagerRef
         )
     }()
 
