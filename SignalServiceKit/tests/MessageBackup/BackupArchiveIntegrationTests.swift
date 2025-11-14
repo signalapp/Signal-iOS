@@ -122,9 +122,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
             ) ?? []
 
             return allBinprotoUrls.filter { binprotoUrl in
-                let binprotoName = binprotoUrl
-                    .lastPathComponent
-                    .filenameWithoutExtension
+                let binprotoName = (binprotoUrl.lastPathComponent as NSString).deletingPathExtension
 
                 switch whichIntegrationTestCases {
                 case .all:
@@ -215,9 +213,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
         }
 
         for binprotoFileUrl in binProtoFileUrls {
-            let filename = binprotoFileUrl
-                .lastPathComponent
-                .filenameWithoutExtension
+            let filename = (binprotoFileUrl.lastPathComponent as NSString).deletingPathExtension
 
             /// Separate the `Logger` and `XCTFail` steps. We want the test to
             /// fail, but `XCTFail` is slow to get its output into the console,

@@ -22,26 +22,6 @@ public enum SignalAttachmentError: Error {
 
 // MARK: -
 
-public extension String {
-    var filenameWithoutExtension: String {
-        return (self as NSString).deletingPathExtension
-    }
-
-    var fileExtension: String? {
-        return (self as NSString).pathExtension
-    }
-
-    func appendingFileExtension(_ fileExtension: String) -> String {
-        guard let result = (self as NSString).appendingPathExtension(fileExtension) else {
-            owsFailDebug("Failed to append file extension: \(fileExtension) to string: \(self)")
-            return self
-        }
-        return result
-    }
-}
-
-// MARK: -
-
 extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
     public var errorDescription: String? {
         localizedDescription
@@ -798,10 +778,11 @@ public class SignalAttachment: NSObject {
                 return attachment
             }
         } else {
-            if let sourceFilename = dataSource.sourceFilename,
-                let sourceFileExtension = sourceFilename.fileExtension,
-                ["heic", "heif"].contains(sourceFileExtension.lowercased()),
-                dataUTI == UTType.jpeg.identifier as String {
+            if
+                let sourceFilename = dataSource.sourceFilename,
+                ["heic", "heif"].contains((sourceFilename as NSString).pathExtension.lowercased()),
+                dataUTI == UTType.jpeg.identifier as String
+            {
 
                 // If a .heic file actually contains jpeg data, update the extension to match.
                 //
@@ -812,8 +793,8 @@ public class SignalAttachment: NSObject {
                 // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
                 // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
 
-                let baseFilename = sourceFilename.filenameWithoutExtension
-                dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
+                let baseFilename = (sourceFilename as NSString).deletingPathExtension
+                dataSource.sourceFilename = (baseFilename as NSString).appendingPathExtension("jpg") ?? baseFilename
             }
 
             // When preparing an attachment, we always prepare it in the max quality for the current
@@ -964,9 +945,14 @@ public class SignalAttachment: NSObject {
             }
 
             // Preserve the original filename
-            let baseFilename = dataSource.sourceFilename?.filenameWithoutExtension
-            let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
-            outputDataSource.sourceFilename = newFilenameWithExtension
+            let outputFilename: String?
+            if let sourceFilename = dataSource.sourceFilename {
+                let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
+                outputFilename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(dataFileExtension) ?? sourceFilenameWithoutExtension
+            } else {
+                outputFilename = nil
+            }
+            outputDataSource.sourceFilename = outputFilename
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= OWSMediaUtils.kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
@@ -1229,7 +1215,13 @@ public class SignalAttachment: NSObject {
             throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
         }
 
-        let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
+        let mp4Filename: String?
+        if let baseFilename {
+            let baseFilenameWithoutExtension = (baseFilename as NSString).deletingPathExtension
+            mp4Filename = (baseFilenameWithoutExtension as NSString).appendingPathExtension("mp4") ?? baseFilenameWithoutExtension
+        } else {
+            mp4Filename = nil
+        }
 
         do {
             let dataSource = try DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)

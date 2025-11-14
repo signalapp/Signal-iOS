@@ -261,7 +261,7 @@ enum DebugLogs {
 
         // Phase 4: Zip up the log files.
         let zipDirUrl = URL(fileURLWithPath: zipDirPath)
-        let zipFileUrl = URL(fileURLWithPath: zipDirPath.appendingFileExtension("zip"))
+        let zipFileUrl = URL(fileURLWithPath: (zipDirPath as NSString).appendingPathExtension("zip")!)
         let fileCoordinator = NSFileCoordinator()
         var zipError: NSError?
         fileCoordinator.coordinate(readingItemAt: zipDirUrl, options: [.forUploading], error: &zipError) { temporaryFileUrl in

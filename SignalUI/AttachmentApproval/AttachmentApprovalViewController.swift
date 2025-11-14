@@ -713,7 +713,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         var filename: String? = attachmentApprovalItem.attachment.sourceFilename
         if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
             if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
-                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+                let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
+                filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
             }
         }
         dataSource.sourceFilename = filename
@@ -735,7 +736,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.sourceFilename
         if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-            filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+            let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
+            filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
         }
         dataSource.sourceFilename = filename
 

@@ -125,7 +125,7 @@ extension TSAttachmentMigration {
             let filename = ((localRelativeFilePath as NSString).lastPathComponent as NSString).deletingPathExtension
             let containingDir = (localRelativeFilePath as NSString).deletingLastPathComponent
             let newFilename = filename.appending("-signal-ios-thumbnail")
-            return containingDir.appendingPathComponent(newFilename).appendingFileExtension("jpg")
+            return (containingDir.appendingPathComponent(newFilename) as NSString).appendingPathExtension("jpg")
         }
 
         var uniqueIdAttachmentFolder: String {

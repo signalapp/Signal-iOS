@@ -702,7 +702,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             // infer a MIME type from the file extension.
             if
                 let sourceFilename,
-                let fileExtension = sourceFilename.fileExtension?.lowercased().nilIfEmpty,
+                let fileExtension = (sourceFilename as NSString).pathExtension.lowercased().nilIfEmpty,
                 let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
             {
                 Logger.warn("Missing attachment content type! Inferred MIME type: \(inferredMimeType)")
