@@ -27,8 +27,6 @@ public enum MimeType: String {
     case imageXWindowsBmp = "image/x-windows-bmp"
     /// oversized text message
     case textXSignalPlain = "text/x-signal-plain"
-    /// unknown for tests
-    case unknownMimetype = "unknown/mimetype"
 }
 
 public enum MimeTypeUtil {
@@ -36,7 +34,6 @@ public enum MimeTypeUtil {
     // MARK: - Constants
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
     public static let oversizeTextAttachmentFileExtension = "txt"
-    public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
     public static let syncMessageFileExtension = "bin"
 
     // MARK: - Supported Mime Types

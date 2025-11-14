@@ -320,9 +320,6 @@ public class SignalAttachment: NSObject {
         if isOversizeText {
             return MimeType.textXSignalPlain.rawValue
         }
-        if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
-            return MimeType.unknownMimetype.rawValue
-        }
         return UTType(dataUTI)?.preferredMIMEType ?? MimeType.applicationOctetStream.rawValue
     }
 
@@ -358,9 +355,6 @@ public class SignalAttachment: NSObject {
         }
         if isOversizeText {
             return MimeTypeUtil.oversizeTextAttachmentFileExtension
-        }
-        if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
-            return "unknown"
         }
         guard let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI) else {
             return nil
