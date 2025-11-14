@@ -769,10 +769,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 stickerButton.trailingAnchor.constraint(equalTo: cameraButton.leadingAnchor),
                 keyboardButton.trailingAnchor.constraint(equalTo: cameraButton.leadingAnchor),
 
-                voiceNoteButton.centerYAnchor.constraint(equalTo: inputTextViewContainer.centerYAnchor),
-                cameraButton.centerYAnchor.constraint(equalTo: inputTextViewContainer.centerYAnchor),
-                stickerButton.centerYAnchor.constraint(equalTo: inputTextViewContainer.centerYAnchor),
-                keyboardButton.centerYAnchor.constraint(equalTo: inputTextViewContainer.centerYAnchor),
+                voiceNoteButton.bottomAnchor.constraint(equalTo: inputTextViewContainer.bottomAnchor),
+                cameraButton.bottomAnchor.constraint(equalTo: inputTextViewContainer.bottomAnchor),
+                stickerButton.bottomAnchor.constraint(equalTo: inputTextViewContainer.bottomAnchor),
+                keyboardButton.bottomAnchor.constraint(equalTo: inputTextViewContainer.bottomAnchor),
             ])
         } else {
             inputTextView.inFieldButtonsAreaWidth = 1 * LayoutMetrics.initialTextBoxHeight
@@ -939,10 +939,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // 4. Update middle part: text input field and buttons inside.
         //
 
-        // Only ever show in-field buttons when there's no Send button visible on the right.
+        // Only ever show in-field buttons when there's no Send button visible on the right or when
+        // text input contains newlines (that increases text box's height).
         // On iOS 26 there are Camera and Voice Note buttons inside of the text input field:
         // those would be hidden to match pre-iOS 26 behavior.
-        let hideAllTextFieldButtons = rightEdgeControlsState != .default
+        let hideAllTextFieldButtons = rightEdgeControlsState != .default || inputTextView.untrimmedText.rangeOfCharacter(from: .newlines) != nil
         // Sticker/keyboard buttons will also be hidden if there's whitespace-only input.
         let textFieldHasAnyInput = !inputTextView.untrimmedText.isEmpty
         let hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput || hasQuotedMessage
