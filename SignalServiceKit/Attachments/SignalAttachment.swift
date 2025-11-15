@@ -1134,6 +1134,8 @@ public class SignalAttachment: NSObject {
 
     @MainActor
     public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
+        let startTime = MonotonicDate()
+
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }
@@ -1188,6 +1190,10 @@ public class SignalAttachment: NSObject {
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }
         dataSource.sourceFilename = mp4Filename
+
+        let endTime = MonotonicDate()
+        let formattedDuration = OWSOperation.formattedNs((endTime - startTime).nanoseconds)
+        Logger.info("transcoded video in \(formattedDuration)s")
 
         return try videoAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
     }

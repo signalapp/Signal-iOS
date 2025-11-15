@@ -153,6 +153,8 @@ class VideoEditorModel: NSObject {
     func render() async throws -> URL {
         owsPrecondition(self.needsRender)
 
+        let startTime = MonotonicDate()
+
         let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
         let exportUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
 
@@ -171,6 +173,10 @@ class VideoEditorModel: NSObject {
         session.timeRange = cmRange
 
         try await session.exportAsync(to: exportUrl, as: .mp4)
+
+        let endTime = MonotonicDate()
+        let formattedDuration = OWSOperation.formattedNs((endTime - startTime).nanoseconds)
+        Logger.info("trimmed video in \(formattedDuration)s")
 
         switch session.status {
         case .completed:
