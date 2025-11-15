@@ -104,7 +104,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             .compactMap { attachment in
                 guard
                     attachment.isVideo,
-                    let url = attachment.dataUrl
+                    let url = attachment.dataSource.dataUrl
                 else {
                     return nil
                 }

@@ -36,7 +36,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     private var isTextMessage: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         // TODO: it may be convertible to an oversize text message, check that
-        return attachment.isConvertibleToTextMessage && attachment.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
+        return attachment.isConvertibleToTextMessage && attachment.dataSource.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
     }
 
     private var isContactShare: Bool {
@@ -100,7 +100,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     private func updateStoriesState() {
         if areAttachmentStoriesCompatPrecheck == true {
             sectionOptions.insert(.stories)
-        } else if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+        } else if let attachments = attachments, attachments.allSatisfy({ $0.dataSource.isValidImage || $0.dataSource.isValidVideo }) {
             sectionOptions.insert(.stories)
         } else if isTextMessage {
             sectionOptions.insert(.stories)
@@ -141,7 +141,7 @@ extension SharingThreadPickerViewController {
         let approvalVC: UIViewController
 
         if isTextMessage {
-            guard let messageText = String(data: firstAttachment.data, encoding: .utf8)?.filterForDisplay else {
+            guard let messageText = String(data: firstAttachment.dataSource.data, encoding: .utf8)?.filterForDisplay else {
                 throw OWSAssertionError("Missing or invalid message text for text attachment")
             }
             let approvalView = TextApprovalViewController(messageBody: MessageBody(text: messageText, ranges: .empty))
@@ -149,7 +149,7 @@ extension SharingThreadPickerViewController {
             approvalView.delegate = self
 
         } else if isContactShare {
-            let cnContact = try SystemContact.parseVCardData(firstAttachment.data)
+            let cnContact = try SystemContact.parseVCardData(firstAttachment.dataSource.data)
 
             let contactShareDraft = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return ContactShareDraft.load(
@@ -581,9 +581,9 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
         // Check if the attachments are compatible with sending to stories.
         let storySelections = selection.conversations.compactMap({ $0 as? StoryConversationItem })
         if !storySelections.isEmpty, let attachments = attachments {
-            let areImagesOrVideos = attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo })
+            let areImagesOrVideos = attachments.allSatisfy({ $0.dataSource.isValidImage || $0.dataSource.isValidVideo })
             let isTextMessage = attachments.count == 1 && attachments.first.map {
-                $0.isConvertibleToTextMessage && $0.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
+                $0.isConvertibleToTextMessage && $0.dataSource.dataLength <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
             } ?? false
             if !areImagesOrVideos && !isTextMessage {
                 // Can't send to stories!

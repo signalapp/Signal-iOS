@@ -57,10 +57,10 @@ public struct AttachmentApprovalItem: Hashable {
     }
 
     private static func imageEditorModel(for attachment: SignalAttachment) -> ImageEditorModel? {
-        guard attachment.isValidImage, !attachment.isAnimatedImage else {
+        guard attachment.dataSource.isValidImage, !attachment.isAnimatedImage else {
             return nil
         }
-        guard let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL else {
+        guard let dataUrl: URL = attachment.dataSource.dataUrl, dataUrl.isFileURL else {
             owsFailDebug("Missing dataUrl.")
             return nil
         }
@@ -75,10 +75,10 @@ public struct AttachmentApprovalItem: Hashable {
     }
 
     private static func videoEditorModel(for attachment: SignalAttachment) -> VideoEditorModel? {
-        guard attachment.isValidVideo, !attachment.isLoopingVideo else {
+        guard attachment.dataSource.isValidVideo, !attachment.isLoopingVideo else {
             return nil
         }
-        guard let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL else {
+        guard let dataUrl: URL = attachment.dataSource.dataUrl, dataUrl.isFileURL else {
             owsFailDebug("Missing dataUrl.")
             return nil
         }

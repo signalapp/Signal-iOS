@@ -757,7 +757,7 @@ private enum ForwardMessageContent {
     var canSendToStories: Bool {
         allItems.allSatisfy { item in
             if let attachments = item.attachments {
-                return attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo })
+                return attachments.allSatisfy({ $0.dataSource.isValidImage || $0.dataSource.isValidVideo })
             } else if item.textAttachment != nil {
                 return true
             } else if item.messageBody != nil {

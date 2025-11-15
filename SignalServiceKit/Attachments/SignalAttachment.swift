@@ -71,30 +71,6 @@ public class SignalAttachment: NSObject {
 
     public var captionText: String?
 
-    public var data: Data {
-        return dataSource.data
-    }
-
-    public var dataLength: UInt {
-        return dataSource.dataLength
-    }
-
-    public var dataUrl: URL? {
-        return dataSource.dataUrl
-    }
-
-    public var sourceFilename: String? {
-        return dataSource.sourceFilename?.filterFilename()
-    }
-
-    public var isValidImage: Bool {
-        return dataSource.isValidImage
-    }
-
-    public var isValidVideo: Bool {
-        return dataSource.isValidVideo
-    }
-
     // This flag should be set for text attachments that can be sent as text messages.
     public var isConvertibleToTextMessage = false
 
@@ -147,7 +123,7 @@ public class SignalAttachment: NSObject {
     // MARK: Methods
 
     public override var debugDescription: String {
-        let fileSize = ByteCountFormatter.string(fromByteCount: Int64(dataLength), countStyle: .file)
+        let fileSize = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
@@ -264,7 +240,7 @@ public class SignalAttachment: NSObject {
             return cachedVideoPreview
         }
 
-        guard let mediaUrl = dataUrl else {
+        guard let mediaUrl = dataSource.dataUrl else {
             return nil
         }
 
@@ -305,7 +281,7 @@ public class SignalAttachment: NSObject {
             return "audio/aac"
         }
 
-        if let filename = sourceFilename {
+        if let filename = dataSource.sourceFilename?.filterFilename() {
             let fileExtension = (filename as NSString).pathExtension
             if !fileExtension.isEmpty {
                 if let mimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension) {
@@ -326,7 +302,7 @@ public class SignalAttachment: NSObject {
     // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
     // like: "signal-2017-04-24-095918.zip"
     public var filenameOrDefault: String {
-        if let filename = sourceFilename {
+        if let filename = dataSource.sourceFilename?.filterFilename() {
             return filename.filterFilename()
         } else {
             let kDefaultAttachmentName = "signal"
@@ -347,7 +323,7 @@ public class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     public var fileExtension: String? {
-        if let filename = sourceFilename {
+        if let filename = dataSource.sourceFilename?.filterFilename() {
             let fileExtension = (filename as NSString).pathExtension
             if !fileExtension.isEmpty {
                 return fileExtension.filterFilename()
@@ -1058,14 +1034,14 @@ public class SignalAttachment: NSObject {
         owsAssertDebug(isImage)
 
         if dataUTI == UTType.png.identifier {
-            let cleanedData = try Self.removeMetadata(fromPng: data)
+            let cleanedData = try Self.removeMetadata(fromPng: dataSource.data)
             guard let dataSource = DataSourceValue(cleanedData, utiType: dataUTI) else {
                 throw SignalAttachmentError.couldNotRemoveMetadata
             }
             return replacingDataSource(with: dataSource)
         }
 
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+        guard let source = CGImageSourceCreateWithData(dataSource.data as CFData, nil) else {
             throw SignalAttachmentError.missingData
         }
 

@@ -75,7 +75,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
-            firstItem.attachment.isValidImage || firstItem.attachment.isValidVideo,
+            firstItem.attachment.dataSource.isValidImage || firstItem.attachment.dataSource.isValidVideo,
             !receivedOptions.contains(.disallowViewOnce)
         {
             options.insert(.canToggleViewOnce)
@@ -83,7 +83,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         if
             ImageQualityLevel.maximumForCurrentAppContext == .high,
-            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isValidImage }) {
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.dataSource.isValidImage }) {
             options.insert(.canChangeQualityLevel)
         }
 
@@ -710,8 +710,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-        if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+        var filename: String? = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename()
+        if let sourceFilename = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename() {
             if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
                 let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
                 filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
@@ -734,8 +734,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         let dataSource = try DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
         // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-        if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+        var filename: String? = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename()
+        if let sourceFilename = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename() {
             let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
             filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
         }
@@ -1412,14 +1412,14 @@ private extension SaveableAsset {
     }
 
     private init(attachment: SignalAttachment) throws {
-        if attachment.isValidImage {
-            guard let imageUrl = attachment.dataUrl else {
+        if attachment.dataSource.isValidImage {
+            guard let imageUrl = attachment.dataSource.dataUrl else {
                 throw OWSAssertionError("imageUrl was unexpectedly nil")
             }
 
             self = .imageUrl(imageUrl)
-        } else if attachment.isValidVideo {
-            guard let videoUrl = attachment.dataUrl else {
+        } else if attachment.dataSource.isValidVideo {
+            guard let videoUrl = attachment.dataSource.dataUrl else {
                 throw OWSAssertionError("videoUrl was unexpectedly nil")
             }
 

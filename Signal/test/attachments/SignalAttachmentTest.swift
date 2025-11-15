@@ -19,7 +19,7 @@ class SignalAttachmentTest: SignalBaseTest {
             dataSource: dataSource,
             dataUTI: UTType.jpeg.identifier
         )
-        let newSize = DataImageSource(attachment.data).imageMetadata()?.pixelSize
+        let newSize = DataImageSource(attachment.dataSource.data).imageMetadata()?.pixelSize
 
         XCTAssertEqual(newSize, size, "image dimensions changed for \(url.lastPathComponent)")
     }
@@ -65,7 +65,7 @@ class SignalAttachmentTest: SignalBaseTest {
         )
 
         XCTAssertEqual(
-            try pngChunkTypes(data: attachment.data),
+            try pngChunkTypes(data: attachment.dataSource.data),
             ["IHDR", "PLTE", "sRGB", "IDAT", "IEND"]
         )
     }
@@ -103,7 +103,7 @@ class SignalAttachmentTest: SignalBaseTest {
         )
 
         XCTAssert(
-            !(try pngChunkTypes(data: attachment.data)).contains("tEXt"),
+            !(try pngChunkTypes(data: attachment.dataSource.data)).contains("tEXt"),
             "Result contained unexpected chunk"
         )
     }

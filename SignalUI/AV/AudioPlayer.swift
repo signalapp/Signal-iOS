@@ -79,7 +79,7 @@ public class AudioPlayer: NSObject {
     }
 
     public convenience init?(attachment: SignalAttachment, audioBehavior: AudioBehavior) {
-        guard let url = attachment.dataUrl else {
+        guard let url = attachment.dataSource.dataUrl else {
             return nil
         }
         self.init(source: .decryptedFile(url), audioBehavior: audioBehavior)
