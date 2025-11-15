@@ -1194,11 +1194,7 @@ public class SignalAttachment: NSObject {
         }
         dataSource.sourceFilename = mp4Filename
 
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
-        if dataSource.dataLength > OWSMediaUtils.kMaxFileSizeVideo {
-            throw SignalAttachmentError.fileSizeTooLarge
-        }
-        return attachment
+        return try videoAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
     }
 
     public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
