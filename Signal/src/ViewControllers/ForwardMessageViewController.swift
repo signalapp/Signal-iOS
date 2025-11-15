@@ -7,8 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol ForwardMessageDelegate: AnyObject {
-    func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
-                                       recipientThreads: [TSThread])
+    func forwardMessageFlowDidComplete(items: [ForwardMessageItem], recipientThreads: [TSThread])
     func forwardMessageFlowDidCancel()
 }
 
@@ -18,7 +17,6 @@ class ForwardMessageViewController: OWSNavigationController {
 
     weak var forwardMessageDelegate: ForwardMessageDelegate?
 
-    typealias Item = ForwardMessageItem
     private typealias Content = ForwardMessageContent
 
     private var content: Content
@@ -69,18 +67,17 @@ class ForwardMessageViewController: OWSNavigationController {
     }
 
     class func present(
-        forItemViewModels itemViewModels: [CVItemViewModelImpl],
+        forItemViewModel itemViewModel: CVItemViewModelImpl,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate,
     ) {
         do {
-            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                try Content.build(itemViewModels: itemViewModels, transaction: transaction)
+            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return try Content.build(itemViewModel: itemViewModel, tx: tx)
             }
             present(content: content, from: fromViewController, delegate: delegate)
         } catch {
-            ForwardMessageViewController.showAlertForForwardError(error: error,
-                                                                        forwardedInteractionCount: itemViewModels.count)
+            ForwardMessageViewController.showAlertForForwardError(error: error, forwardedInteractionCount: 1)
         }
     }
 
@@ -90,13 +87,12 @@ class ForwardMessageViewController: OWSNavigationController {
         delegate: ForwardMessageDelegate,
     ) {
         do {
-            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                try Content.build(selectionItems: selectionItems, transaction: transaction)
+            let content: Content = try SSKEnvironment.shared.databaseStorageRef.read { tx in
+                try Content.build(selectionItems: selectionItems, tx: tx)
             }
             present(content: content, from: fromViewController, delegate: delegate)
         } catch {
-            ForwardMessageViewController.showAlertForForwardError(error: error,
-                                                                        forwardedInteractionCount: selectionItems.count)
+            ForwardMessageViewController.showAlertForForwardError(error: error, forwardedInteractionCount: selectionItems.count)
         }
     }
 
@@ -107,18 +103,13 @@ class ForwardMessageViewController: OWSNavigationController {
         delegate: ForwardMessageDelegate
     ) {
         do {
-            let builder = Item.Builder(interaction: message)
-
-            builder.attachments = try attachmentStreams.map { attachmentStream in
+            let attachments = try attachmentStreams.map { attachmentStream in
                 try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
                     attachment: attachmentStream
                 )
             }
-
-            let item: Item = builder.build()
-
             present(
-                content: .single(item: item),
+                content: ForwardMessageContent(allItems: [ForwardMessageItem(interaction: message, attachments: attachments)]),
                 from: fromViewController,
                 delegate: delegate
             )
@@ -135,7 +126,8 @@ class ForwardMessageViewController: OWSNavigationController {
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
     ) {
-        let builder = Item.Builder()
+        var attachments: [SignalAttachment] = []
+        var textAttachment: TextAttachment?
         switch storyMessage.attachment {
         case .media:
             let attachment: ReferencedAttachmentStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -157,7 +149,7 @@ class ForwardMessageViewController: OWSNavigationController {
                 let signalAttachment = try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
                     attachment: attachment
                 )
-                builder.attachments = [signalAttachment]
+                attachments = [signalAttachment]
             } catch let error {
                 ForwardMessageViewController.showAlertForForwardError(
                     error: error,
@@ -165,10 +157,14 @@ class ForwardMessageViewController: OWSNavigationController {
                 )
                 return
             }
-        case .text(let textAttachment):
-            builder.textAttachment = textAttachment
+        case .text(let _textAttachment):
+            textAttachment = _textAttachment
         }
-        present(content: .single(item: builder.build()), from: fromViewController, delegate: delegate)
+        present(
+            content: ForwardMessageContent(allItems: [ForwardMessageItem(attachments: attachments, textAttachment: textAttachment)]),
+            from: fromViewController,
+            delegate: delegate,
+        )
     }
 
     class func present(
@@ -177,25 +173,17 @@ class ForwardMessageViewController: OWSNavigationController {
         delegate: ForwardMessageDelegate
     ) {
         present(
-            content: .single(item: ForwardMessageItem.Item(
-                interaction: nil,
-                attachments: nil,
-                contactShare: nil,
-                messageBody: messageBody,
-                linkPreviewDraft: nil,
-                stickerMetadata: nil,
-                stickerAttachment: nil,
-                textAttachment: nil
-            )),
+            content: ForwardMessageContent(allItems: [ForwardMessageItem(messageBody: messageBody)]),
             from: fromViewController,
             delegate: delegate
         )
     }
 
-    private class func present(content: Content,
-                               from fromViewController: UIViewController,
-                               delegate: ForwardMessageDelegate) {
-
+    private class func present(
+        content: Content,
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate,
+    ) {
         let sheet = ForwardMessageViewController(content: content)
         sheet.forwardMessageDelegate = delegate
         fromViewController.present(sheet, animated: true) {
@@ -335,7 +323,7 @@ extension ForwardMessageViewController {
         }
     }
 
-    private func send(item: Item, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) async throws {
+    private func send(item: ForwardMessageItem, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) async throws {
         if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
@@ -355,13 +343,13 @@ extension ForwardMessageViewController {
             await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                 self.send(contactShare: contactShare.copyForResending(), thread: recipientThread)
             }
-        } else if let attachments = item.attachments, !attachments.isEmpty {
+        } else if !item.attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
             _ = try await AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: item.messageBody,
-                approvedAttachments: attachments
+                approvedAttachments: item.attachments,
             ).enqueuedPromise.awaitable()
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
@@ -477,7 +465,7 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
 
 extension ForwardMessageViewController {
     static func finalizeForward(
-        items: [Item],
+        items: [ForwardMessageItem],
         recipientThreads: [TSThread],
         fromViewController: UIViewController,
     ) {
@@ -540,11 +528,9 @@ extension ForwardMessageViewController {
 // MARK: -
 
 struct ForwardMessageItem {
-    fileprivate typealias Item = ForwardMessageItem
-
     let interaction: TSInteraction?
 
-    let attachments: [SignalAttachment]?
+    let attachments: [SignalAttachment]
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
@@ -552,46 +538,24 @@ struct ForwardMessageItem {
     let stickerAttachment: AttachmentStream?
     let textAttachment: TextAttachment?
 
-    fileprivate class Builder {
-        let interaction: TSInteraction?
-
-        var attachments: [SignalAttachment]?
-        var contactShare: ContactShareViewModel?
-        var messageBody: MessageBody?
-        var linkPreviewDraft: OWSLinkPreviewDraft?
-        var stickerMetadata: (any StickerMetadata)?
-        var stickerAttachment: AttachmentStream?
-        var textAttachment: TextAttachment?
-
-        init(interaction: TSInteraction? = nil) {
-            self.interaction = interaction
-        }
-
-        func build() -> ForwardMessageItem {
-            ForwardMessageItem(
-                interaction: interaction,
-                attachments: attachments,
-                contactShare: contactShare,
-                messageBody: messageBody,
-                linkPreviewDraft: linkPreviewDraft,
-                stickerMetadata: stickerMetadata,
-                stickerAttachment: stickerAttachment,
-                textAttachment: textAttachment
-            )
-        }
-    }
-
-    var isEmpty: Bool {
-        if let attachments = attachments,
-           !attachments.isEmpty {
-            return false
-        }
-        if contactShare != nil ||
-            messageBody != nil ||
-            stickerMetadata != nil {
-            return false
-        }
-        return true
+    fileprivate init(
+        interaction: TSInteraction? = nil,
+        attachments: [SignalAttachment] = [],
+        contactShare: ContactShareViewModel? = nil,
+        messageBody: MessageBody? = nil,
+        linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        stickerMetadata: (any StickerMetadata)? = nil,
+        stickerAttachment: AttachmentStream? = nil,
+        textAttachment: TextAttachment? = nil,
+    ) {
+        self.interaction = interaction
+        self.attachments = attachments
+        self.contactShare = contactShare
+        self.messageBody = messageBody
+        self.linkPreviewDraft = linkPreviewDraft
+        self.stickerMetadata = stickerMetadata
+        self.stickerAttachment = stickerAttachment
+        self.textAttachment = textAttachment
     }
 
     fileprivate static func build(
@@ -599,34 +563,32 @@ struct ForwardMessageItem {
         componentState: CVComponentState,
         selectionType: CVSelectionType,
         transaction: DBReadTransaction
-    ) throws -> Item {
-
-        let builder = Builder(interaction: interaction)
-
-        let shouldHaveText = (selectionType == .allContent ||
-                                selectionType == .secondaryContent)
-        let shouldHaveAttachments = (selectionType == .allContent ||
-                                        selectionType == .primaryContent)
+    ) throws -> Self {
+        let shouldHaveText = (selectionType == .allContent || selectionType == .secondaryContent)
+        let shouldHaveAttachments = (selectionType == .allContent || selectionType == .primaryContent)
 
         guard shouldHaveText || shouldHaveAttachments else {
             throw ForwardError.invalidInteraction
         }
 
-        if shouldHaveText,
-           let displayableBodyText = componentState.displayableBodyText,
-           !displayableBodyText.fullTextValue.isEmpty {
-
+        var messageBody: MessageBody?
+        var linkPreviewDraft: OWSLinkPreviewDraft?
+        if
+            shouldHaveText,
+            let displayableBodyText = componentState.displayableBodyText,
+            !displayableBodyText.fullTextValue.isEmpty
+        {
             switch displayableBodyText.fullTextValue {
             case .text(let text):
-                builder.messageBody = MessageBody(text: text, ranges: .empty)
+                messageBody = MessageBody(text: text, ranges: .empty)
             case .attributedText(let text):
-                builder.messageBody = MessageBody(text: text.string, ranges: .empty)
+                messageBody = MessageBody(text: text.string, ranges: .empty)
             case .messageBody(let hydratedBody):
-                builder.messageBody = hydratedBody.asMessageBodyForForwarding(preservingAllMentions: true)
+                messageBody = hydratedBody.asMessageBodyForForwarding(preservingAllMentions: true)
             }
 
             if let linkPreview = componentState.linkPreviewModel, let message = interaction as? TSMessage {
-                builder.linkPreviewDraft = Self.tryToCloneLinkPreview(
+                linkPreviewDraft = Self.tryToCloneLinkPreview(
                     linkPreview: linkPreview,
                     parentMessage: message,
                     transaction: transaction
@@ -634,9 +596,13 @@ struct ForwardMessageItem {
             }
         }
 
+        var attachments: [SignalAttachment] = []
+        var contactShare: ContactShareViewModel?
+        var stickerMetadata: (any StickerMetadata)?
+        var stickerAttachment: AttachmentStream?
         if shouldHaveAttachments {
             if let oldContactShare = componentState.contactShareModel {
-                builder.contactShare = oldContactShare.copyForRendering()
+                contactShare = oldContactShare.copyForRendering()
             }
 
             var attachmentStreams = [ReferencedAttachmentStream]()
@@ -648,28 +614,35 @@ struct ForwardMessageItem {
                 attachmentStreams.append(attachmentStream)
             }
 
-            if !attachmentStreams.isEmpty {
-                builder.attachments = try attachmentStreams.map { attachmentStream in
-                    try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
-                        attachment: attachmentStream
-                    )
-                }
+            attachments = try attachmentStreams.map { attachmentStream in
+                try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
+                    attachment: attachmentStream
+                )
             }
 
-            if let stickerMetadata = componentState.stickerMetadata {
-                builder.stickerMetadata = stickerMetadata
-
-                if let stickerAttachment = componentState.stickerAttachment {
-                    builder.stickerAttachment = stickerAttachment
-                }
-            }
+            stickerMetadata = componentState.stickerMetadata
+            stickerAttachment = (stickerMetadata != nil) ? componentState.stickerAttachment : nil
         }
 
-        let item = builder.build()
-        guard !item.isEmpty else {
+        let isEmpty: Bool = (
+            attachments.isEmpty
+            && contactShare == nil
+            && messageBody == nil
+            && stickerMetadata == nil
+        )
+        guard !isEmpty else {
             throw ForwardError.invalidInteraction
         }
-        return item
+
+        return Self(
+            interaction: interaction,
+            attachments: attachments,
+            contactShare: contactShare,
+            messageBody: messageBody,
+            linkPreviewDraft: linkPreviewDraft,
+            stickerMetadata: stickerMetadata,
+            stickerAttachment: stickerAttachment,
+        )
     }
 
     private static func tryToCloneLinkPreview(
@@ -739,25 +712,13 @@ struct ForwardMessageItem {
 
 // MARK: -
 
-private enum ForwardMessageContent {
-    typealias Item = ForwardMessageItem
-
-    case single(item: Item)
-    case multiple(items: [Item])
-
-    var allItems: [Item] {
-        switch self {
-        case .single(let item):
-            return [item]
-        case .multiple(let items):
-            return items
-        }
-    }
+private struct ForwardMessageContent {
+    let allItems: [ForwardMessageItem]
 
     var canSendToStories: Bool {
-        allItems.allSatisfy { item in
-            if let attachments = item.attachments {
-                return attachments.allSatisfy({ $0.dataSource.isValidImage || $0.dataSource.isValidVideo })
+        return allItems.allSatisfy { item in
+            if !item.attachments.isEmpty {
+                return item.attachments.allSatisfy({ $0.dataSource.isValidImage || $0.dataSource.isValidVideo })
             } else if item.textAttachment != nil {
                 return true
             } else if item.messageBody != nil {
@@ -769,58 +730,51 @@ private enum ForwardMessageContent {
     }
 
     var canSendToNonStories: Bool {
-        allItems.allSatisfy { $0.textAttachment == nil }
-    }
-
-    private static func build(items: [Item]) -> ForwardMessageContent {
-        if items.count == 1, let item = items.first {
-            return .single(item: item)
-        } else {
-            return .multiple(items: items)
-        }
+        return allItems.allSatisfy { $0.textAttachment == nil }
     }
 
     static func build(
-        itemViewModels: [CVItemViewModelImpl],
-        transaction: DBReadTransaction
-    ) throws -> ForwardMessageContent {
-        let items: [Item] = try itemViewModels.map { itemViewModel in
-            try Item.build(interaction: itemViewModel.interaction,
-                           componentState: itemViewModel.renderItem.componentState,
-                           selectionType: .allContent,
-                           transaction: transaction)
-        }
-        return build(items: items)
+        itemViewModel: CVItemViewModelImpl,
+        tx: DBReadTransaction
+    ) throws -> Self {
+        return Self(allItems: [try ForwardMessageItem.build(
+            interaction: itemViewModel.interaction,
+            componentState: itemViewModel.renderItem.componentState,
+            selectionType: .allContent,
+            transaction: tx,
+        )])
     }
 
     static func build(
         selectionItems: [CVSelectionItem],
-        transaction: DBReadTransaction
-    ) throws -> ForwardMessageContent {
-        let items: [Item] = try selectionItems.map { selectionItem in
+        tx: DBReadTransaction
+    ) throws -> Self {
+        let items = try selectionItems.map { (selectionItem) throws -> ForwardMessageItem in
             let interactionId = selectionItem.interactionId
-            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
-                                                           transaction: transaction) else {
+            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: tx) else {
                 throw ForwardError.missingInteraction
             }
-            let componentState = try buildComponentState(interaction: interaction,
-                                                         transaction: transaction)
-            return try Item.build(interaction: interaction,
-                                  componentState: componentState,
-                                  selectionType: selectionItem.selectionType,
-                                  transaction: transaction)
+            let componentState = try buildComponentState(interaction: interaction, tx: tx)
+            return try ForwardMessageItem.build(
+                interaction: interaction,
+                componentState: componentState,
+                selectionType: selectionItem.selectionType,
+                transaction: tx,
+            )
         }
-        return build(items: items)
+        return Self(allItems: items)
     }
 
-    private static func buildComponentState(interaction: TSInteraction,
-                                            transaction: DBReadTransaction) throws -> CVComponentState {
+    private static func buildComponentState(
+        interaction: TSInteraction,
+        tx: DBReadTransaction,
+    ) throws(ForwardError) -> CVComponentState {
         guard let componentState = CVLoader.buildStandaloneComponentState(
             interaction: interaction,
             spoilerState: SpoilerRenderState(), // Nothing revealed, doesn't matter.
-            transaction: transaction
+            transaction: tx,
         ) else {
-            throw ForwardError.invalidInteraction
+            throw .invalidInteraction
         }
         return componentState
     }

@@ -209,9 +209,7 @@ extension ConversationViewController: MessageActionsDelegate {
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
-        ForwardMessageViewController.present(forItemViewModels: [itemViewModel],
-                                             from: self,
-                                             delegate: self)
+        ForwardMessageViewController.present(forItemViewModel: itemViewModel, from: self, delegate: self)
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
