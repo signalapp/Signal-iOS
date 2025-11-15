@@ -1532,8 +1532,6 @@ extension AppSetup.GlobalsContinuation {
             udManager: udManager
         )
 
-        let attachmentCloner = SignalAttachmentClonerImpl()
-
         let attachmentViewOnceManager = AttachmentViewOnceManagerImpl(
             attachmentStore: attachmentStore,
             db: db,
@@ -1623,7 +1621,6 @@ extension AppSetup.GlobalsContinuation {
             accountEntropyPoolManager: accountEntropyPoolManager,
             adHocCallRecordManager: adHocCallRecordManager,
             appExpiry: appExpiry,
-            attachmentCloner: attachmentCloner,
             attachmentContentValidator: attachmentContentValidator,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentDownloadStore: attachmentDownloadStore,

@@ -740,6 +740,7 @@
 		50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */; };
 		50C4AEFE2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
+		50C861E62EC52CA90001A4FA /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		50C97C252C3C7F7000A9F384 /* CallEventConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
 		50CDC6592DFB92FD00824B4A /* MonitorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CDC6582DFB92FD00824B4A /* MonitorTest.swift */; };
@@ -955,7 +956,6 @@
 		664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8442BB5CE12005638E0 /* PreparedOutgoingMessage.swift */; };
 		664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8462BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift */; };
 		664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA8492BB5DFE1005638E0 /* ContactShareDraft.swift */; };
-		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */; };
 		665229892E218D5F002C14A0 /* InternalDiskUsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665229882E218D53002C14A0 /* InternalDiskUsageViewController.swift */; };
 		6652298B2E26E7D4002C14A0 /* BackupOversizeTextCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652298A2E26E7D1002C14A0 /* BackupOversizeTextCache.swift */; };
@@ -9512,6 +9512,7 @@
 			isa = PBXGroup;
 			children = (
 				661AEE472C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift */,
+				664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -10497,7 +10498,6 @@
 				664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */,
 				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
-				664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -17501,6 +17501,7 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
+				50C861E62EC52CA90001A4FA /* SignalAttachmentCloner.swift in Sources */,
 				D9E43C2D2CC194140001536E /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
 				D9E43C0F2CC194140001536E /* SimulatorCallUIAdaptee.swift in Sources */,
@@ -18632,7 +18633,6 @@
 				664428962C12305D0092D0E2 /* SignalAttachment+Sending.swift in Sources */,
 				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
-				664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */,

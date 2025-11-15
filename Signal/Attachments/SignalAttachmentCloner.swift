@@ -4,21 +4,10 @@
 //
 
 import Foundation
+import SignalServiceKit
 
-public protocol SignalAttachmentCloner {
-
-    func cloneAsSignalAttachment(
-        attachment: ReferencedAttachmentStream
-    ) throws -> SignalAttachment
-}
-
-public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
-
-    public init() {}
-
-    public func cloneAsSignalAttachment(
-        attachment: ReferencedAttachmentStream
-    ) throws -> SignalAttachment {
+enum SignalAttachmentCloner {
+    static func cloneAsSignalAttachment(attachment: ReferencedAttachmentStream) throws -> SignalAttachment {
         guard let dataUTI = MimeTypeUtil.utiTypeForMimeType(attachment.attachmentStream.mimeType) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
@@ -51,16 +40,3 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
         return signalAttachment
     }
 }
-
-#if TESTABLE_BUILD
-
-public class SignalAttachmentClonerMock: SignalAttachmentCloner {
-
-    public func cloneAsSignalAttachment(
-        attachment: ReferencedAttachmentStream
-    ) throws -> SignalAttachment {
-        throw OWSAssertionError("Unimplemented!")
-    }
-}
-
-#endif

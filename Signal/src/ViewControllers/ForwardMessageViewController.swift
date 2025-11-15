@@ -104,9 +104,7 @@ class ForwardMessageViewController: OWSNavigationController {
     ) {
         do {
             let attachments = try attachmentStreams.map { attachmentStream in
-                try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
-                    attachment: attachmentStream
-                )
+                try SignalAttachmentCloner.cloneAsSignalAttachment(attachment: attachmentStream)
             }
             present(
                 content: ForwardMessageContent(allItems: [ForwardMessageItem(interaction: message, attachments: attachments)]),
@@ -146,9 +144,7 @@ class ForwardMessageViewController: OWSNavigationController {
                 guard let attachment else {
                     throw OWSAssertionError("Missing attachment stream for forwarded story message")
                 }
-                let signalAttachment = try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
-                    attachment: attachment
-                )
+                let signalAttachment = try SignalAttachmentCloner.cloneAsSignalAttachment(attachment: attachment)
                 attachments = [signalAttachment]
             } catch let error {
                 ForwardMessageViewController.showAlertForForwardError(
@@ -615,9 +611,7 @@ struct ForwardMessageItem {
             }
 
             attachments = try attachmentStreams.map { attachmentStream in
-                try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
-                    attachment: attachmentStream
-                )
+                try SignalAttachmentCloner.cloneAsSignalAttachment(attachment: attachmentStream)
             }
 
             stickerMetadata = componentState.stickerMetadata
