@@ -16,13 +16,13 @@ public protocol AttachmentUploadManager {
 
     /// Upload a transient attachment that isn't saved to the database for sending.
     func uploadTransientAttachment(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.LocalUploadMetadata>
 
     /// Upload a transient link'n'sync attachment that isn't saved to the database for sending.
     func uploadLinkNSyncAttachment(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata>
 
@@ -70,7 +70,7 @@ extension AttachmentUploadManager {
     }
 
     public func uploadTransientAttachment(
-        dataSource: DataSource
+        dataSource: DataSourcePath,
     ) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         try await uploadTransientAttachment(
             dataSource: dataSource,
@@ -79,7 +79,7 @@ extension AttachmentUploadManager {
     }
 
     public func uploadLinkNSyncAttachment(
-        dataSource: DataSource
+        dataSource: DataSourcePath,
     ) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         try await uploadLinkNSyncAttachment(
             dataSource: dataSource,
@@ -254,15 +254,13 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     public func uploadTransientAttachment(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[transient]")
 
         let temporaryFile = fileSystem.temporaryFileUrl()
-        guard let sourceURL = dataSource.dataUrl else {
-            throw OWSAssertionError("Failed to access data source file")
-        }
+        let sourceURL = dataSource.fileUrl
         let metadata = try attachmentEncrypter.encryptAttachment(at: sourceURL, output: temporaryFile)
         let localMetadata = try Upload.LocalUploadMetadata.validateAndBuild(fileUrl: temporaryFile, metadata: metadata)
         let form = try await Upload.FormRequest(
@@ -302,18 +300,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     public func uploadLinkNSyncAttachment(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         progress: OWSProgressSink?
     ) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[link'n'sync]")
 
         let dataLength = dataSource.dataLength
-        guard
-            let sourceURL = dataSource.dataUrl,
-            dataLength > 0,
-            let dataLength = UInt32(exactly: dataLength)
-        else {
-            throw OWSAssertionError("Failed to access data source file")
+        let sourceURL = dataSource.fileUrl
+        guard dataLength > 0, let dataLength = UInt32(exactly: dataLength) else {
+            throw OWSAssertionError("invalid link n sync attachment size")
         }
         let metadata = Upload.LinkNSyncUploadMetadata(fileUrl: sourceURL, encryptedDataLength: dataLength)
         let form = try await Upload.FormRequest(
