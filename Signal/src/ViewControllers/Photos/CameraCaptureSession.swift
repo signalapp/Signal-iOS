@@ -842,13 +842,19 @@ class CameraCaptureSession: NSObject {
         // TODO: showing an error here feels bad; maybe break the
         // video up into segments like we do for stories. For now
         // this is better than the old behavior (fail silently).
-        guard OWSMediaUtils.isVideoOfValidSize(path: outputUrl.path) else {
+        do {
+            try OWSMediaUtils.validateVideoSize(atPath: outputUrl.path)
+        } catch {
             return handleVideoCaptureError(PhotoCaptureError.videoTooLarge)
         }
 
-        guard OWSMediaUtils.isValidVideo(path: outputUrl.path) else {
+        do {
+            try OWSMediaUtils.validateVideoExtension(ofPath: outputUrl.path)
+            try OWSMediaUtils.validateVideoAsset(atPath: outputUrl.path)
+        } catch {
             return handleVideoCaptureError(PhotoCaptureError.invalidVideo)
         }
+
         guard let dataSource = try? DataSourcePath(fileUrl: outputUrl, shouldDeleteOnDeallocation: true) else {
             return handleVideoCaptureError(PhotoCaptureError.captureFailed)
         }

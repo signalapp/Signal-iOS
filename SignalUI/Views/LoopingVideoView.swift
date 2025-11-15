@@ -26,7 +26,10 @@ public class LoopingVideo: NSObject {
     }
 
     public convenience init?(decryptedLocalFileUrl url: URL) {
-        guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
+        do {
+            try OWSMediaUtils.validateVideoExtension(ofPath: url.path)
+            try OWSMediaUtils.validateVideoSize(atPath: url.path)
+        } catch {
             return nil
         }
         self.init(asset: AVAsset(url: url))

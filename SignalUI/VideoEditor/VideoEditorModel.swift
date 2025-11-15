@@ -56,9 +56,9 @@ class VideoEditorModel: NSObject {
     init(srcVideoPath: String) throws {
         self.srcVideoPath = srcVideoPath
 
-        guard OWSMediaUtils.isValidVideo(path: srcVideoPath) else {
-            throw OWSAssertionError("Invalid video content type or size.")
-        }
+        try OWSMediaUtils.validateVideoExtension(ofPath: srcVideoPath)
+        try OWSMediaUtils.validateVideoSize(atPath: srcVideoPath)
+        try OWSMediaUtils.validateVideoAsset(atPath: srcVideoPath)
 
         let mediaUrl = URL(fileURLWithPath: srcVideoPath)
         let asset = AVURLAsset(url: mediaUrl)
@@ -83,10 +83,12 @@ class VideoEditorModel: NSObject {
             throw OWSAssertionError("Invalid displaySize: \(displaySize).")
         }
 
-        guard asset.isPlayable,
-              asset.isExportable,
-              asset.isReadable,
-              !asset.hasProtectedContent else {
+        guard
+            asset.isPlayable,
+            asset.isExportable,
+            asset.isReadable,
+            !asset.hasProtectedContent
+        else {
             throw OWSAssertionError("Invalid content.")
         }
 

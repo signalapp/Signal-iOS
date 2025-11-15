@@ -664,15 +664,18 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         }()
 
-        guard asset.isReadable, OWSMediaUtils.isValidVideo(asset: asset) else {
+        guard asset.isReadable else {
             return (.invalid, nil, nil)
         }
 
-        let thumbnailImage = try? OWSMediaUtils.thumbnail(
-            forVideo: asset,
-            maxSizePixels: .square(AttachmentThumbnailQuality.large.thumbnailDimensionPoints())
-        )
-        guard let thumbnailImage else {
+        let thumbnailImage: UIImage
+        do {
+            thumbnailImage = try OWSMediaUtils.generateThumbnail(
+                forVideo: asset,
+                maxSizePixels: .square(AttachmentThumbnailQuality.large.thumbnailDimensionPoints())
+            )
+        } catch {
+            Logger.warn("couldn't generate thumbnail: \(error)")
             return (.invalid, nil, nil)
         }
         owsAssertDebug(

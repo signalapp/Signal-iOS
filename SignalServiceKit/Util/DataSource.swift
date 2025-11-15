@@ -180,7 +180,14 @@ public class DataSourceValue: DataSource {
             return false
         }
         owsFailDebug("Are we calling this anywhere? It seems quite inefficient.")
-        return OWSMediaUtils.isValidVideo(path: path)
+        do {
+            try OWSMediaUtils.validateVideoExtension(ofPath: path)
+            try OWSMediaUtils.validateVideoSize(atPath: path)
+            try OWSMediaUtils.validateVideoAsset(atPath: path)
+            return true
+        } catch {
+            return false
+        }
     }
 
     public var hasStickerLikeProperties: Bool {
@@ -296,9 +303,21 @@ public class DataSourcePath: DataSource {
     public var isValidVideo: Bool {
         owsAssertDebug(!isConsumed)
         if let mimeType {
-            return MimeTypeUtil.isSupportedVideoMimeType(mimeType) && OWSMediaUtils.isValidVideo(path: fileUrl.path)
+            guard MimeTypeUtil.isSupportedVideoMimeType(mimeType) else {
+                return false
+            }
         } else {
-            return MimeTypeUtil.isSupportedVideoFile(fileUrl.path) && OWSMediaUtils.isValidVideo(path: fileUrl.path)
+            guard MimeTypeUtil.isSupportedVideoFile(fileUrl.path) else {
+                return false
+            }
+        }
+        do {
+            try OWSMediaUtils.validateVideoExtension(ofPath: fileUrl.path)
+            try OWSMediaUtils.validateVideoSize(atPath: fileUrl.path)
+            try OWSMediaUtils.validateVideoAsset(atPath: fileUrl.path)
+            return true
+        } catch {
+            return false
         }
     }
 
