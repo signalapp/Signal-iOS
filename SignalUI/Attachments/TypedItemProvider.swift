@@ -177,7 +177,7 @@ public struct TypedItemProvider {
                 defaultTypeIdentifier: UTType.data.identifier
             )
 
-            return try await compressVideoIfNecessary(
+            return try await _buildFileAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
                 progress: progress
@@ -236,7 +236,7 @@ public struct TypedItemProvider {
             }
         }
 
-        return try await compressVideoIfNecessary(dataSource: dataSource, dataUTI: dataUTI, progress: progress)
+        return try await _buildFileAttachment(dataSource: dataSource, dataUTI: dataUTI, progress: progress)
     }
 
     private nonisolated func loadDataRepresentation(
@@ -336,15 +336,12 @@ public struct TypedItemProvider {
         return (dataSource, dataUTI)
     }
 
-    private nonisolated func compressVideoIfNecessary(
+    private nonisolated func _buildFileAttachment(
         dataSource: DataSourcePath,
         dataUTI: String,
         progress: Progress?
     ) async throws -> SignalAttachment {
-        if SignalAttachment.isVideoThatNeedsCompression(
-            dataSource: dataSource,
-            dataUTI: dataUTI
-        ) {
+        if SignalAttachment.videoUTISet.contains(dataUTI) {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
             var progressPoller: ProgressPoller?
             defer {

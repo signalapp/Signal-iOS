@@ -828,10 +828,11 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         }
         dataSource.sourceFilename = filename
 
-        // Although we want to be able to send higher quality attachments through the document picker
-        // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
-        if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: contentType.identifier) {
-            self.showApprovalDialogAfterProcessingVideoURL(url, filename: filename)
+        // Although we want to be able to send higher quality attachments through
+        // the document picker, it's more important that we ensure the sent format
+        // is one all clients can accept (e.g., *not* QuickTime .mov).
+        if SignalAttachment.videoUTISet.contains(contentType.identifier) {
+            self.showApprovalDialogAfterProcessingVideo(dataSource: dataSource)
             return
         }
 
@@ -848,7 +849,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         showApprovalDialog(forAttachments: [attachment])
     }
 
-    private func showApprovalDialogAfterProcessingVideoURL(_ movieURL: URL, filename: String?) {
+    private func showApprovalDialogAfterProcessingVideo(dataSource: DataSourcePath) {
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController.present(
@@ -856,11 +857,6 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             canCancel: true,
             asyncBlock: { modalActivityIndicator in
                 do {
-                    let dataSource = try DataSourcePath(
-                        fileUrl: movieURL,
-                        shouldDeleteOnDeallocation: false,
-                    )
-                    dataSource.sourceFilename = filename
                     let attachment = try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
                     modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
                         self.showApprovalDialog(forAttachments: [attachment])

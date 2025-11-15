@@ -370,7 +370,7 @@ public class SignalAttachment: NSObject {
 
     // Returns the set of UTIs that correspond to valid video formats
     // for Signal attachments.
-    private class var videoUTISet: Set<String> {
+    public class var videoUTISet: Set<String> {
         MimeTypeUtil.supportedVideoUtiTypes
     }
 
@@ -1190,11 +1190,6 @@ public class SignalAttachment: NSObject {
         dataSource.sourceFilename = mp4Filename
 
         return try videoAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
-    }
-
-    public class func isVideoThatNeedsCompression(dataSource: DataSourcePath, dataUTI: String) -> Bool {
-        // Today we re-encode all videos for the most consistent experience.
-        return videoUTISet.contains(dataUTI)
     }
 
     // MARK: Audio Attachments
