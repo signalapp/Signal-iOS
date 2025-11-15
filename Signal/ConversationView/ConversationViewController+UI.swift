@@ -184,7 +184,6 @@ extension ConversationViewController {
             }
 
             navigationItem.rightBarButtonItems = barButtons
-            showGroupCallTooltipIfNecessary()
             return
         }
     }

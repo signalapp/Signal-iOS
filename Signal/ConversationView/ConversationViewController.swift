@@ -99,7 +99,6 @@ public final class ConversationViewController: OWSViewController {
             for: thread, chatColor: chatColor, wallpaperViewBuilder: wallpaperViewBuilder
         )
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
-        let didAlreadyShowGroupCallTooltipEnoughTimes = SSKEnvironment.shared.preferencesRef.wasGroupCallTooltipShown(withTransaction: tx)
 
         let cvc = ConversationViewController(
             appReadiness: appReadiness,
@@ -107,7 +106,6 @@ public final class ConversationViewController: OWSViewController {
             conversationViewModel: conversationViewModel,
             action: action,
             conversationStyle: conversationStyle,
-            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes,
             loadAroundMessageId: loadAroundMessageId,
             scrollToMessageId: scrollToMessageId,
             oldestUnreadMessage: oldestUnreadMessage,
@@ -135,7 +133,6 @@ public final class ConversationViewController: OWSViewController {
         conversationViewModel: ConversationViewModel,
         action: ConversationViewAction,
         conversationStyle: ConversationStyle,
-        didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
         loadAroundMessageId: String?,
         scrollToMessageId: String?,
         oldestUnreadMessage: TSInteraction?,
@@ -150,7 +147,6 @@ public final class ConversationViewController: OWSViewController {
         self.viewState = CVViewState(
             threadUniqueId: threadViewModel.threadRecord.uniqueId,
             conversationStyle: conversationStyle,
-            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes,
             chatColor: chatColor,
             wallpaperViewBuilder: wallpaperViewBuilder
         )
@@ -519,8 +515,6 @@ public final class ConversationViewController: OWSViewController {
         inputToolbar.ensureTextViewHeight()
 
         updateContentInsets()
-
-        self.positionGroupCallTooltip()
     }
 
     public override var shouldAutorotate: Bool {

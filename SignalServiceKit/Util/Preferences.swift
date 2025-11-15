@@ -36,10 +36,10 @@ public class Preferences {
         case wasViewOnceTooltipShown = "OWSPreferencesKeyWasViewOnceTooltipShown"
         case wasDeleteForEveryoneConfirmationShown = "OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown"
         case wasBlurTooltipShown = "OWSPreferencesKeyWasBlurTooltipShown"
-        case wasGroupCallTooltipShown = "OWSPreferencesKeyWasGroupCallTooltipShown"
-        case wasGroupCallTooltipShownCount = "OWSPreferencesKeyWasGroupCallTooltipShownCount"
 
         // Obsolete
+        // case wasGroupCallTooltipShown = "OWSPreferencesKeyWasGroupCallTooltipShown"
+        // case wasGroupCallTooltipShownCount = "OWSPreferencesKeyWasGroupCallTooltipShownCount"
         // case callKitEnabled = "CallKitEnabled"
         // case callKitPrivacyEnabled = "CallKitPrivacyEnabled"
     }
@@ -248,26 +248,6 @@ public class Preferences {
 
     public func setWasViewOnceTooltipShown() {
         setBool(true, forKey: .wasViewOnceTooltipShown)
-    }
-
-    public func wasGroupCallTooltipShown(withTransaction transaction: DBReadTransaction) -> Bool {
-        keyValueStore.getBool(Key.wasGroupCallTooltipShown.rawValue, defaultValue: false, transaction: transaction)
-    }
-
-    public func incrementGroupCallTooltipShownCount() {
-        let currentCount = uint(forKey: .wasGroupCallTooltipShownCount, defaultValue: 0)
-        let incrementedCount = currentCount + 1
-
-        // If we have shown the tooltip more than 3 times, don't show it again.
-        if incrementedCount > 3 {
-            SSKEnvironment.shared.databaseStorageRef.write(block: setWasGroupCallTooltipShown(tx:))
-        } else {
-            setUInt(incrementedCount, forKey: .wasGroupCallTooltipShownCount)
-        }
-    }
-
-    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
-        setBool(true, forKey: .wasGroupCallTooltipShown, tx: tx)
     }
 
     public var wasBlurTooltipShown: Bool {

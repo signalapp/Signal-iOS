@@ -337,8 +337,8 @@ final class GroupCallViewController: UIViewController {
     }
 
     static func presentLobby(forGroupId groupId: GroupIdentifier, videoMuted: Bool = false) {
-        self._presentLobby { viewController, modalViewController in
-            let result = await self._prepareLobby(
+        self._presentLobby { viewController, modalViewController -> (() -> Void)? in
+            return await self._prepareLobby(
                 from: viewController,
                 modalViewController: modalViewController,
                 shouldAskForCameraPermission: !videoMuted,
@@ -347,11 +347,6 @@ final class GroupCallViewController: UIViewController {
                     return callService.buildAndConnectGroupCall(for: groupId, isVideoMuted: videoMuted)
                 }
             )
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                // Dismiss the group call tooltip
-                SSKEnvironment.shared.preferencesRef.setWasGroupCallTooltipShown(tx: tx)
-            }
-            return result
         }
     }
 

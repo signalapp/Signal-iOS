@@ -217,7 +217,6 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
 public protocol _MessageBackup_PreferencesShim {
     func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
     func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
-    func setWasGroupCallTooltipShown(tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
@@ -232,10 +231,6 @@ public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
 
     public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
         preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: tx)
-    }
-
-    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
-        preferences.setWasGroupCallTooltipShown(tx: tx)
     }
 }
 

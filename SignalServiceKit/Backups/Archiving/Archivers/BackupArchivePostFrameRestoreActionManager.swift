@@ -49,11 +49,6 @@ public class BackupArchivePostFrameRestoreActionManager {
         bencher: BackupArchive.RestoreBencher,
         chatItemContext: BackupArchive.ChatItemRestoringContext
     ) throws {
-        // Proactively mark the group call tooltip shown; we don't know
-        // definitively if it was shown prior to restore, but it's a good
-        // guess that it was and its annoying to see again.
-        preferences.setWasGroupCallTooltipShown(tx: chatItemContext.tx)
-
         for (recipientId, actions) in recipientActions {
             if actions.insertContactHiddenInfoMessage {
                 try bencher.benchPostFrameRestoreAction(.InsertContactHiddenInfoMessage) {

@@ -45,14 +45,10 @@ public extension ConversationViewController {
             return
         }
 
-        let startCallResult = CallStarter(
+        _ = CallStarter(
             groupId: groupId,
             context: self.callStarterContext
         ).startCall(from: self)
-
-        if startCallResult.callDidStartOrResume {
-            removeGroupCallTooltip()
-        }
     }
 
     @objc
@@ -97,94 +93,5 @@ public extension ConversationViewController {
                 )
             }
         }
-    }
-
-    // MARK: - Group Call Tooltip
-
-    func showGroupCallTooltipIfNecessary() {
-        removeGroupCallTooltip()
-
-        guard canCall, isGroupConversation else {
-            return
-        }
-        if viewState.didAlreadyShowGroupCallTooltipEnoughTimes {
-            return
-        }
-
-        // We only want to increment once per CVC lifecycle, since
-        // we may tear down and rebuild the tooltip multiple times
-        // as the navbar items change.
-        if !hasIncrementedGroupCallTooltipShownCount {
-            SSKEnvironment.shared.preferencesRef.incrementGroupCallTooltipShownCount()
-            viewState.didAlreadyShowGroupCallTooltipEnoughTimes = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                SSKEnvironment.shared.preferencesRef.wasGroupCallTooltipShown(withTransaction: tx)
-            }
-            hasIncrementedGroupCallTooltipShownCount = true
-        }
-
-        if conversationViewModel.groupCallInProgress {
-            return
-        }
-
-        let tailReferenceView = UIView()
-        tailReferenceView.isUserInteractionEnabled = false
-        view.addSubview(tailReferenceView)
-        self.groupCallTooltipTailReferenceView = tailReferenceView
-
-        let tooltip = GroupCallTooltip.present(fromView: self.view,
-                                               widthReferenceView: self.view,
-                                               tailReferenceView: tailReferenceView) { [weak self] in
-            self?.showGroupLobbyOrActiveCall()
-        }
-        self.groupCallTooltip = tooltip
-
-        // This delay is unfortunate, but the bar button item is not always
-        // ready to use as a position reference right away after it is set
-        // on the navigation item. So we wait a short amount of time for it
-        // to hopefully be ready since there's unfortunately not a simple
-        // way to monitor when the navigation bar layout has finished (without
-        // subclassing navigation bar). Since the stakes are low here (the
-        // tooltip just won't be visible), it's not worth doing that for.
-
-        tooltip.isHidden = true
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.positionGroupCallTooltip()
-        }
-    }
-
-    func positionGroupCallTooltip() {
-        guard let groupCallTooltipTailReferenceView = self.groupCallTooltipTailReferenceView,
-              let groupCallBarButtonItem = self.groupCallBarButtonItem else {
-            return
-        }
-        guard let barButtonView = groupCallBarButtonItem.value(forKey: "view") as? UIView else {
-            return
-        }
-        groupCallTooltipTailReferenceView.frame = view.convert(barButtonView.frame,
-                                                               from: barButtonView.superview)
-        groupCallTooltip?.isHidden = false
-    }
-
-    private func removeGroupCallTooltip() {
-        groupCallTooltip?.removeFromSuperview()
-        self.groupCallTooltip = nil
-        groupCallTooltipTailReferenceView?.removeFromSuperview()
-        self.groupCallTooltipTailReferenceView = nil
-    }
-
-    private var groupCallTooltip: GroupCallTooltip? {
-        get { viewState.groupCallTooltip }
-        set { viewState.groupCallTooltip = newValue }
-    }
-
-    private var groupCallTooltipTailReferenceView: UIView? {
-        get { viewState.groupCallTooltipTailReferenceView }
-        set { viewState.groupCallTooltipTailReferenceView = newValue }
-    }
-
-    private var hasIncrementedGroupCallTooltipShownCount: Bool {
-        get { viewState.hasIncrementedGroupCallTooltipShownCount }
-        set { viewState.hasIncrementedGroupCallTooltipShownCount = newValue }
     }
 }

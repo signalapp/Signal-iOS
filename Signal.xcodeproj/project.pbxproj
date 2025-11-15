@@ -2883,7 +2883,6 @@
 		D9E43BFD2CC194140001536E /* GroupCallErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */; };
 		D9E43BFE2CC194140001536E /* GroupCallNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */; };
 		D9E43BFF2CC194140001536E /* GroupCallSwipeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */; };
-		D9E43C002CC194140001536E /* GroupCallTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB12CC194140001536E /* GroupCallTooltip.swift */; };
 		D9E43C012CC194140001536E /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */; };
 		D9E43C022CC194140001536E /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */; };
 		D9E43C032CC194140001536E /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */; };
@@ -6890,7 +6889,6 @@
 		D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
 		D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallNotificationView.swift; sourceTree = "<group>"; };
 		D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSwipeToastView.swift; sourceTree = "<group>"; };
-		D9E43BB12CC194140001536E /* GroupCallTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallTooltip.swift; sourceTree = "<group>"; };
 		D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
 		D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
 		D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
@@ -13096,7 +13094,6 @@
 				D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */,
 				D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */,
 				D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */,
-				D9E43BB12CC194140001536E /* GroupCallTooltip.swift */,
 				D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */,
 				D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */,
 				D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */,
@@ -17232,7 +17229,6 @@
 				D9E43C272CC194140001536E /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				D9E43C282CC194140001536E /* GroupCallRemoteVideoManager.swift in Sources */,
 				D9E43BFF2CC194140001536E /* GroupCallSwipeToastView.swift in Sources */,
-				D9E43C002CC194140001536E /* GroupCallTooltip.swift in Sources */,
 				D9E43C012CC194140001536E /* GroupCallVideoGrid.swift in Sources */,
 				D9E43C022CC194140001536E /* GroupCallVideoGridLayout.swift in Sources */,
 				D9E43C032CC194140001536E /* GroupCallVideoOverflow.swift in Sources */,

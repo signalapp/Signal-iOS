@@ -90,10 +90,6 @@ public class CVViewState: NSObject {
 
     public var userHasScrolled = false
 
-    public var groupCallTooltip: GroupCallTooltip?
-    public var groupCallTooltipTailReferenceView: UIView?
-    public var didAlreadyShowGroupCallTooltipEnoughTimes: Bool
-    public var hasIncrementedGroupCallTooltipShownCount = false
     public var groupCallBarButtonItem: UIBarButtonItem?
 
     public var lastMessageSentDate: Date?
@@ -159,13 +155,11 @@ public class CVViewState: NSObject {
     public init(
         threadUniqueId: String,
         conversationStyle: ConversationStyle,
-        didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
         chatColor: ColorOrGradientSetting,
         wallpaperViewBuilder: WallpaperViewBuilder?
     ) {
         self.threadUniqueId = threadUniqueId
         self.conversationStyle = conversationStyle
-        self.didAlreadyShowGroupCallTooltipEnoughTimes = didAlreadyShowGroupCallTooltipEnoughTimes
         self.chatColor = chatColor
         self.wallpaperViewBuilder = wallpaperViewBuilder
     }
