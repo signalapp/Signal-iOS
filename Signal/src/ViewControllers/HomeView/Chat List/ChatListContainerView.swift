@@ -18,9 +18,10 @@ final class ChatListContainerView: UIView {
     private var _filterControl: ChatListFilterControl?
 
     /// Set an extra padding on both sides of the table view.
-    /// This is used when chat list is displayed in split view controller's "sidbar".
+    /// This is used when chat list is displayed in split view controller's "sidebar".
     var tableViewHorizontalInset: CGFloat = 0 {
         didSet {
+            guard oldValue != tableViewHorizontalInset else { return }
             tableViewHorizontalEdgeConstraints.forEach { $0.constant = tableViewHorizontalInset }
         }
     }
