@@ -121,8 +121,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             self.toolbarItems = [.flexibleSpace(), toolbarDeleteButton]
         }
 
-        view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
         tableView.delegate = self
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
@@ -132,6 +130,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.register(CreateCallLinkCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
+        view.addSubview(tableView)
+        tableView.autoPinHeight(toHeightOf: view)
+        tableViewHorizontalEdgeConstraints = [
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
+        ]
+        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
+        updateTableViewPaddingIfNeeded()
 
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
@@ -157,6 +163,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         isPeekingEnabled = false
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateTableViewPaddingIfNeeded()
     }
 
     func updateBarButtonItems() {
@@ -1471,6 +1482,32 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     let tableView = UITableView(frame: .zero, style: .plain)
 
+    /// Set to `true` when call list is displayed in split view controller's "sidebar" on iOS 26 and later.
+    /// Setting this to `true` would add an extra padding on both sides of the table view.
+    /// This value is also passed down to table view cells that make their own layout choices based on the value.
+    private var useSidebarCallListCellAppearance = false {
+        didSet {
+            guard oldValue != useSidebarCallListCellAppearance else { return }
+            tableViewHorizontalEdgeConstraints.forEach {
+                $0.constant = useSidebarCallListCellAppearance ? 18 : 0
+            }
+            tableView.reloadData()
+        }
+    }
+    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
+
+    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
+    /// Does nothing on prior iOS versions.
+    private func updateTableViewPaddingIfNeeded() {
+        guard #available(iOS 26, *) else { return }
+
+        if let splitViewController = splitViewController, !splitViewController.isCollapsed {
+            useSidebarCallListCellAppearance = true
+        } else {
+            useSidebarCallListCellAppearance = false
+        }
+    }
+
     private static let createCallLinkReuseIdentifier = "createCallLink"
     private static let callCellReuseIdentifier = "callCell"
 
@@ -1483,35 +1520,36 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func buildTableViewCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell? {
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
-            if let createCallLinkCell = tableView.dequeueReusableCell(
+            guard let createCallLinkCell = tableView.dequeueReusableCell(
                 withIdentifier: Self.createCallLinkReuseIdentifier,
                 for: indexPath
-            ) as? CreateCallLinkCell {
-                return createCallLinkCell
-            }
-            return nil
+            ) as? CreateCallLinkCell else { return nil }
+
+            createCallLinkCell.useSidebarAppearance = useSidebarCallListCellAppearance
+            return createCallLinkCell
+
         case .existingCalls:
-            guard
-                let callCell = tableView.dequeueReusableCell(
-                    withIdentifier: Self.callCellReuseIdentifier
-                ) as? CallCell
-            else {
-                return nil
-            }
+            guard let callCell = tableView.dequeueReusableCell(
+                withIdentifier: Self.callCellReuseIdentifier,
+                for: indexPath
+            ) as? CallCell else { return nil }
+
+            callCell.useSidebarAppearance = useSidebarCallListCellAppearance
             // These loads should be sufficiently fast that doing them here,
             // synchronously, is fine.
-            self.loadMoreCallsIfNecessary(indexToBeDisplayed: indexPath.row)
+            loadMoreCallsIfNecessary(indexToBeDisplayed: indexPath.row)
             if let viewModel = viewModelLoader.viewModel(at: indexPath.row, sneakyTransactionDb: deps.db) {
                 callCell.delegate = self
                 callCell.viewModel = viewModel
 
-                self.peekIfActive(viewModel)
+                peekIfActive(viewModel)
 
                 return callCell
             }
             owsFailDebug("Missing cached view model – how did this happen?")
             /// Return an empty table cell, rather than a ``CallCell`` that's
             /// gonna be incorrectly configured.
+
         case .none:
             break
         }
@@ -2237,6 +2275,9 @@ private extension CallsListViewController {
             }
         }
 
+        /// If set to `true` background in `selected` state would have rounded corners.
+        var useSidebarAppearance = false
+
         // MARK: Subviews
 
         private lazy var avatarView = ConversationAvatarView(
@@ -2485,7 +2526,7 @@ private extension CallsListViewController {
             var configuration = UIBackgroundConfiguration.clear()
             if state.isSelected || state.isHighlighted {
                 configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-                if traitCollection.userInterfaceIdiom == .pad {
+                if useSidebarAppearance {
                     configuration.cornerRadius = 36
                 }
             } else {
@@ -2513,6 +2554,9 @@ private extension CallsListViewController {
 
 private extension CallsListViewController {
     class CreateCallLinkCell: UITableViewCell {
+        /// If set to `true` background in `selected` state would have rounded corners.
+        var useSidebarAppearance = false
+
         private enum Constants {
             static let iconDimension: CGFloat = 24
             static let spacing: CGFloat = 18
@@ -2543,7 +2587,7 @@ private extension CallsListViewController {
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-            self.backgroundColor = .Signal.background
+            automaticallyUpdatesBackgroundConfiguration = false
 
             let stackView = UIStackView(arrangedSubviews: [iconView, label])
             stackView.axis = .horizontal
@@ -2556,6 +2600,19 @@ private extension CallsListViewController {
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
+        }
+
+        override func updateConfiguration(using state: UICellConfigurationState) {
+            var configuration = UIBackgroundConfiguration.clear()
+            if state.isSelected || state.isHighlighted {
+                configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+                if useSidebarAppearance {
+                    configuration.cornerRadius = 36
+                }
+            } else {
+                configuration.backgroundColor = .Signal.background
+            }
+            backgroundConfiguration = configuration
         }
     }
 }
