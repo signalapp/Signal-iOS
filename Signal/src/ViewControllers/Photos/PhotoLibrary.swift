@@ -139,12 +139,11 @@ class PhotoAlbumContents {
                     return
                 }
 
-                let dataUTI = UTType.video.identifier
                 let baseFilename: String? = nil
 
                 Task {
                     do {
-                        future.resolve(try await SignalAttachment.compressVideoAsMp4(asset: video, baseFilename: baseFilename, dataUTI: dataUTI))
+                        future.resolve(try await SignalAttachment.compressVideoAsMp4(asset: video, baseFilename: baseFilename))
                     } catch {
                         future.reject(error)
                     }

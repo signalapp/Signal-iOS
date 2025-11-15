@@ -610,7 +610,7 @@ public class SignalAttachment: NSObject {
                     return nil
                 }
 
-                return try? await SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: dataUTI)
+                return try? await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
             }
         }
         for dataUTI in audioUTISet {
@@ -1124,17 +1124,16 @@ public class SignalAttachment: NSObject {
     }
 
     @MainActor
-    public static func compressVideoAsMp4(dataSource: DataSourcePath, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
+    public static func compressVideoAsMp4(dataSource: DataSourcePath, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         return try await compressVideoAsMp4(
             asset: AVAsset(url: dataSource.fileUrl),
             baseFilename: dataSource.sourceFilename,
-            dataUTI: dataUTI,
             sessionCallback: sessionCallback,
         )
     }
 
     @MainActor
-    public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
+    public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }

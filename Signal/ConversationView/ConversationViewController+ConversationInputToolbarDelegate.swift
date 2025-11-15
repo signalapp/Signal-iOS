@@ -861,10 +861,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                         shouldDeleteOnDeallocation: false,
                     )
                     dataSource.sourceFilename = filename
-                    let attachment = try await SignalAttachment.compressVideoAsMp4(
-                        dataSource: dataSource,
-                        dataUTI: UTType.mpeg4Movie.identifier,
-                    )
+                    let attachment = try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
                     modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
                         self.showApprovalDialog(forAttachments: [attachment])
                     })

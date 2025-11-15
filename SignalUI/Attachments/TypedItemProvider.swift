@@ -225,7 +225,6 @@ public struct TypedItemProvider {
                         continuation.resume(throwing: ItemProviderError.fileUrlWasBplist)
                     } else {
                         do {
-                            // NOTE: Compression here rather than creating an additional temp file would be nice but blocking this completion handler for video encoding is probably not a good way to go.
                             continuation.resume(returning: try Self.copyFileUrl(fileUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
                         } catch {
                             continuation.resume(throwing: error)
@@ -353,7 +352,6 @@ public struct TypedItemProvider {
             }
             return try await SignalAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
-                dataUTI: dataUTI,
                 sessionCallback: { exportSession in
                     guard let progress else { return }
                     progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
