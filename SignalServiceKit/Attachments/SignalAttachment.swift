@@ -580,18 +580,21 @@ public class SignalAttachment: NSObject {
                     return nil
                 }
                 let dataSource = DataSourceValue(data, utiType: dataUTI)
+                guard let dataSource else {
+                    throw .missingData
+                }
 
                 // There is a known bug with the iOS pasteboard where it will randomly give a
                 // single green pixel, and nothing else. Work around this by refetching the
                 // pasteboard after a brief delay (once, then give up).
-                if dataSource?.imageMetadata?.pixelSize == CGSize(square: 1), retrySinglePixelImages {
+                if dataSource.imageMetadata?.pixelSize == CGSize(square: 1), retrySinglePixelImages {
                     try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * 50)
                     return try await attachmentFromPasteboard(pasteboardUTIs: pasteboardUTIs, index: index, retrySinglePixelImages: false)
                 }
 
                 // If the data source is sticker like AND we're pasting the attachment,
                 // we want to make it borderless.
-                let isBorderless = dataSource?.hasStickerLikeProperties ?? false
+                let isBorderless = dataSource.hasStickerLikeProperties
 
                 return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, isBorderless: isBorderless)
             }
@@ -619,6 +622,9 @@ public class SignalAttachment: NSObject {
                     return nil
                 }
                 let dataSource = DataSourceValue(data, utiType: dataUTI)
+                guard let dataSource else {
+                    throw .missingData
+                }
                 return try audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -629,6 +635,9 @@ public class SignalAttachment: NSObject {
             return nil
         }
         let dataSource = DataSourceValue(data, utiType: dataUTI)
+        guard let dataSource else {
+            throw .missingData
+        }
         return try genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
@@ -659,10 +668,12 @@ public class SignalAttachment: NSObject {
                 }
 
                 let dataSource = DataSourceValue(data, utiType: dataUTI)
-                if let dataSource, dataSource.hasStickerLikeProperties == false {
+                guard let dataSource else {
+                    throw .missingData
+                }
+                if !dataSource.hasStickerLikeProperties {
                     owsFailDebug("Treating non-sticker data as a sticker")
                 }
-
                 return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, isBorderless: true)
             }
         }
@@ -677,12 +688,15 @@ public class SignalAttachment: NSObject {
             return nil
         }
         let dataSource = DataSourceValue(memojiGlyph.imageContent, utiType: dataUTI)
+        guard let dataSource else {
+            throw .missingData
+        }
 
         if inputImageUTISet.contains(dataUTI) {
             return try imageAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
-                isBorderless: dataSource?.hasStickerLikeProperties ?? false
+                isBorderless: dataSource.hasStickerLikeProperties,
             )
         }
         if videoUTISet.contains(dataUTI) {
@@ -709,12 +723,8 @@ public class SignalAttachment: NSObject {
     // MARK: Image Attachments
 
     // Factory method for an image attachment.
-    private class func imageAttachment(dataSource: (any DataSource)?, dataUTI: String, isBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
+    private class func imageAttachment(dataSource: any DataSource, dataUTI: String, isBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
-        assert(dataSource != nil)
-        guard let dataSource = dataSource else {
-            throw .missingData
-        }
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
 
@@ -1100,11 +1110,7 @@ public class SignalAttachment: NSObject {
     // MARK: Video Attachments
 
     // Factory method for video attachments.
-    private class func videoAttachment(dataSource: DataSource?, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
-        guard let dataSource = dataSource else {
-            throw .missingData
-        }
-
+    private class func videoAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
             owsFailDebug("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
@@ -1215,12 +1221,7 @@ public class SignalAttachment: NSObject {
         return videoUTISet.contains(dataUTI)
     }
 
-    private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
-        guard let dataSource = dataSource else {
-            Logger.warn("Missing dataSource.")
-            return false
-        }
-
+    private class func isValidOutputVideo(dataSource: DataSource, dataUTI: String) -> Bool {
         guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
             Logger.warn("Invalid UTI type: \(dataUTI).")
             return false
@@ -1236,7 +1237,7 @@ public class SignalAttachment: NSObject {
     // MARK: Audio Attachments
 
     // Factory method for audio attachments.
-    private class func audioAttachment(dataSource: DataSource?, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    private class func audioAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,
@@ -1248,7 +1249,7 @@ public class SignalAttachment: NSObject {
     // MARK: Generic Attachments
 
     // Factory method for generic attachments.
-    private class func genericAttachment(dataSource: DataSource?, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    private class func genericAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,
@@ -1259,7 +1260,7 @@ public class SignalAttachment: NSObject {
 
     // MARK: Voice Messages
 
-    public class func voiceMessageAttachment(dataSource: DataSource?, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func voiceMessageAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         let attachment = try audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
         attachment.isVoiceMessage = true
         return attachment
@@ -1268,7 +1269,7 @@ public class SignalAttachment: NSObject {
     // MARK: Attachments
 
     // Factory method for attachments of any kind.
-    public class func attachment(dataSource: DataSource?, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func attachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
             return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         } else if videoUTISet.contains(dataUTI) {
@@ -1283,17 +1284,12 @@ public class SignalAttachment: NSObject {
     // MARK: Helper Methods
 
     private class func newAttachment(
-        dataSource: DataSource?,
+        dataSource: DataSource,
         dataUTI: String,
         validUTISet: Set<String>?,
         maxFileSize: UInt,
     ) throws(SignalAttachmentError) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
-        assert(dataSource != nil)
-
-        guard let dataSource = dataSource else {
-            throw .missingData
-        }
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
 

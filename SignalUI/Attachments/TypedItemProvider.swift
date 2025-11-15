@@ -191,6 +191,9 @@ public struct TypedItemProvider {
         case .contact:
             let contactData = try await loadDataRepresentation()
             let dataSource = DataSourceValue(contactData, utiType: itemType.typeIdentifier)
+            guard let dataSource else {
+                throw SignalAttachmentError.missingData
+            }
             let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             attachment.isConvertibleToContactShare = true
             return attachment
@@ -203,6 +206,9 @@ public struct TypedItemProvider {
         case .pkPass:
             let pkPass = try await loadDataRepresentation()
             let dataSource = DataSourceValue(pkPass, utiType: itemType.typeIdentifier)
+            guard let dataSource else {
+                throw SignalAttachmentError.missingData
+            }
             let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             return attachment
         }
@@ -306,6 +312,9 @@ public struct TypedItemProvider {
         }
         let type = UTType.png
         let dataSource = DataSourceValue(imagePng, utiType: type.identifier)
+        guard let dataSource else {
+            throw SignalAttachmentError.missingData
+        }
         return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
     }
 

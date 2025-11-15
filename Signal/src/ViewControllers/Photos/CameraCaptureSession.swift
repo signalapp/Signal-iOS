@@ -1038,6 +1038,9 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
             let dataSource = DataSourceValue(photoData, utiType: UTType.jpeg.identifier)
             let attachment: SignalAttachment
             do throws(SignalAttachmentError) {
+                guard let dataSource else {
+                    throw .missingData
+                }
                 attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             } catch {
                 delegate.cameraCaptureSession(self, didFailWith: error)
