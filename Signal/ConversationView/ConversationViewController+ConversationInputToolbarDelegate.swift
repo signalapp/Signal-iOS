@@ -759,45 +759,26 @@ extension ConversationViewController: UIDocumentPickerDelegate {
     }
 
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
-        Logger.debug("Picked document at url: \(url)")
+        let resourceValues: URLResourceValues?
+        do {
+            resourceValues = try url.resourceValues(forKeys: [.contentTypeKey, .isDirectoryKey])
+        } catch {
+            owsFailDebug("couldn't get resourceValues: \(error)")
+            resourceValues = nil
+        }
 
-        let contentType: UTType = {
-            do {
-                let resourceValues = try url.resourceValues(forKeys: [.contentTypeKey])
-                guard let contentType = resourceValues.contentType else {
-                    owsFailDebug("Missing contentType.")
-                    return .data
-                }
-                return contentType
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return .data
-            }
-        }()
-        let isDirectory: Bool = {
-            do {
-                let resourceValues = try url.resourceValues(forKeys: Set([
-                    .isDirectoryKey
-                ]))
-                guard let isDirectory = resourceValues.isDirectory else {
-                    owsFailDebug("Missing isDirectory.")
-                    return false
-                }
-                return isDirectory
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return false
-            }
-        }()
-
-        if isDirectory {
-            Logger.info("User picked directory.")
-
+        if resourceValues?.isDirectory == true {
             DispatchQueue.main.async {
-                OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                                                                         comment: "Alert title when picking a document fails because user picked a directory/bundle"),
-                                                message: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                                                           comment: "Alert body when picking a document fails because user picked a directory/bundle"))
+                OWSActionSheets.showActionSheet(
+                    title: OWSLocalizedString(
+                        "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                        comment: "Alert title when picking a document fails because user picked a directory/bundle"
+                    ),
+                    message: OWSLocalizedString(
+                        "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                        comment: "Alert body when picking a document fails because user picked a directory/bundle",
+                    ),
+                )
             }
             return
         }
@@ -807,38 +788,39 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                 return filename
             }
             owsFailDebug("Unable to determine filename")
-            return OWSLocalizedString("ATTACHMENT_DEFAULT_FILENAME",
-                                     comment: "Generic filename for an attachment with no known name")
+            return OWSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "Generic filename for an attachment with no known name")
         }()
 
-        func buildDataSource() -> DataSourcePath? {
-            do {
-                return try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
-            } catch {
-                owsFailDebug("Error: \(error).")
-                return nil
-            }
-        }
-        guard let dataSource = buildDataSource() else {
+        let dataSource: DataSourcePath
+        do {
+            dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        } catch {
+            owsFailDebug("couldn't build data source: \(error)")
             DispatchQueue.main.async {
-                OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
-                                                                         comment: "Alert title when picking a document fails for an unknown reason"))
+                OWSActionSheets.showActionSheet(
+                    title: OWSLocalizedString(
+                        "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
+                        comment: "Alert title when picking a document fails for an unknown reason",
+                    ),
+                )
             }
             return
         }
         dataSource.sourceFilename = filename
 
+        let contentTypeIdentifier = (resourceValues?.contentType ?? .data).identifier
+
         // Although we want to be able to send higher quality attachments through
         // the document picker, it's more important that we ensure the sent format
         // is one all clients can accept (e.g., *not* QuickTime .mov).
-        if SignalAttachment.videoUTISet.contains(contentType.identifier) {
+        if SignalAttachment.videoUTISet.contains(contentTypeIdentifier) {
             self.showApprovalDialogAfterProcessingVideo(dataSource: dataSource)
             return
         }
 
         let attachment: SignalAttachment
         do throws(SignalAttachmentError) {
-            attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentType.identifier)
+            attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentTypeIdentifier)
         } catch {
             DispatchQueue.main.async {
                 self.showErrorAlert(attachmentError: error)
