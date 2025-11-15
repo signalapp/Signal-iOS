@@ -200,14 +200,16 @@ class RecentPhotosCollectionView: UICollectionView {
             "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS",
             comment: "Text in chat attachment panel explaining that user needs to give Signal permission to access photos."
         ))
-        let button = button(title: OWSLocalizedString(
-            "ATTACHMENT_KEYBOARD_OPEN_SETTINGS",
-            comment: "Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos."
-        ))
-        button.block = {
-            let openAppSettingsUrl = URL(string: UIApplication.openSettingsURLString)!
-            UIApplication.shared.open(openAppSettingsUrl)
-        }
+        let button = UIButton(
+            configuration: .smallSecondary(title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_OPEN_SETTINGS",
+                comment: "Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos."
+            )),
+            primaryAction: UIAction { _ in
+                let openAppSettingsUrl = URL(string: UIApplication.openSettingsURLString)!
+                UIApplication.shared.open(openAppSettingsUrl)
+            }
+        )
         let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])
         stackView.axis = .vertical
         stackView.spacing = 16
@@ -218,7 +220,7 @@ class RecentPhotosCollectionView: UICollectionView {
     private func titleLabel(text: String) -> UILabel {
         let label = UILabel()
         label.font = .dynamicTypeHeadlineClamped
-        label.textColor = Theme.isDarkThemeEnabled ? .ows_gray20 : UIColor(rgbHex: 0x434343).withAlphaComponent(0.8)
+        label.textColor = .Signal.label
         label.textAlignment = .center
         label.numberOfLines = 2
         label.text = text
@@ -229,31 +231,11 @@ class RecentPhotosCollectionView: UICollectionView {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
         label.lineBreakMode = .byWordWrapping
-        label.textColor = Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_blackAlpha50
+        label.textColor = .Signal.secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 0
         label.text = text
         return label
-    }
-
-    private func button(title: String) -> OWSButton {
-        let button = OWSButton()
-
-        let backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
-        button.setBackgroundImage(UIImage.image(color: backgroundColor), for: .normal)
-
-        let highlightedBgColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.26) : UIColor(white: 0, alpha: 0.18)
-        button.setBackgroundImage(UIImage.image(color: highlightedBgColor), for: .highlighted)
-
-        button.ows_contentEdgeInsets = UIEdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16)
-        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 32).isActive = true
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = 16
-
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(Theme.isDarkThemeEnabled ? .ows_gray05 : .black, for: .normal)
-        button.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
-        return button
     }
 }
 
