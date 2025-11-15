@@ -194,7 +194,7 @@ public struct TypedItemProvider {
             guard let dataSource else {
                 throw SignalAttachmentError.missingData
             }
-            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
+            let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             attachment.isConvertibleToContactShare = true
             return attachment
         case .plainText, .text:
@@ -209,7 +209,7 @@ public struct TypedItemProvider {
             guard let dataSource else {
                 throw SignalAttachmentError.missingData
             }
-            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
+            let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
             return attachment
         }
     }
@@ -301,7 +301,7 @@ public struct TypedItemProvider {
 
     private nonisolated static func createAttachment(withText text: String) throws -> SignalAttachment {
         let dataSource = DataSourceValue(oversizeText: text)
-        let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
+        let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
         attachment.isConvertibleToTextMessage = true
         return attachment
     }
@@ -315,7 +315,7 @@ public struct TypedItemProvider {
         guard let dataSource else {
             throw SignalAttachmentError.missingData
         }
-        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
+        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: type.identifier)
     }
 
     private nonisolated static func copyFileUrl(

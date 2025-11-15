@@ -139,28 +139,8 @@ class PhotoAlbumContents {
                     return
                 }
 
-                let dataUTI: String
-                let baseFilename: String?
-                if let onDiskVideo = video as? AVURLAsset {
-                    let url = onDiskVideo.url
-                    dataUTI = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? UTType.video.identifier
-
-                    if let dataSource = try? DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false) {
-                        if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
-                            do {
-                                future.resolve(try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
-                            } catch {
-                                future.reject(error)
-                            }
-                            return
-                        }
-                    }
-
-                    baseFilename = url.lastPathComponent
-                } else {
-                    dataUTI = UTType.video.identifier
-                    baseFilename = nil
-                }
+                let dataUTI = UTType.video.identifier
+                let baseFilename: String? = nil
 
                 Task {
                     do {
@@ -177,7 +157,7 @@ class PhotoAlbumContents {
         switch asset.mediaType {
         case .image:
             return requestImageDataSource(for: asset).map(on: DispatchQueue.global()) { (dataSource: DataSource, dataUTI: String) in
-                return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+                return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         case .video:
             return requestVideoDataSource(for: asset)

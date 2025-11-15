@@ -862,7 +862,7 @@ class CameraCaptureSession: NSObject {
         let attachment: SignalAttachment
 
         do throws(SignalAttachmentError) {
-            attachment = try SignalAttachment.attachment(
+            attachment = try SignalAttachment.videoAttachment(
                 dataSource: dataSource,
                 dataUTI: UTType.mpeg4Movie.identifier,
             )
@@ -1041,7 +1041,7 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
                 guard let dataSource else {
                     throw .missingData
                 }
-                attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+                attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             } catch {
                 delegate.cameraCaptureSession(self, didFailWith: error)
                 return

@@ -712,7 +712,7 @@ public class SignalAttachment: NSObject {
     // MARK: Image Attachments
 
     // Factory method for an image attachment.
-    private class func imageAttachment(dataSource: any DataSource, dataUTI: String, isBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func imageAttachment(dataSource: any DataSource, dataUTI: String, isBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
@@ -1099,7 +1099,7 @@ public class SignalAttachment: NSObject {
     // MARK: Video Attachments
 
     // Factory method for video attachments.
-    private class func videoAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func videoAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
             owsFailDebug("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
@@ -1238,7 +1238,7 @@ public class SignalAttachment: NSObject {
     // MARK: Generic Attachments
 
     // Factory method for generic attachments.
-    private class func genericAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func genericAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,

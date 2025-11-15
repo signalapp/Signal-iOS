@@ -41,7 +41,7 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
         case .voiceMessage:
             signalAttachment = try SignalAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
         case .borderless:
-            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment = try SignalAttachment.imageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
             signalAttachment.isBorderless = true
         case .shouldLoop:
             signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)

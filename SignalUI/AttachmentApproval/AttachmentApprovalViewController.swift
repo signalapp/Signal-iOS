@@ -719,7 +719,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
+        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
     }
 
     private func prepareVideoAttachment(
@@ -741,7 +741,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        let dstAttachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+        let dstAttachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
         dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
         return dstAttachment
     }

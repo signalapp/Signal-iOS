@@ -484,7 +484,7 @@ public class Location: NSObject {
         guard let dataSource else {
             throw SignalAttachmentError.missingData
         }
-        return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
     }
 
     public var messageText: String {
