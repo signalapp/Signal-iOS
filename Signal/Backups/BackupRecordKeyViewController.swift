@@ -108,7 +108,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         aepTextView.backgroundColor = .Signal.secondaryGroupedBackground
 
         let copyToClipboardButton = UIButton(
-            configuration: .compactGray(title: OWSLocalizedString(
+            configuration: .smallSecondary(title: OWSLocalizedString(
                 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
                 comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
             )),
