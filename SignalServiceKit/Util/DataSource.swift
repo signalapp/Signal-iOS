@@ -176,9 +176,6 @@ public class DataSourceValue: DataSource {
         guard let path = dataUrl?.path else {
             return false
         }
-        guard MimeTypeUtil.isSupportedVideoFile(path) else {
-            return false
-        }
         owsFailDebug("Are we calling this anywhere? It seems quite inefficient.")
         do {
             try OWSMediaUtils.validateVideoExtension(ofPath: path)
@@ -302,15 +299,6 @@ public class DataSourcePath: DataSource {
 
     public var isValidVideo: Bool {
         owsAssertDebug(!isConsumed)
-        if let mimeType {
-            guard MimeTypeUtil.isSupportedVideoMimeType(mimeType) else {
-                return false
-            }
-        } else {
-            guard MimeTypeUtil.isSupportedVideoFile(fileUrl.path) else {
-                return false
-            }
-        }
         do {
             try OWSMediaUtils.validateVideoExtension(ofPath: fileUrl.path)
             try OWSMediaUtils.validateVideoSize(atPath: fileUrl.path)
@@ -355,10 +343,5 @@ public class DataSourcePath: DataSource {
 
             try OWSFileSystem.deleteFileIfExists(url: fileUrl)
         }
-    }
-
-    private var mimeType: String? {
-        owsAssertDebug(!isConsumed)
-        return MimeTypeUtil.mimeTypeForFileExtension(fileUrl.pathExtension)
     }
 }

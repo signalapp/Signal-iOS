@@ -61,11 +61,6 @@ public enum MimeTypeUtil {
         || isSupportedMaybeAnimatedMimeType(contentType)
     }
 
-    // MARK: - Supported File Extensions
-    public static func isSupportedVideoFile(_ filePath: String) -> Bool {
-        supportedVideoFileExtensions.contains((filePath as NSString).pathExtension.lowercased())
-    }
-
     // MARK: - Supported Uti Types
     public static let supportedVideoUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedVideoMimeTypesToExtensionTypes.keys))
     public static let supportedAudioUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedAudioMimeTypesToExtensionTypes.keys))
@@ -1270,18 +1265,6 @@ public enum MimeTypeUtil {
     ]
 
     // MARK: - Extension to Mime Type Dictionaries
-    public static let supportedVideoFileExtensions: Set<String> = [
-        "3gp",
-        "3gpp",
-        "3gp2",
-        "3gpp2",
-        "mp4",
-        "mov",
-        "mqv",
-        "m4v",
-        "mpg",
-        "mpeg",
-    ]
     public static let genericExtensionTypesToMimeTypes: [String: String] = [
         // Common MIME types.
         "123": "application/vnd.lotus-1-2-3",
