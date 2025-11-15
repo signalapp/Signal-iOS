@@ -215,7 +215,7 @@ public struct TypedItemProvider {
     }
 
     private nonisolated func buildFileAttachment(progress: Progress?) async throws -> SignalAttachment {
-        let (dataSource, dataUTI): (DataSource, String) = try await withCheckedThrowingContinuation { continuation in
+        let (dataSource, dataUTI): (DataSourcePath, String) = try await withCheckedThrowingContinuation { continuation in
             let typeIdentifier = itemType.typeIdentifier
             _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier)  { fileUrl, error in
                 if let error {
@@ -321,7 +321,7 @@ public struct TypedItemProvider {
     private nonisolated static func copyFileUrl(
         fileUrl: URL,
         defaultTypeIdentifier: String
-    ) throws -> (DataSource, dataUTI: String) {
+    ) throws -> (DataSourcePath, dataUTI: String) {
         guard fileUrl.isFileURL else {
             throw OWSAssertionError("Unexpectedly not a file URL: \(fileUrl)")
         }
@@ -338,7 +338,7 @@ public struct TypedItemProvider {
     }
 
     private nonisolated func compressVideoIfNecessary(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         dataUTI: String,
         progress: Progress?
     ) async throws -> SignalAttachment {

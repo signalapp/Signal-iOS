@@ -811,7 +811,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                                      comment: "Generic filename for an attachment with no known name")
         }()
 
-        func buildDataSource() -> DataSource? {
+        func buildDataSource() -> DataSourcePath? {
             do {
                 return try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
             } catch {

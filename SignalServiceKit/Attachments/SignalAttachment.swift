@@ -602,17 +602,15 @@ public class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard
-                    let data = dataForPasteboardItem(dataUTI: dataUTI, index: index),
-                    let dataSource = DataSourceValue(data, utiType: dataUTI)
+                    let dataValue = dataForPasteboardItem(dataUTI: dataUTI, index: index),
+                    let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI),
+                    let dataSource = try? DataSourcePath(writingTempFileData: dataValue, fileExtension: fileExtension)
                 else {
                     owsFailDebug("Failed to build data source from pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
 
-                return try? await SignalAttachment.compressVideoAsMp4(
-                    dataSource: dataSource,
-                    dataUTI: dataUTI
-                )
+                return try? await SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
         for dataUTI in audioUTISet {
@@ -1126,19 +1124,17 @@ public class SignalAttachment: NSObject {
     }
 
     @MainActor
-    public static func compressVideoAsMp4(dataSource: DataSource, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
-        Logger.debug("")
-
-        guard let url = dataSource.dataUrl else {
-            throw SignalAttachmentError.missingData
-        }
-
-        return try await compressVideoAsMp4(asset: AVAsset(url: url), baseFilename: dataSource.sourceFilename, dataUTI: dataUTI, sessionCallback: sessionCallback)
+    public static func compressVideoAsMp4(dataSource: DataSourcePath, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
+        return try await compressVideoAsMp4(
+            asset: AVAsset(url: dataSource.fileUrl),
+            baseFilename: dataSource.sourceFilename,
+            dataUTI: dataUTI,
+            sessionCallback: sessionCallback,
+        )
     }
 
     @MainActor
     public static func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String, sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil) async throws -> SignalAttachment {
-        Logger.debug("")
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }
@@ -1197,7 +1193,7 @@ public class SignalAttachment: NSObject {
         return try videoAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
     }
 
-    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
+    public class func isVideoThatNeedsCompression(dataSource: DataSourcePath, dataUTI: String) -> Bool {
         // Today we re-encode all videos for the most consistent experience.
         return videoUTISet.contains(dataUTI)
     }

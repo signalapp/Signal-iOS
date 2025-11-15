@@ -232,7 +232,7 @@ public class DataSourcePath: DataSource {
         }
     }
 
-    private var fileUrl: URL
+    public let fileUrl: URL
     private let shouldDeleteOnDeallocation: Bool
     private let lock = NSRecursiveLock()
 
