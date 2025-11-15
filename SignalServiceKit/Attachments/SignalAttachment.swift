@@ -1100,10 +1100,6 @@ public class SignalAttachment: NSObject {
 
     // Factory method for video attachments.
     public class func videoAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
-        if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
-            owsFailDebug("building video with invalid output, migrate to async API using compressVideoAsMp4")
-        }
-
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,
@@ -1208,19 +1204,6 @@ public class SignalAttachment: NSObject {
     public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         // Today we re-encode all videos for the most consistent experience.
         return videoUTISet.contains(dataUTI)
-    }
-
-    private class func isValidOutputVideo(dataSource: DataSource, dataUTI: String) -> Bool {
-        guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
-            Logger.warn("Invalid UTI type: \(dataUTI).")
-            return false
-        }
-
-        if dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeVideo {
-            return true
-        }
-        Logger.warn("Invalid file size.")
-        return false
     }
 
     // MARK: Audio Attachments
