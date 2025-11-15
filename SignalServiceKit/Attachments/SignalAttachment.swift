@@ -680,32 +680,21 @@ public class SignalAttachment: NSObject {
         return nil
     }
 
-    // Returns an attachment from the memoji, or nil if no attachment
-    /// can be created.
-    public class func attachmentFromMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) throws(SignalAttachmentError) -> SignalAttachment? {
+    /// Returns an attachment from the memoji.
+    public class func attachmentFromMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) throws(SignalAttachmentError) -> SignalAttachment {
         let dataUTI = filterDynamicUTITypes([memojiGlyph.contentType.identifier]).first
         guard let dataUTI else {
-            return nil
+            throw .invalidFileFormat
         }
         let dataSource = DataSourceValue(memojiGlyph.imageContent, utiType: dataUTI)
         guard let dataSource else {
             throw .missingData
         }
-
-        if inputImageUTISet.contains(dataUTI) {
-            return try imageAttachment(
-                dataSource: dataSource,
-                dataUTI: dataUTI,
-                isBorderless: dataSource.hasStickerLikeProperties,
-            )
-        }
-        if videoUTISet.contains(dataUTI) {
-            return try videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
-        }
-        if audioUTISet.contains(dataUTI) {
-            return try audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
-        }
-        return try genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        return try imageAttachment(
+            dataSource: dataSource,
+            dataUTI: dataUTI,
+            isBorderless: dataSource.hasStickerLikeProperties,
+        )
     }
 
     private class func dataForPasteboardItem(dataUTI: String, index: IndexSet) -> Data? {
