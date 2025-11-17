@@ -89,6 +89,8 @@ public enum BuildFlags {
         public static let send = build <= .dev
         public static let receive = build <= .dev
     }
+
+    public static let useNewAttachmentLimits = false
 }
 
 // MARK: -

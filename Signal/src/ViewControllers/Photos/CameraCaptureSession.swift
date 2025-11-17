@@ -93,10 +93,14 @@ class CameraCaptureSession: NSObject {
 
     init(
         delegate: CameraCaptureSessionDelegate,
+        maxPlaintextVideoBytes: UInt64,
         qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
     ) {
         self.delegate = delegate
-        self.videoCapture = VideoCapture(qrCodeSampleBufferScanner: qrCodeSampleBufferScanner)
+        self.videoCapture = VideoCapture(
+            maxPlaintextVideoBytes: maxPlaintextVideoBytes,
+            qrCodeSampleBufferScanner: qrCodeSampleBufferScanner,
+        )
 
         super.init()
 
@@ -1193,7 +1197,8 @@ private enum VideoCaptureError: Error {
 
 private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
 
-    private var qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
+    private let maxPlaintextVideoBytes: UInt64
+    private let qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
 
     let videoDataOutput = AVCaptureVideoDataOutput()
     let audioDataOutput = AVCaptureAudioDataOutput()
@@ -1227,8 +1232,10 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
 
-    init(qrCodeSampleBufferScanner: QRCodeSampleBufferScanner) {
+    init(maxPlaintextVideoBytes: UInt64, qrCodeSampleBufferScanner: QRCodeSampleBufferScanner) {
+        self.maxPlaintextVideoBytes = maxPlaintextVideoBytes
         self.qrCodeSampleBufferScanner = qrCodeSampleBufferScanner
+
         super.init()
 
         videoDataOutput.alwaysDiscardsLateVideoFrames = false
@@ -1453,7 +1460,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             if
                 shouldCheckFileSize,
                 let fileSize = (try? OWSFileSystem.fileSize(of: assetWriter.outputURL)),
-                (fileSize + estimatedTeardownOverhead) >= OWSMediaUtils.kMaxFileSizeVideo
+                (fileSize + estimatedTeardownOverhead) >= self.maxPlaintextVideoBytes
             {
                 Logger.warn("stopping recording before hitting max file size")
                 needsFinishAssetWriterSession = true

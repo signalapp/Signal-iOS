@@ -229,6 +229,14 @@ public class RemoteConfig {
         return self.attachmentMaxEncryptedBytes
     }
 
+    public var attachmentMaxPlaintextVideoBytes: UInt64 {
+        if BuildFlags.useNewAttachmentLimits {
+            return PaddingBucket.forEncryptedSizeLimit(UInt64(safeCast: self.attachmentMaxEncryptedBytes)).plaintextSize
+        } else {
+            return UInt64(safeCast: OWSMediaUtils.kMaxFileSizeVideo)
+        }
+    }
+
     public var tsAttachmentMigrationBatchDelayMs: UInt64 {
         getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
     }
