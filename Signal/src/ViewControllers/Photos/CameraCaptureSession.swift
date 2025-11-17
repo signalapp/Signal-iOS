@@ -1445,10 +1445,15 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
                 self.delegate?.videoCapture(self, didUpdateRecordingDuration: recordingDuration.seconds)
             }
 
+            // We target 0.25 MB per second, so we'd expect 3.75 MB to stop recording
+            // roughly 15 seconds before the limit. This number is arbitrary, but it
+            // seems to be smaller than the typical increase per second combined with
+            // the overhead from the call to `finishWriting`.
+            let estimatedTeardownOverhead: UInt64 = 3_750_000
             if
                 shouldCheckFileSize,
                 let fileSize = (try? OWSFileSystem.fileSize(of: assetWriter.outputURL)),
-                fileSize >= UInt64(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
+                (fileSize + estimatedTeardownOverhead) >= OWSMediaUtils.kMaxFileSizeVideo
             {
                 Logger.warn("stopping recording before hitting max file size")
                 needsFinishAssetWriterSession = true
