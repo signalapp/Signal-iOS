@@ -47,7 +47,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         let topInset: CGFloat
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-            topInset = 40
+            topInset = 36
             backgroundColor = .clear
         } else {
             topInset = 12
