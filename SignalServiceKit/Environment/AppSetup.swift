@@ -786,18 +786,16 @@ extension AppSetup.GlobalsContinuation {
             linkPreviewSettingStore: linkPreviewSettingStore
         )
 
-        let editMessageStore = EditMessageStoreImpl()
+        let editMessageStore = EditMessageStore()
         let editManager = EditManagerImpl(
             context: .init(
                 attachmentContentValidator: attachmentContentValidator,
                 attachmentStore: attachmentStore,
-                dataStore: EditManagerImpl.Wrappers.DataStore(),
                 editManagerAttachments: EditManagerAttachmentsImpl(
                     attachmentManager: attachmentManager,
                     attachmentStore: attachmentStore,
                     attachmentValidator: attachmentContentValidator,
                     linkPreviewManager: linkPreviewManager,
-                    tsMessageStore: EditManagerAttachmentsImpl.Wrappers.TSMessageStore()
                 ),
                 editMessageStore: editMessageStore,
                 receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager)

@@ -32,7 +32,6 @@ public class EditManagerImpl: EditManager {
     public struct Context {
         let attachmentContentValidator: AttachmentContentValidator
         let attachmentStore: AttachmentStore
-        let dataStore: EditManagerImpl.Shims.DataStore
         let editManagerAttachments: EditManagerAttachments
         let editMessageStore: EditMessageStore
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
@@ -40,14 +39,12 @@ public class EditManagerImpl: EditManager {
         public init(
             attachmentContentValidator: AttachmentContentValidator,
             attachmentStore: AttachmentStore,
-            dataStore: EditManagerImpl.Shims.DataStore,
             editManagerAttachments: EditManagerAttachments,
             editMessageStore: EditMessageStore,
             receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
         ) {
             self.attachmentContentValidator = attachmentContentValidator
             self.attachmentStore = attachmentStore
-            self.dataStore = dataStore
             self.editManagerAttachments = editManagerAttachments
             self.editMessageStore = editMessageStore
             self.receiptManagerShim = receiptManagerShim
@@ -143,17 +140,16 @@ public class EditManagerImpl: EditManager {
     // MARK: - Edit UI Validation
 
     public func canShowEditMenu(interaction: TSInteraction, thread: TSThread) -> Bool {
-        return Self.validateCanShowEditMenu(interaction: interaction, thread: thread, dataStore: context.dataStore) == nil
+        return Self.validateCanShowEditMenu(interaction: interaction, thread: thread) == nil
     }
 
     private static func validateCanShowEditMenu(
         interaction: TSInteraction,
         thread: TSThread,
-        dataStore: EditManagerImpl.Shims.DataStore
     ) -> EditSendValidationError? {
         guard let message = interaction as? TSOutgoingMessage else { return .messageTypeNotSupported }
 
-        if !Self.editMessageTypeSupported(message: message, dataStore: dataStore) {
+        if !Self.editMessageTypeSupported(message: message) {
             return .messageTypeNotSupported
         }
 
@@ -193,7 +189,7 @@ public class EditManagerImpl: EditManager {
 
         let targetMessage = targetMessageWrapper.message
 
-        if let error = Self.validateCanShowEditMenu(interaction: targetMessage, thread: thread, dataStore: context.dataStore) {
+        if let error = Self.validateCanShowEditMenu(interaction: targetMessage, thread: thread) {
             return error
         }
 
@@ -238,11 +234,11 @@ public class EditManagerImpl: EditManager {
             tx: tx
         )
 
-        let outgoingEditMessage = context.dataStore.createOutgoingEditMessage(
+        let outgoingEditMessage = OutgoingEditMessage(
             thread: thread,
             targetMessageTimestamp: targetMessage.timestamp,
             editMessage: editedMessage,
-            tx: tx
+            transaction: tx
         )
 
         return outgoingEditMessage
@@ -276,7 +272,7 @@ public class EditManagerImpl: EditManager {
             edits: editsToApply,
             tx: tx
         )
-        context.dataStore.overwritingUpdate(latestRevisionMessage, tx: tx)
+        latestRevisionMessage.anyOverwritingUpdate(transaction: tx)
         let latestRevisionRowId = latestRevisionMessage.sqliteRowId!
 
         /// Create and insert a clone of the original message, preserving all
@@ -292,10 +288,9 @@ public class EditManagerImpl: EditManager {
         )
         let priorRevisionMessage = EditTarget.build(
             priorRevisionMessageBuilder,
-            dataStore: context.dataStore,
             tx: tx
         )
-        context.dataStore.insert(priorRevisionMessage, tx: tx)
+        priorRevisionMessage.anyInsert(transaction: tx)
         let priorRevisionRowId = priorRevisionMessage.sqliteRowId!
 
         try context.editManagerAttachments.reconcileAttachments(
@@ -314,7 +309,6 @@ public class EditManagerImpl: EditManager {
         // Update the newly inserted message with any data that needs to be
         // copied from the original message
         editTargetWrapper.updateMessageCopy(
-            dataStore: context.dataStore,
             newMessageCopy: priorRevisionMessage,
             tx: tx
         )
@@ -356,7 +350,6 @@ public class EditManagerImpl: EditManager {
 
         let editedMessage = EditTarget.build(
             editedMessageBuilder,
-            dataStore: context.dataStore,
             tx: tx
         )
 
@@ -422,7 +415,7 @@ public class EditManagerImpl: EditManager {
             }
         }
 
-        if !Self.editMessageTypeSupported(message: targetMessage, dataStore: context.dataStore) {
+        if !Self.editMessageTypeSupported(message: targetMessage) {
             throw OWSAssertionError("Edit of message type not supported")
         }
 
@@ -446,7 +439,6 @@ public class EditManagerImpl: EditManager {
 
     private static func editMessageTypeSupported(
         message: TSMessage,
-        dataStore: EditManagerImpl.Shims.DataStore
     ) -> Bool {
         // Skip remotely deleted
         if message.wasRemotelyDeleted {
@@ -464,7 +456,7 @@ public class EditManagerImpl: EditManager {
         }
 
         // Skip contact shares
-        if dataStore.isMessageContactShare(message) {
+        if message.contactShare != nil {
             return false
         }
 

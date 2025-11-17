@@ -21,75 +21,11 @@ public enum EditMessageTarget {
     }
 }
 
-public protocol EditMessageStore {
-
-    // MARK: - Reads
-
-    func editTarget(
-        timestamp: UInt64,
-        authorAci: Aci?,
-        tx: DBReadTransaction
-    ) -> EditMessageTarget?
-
-    func findMessage(
-        fromEdit edit: TSMessage,
-        tx: DBReadTransaction
-    ) -> TSMessage?
-
-    func numberOfEdits(
-        for message: TSMessage,
-        tx: DBReadTransaction
-    ) -> Int
-
-    /// Fetches all past revisions for the given most-recent-revision message.
-    ///
-    /// - Returns
-    /// An edit record and message instance (if one is found) for each past
-    /// revision, from newest to oldest.
-    func findEditHistory<MessageType: TSMessage>(
-        forMostRecentRevision message: MessageType,
-        tx: DBReadTransaction
-    ) throws -> [(record: EditRecord, message: MessageType?)]
-
-    /// Fetches all EditRecords related to `message`.
-    ///
-    /// The `message` may be the latest revision or a past revision.
-    ///
-    /// The EditRecords are fetched "recursively", meaning that every EditRecord
-    /// that references a message ID which is referenced by any element of the
-    /// result will be returned. This is useful when deleting messages because
-    /// it allows us to maintain invariants required by FOREIGN KEY constraints.
-    ///
-    /// For example, if the revision "graph" is well-formed, we'll return
-    /// EditRecords with distinct pastRevisionIds (e.g., 102, 103) which all
-    /// refer to the same latestRevisionId (e.g., 101), and we'll return this
-    /// exact same result regardless of whether `message` refers to a past
-    /// revision (e.g., 102) or the latest revision (e.g., 101).
-    ///
-    /// If the revision "graph" isn't well-formed, we must fetch extra
-    /// EditRecords to ensure we delete all the EditRecords that reference the
-    /// messages that are about to be deleted.
-    func findEditRecords(
-        relatedTo message: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> [EditRecord]
-
-    // MARK: - Writes
-
-    func insert(
-        _ editRecord: EditRecord,
-        tx: DBWriteTransaction
-    ) throws
-
-    func update(
-        _ editRecord: EditRecord,
-        tx: DBWriteTransaction
-    ) throws
-}
-
-public class EditMessageStoreImpl: EditMessageStore {
+public struct EditMessageStore {
 
     public init() {}
+
+    // MARK: - Reads
 
     public func editTarget(
         timestamp: UInt64,
@@ -190,6 +126,11 @@ public class EditMessageStoreImpl: EditMessageStore {
         }
     }
 
+    /// Fetches all past revisions for the given most-recent-revision message.
+    ///
+    /// - Returns
+    /// An edit record and message instance (if one is found) for each past
+    /// revision, from newest to oldest.
     public func findEditHistory<MessageType: TSMessage>(
         forMostRecentRevision message: MessageType,
         tx: DBReadTransaction
@@ -224,6 +165,24 @@ public class EditMessageStoreImpl: EditMessageStore {
         }
     }
 
+    /// Fetches all EditRecords related to `message`.
+    ///
+    /// The `message` may be the latest revision or a past revision.
+    ///
+    /// The EditRecords are fetched "recursively", meaning that every EditRecord
+    /// that references a message ID which is referenced by any element of the
+    /// result will be returned. This is useful when deleting messages because
+    /// it allows us to maintain invariants required by FOREIGN KEY constraints.
+    ///
+    /// For example, if the revision "graph" is well-formed, we'll return
+    /// EditRecords with distinct pastRevisionIds (e.g., 102, 103) which all
+    /// refer to the same latestRevisionId (e.g., 101), and we'll return this
+    /// exact same result regardless of whether `message` refers to a past
+    /// revision (e.g., 102) or the latest revision (e.g., 101).
+    ///
+    /// If the revision "graph" isn't well-formed, we must fetch extra
+    /// EditRecords to ensure we delete all the EditRecords that reference the
+    /// messages that are about to be deleted.
     public func findEditRecords(
         relatedTo message: TSMessage,
         tx: DBReadTransaction
@@ -252,6 +211,8 @@ public class EditMessageStoreImpl: EditMessageStore {
         // We'll have duplicates because some will be fetched repeatedly.
         return editRecords.removingDuplicates(uniquingElementsBy: { $0.id! })
     }
+
+    // MARK: - Writes
 
     public func insert(
         _ editRecord: EditRecord,

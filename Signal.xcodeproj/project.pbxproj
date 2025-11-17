@@ -811,7 +811,6 @@
 		66062E712E43F83600D5F8C1 /* OWSSequentialProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */; };
 		66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */; };
 		66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */; };
-		66076B5C2BC06CA70043D547 /* EditManagerAttachmentsShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */; };
 		66076B5D2BC06CA70043D547 /* MockEditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */; };
 		66076B5E2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */; };
 		66076B5F2BC06CA70043D547 /* EditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */; };
@@ -4791,7 +4790,6 @@
 		66062E702E43F83200D5F8C1 /* OWSSequentialProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSequentialProgress.swift; sourceTree = "<group>"; };
 		66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilder.swift; sourceTree = "<group>"; };
 		66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilderImpl.swift; sourceTree = "<group>"; };
-		66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsShims.swift; sourceTree = "<group>"; };
 		66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockEditManagerAttachments.swift; sourceTree = "<group>"; };
 		66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsImpl.swift; sourceTree = "<group>"; };
 		66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachments.swift; sourceTree = "<group>"; };
@@ -9430,7 +9428,6 @@
 			children = (
 				66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */,
 				66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */,
-				66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */,
 				66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */,
 			);
 			path = Attachments;
@@ -18042,7 +18039,6 @@
 				C1DB22C329C9F95500757380 /* EditManager.swift in Sources */,
 				66076B5F2BC06CA70043D547 /* EditManagerAttachments.swift in Sources */,
 				66076B5E2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift in Sources */,
-				66076B5C2BC06CA70043D547 /* EditManagerAttachmentsShims.swift in Sources */,
 				668B30092BBDD9A20001FD25 /* EditManagerImpl.swift in Sources */,
 				C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */,
 				C167387529E8397B0068EA92 /* EditMessageStore.swift in Sources */,

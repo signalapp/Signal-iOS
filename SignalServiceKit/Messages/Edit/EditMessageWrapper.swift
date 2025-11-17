@@ -32,12 +32,10 @@ public protocol EditMessageWrapper {
 
     static func build(
         _ builder: MessageBuilderType,
-        dataStore: EditManagerImpl.Shims.DataStore,
         tx: DBReadTransaction
     ) -> MessageType
 
     func updateMessageCopy(
-        dataStore: EditManagerImpl.Shims.DataStore,
         newMessageCopy: MessageType,
         tx: DBWriteTransaction
     )
@@ -173,14 +171,12 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public static func build(
         _ builder: TSIncomingMessageBuilder,
-        dataStore: EditManagerImpl.Shims.DataStore,
         tx: DBReadTransaction
     ) -> TSIncomingMessage {
         return builder.build()
     }
 
     public func updateMessageCopy(
-        dataStore: EditManagerImpl.Shims.DataStore,
         newMessageCopy: TSIncomingMessage,
         tx: DBWriteTransaction
     ) {}
@@ -266,22 +262,19 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public static func build(
         _ builder: TSOutgoingMessageBuilder,
-        dataStore: EditManagerImpl.Shims.DataStore,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
-        return dataStore.build(builder, tx: tx)
+        return builder.build(transaction: tx)
     }
 
     public func updateMessageCopy(
-        dataStore: EditManagerImpl.Shims.DataStore,
         newMessageCopy: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
         // Need to copy over the recipient address from the old message
         // This is needed when procesing sync messages.
-        dataStore.update(
-            newMessageCopy,
-            withRecipientAddressStates: message.recipientAddressStates,
+        newMessageCopy.updateWithRecipientAddressStates(
+            message.recipientAddressStates,
             tx: tx
         )
     }

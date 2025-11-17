@@ -11,20 +11,17 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
     private let linkPreviewManager: LinkPreviewManager
-    private let tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore
 
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         linkPreviewManager: LinkPreviewManager,
-        tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
         self.linkPreviewManager = linkPreviewManager
-        self.tsMessageStore = tsMessageStore
     }
 
     public func reconcileAttachments<EditTarget: EditMessageWrapper>(
@@ -102,7 +99,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
         if let quotedReplyPriorToEdit {
             // If we had a quoted reply, always keep it on the prior revision.
-            tsMessageStore.update(priorRevision, with: quotedReplyPriorToEdit, tx: tx)
+            priorRevision.update(with: quotedReplyPriorToEdit, transaction: tx)
         }
         if let attachmentReferencePriorToEdit {
             // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
@@ -129,7 +126,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .keep:
             if let quotedReplyPriorToEdit {
                 // The latest revision keeps the prior revision's quoted reply.
-                tsMessageStore.update(latestRevision, with: quotedReplyPriorToEdit, tx: tx)
+                latestRevision.update(with: quotedReplyPriorToEdit, transaction: tx)
             }
 
             if let attachmentReferencePriorToEdit {
@@ -175,7 +172,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
         if let linkPreviewPriorToEdit {
             // If we had a link preview, always keep it on the prior revision.
-            tsMessageStore.update(priorRevision, with: linkPreviewPriorToEdit, tx: tx)
+            priorRevision.update(with: linkPreviewPriorToEdit, transaction: tx)
         }
         if let attachmentReferencePriorToEdit {
             // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
@@ -220,7 +217,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 builder: builder,
                 tx: tx
             )
-            tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
+            latestRevision.update(with: builder.info, transaction: tx)
             try builder.finalize(
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,
@@ -252,7 +249,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             } catch let error {
                 throw error
             }
-            tsMessageStore.update(latestRevision, with: linkPreviewBuilder.info, tx: tx)
+            latestRevision.update(with: linkPreviewBuilder.info, transaction: tx)
             try linkPreviewBuilder.finalize(
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,

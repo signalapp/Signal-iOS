@@ -64,10 +64,10 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
     private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
 
-    private let editMessageStore: any EditMessageStore
+    private let editMessageStore: EditMessageStore
 
     init(
-        editMessageStore: any EditMessageStore
+        editMessageStore: EditMessageStore
     ) {
         self.editMessageStore = editMessageStore
     }
