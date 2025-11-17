@@ -507,11 +507,11 @@ public class RemoteConfig {
 // MARK: - IsEnabledFlag
 
 private enum IsEnabledFlag: String, FlagType {
-    case backupSettingsKillSwitch = "ios.backupSettingsKillSwitch"
     case applePayGiftDonationKillSwitch = "ios.applePayGiftDonationKillSwitch"
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
+    case backupSettingsKillSwitch = "ios.backupSettingsKillSwitch"
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
@@ -522,12 +522,12 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
+    case pollCreateKillSwitch = "ios.pollCreateKillSwitch"
+    case pollReceiveKillSwitch = "ios.pollReceiveKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
     case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
-    case pollCreateKillSwitch = "ios.pollCreateKillSwitch"
-    case pollReceiveKillSwitch = "ios.pollReceiveKillSwitch"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -536,11 +536,11 @@ private enum IsEnabledFlag: String, FlagType {
 
     var isHotSwappable: Bool {
         switch self {
-        case .backupSettingsKillSwitch: true
         case .applePayGiftDonationKillSwitch: false
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false
         case .automaticSessionResetKillSwitch: false
+        case .backupSettingsKillSwitch: true
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
@@ -551,12 +551,12 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false
         case .paypalOneTimeDonationKillSwitch: false
+        case .pollCreateKillSwitch: true
+        case .pollReceiveKillSwitch: true
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
         case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
-        case .pollCreateKillSwitch: true
-        case .pollReceiveKillSwitch: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true
