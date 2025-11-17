@@ -94,7 +94,7 @@ public class MessageAction: NSObject {
             case .showPaymentDetails:
                 return .settingsPayments
             case .endPoll:
-                return .pollStop
+                return .pollStopLight
             }
         }()
         return Theme.iconImage(icon)
