@@ -209,7 +209,7 @@ public class EarlyMessageManager {
 
         while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
             envelopes.remove(at: 0)
-            owsFailDebug("Dropping early envelope \(OWSMessageDecrypter.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
+            Logger.warn("Dropping early envelope \(OWSMessageDecrypter.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
         }
 
         envelopes.append(EarlyEnvelope(
@@ -322,7 +322,7 @@ public class EarlyMessageManager {
 
         while receipts.count >= Self.maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
             receipts.remove(at: 0)
-            owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
+            Logger.warn("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
         }
 
         receipts.append(earlyReceipt)
