@@ -830,7 +830,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let application: UIApplication = .shared
         let userNotificationCenter: UNUserNotificationCenter = .current()
 
-        UserNotificationPresenter().clearAllNonScheduledNotifications()
+        UserNotificationPresenter().clearNotificationsForAppActivate()
         application.applicationIconBadgeNumber = 0
 
         userNotificationCenter.add(notificationRequest)
@@ -1557,7 +1557,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
-            SSKEnvironment.shared.notificationPresenterRef.clearAllNonScheduledNotifications()
+            SSKEnvironment.shared.notificationPresenterRef.clearNotificationsForAppActivate()
             UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
         }
     }

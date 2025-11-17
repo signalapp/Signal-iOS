@@ -20,7 +20,7 @@ public class UserNotificationConfig {
 
     class func notificationCategory(_ category: AppNotificationCategory) -> UNNotificationCategory {
         return UNNotificationCategory(
-            identifier: category.identifier,
+            identifier: category.rawValue,
             actions: notificationActions(for: category),
             intentIdentifiers: [],
             options: []
@@ -123,7 +123,7 @@ public class UserNotificationPresenter {
         }
 
         let content = UNMutableNotificationContent()
-        content.categoryIdentifier = category.identifier
+        content.categoryIdentifier = category.rawValue
         content.userInfo = userInfo.build()
         if let sound, sound != .standard(.none) {
             content.sound = sound.notificationSound(isQuiet: isMainAppAndActive)
@@ -306,7 +306,7 @@ public class UserNotificationPresenter {
         let backupsEnabledRequests = await Self.notificationCenter
             .pendingNotificationRequests()
             .filter {
-                $0.content.categoryIdentifier == AppNotificationCategory.backupsEnabled.identifier
+                $0.content.categoryIdentifier == AppNotificationCategory.backupsEnabled.rawValue
             }
 
         Self.notificationCenter.removePendingNotificationRequests(
@@ -321,36 +321,40 @@ public class UserNotificationPresenter {
         Self.notificationCenter.removeAllDeliveredNotifications()
     }
 
-    public func clearAllNonScheduledNotifications() {
-        Logger.info("Clearing all notifications except scheduled notifications")
+    public func clearNotificationsForAppActivate() {
+        Logger.info("Clearing notifications for app activate.")
 
         Task {
-            let scheduledNotifications: Set = [
-                AppNotificationCategory.newDeviceLinked.identifier,
-                AppNotificationCategory.backupsEnabled.identifier
-            ]
-            let pendingNotificationIDs = await Self.notificationCenter.pendingNotificationRequests()
-                .filter { notificationRequest in
-                    scheduledNotifications.contains(notificationRequest.content.categoryIdentifier) == false
+            let shouldRemoveNotificationRequestPredicate: (UNNotificationRequest) -> Bool = { request in
+                guard let appNotificationCategory = AppNotificationCategory(
+                    rawValue: request.content.categoryIdentifier,
+                ) else {
+                    return true
                 }
+
+                return appNotificationCategory.shouldClearOnAppActivate
+            }
+
+            let pendingNotificationIDsToRemove = await Self.notificationCenter.pendingNotificationRequests()
+                .filter { shouldRemoveNotificationRequestPredicate($0) }
                 .map(\.identifier)
-            let deliveredNotificationIDs = await Self.notificationCenter.deliveredNotifications()
-                .filter { notification in
-                    scheduledNotifications.contains(notification.request.content.categoryIdentifier) == false
-                }
+
+            let deliveredNotificationIDsToRemove = await Self.notificationCenter.deliveredNotifications()
+                .filter { shouldRemoveNotificationRequestPredicate($0.request) }
                 .map(\.request.identifier)
 
-            Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: pendingNotificationIDs)
-            Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: deliveredNotificationIDs)
+            Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: pendingNotificationIDsToRemove)
+            Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: deliveredNotificationIDsToRemove)
         }
     }
 
     public func clearDeliveredNewLinkedDevicesNotifications() {
         Logger.info("Clearing delivered new linked device notifications")
+
         Task {
             let pendingNotificationRequestIDs = await Self.notificationCenter.deliveredNotifications()
                 .filter { notification in
-                    notification.request.content.categoryIdentifier == AppNotificationCategory.newDeviceLinked.identifier
+                    notification.request.content.categoryIdentifier == AppNotificationCategory.newDeviceLinked.rawValue
                 }
                 .map(\.request.identifier)
 

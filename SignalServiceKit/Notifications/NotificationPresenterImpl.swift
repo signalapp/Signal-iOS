@@ -18,30 +18,6 @@ public import LibSignalClient
 /// there is no need for an adapter pattern, and instead the appropriate NotificationActionHandler is
 /// wired directly into the appropriate callback point.
 
-public enum AppNotificationCategory: CaseIterable {
-    case incomingMessageWithActions_CanReply
-    case incomingMessageWithActions_CannotReply
-    case incomingMessageWithoutActions
-    case incomingMessageFromNoLongerVerifiedIdentity
-    case incomingReactionWithActions_CanReply
-    case incomingReactionWithActions_CannotReply
-    case infoOrErrorMessage
-    case missedCallWithActions
-    case missedCallWithoutActions
-    case missedCallFromNoLongerVerifiedIdentity
-    case internalError
-    case incomingGroupStoryReply
-    case failedStorySend
-    case transferRelaunch
-    case deregistration
-    case newDeviceLinked
-    case backupsEnabled
-    case backupsMediaTierQuotaConsumed
-    case listMediaIntegrityCheckFailure
-    case pollEndNotification
-    case pollVoteNotification
-}
-
 /// Represents "custom" notification actions. These are the ones that appear
 /// when long-pressing a notification. Their identifiers (rawValues) are
 /// passed to iOS via UNNotificationAction.
@@ -167,51 +143,58 @@ public struct AppNotificationUserInfo {
     }
 }
 
-extension AppNotificationCategory {
-    var identifier: String {
+// MARK: -
+
+public enum AppNotificationCategory: String, CaseIterable {
+    case incomingMessageWithActions_CanReply = "Signal.AppNotificationCategory.incomingMessageWithActions"
+    case incomingMessageWithActions_CannotReply = "Signal.AppNotificationCategory.incomingMessageWithActionsNoReply"
+    case incomingMessageWithoutActions = "Signal.AppNotificationCategory.incomingMessage"
+    case incomingMessageFromNoLongerVerifiedIdentity = "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
+    case incomingReactionWithActions_CanReply = "Signal.AppNotificationCategory.incomingReactionWithActions"
+    case incomingReactionWithActions_CannotReply = "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
+    case infoOrErrorMessage = "Signal.AppNotificationCategory.infoOrErrorMessage"
+    case missedCallWithActions = "Signal.AppNotificationCategory.missedCallWithActions"
+    case missedCallWithoutActions = "Signal.AppNotificationCategory.missedCall"
+    case missedCallFromNoLongerVerifiedIdentity = "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
+    case internalError = "Signal.AppNotificationCategory.internalError"
+    case incomingGroupStoryReply = "Signal.AppNotificationCategory.incomingGroupStoryReply"
+    case failedStorySend = "Signal.AppNotificationCategory.failedStorySend"
+    case transferRelaunch = "Signal.AppNotificationCategory.transferRelaunch"
+    case deregistration = "Signal.AppNotificationCategory.authErrorLogout"
+    case newDeviceLinked = "Signal.AppNotificationCategory.newDeviceLinked"
+    case backupsEnabled = "Signal.AppNotificationCategory.backupsEnabled"
+    case backupsMediaTierQuotaConsumed = "Signal.AppNotificationCategory.backupsMediaTierQuotaConsumed"
+    case listMediaIntegrityCheckFailure = "Signal.AppNotificationCategory.listMediaIntegrityCheckFailure"
+    case pollEndNotification = "Signal.AppNotificationCategory.pollEndNotification"
+    case pollVoteNotification = "Signal.AppNotificationCategory.pollVoteNotification"
+
+    var shouldClearOnAppActivate: Bool {
         switch self {
-        case .incomingMessageWithActions_CanReply:
-            return "Signal.AppNotificationCategory.incomingMessageWithActions"
-        case .incomingMessageWithActions_CannotReply:
-            return "Signal.AppNotificationCategory.incomingMessageWithActionsNoReply"
-        case .incomingMessageWithoutActions:
-            return "Signal.AppNotificationCategory.incomingMessage"
-        case .incomingMessageFromNoLongerVerifiedIdentity:
-            return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
-        case .incomingReactionWithActions_CanReply:
-            return "Signal.AppNotificationCategory.incomingReactionWithActions"
-        case .incomingReactionWithActions_CannotReply:
-            return "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
-        case .infoOrErrorMessage:
-            return "Signal.AppNotificationCategory.infoOrErrorMessage"
-        case .missedCallWithActions:
-            return "Signal.AppNotificationCategory.missedCallWithActions"
-        case .missedCallWithoutActions:
-            return "Signal.AppNotificationCategory.missedCall"
-        case .missedCallFromNoLongerVerifiedIdentity:
-            return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
-        case .internalError:
-            return "Signal.AppNotificationCategory.internalError"
-        case .incomingGroupStoryReply:
-            return "Signal.AppNotificationCategory.incomingGroupStoryReply"
-        case .failedStorySend:
-            return "Signal.AppNotificationCategory.failedStorySend"
-        case .transferRelaunch:
-            return "Signal.AppNotificationCategory.transferRelaunch"
-        case .deregistration:
-            return "Signal.AppNotificationCategory.authErrorLogout"
-        case .newDeviceLinked:
-            return "Signal.AppNotificationCategory.newDeviceLinked"
-        case .backupsEnabled:
-            return "Signal.AppNotificationCategory.backupsEnabled"
-        case .backupsMediaTierQuotaConsumed:
-            return "Signal.AppNotificationCategory.backupsMediaTierQuotaConsumed"
-        case .listMediaIntegrityCheckFailure:
-            return "Signal.AppNotificationCategory.listMediaIntegrityCheckFailure"
-        case .pollEndNotification:
-            return "Signal.AppNotificationCategory.pollEndNotification"
-        case .pollVoteNotification:
-            return "Signal.AppNotificationCategory.pollVoteNotification"
+        case
+                .incomingMessageWithActions_CanReply,
+                .incomingMessageWithActions_CannotReply,
+                .incomingMessageWithoutActions,
+                .incomingMessageFromNoLongerVerifiedIdentity,
+                .incomingReactionWithActions_CanReply,
+                .incomingReactionWithActions_CannotReply,
+                .infoOrErrorMessage,
+                .missedCallWithActions,
+                .missedCallWithoutActions,
+                .missedCallFromNoLongerVerifiedIdentity,
+                .incomingGroupStoryReply,
+                .failedStorySend,
+                .transferRelaunch,
+                .deregistration,
+                .pollEndNotification,
+                .pollVoteNotification:
+            return true
+        case
+                .newDeviceLinked,
+                .backupsEnabled,
+                .backupsMediaTierQuotaConsumed,
+                .listMediaIntegrityCheckFailure,
+                .internalError:
+            return false
         }
     }
 
@@ -262,10 +245,10 @@ extension AppNotificationCategory {
     }
 }
 
+// MARK: -
+
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
-
-// MARK: -
 
 public class NotificationPresenterImpl: NotificationPresenter {
     private let presenter = UserNotificationPresenter()
@@ -1639,8 +1622,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         presenter.clearAllNotifications()
     }
 
-    public func clearAllNonScheduledNotifications() {
-        presenter.clearAllNonScheduledNotifications()
+    public func clearNotificationsForAppActivate() {
+        presenter.clearNotificationsForAppActivate()
     }
 
     public func clearDeliveredNewLinkedDevicesNotifications() {

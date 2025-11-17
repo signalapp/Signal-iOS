@@ -69,7 +69,7 @@ public protocol NotificationPresenter {
     func notifyUserOfDeregistration(tx: DBWriteTransaction)
 
     func clearAllNotifications()
-    func clearAllNonScheduledNotifications()
+    func clearNotificationsForAppActivate()
     func clearDeliveredNewLinkedDevicesNotifications()
 
     func cancelNotifications(threadId: String)
