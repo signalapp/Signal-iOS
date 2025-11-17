@@ -92,7 +92,6 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
     }
 
     private func applyTheme() {
-        tableViewController.applyTheme(to: self)
         searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
         tableView.sectionIndexColor = Theme.primaryTextColor
         if let owsNavigationController = navigationController as? OWSNavigationController {
@@ -103,10 +102,6 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
     public var navbarBackgroundColorOverride: UIColor? { tableViewController.tableBackgroundColor }
-
-    public func applyTheme(to viewController: UIViewController) {
-        tableViewController.applyTheme(to: viewController)
-    }
 
     // MARK: Contacts
 

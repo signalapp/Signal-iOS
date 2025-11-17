@@ -152,17 +152,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        // The header should "extend" offscreen so that we
-        // don't see the root view's background color if we scroll down.
-        let backgroundTopView = UIView()
-        backgroundTopView.backgroundColor = tableBackgroundColor
-        tableView.addSubview(backgroundTopView)
-        backgroundTopView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 0)
-        backgroundTopView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 0)
-        let backgroundTopSize: CGFloat = 300
-        backgroundTopView.autoSetDimension(.height, toSize: backgroundTopSize)
-        backgroundTopView.autoPinEdge(.bottom, to: .top, of: tableView, withOffset: 0)
-
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         observeNotifications()
@@ -316,23 +305,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         }
 
         updateTableContents()
-    }
-
-    var lastContentWidth: CGFloat?
-
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        // Reload the table content if this view's width changes.
-        var hasContentWidthChanged = false
-        if let lastContentWidth = lastContentWidth,
-            lastContentWidth != view.width {
-            hasContentWidthChanged = true
-        }
-
-        if hasContentWidthChanged {
-            updateTableContents()
-        }
     }
 
     // MARK: -

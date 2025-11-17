@@ -233,15 +233,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     var tableView: UITableView { tableViewController.tableView }
 
     private func applyTheme() {
-        tableViewController.applyTheme(to: self)
         tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor
-        if let owsNavigationController = navigationController as? OWSNavigationController {
-            owsNavigationController.updateNavbarAppearance()
-        }
-    }
-
-    public func applyTheme(to viewController: UIViewController) {
-        tableViewController.applyTheme(to: viewController)
     }
 
     // MARK: Context Menu

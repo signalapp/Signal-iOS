@@ -27,7 +27,6 @@ extension ConversationSettingsViewController {
     // MARK: - Table
 
     func updateTableContents(shouldReload: Bool = true) {
-
         let contents = OWSTableContents()
 
         let isNoteToSelf = thread.isNoteToSelf
@@ -42,7 +41,6 @@ extension ConversationSettingsViewController {
         let firstSection = callDetailsSection ?? mainSection
 
         let header = buildMainHeader()
-        lastContentWidth = view.width
         firstSection.customHeaderView = header
 
         // Main section.

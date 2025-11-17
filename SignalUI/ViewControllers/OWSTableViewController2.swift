@@ -187,8 +187,6 @@ open class OWSTableViewController2: OWSViewController {
     }
 
     private func applyTheme() {
-        applyTheme(to: self)
-
         switch backgroundStyle {
         case .default:
             tableView.backgroundColor = self.tableBackgroundColor
@@ -1031,28 +1029,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             ? Theme.darkThemeTableView2SeparatorColor
             : Theme.tableView2SeparatorColor
         }
-    }
-
-    public func applyTheme(to viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        switch backgroundStyle {
-        case .default:
-            viewController.view.backgroundColor = self.tableBackgroundColor
-        case .none:
-            break
-        }
-
-        if
-            let owsNavigationController = viewController.owsNavigationController,
-            ((viewController as? OWSViewController)?.lifecycle ?? .appeared) == .appeared
-        {
-            owsNavigationController.updateNavbarAppearance()
-        }
-
-        Self.removeBackButtonText(viewController: viewController)
-
-        if viewController != self { applyTheme() }
     }
 
     public static func removeBackButtonText(viewController: UIViewController) {
