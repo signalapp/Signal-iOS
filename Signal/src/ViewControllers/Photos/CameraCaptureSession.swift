@@ -1213,9 +1213,19 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     weak var delegate: VideoCaptureDelegate?
 
-    private let videoSampleTimeLock = UnfairLock()
-    private var timeOfFirstAppendedVideoSampleBuffer = CMTime.invalid
-    private var timeOfLastAppendedVideoSampleBuffer = CMTime.invalid
+    private let videoSampleState = AtomicValue(SampleState(), lock: .init())
+    private struct SampleState {
+        var timeOfFirstAppendedVideoSampleBuffer = CMTime.invalid
+        var timeOfLastAppendedVideoSampleBuffer = CMTime.invalid
+        var timeOfMostRecentFileSizeCheck = CMTime.invalid
+
+        func durationSince(startTime: KeyPath<Self, CMTime>) -> CMTime {
+            guard timeOfLastAppendedVideoSampleBuffer.isValid, self[keyPath: startTime].isValid else {
+                return .zero
+            }
+            return CMTimeSubtract(timeOfLastAppendedVideoSampleBuffer, self[keyPath: startTime])
+        }
+    }
 
     init(qrCodeSampleBufferScanner: QRCodeSampleBufferScanner) {
         self.qrCodeSampleBufferScanner = qrCodeSampleBufferScanner
@@ -1311,24 +1321,11 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         AssertIsOnMainThread()
 
         // Make video recording at least 1 second long.
-        let duration = durationOfCurrentRecording
-        let recordedDurationSeconds: TimeInterval = duration.isValid ? duration.seconds : 0
-        let timeExtension: TimeInterval = max(0, 1 - recordedDurationSeconds)
+        let duration = self.videoSampleState.get().durationSince(startTime: \.timeOfFirstAppendedVideoSampleBuffer)
+        let timeExtension: TimeInterval = max(0, 1 - duration.seconds)
         recordingQueue.asyncAfter(deadline: .now() + timeExtension) {
             self.needsFinishAssetWriterSession = true
         }
-    }
-
-    var durationOfCurrentRecording: CMTime {
-        videoSampleTimeLock.lock()
-        let timeOfFirstAppendedVideoSampleBuffer = timeOfFirstAppendedVideoSampleBuffer
-        let timeOfLastAppendedVideoSampleBuffer = timeOfLastAppendedVideoSampleBuffer
-        videoSampleTimeLock.unlock()
-
-        guard timeOfFirstAppendedVideoSampleBuffer.isValid, timeOfLastAppendedVideoSampleBuffer.isValid else {
-            return .zero
-        }
-        return CMTimeSubtract(timeOfLastAppendedVideoSampleBuffer, timeOfFirstAppendedVideoSampleBuffer)
     }
 
     // `recordingQueue`
@@ -1340,9 +1337,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         isAssetWriterAcceptingSampleBuffers = false
 
-        videoSampleTimeLock.lock()
-        let timeOfLastAppendedVideoSampleBuffer = timeOfLastAppendedVideoSampleBuffer
-        videoSampleTimeLock.unlock()
+        let timeOfLastAppendedVideoSampleBuffer = self.videoSampleState.get().timeOfLastAppendedVideoSampleBuffer
 
         // Prevent assetWriter.startSession() from being called if for some reason it wasn't called yet.
         isAssetWriterSessionStarted = true
@@ -1429,26 +1424,35 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         var captureError: (any Error)?
 
-        if
-            let fileSize = (try? OWSFileSystem.fileSize(of: assetWriter.outputURL)),
-            fileSize >= UInt64(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
-        {
-            Logger.warn("Stopping recording before hitting max file size")
-            needsFinishAssetWriterSession = true
-            captureError = VideoCaptureError.fileWouldBeTooLarge
-        }
-
         if assetWriterInput == videoWriterInput {
-            videoSampleTimeLock.lock()
-            timeOfLastAppendedVideoSampleBuffer = presentationTime
-            if !timeOfFirstAppendedVideoSampleBuffer.isValid {
-                timeOfFirstAppendedVideoSampleBuffer = presentationTime
+            let (recordingDuration, shouldCheckFileSize) = self.videoSampleState.update {
+                $0.timeOfLastAppendedVideoSampleBuffer = presentationTime
+                if !$0.timeOfFirstAppendedVideoSampleBuffer.isValid {
+                    $0.timeOfFirstAppendedVideoSampleBuffer = presentationTime
+                }
+                if !$0.timeOfMostRecentFileSizeCheck.isValid {
+                    $0.timeOfMostRecentFileSizeCheck = presentationTime
+                }
+                let recordingDuration = $0.durationSince(startTime: \.timeOfFirstAppendedVideoSampleBuffer)
+                let shouldCheckFileSize = $0.durationSince(startTime: \.timeOfMostRecentFileSizeCheck).seconds >= 1
+                if shouldCheckFileSize {
+                    $0.timeOfMostRecentFileSizeCheck = presentationTime
+                }
+                return (recordingDuration, shouldCheckFileSize)
             }
-            videoSampleTimeLock.unlock()
 
-            let recordingDuration = self.durationOfCurrentRecording.seconds
             DispatchQueue.main.async {
-                self.delegate?.videoCapture(self, didUpdateRecordingDuration: recordingDuration)
+                self.delegate?.videoCapture(self, didUpdateRecordingDuration: recordingDuration.seconds)
+            }
+
+            if
+                shouldCheckFileSize,
+                let fileSize = (try? OWSFileSystem.fileSize(of: assetWriter.outputURL)),
+                fileSize >= UInt64(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
+            {
+                Logger.warn("stopping recording before hitting max file size")
+                needsFinishAssetWriterSession = true
+                captureError = VideoCaptureError.fileWouldBeTooLarge
             }
         }
 
@@ -1493,10 +1497,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         videoWriterInput = nil
         audioWriterInput = nil
         isAssetWriterSessionStarted = false
-        videoSampleTimeLock.lock()
-        timeOfFirstAppendedVideoSampleBuffer = .invalid
-        timeOfLastAppendedVideoSampleBuffer = .invalid
-        videoSampleTimeLock.unlock()
+        videoSampleState.set(SampleState())
     }
 }
 
