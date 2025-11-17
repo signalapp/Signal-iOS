@@ -1847,8 +1847,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .paymentAttachment: .paymentMessage,
             .archivedPaymentAttachment: .paymentMessage,
             .poll: .poll,
-            .bottomButtons: .bottomButtonOrLabel,
-            .bottomLabel: .bottomButtonOrLabel,
+
+            // Bottom buttons, labels, and footers are associated
+            // with other components and should not have unique long-press actions.
+            .bottomButtons: .associatedSubcomponent,
+            .bottomLabel: .associatedSubcomponent,
+            .footer: .associatedSubcomponent
             // TODO: linkPreview?
         ]
         // Recognize the correct message type when tapping next to the message itself
