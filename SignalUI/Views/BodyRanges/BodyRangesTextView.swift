@@ -273,8 +273,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         pickerParentView.insertSubview(pickerView, belowSubview: pickerReferenceView)
         NSLayoutConstraint.activate([
             pickerView.topAnchor.constraint(greaterThanOrEqualTo: pickerParentView.safeAreaLayoutGuide.topAnchor),
-            pickerView.leadingAnchor.constraint(equalTo: pickerParentView.leadingAnchor),
-            pickerView.trailingAnchor.constraint(equalTo: pickerParentView.trailingAnchor),
+            pickerView.leadingAnchor.constraint(equalTo: pickerParentView.safeAreaLayoutGuide.leadingAnchor),
+            pickerView.trailingAnchor.constraint(equalTo: pickerParentView.safeAreaLayoutGuide.trailingAnchor),
             pickerView.bottomAnchor.constraint(equalTo: pickerReferenceView.topAnchor),
         ])
 
