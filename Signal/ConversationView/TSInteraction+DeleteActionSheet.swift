@@ -31,19 +31,13 @@ public extension TSInteraction {
                 thread: associatedThread,
                 hasLinkedDevices: hasLinkedDevices,
                 forceDarkTheme: forceDarkTheme,
-                interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager
             )
         } else {
-            DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
-                fromViewController: fromViewController
-            ) { [weak self] interactionDeleteManager, _ in
-                self?.presentDeletionActionSheetForNotNoteToSelf(
-                    fromViewController: fromViewController,
-                    thread: associatedThread,
-                    forceDarkTheme: forceDarkTheme,
-                    interactionDeleteManager: interactionDeleteManager
-                )
-            }
+            presentDeletionActionSheetForNotNoteToSelf(
+                fromViewController: fromViewController,
+                thread: associatedThread,
+                forceDarkTheme: forceDarkTheme,
+            )
         }
     }
 
@@ -52,7 +46,6 @@ public extension TSInteraction {
         thread: TSThread,
         hasLinkedDevices: Bool,
         forceDarkTheme: Bool,
-        interactionDeleteManager: any InteractionDeleteManager
     ) {
         let deleteMessageHeaderText = OWSLocalizedString(
             "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER",
@@ -89,7 +82,6 @@ public extension TSInteraction {
         actionSheet.addAction(deleteForMeAction(
             title: deleteActionTitle,
             thread: thread,
-            interactionDeleteManager: interactionDeleteManager
         ))
         actionSheet.addAction(.cancel)
 
@@ -100,7 +92,6 @@ public extension TSInteraction {
         fromViewController: UIViewController,
         thread: TSThread,
         forceDarkTheme: Bool,
-        interactionDeleteManager: any InteractionDeleteManager
     ) {
         let actionSheetController = ActionSheetController(
             message: OWSLocalizedString(
@@ -115,7 +106,6 @@ public extension TSInteraction {
         actionSheetController.addAction(deleteForMeAction(
             title: CommonStrings.deleteForMeButton,
             thread: thread,
-            interactionDeleteManager: interactionDeleteManager
         ))
 
         if
@@ -192,15 +182,17 @@ public extension TSInteraction {
     private func deleteForMeAction(
         title: String,
         thread: TSThread,
-        interactionDeleteManager: any InteractionDeleteManager
     ) -> ActionSheetAction {
+        let db = DependenciesBridge.shared.db
+        let interactionDeleteManager = DependenciesBridge.shared.interactionDeleteManager
+
         return ActionSheetAction(
             title: CommonStrings.deleteForMeButton,
             style: .destructive
         ) { [weak self] _ in
             guard let self else { return }
 
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
+            db.asyncWrite { tx in
                 guard
                     let freshSelf = TSInteraction.anyFetch(uniqueId: self.uniqueId, transaction: tx),
                     let freshThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx)

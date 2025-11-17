@@ -299,16 +299,9 @@ extension ChatListViewController {
             return
         }
 
-        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
-            fromViewController: self
-        ) { [weak self] _, threadSoftDeleteManager in
-            self?.showDeleteAllActionSheet(
-                threadSoftDeleteManager: threadSoftDeleteManager
-            )
-        }
-    }
+        let db = DependenciesBridge.shared.db
+        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
 
-    private func showDeleteAllActionSheet(threadSoftDeleteManager: any ThreadSoftDeleteManager) {
         /// We need to grab these now, since they'll be `nil`-ed out when we
         /// show the modal spinner below.
         let selectedIndexPaths = tableView.indexPathsForSelectedRows ?? []
@@ -338,7 +331,7 @@ extension ChatListViewController {
                 // We want to protect this whole operation with a single write
                 // transaction, to ensure the contents of the threads don't
                 // change as we're deleting them.
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                db.write { transaction in
                     self.performOn(indexPaths: selectedIndexPaths) { threadViewModels in
                         threadSoftDeleteManager.softDelete(
                             threads: threadViewModels.map { $0.threadRecord },

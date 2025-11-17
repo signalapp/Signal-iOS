@@ -169,48 +169,44 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     // MARK: -
 
     private func didTapClearHistory() {
-        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
-            fromViewController: self
-        ) { _, threadSoftDeleteManager in
-            let primaryConfirmDeletionTitle = OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
-                comment: "Alert message before user confirms clearing history"
-            )
-            let secondaryConfirmDeletionTitle = OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE",
-                comment: "Secondary alert title before user confirms clearing history"
-            )
-            let secondaryConfirmDeletionMessage = OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE",
-                comment: "Secondary alert message before user confirms clearing history"
-            )
-            let confirmDeletionButtonTitle = OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-                comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
-            )
+        let primaryConfirmDeletionTitle = OWSLocalizedString(
+            "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
+            comment: "Alert message before user confirms clearing history"
+        )
+        let secondaryConfirmDeletionTitle = OWSLocalizedString(
+            "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE",
+            comment: "Secondary alert title before user confirms clearing history"
+        )
+        let secondaryConfirmDeletionMessage = OWSLocalizedString(
+            "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE",
+            comment: "Secondary alert message before user confirms clearing history"
+        )
+        let confirmDeletionButtonTitle = OWSLocalizedString(
+            "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+            comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
+        )
 
-            // Show two layers of confirmation here – this is a maximally
-            // destructive action.
+        // Show two layers of confirmation here – this is a maximally
+        // destructive action.
+        OWSActionSheets.showConfirmationAlert(
+            title: primaryConfirmDeletionTitle,
+            proceedTitle: confirmDeletionButtonTitle,
+            proceedStyle: .destructive,
+        ) { [weak self] _ in
             OWSActionSheets.showConfirmationAlert(
-                title: primaryConfirmDeletionTitle,
+                title: secondaryConfirmDeletionTitle,
+                message: secondaryConfirmDeletionMessage,
                 proceedTitle: confirmDeletionButtonTitle,
-                proceedStyle: .destructive,
+                proceedStyle: .destructive
             ) { [weak self] _ in
-                OWSActionSheets.showConfirmationAlert(
-                    title: secondaryConfirmDeletionTitle,
-                    message: secondaryConfirmDeletionMessage,
-                    proceedTitle: confirmDeletionButtonTitle,
-                    proceedStyle: .destructive
-                ) { [weak self] _ in
-                    self?.clearHistoryBehindSpinner(threadSoftDeleteManager: threadSoftDeleteManager)
-                }
+                self?.clearHistoryBehindSpinner()
             }
         }
     }
 
-    private func clearHistoryBehindSpinner(
-        threadSoftDeleteManager: any ThreadSoftDeleteManager
-    ) {
+    private func clearHistoryBehindSpinner() {
+        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false,

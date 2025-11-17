@@ -97,23 +97,11 @@ extension ThreadSwipeHandler where Self: UIViewController {
             image: "trash-fill",
             title: CommonStrings.deleteButton
         ) { [weak self] completion in
-            guard let self else {
-                completion(false)
-                return
-            }
-
-            DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
-                fromViewController: self
-            ) { [weak self] _, threadSoftDeleteManager in
-                guard let self else { return }
-
-                self.deleteThreadWithConfirmation(
-                    threadViewModel: threadViewModel,
-                    threadSoftDeleteManager: threadSoftDeleteManager,
-                    closeConversationBlock: closeConversationBlock
-                )
-                completion(false)
-            }
+            self?.deleteThreadWithConfirmation(
+                threadViewModel: threadViewModel,
+                closeConversationBlock: closeConversationBlock
+            )
+            completion(false)
         }
 
         let archiveAction = ContextualActionBuilder.makeContextualAction(
@@ -144,10 +132,11 @@ extension ThreadSwipeHandler where Self: UIViewController {
 
     fileprivate func deleteThreadWithConfirmation(
         threadViewModel: ThreadViewModel,
-        threadSoftDeleteManager: any ThreadSoftDeleteManager,
         closeConversationBlock: (() -> Void)?
     ) {
         AssertIsOnMainThread()
+        let db = DependenciesBridge.shared.db
+        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
 
         let alert = ActionSheetController(title: OWSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
                                                                    comment: "Title for the 'conversation delete confirmation' alert."),
@@ -166,7 +155,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             ) { [weak self] modal in
                 guard let self else { return }
 
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                await db.awaitableWrite { tx in
                     threadSoftDeleteManager.softDelete(
                         threads: [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,

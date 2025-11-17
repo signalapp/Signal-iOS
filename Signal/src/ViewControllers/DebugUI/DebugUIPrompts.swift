@@ -41,12 +41,6 @@ class DebugUIPrompts: DebugUIPage {
                 let flipCamTooltipManager = FlipCameraTooltipManager(db: db)
                 flipCamTooltipManager.markTooltipAsUnread()
             }),
-
-            OWSTableItem(title: "Enable DeleteForMeSyncMessage info sheet", actionBlock: {
-                db.write { tx in
-                    DeleteForMeInfoSheetCoordinator.fromGlobals().forceEnableInfoSheet(tx: tx)
-                }
-            }),
         ]
         return OWSTableSection(title: name, items: items)
     }

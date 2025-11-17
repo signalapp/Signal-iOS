@@ -797,40 +797,12 @@ class MediaGallery {
         initiatedBy: UIViewController
     ) {
         AssertIsOnMainThread()
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let db = DependenciesBridge.shared.db
+        let deleteForMeOutgoingSyncMessageManager = DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager
+        let interactionDeleteManager = DependenciesBridge.shared.interactionDeleteManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
-            fromViewController: initiatedBy,
-            deletionBlock: { [weak self] interactionDeleteManager, threadSoftDeleteManager in
-                guard let self else { return }
-
-                self._deleteInternal(
-                    items: items,
-                    atIndexPaths: givenIndexPaths,
-                    initiatedBy: initiatedBy,
-                    deps: DeleteItemsDependencies(
-                        attachmentManager: DependenciesBridge.shared.attachmentManager,
-                        deleteForMeOutgoingSyncMessageManager: DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager,
-                        interactionDeleteManager: interactionDeleteManager,
-                        tsAccountManager: DependenciesBridge.shared.tsAccountManager
-                    )
-                )
-            }
-        )
-    }
-
-    private struct DeleteItemsDependencies {
-        let attachmentManager: any AttachmentManager
-        let deleteForMeOutgoingSyncMessageManager: any DeleteForMeOutgoingSyncMessageManager
-        let interactionDeleteManager: any InteractionDeleteManager
-        let tsAccountManager: any TSAccountManager
-    }
-
-    private func _deleteInternal(
-        items: [MediaGalleryItem],
-        atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]?,
-        initiatedBy: UIViewController,
-        deps: DeleteItemsDependencies
-    ) {
         guard items.count > 0 else {
             return
         }
@@ -844,7 +816,7 @@ class MediaGallery {
             $0.attachmentStream.reference.referenceId
         })
 
-        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
+        db.asyncWrite { tx in
             do {
                 guard let thread = TSThread.anyFetch(uniqueId: self.threadUniqueId, transaction: tx) else {
                     throw OWSGenericError("Couldn't load thread that should exist.")
@@ -856,7 +828,7 @@ class MediaGallery {
                     let message = item.message
                     let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
-                    try deps.attachmentManager.removeAttachment(
+                    try attachmentManager.removeAttachment(
                         reference: referencedAttachment.reference,
                         tx: tx
                     )
@@ -893,8 +865,8 @@ class MediaGallery {
                     }
                 }
 
-                if let localIdentifiers = deps.tsAccountManager.localIdentifiers(tx: tx) {
-                    deps.deleteForMeOutgoingSyncMessageManager.send(
+                if let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
+                    deleteForMeOutgoingSyncMessageManager.send(
                         deletedAttachments: messagesWithAttachmentsRemaining,
                         thread: thread,
                         localIdentifiers: localIdentifiers,
@@ -902,7 +874,7 @@ class MediaGallery {
                     )
                 }
 
-                deps.interactionDeleteManager.delete(
+                interactionDeleteManager.delete(
                     interactions: messagesWithAllAttachmentsRemoved,
                     sideEffects: .custom(
                         deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
