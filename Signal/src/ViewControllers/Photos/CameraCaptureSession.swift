@@ -1250,7 +1250,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         guard var videoSettings = videoDataOutput.recommendedVideoSettings(
             forVideoCodecType: .h264,
-            assetWriterOutputFileType: .mp4
+            assetWriterOutputFileType: assetWriter.outputFileType,
         ) else {
             throw OWSAssertionError("videoSettings was unexpectedly nil")
         }
@@ -1297,7 +1297,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         if includeAudio {
             guard
-                let audioSettings = audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4),
+                let audioSettings = audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: assetWriter.outputFileType),
                 assetWriter.canApply(outputSettings: audioSettings, forMediaType: .audio)
             else {
                 throw PhotoCaptureError.initializationFailed
