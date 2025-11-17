@@ -351,11 +351,12 @@ private class RecentPhotoCell: UICollectionViewCell {
         contentView.addSubview(loadingIndicator)
         loadingIndicator.autoCenterInSuperview()
 
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
-            contentView.cornerConfiguration = .uniformCorners(radius: .fixed(36))
+            updateCornerRadius()
+            registerForTraitChanges([ UITraitVerticalSizeClass.self ]) { (self: Self, _) in
+                self.updateCornerRadius()
+            }
         }
-#endif
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -365,13 +366,19 @@ private class RecentPhotoCell: UICollectionViewCell {
 
     override var bounds: CGRect {
         didSet {
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { return }
-            updateCornerRadius()
+            guard #unavailable(iOS 26) else { return }
+            updateCornerRadiusLegacy()
         }
     }
 
-    @available(iOS, deprecated: 26)
+    @available(iOS 26, *)
     private func updateCornerRadius() {
+        let cornerRadius: CGFloat = traitCollection.verticalSizeClass == .compact ? 20 : 36
+        contentView.cornerConfiguration = .uniformCorners(radius: .fixed(cornerRadius))
+    }
+
+    @available(iOS, deprecated: 26)
+    private func updateCornerRadiusLegacy() {
         let cellSize = min(bounds.width, bounds.height)
         guard cellSize > 0 else { return }
         contentView.layer.cornerRadius = (cellSize * 13 / 84).rounded()

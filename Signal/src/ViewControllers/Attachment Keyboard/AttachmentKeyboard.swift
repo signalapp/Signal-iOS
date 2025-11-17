@@ -38,6 +38,11 @@ class AttachmentKeyboard: CustomKeyboard {
 
     private lazy var limitedPhotoPermissionsView = LimitedPhotoPermissionsView()
 
+    private var topInset: CGFloat {
+        guard #available(iOS 26, *) else { return 12 }
+        return traitCollection.verticalSizeClass == .compact ? 20 : 36
+    }
+
     // MARK: -
 
     init(delegate: AttachmentKeyboardDelegate?) {
@@ -45,14 +50,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         super.init()
 
-        let topInset: CGFloat
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-            topInset = 40
-            backgroundColor = .clear
-        } else {
-            topInset = 12
-            backgroundColor = UIColor.Signal.background
-        }
+        backgroundColor = if #available(iOS 26, *) { .clear } else { .Signal.background }
 
         let stackView = UIStackView(arrangedSubviews: [
             limitedPhotoPermissionsView,
@@ -63,9 +61,21 @@ class AttachmentKeyboard: CustomKeyboard {
         stackView.setCustomSpacing(12, after: limitedPhotoPermissionsView)
         limitedPhotoPermissionsView.isHiddenInStackView = true
         contentView.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
-        stackView.autoPinEdge(toSuperviewSafeArea: .bottom)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        let topEdgeConstraint = stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: topInset)
+        NSLayoutConstraint.activate([
+            topEdgeConstraint,
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
+        ])
+
+        // Variable top inset on iOS 26.
+        if #available(iOS 26, *) {
+            registerForTraitChanges([ UITraitVerticalSizeClass.self ]) { (self: Self, _) in
+                topEdgeConstraint.constant = self.topInset
+            }
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
