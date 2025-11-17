@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class RegistrationLoadingViewController: OWSViewController {
+class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildController {
     enum RegistrationLoadingMode {
         case generic
         case submittingPhoneNumber(e164: String)
@@ -46,6 +46,14 @@ class RegistrationLoadingViewController: OWSViewController {
     public override init() {
         owsFail("This should not be called")
     }
+
+    // MARK: OWSNavigationChildController
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+
+    public var navbarBackgroundColorOverride: UIColor? { .clear }
+
+    public var prefersNavigationBarHidden: Bool { true }
 
     // MARK: - Rendering
 
