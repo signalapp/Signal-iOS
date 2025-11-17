@@ -1767,11 +1767,7 @@ extension CGSize {
     }
 
     fileprivate func cropped(toAspectRatio aspectRatio: CGFloat) -> CGSize {
-        guard aspectRatio > 0, aspectRatio <= 1 else {
-            owsFailDebug("invalid aspectRatio: \(aspectRatio)")
-            return self
-        }
-
+        owsPrecondition(aspectRatio > 0 && aspectRatio <= 1)
         if width > height {
             return CGSize(width: width, height: width * aspectRatio)
         } else {
