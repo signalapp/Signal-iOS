@@ -66,7 +66,6 @@ class RecentPhotosCollectionView: UICollectionView {
             // That delegate method is necessary to allow custom size for "manage access" helper UI.
             setCollectionViewLayout(RecentPhotosCollectionView.collectionViewLayout(itemSize: cellSize), animated: false)
             reloadData() // Needed in order to reload photos with better quality on size change.
-            scrollToFirstItem()
         }
     }
 
@@ -127,7 +126,6 @@ class RecentPhotosCollectionView: UICollectionView {
     func prepareForPresentation() {
         UIView.performWithoutAnimation {
             self.alpha = 0
-            self.scrollToFirstItem()
         }
     }
 
@@ -135,11 +133,6 @@ class RecentPhotosCollectionView: UICollectionView {
         UIView.animate(withDuration: 0.3) {
             self.alpha = 1
         }
-    }
-
-    private func scrollToFirstItem() {
-        guard numberOfSections > 0, numberOfItems(inSection: 0) > 0 else { return }
-        scrollToItem(at: IndexPath(item: 0, section: 0), at: .centeredHorizontally, animated: false)
     }
 
     // Background view
