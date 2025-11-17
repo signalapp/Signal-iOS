@@ -348,6 +348,12 @@ public class CVComponentState: Equatable {
         let titleSelectionBackgroundColor: UIColor
         let action: CVMessageAction?
 
+        struct Expiration: Equatable {
+            let expirationTimestamp: UInt64
+            let expiresInSeconds: UInt32
+        }
+        let expiration: Expiration?
+
         /// Represents users whose names appear in the title. Only applies to
         /// system messages in group threads.
         let namesInTitle: [ReferencedUser]
@@ -356,7 +362,8 @@ public class CVComponentState: Equatable {
             title: NSAttributedString,
             titleColor: UIColor,
             titleSelectionBackgroundColor: UIColor,
-            action: CVMessageAction?
+            action: CVMessageAction?,
+            expiration: Expiration?
         ) {
             let mutableTitle = NSMutableAttributedString(attributedString: title)
             mutableTitle.removeAttribute(
@@ -368,6 +375,7 @@ public class CVComponentState: Equatable {
             self.titleColor = titleColor
             self.titleSelectionBackgroundColor = titleSelectionBackgroundColor
             self.action = action
+            self.expiration = expiration
 
             self.namesInTitle = {
                 // Extract the addresses for names in the string. These are only

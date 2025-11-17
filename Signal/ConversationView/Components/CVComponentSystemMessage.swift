@@ -21,6 +21,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     typealias Action = CVMessageAction
     fileprivate var action: Action? { systemMessage.action }
+    fileprivate var expiration: CVComponentState.SystemMessage.Expiration? { systemMessage.expiration }
 
     init(itemModel: CVItemModel, systemMessage: CVComponentState.SystemMessage) {
         self.systemMessage = systemMessage
@@ -53,6 +54,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                  alignment: .fill,
                                  spacing: ConversationStyle.messageStackSpacing,
                                  layoutMargins: cellLayoutMargins)
+    }
+
+    private var innerHStackConfig: CVStackViewConfig {
+        return CVStackViewConfig(axis: .horizontal,
+                                 alignment: .center,
+                                 spacing: 4,
+                                 layoutMargins: .zero)
     }
 
     private var innerVStackConfig: CVStackViewConfig {
@@ -132,18 +140,31 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         componentView.wasShowingSelectionUI = wasShowingSelectionUI
         componentView.hasActionButton = hasActionButton
 
+        let innerHStack = componentView.innerHStack
         let outerHStack = componentView.outerHStack
         let innerVStack = componentView.innerVStack
         let outerVStack = componentView.outerVStack
         let selectionView = componentView.selectionView
         let textLabel = componentView.textLabel
+        let messageTimerView = componentView.messageTimerView
 
         // Configuring the text label should happen in both reuse and non-reuse
         // scenarios
         textLabel.configureForRendering(config: textLabelConfig, spoilerAnimationManager: componentDelegate.spoilerState.animationManager)
         textLabel.view.accessibilityLabel = textLabelConfig.text.accessibilityDescription
 
+        if let expiration = expiration {
+            messageTimerView.configure(
+                expirationTimestampMs: expiration.expirationTimestamp,
+                disappearingMessageInterval: expiration.expiresInSeconds,
+                tintColor: systemMessage.titleColor
+            )
+        }
+
         if isReusing {
+            innerHStack.configureForReuse(config: innerHStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_innerHStack)
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_innerVStack)
@@ -160,8 +181,16 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wallpaperBlurView.updateIfNecessary()
             }
         } else {
-            var innerVStackViews: [UIView] = [
+            var innerHStackViews: [UIView] = [
                 textLabel.view
+            ]
+
+            if expiration != nil {
+                innerHStackViews.append(messageTimerView)
+            }
+
+            var innerVStackViews: [UIView] = [
+                innerHStack
             ]
             let outerVStackViews = [
                 innerVStack
@@ -212,6 +241,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStackViews.append(button)
             }
 
+            innerHStack.configure(config: innerHStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: Self.measurementKey_innerHStack,
+                                  subviews: innerHStackViews)
             innerVStack.configure(config: innerVStackConfig,
                                   cellMeasurement: cellMeasurement,
                                   measurementKey: Self.measurementKey_innerVStack,
@@ -370,6 +403,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         UIFont.dynamicTypeFootnote
     }
 
+    private static let measurementKey_innerHStack = "CVComponentSystemMessage.measurementKey_innerHStack"
     private static let measurementKey_outerHStack = "CVComponentSystemMessage.measurementKey_outerHStack"
     private static let measurementKey_innerVStack = "CVComponentSystemMessage.measurementKey_innerVStack"
     private static let measurementKey_outerVStack = "CVComponentSystemMessage.measurementKey_outerVStack"
@@ -399,8 +433,21 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             maxWidth: maxContentWidth
         )
 
+        var innerHStackSubviewInfos = [ManualStackSubviewInfo]()
+        innerHStackSubviewInfos.append(textSize.size.asManualSubviewInfo)
+
+        if let infoMessage = interaction as? TSInfoMessage, infoMessage.hasPerConversationExpiration {
+            let timerSize = MessageTimerView.measureSize
+            innerHStackSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
+
+        let innerHStackMeasurement = ManualStackView.measure(config: innerHStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_innerHStack,
+                                                             subviewInfos: innerHStackSubviewInfos)
+
         var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
-        innerVStackSubviewInfos.append(textSize.size.asManualSubviewInfo)
+        innerVStackSubviewInfos.append(innerHStackMeasurement.measuredSize.asManualSubviewInfo)
         if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
             let buttonLabelConfig = self.buttonLabelConfig(action: action)
             let actionButtonSize = (CVText.measureLabel(config: buttonLabelConfig,
@@ -501,10 +548,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     // It could be the entire item or some part thereof.
     public class CVComponentViewSystemMessage: NSObject, CVComponentView {
 
+        fileprivate let innerHStack = ManualStackView(name: "systemMessage.innerHStack")
         fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
         fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
         fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
         fileprivate let selectionView = MessageSelectionView()
+        fileprivate let messageTimerView = MessageTimerView()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
         fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
@@ -551,7 +600,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 outerHStack.reset()
                 innerVStack.reset()
                 outerVStack.reset()
+                innerHStack.reset()
                 textLabel.reset()
+
+                messageTimerView.prepareForReuse()
+                messageTimerView.removeFromSuperview()
 
                 wallpaperBlurView?.removeFromSuperview()
                 wallpaperBlurView?.resetContentAndConfiguration()
@@ -581,6 +634,7 @@ extension CVComponentSystemMessage {
     static func buildComponentState(
         title: NSAttributedString,
         action: Action?,
+        expiration: CVComponentState.SystemMessage.Expiration?,
         titleColor: UIColor? = nil,
         titleSelectionBackgroundColor: UIColor? = nil
     ) -> CVComponentState.SystemMessage {
@@ -588,7 +642,8 @@ extension CVComponentSystemMessage {
             title: title,
             titleColor: titleColor ?? defaultTextColor,
             titleSelectionBackgroundColor: titleSelectionBackgroundColor ?? defaultSelectionBackgroundColor,
-            action: action
+            action: action,
+            expiration: expiration
         )
     }
 
@@ -603,8 +658,9 @@ extension CVComponentSystemMessage {
                                  threadViewModel: threadViewModel,
                                  currentGroupThreadCallGroupId: currentGroupThreadCallGroupId,
                                  transaction: transaction)
+        let expiration = Self.expiration(forInteraction: interaction, transaction: transaction)
 
-        return buildComponentState(title: title, action: action, titleColor: maybeOverrideTitleColor)
+        return buildComponentState(title: title, action: action, expiration: expiration, titleColor: maybeOverrideTitleColor)
     }
 
     private static func title(forInteraction interaction: TSInteraction,
@@ -1031,7 +1087,7 @@ extension CVComponentSystemMessage {
         )
         labelText.append(String(format: titleFormat, configuration.durationString))
 
-        return buildComponentState(title: labelText, action: nil)
+        return buildComponentState(title: labelText, action: nil, expiration: nil)
     }
 
     // MARK: - Actions
@@ -1397,5 +1453,33 @@ extension CVComponentSystemMessage {
         let title = isCurrentCallForThread ? returnTitle : CallStrings.joinGroupCall
 
         return Action(title: title, accessibilityIdentifier: "group_call_button", action: .didTapGroupCall)
+    }
+
+    // MARK: - Expiration
+
+    static func expiration(
+        forInteraction interaction: TSInteraction,
+        transaction: DBReadTransaction
+    ) -> CVComponentState.SystemMessage.Expiration? {
+        if let infoMessage = interaction as? TSInfoMessage {
+            return expiration(forInfoMessage: infoMessage, transaction: transaction)
+        } else {
+            // Expiration state not supported.
+            return nil
+        }
+    }
+
+    private static func expiration(
+        forInfoMessage infoMessage: TSInfoMessage,
+        transaction: DBReadTransaction
+    ) -> CVComponentState.SystemMessage.Expiration? {
+        guard infoMessage.expiresAt > 0 && infoMessage.expiresInSeconds > 0 else {
+            return nil
+        }
+
+        return CVComponentState.SystemMessage.Expiration(
+            expirationTimestamp: infoMessage.expiresAt,
+            expiresInSeconds: infoMessage.expiresInSeconds
+        )
     }
 }
