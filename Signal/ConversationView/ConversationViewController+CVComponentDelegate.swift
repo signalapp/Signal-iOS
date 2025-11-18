@@ -1302,7 +1302,21 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapViewVotes(poll: OWSPoll) {
-        let pollDetails = PollDetailsViewController(poll: poll)
+        let message: TSMessage? = DependenciesBridge.shared.db.read { tx in
+            InteractionFinder.fetch(rowId: poll.interactionId, transaction: tx) as? TSMessage
+        }
+
+        guard let message else {
+            return
+        }
+
+        let pollDetails = PollDetailsViewController(
+            poll: poll,
+            message: message,
+            pollManager: DependenciesBridge.shared.pollMessageManager,
+            db: DependenciesBridge.shared.db,
+            databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver
+        )
         pollDetails.delegate = self
         self.present(OWSNavigationController(rootViewController: pollDetails), animated: true)
     }

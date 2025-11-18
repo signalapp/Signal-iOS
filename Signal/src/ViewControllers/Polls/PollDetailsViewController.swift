@@ -14,14 +14,41 @@ protocol PollDetailsViewControllerDelegate: AnyObject {
 
 class PollDetailsViewController: HostingController<PollDetailsView> {
     private let viewModel: PollDetailsViewModel
-    weak var delegate: PollDetailsViewControllerDelegate?
-    private let poll: OWSPoll
+    private let message: TSMessage
+    private let db: DB
+    private let pollManager: PollMessageManager
 
-    init(poll: OWSPoll) {
-        self.viewModel = PollDetailsViewModel()
-        self.poll = poll
-        super.init(wrappedView: PollDetailsView(poll: poll, viewModel: viewModel))
+    weak var delegate: PollDetailsViewControllerDelegate?
+
+    init(
+        poll: OWSPoll,
+        message: TSMessage,
+        pollManager: PollMessageManager,
+        db: DB,
+        databaseChangeObserver: DatabaseChangeObserver
+    ) {
+        self.viewModel = PollDetailsViewModel(poll: poll)
+        self.message = message
+        self.pollManager = pollManager
+        self.db = db
+
+        super.init(wrappedView: PollDetailsView(viewModel: viewModel))
+
         viewModel.actionsDelegate = self
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
+    }
+
+    private func updatePollStateIfNeeded() {
+        do {
+            let poll = try db.read { tx in
+                try self.pollManager.buildPoll(message: message, transaction: tx)
+            }
+            if let poll {
+                self.viewModel.poll = poll
+            }
+        } catch {
+            Logger.error("Unable to read poll from database: \(error)")
+        }
     }
 }
 
@@ -31,7 +58,7 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
     }
 
     func pollTerminate() {
-        delegate?.terminatePoll(poll: self.poll)
+        delegate?.terminatePoll(poll: self.viewModel.poll)
         dismiss(animated: true)
     }
 
@@ -49,7 +76,13 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
     }
 }
 
-private class PollDetailsViewModel {
+private class PollDetailsViewModel: ObservableObject {
+    @Published var poll: OWSPoll
+
+    init(poll: OWSPoll) {
+        self.poll = poll
+    }
+
     protocol ActionsDelegate: AnyObject {
         func onDismiss()
         func pollTerminate()
@@ -85,22 +118,17 @@ private class PollDetailsViewModel {
 }
 
 struct PollDetailsView: View {
-    fileprivate let viewModel: PollDetailsViewModel
-    private var poll: OWSPoll
+    @ObservedObject fileprivate var viewModel: PollDetailsViewModel
 
     var titleString: String {
-        if poll.isEnded {
+        if viewModel.poll.isEnded {
             return OWSLocalizedString("POLL_RESULTS_TITLE", comment: "Title of poll details pane when poll is ended")
         }
         return OWSLocalizedString("POLL_DETAILS_TITLE", comment: "Title of poll details pane")
     }
 
-    fileprivate init(poll: OWSPoll, viewModel: PollDetailsViewModel) {
-        self.poll = poll
-        self.viewModel = viewModel
-    }
-
     var body: some View {
+        let poll = viewModel.poll
         VStack(spacing: 0) {
             SignalList {
                 SignalSection {
@@ -259,5 +287,23 @@ struct PollDetailsView: View {
         ownerIsLocalUser: false
     )
 
-    PollDetailsView(poll: poll, viewModel: PollDetailsViewModel())
+    PollDetailsView(viewModel: PollDetailsViewModel(poll: poll))
+}
+
+extension PollDetailsViewController: DatabaseChangeDelegate {
+    func databaseChangesDidUpdate(databaseChanges: any SignalServiceKit.DatabaseChanges) {
+        guard databaseChanges.interactionUniqueIds.contains(message.uniqueId) else {
+            return
+        }
+
+        updatePollStateIfNeeded()
+    }
+
+    func databaseChangesDidUpdateExternally() {
+        updatePollStateIfNeeded()
+    }
+
+    func databaseChangesDidReset() {
+        updatePollStateIfNeeded()
+    }
 }
