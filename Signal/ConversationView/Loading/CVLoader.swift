@@ -345,6 +345,7 @@ public class CVLoader: NSObject {
         )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(
+            prevRenderState: nil,
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
@@ -408,6 +409,7 @@ public class CVLoader: NSObject {
         )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(
+            prevRenderState: nil,
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
