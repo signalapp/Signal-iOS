@@ -117,6 +117,7 @@ enum DebugLogs {
                 style: .default,
                 handler: { _ in
                     UIPasteboard.general.string = url.absoluteString
+                    presentingViewController.presentToast(text: CommonStrings.copiedToClipboardToast)
                     submitLogsCompletion()
                 }
             ))
