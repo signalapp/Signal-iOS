@@ -560,13 +560,13 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "恢复密钥正确。请安全保存您的密钥。";
 
 /* Button label for action sheet to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Exit Backup Setup";
+"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "退出备份设置";
 
 /* Message for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "You have not finished setting up backups, and no backup has been created. You can enable backups in Settings.";
+"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "您尚未完成备份设置，也未创建备份。您可以在“设置”中启用备份。";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "Exit Backup Setup?";
+"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "要退出备份设置吗？";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "如果密钥丢失，Signal 将无法帮助您恢复备份。请将其保存在安全的地方，并避免与他人共享该密钥。";
@@ -650,19 +650,19 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "正在恢复消息…";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "Automatic backups are disabled. Enable automatic backups by updating Signal's permissions.";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "自动备份已禁用。请更新 Signal 的权限以启用自动备份。";
 
 /* Add-on to a message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE_UPDATE_NOW" = "Update Now";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE_UPDATE_NOW" = "立即升级";
 
 /* Title for a button that takes the users to Signal's iOS Settings page. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "前往设置";
 
 /* Message for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "To allow Signal to automatically back up your messages, tap \"Go to Settings\" below and enable \"Background App Refresh\"";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "如要允许 Signal 自动备份您的消息，请点击下方的“前往设置”，然后启用“后台 App 刷新”";
 
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Automatic Backups Disabled";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "自动备份已禁用";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "创建您的备份时出错了。请重试或联系支持人员。";
@@ -695,7 +695,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "升级";
 
 /* Text describing the user's free backup plan when they have Backups disabled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "You turned off backups";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "您关闭了备份";
 
 /* Text describing the user's free backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "您使用的是免费备份套餐";
@@ -743,10 +743,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "付费（TestFlight 用户免费）";
 
 /* Title for a button allowing users to renew their backup subscription on this device. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "Renew";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "续订";
 
 /* Text describing that the user's paid backup plan did not correspond to a App Store subscription on this device. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "Your subscription was not found on this device. Renew to continue using Signal Backups.";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "未在此设备上找到您的套餐。请续订以继续使用 Signal 备份。";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "文本 + 所有媒体备份";
@@ -788,13 +788,13 @@
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "您必须注册才能创建新的恢复密钥。";
 
 /* Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "If you create a new recovery key, you will not be able to enable backups for %1$@. The number of keys you can create is limited to prevent abuse.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "如果您创建新的恢复密钥，您将在 %1$@内无法启用备份。为了防止滥用，密钥的创建次数是有限的。";
 
 /* Action in an action sheet allowing to continue to rotate their key */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "Create New Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "创建新密钥";
 
 /* Title for a sheet warning users they've reached a rate limit for creating Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "Recovery Key Limit Reached";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "已达到创建恢复密钥的次数上限";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "新密钥已创建！";
@@ -902,13 +902,13 @@
 "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "查看恢复密钥";
 
 /* Body for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "Your subscription couldn't be restored on this device. This can happen if you're signed into the App Store with a different Apple account or you transferred from an Android phone.\n\nIf you have an active subscription on your old phone consider cancelling it before it renews.";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "您的套餐无法在此设备上恢复。发生这种情况可能是因为您使用了另一个 Apple 账户登录 App Store，或从 Android 手机进行转移。\n\n如果您在旧手机上有生效中的套餐，请考虑在续订之前将其取消。";
 
 /* Button for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "Got It";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "知道了";
 
 /* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Subscription Not Found";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "未找到套餐";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "现在备份";
@@ -965,19 +965,19 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "要跳过下载吗？";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Details";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "详情";
 
 /* Title for notice that the user's Backups subscription couldn't be redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "Couldn't redeem your backups subscription";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "无法兑换您的备份套餐";
 
 /* Body for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "Too many devices have tried to redeem your subscription this month.\n\nYou may have re-registered your Signal account too many times, or have too many devices using the same subscription.";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "本月有太多设备尝试兑换您的备份套餐。\n\n您可能重新注册了太多次 Signal 账户，或有太多设备使用同一套餐。";
 
 /* Button for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "Got It";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "知道了";
 
 /* Title for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "Couldn't redeem your backups subscription";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "无法兑换您的备份套餐";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "媒体上传已暂停：设备电量不足";
@@ -1724,10 +1724,10 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "兑换您的购买时出现错误。请联系支持团队。";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Because you reached your limit of new recovery keys, to prevent abuse you will not be able to enable backups for %1$@. Wait %1$@ and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "因为您已达到创建新恢复密钥的次数上限。为了防止滥用，您将在 %1$@内无法启用备份。请等待 %1$@后再试。";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "Couldn't Enable Backups";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "无法启用备份";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "当前套餐";
@@ -4400,10 +4400,10 @@
 "HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "备份存储空间已满";
 
 /* Title for the conversation list's failed to redeem backup subscription context menu action. */
-"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "Backup Subscription Error";
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "备份套餐错误";
 
 /* Title for the conversation list's backup subscription not found locally context menu action. */
-"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Backup Subscription Not Found";
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "未找到备份套餐";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "备份失败";
@@ -4691,7 +4691,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "完成关联";
 
 /* Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled. */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "Transfer your text messages and all your media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "转移您的文本消息和所有媒体";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "转移消息历史记录";
@@ -7313,28 +7313,28 @@
 "RESET" = "重置";
 
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "您的媒体尚未完成恢复。如果选择取消恢复，您可以重新链接此设备进行恢复。";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "Continue Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "继续恢复";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON" = "Cancel Restore";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON" = "取消恢复";
 
 /* Title for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "Your Media is Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "您的媒体正在恢复";
 
 /* Message for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "您的媒体尚未完成恢复。如果选择取消恢复，您可以重新链接此设备进行恢复。";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "Continue Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "继续恢复";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "Cancel Restore";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "取消恢复";
 
 /* Title for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "Cancel Media Restore?";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "要取消恢复媒体吗？";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "更多";

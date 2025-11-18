@@ -563,9 +563,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception des messages risquent de s&apos;en trouver ralentis.</string>
+			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception de messages risquent de s&apos;en trouver ralentis.</string>
 			<key>other</key>
-			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception des messages risquent de s&apos;en trouver ralentis.</string>
+			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception de messages risquent de s&apos;en trouver ralentis.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>

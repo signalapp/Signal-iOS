@@ -560,13 +560,13 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "ریکوری کیی درست ہے۔ اپنی کیی کو محفوظ رکھیں۔";
 
 /* Button label for action sheet to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Exit Backup Setup";
+"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "بیک اپ کا سیٹ اپ بند کریں";
 
 /* Message for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "You have not finished setting up backups, and no backup has been created. You can enable backups in Settings.";
+"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "آپ نے بیک اپس ترتیب دینے کو ختم نہیں کیا، اور کوئی بیک اپ تخلیق نہیں کیا جا سکا ہے۔ آپ سیٹنگز میں جا کر بیک اپس کو فعال کر سکتے ہیں۔";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "Exit Backup Setup?";
+"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "بیک اپ کا سیٹ اپ بند کریں؟";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "اگر آپ اپنی کیی کو کھو دیتے ہیں تو Signal آپ کے بیک اپ کو بحال کرنے میں مدد نہیں کر سکے گا۔ اسے کسی انتہائی محفوظ جگہ پر اسٹور کریں، اور دوسروں کے ساتھ شئیر نہ کریں۔";
@@ -650,19 +650,19 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "میسجز بحال کر رہے ہیں…";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "Automatic backups are disabled. Enable automatic backups by updating Signal's permissions.";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "خود کار بیک اپس غیر فعال ہیں۔ Signal کی اجازتوں کو اپ ڈیٹ کر کے خود کار بیک اپس کو فعال کریں۔";
 
 /* Add-on to a message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE_UPDATE_NOW" = "Update Now";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE_UPDATE_NOW" = "ابھی اپ ڈیٹ کریں";
 
 /* Title for a button that takes the users to Signal's iOS Settings page. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "ترتیبات پر جائیں";
 
 /* Message for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "To allow Signal to automatically back up your messages, tap \"Go to Settings\" below and enable \"Background App Refresh\"";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "Signal کو اپنے میسجز کے خود کار بیک اپ کی اجازت دینے کے لیے، ذیل میں \"سیٹنگز پر جائیں\" پر ٹیپ کریں اور \"پس منظر میں ایپ ریفریش کریں\" کو فعال کریں";
 
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Automatic Backups Disabled";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "خود کار بیک اپس غیر فعال ہیں";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "آپ کا بیک اپ تخلیق کرنے میں کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔";
@@ -695,7 +695,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "اپ گریڈ";
 
 /* Text describing the user's free backup plan when they have Backups disabled. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "You turned off backups";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "آپ نے بیک اپس کو آف کر دیا ہے";
 
 /* Text describing the user's free backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "آپ کا بیک اپ پلان مفت ہے";
@@ -743,10 +743,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "ادائیگی شدہ (TestFlight یوزرز کے لیے مفت ہے)";
 
 /* Title for a button allowing users to renew their backup subscription on this device. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "Renew";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "تجدید کریں";
 
 /* Text describing that the user's paid backup plan did not correspond to a App Store subscription on this device. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "Your subscription was not found on this device. Renew to continue using Signal Backups.";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "اس ڈیوائس پر آپ کی سبسکرپشن نہیں ملی۔ Signal بیک اپس کا استعمال کرنا جاری رکھنے کے لیے تجدید کریں۔";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "ٹیکسٹ + تمام میڈیا کا بیک اپ";
@@ -788,13 +788,13 @@
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "نئی بحالی کی کیی تخلیق کرنے کے لیے آپ کا رجسٹر ہونا لازمی ہے۔";
 
 /* Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "If you create a new recovery key, you will not be able to enable backups for %1$@. The number of keys you can create is limited to prevent abuse.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "اگر آپ نئی بحالی کی کیی تخلیق کرتے ہیں، تو آپ %1$@ کے لیے بیک اپس فعال نہیں کر سکیں گے۔ غلط استعمال کو روکنے کے لیے آپ کی تخلیق کی جانے والی کییز کی تعداد کو محدود کیا گیا ہے۔";
 
 /* Action in an action sheet allowing to continue to rotate their key */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "Create New Key";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "نئی کیی تخلیق کریں";
 
 /* Title for a sheet warning users they've reached a rate limit for creating Recovery Key. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "Recovery Key Limit Reached";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "بحالی کی کیی کی حد ختم ہو گئی ہے";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "نئی کیی تخلیق ہو گئی!";
@@ -902,13 +902,13 @@
 "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "ریکوری کیی دیکھیں";
 
 /* Body for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "Your subscription couldn't be restored on this device. This can happen if you're signed into the App Store with a different Apple account or you transferred from an Android phone.\n\nIf you have an active subscription on your old phone consider cancelling it before it renews.";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "آپ کی سبسکرپشن اس ڈیوائس پر بحال نہیں کی جا سکتی۔ یہ اس صورت میں ہو سکتا ہے اگر آپ Apple کے مختلف اکاؤنٹ سے ایپ اسٹور میں سائن ان ہیں یا آپ نے کسی Android فون سے ٹرانسفر کیا ہے۔\n\nاگر آپ کے پرانے فون پر آپ کی کوئی فعال سبسکرپشن ہے تو اس کے تجدید ہونے سے پہلے اسے منسوخ کرنے پر غور کریں۔";
 
 /* Button for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "Got It";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "سمجھ گیا";
 
 /* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Subscription Not Found";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "سبسکرپشن نہیں ملی";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "اب بیک اپ کریں";
@@ -965,19 +965,19 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "ڈاؤن لوڈ کو چھوڑ دیں؟";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Details";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "تفصیلات";
 
 /* Title for notice that the user's Backups subscription couldn't be redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "Couldn't redeem your backups subscription";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "آپ کی بیک اپس کی سبسکرپشن کو ریڈیم نہیں کیا جا سکا";
 
 /* Body for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "Too many devices have tried to redeem your subscription this month.\n\nYou may have re-registered your Signal account too many times, or have too many devices using the same subscription.";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "اس ماہ بہت سی ڈیوائسز پر آپ کی سبسکرپشن کو ریڈیم کرنے کی کوشش کی گئی ہے۔\n\nآپ نے ممکنہ طور پر اپنا Signal کا اکاؤنٹ بہت بار دوبارہ رجسٹر کیا ہے، یا بہت زیادہ ڈیوائسز پر ایک ہی سبسکرپشن کو استعمال کیا ہے۔";
 
 /* Button for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "Got It";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "سمجھ گیا";
 
 /* Title for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "Couldn't redeem your backups subscription";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "آپ کی بیک اپس کی سبسکرپشن کو ریڈیم نہیں کیا جا سکا";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "میڈیا اپ لوڈ موقوف ہو گیا: ڈیوائس کی بیٹری کم ہے";
@@ -1724,10 +1724,10 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "آپ کی خریداری کو ریڈیم کرنے میں کچھ غلط ہو گیا۔ براہ کرم سپورٹ سے رابطہ کریں۔";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Because you reached your limit of new recovery keys, to prevent abuse you will not be able to enable backups for %1$@. Wait %1$@ and try again.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "چونکہ آپ اپنی نئی بحالی کی کییز کی حد تک پہنچ گئے ہیں، اس لیے غلط استعمال کو روکنے کے لیے آپ بیک اپس کو %1$@ کے لیے فعال نہیں کر سکیں گے۔ %1$@ کا انتظار کریں اور دوبارہ کوشش کریں۔";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "Couldn't Enable Backups";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "بیک اپس کو فعال نہیں کیا جا سکا";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "موجودہ پلان";
@@ -4400,10 +4400,10 @@
 "HOME_VIEW_TITLE_BACKUP_OUT_OF_STORAGE_QUOTA" = "بیک اپ اسٹوریج فُل ہو گئی ہے";
 
 /* Title for the conversation list's failed to redeem backup subscription context menu action. */
-"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "Backup Subscription Error";
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_FAILED_TO_REDEEM" = "بیک اپ کی سبسکرپشن میں خرابی واقع ہوئی ہے";
 
 /* Title for the conversation list's backup subscription not found locally context menu action. */
-"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Backup Subscription Not Found";
+"HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "بیک اپ کی سبسکرپشن نہیں ملی";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "بیک اپ ناکام ہو گیا";
@@ -4691,7 +4691,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "منسلک ہونا ختم کریں";
 
 /* Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled. */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "Transfer your text messages and all your media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "اپنے ٹیکسٹ میسجز اور اپنا تمام میڈیا ٹرانسفر کریں";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "میسج ہسٹری ٹرانسفر کریں";
@@ -7313,28 +7313,28 @@
 "RESET" = "دوبارہ بحال کریں";
 
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "آپ کے میڈیا کی بحالی مکمل نہیں ہوئی۔ اگر آپ منسوخ کرنے کا انتخاب کرتے ہیں، تو آپ اس ڈیوائس کو ری لنک کر کے دوبارہ بحال کر سکتے ہیں۔";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "Continue Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "بحالی جاری رکھیں";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON" = "Cancel Restore";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_SECONDARY_BUTTON" = "بحالی منسوخ کریں";
 
 /* Title for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "Your Media is Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "آپ کا میڈیا بحال ہو رہا ہے";
 
 /* Message for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "Your media has not completed restoring. If you choose to cancel, you can restore it again by re-linking this device.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "آپ کے میڈیا کی بحالی مکمل نہیں ہوئی۔ اگر آپ منسوخ کرنے کا انتخاب کرتے ہیں، تو آپ اس ڈیوائس کو ری لنک کر کے دوبارہ بحال کر سکتے ہیں۔";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "Continue Restoring";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "بحالی جاری رکھیں";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "Cancel Restore";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "بحالی منسوخ کریں";
 
 /* Title for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "Cancel Media Restore?";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "میڈیا کی بحالی کو منسوخ کریں؟";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "تفصیلات";
