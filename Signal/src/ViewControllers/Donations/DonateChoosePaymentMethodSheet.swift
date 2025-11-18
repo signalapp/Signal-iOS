@@ -7,7 +7,7 @@ import Foundation
 import SignalUI
 import SignalServiceKit
 
-class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
+class DonateChoosePaymentMethodSheet: StackSheetViewController {
     enum DonationMode {
         case oneTime
         case monthly
@@ -91,46 +91,44 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         super.init()
     }
 
-    // MARK: - Updating table contents
-
-    public override func tableContents() -> OWSTableContents {
-        let infoStackView: UIView = {
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.alignment = .center
-            stackView.spacing = 6
-
-            if let assets = badge.assets {
-                let badgeImageView = UIImageView(image: assets.universal160)
-                badgeImageView.autoSetDimensions(to: CGSize(square: 80))
-                stackView.addArrangedSubview(badgeImageView)
-                stackView.setCustomSpacing(12, after: badgeImageView)
-            }
-
-            let titleLabel = UILabel.title2Label(text: titleText)
-            stackView.addArrangedSubview(titleLabel)
-
-            if let bodyText {
-                let bodyLabel = UILabel.explanationTextLabel(text: bodyText)
-                stackView.addArrangedSubview(bodyLabel)
-            }
-
-            return stackView
-        }()
-
-        let section = OWSTableSection(items: [.init(customCellBlock: {
-            let cell = OWSTableItem.newCell()
-            cell.contentView.addSubview(infoStackView)
-            infoStackView.autoPinEdgesToSuperviewMargins()
-            return cell
-        })])
-        section.hasBackground = false
-        section.shouldDisableCellSelection = true
-
-        return OWSTableContents(sections: [section])
+    override var stackViewInsets: UIEdgeInsets {
+        .init(top: 32, leading: 0, bottom: 0, trailing: 0)
     }
 
-    public override func tableFooterView() -> UIView? {
+    // MARK: - Updating table contents
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        stackView.addArrangedSubviews([headerStack(), buttonsStack()])
+        stackView.spacing = 24
+    }
+
+    public func headerStack() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 6
+
+        if let assets = badge.assets {
+            let badgeImageView = UIImageView(image: assets.universal160)
+            badgeImageView.autoSetDimensions(to: CGSize(square: 80))
+            stackView.addArrangedSubview(badgeImageView)
+            stackView.setCustomSpacing(12, after: badgeImageView)
+        }
+
+        let titleLabel = UILabel.title2Label(text: titleText)
+        stackView.addArrangedSubview(titleLabel)
+
+        if let bodyText {
+            let bodyLabel = UILabel.explanationTextLabel(text: bodyText)
+            stackView.addArrangedSubview(bodyLabel)
+        }
+
+        return stackView
+    }
+
+    private func buttonsStack() -> UIView {
         let paymentMethods: [DonationPaymentMethod]
         let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
 
@@ -223,7 +221,6 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         action: @escaping () -> Void
     ) -> UIButton {
         var configuration: UIButton.Configuration
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             configuration = UIButton.Configuration.glass()
         } else {
@@ -232,12 +229,6 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             configuration.baseForegroundColor = .label
             configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
         }
-#else
-        configuration = .bordered()
-        configuration.background.cornerRadius = 12
-        configuration.baseForegroundColor = .label
-        configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
-#endif
 
         configuration.title = title
         configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
@@ -254,17 +245,12 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 
     private func createCreditOrDebitCardButton() -> UIButton {
         var configuration: UIButton.Configuration
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             configuration = .prominentGlass()
         } else {
             configuration = .borderedProminent()
             configuration.background.cornerRadius = 12
         }
-#else
-        configuration = .borderedProminent()
-        configuration.background.cornerRadius = 12
-#endif
 
         configuration.title = OWSLocalizedString(
             "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
