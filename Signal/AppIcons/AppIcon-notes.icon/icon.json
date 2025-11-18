@@ -37,18 +37,23 @@
         {
           "blend-mode-specializations" : [
             {
-              "value" : "overlay"
+              "value" : "normal"
             },
             {
               "appearance" : "dark",
-              "value" : "overlay"
+              "value" : "normal"
             },
             {
               "appearance" : "tinted",
-              "value" : "overlay"
+              "value" : "normal"
             }
           ],
           "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
             {
               "appearance" : "dark",
               "value" : {
@@ -65,7 +70,19 @@
           "hidden" : false,
           "image-name" : "notes-bottom.svg",
           "name" : "notes-bottom",
-          "opacity" : 0.96
+          "opacity-specializations" : [
+            {
+              "value" : 0.8
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.6
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.8
+            }
+          ]
         },
         {
           "fill-specializations" : [
@@ -78,6 +95,53 @@
           ],
           "image-name" : "notes-middle.svg",
           "name" : "notes-middle"
+        },
+        {
+          "blend-mode-specializations" : [
+            {
+              "value" : "normal"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            },
+            {
+              "appearance" : "tinted",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "srgb:0.93333,0.83922,0.45098,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "gray:0.94624,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "notes-bottom.svg",
+          "name" : "notes-bottom",
+          "opacity-specializations" : [
+            {
+              "value" : 0.9
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.9
+            }
+          ]
         }
       ],
       "shadow" : {
