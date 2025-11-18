@@ -33,6 +33,7 @@ extension TSThread {
             } else {
                 thread.lastDraftInteractionRowId = mostRecentInteractionID
                 thread.lastDraftUpdateTimestamp = Date().ows_millisecondsSince1970
+                thread.shouldThreadBeVisible = true
             }
         }
 
