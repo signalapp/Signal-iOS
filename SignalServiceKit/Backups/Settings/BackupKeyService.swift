@@ -49,6 +49,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
+    private let logger: PrefixedLogger
     private let networkManager: NetworkManager
 
     init(
@@ -62,6 +63,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.networkManager = networkManager
     }
 
@@ -190,6 +192,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
             //
             // Treat this like a success: maybe we deleted earlier, but
             // never got the response back.
+            logger.warn("Got 401 deleting Backup: treating like success.")
         }
     }
 

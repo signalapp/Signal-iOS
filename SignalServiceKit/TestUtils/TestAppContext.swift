@@ -74,11 +74,6 @@ public class TestAppContext: NSObject, AppContext {
     public var shouldProcessIncomingMessages = true
     public let hasUI: Bool = true
     public let debugLogsDirPath: String = testDebugLogsDirPath
-
-    @MainActor
-    public func resetAppDataAndExit() -> Never {
-        owsFail("resetAppDataAndExit called during tests")
-    }
 }
 
 #endif

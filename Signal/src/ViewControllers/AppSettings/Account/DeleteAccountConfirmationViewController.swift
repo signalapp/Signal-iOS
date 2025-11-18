@@ -303,11 +303,15 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             progressView.startAnimating { overlayView.alpha = 1 }
 
             do {
-                try await self.deleteDonationSubscriptionIfNecessary()
-                try await self.leaveGroups()
-                try await self.unregisterAccount()
+                try await { () async throws -> Never in
+                    try await self.deleteDonationSubscriptionIfNecessary()
+                    try await self.deleteBackupIfNecessary()
+                    try await self.leaveGroups()
+                    try await self.unregisterAccount()
+                    resetAppDataAndExit()
+                }()
             } catch {
-                owsFailDebug("Failed to unregister \(error)")
+                owsFailDebug("Failed to delete account! \(error)")
 
                 progressView.stopAnimating(success: false) {
                     overlayView.alpha = 0
@@ -324,6 +328,46 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 }
             }
         }
+    }
+
+    private func deleteBackupIfNecessary() async throws {
+        let backupKeyService = DependenciesBridge.shared.backupKeyService
+        let backupSettingsStore = BackupSettingsStore()
+        let db = DependenciesBridge.shared.db
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let (localIdentifiers, currentBackupPlan): (
+            LocalIdentifiers?,
+            BackupPlan,
+        ) = db.read { tx in
+            return (
+                tsAccountManager.localIdentifiers(tx: tx),
+                backupSettingsStore.backupPlan(tx: tx),
+            )
+        }
+
+        guard let localIdentifiers else {
+            return
+        }
+
+        switch currentBackupPlan {
+        case .disabled:
+            logger.info("Backups disabled: skipping delete.")
+            return
+        case .disabling:
+            // If we're disabling then BackupDisablingManager is actively trying
+            // to delete our remote backup, too. Might as well try here too.
+            break
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
+            break
+        }
+
+        logger.info("Attempting to delete Backups!")
+        try await backupKeyService.deleteBackupKey(
+            localIdentifiers: localIdentifiers,
+            auth: .implicit(),
+        )
     }
 
     private func deleteDonationSubscriptionIfNecessary() async throws {
@@ -381,12 +425,19 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         }
     }
 
-    private func unregisterAccount() async throws -> Never {
+    private func unregisterAccount() async throws {
         Logger.info("Unregistering...")
         try await DependenciesBridge.shared.registrationStateChangeManager.unregisterFromService()
     }
 
-    var hasEnteredLocalNumber: Bool {
+    private func resetAppDataAndExit() -> Never {
+        let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
+        SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+    }
+
+    // MARK: -
+
+    private var hasEnteredLocalNumber: Bool {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             owsFailDebug("local number unexpectedly nil")
@@ -403,6 +454,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         return localNumber == parsedNumber?.e164
     }
 }
+
+// MARK: - CountryCodeViewControllerDelegate
 
 extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry country: PhoneNumberCountry) {
@@ -430,6 +483,8 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         updateTableContents()
     }
 }
+
+// MARK: - UITextFieldDelegate
 
 extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

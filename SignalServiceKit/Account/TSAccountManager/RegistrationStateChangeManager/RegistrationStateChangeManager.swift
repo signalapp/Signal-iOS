@@ -158,11 +158,10 @@ public protocol RegistrationStateChangeManager {
      */
     func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction)
 
-    /**
-     * Unregisters with the server, resetting all app data after completion (if successful).
-     */
-    func unregisterFromService() async throws -> Never
+    /// Unregisters the local user's account from Signal entirely. (Must be the
+    /// primary device!)
+    func unregisterFromService() async throws
 
-    /// Unlinks the local device (must not be the primary device).
+    /// Unlinks the local device. (Must not be the primary device!)
     func unlinkLocalDevice(localDeviceId: LocalDeviceId, auth: ChatServiceAuth) async throws
 }

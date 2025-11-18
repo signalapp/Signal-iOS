@@ -10,14 +10,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 
-    private let accountKeyStore: AccountKeyStore
-    private let appContext: AppContext
     private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupCDNCredentialStore: BackupCDNCredentialStore
-    private let backupKeyService: BackupKeyService
-    private let backupRequestManager: BackupRequestManager
-    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     private var chatConnectionManager: any ChatConnectionManager {
@@ -26,14 +21,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let groupsV2: GroupsV2
     private let identityManager: OWSIdentityManager
     private let networkManager: NetworkManager
     private let notificationPresenter: any NotificationPresenter
     private let paymentsEvents: PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
-    private let senderKeyStore: Shims.SenderKeyStore
+    private let senderKeyStore: SenderKeyStore
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
@@ -41,45 +35,33 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let versionedProfiles: VersionedProfiles
 
     init(
-        accountKeyStore: AccountKeyStore,
-        appContext: AppContext,
         authCredentialStore: AuthCredentialStore,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupCDNCredentialStore: BackupCDNCredentialStore,
-        backupKeyService: BackupKeyService,
-        backupRequestManager: BackupRequestManager,
-        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
         paymentsEvents: PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
-        senderKeyStore: Shims.SenderKeyStore,
+        senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         versionedProfiles: VersionedProfiles
     ) {
-        self.accountKeyStore = accountKeyStore
-        self.appContext = appContext
         self.authCredentialStore = authCredentialStore
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupCDNCredentialStore = backupCDNCredentialStore
-        self.backupKeyService = backupKeyService
-        self.backupRequestManager = backupRequestManager
-        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
-        self.groupsV2 = groupsV2
         self.identityManager = identityManager
         self.networkManager = networkManager
         self.notificationPresenter = notificationPresenter
@@ -228,7 +210,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.resetSessionStore(tx: tx)
         signalProtocolStoreManager.signalProtocolStore(for: .pni).sessionStore.resetSessionStore(tx: tx)
-        senderKeyStore.resetSenderKeyStore(tx: tx)
+        senderKeyStore.resetSenderKeyStore(transaction: tx)
         udManager.removeSenderCertificates(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
@@ -285,75 +267,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     private let isUnregisteringFromService = AtomicValue(false, lock: .init())
 
-    public func unregisterFromService() async throws -> Never {
-        owsAssertBeta(appContext.isMainAppAndActive)
-
-        let (localIdentifiers, messageBackupKey, mediaBackupKey) = db.read { tx in
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
-            var messageBackupKey: MessageRootBackupKey?
-            if let aci = localIdentifiers?.aci {
-                messageBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: aci, tx: tx)
-            }
-            return (
-                localIdentifiers,
-                messageBackupKey,
-                accountKeyStore.getMediaRootBackupKey(tx: tx)
-            )
-        }
-
-        // Fetch Backup auth before unregistering ourselves remotely, for use
-        // after we make the unregistration request.
-        let backupAuths: [BackupServiceAuth]?
-        if let localIdentifiers {
-            backupAuths = await withTaskGroup { [backupRequestManager] taskGroup in
-                for credentialType in BackupAuthCredentialType.allCases {
-                    let backupKey: BackupKeyMaterial? = switch credentialType {
-                    case .messages: messageBackupKey
-                    case .media: mediaBackupKey
-                    }
-                    if let backupKey {
-                        taskGroup.addTask {
-                            return try? await backupRequestManager.fetchBackupServiceAuth(
-                                for: backupKey,
-                                localAci: localIdentifiers.aci,
-                                auth: .implicit()
-                            )
-                        }
-                    }
-                }
-
-                var auths: [BackupServiceAuth] = []
-                for await auth in taskGroup {
-                    guard let auth else { continue }
-                    auths.append(auth)
-                }
-                return auths
-            }
-        } else {
-            backupAuths = nil
-        }
-
+    public func unregisterFromService() async throws {
         try await deleteLocalDevice(OWSRequestFactory.unregisterAccountRequest())
-
-        // Now that we've successfully unregistered, make a best effort to wipe
-        // our Backups. This is safe to try even if Backups were disabled.
-        if let localIdentifiers, let backupAuths {
-            for backupAuth in backupAuths {
-                try? await Retry.performWithBackoff(
-                    maxAttempts: 3,
-                    isRetryable: { $0.isNetworkFailureOrTimeout || ($0 as? OWSHTTPError)?.isRetryable == true },
-                    block: {
-                        try await backupKeyService.deleteBackupKey(
-                            localIdentifiers: localIdentifiers,
-                            backupAuth: backupAuth
-                        )
-                    }
-                )
-            }
-        }
-        // No need to set any state, as we wipe the whole app anyway.
-
-        await appContext.resetAppDataAndExit()
     }
 
     public func unlinkLocalDevice(localDeviceId: LocalDeviceId, auth: ChatServiceAuth) async throws {
@@ -446,38 +361,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             name: .localNumberDidChange,
             object: nil
         )
-    }
-}
-
-// MARK: - Shims
-
-extension RegistrationStateChangeManagerImpl {
-    public enum Shims {
-        public typealias SenderKeyStore = _RegistrationStateChangeManagerImpl_SenderKeyStoreShim
-    }
-
-    public enum Wrappers {
-        public typealias SenderKeyStore = _RegistrationStateChangeManagerImpl_SenderKeyStoreWrapper
-    }
-}
-
-// MARK: SenderKeyStore
-
-public protocol _RegistrationStateChangeManagerImpl_SenderKeyStoreShim {
-
-    func resetSenderKeyStore(tx: DBWriteTransaction)
-}
-
-public class _RegistrationStateChangeManagerImpl_SenderKeyStoreWrapper: _RegistrationStateChangeManagerImpl_SenderKeyStoreShim {
-
-    private let senderKeyStore: SenderKeyStore
-
-    public init(_ senderKeyStore: SenderKeyStore) {
-        self.senderKeyStore = senderKeyStore
-    }
-
-    public func resetSenderKeyStore(tx: DBWriteTransaction) {
-        senderKeyStore.resetSenderKeyStore(transaction: tx)
     }
 }
 

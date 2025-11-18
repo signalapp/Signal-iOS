@@ -83,11 +83,6 @@ class NSEContext: NSObject, AppContext {
 
     func runNowOrWhenMainAppIsActive(_ block: () -> Void) {}
 
-    @MainActor
-    func resetAppDataAndExit() -> Never {
-        owsFail("Should not reset app data from NSE")
-    }
-
     var debugLogsDirPath: String {
         DebugLogger.nseDebugLogsDirPath
     }
