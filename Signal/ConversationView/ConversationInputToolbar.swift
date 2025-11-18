@@ -915,7 +915,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Voice recording is in progress in "locked" state: show Send button in active state.
         // In all other voice note recording states there are no trailing edge controls.
         if isShowingVoiceMemoUI {
-            let showSendButton = voiceMemoRecordingState == .recordingLocked
+            let showSendButton: Bool = {
+                switch voiceMemoRecordingState {
+                case .recordingLocked, .draft:
+                    true
+                default:
+                    false
+                }
+            }()
             rightEdgeControlsState = showSendButton ? .sendButton : .hiddenSendButton
         }
         // Text field has non-whitespace input: show Send button in active state.
