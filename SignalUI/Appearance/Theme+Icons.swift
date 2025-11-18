@@ -575,7 +575,7 @@ public extension Theme {
             return "pollstop"
 
         case .pollStopLight:
-            return "pollstop-light"
+            return "pollStop-light"
 
         case .poll:
             return "poll"
