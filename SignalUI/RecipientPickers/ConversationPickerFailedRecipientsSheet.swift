@@ -26,6 +26,8 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         self.remainingConversationItems = remainingConversationItems
         self.onApprove = onApprove
         super.init()
+
+        tableViewController.bottomFooter = tableFooterView()
     }
 
     public override func viewDidLoad() {
@@ -37,7 +39,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         )
     }
 
-    public override func tableFooterView() -> UIView? {
+    private func tableFooterView() -> UIView? {
         let doneButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.okayButton),
             primaryAction: UIAction { [weak self] _ in

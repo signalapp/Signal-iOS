@@ -36,7 +36,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         // `maximumHeight` prevents the view's height from extending into top safe area.)
         return tableView.contentSize.height
             + tableView.contentInset.totalHeight
-            + footerView.frame.height
+            + (tableViewController.bottomFooter?.height ?? 0)
             + bottomSafeAreaContentPadding
     }
 
@@ -52,9 +52,6 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         self.minimizedHeight = self.contentSizeHeight
     }
 
-    private var footerView = UIView.container()
-    private var footerViewConstraints = [NSLayoutConstraint]()
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -62,19 +59,12 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         contentView.addSubview(tableViewController.view)
         tableViewController.didMove(toParent: self)
 
-        contentView.addSubview(footerView)
-
         tableViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        footerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableViewController.view.topAnchor.constraint(equalTo: contentView.topAnchor),
             tableViewController.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             tableViewController.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-
-            footerView.topAnchor.constraint(equalTo: tableViewController.view.bottomAnchor),
-            footerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            footerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            footerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            tableViewController.view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
 
         updateTableContents(shouldReload: true)
@@ -90,38 +80,11 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
     }
 
     public func updateTableContents(shouldReload: Bool = true) {
-        // Update table view.
         tableViewController.setContents(tableContents(), shouldReload: shouldReload)
-
-        // Update footer.
-        footerView.removeAllSubviews()
-        NSLayoutConstraint.deactivate(footerViewConstraints)
-        if let footerContentView = tableFooterView() {
-            footerView.addSubview(footerContentView)
-            footerContentView.translatesAutoresizingMaskIntoConstraints = false
-            footerViewConstraints = [
-                footerContentView.topAnchor.constraint(equalTo: footerView.topAnchor),
-                footerContentView.leadingAnchor.constraint(equalTo: footerView.leadingAnchor),
-                footerContentView.trailingAnchor.constraint(equalTo: footerView.trailingAnchor),
-                footerContentView.bottomAnchor.constraint(equalTo: footerView.bottomAnchor),
-            ]
-        } else {
-            footerViewConstraints = [footerView.heightAnchor.constraint(equalToConstant: 0)]
-        }
-        NSLayoutConstraint.activate(footerViewConstraints)
-
-        footerView.setNeedsLayout()
-        footerView.layoutIfNeeded()
-
-        // Update height.
         updateMinimizedHeight()
     }
 
     open func tableContents() -> OWSTableContents {
         return OWSTableContents()
-    }
-
-    open func tableFooterView() -> UIView? {
-        return nil
     }
 }
