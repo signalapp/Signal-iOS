@@ -45,13 +45,6 @@ public class LocationPicker: UIViewController {
         return searchController
     }()
 
-    private lazy var searchBar: UISearchBar = {
-        let searchBar = self.searchController.searchBar
-        searchBar.placeholder = OWSLocalizedString("LOCATION_PICKER_SEARCH_PLACEHOLDER",
-                                                  comment: "A string indicating that the user can search for a location")
-        return searchBar
-    }()
-
     private static let SearchTermKey = "SearchTermKey"
     private var searchTimer: Timer?
 
@@ -86,9 +79,9 @@ public class LocationPicker: UIViewController {
 
         title = OWSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
-        navigationItem.leftBarButtonItem = .button(
+        navigationItem.rightBarButtonItem = .button(
             icon: .buttonX,
-            style: .done
+            style: .plain
         ) { [weak delegate] in
             delegate?.locationPickerDidCancel()
         }
@@ -96,20 +89,27 @@ public class LocationPicker: UIViewController {
         locationManager.delegate = self
         mapView.delegate = self
 
-        OWSSearchBar.applyTheme(to: searchBar)
+        let searchBar = self.searchController.searchBar
+        searchBar.placeholder = OWSLocalizedString(
+            "LOCATION_PICKER_SEARCH_PLACEHOLDER",
+            comment: "A string indicating that the user can search for a location"
+        )
 
-        searchBar.isTranslucent = true
+        if #unavailable(iOS 26) {
+            OWSSearchBar.applyTheme(to: searchBar)
+            searchBar.isTranslucent = true
 
-        // When the search bar isn't translucent, it doesn't allow
-        // setting the textField's backgroundColor. Instead, we need
-        // to use the background image.
-        let backgroundImage = UIImage.image(
-            color: Theme.searchFieldBackgroundColor,
-            size: CGSize(square: 36)
-        ).withCornerRadius(10)
-        searchBar.setSearchFieldBackgroundImage(backgroundImage, for: .normal)
-        searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
-        searchBar.textField?.backgroundColor = .clear
+            // When the search bar isn't translucent, it doesn't allow
+            // setting the textField's backgroundColor. Instead, we need
+            // to use the background image.
+            let backgroundImage = UIImage.image(
+                color: Theme.searchFieldBackgroundColor,
+                size: CGSize(square: 36)
+            ).withCornerRadius(10)
+            searchBar.setSearchFieldBackgroundImage(backgroundImage, for: .normal)
+            searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
+            searchBar.textField?.backgroundColor = .clear
+        }
 
         navigationItem.searchController = searchController
         definesPresentationContext = true
