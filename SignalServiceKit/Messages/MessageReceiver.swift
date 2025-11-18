@@ -1245,7 +1245,6 @@ public final class MessageReceiver {
                         SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollEnd(forMessage: incomingMessage, thread: thread, transaction: tx)
                     }
 
-                    // TODO: early message handler for out of order poll terminate
                     if let question = targetMessage.body {
                         DependenciesBridge.shared.pollMessageManager.insertInfoMessageForEndPoll(
                             timestamp: Date().ows_millisecondsSince1970,
@@ -1260,6 +1259,16 @@ public final class MessageReceiver {
                     } else {
                         Logger.error("Poll question empty when processing poll terminate")
                     }
+                } else {
+                    SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
+                        request.envelope,
+                        plainTextData: request.plaintextData,
+                        wasReceivedByUD: request.wasReceivedByUD,
+                        serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                        associatedMessageTimestamp: pollTerminate.targetSentTimestamp,
+                        associatedMessageAuthor: request.decryptedEnvelope.sourceAci,
+                        transaction: tx
+                    )
                 }
             } catch {
                 owsFailDebug("Could not terminate poll!")
