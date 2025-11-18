@@ -397,6 +397,7 @@ public class CVPollView: ManualStackView {
 
     func configureForRendering(
         state: CVPollView.State,
+        previousPollState: CVPollView.State?,
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate
     ) {
@@ -418,7 +419,9 @@ public class CVPollView: ManualStackView {
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
                 pollOption: option,
+                prevOption: previousPollState?.poll.optionForIndex(optionIndex: option.optionIndex),
                 totalVoters: poll.totalVoters(),
+                prevTotalVoters: previousPollState?.poll.totalVoters(),
                 localUserVoteState: localUserVoteState(localAci: state.localAci, option: option),
                 pollIsEnded: poll.isEnded,
                 pendingVotesCount: poll.pendingVotesCount(),
@@ -496,6 +499,7 @@ public class CVPollView: ManualStackView {
         let progressBarBackground = UIView()
         let progressBarContainer = ManualLayoutView(name: "progressBarContainer")
         let generator = UINotificationFeedbackGenerator()
+        var didAnimate = false
 
         var localUserVoteState: VoteState = .unvote
 
@@ -503,7 +507,9 @@ public class CVPollView: ManualStackView {
             configurator: Configurator,
             cellMeasurement: CVCellMeasurement,
             pollOption: OWSPollOption,
+            prevOption: OWSPollOption?,
             totalVoters: Int,
+            prevTotalVoters: Int?,
             localUserVoteState: VoteState,
             pollIsEnded: Bool,
             pendingVotesCount: Int,
@@ -520,7 +526,9 @@ public class CVPollView: ManualStackView {
                 option: pollOption.text,
                 index: pollOption.optionIndex,
                 votes: pollOption.acis.count,
+                prevVotes: prevOption?.acis.count,
                 totalVoters: totalVoters,
+                prevTotalVoters: prevTotalVoters,
                 pollIsEnded: pollIsEnded,
                 pendingVotesCount: pendingVotesCount
             )
@@ -544,7 +552,9 @@ public class CVPollView: ManualStackView {
 
         private func buildProgressBar(
             votes: Int,
+            prevVotes: Int?,
             totalVoters: Int,
+            prevTotalVoters: Int?,
             pollIsEnded: Bool,
             foregroundColor: UIColor,
             backgroundColor: UIColor,
@@ -582,18 +592,20 @@ public class CVPollView: ManualStackView {
                 Self.setSubviewFrame(subview: progressBarBackground, frame: subviewFrame)
             })
 
-            // No need to render progress fill if votes are 0
-            if votes <= 0 {
-                return
-            }
-
             progressBarContainer.addSubview(progressFill, withLayoutBlock: { [weak self] _ in
                 guard let self = self, let superview = progressFill.superview else {
                     owsFailDebug("Missing superview.")
                     return
                 }
 
-                let percent = Float(votes) / Float(totalVoters)
+                var percent = 0.0 as Float
+                if totalVoters > 0 {
+                    percent = Float(votes) / Float(totalVoters)
+                }
+                var prevPercent = 0.0 as Float
+                if let prevVotes, let prevTotalVoters, prevTotalVoters > 0 {
+                    prevPercent = Float(prevVotes) / Float(prevTotalVoters)
+                }
 
                 // The progress bar should start under the text, not the checkbox, so we need to shift it
                 // over the amount of the checkbox width (plus spacing), and remove that offset from the total size.
@@ -601,6 +613,7 @@ public class CVPollView: ManualStackView {
                 let checkboxOffset = pollIsEnded ? 0 : checkboxWidthWithSpacing
                 let adjustedContainerWidth = superview.bounds.width - checkboxOffset
                 let numVotesBarFill = CGFloat(percent) * adjustedContainerWidth
+                let prevNumVotesBarFill = CGFloat(prevPercent) * adjustedContainerWidth
 
                 // Origin references the left. If RTL, we want the origin to be its "finished" point, which is
                 // the total container size minus the fill size.
@@ -611,11 +624,39 @@ public class CVPollView: ManualStackView {
                     originX = superview.bounds.origin.x + checkboxOffset
                 }
 
-                let subviewFrame = CGRect(
+                var subviewFrame = CGRect(
                     origin: CGPoint(x: originX, y: superview.bounds.origin.y),
                     size: CGSize(width: numVotesBarFill, height: superview.bounds.height)
                 )
+
+                guard prevVotes != nil else {
+                    // Don't animate if there's no previous state, just set to the final width.
+                    subviewFrame.width = numVotesBarFill
+                    Self.setSubviewFrame(subview: progressFill, frame: subviewFrame)
+                    return
+                }
+
                 Self.setSubviewFrame(subview: progressFill, frame: subviewFrame)
+                if !didAnimate {
+                    didAnimate = true
+
+                    DispatchQueue.main.async { [weak self] in
+                        self?.progressFill.frame.width = prevNumVotesBarFill
+                        if prevNumVotesBarFill != numVotesBarFill {
+                            UIView.animate(
+                                withDuration: 0.25,
+                                delay: 0.0,
+                                usingSpringWithDamping: 0.7,
+                                initialSpringVelocity: 0.0,
+                                options: [],
+                                animations: { [weak self] in
+                                    self?.progressFill.frame.width = numVotesBarFill
+                                },
+                                completion: nil
+                            )
+                        }
+                    }
+                }
             })
         }
 
@@ -771,7 +812,9 @@ public class CVPollView: ManualStackView {
             option: String,
             index: UInt32,
             votes: Int,
+            prevVotes: Int?,
             totalVoters: Int,
+            prevTotalVoters: Int?,
             pollIsEnded: Bool,
             pendingVotesCount: Int
         ) {
@@ -822,7 +865,9 @@ public class CVPollView: ManualStackView {
 
             buildProgressBar(
                 votes: votes,
+                prevVotes: prevVotes,
                 totalVoters: totalVoters,
+                prevTotalVoters: prevTotalVoters,
                 pollIsEnded: pollIsEnded,
                 foregroundColor: configurator.colorConfigurator.voteProgressForegroundColor,
                 backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor,
