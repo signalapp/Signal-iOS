@@ -5,7 +5,7 @@
 
 extension URL {
     public enum Support {
-        public static let backups: URL = .supportArticle("360007059752")
+        public static let backups: URL = .supportArticle("9708267671322")
         public static let contactAccessNotAllowed: URL = .supportArticle("360007319011#ipad_contacts")
         public static let debugLogs: URL = .supportArticle("360007318591")
         public static let deliveryIssue: URL = .supportArticle("4404859745690")
