@@ -19,7 +19,7 @@ struct CVLoadContext: CVItemBuildingContext {
     let viewStateSnapshot: CVViewStateSnapshot
     let spoilerState: SpoilerRenderState
     let messageLoader: MessageLoader
-    let prevRenderState: CVRenderState?
+    let prevRenderState: CVRenderState
     let transaction: DBReadTransaction
     let avatarBuilder: CVAvatarBuilder
     let localAci: Aci
@@ -63,7 +63,6 @@ protocol CVItemBuildingContext {
     var transaction: DBReadTransaction { get }
     var avatarBuilder: CVAvatarBuilder { get }
     var localAci: Aci { get }
-    var prevRenderState: CVRenderState? { get }
 }
 
 // MARK: -
@@ -79,7 +78,6 @@ extension CVItemBuildingContext {
 // MARK: -
 
 struct CVItemBuildingContextImpl: CVItemBuildingContext {
-    let prevRenderState: CVRenderState?
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
     let transaction: DBReadTransaction

@@ -34,12 +34,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
             return
         }
 
-        componentViewPoll.pollView.configureForRendering(
-            state: poll.state,
-            previousPollState: poll.prevPollState,
-            cellMeasurement: cellMeasurement,
-            componentDelegate: componentDelegate
-        )
+        componentViewPoll.pollView.configureForRendering(state: poll.state, cellMeasurement: cellMeasurement, componentDelegate: componentDelegate)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: SignalUI.CVCellMeasurement.Builder) -> CGSize {

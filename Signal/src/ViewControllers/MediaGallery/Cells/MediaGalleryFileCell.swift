@@ -129,7 +129,6 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             spoilerReveal: spoilerState.revealState
         )
         let itemBuildingContext = CVItemBuildingContextImpl(
-            prevRenderState: nil,
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,

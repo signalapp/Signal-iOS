@@ -337,7 +337,6 @@ public class CVComponentState: Equatable {
 
     struct Poll: Equatable {
         let state: CVPollView.State
-        let prevPollState: CVPollView.State?
     }
     let poll: Poll?
 
@@ -1768,21 +1767,7 @@ fileprivate extension CVComponentState.Builder {
             localAci: self.localAci
         )
 
-        let prevPollState: CVComponentState.Poll?
-        if let prevRenderState = itemBuildingContext.prevRenderState,
-           let prevPollInteraction = prevRenderState.items.first(
-            where: {
-                $0.interactionUniqueId == message.uniqueId
-            }),
-           let _prevPollState = prevPollInteraction.componentState.poll
-        {
-            prevPollState = _prevPollState
-        } else {
-            prevPollState = nil
-        }
-
-        // Pass the previously rendered poll so we can animate.
-        self.poll = Poll(state: state, prevPollState: prevPollState?.state)
+        self.poll = Poll(state: state)
 
         if poll.totalVoters() > 0 {
             let title = poll.isEnded ? OWSLocalizedString(
