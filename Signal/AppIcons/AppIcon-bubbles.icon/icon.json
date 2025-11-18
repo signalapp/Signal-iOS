@@ -14,9 +14,14 @@
         {
           "fill-specializations" : [
             {
+              "value" : {
+                "solid" : "srgb:0.00000,0.47843,1.00000,1.00000"
+              }
+            },
+            {
               "appearance" : "tinted",
               "value" : {
-                "solid" : "gray:0.34749,1.00000"
+                "solid" : "gray:0.31820,1.00000"
               }
             }
           ],
@@ -30,6 +35,24 @@
           "blend-mode" : "normal",
           "fill-specializations" : [
             {
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.65091,0.81203,1.00000,1.00000",
+                  "srgb:0.02009,0.68619,0.89532,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 0
+                  },
+                  "stop" : {
+                    "x" : 0.5057908442982456,
+                    "y" : 1
+                  }
+                }
+              }
+            },
+            {
               "appearance" : "tinted",
               "value" : {
                 "linear-gradient" : [
@@ -41,10 +64,40 @@
           ],
           "image-name" : "bubbles-small.svg",
           "name" : "bubbles-small",
-          "opacity" : 1
+          "opacity-specializations" : [
+            {
+              "value" : 1
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.92
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.86
+            }
+          ]
         },
         {
           "fill-specializations" : [
+            {
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:1.00000,0.56471,0.16078,1.00000",
+                  "srgb:1.00000,0.24706,0.20000,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 0
+                  },
+                  "stop" : {
+                    "x" : 0.4822402887079063,
+                    "y" : 1
+                  }
+                }
+              }
+            },
             {
               "appearance" : "tinted",
               "value" : {
