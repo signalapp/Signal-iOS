@@ -357,7 +357,8 @@ public final class ConversationViewController: OWSViewController {
         self.updateNavigationTitle()
 
         self.ensureBottomViewType()
-        self.updateInputToolbarLayout(initialLayout: true)
+        inputToolbar?.scrollToBottom()
+
         self.refreshCallState()
 
         self.showMessageRequestDialogIfRequired()
@@ -443,7 +444,6 @@ public final class ConversationViewController: OWSViewController {
         // Clear the "on open" state after the view has been presented.
         self.actionOnOpen = .none
 
-        self.updateInputToolbarLayout()
         self.configureScrollDownButtons()
         inputToolbar?.viewDidAppear()
 
@@ -579,7 +579,6 @@ public final class ConversationViewController: OWSViewController {
         self.updateNavigationBarSubtitleLabel()
 
         self.updateInputToolbar()
-        self.updateInputToolbarLayout()
         self.updateBarButtonItems()
         self.ensureBannerState()
 
@@ -682,7 +681,6 @@ public final class ConversationViewController: OWSViewController {
         }
 
         updateContentInsetsDebounced()
-        updateInputToolbarLayout()
         viewSafeAreaInsetsDidChangeForLoad()
         updateConversationStyle()
     }

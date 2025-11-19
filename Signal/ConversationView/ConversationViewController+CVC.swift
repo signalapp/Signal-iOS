@@ -261,7 +261,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         self.updateLastKnownDistanceFromBottom()
-        self.updateInputToolbarLayout()
         self.showMessageRequestDialogIfRequired()
         self.configureScrollDownButtons()
 

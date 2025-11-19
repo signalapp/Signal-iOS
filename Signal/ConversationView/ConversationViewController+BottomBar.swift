@@ -252,22 +252,6 @@ public extension ConversationViewController {
         ensureBottomViewType()
     }
 
-    func updateInputToolbarLayout(initialLayout: Bool = false) {
-        AssertIsOnMainThread()
-
-        guard hasViewWillAppearEverBegun else {
-            return
-        }
-        guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
-            return
-        }
-
-        if initialLayout {
-            inputToolbar.scrollToBottom()
-        }
-    }
-
     func popKeyBoard() {
         AssertIsOnMainThread()
 
