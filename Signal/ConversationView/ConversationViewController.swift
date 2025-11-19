@@ -334,14 +334,14 @@ public final class ConversationViewController: OWSViewController {
 
         super.viewWillAppear(animated)
 
+        configureGestureRecognizersIfNeeded()
+
         if self.inputToolbar == nil {
             // This will create the input toolbar for the first time.
             // It's important that we do this at the "last moment" to
             // avoid expensive work that delays CVC presentation.
             self.applyTheme()
             owsAssertDebug(self.inputToolbar != nil)
-
-            self.createGestureRecognizers()
         } else {
             self.ensureBannerState()
         }

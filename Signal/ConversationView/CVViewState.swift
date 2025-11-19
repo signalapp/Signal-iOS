@@ -112,12 +112,13 @@ public class CVViewState: NSObject {
 
     // MARK: - Gestures
 
+    public var collectionViewGestureRecongnizersConfigured = false
     public let collectionViewTapGestureRecognizer = SingleOrDoubleTapGestureRecognizer()
     public let collectionViewLongPressGestureRecognizer = UILongPressGestureRecognizer()
     public let collectionViewContextMenuGestureRecognizer = UILongPressGestureRecognizer()
-    public var collectionViewContextMenuSecondaryClickRecognizer: UITapGestureRecognizer?
-
+    public var collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
     public let collectionViewPanGestureRecognizer = UIPanGestureRecognizer()
+
     public var collectionViewActiveContextMenuInteraction: ChatHistoryContextMenuInteraction?
     public var longPressHandler: CVLongPressHandler?
     public var panHandler: CVPanHandler?
@@ -273,6 +274,11 @@ extension ConversationViewController {
 
     // MARK: - Gestures
 
+    var collectionViewGestureRecongnizersConfigured: Bool {
+        get { viewState.collectionViewGestureRecongnizersConfigured }
+        set { viewState.collectionViewGestureRecongnizersConfigured = newValue }
+    }
+
     var collectionViewTapGestureRecognizer: SingleOrDoubleTapGestureRecognizer {
         viewState.collectionViewTapGestureRecognizer
     }
@@ -282,12 +288,9 @@ extension ConversationViewController {
     var collectionViewContextMenuGestureRecognizer: UILongPressGestureRecognizer {
         viewState.collectionViewContextMenuGestureRecognizer
     }
-    var collectionViewContextMenuSecondaryClickRecognizer: UITapGestureRecognizer? {
-        get { viewState.collectionViewContextMenuSecondaryClickRecognizer }
-        set { viewState.collectionViewContextMenuSecondaryClickRecognizer = newValue }
-
+    var collectionViewContextMenuSecondaryClickRecognizer: UITapGestureRecognizer {
+        viewState.collectionViewContextMenuSecondaryClickRecognizer
     }
-
     var collectionViewPanGestureRecognizer: UIPanGestureRecognizer {
         viewState.collectionViewPanGestureRecognizer
     }

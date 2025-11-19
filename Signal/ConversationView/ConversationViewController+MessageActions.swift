@@ -17,7 +17,7 @@ extension ConversationViewController {
         let cellCenterPoint = cell.frame.center
         let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
         var presentImmediately = false
-        if let secondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer, secondaryClickRecognizer.state == .ended {
+        if collectionViewContextMenuSecondaryClickRecognizer.state == .ended {
             presentImmediately = true
         }
         interaction.initiateContextMenuGesture(locationInView: screenPoint, presentImmediately: presentImmediately)

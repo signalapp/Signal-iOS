@@ -11,7 +11,9 @@ public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
 }
 
 extension ConversationViewController: UIGestureRecognizerDelegate {
-    func createGestureRecognizers() {
+    func configureGestureRecognizersIfNeeded() {
+        guard !collectionViewGestureRecongnizersConfigured else { return }
+
         collectionViewTapGestureRecognizer.setTapDelegate(self)
         collectionViewTapGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewTapGestureRecognizer)
@@ -25,12 +27,10 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewContextMenuGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewContextMenuGestureRecognizer)
 
-        let collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
         collectionViewContextMenuSecondaryClickRecognizer.addTarget(self, action: #selector(handleSecondaryClickGesture))
         collectionViewContextMenuSecondaryClickRecognizer.buttonMaskRequired = [.secondary]
         collectionViewContextMenuSecondaryClickRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewContextMenuSecondaryClickRecognizer)
-        self.collectionViewContextMenuSecondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer
 
         collectionViewPanGestureRecognizer.addTarget(self, action: #selector(handlePanGesture))
         collectionViewPanGestureRecognizer.delegate = self
@@ -48,6 +48,8 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
             collectionViewPanGestureRecognizer.require(toFail: interactivePopGestureRecognizer)
         }
+
+        collectionViewGestureRecongnizersConfigured = true
     }
 
     // TODO: Revisit
