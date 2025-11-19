@@ -14,6 +14,7 @@ struct BackupDisablingManagerTest {
         let mockAccountEntropyPoolManager = MockAccountEntropyPoolManager()
         let mockAuthCredentialStore = AuthCredentialStore(dateProvider: { Date() })
         let mockBackupAttachmentDownloadQueueStatusManager = MockBackupAttachmentDownloadQueueStatusManager()
+        let mockBackupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let mockBackupCDNCredentialStore = BackupCDNCredentialStore()
         let mockBackupKeyService = MockBackupKeyService()
         let mockBackupAttachmentCoordinator = MockBackupAttachmentCoordinator()
@@ -27,6 +28,7 @@ struct BackupDisablingManagerTest {
             authCredentialStore: mockAuthCredentialStore,
             backupAttachmentCoordinator: mockBackupAttachmentCoordinator,
             backupAttachmentDownloadQueueStatusManager: mockBackupAttachmentDownloadQueueStatusManager,
+            backupAttachmentUploadEraStore: mockBackupAttachmentUploadEraStore,
             backupCDNCredentialStore: mockBackupCDNCredentialStore,
             backupKeyService: mockBackupKeyService,
             backupPlanManager: mockBackupPlanManager,
