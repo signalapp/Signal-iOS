@@ -66,6 +66,9 @@ class StoryCell: UITableViewCell {
         return stackView
     }()
 
+    /// If set to `true` background in `selected` state would have rounded corners.
+    var useSidebarAppearance = false
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -96,7 +99,7 @@ class StoryCell: UITableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            if traitCollection.userInterfaceIdiom == .pad {
+            if useSidebarAppearance {
                 configuration.cornerRadius = 24
             }
         } else {

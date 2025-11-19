@@ -38,24 +38,29 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
-    override func loadView() {
-        view = tableView
-        tableView.delegate = self
-        tableView.dataSource = self
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
+        tableView.backgroundColor = .Signal.background
 
         title = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
+        tableView.delegate = self
+        tableView.dataSource = self
         tableView.register(SentStoryCell.self, forCellReuseIdentifier: SentStoryCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
         tableView.backgroundColor = .Signal.background
+        view.addSubview(tableView)
+        tableView.autoPinHeight(toHeightOf: view)
+        tableViewHorizontalEdgeConstraints = [
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
+        ]
+        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
+        updateTableViewPaddingIfNeeded()
 
         reloadStories()
 
@@ -67,10 +72,42 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
         )
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateTableViewPaddingIfNeeded()
+    }
+
     @objc
     private func showPrivacySettings() {
         let vc = StoryPrivacySettingsViewController()
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    }
+
+    /// Set to `true` when list is displayed in split view controller's "sidebar" on iOS 26 and later.
+    /// Setting this to `true` would add an extra padding on both sides of the table view.
+    /// This value is also passed down to table view cells that make their own layout choices based on the value.
+    private var useSidebarStoryListCellAppearance = false {
+        didSet {
+            guard oldValue != useSidebarStoryListCellAppearance else { return }
+            tableViewHorizontalEdgeConstraints.forEach {
+                $0.constant = useSidebarStoryListCellAppearance ? 16 : 0
+            }
+            tableView.reloadData()
+        }
+    }
+
+    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
+
+    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
+    /// Does nothing on prior iOS versions.
+    private func updateTableViewPaddingIfNeeded() {
+        guard #available(iOS 26, *) else { return }
+
+        if let splitViewController = splitViewController, !splitViewController.isCollapsed {
+            useSidebarStoryListCellAppearance = true
+        } else {
+            useSidebarStoryListCellAppearance = false
+        }
     }
 
     private func reloadStories() {
@@ -226,6 +263,7 @@ extension MyStoriesViewController: UITableViewDataSource {
             }
         }()
 
+        cell.useSidebarAppearance = useSidebarStoryListCellAppearance
         cell.configure(
             with: item,
             spoilerState: spoilerState,
@@ -381,6 +419,9 @@ class SentStoryCell: UITableViewCell {
         return view
     }()
 
+    /// If set to `true` background in `selected` state would have rounded corners.
+    var useSidebarAppearance = false
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -418,7 +459,7 @@ class SentStoryCell: UITableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            if traitCollection.userInterfaceIdiom == .pad {
+            if useSidebarAppearance {
                 configuration.cornerRadius = 24
             }
         } else {

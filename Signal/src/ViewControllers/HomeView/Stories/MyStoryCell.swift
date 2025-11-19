@@ -11,32 +11,35 @@ import SignalUI
 class MyStoryCell: UITableViewCell {
     static let reuseIdentifier = "MyStoryCell"
 
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeHeadline
         label.textColor = .Signal.label
         return label
     }()
-    let titleChevron: UIImageView = {
+    private let titleChevron: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .Signal.label
         return imageView
     }()
-    let subtitleLabel: UILabel = {
+    private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
         label.textColor = .Signal.secondaryLabel
         return label
     }()
-    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, badged: false, useAutolayout: true)
-    let attachmentThumbnail = UIView()
+    private let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, badged: false, useAutolayout: true)
+    private let attachmentThumbnail = UIView()
 
-    let failedIconView = UIImageView(image: Theme.iconImage(.error16))
+    private let failedIconView = UIImageView(image: Theme.iconImage(.error16))
 
-    let addStoryButton = OWSButton()
+    private let addStoryButton = OWSButton()
     private let plusIcon = PlusIconView()
 
-    let contentHStackView = UIStackView()
+    private let contentHStackView = UIStackView()
+
+    /// If set to `true` background in `selected` state would have rounded corners.
+    var useSidebarAppearance = false
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -91,7 +94,7 @@ class MyStoryCell: UITableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-            if traitCollection.userInterfaceIdiom == .pad {
+            if useSidebarAppearance {
                 configuration.cornerRadius = 24
             }
         } else {
