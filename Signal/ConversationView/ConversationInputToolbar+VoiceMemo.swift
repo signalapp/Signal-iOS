@@ -16,6 +16,10 @@ extension ConversationInputToolbar {
 
             directionalLayoutMargins = .init(top: 12, leading: 8, bottom: 8, trailing: 8)
 
+            if #available(iOS 26, *) {
+                visualEffectView.contentView.clipsToBounds = true
+                visualEffectView.contentView.cornerConfiguration = .capsule()
+            }
             addSubview(visualEffectView)
             visualEffectView.contentView.addSubview(lockIconView)
             visualEffectView.contentView.addSubview(chevronView)
@@ -28,12 +32,6 @@ extension ConversationInputToolbar {
                 chevronView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
                 iconSpacingConstraint,
             ])
-
-#if compiler(>=6.2)
-            if #available(iOS 26, *) {
-                visualEffectView.cornerConfiguration = .capsule()
-            }
-#endif
         }
 
         required init?(coder aDecoder: NSCoder) {
@@ -45,11 +43,7 @@ extension ConversationInputToolbar {
 
             visualEffectView.frame = bounds
 
-            var cantUseCornerConfiguration = true
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-                cantUseCornerConfiguration = false
-            }
-            if cantUseCornerConfiguration {
+            if #unavailable(iOS 26) {
                 let maskLayer = CAShapeLayer()
                 maskLayer.path = UIBezierPath(ovalIn: bounds).cgPath
                 visualEffectView.layer.mask = maskLayer
@@ -82,17 +76,12 @@ extension ConversationInputToolbar {
 
         private lazy var visualEffectView: UIVisualEffectView = {
             let visualEffect: UIVisualEffect = {
-#if compiler(>=6.2)
                 if #available(iOS 26, *) {
-                    return UIGlassEffect(style: .regular)
+                    UIGlassEffect(style: .regular)
                 } else {
-                    return UIBlurEffect(style: .systemThinMaterial)
+                    UIBlurEffect(style: .systemThinMaterial)
                 }
-#else
-                UIBlurEffect(style: .systemThinMaterial)
-#endif
             }()
-
             return UIVisualEffectView(effect: visualEffect)
         }()
     }
@@ -142,9 +131,9 @@ extension ConversationInputToolbar {
 
             voiceMessageInterruptedDraft.audioPlayer.delegate = self
 
-            waveformView.thumbColor = Theme.primaryTextColor
-            waveformView.playedColor = Theme.primaryTextColor
-            waveformView.unplayedColor = Theme.ternaryTextColor
+            waveformView.thumbColor = .Signal.label
+            waveformView.playedColor = .Signal.label
+            waveformView.unplayedColor = .Signal.tertiaryLabel
             waveformView.audioWaveformTask = voiceMessageInterruptedDraft.audioWaveformTask
 
             let stackView = UIStackView(arrangedSubviews: [

@@ -46,12 +46,15 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
 
         // Background with rounded corners.
         let backgroundView: UIView
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
+            clipsToBounds = true
+            cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
+
             let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
 
             // Colored overlay on top of blur.
             let dimmingView = UIView()
-            dimmingView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
+            dimmingView.backgroundColor = .Signal.secondaryFill
             dimmingView.translatesAutoresizingMaskIntoConstraints = false
             blurEffectView.contentView.addSubview(dimmingView)
             NSLayoutConstraint.activate([
@@ -60,11 +63,6 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
                 dimmingView.trailingAnchor.constraint(equalTo: blurEffectView.trailingAnchor),
                 dimmingView.bottomAnchor.constraint(equalTo: blurEffectView.bottomAnchor),
             ])
-
-#if compiler(>=6.2)
-            clipsToBounds = true
-            cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
-#endif
 
             contentView = blurEffectView.contentView
             backgroundView = blurEffectView
@@ -77,7 +75,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
                 }
             )
             backgroundView.layer.mask = maskLayer
-            backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
+            backgroundView.backgroundColor = .Signal.secondaryFill
         }
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(backgroundView)
@@ -395,7 +393,7 @@ private class QuotedMessageSnippetView: UIView {
         horizonalStack.spacing = 8
 
         let stripeView = UIView()
-        stripeView.backgroundColor = .Signal.quaternaryLabel.resolvedForInputToolbar()
+        stripeView.backgroundColor = .Signal.quaternaryLabel
         horizonalStack.addArrangedSubview(stripeView)
 #if compiler(>=6.2)
         if #available(iOS 26, *) {
@@ -562,10 +560,10 @@ private class QuotedMessageSnippetView: UIView {
         } else if attachment.asAnyPointer() != nil {
             let refreshIcon = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
             refreshIcon.contentMode = .scaleAspectFit
-            refreshIcon.tintColor = .Signal.tertiaryLabel.resolvedForInputToolbar()
+            refreshIcon.tintColor = .Signal.tertiaryLabel
 
             let containerView = UIView.container()
-            containerView.backgroundColor = .Signal.tertiaryBackground.resolvedForInputToolbar()
+            containerView.backgroundColor = .Signal.tertiaryBackground
             containerView.addSubview(refreshIcon)
             refreshIcon.translatesAutoresizingMaskIntoConstraints = false
             containerView.addConstraints([

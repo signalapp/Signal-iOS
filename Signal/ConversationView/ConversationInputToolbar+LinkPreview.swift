@@ -13,15 +13,13 @@ class OutgoingLinkPreviewView: UIView {
 
         directionalLayoutMargins = .init(top: 0, leading: 12, bottom: 0, trailing: 0)
 
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             clipsToBounds = true
             cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 12))
         }
-#endif
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = .Signal.secondaryFill.resolvedForInputToolbar()
+        backgroundView.backgroundColor = .Signal.secondaryFill
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(backgroundView)
         NSLayoutConstraint.activate([
@@ -48,7 +46,7 @@ class OutgoingLinkPreviewView: UIView {
     override var bounds: CGRect {
         didSet {
             // Use `cornerConfiguration`.
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable { return }
+            if #available(iOS 26, *) { return }
 
             // Mask to round corners.
             let maskLayer = CAShapeLayer()
@@ -92,7 +90,7 @@ class OutgoingLinkPreviewView: UIView {
             traitCollection.userInterfaceStyle == .dark
             ? UIColor(rgbHex: 0x787880, alpha: 0.4)
             : UIColor(rgbHex: 0xF5F5F5, alpha: 0.9)
-        }.resolvedForInputToolbar()
+        }
         cancelButton.configuration?.background.visualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         cancelButton.tintColor = ConversationInputToolbar.Style.primaryTextColor
         cancelButton.configuration?.cornerStyle = .capsule

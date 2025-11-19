@@ -171,7 +171,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     func update(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
         if #available(iOS 26, *), let sendButton = trailingEdgeControl as? UIButton {
-            sendButton.tintColor = conversationStyle.chatColorValue.asSendButtonTintColor().resolvedForInputToolbar()
+            sendButton.tintColor = conversationStyle.chatColorValue.asSendButtonTintColor()
         }
     }
 
@@ -185,7 +185,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }
 
     public enum Style {
-#if compiler(>=6.2)
         @available(iOS 26, *)
         static var glassTintColor: UIColor {
             UIColor { traitCollection in
@@ -193,7 +192,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                     return UIColor(white: 0, alpha: 0.2)
                 }
                 return UIColor(white: 1, alpha: 0.12)
-            }.resolvedForInputToolbar()
+            }
         }
 
         @available(iOS 26, *)
@@ -203,21 +202,24 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             glassEffect.isInteractive = isInteractive
             return glassEffect
         }
-#endif
 
         static var primaryTextColor: UIColor {
-            .Signal.label.resolvedForInputToolbar()
+            .Signal.label
         }
 
         static var secondaryTextColor: UIColor {
-            .Signal.secondaryLabel.resolvedForInputToolbar()
+            .Signal.secondaryLabel
         }
 
         static var buttonTintColor: UIColor {
             if #available(iOS 26, *) {
-                return .Signal.label.resolvedForInputToolbar()
+                return .Signal.label
             }
-            return Theme.primaryIconColor.resolvedForInputToolbar()
+            return UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark
+                ? Theme.darkThemeLegacyPrimaryIconColor
+                : Theme.lightThemeLegacyPrimaryIconColor
+            }
         }
     }
 
@@ -316,7 +318,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             return button
         }
 
-#if compiler(>=6.2)
         @available(iOS 26.0, *)
         static func sendButton(
             primaryAction: UIAction?,
@@ -388,7 +389,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 configuration: .prominentGlass(),
                 primaryAction: primaryAction
             )
-            button.tintColor = .Signal.red.resolvedForInputToolbar()
+            button.tintColor = .Signal.red
             button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
@@ -400,7 +401,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             ])
             return button
         }
-#endif
     }
 
     private lazy var inputTextView: ConversationInputTextView = {
@@ -483,7 +483,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 },
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton")
             )
-            button.tintColor = conversationStyle.bubbleChatColorOutgoing.asSendButtonTintColor().resolvedForInputToolbar()
+            button.tintColor = conversationStyle.bubbleChatColorOutgoing.asSendButtonTintColor()
             return button
         }
 #endif
@@ -520,6 +520,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }()
 
     private var glassContainerView: UIView?
+    private var legacyBackgroundView: UIView?
+    private var legacyBackgroundBlurView: UIVisualEffectView?
 
     /// Whole-width container that contains (+) button, text input part and Send button.
     private let contentView = UIView()
@@ -545,11 +547,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         contentView.semanticContentAttribute = .forceLeftToRight
 
         let contentViewSuperview: UIView
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             iOS26Layout = true
 
             // Glass Container.
-#if compiler(>=6.2)
             let glassContainerView = UIVisualEffectView(effect: UIGlassContainerEffect())
             addSubview(glassContainerView)
             glassContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -562,28 +563,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
             contentViewSuperview = glassContainerView.contentView
             self.glassContainerView = glassContainerView
-#else
-            contentViewSuperview = self
-#endif
         } else {
             // Background needed on pre-iOS 26 devices.
             // The background is stretched to all edges to cover any safe area gaps.
            let backgroundView = UIView()
             if UIAccessibility.isReduceTransparencyEnabled {
-                backgroundView.backgroundColor = Theme.toolbarBackgroundColor
+                backgroundView.backgroundColor = .Signal.background
             } else {
-                backgroundView.backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-
-                let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-                // Alter the visual effect view's tint to match our background color
-                // so the input bar, when over a solid color background matching `toolbarBackgroundColor`,
-                // exactly matches the background color. This is brittle, but there is no way to get
-                // this behavior from UIVisualEffectView otherwise.
-                if let tintingView = blurEffectView.subviews.first(where: {
-                    String(describing: type(of: $0)) == "_UIVisualEffectSubview"
-                }) {
-                    tintingView.backgroundColor = backgroundView.backgroundColor
-                }
+                let blurEffectView = UIVisualEffectView(effect: nil) // will be updated later
                 backgroundView.addSubview(blurEffectView)
                 blurEffectView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -592,6 +579,13 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                     blurEffectView.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor),
                     blurEffectView.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor),
                 ])
+
+                // Set background color and visual effect.
+                updateBackgroundColors(backgroundView: backgroundView, backgroundBlurView: blurEffectView)
+
+                // Remember these views so that we can update colors on traitCollection changes.
+                self.legacyBackgroundView = backgroundView
+                self.legacyBackgroundBlurView = blurEffectView
             }
             addSubview(backgroundView)
             backgroundView.translatesAutoresizingMaskIntoConstraints = false
@@ -708,15 +702,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Rounded rect background for the text input field:
         // Liquid Glass on iOS 26, gray-ish on earlier iOS versions.
         let backgroundView: UIView
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+        if #available(iOS 26, *) {
             let glassEffectView = UIVisualEffectView(effect: Style.glassEffect(isInteractive: true))
             glassEffectView.cornerConfiguration = .uniformCorners(radius: 20)
             glassEffectView.contentView.addSubview(messageComponentsView)
             backgroundView = glassEffectView
-#else
-            backgroundView = UIView()
-#endif
+
             messageContentView.addSubview(backgroundView)
         } else {
             backgroundView = UIView()
@@ -1167,6 +1158,32 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         inputTextView.font = .dynamicTypeBody
     }
 
+    // Dynamic color and visual effect support for background view(s) on iOS 15-18.
+    @available(iOS, deprecated: 26)
+    private func updateBackgroundColors(backgroundView: UIView, backgroundBlurView: UIVisualEffectView) {
+        let backgroundColor = UIColor.Signal.background
+            .resolvedColor(with: traitCollection)
+            .withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+
+        backgroundView.backgroundColor = backgroundColor
+
+        // Match Theme.barBlurEffect.
+        backgroundBlurView.effect =
+        traitCollection.userInterfaceStyle == .dark
+        ? UIBlurEffect(style: .dark)
+        : UIBlurEffect(style: .light)
+
+        // Alter the visual effect view's tint to match our background color
+        // so the input bar, when over a solid color background matching `toolbarBackgroundColor`,
+        // exactly matches the background color. This is brittle, but there is no way to get
+        // this behavior from UIVisualEffectView otherwise.
+        if let tintingView = backgroundBlurView.subviews.first(where: {
+            String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+        }) {
+            tintingView.backgroundColor = backgroundColor
+        }
+    }
+
     // MARK: Right Edge Buttons
 
     @available(iOS, deprecated: 26.0)
@@ -1442,7 +1459,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
     }
 
-#if compiler(>=6.2)
     @available(iOS 26.0, *)
     private class AttachmentButton: UIButton, AttachmentButtonProtocol {
 
@@ -1478,7 +1494,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             }
         }
     }
-#endif
 
     // MARK: Message Body
 
@@ -2068,12 +2083,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         static let outerPanelHMargin: CGFloat = if #available(iOS 26, *) { OWSTableViewController2.cellHInnerMargin } else { 0 }
 
         // Corner radius of the glass/blur background.
-        @available(iOS 26.0, *)
+        @available(iOS 26, *)
         static let backgroundCornerRadius: CGFloat = 26
 
         // Make sure to match parameters from MentionPicker.
         static func animationTransform(_ view: UIView) -> CGAffineTransform {
-            guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return .identity }
+            guard #available(iOS 26, *) else { return .identity }
             return .scale(0.9)
         }
 
@@ -2086,15 +2101,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             )
         }
 
-#if compiler(>=6.2)
         static let panelVisualEffect: UIVisualEffect = {
             // UIVisualEffect cannot "dematerialize" glass on iOS 26.0: setting `effect` to `nil` simply doesn't work.
             // That was fixed in 26.1.
             if #available(iOS 26.1, *) { Style.glassEffect() } else { UIBlurEffect(style: .systemMaterial) }
         }()
-#else
-        static let panelVisualEffect = UIBlurEffect(style: .systemMaterial)
-#endif
     }
 
     /// Outermost sticker view placed as a subview of the delegate provided view and takes full width of that.
@@ -2413,7 +2424,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         micIcon.tintColor = .white
 
         let circleView = CircleView(frame: CGRect(origin: .zero, size: .square(circleSize)))
-        circleView.backgroundColor = .Signal.red.resolvedForInputToolbar()
+        circleView.backgroundColor = .Signal.red
         circleView.addSubview(micIcon)
         circleView.translatesAutoresizingMaskIntoConstraints = false
         micIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -2455,7 +2466,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             }
         )
         button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
-        button.configuration?.baseForegroundColor = .Signal.red.resolvedForInputToolbar()
+        button.configuration?.baseForegroundColor = .Signal.red
         return button
     }()
 
@@ -2477,7 +2488,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Red mic icon
         let redMicIconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-fill"))
-        redMicIconImageView.tintColor = .Signal.red.resolvedForInputToolbar()
+        redMicIconImageView.tintColor = .Signal.red
         redMicIconImageView.autoSetDimensions(to: .square(24))
         voiceMemoContentView.addSubview(redMicIconImageView)
 
@@ -2657,7 +2668,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             }
         )
         cancelButton.alpha = 0
-        cancelButton.configuration?.baseForegroundColor = .Signal.red.resolvedForInputToolbar()
+        cancelButton.configuration?.baseForegroundColor = .Signal.red
         cancelButton.configuration?.contentInsets = .init(margin: 8)
         cancelButton.configuration?.title = CommonStrings.cancelButton
         cancelButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
@@ -3020,6 +3031,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
+        if #unavailable(iOS 26), let legacyBackgroundView, let legacyBackgroundBlurView {
+            updateBackgroundColors(backgroundView: legacyBackgroundView, backgroundBlurView: legacyBackgroundBlurView)
+        }
+
         // Starting with iOS 17 UIKit messes up keyboard layout guide on rotation if custom keyboard is up.
         // That causes the keyboard to overlap text input field and become unaccessible.
         // The workaround is to hide the keyboard on rotation.
@@ -3274,29 +3289,5 @@ private extension ColorOrGradientValue {
                 return lightThemeFinalColor
             }
         }
-    }
-}
-
-extension UIColor {
-
-    private static var lightTraitCollection: UITraitCollection {
-        UITraitCollection(userInterfaceStyle: .light)
-    }
-
-    private static var darkTraitCollection: UITraitCollection {
-        UITraitCollection(userInterfaceStyle: .dark)
-    }
-
-    private static var currentThemeTraitCollection: UITraitCollection {
-        Theme.isDarkThemeEnabled ? darkTraitCollection : lightTraitCollection
-    }
-
-    // Change this to false to resolve each color used to current interface style.
-    private static let useDynamicColors: Bool = true
-
-    func resolvedForInputToolbar() -> UIColor {
-        guard !Self.useDynamicColors else { return self }
-
-        return self.resolvedColor(with: Self.currentThemeTraitCollection)
     }
 }

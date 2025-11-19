@@ -122,6 +122,7 @@ public extension ConversationViewController {
         case .selection:
             bottomView = selectionToolbar
         case .inputToolbar:
+            loadInputToolbarIfNeeded()
             bottomView = inputToolbar
         case .blockingLegacyGroup:
             let legacyGroupView = BlockingLegacyGroupView(fromViewController: self)
@@ -161,64 +162,44 @@ public extension ConversationViewController {
         updateContentInsets()
     }
 
-    // This is expensive. We only need to do it if conversationStyle has changed.
-    //
-    // TODO: Once conversationStyle is immutable, compare the old and new
-    //       conversationStyle values and exit early if it hasn't changed.
-    func updateInputToolbar() {
+    func loadInputToolbarIfNeeded() {
         AssertIsOnMainThread()
 
-        guard hasViewWillAppearEverBegun else {
-            return
-        }
+        guard hasViewWillAppearEverBegun else { return }
+
+        guard inputToolbar == nil else { return }
 
         var messageDraft: MessageBody?
         var replyDraft: ThreadReplyInfo?
         var voiceMemoDraft: VoiceMessageInterruptedDraft?
         var editTarget: TSOutgoingMessage?
-        if let oldInputToolbar = self.inputToolbar {
-            // Maintain draft continuity.
-            messageDraft = oldInputToolbar.messageBodyForSending
-            replyDraft = oldInputToolbar.draftReply
-            editTarget = oldInputToolbar.editTarget
-            voiceMemoDraft = oldInputToolbar.voiceMemoDraft
-        } else {
-            SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                messageDraft = self.thread.currentDraft(transaction: transaction)
-                voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: self.thread, transaction: transaction)
-                if messageDraft != nil || voiceMemoDraft != nil {
-                    replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: self.thread.uniqueId, tx: transaction)
-                }
-                editTarget = self.thread.editTarget(transaction: transaction)
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            messageDraft = thread.currentDraft(transaction: transaction)
+            voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: thread, transaction: transaction)
+            if messageDraft != nil || voiceMemoDraft != nil {
+                replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: thread.uniqueId, tx: transaction)
             }
+            editTarget = thread.editTarget(transaction: transaction)
         }
 
-        let newInputToolbar = buildInputToolbar(
+        let inputToolbar = buildInputToolbar(
             messageDraft: messageDraft,
             draftReply: replyDraft,
             voiceMemoDraft: voiceMemoDraft,
             editTarget: editTarget
         )
 
-        let hadFocus = self.inputToolbar?.isInputViewFirstResponder ?? false
-        self.inputToolbar = newInputToolbar
-
-#if compiler(>=6.2)
         // Obscures content underneath bottom bar to improve legibility.
         if #available(iOS 26, *) {
             let interaction = UIScrollEdgeElementContainerInteraction()
             interaction.scrollView = collectionView
             interaction.edge = .bottom
-            newInputToolbar.setScrollEdgeElementContainerInteraction(interaction)
+            inputToolbar.setScrollEdgeElementContainerInteraction(interaction)
         }
-#endif
 
-        if hadFocus {
-            self.inputToolbar?.beginEditingMessage()
-        }
-        newInputToolbar.updateFontSizes()
+        inputToolbar.updateFontSizes()
 
-        updateBottomBar()
+        self.inputToolbar = inputToolbar
     }
 
     func reloadDraft() {

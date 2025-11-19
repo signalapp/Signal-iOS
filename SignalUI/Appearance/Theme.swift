@@ -310,7 +310,7 @@ final public class Theme: NSObject {
     public class var backgroundColor: UIColor {
         isDarkThemeEnabled
         ? darkThemeBackgroundColor
-        : UIColor.Signal.background.resolvedColor(with: lightTraitCollection)
+        : lightThemeBackgroundColor
     }
 
     public class var secondaryBackgroundColor: UIColor {
@@ -339,7 +339,11 @@ final public class Theme: NSObject {
         if #available(iOS 26, *) {
             return primaryTextColor
         }
-        return isDarkThemeEnabled ? darkThemeNavbarIconColor : .ows_gray75
+        return legacyPrimaryIconColor
+    }
+
+    public class var legacyPrimaryIconColor: UIColor {
+        isDarkThemeEnabled ? darkThemeLegacyPrimaryIconColor : lightThemeLegacyPrimaryIconColor
     }
 
     public class var secondaryTextAndIconColor: UIColor {
@@ -433,9 +437,15 @@ final public class Theme: NSObject {
 
     // MARK: - Light Theme Colors
 
+    public class var lightThemeBackgroundColor: UIColor {
+        UIColor.Signal.background.resolvedColor(with: lightTraitCollection)
+    }
+
     public class var lightThemePrimaryColor: UIColor {
         UIColor.Signal.label.resolvedColor(with: lightTraitCollection)
     }
+
+    public class var lightThemeLegacyPrimaryIconColor: UIColor { .ows_gray75 }
 
     public class var lightThemeSecondaryTextAndIconColor: UIColor {
         UIColor.Signal.secondaryLabel.resolvedColor(with: lightTraitCollection)
@@ -450,6 +460,8 @@ final public class Theme: NSObject {
     public class var darkThemePrimaryColor: UIColor {
         UIColor.Signal.label.resolvedColor(with: darkTraitCollection)
     }
+
+    public class var darkThemeLegacyPrimaryIconColor: UIColor { .ows_gray15 }
 
     public class var darkThemeSecondaryTextAndIconColor: UIColor {
         UIColor.Signal.secondaryLabel.resolvedColor(with: darkTraitCollection)
