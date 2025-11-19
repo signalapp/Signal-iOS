@@ -177,7 +177,7 @@ class BackupSettingsViewController:
         case nil:
             break
         case .presentWelcomeToBackupsSheet:
-            presentWelcomeToBackupsSheetIfNecessary()
+            presentWelcomeToBackupsSheet()
         }
     }
 
@@ -495,25 +495,32 @@ class BackupSettingsViewController:
     // MARK: - BackupSettingsViewModel.ActionsDelegate
 
     fileprivate func enableBackups(
-        implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?
+        planSelection: BackupSettingsViewModel.EnableBackupsPlanSelection,
+        shouldShowWelcomeToBackupsSheet: Bool,
     ) {
         // TODO: [Backups] Show the rest of the onboarding flow.
 
         Task {
-            if let planSelection = implicitPlanSelection {
+            switch planSelection {
+            case .required(let planSelection):
                 await _enableBackups(
                     fromViewController: self,
-                    planSelection: planSelection
+                    planSelection: planSelection,
+                    shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
                 )
-            } else {
-                await _showChooseBackupPlan(initialPlanSelection: nil)
+            case .userChoice(let initialSelection):
+                await _showChooseBackupPlan(
+                    initialPlanSelection: initialSelection,
+                    shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+                )
             }
         }
     }
 
     @MainActor
     private func _showChooseBackupPlan(
-        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?
+        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?,
+        shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
         do throws(ActionSheetDisplayableError) {
             let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
@@ -525,7 +532,8 @@ class BackupSettingsViewController:
 
                         await _enableBackups(
                             fromViewController: chooseBackupPlanViewController,
-                            planSelection: planSelection
+                            planSelection: planSelection,
+                            shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
                         )
                     }
                 }
@@ -543,7 +551,8 @@ class BackupSettingsViewController:
     @MainActor
     private func _enableBackups(
         fromViewController: UIViewController,
-        planSelection: ChooseBackupPlanViewController.PlanSelection
+        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
         do throws(ActionSheetDisplayableError) {
             try await backupEnablingManager.enableBackups(
@@ -552,24 +561,16 @@ class BackupSettingsViewController:
             )
 
             navigationController?.popToViewController(self, animated: true) { [self] in
-                presentWelcomeToBackupsSheetIfNecessary()
+                if shouldShowWelcomeToBackupsSheet {
+                    presentWelcomeToBackupsSheet()
+                }
             }
         } catch {
             error.showActionSheet(from: fromViewController)
         }
     }
 
-    private func presentWelcomeToBackupsSheetIfNecessary() {
-        let hasNeverRunBackups = db.read { tx in
-            backupSettingsStore.firstBackupDate(tx: tx) == nil
-        }
-
-        if hasNeverRunBackups {
-            _presentWelcomeToBackupsSheet()
-        }
-    }
-
-    private func _presentWelcomeToBackupsSheet() {
+    private func presentWelcomeToBackupsSheet() {
         final class WelcomeToBackupsSheet: HeroSheetViewController {
             override var canBeDismissed: Bool { false }
 
@@ -845,12 +846,6 @@ class BackupSettingsViewController:
     }
 
     // MARK: -
-
-    fileprivate func showChooseBackupPlan(initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?) {
-        Task {
-            await _showChooseBackupPlan(initialPlanSelection: initialPlanSelection)
-        }
-    }
 
     fileprivate func showAppStoreManageSubscriptions() {
         guard let windowScene = view.window?.windowScene else {
@@ -1454,13 +1449,16 @@ class BackupSettingsViewController:
 // MARK: -
 
 private class BackupSettingsViewModel: ObservableObject {
-    protocol ActionsDelegate: AnyObject {
-        func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?)
+    enum EnableBackupsPlanSelection {
+        case required(ChooseBackupPlanViewController.PlanSelection)
+        case userChoice(initialSelection: ChooseBackupPlanViewController.PlanSelection?)
+    }
 
+    protocol ActionsDelegate: AnyObject {
+        func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool)
         func disableBackups()
 
         func loadBackupSubscription()
-        func showChooseBackupPlan(initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?)
         func showAppStoreManageSubscriptions()
 
         func performManualBackup()
@@ -1565,8 +1563,11 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
-    func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) {
-        actionsDelegate?.enableBackups(implicitPlanSelection: implicitPlanSelection)
+    func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool) {
+        actionsDelegate?.enableBackups(
+            planSelection: planSelection,
+            shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+        )
     }
 
     func disableBackups() {
@@ -1588,10 +1589,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     func loadBackupSubscription() {
         actionsDelegate?.loadBackupSubscription()
-    }
-
-    func showChooseBackupPlan(initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?) {
-        actionsDelegate?.showChooseBackupPlan(initialPlanSelection: initialPlanSelection)
     }
 
     func showAppStoreManageSubscriptions() {
@@ -2081,7 +2078,7 @@ private struct ReenableBackupsButton: View {
     let backupSubscriptionLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
     let viewModel: BackupSettingsViewModel
 
-    private var implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?? {
+    private var enableBackupsPlanSelection: BackupSettingsViewModel.EnableBackupsPlanSelection? {
         switch backupSubscriptionLoadingState {
         case .loading, .networkError:
             // Don't let them reenable until we know more.
@@ -2094,18 +2091,20 @@ private struct ReenableBackupsButton: View {
                 .loaded(.paidButFailedToRenew),
                 .loaded(.paidButIAPNotFoundLocally),
                 .genericError:
-            // Let them choose with which plan to reenable.
-            return .some(nil)
+            return .userChoice(initialSelection: nil)
         case .loaded(.paid), .loaded(.paidButExpiring):
             // They're currently paid, so automatically reenable with paid.
-            return .paid
+            return .required(.paid)
         }
     }
 
     var body: some View {
-        if let implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection? {
+        if let enableBackupsPlanSelection {
             Button {
-                viewModel.enableBackups(implicitPlanSelection: implicitPlanSelection)
+                viewModel.enableBackups(
+                    planSelection: enableBackupsPlanSelection,
+                    shouldShowWelcomeToBackupsSheet: true,
+                )
             } label: {
                 Text(OWSLocalizedString(
                     "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE",
@@ -2829,7 +2828,10 @@ private struct BackupSubscriptionLoadedView: View {
                     "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE",
                     comment: "Title for a button allowing users to upgrade from a free to paid backup plan."
                 ), action: {
-                    viewModel.showChooseBackupPlan(initialPlanSelection: .free)
+                    viewModel.enableBackups(
+                        planSelection: .userChoice(initialSelection: .free),
+                        shouldShowWelcomeToBackupsSheet: false,
+                    )
                 }
             )
         case .freeAndDisabled:
@@ -2841,7 +2843,10 @@ private struct BackupSubscriptionLoadedView: View {
                     "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE",
                     comment: "Title for a button allowing users to manage their backup plan as a tester."
                 ), action: {
-                    viewModel.showChooseBackupPlan(initialPlanSelection: .paid)
+                    viewModel.enableBackups(
+                        planSelection: .userChoice(initialSelection: .paid),
+                        shouldShowWelcomeToBackupsSheet: false,
+                    )
                 }
             )
         case .paid:
@@ -2880,7 +2885,10 @@ private struct BackupSubscriptionLoadedView: View {
                     ),
                     expandWidth: true,
                     action: {
-                        viewModel.showChooseBackupPlan(initialPlanSelection: nil)
+                        viewModel.enableBackups(
+                            planSelection: .userChoice(initialSelection: nil),
+                            shouldShowWelcomeToBackupsSheet: false,
+                        )
                     },
                 )
 
@@ -3058,11 +3066,10 @@ private extension BackupSettingsViewModel {
         isBackgroundAppRefreshDisabled: Bool = false,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
-            func enableBackups(implicitPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("Enabling! implicitPlanSelection: \(implicitPlanSelection as Any)") }
+            func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool) { print("Enabling! planSelection: \(planSelection)") }
             func disableBackups() { print("Disabling!") }
 
             func loadBackupSubscription() { print("Loading BackupSubscription!") }
-            func showChooseBackupPlan(initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?) { print("ChooseBackupPlan! \(initialPlanSelection as Any)") }
             func showAppStoreManageSubscriptions() { print("AppStore Manage Subscriptions!") }
 
             func performManualBackup() { print("Manually backing up!") }
