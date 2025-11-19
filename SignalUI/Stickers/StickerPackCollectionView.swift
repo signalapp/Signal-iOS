@@ -433,36 +433,27 @@ private class StickerPickerHeaderView: UICollectionReusableView {
 
 extension StickerPackCollectionView {
 
-    // TODO:
-    static let kSpacing: CGFloat = 8
+    private static let minimumCellSpacing: CGFloat = 8
 
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
-
-        layout.sectionInsetReference = .fromSafeArea
-        layout.minimumInteritemSpacing = kSpacing
-        layout.minimumLineSpacing = kSpacing
-        let inset = kSpacing
-        layout.sectionInset = UIEdgeInsets(top: inset, leading: inset, bottom: inset, trailing: inset)
-
+        layout.sectionInsetReference = .fromLayoutMargins
+        layout.minimumInteritemSpacing = minimumCellSpacing
+        layout.minimumLineSpacing = minimumCellSpacing
         return layout
     }
 
-    // TODO: There's pending design Qs here.
     func updateLayout() {
         guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else {
             // The layout isn't set while the view is being initialized.
             return
         }
 
-        let containerWidth = self.safeAreaLayoutGuide.layoutFrame.size.width
-
-        let spacing = StickerPackCollectionView.kSpacing
-        let inset = spacing
+        let contentWidth = layoutMarginsGuide.layoutFrame.size.width
+        let cellSpacing = Self.minimumCellSpacing
         let preferredCellSize: CGFloat = 80
-        let contentWidth = containerWidth - 2 * inset
-        let columnCount = UInt((contentWidth + spacing) / (preferredCellSize + spacing))
-        let cellWidth = (contentWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
+        let columnCount = UInt((contentWidth + cellSpacing) / (preferredCellSize + cellSpacing))
+        let cellWidth = (contentWidth - cellSpacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
         let itemSize = CGSize(square: cellWidth)
 
         if itemSize != flowLayout.itemSize {
