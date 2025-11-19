@@ -524,16 +524,6 @@ public final class ConversationViewController: OWSViewController {
         Logger.info("didChangePreferredContentSize")
 
         resetForSizeOrOrientationChange()
-
-        guard hasViewWillAppearEverBegun else {
-            return
-        }
-        guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
-            return
-        }
-
-        inputToolbar.updateFontSizes()
     }
 
     public override func themeDidChange() {

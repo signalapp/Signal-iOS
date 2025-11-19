@@ -173,10 +173,16 @@ class RecentPhotosCollectionView: UICollectionView {
     }
 
     private func noPhotosView() -> UIView {
-        let titleLabel = titleLabel(text: OWSLocalizedString(
+        let titleLabel = UILabel()
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.font = .dynamicTypeHeadlineClamped
+        titleLabel.textColor = .Signal.label
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 2
+        titleLabel.text = OWSLocalizedString(
             "ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE",
             comment: "First block of text in chat attachment panel when there's no recent photos to show."
-        ))
+        )
         let bodyLabel = textLabel(text: OWSLocalizedString(
             "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY",
             comment: "Second block of text in chat attachment panel when there's no recent photos to show."
@@ -210,18 +216,9 @@ class RecentPhotosCollectionView: UICollectionView {
         return stackView
     }
 
-    private func titleLabel(text: String) -> UILabel {
-        let label = UILabel()
-        label.font = .dynamicTypeHeadlineClamped
-        label.textColor = .Signal.label
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        label.text = text
-        return label
-    }
-
     private func textLabel(text: String) -> UILabel {
         let label = UILabel()
+        label.adjustsFontForContentSizeCategory = true
         label.font = .dynamicTypeSubheadlineClamped
         label.lineBreakMode = .byWordWrapping
         label.textColor = .Signal.secondaryLabel

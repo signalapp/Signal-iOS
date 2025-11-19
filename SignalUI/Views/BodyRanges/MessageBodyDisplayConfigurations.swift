@@ -185,7 +185,7 @@ extension ThemedColor {
 }
 
 extension UIFont {
-    fileprivate static let defaultBaseFont = UIFont.dynamicTypeBody
+    fileprivate static var defaultBaseFont: UIFont { UIFont.dynamicTypeBody }
 }
 
 extension HydratedMessageBody.DisplayConfiguration {

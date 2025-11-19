@@ -152,6 +152,7 @@ class OutgoingLinkPreviewView: UIView {
             label.text = text
             label.textColor = ConversationInputToolbar.Style.primaryTextColor
             label.numberOfLines = 2
+            label.adjustsFontForContentSizeCategory = true
             label.font = .dynamicTypeFootnote.semibold()
             label.lineBreakMode = .byTruncatingTail
             label.setContentHuggingVerticalHigh()
@@ -164,6 +165,7 @@ class OutgoingLinkPreviewView: UIView {
             label.text = text
             label.textColor = ConversationInputToolbar.Style.primaryTextColor
             label.numberOfLines = 2
+            label.adjustsFontForContentSizeCategory = true
             label.font = .dynamicTypeFootnote
             label.lineBreakMode = .byTruncatingTail
             label.setContentHuggingVerticalHigh()
@@ -179,6 +181,7 @@ class OutgoingLinkPreviewView: UIView {
             label.text = text
             label.textColor = ConversationInputToolbar.Style.secondaryTextColor
             label.numberOfLines = 1
+            label.adjustsFontForContentSizeCategory = true
             label.font = .dynamicTypeCaption1
             label.lineBreakMode = .byTruncatingTail
             label.setContentHuggingVerticalHigh()
@@ -292,6 +295,7 @@ class OutgoingLinkPreviewView: UIView {
         titleLabel.text = CallStrings.signalCall
         titleLabel.textColor = ConversationInputToolbar.Style.primaryTextColor
         titleLabel.numberOfLines = 2
+        titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.font = .dynamicTypeFootnote.semibold()
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.setContentHuggingVerticalHigh()
@@ -301,6 +305,7 @@ class OutgoingLinkPreviewView: UIView {
         subtitleLabel.text = CallStrings.callLinkDescription
         subtitleLabel.textColor = ConversationInputToolbar.Style.primaryTextColor
         subtitleLabel.numberOfLines = 2
+        subtitleLabel.adjustsFontForContentSizeCategory = true
         subtitleLabel.font = .dynamicTypeFootnote
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.setContentHuggingVerticalHigh()
@@ -315,6 +320,7 @@ class OutgoingLinkPreviewView: UIView {
             label.text = text
             label.textColor = ConversationInputToolbar.Style.secondaryTextColor
             label.numberOfLines = 1
+            label.adjustsFontForContentSizeCategory = true
             label.font = .dynamicTypeCaption1
             label.lineBreakMode = .byTruncatingTail
             label.setContentHuggingVerticalHigh()

@@ -117,10 +117,30 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
+
+        if #available(iOS 17, *) {
+            inputTextView.registerForTraitChanges(
+                [ UITraitPreferredContentSizeCategory.self ]
+            ) { [weak self] (textView: UITextView, _) in
+                self?.updateTextViewFontSize()
+            }
+        } else {
+            contentSizeChangeNotificationObserver = NotificationCenter.default.addObserver(
+                name: UIContentSizeCategory.didChangeNotification
+            ) { [weak self] _ in
+                self?.updateTextViewFontSize()
+            }
+        }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        if let contentSizeChangeNotificationObserver {
+            NotificationCenter.default.removeObserver(contentSizeChangeNotificationObserver)
+        }
     }
 
     // MARK: Layout Configuration.
@@ -1154,10 +1174,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         inputTextView.scrollToBottom()
     }
 
-    func updateFontSizes() {
-        inputTextView.font = .dynamicTypeBody
-    }
-
     // Dynamic color and visual effect support for background view(s) on iOS 15-18.
     @available(iOS, deprecated: 26)
     private func updateBackgroundColors(backgroundView: UIView, backgroundBlurView: UIVisualEffectView) {
@@ -1565,6 +1581,16 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         inputTextView.undoManager?.removeAllActions()
     }
 
+    // MARK: Content Size Change Handling
+
+    // Unused on iOS 17 and later.
+    private var contentSizeChangeNotificationObserver: NotificationCenter.Observer?
+
+    private func updateTextViewFontSize() {
+        inputTextView.font = .dynamicTypeBody
+        updateHeightWithTextView(inputTextView)
+    }
+
     // MARK: Edit Message
 
     var isEditingMessage: Bool { editTarget != nil }
@@ -1632,6 +1658,17 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         )
         editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         editLabel.textColor = Style.primaryTextColor
+
+        // Font produced via `.semibold()` is no longer dynamic
+        // and UILabel has to be updated when content size changes.
+        if #available(iOS 17, *) {
+            editLabel.registerForTraitChanges(
+                [ UITraitPreferredContentSizeCategory.self ],
+                handler: { (label: UILabel, _) in
+                    label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+                }
+            )
+        }
 
         let stackView = UIStackView(arrangedSubviews: [editIconView, editLabel, editMessageThumbnailView])
         stackView.axis = .horizontal

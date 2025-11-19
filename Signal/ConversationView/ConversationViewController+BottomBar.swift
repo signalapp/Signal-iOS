@@ -197,8 +197,6 @@ public extension ConversationViewController {
             inputToolbar.setScrollEdgeElementContainerInteraction(interaction)
         }
 
-        inputToolbar.updateFontSizes()
-
         self.inputToolbar = inputToolbar
     }
 

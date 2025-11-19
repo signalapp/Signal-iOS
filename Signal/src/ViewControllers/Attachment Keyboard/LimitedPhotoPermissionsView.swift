@@ -29,23 +29,12 @@ class LimitedPhotoPermissionsView: UIView {
             CurrentAppContext().openSystemSettings()
         }
 
-        var buttonConfig = UIButton.Configuration.gray()
-        buttonConfig.cornerStyle = .capsule
-        buttonConfig.baseForegroundColor = UIColor.Signal.label
-        buttonConfig.baseBackgroundColor = UIColor.Signal.tertiaryFill
-        var titleAttributedString = AttributedString(
-            OWSLocalizedString(
-                "ATTACHMENT_KEYBOARD_BUTTON_MANAGE",
-                comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
-            )
-        )
-        titleAttributedString.font = UIFont.dynamicTypeFootnoteClamped.medium()
-        buttonConfig.attributedTitle = titleAttributedString
-
-        let button = UIButton(configuration: buttonConfig)
+        let button = UIButton(configuration: .smallSecondary(title: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_BUTTON_MANAGE",
+            comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
+        )))
         button.menu = UIMenu(children: [settingsAction, selectMoreAction])
         button.showsMenuAsPrimaryAction = true
-        button.titleLabel?.font = .dynamicTypeFootnoteClamped
 
         return button
     }()

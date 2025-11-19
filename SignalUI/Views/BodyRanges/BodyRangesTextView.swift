@@ -174,6 +174,12 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         }
     }
 
+    open override var font: UIFont? {
+        didSet {
+            editableBody.didUpdateTheming()
+        }
+    }
+
     private let editableBody: EditableMessageBodyTextStorage
 
     public var messageBodyForSending: MessageBody {
