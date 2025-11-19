@@ -4,49 +4,27 @@
 //
 
 import BonMot
-import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 /* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.
  If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
 typealias StringStyle = BonMot.StringStyle
 
-public protocol ConversationSearchViewDelegate: AnyObject {
+protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()
     func conversationSearchDidSelectRow()
 }
 
-public class ConversationSearchViewController: UITableViewController {
+class ConversationSearchViewController: OWSViewController {
 
-    // MARK: -
-
-    public weak var delegate: ConversationSearchViewDelegate?
+    weak var delegate: ConversationSearchViewDelegate?
 
     private var hasEverAppeared = false
     private var lastReloadDate: Date?
     private let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
 
     private lazy var spoilerAnimationManager = SpoilerAnimationManager()
-
-    public var searchText = "" {
-        didSet {
-            guard searchText != oldValue else { return }
-            AssertIsOnMainThread()
-
-            // Use a slight delay to debounce updates.
-            refreshSearchResults()
-        }
-    }
-
-    var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty {
-        didSet {
-            AssertIsOnMainThread()
-
-            updateSeparators()
-        }
-    }
-    private var lastSearchText: String?
 
     enum SearchSection: Int {
         case noResults
@@ -58,28 +36,20 @@ public class ConversationSearchViewController: UITableViewController {
 
     private var hasThemeChanged = false
 
-    class var matchSnippetStyle: StringStyle {
-        StringStyle(
-            .color(Theme.secondaryTextAndIconColor),
-            .xmlRules([
-                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeSubheadline.semibold())))
-            ])
-        )
+    // MARK: View Controller
+
+    override init() {
+        super.init()
     }
 
-    // MARK: View Lifecycle
-
-    init() {
-        super.init(style: .grouped)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = .Signal.background
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.separatorColor = .clear
@@ -90,28 +60,27 @@ public class ConversationSearchViewController: UITableViewController {
         tableView.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        tableView.autoPinHeight(toHeightOf: view)
+        tableViewHorizontalEdgeConstraints = [
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
+        ]
+        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
+        updateTableViewPaddingIfNeeded()
+
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .themeDidChange,
-                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
 
-        applyTheme()
         updateSeparators()
     }
 
-    private func reloadTableData() {
-        self.lastReloadDate = Date()
-        self.cellContentCache.clear()
-        self.tableView.reloadData()
-    }
-
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         guard hasThemeChanged else {
@@ -119,16 +88,18 @@ public class ConversationSearchViewController: UITableViewController {
         }
         hasThemeChanged = false
 
-        applyTheme()
         reloadTableData()
         self.hasEverAppeared = true
     }
 
-    @objc
-    internal func themeDidChange(notification: NSNotification) {
-        AssertIsOnMainThread()
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateTableViewPaddingIfNeeded()
+    }
 
-        applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+
         reloadTableData()
 
         hasThemeChanged = true
@@ -136,29 +107,151 @@ public class ConversationSearchViewController: UITableViewController {
 
     @objc
     private func blockListDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
         refreshSearchResults()
     }
 
-    private func applyTheme() {
-        AssertIsOnMainThread()
+    // MARK: Table View
 
-        self.view.backgroundColor = Theme.backgroundColor
-        self.tableView.backgroundColor = Theme.backgroundColor
+    private let tableView = UITableView(frame: .zero, style: .grouped)
+
+    /// Set to `true` when list is displayed in split view controller's "sidebar" on iOS 26 and later.
+    /// Setting this to `true` would add an extra padding on both sides of the table view.
+    /// This value is also passed down to table view cells that make their own layout choices based on the value.
+    private var useSidebarTableViewCellAppearance = false {
+        didSet {
+            guard oldValue != useSidebarTableViewCellAppearance else { return }
+            tableViewHorizontalEdgeConstraints.forEach {
+                $0.constant = useSidebarTableViewCellAppearance ? 16 : 0
+            }
+            tableView.reloadData()
+        }
+    }
+
+    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
+
+    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
+    /// Does nothing on prior iOS versions.
+    private func updateTableViewPaddingIfNeeded() {
+        guard #available(iOS 26, *) else { return }
+
+        if let splitViewController = presentingViewController?.splitViewController, !splitViewController.isCollapsed {
+            useSidebarTableViewCellAppearance = true
+        } else {
+            useSidebarTableViewCellAppearance = false
+        }
+    }
+
+    private func reloadTableData() {
+        lastReloadDate = Date()
+        cellContentCache.clear()
+        tableView.reloadData()
     }
 
     private func updateSeparators() {
-        AssertIsOnMainThread()
-
-        self.tableView.separatorStyle = (searchResultSet.isEmpty
-                                            ? UITableViewCell.SeparatorStyle.none
-                                            : UITableViewCell.SeparatorStyle.singleLine)
+        tableView.separatorStyle = searchResultSet.isEmpty ? .none : .singleLine
     }
 
-    // MARK: UITableViewDelegate
+    // MARK: Search
 
-    public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    // Search is triggered with this is set externally by ChatListViewController.
+    var searchText = "" {
+        didSet {
+            guard searchText != oldValue else { return }
+
+            // Use a slight delay to debounce updates.
+            refreshSearchResults()
+        }
+    }
+
+    private var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty {
+        didSet {
+            updateSeparators()
+        }
+    }
+
+    private var lastSearchText: String?
+
+    private var refreshTimer: Timer?
+
+    private func refreshSearchResults() {
+        AssertIsOnMainThread()
+
+        guard !searchResultSet.isEmpty else {
+            // To avoid incorrectly showing the "no results" state,
+            // always search immediately if the current result set is empty.
+            refreshTimer?.invalidate()
+            refreshTimer = nil
+
+            updateSearchResults(searchText: searchText)
+            return
+        }
+
+        if refreshTimer != nil {
+            // Don't start a new refresh timer if there's already one active.
+            return
+        }
+
+        refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
+            strongSelf.refreshTimer = nil
+        }
+    }
+
+    private var currentSearchTask: Task<Void, Never>?
+
+    private func updateSearchResults(searchText: String) {
+        let searchText = searchText.stripped
+        let lastSearchText = self.lastSearchText
+        self.lastSearchText = searchText
+
+        if searchText != lastSearchText {
+            // The query has changed; perform a search.
+        } else if tableView.visibleCells.contains(where: { $0 is ChatListCell }) {
+            // The database may have been updated, and that'll lead to a duplicate
+            // query for the same search text. In that case, perform a search if
+            // there's a cell that needs to be updated.
+        } else {
+            // Nothing has changed, so don't perform a search.
+            return
+        }
+
+        currentSearchTask?.cancel()
+        currentSearchTask = Task {
+            let searchResultSet: HomeScreenSearchResultSet
+            do throws(CancellationError) {
+                searchResultSet = try await fetchSearchResults(searchText: searchText)
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
+            } catch {
+                return
+            }
+            self.searchResultSet = searchResultSet
+            self.reloadTableData()
+        }
+    }
+
+    private nonisolated func fetchSearchResults(searchText: String) async throws(CancellationError) -> HomeScreenSearchResultSet {
+        if searchText.isEmpty {
+            return .empty
+        }
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return try databaseStorage.read { tx throws(CancellationError) in
+            return try FullTextSearcher.shared.searchForHomeScreen(searchText: searchText, tx: tx)
+        }
+    }
+}
+
+// MARK: -
+
+extension ConversationSearchViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             owsFailDebug("unknown section selected.")
             return nil
@@ -167,12 +260,13 @@ public class ConversationSearchViewController: UITableViewController {
         switch searchSection {
         case .noResults:
             return nil
+
         case .contactThreads, .groupThreads, .contacts, .messages:
             return indexPath
         }
     }
 
-    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
@@ -228,35 +322,24 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    public override func tableView(
-        _ tableView: UITableView,
-        willDisplay cell: UITableViewCell,
-        forRowAt indexPath: IndexPath
-    ) {
-        AssertIsOnMainThread()
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? ChatListCell else { return }
 
-        guard let cell = cell as? ChatListCell else {
-            return
-        }
         cell.isCellVisible = true
     }
 
-    public override func tableView(
-        _ tableView: UITableView,
-        didEndDisplaying cell: UITableViewCell,
-        forRowAt indexPath: IndexPath
-    ) {
-        AssertIsOnMainThread()
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? ChatListCell else { return }
 
-        guard let cell = cell as? ChatListCell else {
-            return
-        }
         cell.isCellVisible = false
     }
+}
 
-    // MARK: UITableViewDataSource
+// MARK: -
 
-    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+extension ConversationSearchViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
             owsFailDebug("unknown section: \(section)")
             return 0
@@ -276,9 +359,7 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    public override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        AssertIsOnMainThread()
-
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableView.automaticDimension
@@ -288,7 +369,7 @@ public class ConversationSearchViewController: UITableViewController {
         case .noResults, .contacts:
             return UITableView.automaticDimension
         case .contactThreads, .groupThreads, .messages:
-            guard let configuration = self.cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
+            guard let configuration = cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
                 owsFailDebug("Missing configuration.")
                 return UITableView.automaticDimension
             }
@@ -298,7 +379,6 @@ public class ConversationSearchViewController: UITableViewController {
     }
 
     private func cellContentToken(forConfiguration configuration: ChatListCell.Configuration, useCache: Bool = true) -> CLVCellContentToken {
-        AssertIsOnMainThread()
 
         // If we have an existing CLVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
@@ -314,8 +394,7 @@ public class ConversationSearchViewController: UITableViewController {
         return cellContentToken
     }
 
-    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             return UITableViewCell()
         }
@@ -332,41 +411,50 @@ public class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
 
-            OWSTableItem.configureCell(cell)
-
-            let searchText = self.searchResultSet.searchText
-            cell.configure(searchText: searchText)
+            cell.configure(searchText: searchResultSet.searchText)
             return cell
+
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
-            guard let searchResult = self.searchResultSet.contactResults[safe: indexPath.row] else {
+            guard let searchResult = searchResultSet.contactResults[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
+
             cell.configureWithSneakyTransaction(address: searchResult.recipientAddress, localUserDisplayMode: .noteToSelf)
             return cell
+
         case .contactThreads, .groupThreads, .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
-            guard let configuration = self.cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
+            guard let configuration = cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
                 owsFailDebug("Missing configuration.")
                 return UITableViewCell()
             }
+
             let cellContentToken = cellContentToken(forConfiguration: configuration)
             cell.configure(cellContentToken: cellContentToken, spoilerAnimationManager: spoilerAnimationManager)
+            cell.useSidebarAppearance = useSidebarTableViewCellAppearance
             return cell
         }
     }
 
-    private func cellConfiguration(searchSection: SearchSection, row: Int) -> ChatListCell.Configuration? {
-        AssertIsOnMainThread()
+    private class var matchSnippetStyle: StringStyle {
+        StringStyle(
+            .color(.Signal.secondaryLabel),
+            .xmlRules([
+                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeSubheadline.semibold())))
+            ])
+        )
+    }
 
+    private func cellConfiguration(searchSection: SearchSection, row: Int) -> ChatListCell.Configuration? {
         let lastReloadDate: Date? = {
             guard self.hasEverAppeared else {
                 return nil
@@ -378,8 +466,9 @@ public class ConversationSearchViewController: UITableViewController {
         case .noResults:
             owsFailDebug("Invalid section.")
             return nil
+
         case .contactThreads:
-            guard let searchResult = self.searchResultSet.contactThreadResults[safe: row] else {
+            guard let searchResult = searchResultSet.contactThreadResults[safe: row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
@@ -387,8 +476,9 @@ public class ConversationSearchViewController: UITableViewController {
                 threadViewModel: searchResult.threadViewModel,
                 lastReloadDate: lastReloadDate
             )
+
         case .groupThreads:
-            guard let searchResult = self.searchResultSet.groupThreadResults[safe: row] else {
+            guard let searchResult = searchResultSet.groupThreadResults[safe: row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
@@ -404,11 +494,13 @@ public class ConversationSearchViewController: UITableViewController {
                 overrideSnippet: overrideSnippet,
                 overrideDate: nil
             )
+
         case .contacts:
             owsFailDebug("Invalid section.")
             return nil
+
         case .messages:
-            guard let searchResult = self.searchResultSet.messageResults[safe: row] else {
+            guard let searchResult = searchResultSet.messageResults[safe: row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
@@ -435,50 +527,7 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    public override func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
-    }
-
-    public override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        UIView()
-    }
-
-    public override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        .leastNonzeroMagnitude
-    }
-
-    public override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
-            return .leastNonzeroMagnitude
-        }
-        return UITableView.automaticDimension
-    }
-
-    public override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
-            return UIView()
-        }
-
-        let textView = LinkingTextView()
-        textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.dynamicTypeHeadlineClamped
-        textView.text = title
-
-        let hInset = OWSTableViewController2.cellOuterInset(in: view)
-        var textContainerInset = UIEdgeInsets(
-            top: 14,
-            left: hInset,
-            bottom: 8,
-            right: hInset
-        )
-        textContainerInset.left += tableView.safeAreaInsets.left
-        textContainerInset.right += tableView.safeAreaInsets.right
-        textView.textContainerInset = textContainerInset
-
-        return textView
-    }
-
-    public override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    private func titleForHeaderInSection(_ section: Int) -> String? {
         guard let searchSection = SearchSection(rawValue: section) else {
             owsFailDebug("unknown section: \(section)")
             return nil
@@ -487,130 +536,104 @@ public class ConversationSearchViewController: UITableViewController {
         switch searchSection {
         case .noResults:
             return nil
+
         case .contactThreads:
-            if searchResultSet.contactThreadResults.count > 0 {
-                return OWSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing 1:1 chats")
-            } else {
-                return nil
-            }
+            guard searchResultSet.contactThreadResults.count > 0 else { return nil }
+
+            return OWSLocalizedString(
+                "SEARCH_SECTION_CONVERSATIONS",
+                comment: "section header for search results that match existing 1:1 chats"
+            )
+
         case .groupThreads:
-            if searchResultSet.groupThreadResults.count > 0 {
-                return OWSLocalizedString("SEARCH_SECTION_GROUPS", comment: "section header for search results that match existing groups")
-            } else {
-                return nil
-            }
+            guard searchResultSet.groupThreadResults.count > 0 else { return nil }
+
+            return OWSLocalizedString(
+                "SEARCH_SECTION_GROUPS",
+                comment: "section header for search results that match existing groups"
+            )
+
         case .contacts:
-            if searchResultSet.contactResults.count > 0 {
-                return OWSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "section header for search results that match a contact who doesn't have an existing conversation")
-            } else {
-                return nil
-            }
+            guard searchResultSet.contactResults.count > 0 else { return nil }
+
+            return OWSLocalizedString(
+                "SEARCH_SECTION_CONTACTS",
+                comment: "section header for search results that match a contact who doesn't have an existing conversation"
+            )
+
         case .messages:
-            if searchResultSet.messageResults.count > 0 {
-                return OWSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "section header for search results that match a message in a conversation")
-            } else {
-                return nil
-            }
+            guard searchResultSet.messageResults.count > 0 else { return nil }
+
+            return OWSLocalizedString(
+                "SEARCH_SECTION_MESSAGES",
+                comment: "section header for search results that match a message in a conversation"
+            )
         }
     }
 
-    public override func tableView(_ tableView: UITableView,
-                                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 5
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard nil != titleForHeaderInSection(section) else {
+            return .leastNonzeroMagnitude
+        }
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = titleForHeaderInSection(section) else {
+            return UIView()
+        }
+
+        let label = UILabel()
+        label.textColor = .Signal.label
+        label.font = .dynamicTypeHeadline
+        label.text = title
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let headerView = UITableViewHeaderFooterView(reuseIdentifier: nil)
+        headerView.directionalLayoutMargins.top = 14
+        headerView.directionalLayoutMargins.bottom = 8
+        headerView.contentView.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: headerView.contentView.layoutMarginsGuide.topAnchor),
+            label.leadingAnchor.constraint(equalTo: headerView.contentView.layoutMarginsGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: headerView.contentView.layoutMarginsGuide.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: headerView.contentView.layoutMarginsGuide.bottomAnchor),
+        ])
+
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        // Without returning a footer with a non-zero height, Grouped
+        // table view will use a default spacing between sections. We
+        // do not want that spacing so we use the smallest possible height.
+        return .leastNormalMagnitude
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        UIView()
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return trailingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
-    public override func tableView(_ tableView: UITableView,
-                                   leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         return leadingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
-    // MARK: Update Search Results
-
-    var refreshTimer: Timer?
-
-    private func refreshSearchResults() {
-        AssertIsOnMainThread()
-
-        guard !searchResultSet.isEmpty else {
-            // To avoid incorrectly showing the "no results" state,
-            // always search immediately if the current result set is empty.
-            refreshTimer?.invalidate()
-            refreshTimer = nil
-
-            updateSearchResults(searchText: searchText)
-            return
-        }
-
-        if refreshTimer != nil {
-            // Don't start a new refresh timer if there's already one active.
-            return
-        }
-
-        refreshTimer?.invalidate()
-        refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-
-            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
-            strongSelf.refreshTimer = nil
-        }
-    }
-
-    private var currentSearchTask: Task<Void, Never>?
-
-    private func updateSearchResults(searchText: String) {
-        let searchText = searchText.stripped
-        let lastSearchText = self.lastSearchText
-        self.lastSearchText = searchText
-
-        if searchText != lastSearchText {
-            // The query has changed; perform a search.
-        } else if tableView.visibleCells.contains(where: { $0 is ChatListCell }) {
-            // The database may have been updated, and that'll lead to a duplicate
-            // query for the same search text. In that case, perform a search if
-            // there's a cell that needs to be updated.
-        } else {
-            // Nothing has changed, so don't perform a search.
-            return
-        }
-
-        self.currentSearchTask?.cancel()
-        self.currentSearchTask = Task {
-            let searchResultSet: HomeScreenSearchResultSet
-            do throws(CancellationError) {
-                searchResultSet = try await fetchSearchResults(searchText: searchText)
-                if Task.isCancelled {
-                    throw CancellationError()
-                }
-            } catch {
-                return
-            }
-            self.searchResultSet = searchResultSet
-            self.reloadTableData()
-        }
-    }
-
-    private nonisolated func fetchSearchResults(searchText: String) async throws(CancellationError) -> HomeScreenSearchResultSet {
-        if searchText.isEmpty {
-            return .empty
-        }
-
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        return try databaseStorage.read { tx throws(CancellationError) in
-            return try FullTextSearcher.shared.searchForHomeScreen(searchText: searchText, tx: tx)
-        }
-    }
-
-    // MARK: -
-
     private func getThreadViewModelFor(indexPath: IndexPath) -> ThreadViewModel? {
-        if let searchSection = SearchSection(rawValue: indexPath.section) {
-            if searchSection == .contactThreads {
-                return searchResultSet.contactThreadResults[indexPath.row].threadViewModel
-            } else if searchSection == .groupThreads {
-                return searchResultSet.groupThreadResults[indexPath.row].threadViewModel
-            }
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else { return nil }
+
+        if searchSection == .contactThreads {
+            return searchResultSet.contactThreadResults[indexPath.row].threadViewModel
+        } else if searchSection == .groupThreads {
+            return searchResultSet.groupThreadResults[indexPath.row].threadViewModel
         }
         return nil
     }
@@ -619,7 +642,8 @@ public class ConversationSearchViewController: UITableViewController {
 // MARK: - UIScrollViewDelegate
 
 extension ConversationSearchViewController {
-    public override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         delegate?.conversationSearchViewWillBeginDragging()
     }
 }
@@ -627,43 +651,51 @@ extension ConversationSearchViewController {
 // MARK: -
 
 class EmptySearchResultCell: UITableViewCell {
+
     static let reuseIdentifier = "EmptySearchResultCell"
 
-    let messageLabel: UILabel
-    let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let messageLabel = UILabel()
+
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.selectionStyle = .none
+        selectionStyle = .none
+        automaticallyUpdatesBackgroundConfiguration = false
 
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 3
 
         contentView.addSubview(messageLabel)
-
-        messageLabel.autoSetDimension(.height, toSize: 150)
-
-        messageLabel.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
-        messageLabel.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        messageLabel.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
-        messageLabel.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-
-        messageLabel.autoVCenterInSuperview()
-        messageLabel.autoHCenterInSuperview()
-
-        messageLabel.setContentHuggingHigh()
-        messageLabel.setCompressionResistanceHigh()
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            messageLabel.heightAnchor.constraint(equalToConstant: 150),
+            messageLabel.topAnchor.constraint(greaterThanOrEqualTo: contentView.layoutMarginsGuide.topAnchor),
+            messageLabel.centerYAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerYAnchor),
+            messageLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.layoutMarginsGuide.leadingAnchor),
+            messageLabel.centerXAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerXAnchor),
+
+            activityIndicator.centerXAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerYAnchor),
+        ])
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configure(searchText: String) {
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        var configuration = UIBackgroundConfiguration.clear()
+        configuration.backgroundColor = .Signal.background
+        backgroundConfiguration = configuration
+    }
+
+    func configure(searchText: String) {
         if searchText.isEmpty {
             activityIndicator.color = Theme.primaryIconColor
             activityIndicator.isHidden = false
@@ -681,7 +713,7 @@ class EmptySearchResultCell: UITableViewCell {
             )
             messageLabel.text = String(format: format, searchText)
 
-            messageLabel.textColor = Theme.primaryTextColor
+            messageLabel.textColor = .Signal.label
             messageLabel.font = UIFont.dynamicTypeBody
         }
     }

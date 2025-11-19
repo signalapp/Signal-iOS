@@ -42,9 +42,10 @@ extension ChatListViewController: OWSNavigationChildController {
 }
 
 extension ChatListViewController: UISearchResultsUpdating {
+
     public func updateSearchResults(for searchController: UISearchController) {
-        AssertIsOnMainThread()
         guard isSearching else { return }
+
         viewState.searchResultsController.searchText = searchText
     }
 }
