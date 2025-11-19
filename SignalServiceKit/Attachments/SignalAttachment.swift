@@ -1011,7 +1011,7 @@ public class SignalAttachment: NSObject {
     /// Remove nonessential chunks from PNG data.
     /// - Returns: Cleaned PNG data.
     /// - Throws: `SignalAttachmentError.couldNotRemoveMetadata` if the PNG parser fails.
-    private static func removeMetadata(fromPng pngData: Data) throws -> Data {
+    private static func removeMetadata(fromPng pngData: Data) throws(SignalAttachmentError) -> Data {
         do {
             let chunker = try PngChunker(source: DataImageSource(pngData))
             var result = PngChunker.pngSignature
@@ -1023,33 +1023,33 @@ public class SignalAttachment: NSObject {
             return result
         } catch {
             Logger.warn("Could not remove PNG metadata: \(error)")
-            throw SignalAttachmentError.couldNotRemoveMetadata
+            throw .couldNotRemoveMetadata
         }
     }
 
-    private func removingImageMetadata() throws -> SignalAttachment {
+    private func removingImageMetadata() throws(SignalAttachmentError) -> SignalAttachment {
         owsAssertDebug(isImage)
 
         if dataUTI == UTType.png.identifier {
             let cleanedData = try Self.removeMetadata(fromPng: dataSource.data)
             guard let dataSource = DataSourceValue(cleanedData, utiType: dataUTI) else {
-                throw SignalAttachmentError.couldNotRemoveMetadata
+                throw .couldNotRemoveMetadata
             }
             return replacingDataSource(with: dataSource)
         }
 
         guard let source = CGImageSourceCreateWithData(dataSource.data as CFData, nil) else {
-            throw SignalAttachmentError.missingData
+            throw .missingData
         }
 
         guard let type = CGImageSourceGetType(source) else {
-            throw SignalAttachmentError.invalidFileFormat
+            throw .invalidFileFormat
         }
 
         let count = CGImageSourceGetCount(source)
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData as CFMutableData, type, count, nil) else {
-            throw SignalAttachmentError.couldNotRemoveMetadata
+            throw .couldNotRemoveMetadata
         }
 
         // Build up a metadata with CFNulls in the place of all tags present in the original metadata.
@@ -1059,23 +1059,25 @@ public class SignalAttachment: NSObject {
         var hadError = false
         for i in 0..<count {
             guard let originalMetadata = CGImageSourceCopyMetadataAtIndex(source, i, nil) else {
-                throw SignalAttachmentError.couldNotRemoveMetadata
+                throw .couldNotRemoveMetadata
             }
             CGImageMetadataEnumerateTagsUsingBlock(originalMetadata, nil, enumerateOptions) { path, tag in
                 if Self.preservedMetadata.contains(path) {
                     return true
                 }
-                guard let namespace = CGImageMetadataTagCopyNamespace(tag),
-                      let prefix = CGImageMetadataTagCopyPrefix(tag),
-                      CGImageMetadataRegisterNamespaceForPrefix(metadata, namespace, prefix, nil),
-                      CGImageMetadataSetValueWithPath(metadata, nil, path, kCFNull) else {
+                guard
+                    let namespace = CGImageMetadataTagCopyNamespace(tag),
+                    let prefix = CGImageMetadataTagCopyPrefix(tag),
+                    CGImageMetadataRegisterNamespaceForPrefix(metadata, namespace, prefix, nil),
+                    CGImageMetadataSetValueWithPath(metadata, nil, path, kCFNull)
+                else {
                     hadError = true
                     return false // stop iteration
                 }
                 return true
             }
             if hadError {
-                throw SignalAttachmentError.couldNotRemoveMetadata
+                throw .couldNotRemoveMetadata
             }
         }
 
@@ -1084,11 +1086,11 @@ public class SignalAttachment: NSObject {
             kCGImageDestinationMetadata: metadata
         ]
         guard CGImageDestinationCopyImageSource(destination, source, copyOptions, nil) else {
-            throw SignalAttachmentError.couldNotRemoveMetadata
+            throw .couldNotRemoveMetadata
         }
 
         guard let dataSource = DataSourceValue(mutableData as Data, utiType: dataUTI) else {
-            throw SignalAttachmentError.couldNotRemoveMetadata
+            throw .couldNotRemoveMetadata
         }
 
         return self.replacingDataSource(with: dataSource)
