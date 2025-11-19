@@ -238,7 +238,7 @@ public class RemoteConfig {
         if BuildFlags.Backups.useLowerDefaultListMediaRefreshInterval {
             defaultValue = .dayInMs
         } else {
-            defaultValue = .dayInMs * 30
+            defaultValue = .dayInMs * 7
         }
         return getUInt64Value(forFlag: .backupListMediaDefaultRefreshIntervalMs, defaultValue: defaultValue)
     }

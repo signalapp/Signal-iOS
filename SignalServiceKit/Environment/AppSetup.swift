@@ -1064,6 +1064,7 @@ extension AppSetup.GlobalsContinuation {
             authCredentialStore: authCredentialStore,
             backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupKeyService: backupKeyService,
             backupPlanManager: backupPlanManager,

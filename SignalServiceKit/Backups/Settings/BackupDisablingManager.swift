@@ -21,6 +21,7 @@ public final class BackupDisablingManager {
     private let authCredentialStore: AuthCredentialStore
     private let backupAttachmentCoordinator: BackupAttachmentCoordinator
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
@@ -36,6 +37,7 @@ public final class BackupDisablingManager {
         authCredentialStore: AuthCredentialStore,
         backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupKeyService: BackupKeyService,
         backupPlanManager: BackupPlanManager,
@@ -47,6 +49,7 @@ public final class BackupDisablingManager {
         self.authCredentialStore = authCredentialStore
         self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentDownloadQueueStatusManager = backupAttachmentDownloadQueueStatusManager
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
@@ -221,6 +224,10 @@ public final class BackupDisablingManager {
                 // and are no longer safe to use.
                 authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
                 backupCDNCredentialStore.wipe(tx: tx)
+
+                // If we reenable, we need to run another list-media to discover
+                // that we need to reupload all our media.
+                backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
 
                 if let aepBeingRotatedString = kvStore.getString(StoreKeys.aepBeingRotated, transaction: tx) {
                     logger.warn("Rotating AEP after disabling Backups!")
