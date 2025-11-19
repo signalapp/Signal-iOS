@@ -241,18 +241,21 @@ public class RemoteConfig {
         getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
     }
 
-    public var backupListMediaDefaultRefreshIntervalMs: UInt64 {
+    public var backupListMediaDefaultRefreshInterval: TimeInterval {
         let defaultValue: UInt64
         if BuildFlags.Backups.useLowerDefaultListMediaRefreshInterval {
             defaultValue = .dayInMs
         } else {
             defaultValue = .dayInMs * 7
         }
-        return getUInt64Value(forFlag: .backupListMediaDefaultRefreshIntervalMs, defaultValue: defaultValue)
+
+        let intervalMs = getUInt64Value(forFlag: .backupListMediaDefaultRefreshIntervalMs, defaultValue: defaultValue)
+        return TimeInterval(intervalMs) / 1000
     }
 
-    public var backupListMediaOutOfQuotaRefreshIntervalMs: UInt64 {
-        getUInt64Value(forFlag: .backupListMediaOutOfQuotaRefreshIntervalMs, defaultValue: .dayInMs)
+    public var backupListMediaOutOfQuotaRefreshInterval: TimeInterval {
+        let intervalMs = getUInt64Value(forFlag: .backupListMediaOutOfQuotaRefreshIntervalMs, defaultValue: .dayInMs)
+        return TimeInterval(intervalMs) / 1000
     }
 
     public var mediaTierFallbackCdnNumber: UInt32 {
