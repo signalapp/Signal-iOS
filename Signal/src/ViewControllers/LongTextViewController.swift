@@ -3,34 +3,70 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
 protocol LongTextViewDelegate: AnyObject {
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController)
 }
 
-// MARK: -
-public class LongTextViewController: OWSViewController {
+class LongTextViewController: OWSViewController {
 
     // MARK: - Properties
 
     weak var delegate: LongTextViewDelegate?
 
-    let itemViewModel: CVItemViewModelImpl
-    let threadViewModel: ThreadViewModel
-    let spoilerState: SpoilerRenderState
+    private let itemViewModel: CVItemViewModelImpl
+    private let threadViewModel: ThreadViewModel
+    private let spoilerState: SpoilerRenderState
 
-    var messageTextView: UITextView!
-    let footer = UIToolbar.clear()
+    private let textView: UITextView = {
+        let textView = OWSTextView()
+        textView.font = UIFont.dynamicTypeBody
+        textView.textColor = .Signal.label
+        textView.backgroundColor = .Signal.background
+        textView.isOpaque = true
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.isScrollEnabled = true
+        textView.showsHorizontalScrollIndicator = false
+        textView.showsVerticalScrollIndicator = true
+        textView.isUserInteractionEnabled = true
+        return textView
+    }()
+    private lazy var toolbar: UIToolbar = {
+        let toolbar = UIToolbar()
+        toolbar.items = [
+            UIBarButtonItem(
+                image: Theme.iconImage(.buttonShare),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.shareButtonPressed()
+                }
+            ),
+
+            .flexibleSpace(),
+
+            UIBarButtonItem(
+                image: Theme.iconImage(.buttonForward),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.forwardButtonPressed()
+                }
+            ),
+        ]
+        if #unavailable(iOS 26) {
+            toolbar.tintColor = Theme.primaryIconColor
+            toolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
+        }
+        return toolbar
+    }()
 
     private var linkItems: [CVTextLabel.Item]?
 
-    var displayableText: DisplayableText? { itemViewModel.displayableBodyText }
+    private var displayableText: DisplayableText? { itemViewModel.displayableBodyText }
 
-    // MARK: Initializers
+    // MARK: - UIViewController
 
-    public init(
+    init(
         itemViewModel: CVItemViewModelImpl,
         threadViewModel: ThreadViewModel,
         spoilerState: SpoilerRenderState
@@ -41,174 +77,195 @@ public class LongTextViewController: OWSViewController {
         super.init()
     }
 
-    // MARK: View Lifecycle
-
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.title = OWSLocalizedString("LONG_TEXT_VIEW_TITLE",
                                                  comment: "Title for the 'long text message' view.")
+        view.backgroundColor = .Signal.background
 
-        createViews()
+        view.addSubview(textView)
+        view.addSubview(toolbar)
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textView.topAnchor.constraint(equalTo: view.topAnchor),
+            textView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            textView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            textView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-        self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
+            toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            toolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
+
+        if #available(iOS 26, *) {
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.edge = .bottom
+            interaction.scrollView = textView
+            toolbar.addInteraction(interaction)
+        }
+
+        loadContent()
+
+        if #available(iOS 17, *) {
+            // Modern alternative to `themeDidChange`.
+            textView.registerForTraitChanges([ UITraitUserInterfaceStyle.self, UITraitPreferredContentSizeCategory.self ])
+            { [weak self] (view: UIView, _) in
+                self?.loadContent()
+            }
+        }
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
-        loadContent()
+        // Scroll to top.
+        textView.contentOffset = CGPoint(x: 0, y: textView.contentInset.top)
     }
 
-    public func loadContent() {
+    override func viewLayoutMarginsDidChange() {
+        super.viewLayoutMarginsDidChange()
+
+        // Text view is constrained to root view's left and right safe areas.
+        // Readable content guide's left and right margins include respective safe areas.
+        // We need to subtract safe area margins from readable content guide's margins to get proper text alignment.
+        // Since we use view's and layout guide's frames here make sure to only operate
+        // with "left" and "right" insets and don't mix with "leading" / "trailing".
+        textView.textContainerInset.left = view.readableContentGuide.layoutFrame.minX - view.safeAreaInsets.left
+        textView.textContainerInset.right = view.bounds.maxX - view.readableContentGuide.layoutFrame.maxX - view.safeAreaInsets.left
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // UIKit adjusts bottom inset for the safe area height, so we just need to account for toolbar height.
+        let bottomInset = toolbar.frame.height
+        textView.textContainerInset.bottom = bottomInset + 16
+        textView.verticalScrollIndicatorInsets.bottom = bottomInset
+    }
+
+    override func themeDidChange() {
         super.themeDidChange()
 
-        view.backgroundColor = Theme.backgroundColor
-        messageTextView.backgroundColor = Theme.backgroundColor
-        messageTextView.textColor = Theme.primaryTextColor
-        footer.tintColor = Theme.primaryIconColor
+        if #unavailable(iOS 26) {
+            toolbar.tintColor = Theme.primaryIconColor
+        }
+        if #unavailable(iOS 17) {
+            loadContent()
+        }
+    }
 
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+        if #unavailable(iOS 17) {
+            loadContent()
+        }
+    }
+
+    // MARK: - Content
+
+    private func loadContent() {
         let displayConfig = HydratedMessageBody.DisplayConfiguration.longMessageView(
             revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                 interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )
         )
 
-        messageTextViewSpoilerConfig.animationManager = self.spoilerState.animationManager
+        messageTextViewSpoilerConfig.animationManager = spoilerState.animationManager
         messageTextViewSpoilerConfig.text = displayableText?.fullTextValue
         messageTextViewSpoilerConfig.displayConfig = displayConfig
 
-        if let displayableText = displayableText {
-            let baseAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.dynamicTypeBody,
-                .foregroundColor: Theme.primaryTextColor
-            ]
-
-            let mutableText: NSMutableAttributedString
-            switch displayableText.fullTextValue {
-            case .text(let text):
-                mutableText = NSMutableAttributedString(string: text, attributes: baseAttrs)
-            case .attributedText(let text):
-                mutableText = NSMutableAttributedString(attributedString: text)
-                mutableText.addAttributesToEntireString(baseAttrs)
-            case .messageBody(let messageBody):
-                let attrString = messageBody.asAttributedStringForDisplay(
-                    config: displayConfig,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                )
-                mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
-            }
-
-            let hasPendingMessageRequest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                itemViewModel.thread.hasPendingMessageRequest(transaction: transaction)
-            }
-            CVComponentBodyText.configureTextView(
-                messageTextView,
-                interaction: itemViewModel.interaction,
-                displayableText: displayableText
-            )
-
-            let items = CVComponentBodyText.detectItems(
-                text: displayableText,
-                hasPendingMessageRequest: hasPendingMessageRequest,
-                shouldAllowLinkification: displayableText.shouldAllowLinkification,
-                textWasTruncated: false,
-                revealedSpoilerIds: displayConfig.style.revealedIds,
-                interactionUniqueId: itemViewModel.interaction.uniqueId,
-                interactionIdentifier: .fromInteraction(itemViewModel.interaction)
-            )
-
-            CVTextLabel.linkifyData(
-                attributedText: mutableText,
-                linkifyStyle: .linkAttribute,
-                items: items
-            )
-            messageTextView.attributedText = mutableText
-            messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
-            self.linkItems = items
-
-            if items.isEmpty.negated {
-                messageTextView.addGestureRecognizer(UITapGestureRecognizer(
-                    target: self,
-                    action: #selector(didTapMessageTextView)
-                ))
-            }
-        } else {
+        guard let displayableText else {
             owsFailDebug("displayableText was unexpectedly nil")
-            messageTextView.text = ""
+            textView.text = ""
+            return
         }
 
-        messageTextView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
-            .underlineColor: Theme.primaryTextColor,
+        let textColor: UIColor
+        if #available(iOS 17, *) {
+            textColor = UIColor.Signal.label.resolvedColor(with: textView.traitCollection)
+        } else {
+            textColor = Theme.primaryTextColor
+        }
+
+        let baseAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.dynamicTypeBody,
+            .foregroundColor: textColor
+        ]
+
+        let mutableText: NSMutableAttributedString
+        switch displayableText.fullTextValue {
+        case .text(let text):
+            mutableText = NSMutableAttributedString(string: text, attributes: baseAttrs)
+        case .attributedText(let text):
+            mutableText = NSMutableAttributedString(attributedString: text)
+            mutableText.addAttributesToEntireString(baseAttrs)
+        case .messageBody(let messageBody):
+            let attrString = messageBody.asAttributedStringForDisplay(
+                config: displayConfig,
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
+            mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
+        }
+
+        let hasPendingMessageRequest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            itemViewModel.thread.hasPendingMessageRequest(transaction: transaction)
+        }
+        CVComponentBodyText.configureTextView(
+            textView,
+            interaction: itemViewModel.interaction,
+            displayableText: displayableText
+        )
+
+        let items = CVComponentBodyText.detectItems(
+            text: displayableText,
+            hasPendingMessageRequest: hasPendingMessageRequest,
+            shouldAllowLinkification: displayableText.shouldAllowLinkification,
+            textWasTruncated: false,
+            revealedSpoilerIds: displayConfig.style.revealedIds,
+            interactionUniqueId: itemViewModel.interaction.uniqueId,
+            interactionIdentifier: .fromInteraction(itemViewModel.interaction)
+        )
+
+        CVTextLabel.linkifyData(
+            attributedText: mutableText,
+            linkifyStyle: .linkAttribute,
+            items: items
+        )
+        textView.attributedText = mutableText
+        textView.textAlignment = displayableText.fullTextNaturalAlignment
+        linkItems = items
+
+        if items.isEmpty.negated {
+            textView.addGestureRecognizer(UITapGestureRecognizer(
+                target: self,
+                action: #selector(didTapMessageTextView)
+            ))
+        }
+
+        textView.linkTextAttributes = [
+            .foregroundColor: textColor,
+            .underlineColor: textColor,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
     }
 
-    // MARK: -
-
-    private func refreshContent() {
+    private func checkIfMessageWasDeleted() {
         AssertIsOnMainThread()
 
         let uniqueId = itemViewModel.interaction.uniqueId
         let messageWasDeleted = SSKEnvironment.shared.databaseStorageRef.read {
             TSInteraction.anyFetch(uniqueId: uniqueId, transaction: $0) == nil
         }
-        guard messageWasDeleted else {
-            return
-        }
+        guard messageWasDeleted else { return }
+
         Logger.error("Message was deleted")
         DispatchQueue.main.async {
             self.delegate?.longTextViewMessageWasDeleted(self)
         }
-    }
-
-    // MARK: - Create Views
-
-    private func createViews() {
-        view.backgroundColor = Theme.backgroundColor
-
-        let messageTextView = OWSTextView()
-        self.messageTextView = messageTextView
-        messageTextView.font = UIFont.dynamicTypeBody
-        messageTextView.backgroundColor = Theme.backgroundColor
-        messageTextView.isOpaque = true
-        messageTextView.isEditable = false
-        messageTextView.isSelectable = true
-        messageTextView.isScrollEnabled = true
-        messageTextView.showsHorizontalScrollIndicator = false
-        messageTextView.showsVerticalScrollIndicator = true
-        messageTextView.isUserInteractionEnabled = true
-        messageTextView.textColor = Theme.primaryTextColor
-
-        view.addSubview(messageTextView)
-        messageTextView.autoPinEdge(toSuperviewEdge: .top)
-        messageTextView.autoPinEdge(toSuperviewEdge: .leading)
-        messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
-        messageTextView.textContainerInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
-
-        view.addSubview(footer)
-        footer.autoPinWidthToSuperview()
-        footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
-        footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        footer.tintColor = Theme.primaryIconColor
-
-        footer.items = [
-            UIBarButtonItem(
-                image: Theme.iconImage(.buttonShare),
-                style: .plain,
-                target: self,
-                action: #selector(shareButtonPressed)
-            ),
-            .flexibleSpace(),
-            .button(icon: .buttonForward, style: .plain) { [weak self] in
-                self?.forwardButtonPressed()
-            },
-        ]
-
-        loadContent()
     }
 
     // MARK: - Spoiler Animation
@@ -220,18 +277,16 @@ public class LongTextViewController: OWSViewController {
     }
 
     private lazy var messageTextViewSpoilerAnimator: SpoilerableTextViewAnimator = {
-        let animator = SpoilerableTextViewAnimator(textView: messageTextView)
+        let animator = SpoilerableTextViewAnimator(textView: textView)
         animator.updateAnimationState(messageTextViewSpoilerConfig)
         return animator
     }()
 
     // MARK: - Actions
 
-    @objc
-    private func shareButtonPressed(_ sender: UIBarButtonItem) {
-        guard let displayableText else {
-            return
-        }
+    private func shareButtonPressed() {
+        guard let displayableText else { return }
+
         let shareText: String
         switch displayableText.fullTextValue {
         case .text(let text):
@@ -241,7 +296,7 @@ public class LongTextViewController: OWSViewController {
         case .messageBody(let messageBody):
             shareText = messageBody.asPlaintext()
         }
-        AttachmentSharing.showShareUI(for: shareText, sender: sender)
+        AttachmentSharing.showShareUI(for: shareText, sender: toolbar.items?.first)
     }
 
     private func forwardButtonPressed() {
@@ -263,9 +318,9 @@ public class LongTextViewController: OWSViewController {
         guard let linkItems else {
             return
         }
-        let location = sender.location(in: messageTextView)
+        let location = sender.location(in: textView)
 
-        guard let characterIndex = messageTextView.characterIndex(of: location) else {
+        guard let characterIndex = textView.characterIndex(of: location) else {
             return
         }
 
@@ -312,21 +367,21 @@ public class LongTextViewController: OWSViewController {
 
 extension LongTextViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdate(interaction: itemViewModel.interaction) else {
             return
         }
         assert(databaseChanges.didUpdateInteractions)
 
-        refreshContent()
+        checkIfMessageWasDeleted()
     }
 
-    public func databaseChangesDidUpdateExternally() {
-        refreshContent()
+    func databaseChangesDidUpdateExternally() {
+        checkIfMessageWasDeleted()
     }
 
-    public func databaseChangesDidReset() {
-        refreshContent()
+    func databaseChangesDidReset() {
+        checkIfMessageWasDeleted()
     }
 }
 

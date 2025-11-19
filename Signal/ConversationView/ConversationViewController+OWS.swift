@@ -462,13 +462,13 @@ extension ConversationViewController: MessageEditHistoryViewDelegate {
 
 extension ConversationViewController: LongTextViewDelegate {
 
-    public func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
+    func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
         Logger.info("")
 
         navigationController?.popToViewController(self, animated: true)
     }
 
-    public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModelImpl) {
+    func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         guard let displayableBodyText = itemViewModel.displayableBodyText else {
