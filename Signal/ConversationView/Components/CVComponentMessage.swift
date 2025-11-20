@@ -767,8 +767,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
-        componentView.hInnerStack.isAccessibilityElement = true
+        if poll == nil {
+            // Polls manage accessibility manually.
+            componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
+            componentView.hInnerStack.isAccessibilityElement = true
+        }
 
         var selectionViews: [ManualLayoutView] = [ componentView.primarySelectionView ]
         if hasSecondaryContentForSelection {

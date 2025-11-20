@@ -399,7 +399,8 @@ public class CVPollView: ManualStackView {
         state: CVPollView.State,
         previousPollState: CVPollView.State?,
         cellMeasurement: CVCellMeasurement,
-        componentDelegate: CVComponentDelegate
+        componentDelegate: CVComponentDelegate,
+        accessibilitySummary: String
     ) {
         let poll = state.poll
 
@@ -409,6 +410,10 @@ public class CVPollView: ManualStackView {
         let questionTextLabelConfig = configurator.questionTextLabelConfig
         questionTextLabelConfig.applyForRendering(label: questionTextLabel)
         outerStackSubViews.append(questionTextLabel)
+
+        // Accessibility
+        questionTextLabel.isAccessibilityElement = true
+        questionTextLabel.accessibilityLabel = accessibilitySummary
 
         buildSubtitleStack(configurator: configurator, cellMeasurement: cellMeasurement)
         outerStackSubViews.append(subtitleStack)
@@ -520,6 +525,36 @@ public class CVPollView: ManualStackView {
             generator.prepare()
 
             super.init(name: "PollOptionView")
+
+            // Accessibility
+            let localizedVotesString = String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "POLL_VOTE_COUNT",
+                    tableName: "PluralAware",
+                    comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"
+                ),
+                pollOption.acis.count
+            )
+
+            isAccessibilityElement = true
+            switch localUserVoteState {
+            case .vote:
+                accessibilityTraits.insert(.selected)
+                accessibilityLabel = "\(pollOption.text). \(localizedVotesString)"
+            case .unvote:
+                accessibilityTraits.remove(.selected)
+                accessibilityLabel = "\(pollOption.text). \(localizedVotesString)"
+            case .pendingVote, .pendingUnvote:
+                accessibilityTraits.remove(.selected)
+                accessibilityLabel = OWSLocalizedString("POLL_ACCESSIBILITY_LABEL_OPTION_PENDING", comment: "Accessibility label for a vote option that is not selected by the user.") + ".\(pollOption.text). \(localizedVotesString)"
+            }
+
+            if !pollIsEnded {
+                accessibilityTraits.insert(.button)
+            } else {
+                accessibilityTraits.insert(.staticText)
+            }
+
             buildOptionRowStack(
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
