@@ -262,24 +262,26 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     inProgressIntegrityCheckResult: inProgressIntegrityCheckResult,
                 )
             }
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch where isRetryable(error) {
+            throw error
         } catch {
-            if !isRetryable(error) {
-                logger.error("Unretryable failure in list media! \(error)")
+            logger.error("Unretryable failure in list media! \(error)")
 
-                if BuildFlags.Backups.performListMediaIntegrityChecks {
-                    // Post a notification so we hear about this quickly.
-                    notificationPresenter.notifyUserOfListMediaIntegrityCheckFailure()
-                }
+            if BuildFlags.Backups.performListMediaIntegrityChecks {
+                // Post a notification so we hear about this quickly.
+                notificationPresenter.notifyUserOfListMediaIntegrityCheckFailure()
+            }
 
-                // We failed for a non-retryable reason: "complete" this attempt
-                // so we don't make a doomed attempt for each of our callers.
-                await db.awaitableWrite { tx in
-                    didFinishListMedia(
-                        startTimestamp: startTimestamp,
-                        integrityCheckResult: nil,
-                        tx: tx,
-                    )
-                }
+            // We failed for a non-retryable reason: "complete" this attempt
+            // so we don't make a doomed attempt for each of our callers.
+            await db.awaitableWrite { tx in
+                didFinishListMedia(
+                    startTimestamp: startTimestamp,
+                    integrityCheckResult: nil,
+                    tx: tx,
+                )
             }
 
             throw error
