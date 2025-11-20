@@ -11,6 +11,7 @@ public enum ImageFormat: CustomStringConvertible {
     case tiff
     case jpeg
     case bmp
+    case dng
     case webp
     case heic
     case heif
@@ -27,6 +28,8 @@ public enum ImageFormat: CustomStringConvertible {
             "ImageFormat_Jpeg"
         case .bmp:
             "ImageFormat_Bmp"
+        case .dng:
+            "ImageFormat_Dng"
         case .webp:
             "ImageFormat_Webp"
         case .heic:
@@ -42,14 +45,24 @@ public enum ImageFormat: CustomStringConvertible {
 
     private var mimeTypes: (preferredMimeType: MimeType, alternativeMimeTypes: [MimeType]) {
         switch self {
-        case .png: (.imagePng, [.imageApng, .imageVndMozillaApng])
-        case .gif: (.imageGif, [])
-        case .tiff: (.imageTiff, [.imageXTiff])
-        case .jpeg: (.imageJpeg, [])
-        case .bmp: (.imageBmp, [.imageXWindowsBmp])
-        case .webp: (.imageWebp, [])
-        case .heic: (.imageHeic, [])
-        case .heif: (.imageHeif, [])
+        case .png:
+            (.imagePng, [.imageApng, .imageVndMozillaApng])
+        case .gif:
+            (.imageGif, [])
+        case .tiff:
+            (.imageTiff, [.imageXTiff])
+        case .jpeg:
+            (.imageJpeg, [])
+        case .bmp:
+            (.imageBmp, [.imageXWindowsBmp])
+        case .dng:
+            (.imageDng, [])
+        case .webp:
+            (.imageWebp, [])
+        case .heic:
+            (.imageHeic, [])
+        case .heif:
+            (.imageHeif, [])
         }
     }
 
