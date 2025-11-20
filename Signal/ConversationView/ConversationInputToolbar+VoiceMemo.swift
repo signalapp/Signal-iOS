@@ -17,8 +17,8 @@ extension ConversationInputToolbar {
             directionalLayoutMargins = .init(top: 12, leading: 8, bottom: 8, trailing: 8)
 
             if #available(iOS 26, *) {
-                visualEffectView.contentView.clipsToBounds = true
-                visualEffectView.contentView.cornerConfiguration = .capsule()
+                visualEffectView.clipsToBounds = true
+                visualEffectView.cornerConfiguration = .capsule()
             }
             addSubview(visualEffectView)
             visualEffectView.contentView.addSubview(lockIconView)
@@ -45,7 +45,10 @@ extension ConversationInputToolbar {
 
             if #unavailable(iOS 26) {
                 let maskLayer = CAShapeLayer()
-                maskLayer.path = UIBezierPath(ovalIn: bounds).cgPath
+                maskLayer.path = UIBezierPath(
+                    roundedRect: bounds,
+                    cornerRadius: bounds.size.smallerAxis / 2
+                ).cgPath
                 visualEffectView.layer.mask = maskLayer
             }
         }
