@@ -87,7 +87,17 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             return
         }
 
-        try await appAttestManager.performAttestationAction(.acquireBackupEntitlement)
+        try await Retry.performWithBackoff(
+            maxAttempts: 5,
+            isRetryable: { error in
+                return error.isNetworkFailureOrTimeout
+                || error.is5xxServiceResponse
+                // TODO: Back off for the amount specified in the retry-after
+                || error.httpStatusCode == 429
+            }
+        ) {
+            try await appAttestManager.performAttestationAction(.acquireBackupEntitlement)
+        }
 
         logger.info("Successfully acquired Backup entitlement!")
     }
