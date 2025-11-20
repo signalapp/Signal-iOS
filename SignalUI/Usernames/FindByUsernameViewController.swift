@@ -141,20 +141,19 @@ public class FindByUsernameViewController: OWSTableViewController2 {
     private func didTapNext() {
         let usernameValue = self.usernameValue
         usernameTextField.resignFirstResponder()
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            UsernameQuerier().queryForUsername(
+
+        Task {
+            guard let aci = await UsernameQuerier().queryForUsername(
                 username: usernameValue,
                 fromViewController: self,
-                tx: tx,
                 failureSheetDismissalDelegate: self,
-                onSuccess: { [weak self] aci in
-                    AssertIsOnMainThread()
-                    self?.findByUsernameDelegate?.findByUsername(address: SignalServiceAddress(aci))
-                }
-            )
+            ) else {
+                return
+            }
+
+            findByUsernameDelegate?.findByUsername(address: SignalServiceAddress(aci))
         }
     }
-
 }
 
 extension FindByUsernameViewController: SheetDismissalDelegate {

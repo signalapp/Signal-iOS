@@ -131,13 +131,14 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     @MainActor
     public class func presentAndPropagateResult<T, E>(
         from viewController: UIViewController,
+        canCancel: Bool = false,
         presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
         wrappedAsyncBlock: @escaping () async throws(E) -> T
     ) async throws(E) -> T {
         let result: Result<T, E> = await withCheckedContinuation { continuation in
             present(
                 fromViewController: viewController,
-                canCancel: false,
+                canCancel: canCancel,
                 presentationDelay: presentationDelay,
                 asyncBlock: { modal in
                     let result = await Result(catching: wrappedAsyncBlock)

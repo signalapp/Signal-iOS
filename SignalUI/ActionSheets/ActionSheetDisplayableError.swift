@@ -15,12 +15,16 @@ public enum ActionSheetDisplayableError: Error {
     /// manually cancelled makes it obvious why a given action was aborted.
     case userCancelled
 
-    public func showActionSheet(from fromViewController: UIViewController?) {
+    public func showActionSheet(
+        from fromViewController: UIViewController?,
+        dismissalDelegate: SheetDismissalDelegate? = nil,
+    ) {
         if let localizedActionSheetMessage {
             OWSActionSheets.showActionSheet(
                 title: localizedActionSheetTitle,
                 message: localizedActionSheetMessage,
                 fromViewController: fromViewController,
+                dismissalDelegate: dismissalDelegate,
             )
         }
     }

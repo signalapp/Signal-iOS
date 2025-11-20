@@ -1430,18 +1430,15 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsername(_ username: String) {
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            UsernameQuerier().queryForUsername(
+        Task {
+            guard let aci = await UsernameQuerier().queryForUsername(
                 username: username,
                 fromViewController: self,
-                tx: tx,
-                onSuccess: { [weak self] aci in
-                    AssertIsOnMainThread()
+            ) else {
+                return
+            }
 
-                    guard let self else { return }
-                    self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
-                }
-            )
+            tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
         }
     }
 }

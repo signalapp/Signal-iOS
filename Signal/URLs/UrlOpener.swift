@@ -152,17 +152,18 @@ class UrlOpener {
             SignalDotMePhoneNumberLink.openChat(url: url, fromViewController: rootViewController)
 
         case .usernameLink(let link):
-            databaseStorage.read { tx in
-                UsernameQuerier().queryForUsernameLink(
+            Task {
+                guard let (_, aci) = await UsernameQuerier().queryForUsernameLink(
                     link: link,
                     fromViewController: rootViewController,
-                    tx: tx
-                ) { _, aci in
-                    SignalApp.shared.presentConversationForAddress(
-                        SignalServiceAddress(aci),
-                        animated: true
-                    )
+                ) else {
+                    return
                 }
+
+                SignalApp.shared.presentConversationForAddress(
+                    SignalServiceAddress(aci),
+                    animated: true,
+                )
             }
 
         case .stickerPack(let stickerPackInfo):

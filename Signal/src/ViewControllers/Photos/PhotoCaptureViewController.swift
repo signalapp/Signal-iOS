@@ -1299,14 +1299,16 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
         {
             qrCodeScanned = true
 
-            SSKEnvironment.shared.databaseStorageRef.read { tx in
-                UsernameQuerier().queryForUsernameLink(
+            Task {
+                guard let (username, aci) = await UsernameQuerier().queryForUsernameLink(
                     link: usernameLink,
                     fromViewController: self,
-                    tx: tx,
                     failureSheetDismissalDelegate: self,
-                    onSuccess: self.showUsernameLinkSheet(username:aci:)
-                )
+                ) else {
+                    return
+                }
+
+                showUsernameLinkSheet(username: username, aci: aci)
             }
         } else if
             let provisioningURL = DeviceProvisioningURL(urlString: qrCodeString),
