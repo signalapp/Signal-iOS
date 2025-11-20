@@ -1554,28 +1554,6 @@
 			<string>Cuir %1$d ceann ar aghaidh</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
-			<key>two</key>
-			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
-			<key>few</key>
-			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
-			<key>many</key>
-			<string>Chuir tú bac ar %1$d mball den ghrúpa seo</string>
-			<key>other</key>
-			<string>Chuir tú bac ar %1$d ball den ghrúpa seo</string>
-		</dict>
-	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -1412,26 +1412,6 @@
 			<string>Переслать %1$d</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Вы заблокировали %1$d участника этой группы</string>
-			<key>few</key>
-			<string>Вы заблокировали %1$d участников этой группы</string>
-			<key>many</key>
-			<string>Вы заблокировали %1$d участников этой группы</string>
-			<key>other</key>
-			<string>Вы заблокировали %1$d участника этой группы</string>
-		</dict>
-	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

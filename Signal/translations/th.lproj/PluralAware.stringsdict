@@ -986,20 +986,6 @@
 			<string>ส่งต่อ %1$d</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>คุณได้บล็อกสมาชิก %1$d คนในกลุ่มนี้</string>
-		</dict>
-	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

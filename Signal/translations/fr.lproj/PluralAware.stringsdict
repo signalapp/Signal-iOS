@@ -563,9 +563,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception des messages risquent de s&apos;en trouver ralentis.</string>
+			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception de messages risquent de s&apos;en trouver ralentis.</string>
 			<key>other</key>
-			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception des messages risquent de s&apos;en trouver ralentis.</string>
+			<string>Pour un fonctionnement optimal, les groupes Signal peuvent accueillir jusqu&apos;à %1$d membres. Si vous dépassez cette limite, l&apos;envoi et la réception de messages risquent de s&apos;en trouver ralentis.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -1126,22 +1126,6 @@
 			<string>Transférer %1$d média</string>
 			<key>other</key>
 			<string>Transférer %1$d médias</string>
-		</dict>
-	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Vous avez bloqué %1$d membre de ce groupe</string>
-			<key>other</key>
-			<string>Vous avez bloqué %1$d membres de ce groupe</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
