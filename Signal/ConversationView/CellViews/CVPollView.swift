@@ -661,10 +661,21 @@ public class CVPollView: ManualStackView {
 
                 var subviewFrame = CGRect(
                     origin: CGPoint(x: originX, y: superview.bounds.origin.y),
-                    size: CGSize(width: numVotesBarFill, height: superview.bounds.height)
+                    size: CGSize(width: progressFill.frame.width, height: superview.bounds.height)
                 )
 
-                guard prevVotes != nil else {
+                // CVPollView is discarded and re-rendered everytime the vote state changes,
+                // so we only ever want to animate once (when appearing) for each view.
+                // But, layoutSubviews() is called multiple times when creating the view
+                // which can cause glitchiness in the animations, or the wrong bar fill.
+                if prevVotes != nil {
+                    // If this view already animated/animating, that means this is a
+                    // repeat call to layoutSubviews() and we don't want to change the
+                    // width - the animation will set it correctly once it completes.
+                    if !didAnimate {
+                        subviewFrame.width = prevNumVotesBarFill
+                    }
+                } else {
                     // Don't animate if there's no previous state, just set to the final width.
                     subviewFrame.width = numVotesBarFill
                     Self.setSubviewFrame(subview: progressFill, frame: subviewFrame)
@@ -676,6 +687,7 @@ public class CVPollView: ManualStackView {
                     didAnimate = true
 
                     DispatchQueue.main.async { [weak self] in
+                        // Start animation at previous state's fill, and finish at new state's fill.
                         self?.progressFill.frame.width = prevNumVotesBarFill
                         if prevNumVotesBarFill != numVotesBarFill {
                             UIView.animate(
