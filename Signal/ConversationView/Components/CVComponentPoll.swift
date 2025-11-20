@@ -38,7 +38,8 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
             state: poll.state,
             previousPollState: poll.prevPollState,
             cellMeasurement: cellMeasurement,
-            componentDelegate: componentDelegate
+            componentDelegate: componentDelegate,
+            accessibilitySummary: buildAccessibilityLabel()
         )
     }
 
@@ -47,6 +48,35 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
 
         let maxWidth = min(maxWidth, conversationStyle.maxMessageWidth)
         return CVPollView.measure(maxWidth: maxWidth, measurementBuilder: measurementBuilder, state: poll.state)
+    }
+
+    // Builds an accessibility label for the entire poll.
+    // This label uses basic punctuation which might be used by
+    // VoiceOver for pauses/timing.
+    //
+    // Example: Lilia sent: a poll, what should we have for dinner?
+    // Example: You sent: a poll, where should we go on vacation?
+    private func buildAccessibilityLabel() -> String {
+        var elements = [String]()
+        if isIncoming {
+            if let accessibilityAuthorName = itemViewState.accessibilityAuthorName {
+                let senderFormat = OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
+                                                comment: "Format for sender info for accessibility label for message. Embeds {{ the sender name }}.")
+                elements.append(String(format: senderFormat, accessibilityAuthorName))
+            } else {
+                owsFailDebug("Missing accessibilityAuthorName.")
+            }
+        } else if isOutgoing {
+            elements.append(OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
+                                               comment: "Format for sender info for outgoing messages."))
+        }
+
+        let formatQuestion = OWSLocalizedString("POLL_ACCESSIBILITY_LABEL",
+                                        comment: "Accessibility label for poll message. Embeds {{ poll question }}.")
+        elements.append(String(format: formatQuestion, poll.state.poll.question))
+
+        let result = elements.joined(separator: " ")
+        return result
     }
 
     // MARK: -
@@ -75,5 +105,4 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
             pollView.reset()
         }
     }
-
 }
