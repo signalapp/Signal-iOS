@@ -151,7 +151,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
     private let logger = PrefixedLogger(prefix: "[Backups][Sub]")
 
-    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let backupSubscriptionRedeemer: BackupSubscriptionRedeemer
@@ -164,7 +163,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private let whoAmIManager: WhoAmIManager
 
     init(
-        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         backupSubscriptionRedeemer: BackupSubscriptionRedeemer,
@@ -175,7 +173,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         tsAccountManager: TSAccountManager,
         whoAmIManager: WhoAmIManager,
     ) {
-        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.backupSubscriptionRedeemer = backupSubscriptionRedeemer
@@ -183,7 +180,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         self.db = db
         self.networkManager = networkManager
         self.storageServiceManager = storageServiceManager
-        self.store = Store(backupAttachmentUploadEraStore: backupAttachmentUploadEraStore)
+        self.store = Store()
         self.tsAccountManager = tsAccountManager
         self.whoAmIManager = whoAmIManager
 
@@ -882,11 +879,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             static let lastRedemptionNecessaryCheck = "lastRedemptionNecessaryCheck"
         }
 
-        private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
         private let kvStore: KeyValueStore
 
-        init(backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore) {
-            self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
+        init() {
             self.kvStore = KeyValueStore(collection: "BackupSubscriptionManager")
         }
 
@@ -924,9 +919,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 kvStore.removeValue(forKey: Keys.originalTransactionId, transaction: tx)
                 kvStore.setString(purchaseToken, key: Keys.purchaseToken, transaction: tx)
             }
-
-            // Any time we set the subscriber ID, rotate the upload era.
-            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
         }
 
         // MARK: - SubscriptionRedemptionNecessityCheckerStore

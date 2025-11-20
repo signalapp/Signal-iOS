@@ -203,9 +203,9 @@ final class BackupEnablingManager {
                 ))
             }
 
-            try await setBackupPlan { tx in
+            try await setBackupPlan { currentBackupPlan in
                 let currentOptimizeLocalStorage: Bool
-                switch backupPlanManager.backupPlan(tx: tx) {
+                switch currentBackupPlan {
                 case .disabled, .disabling, .free:
                     currentOptimizeLocalStorage = false
                 case
@@ -241,11 +241,7 @@ final class BackupEnablingManager {
             throw .genericError
         }
 
-        try await setBackupPlan { tx in
-            // Rotate the upload era, since now that we're paid we'll probably
-            // want to do uploads, and to that end need to do a list-media.
-            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
-
+        try await setBackupPlan { _ in
             return .paidAsTester(optimizeLocalStorage: false)
         }
     }
@@ -253,11 +249,11 @@ final class BackupEnablingManager {
     // MARK: -
 
     private func setBackupPlan(
-        block: (DBWriteTransaction) -> BackupPlan,
+        block: (_ currentBackupPlan: BackupPlan) -> BackupPlan,
     ) async throws(ActionSheetDisplayableError) {
         do {
             try await db.awaitableWriteWithRollbackIfThrows { tx in
-                let newBackupPlan = block(tx)
+                let newBackupPlan = block(backupPlanManager.backupPlan(tx: tx))
                 try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
             }
         } catch {

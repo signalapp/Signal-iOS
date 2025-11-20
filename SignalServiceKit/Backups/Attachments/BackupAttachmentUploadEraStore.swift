@@ -6,10 +6,9 @@
 /// The "era" for a Backup Attachment upload identifies when it was uploaded to
 /// the media tier, relative to events that might require us to reupload it.
 ///
-/// At the time of writing, upload eras rotate when the subscriber ID for our
-/// Backups subscription rotates; that's a sign that previously-uploaded media,
-/// which were uploaded during a previous iteration of our Backups subscription,
-/// may have expired off the media tier and consequently need to be reuploaded.
+/// The upload era should rotate whenever something happens such that we may
+/// need to (re-)upload backup media. Rotating the upload era causes us to run
+/// list-media, and thereby learn about any media needing upload.
 public struct BackupAttachmentUploadEraStore {
     private enum StoreKeys {
         static let currentUploadEra = "currentUploadEra"

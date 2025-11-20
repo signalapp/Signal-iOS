@@ -457,6 +457,7 @@ extension AppSetup.GlobalsContinuation {
 
         let backupPlanManager = BackupPlanManagerImpl(
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
@@ -465,7 +466,6 @@ extension AppSetup.GlobalsContinuation {
 
         let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupPlanManager: backupPlanManager,
             backupSubscriptionIssueStore: backupSubscriptionIssueStore,
             backupSubscriptionRedeemer: BackupSubscriptionRedeemer(
@@ -1063,7 +1063,6 @@ extension AppSetup.GlobalsContinuation {
             authCredentialStore: authCredentialStore,
             backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
-            backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupKeyService: backupKeyService,
             backupPlanManager: backupPlanManager,

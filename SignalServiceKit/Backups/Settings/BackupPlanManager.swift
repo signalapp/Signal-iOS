@@ -40,6 +40,7 @@ extension Notification.Name {
 class BackupPlanManagerImpl: BackupPlanManager {
 
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
@@ -48,12 +49,14 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
     init(
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         tsAccountManager: TSAccountManager,
     ) {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
@@ -109,6 +112,12 @@ class BackupPlanManagerImpl: BackupPlanManager {
             tx: tx,
         )
 
+        rotateUploadEraIfNecessary(
+            oldBackupPlan: oldBackupPlan,
+            newBackupPlan: newBackupPlan,
+            tx: tx,
+        )
+
         try configureDownloadsForBackupPlanChange(
             oldPlan: oldBackupPlan,
             newPlan: newBackupPlan,
@@ -130,6 +139,28 @@ class BackupPlanManagerImpl: BackupPlanManager {
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
             }
+        }
+    }
+
+    // MARK: -
+
+    private func rotateUploadEraIfNecessary(
+        oldBackupPlan: BackupPlan,
+        newBackupPlan: BackupPlan,
+        tx: DBWriteTransaction,
+    ) {
+        func isPaidPlan(_ backupPlan: BackupPlan) -> Bool {
+            switch backupPlan {
+            case .disabled, .disabling, .free: false
+            case .paid, .paidExpiringSoon, .paidAsTester: true
+            }
+        }
+
+        if !isPaidPlan(oldBackupPlan), isPaidPlan(newBackupPlan) {
+            // If we're becoming a paid-tier user, we should rotate the upload
+            // era to ensure we run a list-media and discover any necessary
+            // uploads.
+            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
         }
     }
 
