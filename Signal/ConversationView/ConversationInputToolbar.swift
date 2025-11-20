@@ -742,6 +742,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let hMargin: CGFloat = iOS26Layout ? 12 : 0 // iOS 26 needs space between leading/trailing buttons and text view background.
         messageContentView.directionalLayoutMargins = .init(hMargin: hMargin, vMargin: vMargin)
         messageContentView.semanticContentAttribute = .forceLeftToRight
+        backgroundView.semanticContentAttribute = .forceLeftToRight
 
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         messageComponentsView.translatesAutoresizingMaskIntoConstraints = false
