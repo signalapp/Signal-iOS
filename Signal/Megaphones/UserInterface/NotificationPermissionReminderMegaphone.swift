@@ -114,7 +114,7 @@ class TurnOnPermissionView: UIStackView {
 
         // Button
         let primaryButton = button ?? UIButton(
-            configuration: .largePrimary(title: title),
+            configuration: .largePrimary(title: CommonStrings.goToSettingsButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.goToSettings()
             }
