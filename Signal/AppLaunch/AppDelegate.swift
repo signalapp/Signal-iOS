@@ -761,6 +761,25 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return registrationState
         }
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        cron.schedulePeriodically(
+            uniqueKey: .fetchLocalProfile,
+            approximateInterval: .day,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: {
+                do {
+                    _ = try await profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
+                    // Don't remove this -- fetching the local user's profile is special-cased
+                    // and won't download the avatar via the normal mechanism.
+                    try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: .implicit())
+                } catch {
+                    Logger.warn("Couldn't fetch local user profile or avatar: \(error)")
+                    throw error
+                }
+            },
+        )
+
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
@@ -786,21 +805,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     )
                 } catch {
                     Logger.warn("\(error)")
-                }
-            }
-        }
-
-        if tsRegistrationState.isRegistered {
-            Task {
-                do {
-                    _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
-                    // Don't remove this -- fetching the local user's profile is special-cased
-                    // and won't download the avatar via the normal mechanism.
-                    try await SSKEnvironment.shared.profileManagerRef.downloadAndDecryptLocalUserAvatarIfNeeded(
-                        authedAccount: .implicit()
-                    )
-                } catch {
-                    Logger.warn("Couldn't fetch local user profile or avatar: \(error)")
                 }
             }
         }
