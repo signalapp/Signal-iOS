@@ -209,7 +209,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = self.inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
         inputToolbar.setMessageBody(messageDraft, animated: false)
@@ -239,7 +238,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -259,7 +257,6 @@ public extension ConversationViewController {
         }
 
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 

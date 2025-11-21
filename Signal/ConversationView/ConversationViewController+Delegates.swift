@@ -39,7 +39,6 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
         inputToolbar.setMessageBody(newMessageBody, animated: false)

@@ -293,7 +293,6 @@ public final class ConversationViewController: OWSViewController {
             return result
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return result
         }
 
@@ -495,7 +494,6 @@ public final class ConversationViewController: OWSViewController {
             return
         }
         guard let inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 

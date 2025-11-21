@@ -14,7 +14,6 @@ extension ConversationViewController: MessageActionsDelegate {
         if let inputToolbar {
             hasUnsavedDraft = inputToolbar.hasUnsavedDraft
         } else {
-            owsFailDebug("Missing inputToolbar.")
             hasUnsavedDraft = false
         }
 
@@ -176,7 +175,6 @@ extension ConversationViewController: MessageActionsDelegate {
         AssertIsOnMainThread()
 
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 

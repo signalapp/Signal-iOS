@@ -34,7 +34,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -78,7 +77,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -208,7 +206,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
         guard inputToolbar != nil else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
         updateContentInsets()
@@ -272,7 +269,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -571,7 +567,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -905,7 +900,7 @@ extension ConversationViewController: SendMediaNavDelegate {
             case .inputToolbarNotReady:
                 owsFailDebug("InputToolbar not yet ready.")
             case .inputToolbarMissing:
-                owsFailDebug("Missing inputToolbar.")
+                break
             case .conversationBlocked, .untrustedContacts:
                 // User was prompted but chose not to make changes. Stop here.
                 break
@@ -925,7 +920,6 @@ extension ConversationViewController: SendMediaNavDelegate {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 

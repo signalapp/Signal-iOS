@@ -344,7 +344,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -371,7 +370,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -386,7 +384,6 @@ public extension ConversationViewController {
             return
         }
         guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
@@ -401,7 +398,6 @@ public extension ConversationViewController {
             return
         }
         guard nil != inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
             return
         }
 
