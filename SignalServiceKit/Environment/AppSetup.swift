@@ -1388,6 +1388,7 @@ extension AppSetup.GlobalsContinuation {
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
                 backupPlanManager: backupPlanManager,
                 backupSubscriptionManager: backupSubscriptionManager,
+                callServiceSettingsStore: CallServiceSettingsStore(),
                 chatStyleArchiver: backupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
                 donationSubscriptionManager: BackupArchive.Wrappers.DonationSubscriptionManager(),
@@ -1405,6 +1406,7 @@ extension AppSetup.GlobalsContinuation {
                 sskPreferences: BackupArchive.Wrappers.SSKPreferences(),
                 storyManager: BackupArchive.Wrappers.StoryManager(),
                 systemStoryManager: BackupArchive.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
+                theme: ThemeDataStore(),
                 typingIndicators: BackupArchive.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
                 udManager: BackupArchive.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager

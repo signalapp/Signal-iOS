@@ -80,6 +80,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     public let earlyRingNextIncomingCall = AtomicBool(false, lock: .init())
 
+    let callServiceSettingsStore: CallServiceSettingsStore
     let callServiceState: CallServiceState
     var notificationObservers: [any NSObjectProtocol] = []
 
@@ -91,6 +92,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         callLinkStore: any CallLinkRecordStore,
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
+        callServiceSettingsStore: CallServiceSettingsStore,
         db: any DB,
         deviceSleepManager: DeviceSleepManagerImpl,
         mutableCurrentCall: AtomicValue<SignalCall?>,
@@ -108,6 +110,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.callManagerHttpClient = httpClient
         let callUIAdapter = CallUIAdapter()
         self.callUIAdapter = callUIAdapter
+        self.callServiceSettingsStore = callServiceSettingsStore
         self.callServiceState = CallServiceState(currentCall: mutableCurrentCall)
         self.individualCallService = IndividualCallService(
             callManager: self.callManager,
@@ -144,7 +147,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         notificationObservers.append(NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.didBecomeActive() }
         })
-        notificationObservers.append(NotificationCenter.default.addObserver(forName: Self.callServicePreferencesDidChange, object: nil, queue: .main) { [weak self] _ in
+        notificationObservers.append(NotificationCenter.default.addObserver(forName: .callServicePreferencesDidChange, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.configureDataMode() }
         })
 
@@ -435,8 +438,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     func shouldUseLowDataWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
-        let highDataInterfaces = databaseStorage.read { readTx in
-            Self.highDataNetworkInterfaces(readTx: readTx)
+        let highDataInterfaces = databaseStorage.read { tx in
+            callServiceSettingsStore.highDataNetworkInterfaces(tx: tx)
         }
         if let allowsHighData = highDataInterfaces.includes(networkRoute.localAdapterType) {
             return !allowsHighData
@@ -878,30 +881,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
             groupThreadCall.ringRtcCall.updateGroupMembers(members: membershipInfo)
         }
-    }
-
-    // MARK: - Data Modes
-
-    static nonisolated let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
-    private static nonisolated let keyValueStore = KeyValueStore(collection: "CallService")
-    // This used to be called "high bandwidth", but "data" is more accurate.
-    private static nonisolated let highDataPreferenceKey = "HighBandwidthPreferenceKey"
-
-    static nonisolated func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: DBWriteTransaction) {
-        Logger.info("Updating preferred low data interfaces: \(interfaceSet.rawValue)")
-
-        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx)
-        writeTx.addSyncCompletion {
-            NotificationCenter.default.postOnMainThread(name: callServicePreferencesDidChange, object: nil)
-        }
-    }
-
-    static nonisolated func highDataNetworkInterfaces(readTx: DBReadTransaction) -> NetworkInterfaceSet {
-        guard let highDataPreference = keyValueStore.getUInt(
-                highDataPreferenceKey,
-                transaction: readTx) else { return .wifiAndCellular }
-
-        return NetworkInterfaceSet(rawValue: highDataPreference)
     }
 }
 

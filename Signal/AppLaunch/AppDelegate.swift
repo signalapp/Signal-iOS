@@ -470,6 +470,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 callLinkStore: dataMigrationContinuation.dependenciesBridge.callLinkStore,
                 callRecordDeleteManager: dataMigrationContinuation.dependenciesBridge.callRecordDeleteManager,
                 callRecordStore: dataMigrationContinuation.dependenciesBridge.callRecordStore,
+                callServiceSettingsStore: CallServiceSettingsStore(),
                 db: dataMigrationContinuation.dependenciesBridge.db,
                 deviceSleepManager: launchContext.deviceSleepManager,
                 mutableCurrentCall: _currentCall,

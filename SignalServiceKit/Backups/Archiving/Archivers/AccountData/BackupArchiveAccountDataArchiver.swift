@@ -53,6 +53,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
+    private let callServiceSettingsStore: CallServiceSettingsStore
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
     private let donationSubscriptionManager: BackupArchive.Shims.DonationSubscriptionManager
@@ -70,6 +71,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let sskPreferences: BackupArchive.Shims.SSKPreferences
     private let storyManager: BackupArchive.Shims.StoryManager
     private let systemStoryManager: BackupArchive.Shims.SystemStoryManager
+    private let theme: ThemeDataStore
     private let typingIndicators: BackupArchive.Shims.TypingIndicators
     private let udManager: BackupArchive.Shims.UDManager
     private let usernameEducationManager: UsernameEducationManager
@@ -78,6 +80,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
+        callServiceSettingsStore: CallServiceSettingsStore,
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
         donationSubscriptionManager: BackupArchive.Shims.DonationSubscriptionManager,
@@ -95,6 +98,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         sskPreferences: BackupArchive.Shims.SSKPreferences,
         storyManager: BackupArchive.Shims.StoryManager,
         systemStoryManager: BackupArchive.Shims.SystemStoryManager,
+        theme: ThemeDataStore,
         typingIndicators: BackupArchive.Shims.TypingIndicators,
         udManager: BackupArchive.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
@@ -102,6 +106,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
+        self.callServiceSettingsStore = callServiceSettingsStore
         self.chatStyleArchiver = chatStyleArchiver
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
         self.donationSubscriptionManager = donationSubscriptionManager
@@ -119,6 +124,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         self.sskPreferences = sskPreferences
         self.storyManager = storyManager
         self.systemStoryManager = systemStoryManager
+        self.theme = theme
         self.typingIndicators = typingIndicators
         self.udManager = udManager
         self.usernameEducationManager = usernameEducationManager
@@ -329,6 +335,21 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         if screenLock.isScreenLockEnabled(tx: context.tx) {
             let screenLockSeconds = screenLock.screenLockTimeout(tx: context.tx)
             accountSettings.screenLockTimeoutMinutes = UInt32(screenLockSeconds / Double(60))
+        }
+
+        accountSettings.appTheme = switch theme.getCurrentMode(tx: context.tx) {
+        case .dark: .dark
+        case .light: .light
+        case .system: .system
+        }
+
+        let callServiceDataSetting = callServiceSettingsStore.highDataNetworkInterfaces(tx: context.tx)
+        accountSettings.callsUseLessDataSetting = if callServiceDataSetting == .wifiAndCellular {
+            .wifiAndMobileData
+        } else if callServiceDataSetting == .cellular {
+            .mobileDataOnly
+        } else {
+            .never
         }
 
         return .success(accountSettings)
@@ -597,6 +618,23 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                     ows2FAManager.resetDefaultRepetitionIntervalForBackupRestore(tx: context.tx)
                 }
             }
+
+            let appAppearanceMode: ThemeDataStore.Appearance = switch settings.appTheme {
+            case .UNRECOGNIZED, .unknownAppTheme, .system: .system
+            case .dark: .dark
+            case .light: .light
+            }
+            theme.setCurrentMode(appAppearanceMode, tx: context.tx)
+
+            let callServiceDataMode: NetworkInterfaceSet = switch settings.callsUseLessDataSetting {
+            case .mobileDataOnly: .cellular
+            case .wifiAndMobileData: .wifiAndCellular
+            case .never, .UNRECOGNIZED, .unknownCallDataSetting: .none
+            }
+            callServiceSettingsStore.setHighDataInterfaces(
+                callServiceDataMode,
+                tx: context.tx
+            )
         }
 
         // Restore username details (username, link, QR color)

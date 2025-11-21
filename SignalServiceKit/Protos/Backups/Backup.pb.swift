@@ -464,6 +464,94 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   }
 
+  public enum AppTheme: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public typealias RawValue = Int
+
+    /// Interpret as "System"
+    case unknownAppTheme // = 0
+    case system // = 1
+    case light // = 2
+    case dark // = 3
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .unknownAppTheme
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .unknownAppTheme
+      case 1: self = .system
+      case 2: self = .light
+      case 3: self = .dark
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .unknownAppTheme: return 0
+      case .system: return 1
+      case .light: return 2
+      case .dark: return 3
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    public static let allCases: [BackupProto_AccountData.AppTheme] = [
+      .unknownAppTheme,
+      .system,
+      .light,
+      .dark,
+    ]
+
+  }
+
+  public enum CallsUseLessDataSetting: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public typealias RawValue = Int
+
+    /// Interpret as "Never"
+    case unknownCallDataSetting // = 0
+    case never // = 1
+    case mobileDataOnly // = 2
+    case wifiAndMobileData // = 3
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .unknownCallDataSetting
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .unknownCallDataSetting
+      case 1: self = .never
+      case 2: self = .mobileDataOnly
+      case 3: self = .wifiAndMobileData
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .unknownCallDataSetting: return 0
+      case .never: return 1
+      case .mobileDataOnly: return 2
+      case .wifiAndMobileData: return 3
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    public static let allCases: [BackupProto_AccountData.CallsUseLessDataSetting] = [
+      .unknownCallDataSetting,
+      .never,
+      .mobileDataOnly,
+      .wifiAndMobileData,
+    ]
+
+  }
+
   public struct UsernameLink: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -770,6 +858,18 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public var hasPinReminders: Bool {return _storage._pinReminders != nil}
     /// Clears the value of `pinReminders`. Subsequent reads from it will return its default value.
     public mutating func clearPinReminders() {_uniqueStorage()._pinReminders = nil}
+
+    /// If unset, treat the same as "Unknown" case
+    public var appTheme: BackupProto_AccountData.AppTheme {
+      get {return _storage._appTheme}
+      set {_uniqueStorage()._appTheme = newValue}
+    }
+
+    /// If unset, treat the same as "Unknown" case
+    public var callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting {
+      get {return _storage._callsUseLessDataSetting}
+      set {_uniqueStorage()._callsUseLessDataSetting = newValue}
+    }
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -6650,6 +6750,14 @@ extension BackupProto_AccountData.SentMediaQuality: SwiftProtobuf._ProtoNameProv
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_QUALITY\0\u{1}STANDARD\0\u{1}HIGH\0")
 }
 
+extension BackupProto_AccountData.AppTheme: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_APP_THEME\0\u{1}SYSTEM\0\u{1}LIGHT\0\u{1}DARK\0")
+}
+
+extension BackupProto_AccountData.CallsUseLessDataSetting: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_CALL_DATA_SETTING\0\u{1}NEVER\0\u{1}MOBILE_DATA_ONLY\0\u{1}WIFI_AND_MOBILE_DATA\0")
+}
+
 extension BackupProto_AccountData.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".UsernameLink"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}entropy\0\u{1}serverId\0\u{1}color\0")
@@ -6745,7 +6853,7 @@ extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: Swift
 
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -6774,6 +6882,8 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _autoDownloadSettings: BackupProto_AccountData.AutoDownloadSettings? = nil
     var _screenLockTimeoutMinutes: UInt32? = nil
     var _pinReminders: Bool? = nil
+    var _appTheme: BackupProto_AccountData.AppTheme = .unknownAppTheme
+    var _callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting = .unknownCallDataSetting
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -6810,6 +6920,8 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _autoDownloadSettings = source._autoDownloadSettings
       _screenLockTimeoutMinutes = source._screenLockTimeoutMinutes
       _pinReminders = source._pinReminders
+      _appTheme = source._appTheme
+      _callsUseLessDataSetting = source._callsUseLessDataSetting
     }
   }
 
@@ -6854,6 +6966,8 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 24: try { try decoder.decodeSingularMessageField(value: &_storage._autoDownloadSettings) }()
         case 26: try { try decoder.decodeSingularUInt32Field(value: &_storage._screenLockTimeoutMinutes) }()
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._pinReminders) }()
+        case 28: try { try decoder.decodeSingularEnumField(value: &_storage._appTheme) }()
+        case 29: try { try decoder.decodeSingularEnumField(value: &_storage._callsUseLessDataSetting) }()
         default: break
         }
       }
@@ -6944,6 +7058,12 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       try { if let v = _storage._pinReminders {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 27)
       } }()
+      if _storage._appTheme != .unknownAppTheme {
+        try visitor.visitSingularEnumField(value: _storage._appTheme, fieldNumber: 28)
+      }
+      if _storage._callsUseLessDataSetting != .unknownCallDataSetting {
+        try visitor.visitSingularEnumField(value: _storage._callsUseLessDataSetting, fieldNumber: 29)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6979,6 +7099,8 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._autoDownloadSettings != rhs_storage._autoDownloadSettings {return false}
         if _storage._screenLockTimeoutMinutes != rhs_storage._screenLockTimeoutMinutes {return false}
         if _storage._pinReminders != rhs_storage._pinReminders {return false}
+        if _storage._appTheme != rhs_storage._appTheme {return false}
+        if _storage._callsUseLessDataSetting != rhs_storage._callsUseLessDataSetting {return false}
         return true
       }
       if !storagesAreEqual {return false}

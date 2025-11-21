@@ -23,7 +23,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(preferencesDidChange),
-            name: CallService.callServicePreferencesDidChange,
+            name: .callServicePreferencesDidChange,
             object: nil
         )
     }
@@ -124,7 +124,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         )
 
         let currentCallDataPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            CallService.highDataNetworkInterfaces(readTx: transaction).inverted
+            CallServiceSettingsStore().highDataNetworkInterfaces(tx: transaction).inverted
         }
         let currentCallDataPreferenceString = NetworkInterfacePreferenceViewController.name(
             forInterfaceSet: currentCallDataPreference
@@ -146,8 +146,9 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     // MARK: - Events
 
     private func showCallDataPreferences() {
+        let callServiceSettingsStore = CallServiceSettingsStore()
         let currentLowDataPreference = SSKEnvironment.shared.databaseStorageRef.read { readTx in
-            CallService.highDataNetworkInterfaces(readTx: readTx).inverted
+            callServiceSettingsStore.highDataNetworkInterfaces(tx: readTx).inverted
         }
 
         let vc = NetworkInterfacePreferenceViewController(
@@ -157,7 +158,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 if self != nil {
                     SSKEnvironment.shared.databaseStorageRef.write { writeTx in
                         let newHighDataPref = newLowDataPref.inverted
-                        CallService.setHighDataInterfaces(newHighDataPref, writeTx: writeTx)
+                        callServiceSettingsStore.setHighDataInterfaces(newHighDataPref, tx: writeTx)
                     }
                 }
             })

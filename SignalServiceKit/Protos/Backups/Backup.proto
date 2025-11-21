@@ -92,6 +92,20 @@ message AccountData {
     AutoDownloadOption documents = 4;
   }
 
+  enum AppTheme {
+    UNKNOWN_APP_THEME = 0; // Interpret as "System"
+    SYSTEM = 1;
+    LIGHT = 2;
+    DARK = 3;
+  }
+
+  enum CallsUseLessDataSetting {
+    UNKNOWN_CALL_DATA_SETTING = 0; // Interpret as "Never"
+    NEVER = 1;
+    MOBILE_DATA_ONLY = 2;
+    WIFI_AND_MOBILE_DATA = 3;
+  }
+
   message AccountSettings {
     bool readReceipts = 1;
     bool sealedSenderIndicators = 2;
@@ -121,6 +135,8 @@ message AccountData {
     reserved /* wifiAutoDownloadSettings */ 25;
     optional uint32 screenLockTimeoutMinutes = 26; // If unset, consider screen lock to be disabled.
     optional bool pinReminders = 27; // If unset, consider pin reminders to be enabled.
+    AppTheme appTheme = 28;  // If unset, treat the same as "Unknown" case
+    CallsUseLessDataSetting callsUseLessDataSetting = 29;  // If unset, treat the same as "Unknown" case
   }
 
   message SubscriberData {

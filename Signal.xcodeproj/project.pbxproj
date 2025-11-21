@@ -1810,6 +1810,8 @@
 		C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
+		C19001C02ECE319800D0CBD5 /* ThemeDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19001BF2ECE319400D0CBD5 /* ThemeDataStore.swift */; };
+		C19001C22ECF62BA00D0CBD5 /* CallServiceSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19001C12ECF62AD00D0CBD5 /* CallServiceSettingsStore.swift */; };
 		C190F8F02C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C190F8EF2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.m */; };
 		C190F8F12C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C190F8EE2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C190F8F42C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C190F8F32C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.m */; };
@@ -5794,6 +5796,8 @@
 		C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationUIStyles.swift; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
+		C19001BF2ECE319400D0CBD5 /* ThemeDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeDataStore.swift; sourceTree = "<group>"; };
+		C19001C12ECF62AD00D0CBD5 /* CallServiceSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallServiceSettingsStore.swift; sourceTree = "<group>"; };
 		C190F8EE2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIncomingArchivedPaymentMessage.h; sourceTree = "<group>"; };
 		C190F8EF2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingArchivedPaymentMessage.m; sourceTree = "<group>"; };
 		C190F8F22C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingArchivedPaymentMessage.h; sourceTree = "<group>"; };
@@ -11306,6 +11310,15 @@
 			path = Edit;
 			sourceTree = "<group>";
 		};
+		C19001BE2ECE318900D0CBD5 /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				C19001C12ECF62AD00D0CBD5 /* CallServiceSettingsStore.swift */,
+				C19001BF2ECE319400D0CBD5 /* ThemeDataStore.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
 		C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */ = {
 			isa = PBXGroup;
 			children = (
@@ -13689,6 +13702,7 @@
 				F9C5CAB4289453B200548EEE /* Spam */,
 				F9C5CA2F289453B100548EEE /* Storage */,
 				88E34F2522F269B600966CC2 /* StorageService */,
+				C19001BE2ECE318900D0CBD5 /* Stores */,
 				7255A4C52B98DA2200E95368 /* Stories */,
 				D91A39E62AE2F42000F57A61 /* Subscriptions */,
 				F9C5C8A4289451B900548EEE /* tests */,
@@ -17904,6 +17918,7 @@
 				D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */,
 				D91AC9302B5F31BB00814975 /* CallRecordStoreNotification.swift in Sources */,
 				D9A81C6B2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift in Sources */,
+				C19001C22ECF62BA00D0CBD5 /* CallServiceSettingsStore.swift in Sources */,
 				500AF3AB2C58347C00CB9F4F /* CancellableContinuation.swift in Sources */,
 				17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */,
 				5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */,
@@ -18719,6 +18734,7 @@
 				F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */,
 				66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */,
 				66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */,
+				C19001C02ECE319800D0CBD5 /* ThemeDataStore.swift in Sources */,
 				66FC638229E2172400F00DAC /* ThemedColor.swift in Sources */,
 				668A01362C2B6088007B8808 /* Thenable+After.swift in Sources */,
 				668A01372C2B6088007B8808 /* Thenable+Race.swift in Sources */,
