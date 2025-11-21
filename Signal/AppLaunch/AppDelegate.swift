@@ -697,14 +697,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Task {
-                try? await RemoteMegaphoneFetcher(
-                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                    signalService: SSKEnvironment.shared.signalServiceRef
-                ).syncRemoteMegaphonesIfNecessary()
-            }
-        }
+        let remoteMegaphoneFetcher = RemoteMegaphoneFetcher(
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+            signalService: SSKEnvironment.shared.signalServiceRef,
+        )
+        cron.schedulePeriodically(
+            uniqueKey: .fetchMegaphones,
+            approximateInterval: 3 * .day,
+            mustBeRegistered: false,
+            mustBeConnected: true,
+            operation: { try await remoteMegaphoneFetcher.syncRemoteMegaphones() },
+        )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DependenciesBridge.shared.orphanedAttachmentCleaner.beginObserving()

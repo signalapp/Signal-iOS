@@ -68,6 +68,7 @@ public class Cron {
         case fetchDevices
         case fetchEmojiSearch
         case fetchLocalProfile
+        case fetchMegaphones
         case fetchSenderCertificates
         case fetchStaleGroup
         case fetchStaleProfiles

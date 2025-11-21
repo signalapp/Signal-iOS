@@ -4,14 +4,14 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 
 /// Handles fetching and parsing remote megaphones.
-public class RemoteMegaphoneFetcher {
+class RemoteMegaphoneFetcher {
     private let databaseStorage: SDSDatabaseStorage
     private let signalService: any OWSSignalServiceProtocol
 
-    public init(
+    init(
         databaseStorage: SDSDatabaseStorage,
         signalService: any OWSSignalServiceProtocol
     ) {
@@ -22,12 +22,7 @@ public class RemoteMegaphoneFetcher {
     /// Fetch all remote megaphones currently on the service and persist them
     /// locally. Removes any locally-persisted remote megaphones that are no
     /// longer available remotely.
-    public func syncRemoteMegaphonesIfNecessary() async throws {
-        let shouldSync = databaseStorage.read { self.shouldSync(transaction: $0) }
-        guard shouldSync else {
-            return
-        }
-
+    func syncRemoteMegaphones() async throws {
         Logger.info("Beginning remote megaphone fetch.")
 
         let megaphones: [RemoteMegaphoneModel]
@@ -45,52 +40,7 @@ public class RemoteMegaphoneFetcher {
                 withFetchedMegaphones: megaphones,
                 transaction: transaction
             )
-
-            self.recordCompletedSync(transaction: transaction)
         }
-    }
-}
-
-// MARK: - Sync conditions
-
-private extension String {
-    static let fetcherStoreCollection = "RemoteMegaphoneFetcher"
-    static let appVersionAtLastFetchKey = "appVersionAtLastFetch"
-    static let lastFetchDateKey = "lastFetchDate"
-}
-
-private extension RemoteMegaphoneFetcher {
-    private static let fetcherStore = KeyValueStore(collection: .fetcherStoreCollection)
-
-    private static let delayBetweenSyncs: TimeInterval = 3 * .day
-
-    func shouldSync(transaction: DBReadTransaction) -> Bool {
-        guard
-            let appVersionAtLastFetch = Self.fetcherStore.getString(.appVersionAtLastFetchKey, transaction: transaction),
-            let lastFetchDate = Self.fetcherStore.getDate(.lastFetchDateKey, transaction: transaction)
-        else {
-            // If we have never recorded last-fetch data, we should sync.
-            return true
-        }
-
-        let hasChangedAppVersion = appVersionAtLastFetch != AppVersionImpl.shared.currentAppVersion
-        let hasWaitedEnoughSinceLastSync = Date().timeIntervalSince(lastFetchDate) > Self.delayBetweenSyncs
-
-        return hasChangedAppVersion || hasWaitedEnoughSinceLastSync
-    }
-
-    func recordCompletedSync(transaction: DBWriteTransaction) {
-        Self.fetcherStore.setString(
-            AppVersionImpl.shared.currentAppVersion,
-            key: .appVersionAtLastFetchKey,
-            transaction: transaction
-        )
-
-        Self.fetcherStore.setDate(
-            Date(),
-            key: .lastFetchDateKey,
-            transaction: transaction
-        )
     }
 }
 
