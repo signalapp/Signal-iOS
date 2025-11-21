@@ -710,9 +710,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             AppEnvironment.shared.ownedObjects.append(fetchJobRunner)
         }
 
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            ViewOnceMessages.startExpiringWhenNecessary()
-        }
+        cron.schedulePeriodically(
+            uniqueKey: .cleanUpViewOnceMessages,
+            approximateInterval: .day,
+            mustBeRegistered: false,
+            mustBeConnected: false,
+            operation: { try await ViewOnceMessages.expireIfNecessary() },
+        )
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReadyUIStillPending()

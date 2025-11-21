@@ -63,6 +63,7 @@ public class Cron {
     /// local builds, but it's true for all TestFlight/App Store builds.)
     public enum UniqueKey: String {
         case cleanUpMessageSendLog
+        case cleanUpViewOnceMessages
     }
 
     init(

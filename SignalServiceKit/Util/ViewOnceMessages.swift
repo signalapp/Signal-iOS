@@ -21,36 +21,27 @@ public class ViewOnceMessages: NSObject {
 
     // "Check for auto-completion", e.g. complete messages whether or
     // not they have been read after N days.  Also complete outgoing
-    // sent messages. We need to repeat this check periodically while
-    // the app is running.
-    public static func startExpiringWhenNecessary() {
+    // sent messages.
+    public static func expireIfNecessary() async throws(CancellationError) {
         // Find all view-once messages which are not yet complete.
         // Complete messages if necessary.
-        Task {
-            while true {
-                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-                var afterRowId: Int64?
-                while true {
-                    await databaseStorage.awaitableWrite { tx in
-                        let messages: [TSMessage]
-                        (messages, afterRowId) = ViewOnceMessageFinder().fetchSomeIncompleteViewOnceMessages(after: afterRowId, limit: 100, tx: tx)
-                        if !messages.isEmpty {
-                            Logger.info("Checking \(messages.count) view once message(s) for auto-expiration.")
-                        }
-                        for message in messages {
-                            completeIfNecessary(message: message, transaction: tx)
-                        }
-                    }
-                    if afterRowId == nil {
-                        break
-                    }
-                }
-
-                // We need to "check for auto-completion" once per day.
-                try await Task.sleep(nanoseconds: TimeInterval.day.clampedNanoseconds)
-                Logger.info("Checking for auto-expired view once messages again because it's been a day.")
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        var afterRowId: Int64?
+        repeat {
+            if Task.isCancelled {
+                throw CancellationError()
             }
-        }
+            await databaseStorage.awaitableWrite { tx in
+                let messages: [TSMessage]
+                (messages, afterRowId) = ViewOnceMessageFinder().fetchSomeIncompleteViewOnceMessages(after: afterRowId, limit: 100, tx: tx)
+                if !messages.isEmpty {
+                    Logger.info("Checking \(messages.count) view once message(s) for auto-expiration.")
+                }
+                for message in messages {
+                    completeIfNecessary(message: message, transaction: tx)
+                }
+            }
+        } while afterRowId != nil
     }
 
     @objc
