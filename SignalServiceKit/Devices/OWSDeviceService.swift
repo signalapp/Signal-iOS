@@ -105,9 +105,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             throw OWSAssertionError("Missing ACI identity key pair: will fail to refresh devices!")
         }
 
-        let getDevicesResponse = try await networkManager.asyncRequest(
-            .getDevices()
-        )
+        let getDevicesResponse = try await networkManager.asyncRequest(.getDevices())
 
         let devices = try parseDeviceList(
             httpResponse: getDevicesResponse,

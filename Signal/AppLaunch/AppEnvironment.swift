@@ -132,6 +132,15 @@ public class AppEnvironment: NSObject {
             udManager: SSKEnvironment.shared.udManagerRef
         )
 
+        let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
+        cron.schedulePeriodically(
+            uniqueKey: .fetchDevices,
+            approximateInterval: .day,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary() },
+        )
+
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
         cron.schedulePeriodically(
             uniqueKey: .fetchSubscriptionConfig,
@@ -159,7 +168,6 @@ public class AppEnvironment: NSObject {
             let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
             let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
             let identityKeyMismatchManager = DependenciesBridge.shared.identityKeyMismatchManager
-            let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
             let interactionStore = DependenciesBridge.shared.interactionStore
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
@@ -280,10 +288,6 @@ public class AppEnvironment: NSObject {
 
             Task {
                 await self.avatarHistoryManager.cleanupOrphanedImages()
-            }
-
-            Task {
-                await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
             }
 
             Task {

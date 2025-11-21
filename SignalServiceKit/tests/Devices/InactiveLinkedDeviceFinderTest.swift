@@ -51,45 +51,33 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         )
     }
 
-    func testRefreshing() async {
+    func testRefreshing() async throws {
         // Skip if linked device.
         mockTSAccountManager.registrationStateMock = { .provisioned }
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 0)
 
         // Make a first attempt, failing to refresh.
         mockTSAccountManager.registrationStateMock = { .registered }
         mockDevicesService.shouldFail = true
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try? await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
 
         // Make a second attempt, succeeding.
         mockTSAccountManager.registrationStateMock = { .registered }
         mockDevicesService.shouldFail = false
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
-        XCTAssertEqual(mockDevicesService.refreshCount, 2)
-
-        // A third attempt should do nothing, because we just succeeded.
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 2)
     }
 
-    func testFetching() async {
+    func testFetching() async throws {
         func findLeastActive() -> InactiveLinkedDevice? {
             return mockDB.read { inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: $0) }
         }
 
-        // Nothing if never refreshed.
-        mockTSAccountManager.registrationStateMock = { .registered }
-        setMockDevices([
-            .primary(),
-            .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
-        ])
-        XCTAssertNil(findLeastActive())
-
         // Do a refresh...
         mockTSAccountManager.registrationStateMock = { .registered }
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
 
         // Only include inactive devices.
@@ -130,7 +118,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         XCTAssertNil(findLeastActive())
     }
 
-    func testPermanentlyDisabling() async {
+    func testPermanentlyDisabling() async throws {
         mockTSAccountManager.registrationStateMock = { .registered }
         setMockDevices([
             .primary(),
@@ -138,14 +126,14 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         ])
 
         mockDB.write { inactiveLinkedDeviceFinder.permanentlyDisableFinders(tx: $0) }
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 0)
         XCTAssertFalse(mockDB.read { inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: $0) })
 
         // Re-enable (only available in tests) and run more tests, to prove the
         // disabling is why the first battery passed.
         mockDB.write { inactiveLinkedDeviceFinder.reenablePermanentlyDisabledFinders(tx: $0) }
-        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
         XCTAssertTrue(mockDB.read { inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: $0) })
     }
