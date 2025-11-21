@@ -756,6 +756,28 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             operation: { try await ViewOnceMessages.expireIfNecessary() },
         )
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let backupRefreshManager = BackupRefreshManager(
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
+            backupRequestManager: DependenciesBridge.shared.backupRequestManager,
+            backupSettingsStore: BackupSettingsStore(),
+            db: DependenciesBridge.shared.db,
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+        )
+        cron.schedulePeriodically(
+            uniqueKey: .refreshBackup,
+            approximateInterval: BackupRefreshManager.backupRefreshTimeInterval,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: {
+                guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+                    throw OWSAssertionError("never registered")
+                }
+                try await backupRefreshManager.refreshBackup(localIdentifiers: localIdentifiers)
+            },
+        )
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReadyUIStillPending()
 
@@ -770,7 +792,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
         }
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let tsRegistrationState: TSRegistrationState = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let registrationState = tsAccountManager.registrationState(tx: tx)

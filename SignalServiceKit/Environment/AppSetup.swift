@@ -1047,15 +1047,6 @@ extension AppSetup.GlobalsContinuation {
             storyRecipientStore: storyRecipientStore
         )
 
-        let backupRefreshManager = BackupRefreshManager(
-            accountKeyStore: accountKeyStore,
-            backupRequestManager: backupRequestManager,
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            networkManager: networkManager,
-            dateProvider: dateProvider
-        )
-
         let accountEntropyPoolManager = AccountEntropyPoolManagerImpl(
             accountAttributesUpdater: accountAttributesUpdater,
             accountKeyStore: accountKeyStore,
@@ -1654,7 +1645,6 @@ extension AppSetup.GlobalsContinuation {
             backupKeyService: backupKeyService,
             backupListMediaManager: backupListMediaManager,
             backupListMediaStore: backupListMediaStore,
-            backupRefreshManager: backupRefreshManager,
             backupRequestManager: backupRequestManager,
             backupPlanManager: backupPlanManager,
             backupSubscriptionManager: backupSubscriptionManager,

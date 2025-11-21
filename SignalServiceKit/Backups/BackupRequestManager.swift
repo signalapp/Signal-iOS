@@ -150,7 +150,7 @@ public protocol BackupRequestManager {
 }
 
 extension BackupRequestManager {
-    func fetchBackupServiceAuth(
+    public func fetchBackupServiceAuth(
         for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,

@@ -79,9 +79,8 @@ public class DependenciesBridge {
     public let backupKeyService: BackupKeyService
     public let backupListMediaManager: BackupListMediaManager
     public let backupListMediaStore: BackupListMediaStore
-    public let backupRefreshManager: BackupRefreshManager
-    public let backupRequestManager: BackupRequestManager
     public let backupPlanManager: BackupPlanManager
+    public let backupRequestManager: BackupRequestManager
     public let backupSubscriptionManager: BackupSubscriptionManager
     public let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     public let badgeCountFetcher: BadgeCountFetcher
@@ -218,7 +217,6 @@ public class DependenciesBridge {
         backupKeyService: BackupKeyService,
         backupListMediaManager: BackupListMediaManager,
         backupListMediaStore: BackupListMediaStore,
-        backupRefreshManager: BackupRefreshManager,
         backupRequestManager: BackupRequestManager,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -356,7 +354,6 @@ public class DependenciesBridge {
         self.backupKeyService = backupKeyService
         self.backupListMediaManager = backupListMediaManager
         self.backupListMediaStore = backupListMediaStore
-        self.backupRefreshManager = backupRefreshManager
         self.backupRequestManager = backupRequestManager
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager

@@ -4,20 +4,20 @@
 //
 
 import LibSignalClient
+import SignalServiceKit
 
 // MARK: -
 
-public final class BackupRefreshManager {
+final class BackupRefreshManager {
     private let accountKeyStore: AccountKeyStore
     private let api: NetworkAPI
     private let backupRequestManager: BackupRequestManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
-    private let dateProvider: DateProvider
 
     // Backups may expire after 30 days. Do a refresh every few days
     // to account for if the app isn't opened often.
-    private let backupRefreshTimeInterval: TimeInterval = 3 * .day
+    static let backupRefreshTimeInterval: TimeInterval = 3 * .day
 
     init(
         accountKeyStore: AccountKeyStore,
@@ -25,24 +25,12 @@ public final class BackupRefreshManager {
         backupSettingsStore: BackupSettingsStore,
         db: DB,
         networkManager: NetworkManagerProtocol,
-        dateProvider: @escaping DateProvider
     ) {
         self.accountKeyStore = accountKeyStore
         self.api = NetworkAPI(networkManager: networkManager)
         self.backupRequestManager = backupRequestManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
-        self.dateProvider = dateProvider
-    }
-
-    private func needsBackupRefresh() -> Bool {
-        db.read { tx in
-            let maxDaysAgo = dateProvider().addingTimeInterval(-1 * backupRefreshTimeInterval)
-            let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-            let lastBackupRefreshDate = backupSettingsStore.lastBackupRefreshDate(tx: tx) ?? Date.distantPast
-
-            return backupPlan != .disabled && lastBackupRefreshDate < maxDaysAgo
-        }
     }
 
     private func rootBackupKeys(localIdentifiers: LocalIdentifiers) async throws -> (MessageRootBackupKey, MediaRootBackupKey) {
@@ -59,32 +47,29 @@ public final class BackupRefreshManager {
         }
     }
 
-    public func refreshBackupIfNeeded(
-        localIdentifiers: LocalIdentifiers,
-        auth: ChatServiceAuth
-    ) async throws {
-        guard needsBackupRefresh() else {
+    func refreshBackup(localIdentifiers: LocalIdentifiers) async throws {
+        let backupPlan = db.read(block: backupSettingsStore.backupPlan(tx:))
+        switch backupPlan {
+        case .disabled:
             return
+        case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
+            break
         }
 
         let (messageBackupKey, mediaBackupKey) = try await rootBackupKeys(localIdentifiers: localIdentifiers)
         let messageBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: messageBackupKey,
             localAci: localIdentifiers.aci,
-            auth: auth
+            auth: .implicit(),
         )
         try await api.refreshBackup(auth: messageBackupAuth)
 
         let mediaBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: mediaBackupKey,
             localAci: localIdentifiers.aci,
-            auth: auth
+            auth: .implicit(),
         )
         try await api.refreshBackup(auth: mediaBackupAuth)
-
-        await db.awaitableWrite { tx in
-            backupSettingsStore.setLastBackupRefreshDate(dateProvider(), tx: tx)
-        }
     }
 
     // MARK: -

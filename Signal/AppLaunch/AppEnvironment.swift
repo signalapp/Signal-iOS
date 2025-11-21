@@ -159,7 +159,6 @@ public class AppEnvironment: NSObject {
             let accountEntropyPoolManager = DependenciesBridge.shared.accountEntropyPoolManager
             let backupDisablingManager = DependenciesBridge.shared.backupDisablingManager
             let backupIdService = DependenciesBridge.shared.backupIdService
-            let backupRefreshManager = DependenciesBridge.shared.backupRefreshManager
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
             let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
             let callRecordStore = DependenciesBridge.shared.callRecordStore
@@ -195,12 +194,10 @@ public class AppEnvironment: NSObject {
 
             let (
                 isRegisteredPrimaryDevice,
-                isRegistered,
                 localIdentifiers
             ) = db.read { tx in
                 (
                     tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                    tsAccountManager.registrationState(tx: tx).isRegistered,
                     tsAccountManager.localIdentifiers(tx: tx),
                 )
             }
@@ -244,25 +241,6 @@ public class AppEnvironment: NSObject {
             } else {
                 Task {
                     await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
-                }
-            }
-
-            // Things that should run on only registered devices, both linked & primary.
-            if isRegistered {
-                Task {
-                    guard let localIdentifiers else {
-                        owsFailDebug("Registered but no local identifiers")
-                        return
-                    }
-
-                    do {
-                        try await backupRefreshManager.refreshBackupIfNeeded(
-                            localIdentifiers: localIdentifiers,
-                            auth: .implicit()
-                        )
-                    } catch {
-                        owsFailDebug("Failed to refresh backup \(error)")
-                    }
                 }
             }
 
