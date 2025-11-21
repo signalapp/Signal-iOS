@@ -131,14 +131,7 @@ class EmojiPickerCollectionView: UICollectionView {
         addGestureRecognizer(tapGestureRecognizer)
         tapGestureRecognizer.delegate = self
 
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiSearchManifestUpdated), name: EmojiSearchIndex.EmojiSearchManifestFetchedNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiSearchIndexUpdated), name: EmojiSearchIndex.EmojiSearchIndexFetchedNotification, object: nil)
-
-        EmojiSearchIndex.updateManifestIfNeeded()
-        emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalizationForLocale(NSLocale.current.identifier)
-        if let emojiSearchLocalization = emojiSearchLocalization {
-            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: true)
-        }
+        loadEmojiSearchIfNeeded()
     }
 
     required init?(coder: NSCoder) {
@@ -302,7 +295,36 @@ class EmojiPickerCollectionView: UICollectionView {
 
     // MARK: - Search
 
-    func searchWithText(_ searchText: String?) {
+    private var hasLoadedEmojiSearch = false
+
+    private func loadEmojiSearchIfNeeded() {
+        if hasLoadedEmojiSearch {
+            return
+        }
+        hasLoadedEmojiSearch = true
+        loadEmojiSearch()
+        if emojiSearchIndex == nil, emojiSearchLocalization != nil {
+            Task {
+                try await EmojiSearchIndex.updateManifest()
+                self.loadEmojiSearch()
+            }
+        }
+    }
+
+    private func loadEmojiSearch() {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        databaseStorage.read { tx in
+            self.emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalization(
+                forLocale: NSLocale.current.identifier,
+                manifestLocalizations: EmojiSearchIndex.availableLocalizations(tx: tx) ?? [],
+            )
+            self.emojiSearchIndex = self.emojiSearchLocalization.flatMap {
+                return EmojiSearchIndex.emojiSearchIndex(forLocalization: $0, tx: tx)
+            }
+        }
+    }
+
+    private func searchWithText(_ searchText: String?) {
         emojiSearchResults = searchResults(searchText)
         reloadData()
     }
@@ -350,21 +372,6 @@ class EmojiPickerCollectionView: UICollectionView {
         }
 
         return result.anchoredMatches + result.unanchoredMatches
-    }
-
-    @objc
-    private func emojiSearchManifestUpdated(notification: Notification) {
-        emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalizationForLocale(NSLocale.current.identifier)
-        if let emojiSearchLocalization = emojiSearchLocalization {
-            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
-        }
-    }
-
-    @objc
-    private func emojiSearchIndexUpdated(notification: Notification) {
-        if let emojiSearchLocalization = emojiSearchLocalization {
-            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
-        }
     }
 
     var scrollingToSection: EmojiPickerSection?
@@ -575,173 +582,111 @@ private class EmojiSectionHeader: UICollectionReusableView {
     }
 }
 
-// URL handling
-private class EmojiSearchIndex: NSObject {
-
-    public static let EmojiSearchManifestFetchedNotification = Notification.Name("EmojiSearchManifestFetchedNotification")
-    public static let EmojiSearchIndexFetchedNotification = Notification.Name("EmojiSearchIndexFetchedNotification")
-
+enum EmojiSearchIndex {
     private static let emojiSearchIndexKVS = KeyValueStore(collection: "EmojiSearchIndexKeyValueStore")
     private static let emojiSearchIndexVersionKey = "emojiSearchIndexVersionKey"
     private static let emojiSearchIndexAvailableLocalizationsKey = "emojiSearchIndexAvailableLocalizationsKey"
 
-    private static let remoteManifestURL = URL(string: "/dynamic/android/emoji/search/manifest.json")!
-    private static let remoteSearchFormat = "/static/android/emoji/search/%d/%@.json"
+    static func updateManifest() async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let signalService = SSKEnvironment.shared.signalServiceRef
 
-    public class func updateManifestIfNeeded() {
-        var searchIndexVersion: Int = 0
-        var searchIndexLocalizations: [String] = []
-        (searchIndexVersion, searchIndexLocalizations) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let version = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
-            let locs = self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) ?? []
-            return (version, locs)
+        let urlSession = signalService.urlSessionForUpdates()
+        let response = try await urlSession.performRequest("/dynamic/android/emoji/search/manifest.json", method: .get)
+        guard response.responseStatusCode == 200 else {
+            throw OWSAssertionError("bad response code for emoji manifest fetch")
+        }
+        let manifest = try JSONDecoder().decode(Manifest.self, from: response.responseBodyData ?? Data())
+
+        await databaseStorage.awaitableWrite { tx in
+            let localVersion = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: tx)
+            if manifest.version != localVersion {
+                Logger.info("invalidating search index (old version: \(localVersion as Optional), new version: \(manifest.version))")
+                self.resetSearchIndex(
+                    newVersion: manifest.version,
+                    newLocalizations: manifest.languages,
+                    tx: tx,
+                )
+            }
         }
 
-        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
-        Task {
-            do {
-                let response = try await urlSession.performRequest(self.remoteManifestURL.absoluteString, method: .get)
-                guard response.responseStatusCode == 200 else {
-                    throw OWSAssertionError("Bad response code for emoji manifest fetch")
-                }
-
-                guard let parser = response.responseBodyParamParser else {
-                    throw OWSAssertionError("Unable to generate JSON for emoji manifest from response body.")
-                }
-
-                let remoteVersion: Int = try parser.required(key: "version")
-                let remoteLocalizations: [String] = try parser.required(key: "languages")
-                if remoteVersion != searchIndexVersion {
-                    Logger.info("[Emoji Search] Invalidating search index, old version \(searchIndexVersion), new version \(remoteVersion)")
-                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                        self.invalidateSearchIndex(
-                            newVersion: remoteVersion,
-                            localizationsToInvalidate: searchIndexLocalizations,
-                            newLocalizations: remoteLocalizations,
-                            tx: tx
-                        )
-                    }
-                    let localization = self.searchIndexLocalizationForLocale(NSLocale.current.identifier, searchIndexManifest: remoteLocalizations)
-                    if let localization = localization {
-                        self.fetchEmojiSearchIndex(for: localization, version: remoteVersion)
-                    }
-                    NotificationCenter.default.postOnMainThread(name: self.EmojiSearchManifestFetchedNotification, object: nil)
-                }
-            } catch {
-                owsFailDebug("Failed to download manifest \(error)")
-            }
+        let localization = self.searchIndexLocalization(
+            forLocale: NSLocale.current.identifier,
+            manifestLocalizations: manifest.languages,
+        )
+        if let localization {
+            try await self.fetchEmojiSearchIndex(forLocalization: localization, version: manifest.version)
         }
     }
 
-    public static func searchIndexLocalizationForLocale(_ locale: String, searchIndexManifest: [String]? = nil) -> String? {
-        var manifest = searchIndexManifest
-        if manifest == nil {
-            manifest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) ?? []
-            }
-        }
+    struct Manifest: Decodable {
+        var version: Int
+        var languages: [String]
+    }
 
-        guard let manifest = manifest else {
-            Logger.info("[Emoji Search] Manifest not yet downloaded")
-            return nil
-        }
-
+    fileprivate static func searchIndexLocalization(forLocale locale: String, manifestLocalizations: [String]) -> String? {
         // We have a specific locale for this
-        if manifest.contains(locale) {
+        if manifestLocalizations.contains(locale) {
             return locale
         }
 
         // Look for a generic top level
         let localizationComponents = locale.components(separatedBy: "_")
         if localizationComponents.count > 1, let firstComponent = localizationComponents.first {
-            if manifest.contains(firstComponent) {
+            if manifestLocalizations.contains(firstComponent) {
                 return firstComponent
             }
         }
+
         return nil
     }
 
-    public static func emojiSearchIndex(for localization: String, shouldFetch: Bool) -> [String: [String]]? {
-        let index = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return self.emojiSearchIndexKVS.getObject(
-                localization,
-                ofClasses: [NSDictionary.self, NSArray.self, NSString.self],
-                transaction: transaction
-            ) as? [String: [String]]
-        }
-
-        if shouldFetch && index == nil {
-            Logger.debug("Kicking off fetch for localization \(localization)")
-            self.fetchEmojiSearchIndex(for: localization)
-        }
-
-        return index
+    fileprivate static func emojiSearchIndex(forLocalization localization: String, tx: DBReadTransaction) -> [String: [String]]? {
+        return self.emojiSearchIndexKVS.getObject(
+            localization,
+            ofClasses: [NSDictionary.self, NSArray.self, NSString.self],
+            transaction: tx,
+        ) as? [String: [String]]
     }
 
-    private static func invalidateSearchIndex(
+    private static func resetSearchIndex(
         newVersion: Int,
-        localizationsToInvalidate: [String],
         newLocalizations: [String],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
-        for localization in localizationsToInvalidate {
-            emojiSearchIndexKVS.removeValue(forKey: localization, transaction: tx)
-        }
-        emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
-        emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: tx)
+        emojiSearchIndexKVS.removeAll(transaction: tx)
+        emojiSearchIndexKVS.setObject(newLocalizations, key: self.emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
+        emojiSearchIndexKVS.setInt(newVersion, key: self.emojiSearchIndexVersionKey, transaction: tx)
     }
 
-    private static func fetchEmojiSearchIndex(for localization: String, version: Int? = nil) {
+    fileprivate static func availableLocalizations(tx: DBReadTransaction) -> [String]? {
+        return self.emojiSearchIndexKVS.getStringArray(self.emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
+    }
 
-        var searchIndexVersion = version
-        if searchIndexVersion == nil {
-            searchIndexVersion = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
-            }
+    fileprivate static func fetchEmojiSearchIndex(forLocalization localization: String, version: Int) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let signalService = SSKEnvironment.shared.signalServiceRef
+
+        let urlSession = signalService.urlSessionForUpdates()
+        let response = try await urlSession.performRequest(
+            "/static/android/emoji/search/\(version)/\(localization).json",
+            method: .get,
+        )
+        guard response.responseStatusCode == 200 else {
+            throw OWSAssertionError("Bad response code for emoji index fetch")
+        }
+        var searchIndex = [String: [String]]()
+        for emojiTags in try JSONDecoder().decode([EmojiTags].self, from: response.responseBodyData ?? Data()) {
+            searchIndex[emojiTags.emoji] = emojiTags.tags
         }
 
-        guard let searchIndexVersion = searchIndexVersion else {
-            owsFailDebug("No local emoji index version, manifest must be updated first")
-            return
-        }
-
-        let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates()
-        let request = String(format: remoteSearchFormat, searchIndexVersion, localization)
-        Task {
-            do {
-                let response = try await urlSession.performRequest(request, method: .get)
-                guard response.responseStatusCode == 200 else {
-                    throw OWSAssertionError("Bad response code for emoji index fetch")
-                }
-
-                guard let json = response.responseBodyJson as? [[String: Any]] else {
-                    throw OWSAssertionError("Unable to generate JSON for emoji index from response body.")
-                }
-
-                let index = self.buildSearchIndexMap(for: json)
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                    self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
-                }
-
-                NotificationCenter.default.postOnMainThread(name: self.EmojiSearchIndexFetchedNotification, object: nil)
-
-            } catch {
-                owsFailDebug("Failed to download manifest \(error)")
-            }
+        await databaseStorage.awaitableWrite { tx in
+            self.emojiSearchIndexKVS.setObject(searchIndex, key: localization, transaction: tx)
         }
     }
 
-    private static func buildSearchIndexMap(for responseArray: [[String: Any]]) -> [String: [String]] {
-        var index: [String: [String]] = [:]
-
-        for response in responseArray {
-            let emoji: String? = response["emoji"] as? String
-            let tags: [String]? = response["tags"] as? [String]
-            if let emoji = emoji, let tags = tags {
-                index[emoji] = tags
-            }
-        }
-
-        return index
+    struct EmojiTags: Decodable {
+        var emoji: String
+        var tags: [String]
     }
 }

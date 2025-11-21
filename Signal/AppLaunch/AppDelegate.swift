@@ -780,6 +780,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             },
         )
 
+        cron.schedulePeriodically(
+            uniqueKey: .fetchEmojiSearch,
+            approximateInterval: 3 * .day,
+            mustBeRegistered: false,
+            mustBeConnected: true,
+            operation: { try await EmojiSearchIndex.updateManifest() },
+        )
+
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.

@@ -66,6 +66,7 @@ public class Cron {
         case cleanUpMessageSendLog
         case cleanUpViewOnceMessages
         case fetchDevices
+        case fetchEmojiSearch
         case fetchLocalProfile
         case fetchSenderCertificates
         case fetchStaleGroup
