@@ -107,14 +107,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self else { return }
                 ModalActivityIndicatorViewController.present(
                     fromViewController: self,
-                    canCancel: false
-                ) { modalActivityIndicator in
-                    DispatchQueue.main.async {
-                        OWSOrphanDataCleaner.auditAndCleanup(true) {
-                            DispatchQueue.main.async { modalActivityIndicator.dismiss() }
-                        }
-                    }
-                }
+                    canCancel: false,
+                    asyncBlock: { modalActivityIndicator in
+                        try? await OWSOrphanDataCleaner.cleanUp(shouldRemoveOrphanedData: true)
+                        modalActivityIndicator.dismiss()
+                    },
+                )
             }
         ))
 

@@ -14,12 +14,18 @@ class DebugUIDiskUsage: DebugUIPage {
 
     func section(thread: TSThread?) -> OWSTableSection? {
         return OWSTableSection(title: name, items: [
-            OWSTableItem(title: "Audit & Log",
-                         actionBlock: { OWSOrphanDataCleaner.auditAndCleanup(false) }),
-            OWSTableItem(title: "Audit & Clean Up",
-                         actionBlock: { OWSOrphanDataCleaner.auditAndCleanup(true) }),
-            OWSTableItem(title: "Clear All Attachment Thumbnails",
-                         actionBlock: { DebugUIDiskUsage.clearAllAttachmentThumbnails() }),
+            OWSTableItem(
+                title: "Audit & Log",
+                actionBlock: { Task { try? await OWSOrphanDataCleaner.cleanUp(shouldRemoveOrphanedData: false) } },
+            ),
+            OWSTableItem(
+                title: "Audit & Clean Up",
+                actionBlock: { Task { try? await OWSOrphanDataCleaner.cleanUp(shouldRemoveOrphanedData: true) } },
+            ),
+            OWSTableItem(
+                title: "Clear All Attachment Thumbnails",
+                actionBlock: { DebugUIDiskUsage.clearAllAttachmentThumbnails() },
+            ),
         ])
     }
 

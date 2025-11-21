@@ -455,9 +455,13 @@ extension TSGroupModel {
 
         var filePaths = Set<String>()
 
-        while let thread = try cursor.next() as? TSGroupThread {
-            guard let avatarHash = thread.groupModel.avatarHash else { continue }
-            filePaths.insert(avatarFilePath(forHash: avatarHash).path)
+        do {
+            while let thread = try cursor.next() as? TSGroupThread {
+                guard let avatarHash = thread.groupModel.avatarHash else { continue }
+                filePaths.insert(avatarFilePath(forHash: avatarHash).path)
+            }
+        } catch {
+            throw error.grdbErrorForLogging
         }
 
         return filePaths

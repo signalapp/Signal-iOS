@@ -8,11 +8,6 @@ import GRDB
 import SignalServiceKit
 import SignalUI
 
-private enum Constants {
-    static let lastCleaningVersionKey = "OWSOrphanDataCleaner_LastCleaningVersionKey"
-    static let lastCleaningDateKey = "OWSOrphanDataCleaner_LastCleaningDateKey"
-}
-
 private struct OWSOrphanData {
     let interactionIds: Set<String>
     let filePaths: Set<String>
@@ -21,220 +16,46 @@ private struct OWSOrphanData {
     let fileAndDirectoryPaths: Set<String>
     let hasOrphanedPacksOrStickers: Bool
 }
-private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> Void
 
 // Notes:
 //
 // * On disk, we only bother cleaning up files, not directories.
 enum OWSOrphanDataCleaner {
 
-    /// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
-    /// invoked off the main thread.
-    private static var isMainAppAndActive: Bool {
-        CurrentAppContext().reportedApplicationState == .active
-    }
     private static let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-    private static let keyValueStore = KeyValueStore(collection: "OWSOrphanDataCleaner_Collection")
 
-    /// We use the lowest priority possible.
-    private static let workQueue = DispatchQueue.global(qos: .background)
+    static func cleanUp(shouldRemoveOrphanedData: Bool) async throws {
+        Logger.info("starting orphan data \(shouldRemoveOrphanedData ? "cleanup" : "audit")")
 
-    static func auditOnLaunchIfNecessary() {
-        AssertIsOnMainThread()
-
-        guard shouldAuditWithSneakyTransaction() else { return }
-
-        // If we want to be cautious, we can disable orphan deletion using
-        // flag - the cleanup will just be a dry run with logging.
-        let shouldCleanUp = true
-        auditAndCleanup(shouldCleanUp)
-    }
-
-    /// This is exposed for the debug UI and tests.
-    static func auditAndCleanup(_ shouldRemoveOrphans: Bool, completion: (() -> Void)? = nil) {
-        AssertIsOnMainThread()
-
-        guard CurrentAppContext().isMainApp else {
-            owsFailDebug("can't audit orphan data in app extensions.")
-            return
-        }
-
-        Logger.info("Starting orphan data \(shouldRemoveOrphans ? "cleanup" : "audit")")
-
-        // Orphan cleanup has two risks:
+        // Orphaned cleanup has one risk: It could accidentally delete data still
+        // in use (e.g., a profile avatar that's been saved to disk but whose
+        // OWSUserProfile hasn't yet been saved).
         //
-        // * As a long-running process that involves access to the
-        //   shared data container, it could cause 0xdead10cc.
-        // * It could accidentally delete data still in use,
-        //   e.g. a profile avatar which has been saved to disk
-        //   but whose OWSUserProfile hasn't been saved yet.
+        // To prevent accidental data deletion, we take the following measure:
         //
-        // To prevent 0xdead10cc, the cleaner continually checks
-        // whether the app has resigned active.  If so, it aborts.
-        // Each phase (search, re-search, processing) retries N times,
-        // then gives up until the next app launch.
-        //
-        // To prevent accidental data deletion, we take the following
-        // measures:
-        //
-        // * Only cleanup data of the following types (which should
-        //   include all relevant app data): profile avatar,
-        //   attachment, temporary files (including temporary
-        //   attachments).
-        // * We don't delete any data created more recently than N seconds
-        //   _before_ when the app launched.  This prevents any stray data
-        //   currently in use by the app from being accidentally cleaned
-        //   up.
-        let maxRetries = 3
-        findOrphanData(withRetries: maxRetries) { orphanData in
-            processOrphans(orphanData,
-                           remainingRetries: maxRetries,
-                           shouldRemoveOrphans: shouldRemoveOrphans) {
-                Logger.info("Completed orphan data cleanup.")
-
-                databaseStorage.write { transaction in
-                    keyValueStore.setString(AppVersionImpl.shared.currentAppVersion,
-                                            key: Constants.lastCleaningVersionKey,
-                                            transaction: transaction)
-                    keyValueStore.setDate(Date(),
-                                          key: Constants.lastCleaningDateKey,
-                                          transaction: transaction)
-                }
-
-                completion?()
-            } failure: {
-                Logger.info("Aborting orphan data cleanup.")
-                completion?()
-            }
-        } failure: {
-            Logger.info("Aborting orphan data cleanup.")
-            completion?()
-        }
-    }
-
-    private static func shouldAuditWithSneakyTransaction() -> Bool {
-        let kvs = keyValueStore
-        let currentAppVersion = AppVersionImpl.shared.currentAppVersion
-
-        return databaseStorage.read { transaction -> Bool in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: transaction).isRegistered else {
-                return false
-            }
-
-            let lastCleaningVersion = kvs.getString(
-                Constants.lastCleaningVersionKey,
-                transaction: transaction
-            )
-            guard let lastCleaningVersion else {
-                Logger.info("Performing orphan data cleanup because we've never done it")
-                return true
-            }
-            guard lastCleaningVersion == currentAppVersion else {
-                Logger.info("Performing orphan data cleanup because we're on a different app version")
-                return true
-            }
-
-            let lastCleaningDate = kvs.getDate(
-                Constants.lastCleaningDateKey,
-                transaction: transaction
-            )
-            guard let lastCleaningDate else {
-                owsFailDebug("We have a \"last cleaned version\". Why don't we have a last cleaned date?")
-                Logger.info("Performing orphan data cleanup because we've never done it")
-                return true
-            }
-
-            #if DEBUG
-            let hasEnoughTimePassed = DateUtil.dateIsOlderThanToday
-            #else
-            let hasEnoughTimePassed = DateUtil.dateIsOlderThanOneWeek
-            #endif
-            if hasEnoughTimePassed(lastCleaningDate, nil) {
-                Logger.info("Performing orphan data cleanup because enough time has passed")
-                return true
-            }
-
-            return false
-        }
-    }
-
-    private static func fetchMessage(
-        for jobRecord: MessageSenderJobRecord,
-        transaction: DBReadTransaction
-    ) -> TSMessage? {
-        switch jobRecord.messageType {
-        case .none:
-            return nil
-        case .transient(let message):
-            return message
-        case .persisted(let messageId, _), .editMessage(let messageId, _, _):
-            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
-                // Interaction may have been deleted.
-                Logger.warn("Missing interaction")
-                return nil
-            }
-            return interaction as? TSMessage
-        }
+        // * We don't delete any data created more recently than N seconds before
+        // we started cleaning orphaned data. This prevents any stray data
+        // currently in use by the app from being accidentally cleaned up.
+        let startTime = Date()
+        let orphanedData = try await findOrphanedData()
+        try await processOrphanedData(
+            orphanedData,
+            startTime: startTime,
+            shouldRemoveOrphanedData: shouldRemoveOrphanedData,
+        )
+        Logger.info("completed orphaned data cleanup")
     }
 
     // MARK: - Find
 
-    /// This method finds but does not delete orphan data.
-    ///
-    /// The follow items are considered orphan data:
-    /// * Orphan `TSInteraction`s (with no thread).
-    /// * Orphan profile avatars.
-    /// * Temporary files (all).
-    private static func findOrphanData(withRetries remainingRetries: Int,
-                                       success: @escaping OrphanDataBlock,
-                                       failure: @escaping () -> Void) {
-        guard remainingRetries > 0 else {
-            Logger.info("Aborting orphan data search. No more retries.")
-            workQueue.async(failure)
-            return
-        }
+    /// This method finds (but does not delete) orphaned data.
+    private static func findOrphanedData() async throws -> OWSOrphanData {
+        Logger.info("searching for orphaned data")
 
-        Logger.info("Enqueuing an orphan data search. Remaining retries: \(remainingRetries)")
-
-        // Wait until the app is active...
-        CurrentAppContext().runNowOrWhenMainAppIsActive {
-            // ...but perform the work off the main thread.
-            let backgroundTask = OWSBackgroundTask(label: #function)
-            workQueue.async {
-                if let orphanData = findOrphanDataSync() {
-                    success(orphanData)
-                } else {
-                    findOrphanData(withRetries: remainingRetries - 1, success: success, failure: failure)
-                }
-                backgroundTask.end()
-            }
-        }
-    }
-
-    /// Returns `nil` on failure, usually indicating that the search
-    /// aborted due to the app resigning active. This method is extremely careful to
-    /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
-    private static func findOrphanDataSync() -> OWSOrphanData? {
-        var shouldAbort = false
-
-        let legacyProfileAvatarsDirPath = OWSUserProfile.legacyProfileAvatarsDirPath
-        let sharedDataProfileAvatarsDirPath = OWSUserProfile.sharedDataProfileAvatarsDirPath
-        guard let legacyProfileAvatarsFilePaths = filePaths(inDirectorySafe: legacyProfileAvatarsDirPath), isMainAppAndActive else {
-            return nil
-        }
-        guard let sharedDataProfileAvatarFilePaths = filePaths(inDirectorySafe: sharedDataProfileAvatarsDirPath), isMainAppAndActive else {
-            return nil
-        }
-
-        guard let allGroupAvatarFilePaths = filePaths(inDirectorySafe: TSGroupModel.avatarsDirectory.path), isMainAppAndActive else {
-            return nil
-        }
-
-        let stickersDirPath = StickerManager.cacheDirUrl().path
-        guard let allStickerFilePaths = filePaths(inDirectorySafe: stickersDirPath), isMainAppAndActive else {
-            return nil
-        }
+        let legacyProfileAvatarsFilePaths = try filePaths(inDirectorySafe: OWSUserProfile.legacyProfileAvatarsDirPath)
+        let sharedDataProfileAvatarFilePaths = try filePaths(inDirectorySafe: OWSUserProfile.sharedDataProfileAvatarsDirPath)
+        let allGroupAvatarFilePaths = try filePaths(inDirectorySafe: TSGroupModel.avatarsDirectory.path)
+        let allStickerFilePaths = try filePaths(inDirectorySafe: StickerManager.cacheDirUrl().path)
 
         let allOnDiskFilePaths: Set<String> = {
             var result: Set<String> = []
@@ -244,9 +65,8 @@ enum OWSOrphanDataCleaner {
             result.formUnion(allStickerFilePaths)
             // TODO: Badges?
 
-            // This should be redundant, but this will future-proof us against
-            // ever accidentally removing the GRDB databases during
-            // orphan clean up.
+            // This should be redundant, but this will future-proof us against ever
+            // accidentally removing the GRDB databases during orphan clean up.
             let grdbPrimaryDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .primary).path
             let grdbHotswapDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
             let grdbTransferDirectoryPath: String?
@@ -277,45 +97,34 @@ enum OWSOrphanDataCleaner {
             return result
         }()
 
-        let profileAvatarFilePaths: Set<String> = {
-            var result: Set<String> = []
-            databaseStorage.read { transaction in
-                result = OWSProfileManager.allProfileAvatarFilePaths(transaction: transaction)
+        let profileAvatarFilePaths = databaseStorage.read { tx in
+            return OWSProfileManager.allProfileAvatarFilePaths(transaction: tx)
+        }
+
+        try Task.checkCancellation()
+
+        let groupAvatarFilePaths: Set<String>
+        do {
+            groupAvatarFilePaths = try databaseStorage.read { tx in
+                return try TSGroupModel.allGroupAvatarFilePaths(transaction: tx)
             }
-            return result
-        }()
-
-        guard let groupAvatarFilePaths = {
-            do {
-                var result: Set<String> = []
-                try databaseStorage.read { transaction in
-                    result = try TSGroupModel.allGroupAvatarFilePaths(transaction: transaction)
-                }
-                return result
-            } catch {
-                owsFailDebug("Failed to query group avatar file paths \(error)")
-                return nil
-            }
-        }() else {
-            return nil
+        } catch {
+            owsFailDebug("failed to query group avatar file paths: \(error)")
+            throw error
         }
 
-        guard isMainAppAndActive else {
-            return nil
-        }
+        try Task.checkCancellation()
 
-        let voiceMessageDraftOrphanedPaths = findOrphanedVoiceMessageDraftPaths()
+        let voiceMessageDraftOrphanedPaths = await findOrphanedVoiceMessageDraftPaths()
 
-        guard isMainAppAndActive else {
-            return nil
-        }
+        try Task.checkCancellation()
 
         var orphanInteractionIds: Set<String> = []
         var orphanReactionIds: Set<String> = []
         var orphanMentionIds: Set<String> = []
         var activeStickerFilePaths: Set<String> = []
         var hasOrphanedPacksOrStickers = false
-        databaseStorage.read { transaction in
+        try databaseStorage.read { transaction in
             let threadIds: Set<String> = Set(ThreadFinder().fetchUniqueIds(tx: transaction))
 
             var allInteractionIds: Set<String> = []
@@ -327,28 +136,21 @@ enum OWSOrphanDataCleaner {
                 while let row = try fetchCursor.next() {
                     let threadUniqueId = row[0] as String
                     let uniqueId = row[1] as String
-                    guard isMainAppAndActive else {
-                        shouldAbort = true
-                        return
-                    }
+                    try Task.checkCancellation()
                     if threadUniqueId.isEmpty || !threadIds.contains(threadUniqueId) {
                         orphanInteractionIds.insert(uniqueId)
                     }
                     allInteractionIds.insert(uniqueId)
                 }
+            } catch let error as CancellationError {
+                throw error
             } catch {
                 owsFailDebug("Couldn't enumerate TSInteractions: \(error.grdbErrorForLogging)")
-                shouldAbort = true
-                return
-            }
-
-            if shouldAbort {
-                return
+                throw error.grdbErrorForLogging
             }
 
             OWSReaction.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { reaction, stop in
-                guard isMainAppAndActive else {
-                    shouldAbort = true
+                if Task.isCancelled {
                     stop.pointee = true
                     return
                 }
@@ -356,14 +158,10 @@ enum OWSOrphanDataCleaner {
                     orphanReactionIds.insert(reaction.uniqueId)
                 }
             }
-
-            if shouldAbort {
-                return
-            }
+            try Task.checkCancellation()
 
             TSMention.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { mention, stop in
-                guard isMainAppAndActive else {
-                    shouldAbort = true
+                if Task.isCancelled {
                     stop.pointee = true
                     return
                 }
@@ -371,17 +169,12 @@ enum OWSOrphanDataCleaner {
                     orphanMentionIds.insert(mention.uniqueId)
                 }
             }
-
-            if shouldAbort {
-                return
-            }
+            try Task.checkCancellation()
 
             activeStickerFilePaths.formUnion(StickerManager.filePathsForAllInstalledStickers(transaction: transaction))
+            try Task.checkCancellation()
 
             hasOrphanedPacksOrStickers = StickerManager.hasOrphanedData(tx: transaction)
-        }
-        if shouldAbort {
-            return nil
         }
 
         var orphanFilePaths = allOnDiskFilePaths
@@ -392,19 +185,21 @@ enum OWSOrphanDataCleaner {
         var orphanFileAndDirectoryPaths: Set<String> = []
         orphanFileAndDirectoryPaths.formUnion(voiceMessageDraftOrphanedPaths)
 
-        return OWSOrphanData(interactionIds: orphanInteractionIds,
-                             filePaths: orphanFilePaths,
-                             reactionIds: orphanReactionIds,
-                             mentionIds: orphanMentionIds,
-                             fileAndDirectoryPaths: orphanFileAndDirectoryPaths,
-                             hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers)
+        return OWSOrphanData(
+            interactionIds: orphanInteractionIds,
+            filePaths: orphanFilePaths,
+            reactionIds: orphanReactionIds,
+            mentionIds: orphanMentionIds,
+            fileAndDirectoryPaths: orphanFileAndDirectoryPaths,
+            hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers
+        )
     }
 
     /// Finds paths in `baseUrl` not present in `fetchExpectedRelativePaths()`.
     private static func findOrphanedPaths(
         baseUrl: URL,
         fetchExpectedRelativePaths: (DBReadTransaction) -> Set<String>
-    ) -> Set<String> {
+    ) async -> Set<String> {
         let basePath = baseUrl.path
 
         // The ordering within this method is important. First, we search the file
@@ -431,7 +226,7 @@ enum OWSOrphanDataCleaner {
             return []
         }
 
-        databaseStorage.write { _ in }
+        await databaseStorage.awaitableWrite { _ in }
         var expectedRelativePaths = databaseStorage.read { fetchExpectedRelativePaths($0) }
 
         // Mark the directories that contain these files as expected as well. This
@@ -451,8 +246,8 @@ enum OWSOrphanDataCleaner {
         return Set(orphanedRelativePaths.lazy.map { basePath.appendingPathComponent($0) })
     }
 
-    private static func findOrphanedVoiceMessageDraftPaths() -> Set<String> {
-        findOrphanedPaths(
+    private static func findOrphanedVoiceMessageDraftPaths() async -> Set<String> {
+        await findOrphanedPaths(
             baseUrl: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory,
             fetchExpectedRelativePaths: {
                 VoiceMessageInterruptedDraftStore.allDraftFilePaths(transaction: $0)
@@ -462,178 +257,122 @@ enum OWSOrphanDataCleaner {
 
     // MARK: - Remove
 
-    /// Calls `failure` on exhausting all remaining retries, usually indicating that
-    /// orphan processing aborted due to the app resigning active. This method is
-    /// extremely careful to abort if the app resigns active, in order to avoid
-    /// `0xdead10cc` crashes.
-    private static func processOrphans(_ orphanData: OWSOrphanData,
-                                       remainingRetries: Int,
-                                       shouldRemoveOrphans: Bool,
-                                       success: @escaping () -> Void,
-                                       failure: @escaping () -> Void) {
-        guard remainingRetries > 0 else {
-            Logger.info("Aborting orphan data audit.")
-            workQueue.async(failure)
-            return
-        }
-
-        // Wait until the app is active...
-        CurrentAppContext().runNowOrWhenMainAppIsActive {
-            // ...but perform the work off the main thread.
-            let backgroundTask = OWSBackgroundTask(label: #function)
-            workQueue.async {
-                let result = processOrphansSync(orphanData, shouldRemoveOrphans: shouldRemoveOrphans)
-                if result {
-                    success()
-                } else {
-                    processOrphans(orphanData,
-                                   remainingRetries: remainingRetries - 1,
-                                   shouldRemoveOrphans: shouldRemoveOrphans,
-                                   success: success,
-                                   failure: failure)
-                }
-                backgroundTask.end()
-            }
-        }
-    }
-
-    /// Returns `false` on failure, usually indicating that orphan processing
-    /// aborted due to the app resigning active.  This method is extremely careful to
-    /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
-    private static func processOrphansSync(_ orphanData: OWSOrphanData, shouldRemoveOrphans: Bool) -> Bool {
-        guard isMainAppAndActive else {
-            return false
-        }
-
-        var shouldAbort = false
-
+    /// Deletes orphaned data.
+    private static func processOrphanedData(
+        _ orphanedData: OWSOrphanData,
+        startTime: Date,
+        shouldRemoveOrphanedData: Bool,
+    ) async throws {
         // We need to avoid cleaning up new files that are still in the process of
         // being created/written, so we don't clean up anything recent.
-        let minimumOrphanAgeSeconds: TimeInterval = CurrentAppContext().isRunningTests ? 0 : 15 * .minute
-        let appLaunchTime = CurrentAppContext().appLaunchTime
-        let thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - minimumOrphanAgeSeconds
-        let thresholdDate = Date(timeIntervalSince1970: thresholdTimestamp)
-        databaseStorage.write { transaction in
-            var interactionsRemoved: UInt = 0
-            for interactionId in orphanData.interactionIds {
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    return
-                }
+        let minimumOrphanAgeSeconds: TimeInterval = 15 * .minute
+        let thresholdDate = startTime.addingTimeInterval(-minimumOrphanAgeSeconds)
+
+        var interactionsRemoved = 0
+        for interactionId in orphanedData.interactionIds {
+            try Task.checkCancellation()
+            await databaseStorage.awaitableWrite { transaction in
                 guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) else {
                     // This could just be a race condition, but it should be very unlikely.
                     Logger.warn("Could not load interaction: \(interactionId)")
-                    continue
+                    return
                 }
                 // Don't delete interactions which were created in the last N minutes.
                 let creationDate = Date(millisecondsSince1970: interaction.timestamp)
                 guard creationDate <= thresholdDate else {
-                    Logger.info("Skipping orphan interaction due to age: \(creationDate.timeIntervalSinceNow)")
-                    continue
+                    Logger.info("Skipping orphan interaction due to age: \(-creationDate.timeIntervalSinceNow)")
+                    return
                 }
                 Logger.info("Removing orphan message: \(interaction.uniqueId)")
                 interactionsRemoved += 1
-                guard shouldRemoveOrphans else {
-                    continue
+                guard shouldRemoveOrphanedData else {
+                    return
                 }
                 DependenciesBridge.shared.interactionDeleteManager
                     .delete(interaction, sideEffects: .default(), tx: transaction)
             }
-            Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
+        }
+        Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
 
-            var reactionsRemoved: UInt = 0
-            for reactionId in orphanData.reactionIds {
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    return
-                }
-
-                let performedCleanup = ReactionManager.tryToCleanupOrphanedReaction(uniqueId: reactionId,
-                                                                                    thresholdDate: thresholdDate,
-                                                                                    shouldPerformRemove: shouldRemoveOrphans,
-                                                                                    transaction: transaction)
+        var reactionsRemoved = 0
+        for reactionId in orphanedData.reactionIds {
+            try Task.checkCancellation()
+            await databaseStorage.awaitableWrite { tx in
+                let performedCleanup = ReactionManager.tryToCleanupOrphanedReaction(
+                    uniqueId: reactionId,
+                    thresholdDate: thresholdDate,
+                    shouldPerformRemove: shouldRemoveOrphanedData,
+                    transaction: tx,
+                )
                 if performedCleanup {
                     reactionsRemoved += 1
                 }
             }
-            Logger.info("Deleted orphan reactions: \(reactionsRemoved)")
+        }
+        Logger.info("Deleted orphan reactions: \(reactionsRemoved)")
 
-            var mentionsRemoved: UInt = 0
-            for mentionId in orphanData.mentionIds {
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    return
-                }
-
-                let performedCleanup = MentionFinder.tryToCleanupOrphanedMention(uniqueId: mentionId,
-                                                                                 thresholdDate: thresholdDate,
-                                                                                 shouldPerformRemove: shouldRemoveOrphans,
-                                                                                 transaction: transaction)
+        var mentionsRemoved = 0
+        for mentionId in orphanedData.mentionIds {
+            try Task.checkCancellation()
+            await databaseStorage.awaitableWrite { tx in
+                let performedCleanup = MentionFinder.tryToCleanupOrphanedMention(
+                    uniqueId: mentionId,
+                    thresholdDate: thresholdDate,
+                    shouldPerformRemove: shouldRemoveOrphanedData,
+                    transaction: tx,
+                )
                 if performedCleanup {
                     mentionsRemoved += 1
                 }
             }
-            Logger.info("Deleted orphan mentions: \(mentionsRemoved)")
+        }
+        Logger.info("Deleted orphan mentions: \(mentionsRemoved)")
 
-            if orphanData.hasOrphanedPacksOrStickers {
+        if orphanedData.hasOrphanedPacksOrStickers {
+            await databaseStorage.awaitableWrite { transaction in
                 StickerManager.cleanUpOrphanedData(tx: transaction)
             }
         }
+        try Task.checkCancellation()
 
-        guard !shouldAbort else {
-            return false
-        }
-
-        var filesRemoved: UInt = 0
-        let filePaths = orphanData.filePaths.sorted()
+        var filesRemoved = 0
+        let filePaths = orphanedData.filePaths.sorted()
         for filePath in filePaths {
-            guard isMainAppAndActive else {
-                return false
-            }
+            try Task.checkCancellation()
 
             guard let attributes = try? FileManager.default.attributesOfItem(atPath: filePath) else {
                 // This is fine; the file may have been deleted since we found it.
                 Logger.warn("Could not get attributes of file at: \(filePath)")
                 continue
             }
-            // Don't delete files which were created in the last N minutes.
-            if let creationDate = (attributes as NSDictionary).fileModificationDate(), creationDate > thresholdDate {
-                Logger.info("Skipping file due to age: \(creationDate.timeIntervalSinceNow)")
+            // Don't delete files which were modified in the last N minutes.
+            if let modificationDate = (attributes as NSDictionary).fileModificationDate(), modificationDate > thresholdDate {
+                Logger.info("Skipping file due to age: \(-modificationDate.timeIntervalSinceNow)")
                 continue
             }
             Logger.info("Deleting file: \(filePath)")
             filesRemoved += 1
-            guard shouldRemoveOrphans else {
-                continue
-            }
-            guard OWSFileSystem.fileOrFolderExists(atPath: filePath) else {
-                // Already removed.
+            guard shouldRemoveOrphanedData else {
                 continue
             }
             if !OWSFileSystem.deleteFile(filePath, ignoreIfMissing: true) {
                 owsFailDebug("Could not remove orphan file")
             }
         }
-        Logger.info("Deleted orphan files: \(filesRemoved)")
+        Logger.info("Deleted orphaned files: \(filesRemoved)")
 
-        if shouldRemoveOrphans {
-            guard removeOrphanedFileAndDirectoryPaths(orphanData.fileAndDirectoryPaths) else {
-                return false
-            }
+        if shouldRemoveOrphanedData {
+            try removeOrphanedFileAndDirectoryPaths(orphanedData.fileAndDirectoryPaths)
         }
-
-        return true
     }
 
-    private static func removeOrphanedFileAndDirectoryPaths(_ fileAndDirectoryPaths: Set<String>) -> Bool {
+    private static func removeOrphanedFileAndDirectoryPaths(_ fileAndDirectoryPaths: Set<String>) throws {
         var successCount = 0
         var errorCount = 0
         // Sort by longest path to shortest path so that we remove files before we
         // try to remove the directories that contain them.
         for fileOrDirectoryPath in fileAndDirectoryPaths.sorted(by: { $0.count < $1.count }).reversed() {
-            if !self.isMainAppAndActive {
-                return false
-            }
+            try Task.checkCancellation()
             do {
                 try removeFileOrEmptyDirectory(at: fileOrDirectoryPath)
                 successCount += 1
@@ -643,7 +382,6 @@ enum OWSOrphanDataCleaner {
             }
         }
         Logger.info("Deleted orphaned files/directories [successes: \(successCount), failures: \(errorCount)]")
-        return true
     }
 
     private static func removeFileOrEmptyDirectory(at path: String) throws {
@@ -686,31 +424,14 @@ enum OWSOrphanDataCleaner {
 
     // MARK: - Helpers
 
-    private static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
+    private static func filePaths(inDirectorySafe dirPath: String) throws -> Set<String> {
         guard FileManager.default.fileExists(atPath: dirPath) else {
             return []
         }
+        var result: Set<String> = []
+        let fileNames: [String]
         do {
-            var result: Set<String> = []
-            let fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
-            for fileName in fileNames {
-                guard isMainAppAndActive else {
-                    return nil
-                }
-                let filePath = dirPath.appendingPathComponent(fileName)
-                var isDirectory: ObjCBool = false
-                if FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) {
-                    if isDirectory.boolValue {
-                        guard let dirPaths = filePaths(inDirectorySafe: filePath) else {
-                            return nil
-                        }
-                        result.formUnion(dirPaths)
-                    } else {
-                        result.insert(filePath)
-                    }
-                }
-            }
-            return result
+            fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
         } catch {
             switch error {
             case POSIXError.ENOENT, CocoaError.fileReadNoSuchFile:
@@ -721,5 +442,18 @@ enum OWSOrphanDataCleaner {
             }
             return []
         }
+        for fileName in fileNames {
+            try Task.checkCancellation()
+            let filePath = dirPath.appendingPathComponent(fileName)
+            var isDirectory: ObjCBool = false
+            if FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) {
+                if isDirectory.boolValue {
+                    result.formUnion(try filePaths(inDirectorySafe: filePath))
+                } else {
+                    result.insert(filePath)
+                }
+            }
+        }
+        return result
     }
 }

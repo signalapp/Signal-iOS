@@ -616,9 +616,29 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             operation: { try await messageSendLog.cleanUpExpiredEntries() },
         )
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
-        }
+        var orphanedDataCleanerFailureCount = 0
+        cron.schedulePeriodically(
+            uniqueKey: .cleanUpOrphanedData,
+            approximateInterval: 2 * .week,
+            mustBeRegistered: true,
+            mustBeConnected: false,
+            operation: {
+                // Prior to Cron, if the orphaned data cleaner encountered 3 errors, it
+                // would give up until the app restarted. We maintain a similar behavior
+                // here by throwing OWSRetryableErrors that bypass the cleanup operation
+                // that's likely hitting repeated timeouts.
+                // TODO: Make this better; remove this hack.
+                if orphanedDataCleanerFailureCount >= 3 {
+                    throw OWSRetryableError()
+                }
+                do {
+                    try await OWSOrphanDataCleaner.cleanUp(shouldRemoveOrphanedData: true)
+                } catch {
+                    orphanedDataCleanerFailureCount += 1
+                    throw error
+                }
+            },
+        )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {

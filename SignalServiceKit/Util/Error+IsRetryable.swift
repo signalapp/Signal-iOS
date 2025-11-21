@@ -84,6 +84,9 @@ public class OWSRetryableError: CustomNSError, IsRetryableProvider {
         OWSRetryableError() as Error as NSError
     }
 
+    public init() {
+    }
+
     // MARK: - IsRetryableProvider
 
     public var isRetryableProvider: Bool { true }

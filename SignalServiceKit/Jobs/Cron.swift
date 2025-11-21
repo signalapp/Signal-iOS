@@ -64,6 +64,7 @@ public class Cron {
     public enum UniqueKey: String {
         case checkUsername
         case cleanUpMessageSendLog
+        case cleanUpOrphanedData
         case cleanUpViewOnceMessages
         case fetchDevices
         case fetchEmojiSearch

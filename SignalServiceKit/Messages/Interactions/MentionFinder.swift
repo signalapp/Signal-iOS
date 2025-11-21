@@ -122,7 +122,7 @@ public class MentionFinder {
         }
 
         guard mention.creationDate <= thresholdDate else {
-            Logger.info("Skipping orphan mention due to age: \(mention.creationDate.timeIntervalSinceNow)")
+            Logger.info("Skipping orphan mention due to age: \(-mention.creationDate.timeIntervalSinceNow)")
             return false
         }
 
