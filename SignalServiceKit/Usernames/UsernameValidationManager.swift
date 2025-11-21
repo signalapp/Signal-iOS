@@ -6,11 +6,6 @@
 import LibSignalClient
 
 extension Usernames {
-    fileprivate enum ValidationError: Error {
-        case usernameMismatch
-        case usernameLinkMismatch
-    }
-
     public enum Validation {
         public enum Shims {
             public typealias MessageProcessor = _UsernameValidationManager_MessageProcessorShim
@@ -25,18 +20,12 @@ extension Usernames {
 }
 
 public protocol UsernameValidationManager {
-    func validateUsernameIfNecessary() async
+    func validateUsername() async throws -> Bool
 }
 
 // MARK: -
 
 public class UsernameValidationManagerImpl: UsernameValidationManager {
-
-    private enum Constants {
-        static let collectionName: String = "UsernameValidation"
-        static let lastValidationDateKey: String = "lastValidationDate"
-    }
-
     struct Context {
         let database: any DB
         let localUsernameManager: LocalUsernameManager
@@ -49,33 +38,28 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     // MARK: Init
 
     private let context: Context
-    private let keyValueStore: KeyValueStore
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     private var logger: UsernameLogger { .shared }
 
     init(context: Context) {
         self.context = context
-        self.keyValueStore = KeyValueStore(collection: Constants.collectionName)
     }
 
     // MARK: Username Validation
 
-    public func validateUsernameIfNecessary() async {
+    public func validateUsername() async throws -> Bool {
         do {
-            try await taskQueue.run {
-                try await self._validateUsernameIfNecessary()
+            return try await taskQueue.run {
+                return try await self._validateUsername()
             }
         } catch {
             logger.error("Error validating username and/or link: \(error)")
+            throw error
         }
     }
 
-    private func _validateUsernameIfNecessary() async throws {
-        guard context.database.read(block: { shouldValidateUsername($0) }) else {
-            return
-        }
-
+    private func _validateUsername() async throws -> Bool {
         logger.info("Validating username.")
 
         try await ensureUsernameStateUpToDate()
@@ -88,42 +72,25 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         case .unset:
             // If we validate that we have no local username we can skip
             // validating the username link as it's irrelevant.
-            try await validateLocalUsernameAgainstService(localUsername: nil)
+            return try await validateLocalUsernameAgainstService(localUsername: nil)
         case let .available(username, usernameLink):
             // If we have a username and we're in a good state, try and
             // validate both the username and the link.
-            try await validateLocalUsernameAgainstService(localUsername: username)
-
-            try await validateLocalUsernameLinkAgainstService(
+            guard try await validateLocalUsernameAgainstService(localUsername: username) else {
+                return false
+            }
+            return try await validateLocalUsernameLinkAgainstService(
                 localUsername: username,
                 localUsernameLink: usernameLink
             )
         case let .linkCorrupted(username):
             // If we have a username but know our link is broken, no need to
             // validate the link. (What would we even validate?)
-            try await validateLocalUsernameAgainstService(localUsername: username)
+            return try await validateLocalUsernameAgainstService(localUsername: username)
         case .usernameAndLinkCorrupted:
             // If we know we're in a bad state, we can skip validation.
-            break
+            return false
         }
-
-        // Save the time we last finished validating successfully.
-        await self.context.database.awaitableWrite { tx in
-            self.setLastValidation(date: Date(), tx)
-        }
-    }
-
-    private func shouldValidateUsername(_ transaction: DBReadTransaction) -> Bool {
-        guard let lastValidationDate = lastValidationDate(transaction) else {
-            return true
-        }
-
-        if Date() > lastValidationDate.addingTimeInterval(.day) {
-            // It's been more than a day - check again.
-            return true
-        }
-
-        return false
     }
 
     /// Ensure that we have the latest local state regarding our username.
@@ -151,7 +118,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     /// does not match the service.
     private func validateLocalUsernameAgainstService(
         localUsername: String?
-    ) async throws {
+    ) async throws -> Bool {
         let whoAmIResponse = try await self.context.whoAmIManager.makeWhoAmIRequest()
 
         let validationSucceeded: Bool = {
@@ -187,78 +154,43 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
                     tx: tx
                 )
             }
-
-            throw Usernames.ValidationError.usernameMismatch
         }
+        return validationSucceeded
     }
 
     private func validateLocalUsernameLinkAgainstService(
         localUsername: String,
         localUsernameLink: Usernames.UsernameLink
-    ) async throws {
-        let usernameForLocalLink: String?
+    ) async throws -> Bool {
+        let validationSucceeded: Bool
         do {
-            usernameForLocalLink = try await self.context.usernameLinkManager.decryptEncryptedLink(
+            let usernameForLocalLink = try await self.context.usernameLinkManager.decryptEncryptedLink(
                 link: localUsernameLink
             )
-        } catch {
-            switch error {
-            case LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength:
-                fallthrough
-            case LibSignalClient.SignalError.usernameLinkInvalid:
-                self.logger.warn("Local username link invalid: marking local username link corrupted!")
-
-                await self.context.database.awaitableWrite { tx in
-                    self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
-                        username: localUsername,
-                        tx: tx
-                    )
-                }
-            default:
-                break
+            if usernameForLocalLink == nil {
+                self.logger.warn("Couldn't find our own username link")
             }
-
-            throw error
+            validationSucceeded = (usernameForLocalLink == localUsername)
+        } catch
+            LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength,
+            LibSignalClient.SignalError.usernameLinkInvalid
+        {
+            self.logger.warn("Couldn't parse our own username link")
+            validationSucceeded = false
         }
 
-        if
-            let usernameForLocalLink,
-            usernameForLocalLink == localUsername
-        {
-            self.logger.info("Username link validated successfully.")
+        if validationSucceeded {
+            self.logger.info("Successfully validated our own username link")
         } else {
-            if usernameForLocalLink == nil {
-                self.logger.warn("Username missing for local link!")
-            }
-
-            self.logger.warn("Username link validation failed: marking local username link corrupted!")
-
+            self.logger.warn("Couldn't validate our own username link; marking invalid")
             await self.context.database.awaitableWrite { tx in
                 self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
                     username: localUsername,
                     tx: tx
                 )
             }
-
-            throw Usernames.ValidationError.usernameLinkMismatch
         }
-    }
-
-    // MARK: Internal validation state
-
-    internal func lastValidationDate(_ transaction: DBReadTransaction) -> Date? {
-        keyValueStore.getDate(
-            Constants.lastValidationDateKey,
-            transaction: transaction
-        )
-    }
-
-    internal func setLastValidation(date: Date, _ transaction: DBWriteTransaction) {
-        self.keyValueStore.setDate(
-            date,
-            key: Constants.lastValidationDateKey,
-            transaction: transaction
-        )
+        return validationSucceeded
     }
 }
 

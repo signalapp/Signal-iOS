@@ -38,7 +38,6 @@ public class AppEnvironment: NSObject {
     private(set) var outgoingDeviceRestorePresenter: OutgoingDeviceRestorePresenter!
     private(set) var provisioningManager: ProvisioningManager!
     private(set) var quickRestoreManager: QuickRestoreManager!
-    private var usernameValidationObserver: UsernameValidationObserver!
     private var registrationIdMismatchManager: RegistrationIdMismatchManager!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
@@ -53,7 +52,6 @@ public class AppEnvironment: NSObject {
     func setUp(appReadiness: AppReadiness, callService: CallService) {
         let dependenciesBridge = DependenciesBridge.shared
         let cron = dependenciesBridge.cron
-        _ = cron
 
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupNonceStore = BackupNonceMetadataStore()
@@ -113,10 +111,14 @@ public class AppEnvironment: NSObject {
             networkManager: SSKEnvironment.shared.networkManagerRef,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
-        self.usernameValidationObserver = UsernameValidationObserver(
-            appReadiness: appReadiness,
-            manager: DependenciesBridge.shared.usernameValidationManager,
-            database: DependenciesBridge.shared.db
+
+        let usernameValidationManager = DependenciesBridge.shared.usernameValidationManager
+        cron.schedulePeriodically(
+            uniqueKey: .checkUsername,
+            approximateInterval: .day,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { _ = try await usernameValidationManager.validateUsername() },
         )
 
         self.outgoingDeviceRestorePresenter = OutgoingDeviceRestorePresenter(

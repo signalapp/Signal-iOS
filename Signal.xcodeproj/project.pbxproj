@@ -1765,7 +1765,6 @@
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
 		C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
-		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
 		C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15EE0922D5D5AC00070838C /* Registration.pb.swift */; };
@@ -5750,7 +5749,6 @@
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSOutgoingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
-		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRestoreFromBackupConfirmationViewController.swift; sourceTree = "<group>"; };
 		C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRequestManager.swift; sourceTree = "<group>"; };
@@ -12494,7 +12492,6 @@
 				D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
 				C15837EE29A592BA00176927 /* UsernameValidationManager.swift */,
-				C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */,
 			);
 			path = Usernames;
 			sourceTree = "<group>";
@@ -18873,7 +18870,6 @@
 				D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */,
 				D925F563298D8F9400158EE4 /* Usernames.swift in Sources */,
 				C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */,
-				C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */,
 				725465602BA033E200EABFD2 /* UserNotificationsPresenter.swift in Sources */,
 				F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */,
 				5037F1942A43A6A300C372AD /* UserProfileMerger.swift in Sources */,
