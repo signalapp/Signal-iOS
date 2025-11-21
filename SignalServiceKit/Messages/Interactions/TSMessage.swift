@@ -595,11 +595,25 @@ public extension TSMessage {
         let bodyDescription = self.rawBody(transaction: tx)
         if
             bodyDescription == nil,
-            let storyReactionEmoji,
-            storyReactionEmoji.isEmpty.negated
+            let storyReactionEmoji = storyReactionEmoji?.strippedOrNil,
+            let storyAuthorAci = storyAuthorAci?.wrappedAciValue
         {
-            if let storyAuthorAddress, storyAuthorAddress.isLocalAddress.negated {
-                let storyAuthorName = SSKEnvironment.shared.contactManagerRef.displayName(for: storyAuthorAddress, tx: tx)
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let contactManager = SSKEnvironment.shared.contactManagerRef
+
+            if
+                let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
+                localIdentifiers.contains(serviceId: storyAuthorAci)
+            {
+                return .storyReactionEmoji(String(
+                    format: OWSLocalizedString(
+                        "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT",
+                        comment: "inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}}"
+                    ),
+                    storyReactionEmoji
+                ))
+            } else {
+                let storyAuthorName = contactManager.displayName(for: SignalServiceAddress(storyAuthorAci), tx: tx)
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
                         "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
@@ -607,14 +621,6 @@ public extension TSMessage {
                     ),
                     storyReactionEmoji,
                     storyAuthorName.resolvedValue(useShortNameIfAvailable: true)
-                ))
-            } else {
-                return .storyReactionEmoji(String(
-                    format: OWSLocalizedString(
-                        "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT",
-                        comment: "inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}}"
-                    ),
-                    storyReactionEmoji
                 ))
             }
         }

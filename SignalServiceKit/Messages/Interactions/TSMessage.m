@@ -298,15 +298,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [[AciObjC alloc] initWithAciString:self.storyAuthorUuidString];
 }
 
-- (nullable SignalServiceAddress *)storyAuthorAddress
-{
-    AciObjC *storyAuthorAci = self.storyAuthorAci;
-    if (storyAuthorAci == nil) {
-        return nil;
-    }
-    return [[SignalServiceAddress alloc] initWithServiceIdObjC:storyAuthorAci];
-}
-
 - (BOOL)isStoryReply
 {
     return self.storyAuthorUuidString != nil;

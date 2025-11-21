@@ -132,7 +132,6 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 /// not use presence of this field; use `isStoryReply` instead. Treat nil values as expired stories.
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
 @property (nonatomic, readonly, nullable) AciObjC *storyAuthorAci;
-@property (nonatomic, readonly, nullable) SignalServiceAddress *storyAuthorAddress;
 @property (nonatomic, readonly, nullable) NSString *storyAuthorUuidString;
 @property (nonatomic, readonly) BOOL isGroupStoryReply;
 @property (nonatomic, readonly) BOOL isStoryReply;
