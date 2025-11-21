@@ -94,6 +94,7 @@ public class DependenciesBridge {
     public let chatColorSettingStore: ChatColorSettingStore
     public let chatConnectionManager: ChatConnectionManager
     public let contactShareManager: ContactShareManager
+    public let cron: Cron
     public let currentCallProvider: any CurrentCallProvider
     public let databaseChangeObserver: DatabaseChangeObserver
     public let db: any DB
@@ -232,6 +233,7 @@ public class DependenciesBridge {
         chatColorSettingStore: ChatColorSettingStore,
         chatConnectionManager: ChatConnectionManager,
         contactShareManager: ContactShareManager,
+        cron: Cron,
         currentCallProvider: any CurrentCallProvider,
         databaseChangeObserver: DatabaseChangeObserver,
         db: any DB,
@@ -369,6 +371,7 @@ public class DependenciesBridge {
         self.chatColorSettingStore = chatColorSettingStore
         self.chatConnectionManager = chatConnectionManager
         self.contactShareManager = contactShareManager
+        self.cron = cron
         self.currentCallProvider = currentCallProvider
         self.databaseChangeObserver = databaseChangeObserver
         self.db = db

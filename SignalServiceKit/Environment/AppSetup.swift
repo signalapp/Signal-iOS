@@ -224,6 +224,11 @@ extension AppSetup.GlobalsContinuation {
             remoteConfig: remoteConfig.netConfig(),
         )
 
+        let cron = Cron(
+            appVersion: appVersion.currentAppVersion4,
+            db: databaseStorage,
+        )
+
         let recipientDatabaseTable = RecipientDatabaseTable()
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
@@ -1099,6 +1104,7 @@ extension AppSetup.GlobalsContinuation {
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupSubscriptionManager: backupSubscriptionManager,
             backupTestFlightEntitlementManager: backupTestFlightEntitlementManager,
+            cron: cron,
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
@@ -1658,6 +1664,7 @@ extension AppSetup.GlobalsContinuation {
             chatColorSettingStore: chatColorSettingStore,
             chatConnectionManager: chatConnectionManager,
             contactShareManager: contactShareManager,
+            cron: cron,
             currentCallProvider: currentCallProvider,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,

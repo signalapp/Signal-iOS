@@ -19,6 +19,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         // TODO: Fix circular dependency.
         return DependenciesBridge.shared.chatConnectionManager
     }
+    private let cron: Cron
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let identityManager: OWSIdentityManager
@@ -40,6 +41,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
+        cron: Cron,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         identityManager: OWSIdentityManager,
@@ -60,6 +62,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
+        self.cron = cron
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
         self.identityManager = identityManager
@@ -327,6 +330,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         versionedProfiles.clearProfileKeyCredentials(tx: tx)
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
         authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
+        cron.resetMostRecentDates(tx: tx)
 
         storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, pni: pni, e164: e164))
 

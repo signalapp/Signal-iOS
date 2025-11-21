@@ -51,6 +51,10 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
+        let dependenciesBridge = DependenciesBridge.shared
+        let cron = dependenciesBridge.cron
+        _ = cron
+
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupNonceStore = BackupNonceMetadataStore()
         let backupSettingsStore = BackupSettingsStore()

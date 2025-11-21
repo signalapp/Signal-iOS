@@ -183,16 +183,26 @@ class NotificationService: UNNotificationServiceExtension {
             return UNMutableNotificationContent()
         }
 
+        let cron = DependenciesBridge.shared.cron
+        let cronCtx = CronContext(
+            chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+        )
+
         do {
             try await startProxyIfEnabled()
             defer { SignalProxy.stopRelayServer() }
 
             let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
 
+            await backgroundMessageFetcher.start()
+            // Start Cron after we request a socket.
+            async let cronResult: Void = cron.runOnce(ctx: cronCtx)
             let fetchResult = await Result(catching: {
-                await backgroundMessageFetcher.start()
                 try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()
             })
+            // Wait for Cron to finish executing before we release the socket.
+            await cronResult
             await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             try fetchResult.get()
         } catch is CancellationError {
