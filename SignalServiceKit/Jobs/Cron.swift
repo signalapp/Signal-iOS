@@ -62,7 +62,7 @@ public class Cron {
     /// anything that's been written to disk. (This statement is not true for
     /// local builds, but it's true for all TestFlight/App Store builds.)
     public enum UniqueKey: String {
-        case none
+        case cleanUpMessageSendLog
     }
 
     init(

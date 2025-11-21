@@ -604,15 +604,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let appContext = launchContext.appContext
         let dependenciesBridge = DependenciesBridge.shared
         let cron = dependenciesBridge.cron
-        _ = cron
 
         SignalApp.shared.performInitialSetup(appReadiness: appReadiness)
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            // This runs every 24 hours or so.
-            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-            messageSendLog.cleanUpAndScheduleNextOccurrence()
-        }
+        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+        cron.schedulePeriodically(
+            uniqueKey: .cleanUpMessageSendLog,
+            approximateInterval: .day,
+            mustBeRegistered: false,
+            mustBeConnected: false,
+            operation: { try await messageSendLog.cleanUpExpiredEntries() },
+        )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()

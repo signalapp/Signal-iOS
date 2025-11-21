@@ -452,8 +452,8 @@ class MessageSendLogTests: SSKBaseTest {
         }
     }
 
-    func testCleanupExpiredPayloads() throws {
-        let (oldId, newId) = try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
+    func testCleanupExpiredPayloads() async throws {
+        let (oldId, newId) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTx in
             let oldMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 1000), transaction: writeTx)
             let oldData = CommonGenerator.sentence.data(using: .utf8)!
             let oldId = try XCTUnwrap(messageSendLog.recordPayload(oldData, for: oldMessage, tx: writeTx))
@@ -468,7 +468,7 @@ class MessageSendLogTests: SSKBaseTest {
             return (oldId, newId)
         }
 
-        try messageSendLog.cleanUpExpiredEntries()
+        try await messageSendLog.cleanUpExpiredEntries()
 
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             // Verify only the old message was deleted

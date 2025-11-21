@@ -356,33 +356,14 @@ public class MessageSendLog {
         }
     }
 
-    public func cleanUpAndScheduleNextOccurrence() {
-        AssertIsOnMainThread()
-        let backgroundTask = OWSBackgroundTask(label: #function)
-        DispatchQueue.global(qos: .utility).async {
-            defer {
-                DispatchQueue.main.async(backgroundTask.end)
-            }
-
-            do {
-                try self.cleanUpExpiredEntries()
-            } catch {
-                Logger.warn("Couldn't prune stale MSL entries \(error)")
-            }
-
-            DispatchQueue.main.asyncAfter(wallDeadline: .now() + .day) { [weak self] in
-                self?.cleanUpAndScheduleNextOccurrence()
-            }
-        }
-    }
-
-    public func cleanUpExpiredEntries() throws {
+    public func cleanUpExpiredEntries() async throws {
         let cutoffTimestamp = currentExpiredPayloadTimestamp()
         let fetchRequest = Payload
             .select(Column("payloadId"), as: Int64.self)
             .filter(Column("sentTimestamp") < cutoffTimestamp)
             .limit(Constants.cleanupLimit)
-        let count = try TimeGatedBatch.processAll(db: db) { tx in
+        let count = try await TimeGatedBatch.processAllAsync(db: db) { tx in
+            try Task.checkCancellation()
             do {
                 let db = tx.database
                 let payloadIds = try fetchRequest.fetchAll(db)
@@ -392,6 +373,7 @@ public class MessageSendLog {
                 throw error.grdbErrorForLogging
             }
         }
+
         if count > 0 {
             Logger.info("Deleted \(count) stale MSL entries")
         }
