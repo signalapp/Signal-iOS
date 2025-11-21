@@ -1055,8 +1055,42 @@ public final class MessageReceiver {
             return nil
         }
 
+        if let pollVote = dataMessage.pollVote {
+            do {
+                guard let (targetMessage, shouldNotifyAuthorOfVote) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                    voteAuthor: envelope.sourceAci,
+                    pollVoteProto: pollVote,
+                    transaction: tx
+                ) else {
+                    Logger.error("error processing poll vote!")
+                    return nil
+                }
+
+                // Update interaction in the conversation view
+                SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                if shouldNotifyAuthorOfVote {
+                    // If this is not an unvote, the user is the poll creator and the vote isn't authored by them, send a notification.
+                    if let outgoingMessage = targetMessage as? TSOutgoingMessage {
+                            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollVote(
+                                forMessage: outgoingMessage,
+                                voteAuthor: envelope.sourceAci,
+                                thread: thread,
+                                transaction: tx
+                            )
+                    }
+                }
+            } catch {
+                owsFailDebug("Could not insert poll vote!")
+                return nil
+            }
+
+            // Don't store PollVote as a message.
+            return nil
+        }
+
         if request.shouldDiscardVisibleMessages {
-            // Now that "reactions" and "delete for everyone" have been processed, the
+            // Now that "poll votes", "reactions" and "delete for everyone" have been processed, the
             // only possible outcome of further processing is a visible message or
             // group call update, both of which should be discarded.
             Logger.info("Discarding message w/ts \(envelope.timestamp)")
@@ -1276,40 +1310,6 @@ public final class MessageReceiver {
             }
 
             // Don't store poll terminate as a message.
-            return nil
-        }
-
-        if let pollVote = dataMessage.pollVote {
-            do {
-                guard let (targetMessage, shouldNotifyAuthorOfVote) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
-                    voteAuthor: envelope.sourceAci,
-                    pollVoteProto: pollVote,
-                    transaction: tx
-                ) else {
-                    Logger.error("error processing poll vote!")
-                    return nil
-                }
-
-                // Update interaction in the conversation view
-                SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
-
-                if shouldNotifyAuthorOfVote {
-                    // If this is not an unvote, the user is the poll creator and the vote isn't authored by them, send a notification.
-                    if let outgoingMessage = targetMessage as? TSOutgoingMessage {
-                            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfPollVote(
-                                forMessage: outgoingMessage,
-                                voteAuthor: envelope.sourceAci,
-                                thread: thread,
-                                transaction: tx
-                            )
-                    }
-                }
-            } catch {
-                owsFailDebug("Could not insert poll vote!")
-                return nil
-            }
-
-            // Don't store PollVote as a message.
             return nil
         }
 
