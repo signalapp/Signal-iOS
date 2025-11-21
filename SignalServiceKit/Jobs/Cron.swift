@@ -68,6 +68,7 @@ public class Cron {
         case fetchDevices
         case fetchSenderCertificates
         case fetchStaleGroup
+        case fetchStaleProfiles
         case fetchSubscriptionConfig
     }
 

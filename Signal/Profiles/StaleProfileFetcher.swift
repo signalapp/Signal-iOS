@@ -23,11 +23,8 @@ class StaleProfileFetcher {
         self.tsAccountManager = tsAccountManager
     }
 
-    func scheduleProfileFetches() {
+    func fetchSomeStaleProfiles() async throws(CancellationError) {
         let staleServiceIds = db.read { tx -> [ServiceId] in
-            guard tsAccountManager.registrationState(tx: tx).isRegistered else {
-                return []
-            }
             var staleServiceIds = [ServiceId]()
             Self.enumerateMissingAndStaleUserProfiles(now: Date(), tx: tx) { userProfile in
                 switch userProfile.internalAddress {
@@ -42,9 +39,15 @@ class StaleProfileFetcher {
             }
             return staleServiceIds
         }
-        Task { [profileFetcher] in
-            for serviceId in staleServiceIds.shuffled() {
-                _ = try? await profileFetcher.fetchProfile(for: serviceId, context: .init(isOpportunistic: true))
+        for serviceId in staleServiceIds.shuffled() {
+            do {
+                _ = try await profileFetcher.fetchProfile(for: serviceId, context: .init(isOpportunistic: true))
+            } catch let error as CancellationError {
+                throw error
+            } catch ProfileFetcherError.skippingOpportunisticFetch {
+                // We expect this to happen and can safely ignore it.
+            } catch {
+                Logger.warn("Couldn't fetch stale profile for \(serviceId): \(error)")
             }
         }
     }

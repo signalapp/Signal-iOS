@@ -665,13 +665,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            StaleProfileFetcher(
-                db: DependenciesBridge.shared.db,
-                profileFetcher: SSKEnvironment.shared.profileFetcherRef,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager
-            ).scheduleProfileFetches()
-        }
+        cron.schedulePeriodically(
+            uniqueKey: .fetchStaleProfiles,
+            approximateInterval: .day,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: {
+                try await StaleProfileFetcher(
+                    db: DependenciesBridge.shared.db,
+                    profileFetcher: SSKEnvironment.shared.profileFetcherRef,
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                ).fetchSomeStaleProfiles()
+            },
+        )
 
         let groupV2Updates = SSKEnvironment.shared.groupV2UpdatesRef
         cron.schedulePeriodically(
