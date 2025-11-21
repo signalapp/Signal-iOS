@@ -30,21 +30,11 @@ public class SubscriptionConfigManager {
         self.networkManager = networkManager
     }
 
-    public func refreshIfNeeded() async throws {
-        if
-            let lastFetchDate = db.read(block: {
-                kvStore.fetchValue(Date.self, forKey: StoreKeys.lastFetchDate, tx: $0)
-            }),
-            dateProvider().timeIntervalSince(lastFetchDate) < .day
-        {
-            // Refresh daily, although we'll use a cached value for longer.
-            return
-        }
-
-        _ = try await refresh()
+    public func refresh() async throws {
+        _ = try await _refresh()
     }
 
-    private func refresh() async throws -> SubscriptionConfig {
+    private func _refresh() async throws -> SubscriptionConfig {
         var request = TSRequest(
             url: URL(string: "v1/subscription/configuration")!,
             method: "GET",
@@ -88,7 +78,7 @@ public class SubscriptionConfigManager {
             return donationConfig
         }
 
-        return try await refresh().donation
+        return try await _refresh().donation
     }
 
     // MARK: Backups
@@ -103,7 +93,7 @@ public class SubscriptionConfigManager {
             return backupConfig
         }
 
-        return try await refresh().backup
+        return try await _refresh().backup
     }
 
     /// Returns a recently-fetched-and-cached `BackupSubscriptionConfiguration`

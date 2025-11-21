@@ -132,6 +132,15 @@ public class AppEnvironment: NSObject {
             udManager: SSKEnvironment.shared.udManagerRef
         )
 
+        let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
+        cron.schedulePeriodically(
+            uniqueKey: .fetchSubscriptionConfig,
+            approximateInterval: .day,
+            mustBeRegistered: false,
+            mustBeConnected: true,
+            operation: { try await subscriptionConfigManager.refresh() },
+        )
+
         appReadiness.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: DependenciesBridge.shared.databaseChangeObserver)
             self.appIconBadgeUpdater.startObserving()
@@ -159,7 +168,6 @@ public class AppEnvironment: NSObject {
             let threadStore = DependenciesBridge.shared.threadStore
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let storageServiceRecordIkmMigrator = DependenciesBridge.shared.storageServiceRecordIkmMigrator
-            let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
 
             let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
                 db: db,
@@ -276,14 +284,6 @@ public class AppEnvironment: NSObject {
 
             Task {
                 await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
-            }
-
-            Task {
-                do {
-                    try await subscriptionConfigManager.refreshIfNeeded()
-                } catch {
-                    owsFailDebug("Failed to fetch subscription configuration in launch job! \(error)")
-                }
             }
 
             Task {
