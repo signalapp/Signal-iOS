@@ -65,6 +65,7 @@ public class Cron {
         case checkUsername
         case cleanUpMessageSendLog
         case cleanUpViewOnceMessages
+        case fetchStaleGroup
     }
 
     init(

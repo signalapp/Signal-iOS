@@ -202,6 +202,8 @@ public struct GroupsV2BuiltGroupChange {
 // MARK: -
 
 public protocol GroupV2Updates {
+    func autoRefreshGroup() async throws(CancellationError)
+
     func refreshGroupImpl(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
@@ -612,6 +614,10 @@ public class MockGroupsV2: GroupsV2 {
 // MARK: -
 
 public class MockGroupV2Updates: GroupV2Updates {
+    public func autoRefreshGroup() async throws(CancellationError) {
+        owsFail("Not implemented.")
+    }
+
     public func refreshGroupImpl(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,

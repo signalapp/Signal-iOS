@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public class GroupV2UpdatesImpl {
+public class GroupV2UpdatesImpl: GroupV2Updates {
 
     // This tracks the last time that groups were updated to the current
     // revision.
@@ -18,26 +18,18 @@ public class GroupV2UpdatesImpl {
 
     init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
-
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            Task { await self.autoRefreshGroupOnLaunch() }
-        }
     }
 
     // MARK: -
 
-    // On launch, we refresh a few randomly-selected groups.
-    private func autoRefreshGroupOnLaunch() async {
+    // On launch, we refresh a randomly-selected group.
+    public func autoRefreshGroup() async throws(CancellationError) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 
-        do throws(CancellationError) {
-            try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
-        } catch {
-            return
-        }
+        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
 
         guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
             // We didn't find a group to refresh; abort.
@@ -48,15 +40,15 @@ public class GroupV2UpdatesImpl {
         let groupSecretParams = groupInfoToRefresh.groupSecretParams
         if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
             let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow / TimeInterval.day)
-            Logger.info("Auto-refreshing group: \(groupId) which hasn't been refreshed in \(formattedDays) days.")
+            Logger.info("auto-refreshing group: \(groupId) which hasn't been refreshed in \(formattedDays) days")
         } else {
-            Logger.info("Auto-refreshing group: \(groupId) which has never been refreshed.")
+            Logger.info("auto-refreshing group: \(groupId) which has never been refreshed")
         }
 
         do {
             try await self.refreshGroup(secretParams: groupSecretParams)
         } catch GroupsV2Error.localUserNotInGroup {
-            Logger.warn("Can't auto-refresh group unless we're a member")
+            Logger.warn("can't auto-refresh group unless we're a member")
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
         }
@@ -70,8 +62,7 @@ public class GroupV2UpdatesImpl {
 
     private static func findGroupToAutoRefresh() -> GroupInfo? {
         // Enumerate the all v2 groups, trying to find the "best" one to refresh.
-        // The "best" is the group that hasn't been refreshed in the longest
-        // time.
+        // The "best" is the group that hasn't been refreshed in the longest time.
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var groupInfoToRefresh: GroupInfo?
             TSGroupThread.anyEnumerate(
@@ -131,11 +122,6 @@ public class GroupV2UpdatesImpl {
             return groupInfoToRefresh
         }
     }
-}
-
-// MARK: - GroupV2UpdatesSwift
-
-extension GroupV2UpdatesImpl: GroupV2Updates {
 
     public func updateGroupWithChangeActions(
         groupId: GroupIdentifier,

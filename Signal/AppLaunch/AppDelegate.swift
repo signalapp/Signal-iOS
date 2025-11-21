@@ -673,6 +673,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             ).scheduleProfileFetches()
         }
 
+        let groupV2Updates = SSKEnvironment.shared.groupV2UpdatesRef
+        cron.schedulePeriodically(
+            uniqueKey: .fetchStaleGroup,
+            approximateInterval: .day,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await groupV2Updates.autoRefreshGroup() },
+        )
+
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
                 YDBStorage.deleteYDBStorage()
