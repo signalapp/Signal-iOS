@@ -4702,7 +4702,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.phoneNumberDiscoverability,
-            hasSVRBackups: hasSVRBackups
+            capabilities: AccountAttributes.Capabilities(hasSVRBackups: hasSVRBackups),
         )
     }
 

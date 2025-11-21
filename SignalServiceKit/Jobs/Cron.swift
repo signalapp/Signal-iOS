@@ -74,6 +74,7 @@ public class Cron {
         case fetchStaleGroup
         case fetchStaleProfiles
         case fetchSubscriptionConfig
+        case updateAttributes
     }
 
     init(

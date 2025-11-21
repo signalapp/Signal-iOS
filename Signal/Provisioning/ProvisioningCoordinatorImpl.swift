@@ -730,7 +730,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: encryptedDeviceName,
             discoverableByPhoneNumber: phoneNumberDiscoverability,
-            hasSVRBackups: hasSVRBackups
+            capabilities: AccountAttributes.Capabilities(hasSVRBackups: hasSVRBackups),
         )
     }
 

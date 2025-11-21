@@ -409,6 +409,7 @@ extension AppSetup.GlobalsContinuation {
             ),
             appReadiness: appReadiness,
             appVersion: appVersion,
+            cron: cron,
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,

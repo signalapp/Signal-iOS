@@ -3393,7 +3393,7 @@ public class RegistrationCoordinatorTest {
                 registrationRecoveryPassword: masterKey?.regRecoveryPw,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: .nobody,
-                hasSVRBackups: true
+                capabilities: AccountAttributes.Capabilities(hasSVRBackups: true),
             )
         }
 

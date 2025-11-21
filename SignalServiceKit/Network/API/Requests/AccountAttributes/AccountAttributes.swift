@@ -85,7 +85,7 @@ public struct AccountAttributes: Codable {
         registrationRecoveryPassword: String?,
         encryptedDeviceName: String?,
         discoverableByPhoneNumber: PhoneNumberDiscoverability?,
-        hasSVRBackups: Bool
+        capabilities: Capabilities,
     ) {
         self.isManualMessageFetchEnabled = isManualMessageFetchEnabled
         self.registrationId = registrationId
@@ -96,7 +96,7 @@ public struct AccountAttributes: Codable {
         self.registrationRecoveryPassword = registrationRecoveryPassword
         self.encryptedDeviceName = encryptedDeviceName
         self.discoverableByPhoneNumber = discoverableByPhoneNumber.orAccountAttributeDefault.isDiscoverable
-        self.capabilities = Capabilities(hasSVRBackups: hasSVRBackups)
+        self.capabilities = capabilities
     }
 
     public struct Capabilities: Codable {

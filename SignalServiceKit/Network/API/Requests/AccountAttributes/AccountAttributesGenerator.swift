@@ -28,11 +28,17 @@ public struct AccountAttributesGenerator {
     }
 
     func generateForPrimary(
-        aciRegistrationId: UInt32,
-        pniRegistrationId: UInt32,
+        capabilities: AccountAttributes.Capabilities,
         tx: DBReadTransaction
-    ) -> AccountAttributes {
+    ) throws -> AccountAttributes {
         owsAssertDebug(tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true)
+
+        guard
+            let aciRegistrationId = tsAccountManager.getRegistrationId(for: .aci, tx: tx),
+            let pniRegistrationId = tsAccountManager.getRegistrationId(for: .pni, tx: tx)
+        else {
+            throw OWSGenericError("couldn't fetch registration IDs")
+        }
 
         let isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx: tx)
 
@@ -42,7 +48,6 @@ public struct AccountAttributesGenerator {
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
 
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
-        let hasSVRBackups = svrLocalStorage.getIsMasterKeyBackedUp(tx)
 
         let reglockToken: String?
         if
@@ -70,7 +75,7 @@ public struct AccountAttributesGenerator {
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: nil,
             discoverableByPhoneNumber: phoneNumberDiscoverability,
-            hasSVRBackups: hasSVRBackups
+            capabilities: capabilities,
         )
     }
 }
