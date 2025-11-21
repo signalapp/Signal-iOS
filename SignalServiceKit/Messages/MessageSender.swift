@@ -620,7 +620,7 @@ public class MessageSender {
         }
         try await waitForPreKeyRotationIfNeeded()
         let udManager = SSKEnvironment.shared.udManagerRef
-        let senderCertificates = try await udManager.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
+        let senderCertificates = try await udManager.fetchSenderCertificates()
         // Send the message.
         let sendResult = await Result(catching: {
             return try await sendPreparedMessage(

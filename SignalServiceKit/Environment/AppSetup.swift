@@ -329,7 +329,11 @@ extension AppSetup.GlobalsContinuation {
             appReadiness: appReadiness
         )
         let syncManager = testDependencies.syncManager ?? OWSSyncManager(appReadiness: appReadiness)
-        let udManager = OWSUDManagerImpl(appReadiness: appReadiness)
+        let udManager = OWSUDManagerImpl(
+            cron: cron,
+            db: databaseStorage,
+            tsAccountManager: tsAccountManager,
+        )
         let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl(appReadiness: appReadiness)
 
         let lastVisibleInteractionStore = LastVisibleInteractionStore()
