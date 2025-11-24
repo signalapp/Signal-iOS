@@ -361,7 +361,7 @@ public struct TypedItemProvider {
                     Data(filteredText.rawValue.utf8),
                     fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
                 ),
-                dataUTI: UTType.text.identifier,
+                dataUTI: UTType.plainText.identifier,
             ))
         }
     }
