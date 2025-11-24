@@ -54,6 +54,16 @@ public struct HTTPResponse {
     public var responseBodyString: String? {
         responseBodyData.flatMap { String(data: $0, encoding: responseStringEncoding) }
     }
+
+    /// Converts a response into an OWSHTTPError.
+    public func asError() -> OWSHTTPError {
+        return OWSHTTPError.serviceResponse(OWSHTTPError.ServiceResponse(
+            requestUrl: self.requestUrl,
+            responseStatus: self.responseStatusCode,
+            responseHeaders: self.headers,
+            responseData: self.responseBodyData,
+        ))
+    }
 }
 
 private extension HTTPURLResponse {

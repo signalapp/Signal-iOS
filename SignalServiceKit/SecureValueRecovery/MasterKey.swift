@@ -66,25 +66,17 @@ public struct MasterKey: Codable {
     public func encrypt(
         keyType: SVR.DerivedKey,
         data: Data
-    ) -> SVR.ApplyDerivedKeyResult {
+    ) throws -> Data {
         let keyData = self.data(for: keyType)
-        do {
-            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate())
-        } catch let error {
-            return .cryptographyError(error)
-        }
+        return try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate()
     }
 
     public func decrypt(
         keyType: SVR.DerivedKey,
         encryptedData: Data
-    ) -> SVR.ApplyDerivedKeyResult {
+    ) throws -> Data {
         let keyData = self.data(for: keyType)
-        do {
-            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData))
-        } catch let error {
-            return .cryptographyError(error)
-        }
+        return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData)
     }
 }
 

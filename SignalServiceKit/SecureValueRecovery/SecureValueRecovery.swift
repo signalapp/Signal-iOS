@@ -106,13 +106,6 @@ public enum SVR {
             }
         }
     }
-
-    public enum ApplyDerivedKeyResult {
-        case success(Data)
-        case masterKeyMissing
-        //  Error encrypting or decrypting
-        case cryptographyError(Error)
-    }
 }
 
 public protocol SecureValueRecovery {

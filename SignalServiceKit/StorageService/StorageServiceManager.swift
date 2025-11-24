@@ -1026,29 +1026,27 @@ class StorageServiceOperation {
             """
         )
 
-        switch await StorageService.updateManifest(
-            manifest,
-            newItems: updatedItems,
-            deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
-            deleteAllExistingRecords: false,
-            masterKey: masterKey,
-            chatServiceAuth: authedAccount.chatServiceAuth
-        ) {
-        case .success:
-            break
-        case .conflictingManifest(let conflictingManifest):
+        do {
+            try await StorageService.updateManifest(
+                manifest,
+                newItems: updatedItems,
+                deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
+                deleteAllExistingRecords: false,
+                masterKey: masterKey,
+                chatServiceAuth: authedAccount.chatServiceAuth
+            )
+        } catch StorageService.StorageError.conflictingManifest(let conflictingManifest) {
             // Throw away all our work, resolve conflicts, and try again.
             try await self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
             return
-        case
-                .error(.manifestDecryptionFailed(let conflictingVersion)) where isPrimaryDevice,
-                .error(.manifestProtoDeserializationFailed(let conflictingVersion)) where isPrimaryDevice:
+        } catch
+            StorageService.StorageError.manifestDecryptionFailed(let conflictingVersion) where isPrimaryDevice,
+            StorageService.StorageError.manifestProtoDeserializationFailed(let conflictingVersion) where isPrimaryDevice
+        {
             /// The remote manifest is invalid and conflicting, which is
             /// blocking us from doing a backup. Overwrite it.
             try await createNewManifestAndRecords(version: conflictingVersion + 1)
             return
-        case .error(let storageError):
-            throw storageError
         }
 
         Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
@@ -1103,30 +1101,36 @@ class StorageServiceOperation {
             return state.manifestVersion
         }()
 
-        switch await StorageService.fetchLatestManifest(
-            greaterThanVersion: greaterThanVersion,
-            masterKey: masterKey,
-            chatServiceAuth: authedAccount.chatServiceAuth
-        ) {
-        case .noExistingManifest:
-            // There is no existing manifest, let's create one.
-            return try await self.createNewManifestAndRecords(version: 1)
-        case .noNewerManifest:
-            // Our manifest version matches the server version, nothing to do here.
-            return
-        case .latestManifest(let manifest):
-            // Our manifest is not the latest, merge in the latest copy.
-            return try await self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
-        case .error(.manifestDecryptionFailed(let manifestVersion)):
-            // If we succeeded to fetch the manifest but were unable to decrypt it,
-            // it likely means our keys changed.
-            if self.isPrimaryDevice {
-                // If this is the primary device, throw everything away and re-encrypt
-                // the social graph with the keys we have locally.
-                Logger.warn("Manifest decryption failed on primary, recreating manifest.")
-                try await self.createNewManifestAndRecords(version: manifestVersion + 1)
+        do {
+            switch try await StorageService.fetchLatestManifest(
+                ifGreaterThanVersion: greaterThanVersion,
+                masterKey: masterKey,
+                chatServiceAuth: authedAccount.chatServiceAuth
+            ) {
+            case .noExistingManifest:
+                // There is no existing manifest, let's create one.
+                return try await self.createNewManifestAndRecords(version: 1)
+            case .noNewerManifest:
+                // Our manifest version matches the server version, nothing to do here.
                 return
-            } else {
+            case .latestManifest(let manifest):
+                // Our manifest is not the latest, merge in the latest copy.
+                return try await self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
+            }
+        } catch
+            StorageService.StorageError.manifestDecryptionFailed(let manifestVersion) where isPrimaryDevice,
+            StorageService.StorageError.manifestProtoDeserializationFailed(let manifestVersion) where isPrimaryDevice
+        {
+            // If we succeeded to fetch the manifest but were unable to decrypt or
+            // decode it, it likely means our keys changed or another device encrypted
+            // a malformed value. If this is the primary device, throw everything away
+            // and re-encrypt the social graph with the keys we have locally.
+            Logger.warn("Manifest decryption/deserialization failed on primary, recreating manifest.")
+            try await self.createNewManifestAndRecords(version: manifestVersion + 1)
+            return
+        } catch {
+            switch error {
+            case StorageService.StorageError.manifestDecryptionFailed(_) where !isPrimaryDevice:
                 // If this is a linked device, give up and request the latest storage
                 // service key from the primary device.
                 Logger.warn("Manifest decryption failed on linked device, clearing storage service keys.")
@@ -1138,20 +1142,16 @@ class StorageServiceOperation {
                     DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
+            default:
+                break
             }
-        case .error(.manifestProtoDeserializationFailed(let manifestVersion)) where isPrimaryDevice:
-            /// We have byte garbage in Storage Service. Our only recourse is to
-            /// throw everything away and recreate it with data we have locally.
-            Logger.warn("Manifest deserialization failed on primary, recreating manifest.")
-            try await self.createNewManifestAndRecords(version: manifestVersion + 1)
-        case .error(let storageError):
-            throw storageError
+            throw error
         }
     }
 
     // MARK: - Creating new manifests
 
-    private func createNewManifestPreservingRecords(version: UInt64) async throws(StorageService.StorageError) {
+    private func createNewManifestPreservingRecords(version: UInt64) async throws {
         owsPrecondition(isPrimaryDevice)
 
         var state = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -1192,7 +1192,7 @@ class StorageServiceOperation {
         }
     }
 
-    private func createNewManifestAndRecords(version: UInt64) async throws(StorageService.StorageError) {
+    private func createNewManifestAndRecords(version: UInt64) async throws {
         owsPrecondition(isPrimaryDevice)
 
         var allItems: [StorageService.StorageItem] = []
@@ -1336,8 +1336,7 @@ class StorageServiceOperation {
                 deletedIdentifiers: [],
                 deleteAllExistingRecords: true
             ) != nil {
-                owsFailDebug("Repeated conflicts trying to create a new manifest; giving up. What's going on?")
-                throw .assertion
+                throw OWSGenericError("Repeated conflicts trying to create a new manifest; giving up. What's going on?")
             }
         }
     }
@@ -1354,21 +1353,21 @@ class StorageServiceOperation {
         newItems: [StorageService.StorageItem],
         deletedIdentifiers: [StorageService.StorageIdentifier],
         deleteAllExistingRecords: Bool
-    ) async throws(StorageService.StorageError) -> UInt64? {
+    ) async throws -> UInt64? {
         owsPrecondition(isPrimaryDevice)
 
         Logger.info("Creating a new manifest with manifest version: \(manifest.version).")
 
         let conflictingManifestVersion: UInt64
-        switch await StorageService.updateManifest(
-            manifest,
-            newItems: newItems,
-            deletedIdentifiers: deletedIdentifiers,
-            deleteAllExistingRecords: deleteAllExistingRecords,
-            masterKey: masterKey,
-            chatServiceAuth: authedAccount.chatServiceAuth
-        ) {
-        case .success:
+        do {
+            try await StorageService.updateManifest(
+                manifest,
+                newItems: newItems,
+                deletedIdentifiers: deletedIdentifiers,
+                deleteAllExistingRecords: deleteAllExistingRecords,
+                masterKey: masterKey,
+                chatServiceAuth: authedAccount.chatServiceAuth
+            )
             /// We created a new manifest, so let's tell our other devices to go
             /// fetch it.
             await SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
@@ -1380,7 +1379,7 @@ class StorageServiceOperation {
             }
 
             return nil
-        case .conflictingManifest(let conflictingManifest):
+        } catch StorageService.StorageError.conflictingManifest(let conflictingManifest) {
             /// This is weird, because we generally only create a new manifest
             /// when we know the existing manifest is broken. Somehow, between
             /// the time we found it broken and decided we needed to recreate
@@ -1392,9 +1391,10 @@ class StorageServiceOperation {
             /// callers will see the conflicting version and overwrite whatever
             /// was in the mysteriously-fixed manifest.
             conflictingManifestVersion = conflictingManifest.version
-        case
-                .error(.manifestDecryptionFailed(let _conflictingManifestVersion)),
-                .error(.manifestProtoDeserializationFailed(let _conflictingManifestVersion)):
+        } catch
+            StorageService.StorageError.manifestDecryptionFailed(let _conflictingManifestVersion),
+            StorageService.StorageError.manifestProtoDeserializationFailed(let _conflictingManifestVersion)
+        {
             /// This indicates that we found a conflicting remote manifest that
             /// we couldn't read. For example, maybe we're creating a new
             /// manifest in response to having rotated keys on this (primary)
@@ -1405,8 +1405,6 @@ class StorageServiceOperation {
             /// we'll let callers see the conflicting version and overwrite
             /// whatever was in it.
             conflictingManifestVersion = _conflictingManifestVersion
-        case .error(let storageError):
-            throw storageError
         }
 
         return conflictingManifestVersion
@@ -1486,17 +1484,12 @@ class StorageServiceOperation {
                 Logger.info("\(manifest.logDescription); merging account record")
 
                 let item: StorageService.StorageItem?
-                switch await StorageService.fetchItems(
+                item = try await StorageService.fetchItems(
                     for: [newLocalAccountIdentifier],
                     manifest: manifest,
                     masterKey: masterKey,
                     chatServiceAuth: authedAccount.chatServiceAuth
-                ) {
-                case .success(let storageItems):
-                    item = storageItems.first
-                case .error(let storageError):
-                    throw storageError
-                }
+                ).first
 
                 guard let item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
@@ -1710,17 +1703,12 @@ class StorageServiceOperation {
         var deferredItems = [StorageService.StorageItem]()
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
             let fetchedItems: [StorageService.StorageItem]
-            switch await StorageService.fetchItems(
+            fetchedItems = try await StorageService.fetchItems(
                 for: Array(identifierBatch),
                 manifest: manifest,
                 masterKey: masterKey,
                 chatServiceAuth: self.authedAccount.chatServiceAuth
-            ) {
-            case .success(let _fetchedItems):
-                fetchedItems = _fetchedItems
-            case .error(let storageError):
-                throw storageError
-            }
+            )
 
             // We process contacts with ACIs before those without ACIs. We do this to
             // ensure we process split operations first. If we don't, then we'll likely

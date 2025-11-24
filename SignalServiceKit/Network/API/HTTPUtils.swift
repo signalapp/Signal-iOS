@@ -214,7 +214,6 @@ public extension Error {
         case POSIXError.EPROTO: return true
         case let httpError as OWSHTTPError: return httpError.isNetworkFailureImpl
         case SignalError.connectionFailed: return true
-        case StorageService.StorageError.networkError: return true
         case Upload.Error.networkError: return true
         default: return false
         }
