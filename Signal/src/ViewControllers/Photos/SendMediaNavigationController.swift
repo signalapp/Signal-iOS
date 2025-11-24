@@ -13,7 +13,7 @@ protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments approvedAttachments: ApprovedAttachments, messageBody: MessageBody?)
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: UnsentTextAttachment)
 
@@ -565,8 +565,16 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         attachmentDrafts.removeAll { $0 == removedDraft }
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
-        sendMediaNavDelegate?.sendMediaNav(self, didApproveAttachments: attachments, messageBody: messageBody)
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
+    ) {
+        sendMediaNavDelegate?.sendMediaNav(
+            self,
+            didApproveAttachments: approvedAttachments,
+            messageBody: messageBody,
+        )
     }
 
     func attachmentApprovalDidCancel() {

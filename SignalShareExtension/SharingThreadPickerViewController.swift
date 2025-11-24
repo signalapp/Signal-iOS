@@ -44,10 +44,10 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         return attachment.isConvertibleToContactShare
     }
 
-    private var approvedAttachments: [SignalAttachment]?
+    private var approvedAttachments: ApprovedAttachments?
+    private var approvedMessageBody: MessageBody?
     private var approvedContactShare: ContactShareDraft?
-    private var approvalMessageBody: MessageBody?
-    private var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
+    private var approvedLinkPreviewDraft: OWSLinkPreviewDraft?
 
     private var mentionCandidates: [Aci] = []
 
@@ -199,9 +199,9 @@ extension SharingThreadPickerViewController {
                 selectedConversations: selectedConversations,
                 isTextMessage: isTextMessage,
                 isContactShare: isContactShare,
-                messageBody: approvalMessageBody,
+                messageBody: approvedMessageBody,
                 attachments: approvedAttachments,
-                linkPreviewDraft: approvalLinkPreviewDraft,
+                linkPreviewDraft: approvedLinkPreviewDraft,
                 contactShareDraft: approvedContactShare
             ) {
             case .success:
@@ -223,7 +223,7 @@ extension SharingThreadPickerViewController {
         isTextMessage: Bool,
         isContactShare: Bool,
         messageBody: MessageBody?,
-        attachments: [SignalAttachment]?,
+        attachments: ApprovedAttachments?,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         contactShareDraft: ContactShareDraft?
     ) async -> Result<Void, SendError> {
@@ -634,8 +634,8 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
         assert(messageBody?.text.nilIfEmpty != nil)
 
-        approvalMessageBody = messageBody
-        approvalLinkPreviewDraft = linkPreviewDraft
+        approvedMessageBody = messageBody
+        approvedLinkPreviewDraft = linkPreviewDraft
 
         send()
     }
@@ -696,7 +696,7 @@ extension SharingThreadPickerViewController: ContactShareViewControllerDelegate 
 extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
-        self.approvalMessageBody = newMessageBody
+        // We can ignore this event.
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
@@ -707,9 +707,13 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
         // We can ignore this event.
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
-        self.approvedAttachments = attachments
-        self.approvalMessageBody = messageBody
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
+    ) {
+        self.approvedAttachments = approvedAttachments
+        self.approvedMessageBody = messageBody
 
         send()
     }

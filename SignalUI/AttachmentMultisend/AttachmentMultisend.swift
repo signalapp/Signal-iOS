@@ -25,7 +25,7 @@ public class AttachmentMultisend {
     public class func sendApprovedMedia(
         conversations: [ConversationItem],
         approvedMessageBody: MessageBody?,
-        approvedAttachments: [SignalAttachment]
+        approvedAttachments: ApprovedAttachments,
     ) -> AttachmentMultisend.Result {
         let (preparedPromise, preparedFuture) = Promise<[PreparedOutgoingMessage]>.pending()
         let (enqueuedPromise, enqueuedFuture) = Promise<[TSThread]>.pending()
@@ -68,6 +68,7 @@ public class AttachmentMultisend {
                         // Stories get an untruncated message body
                         messageBodyForStories: approvedMessageBody,
                         approvedAttachments: segmentedAttachments,
+                        isViewOnce: approvedAttachments.isViewOnce,
                         tx: tx
                     )
 
@@ -192,13 +193,11 @@ public class AttachmentMultisend {
     private struct SegmentAttachmentResult {
         let original: AttachmentDataSource?
         let segmented: [AttachmentDataSource]?
-        let isViewOnce: Bool
         let renderingFlag: AttachmentReference.RenderingFlag
 
         init(
             original: AttachmentDataSource?,
             segmented: [AttachmentDataSource]?,
-            isViewOnce: Bool,
             renderingFlag: AttachmentReference.RenderingFlag
         ) throws {
             // We only create data sources for the original or segments if we need to.
@@ -210,7 +209,6 @@ public class AttachmentMultisend {
             }
             self.original = original
             self.segmented = segmented
-            self.isViewOnce = isViewOnce
             self.renderingFlag = renderingFlag
         }
 
@@ -224,7 +222,7 @@ public class AttachmentMultisend {
 
     private class func segmentAttachmentsIfNecessary(
         for conversations: [ConversationItem],
-        approvedAttachments: [SignalAttachment],
+        approvedAttachments: ApprovedAttachments,
         hasNonStoryDestination: Bool,
         hasStoryDestination: Bool
     ) async throws -> [SegmentAttachmentResult] {
@@ -232,7 +230,7 @@ public class AttachmentMultisend {
         guard hasStoryDestination, !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
             // No need to segment!
             var results = [SegmentAttachmentResult]()
-            for attachment in approvedAttachments {
+            for attachment in approvedAttachments.attachments {
                 let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
                     dataSource: attachment.dataSource,
                     shouldConsume: true,
@@ -243,7 +241,6 @@ public class AttachmentMultisend {
                 try results.append(.init(
                     original: dataSource,
                     segmented: nil,
-                    isViewOnce: attachment.isViewOnceAttachment,
                     renderingFlag: attachment.renderingFlag
                 ))
             }
@@ -255,7 +252,7 @@ public class AttachmentMultisend {
         let segmentedResults = try await withThrowingTaskGroup(
             of: (Int, SegmentAttachmentResult).self
         ) { taskGroup in
-            for (index, attachment) in approvedAttachments.enumerated() {
+            for (index, attachment) in approvedAttachments.attachments.enumerated() {
                 taskGroup.addTask(operation: {
                     let segmentingResult = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
                         .segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
@@ -296,12 +293,11 @@ public class AttachmentMultisend {
                     return try (index, .init(
                         original: originalDataSource,
                         segmented: segmentedDataSources,
-                        isViewOnce: attachment.isViewOnceAttachment,
                         renderingFlag: attachment.renderingFlag
                     ))
                 })
             }
-            var segmentedResults = [SegmentAttachmentResult?].init(repeating: nil, count: approvedAttachments.count)
+            var segmentedResults = [SegmentAttachmentResult?].init(repeating: nil, count: approvedAttachments.attachments.count)
             for try await result in taskGroup {
                 segmentedResults[result.0] = result.1
             }
@@ -317,6 +313,7 @@ public class AttachmentMultisend {
         destinations: [Destination],
         messageBodyForStories: MessageBody?,
         approvedAttachments: [SegmentAttachmentResult],
+        isViewOnce: Bool,
         tx: DBWriteTransaction
     ) throws -> ([TSThread], [PreparedOutgoingMessage]) {
         let segmentedAttachments = approvedAttachments.reduce([], { arr, segmented in
@@ -328,7 +325,6 @@ public class AttachmentMultisend {
             }
             return SignalAttachment.ForSending(
                 dataSource: original,
-                isViewOnce: attachment.isViewOnce,
                 renderingFlag: attachment.renderingFlag
             )
         }
@@ -357,7 +353,7 @@ public class AttachmentMultisend {
         let nonStoryMessages = try prepareNonStoryMessages(
             threadDestinations: nonStoryThreads,
             unsegmentedAttachments: unsegmentedAttachments,
-            isViewOnceMessage: approvedAttachments.contains(where: \.isViewOnce),
+            isViewOnceMessage: isViewOnce,
             tx: tx
         )
 
@@ -450,6 +446,7 @@ public class AttachmentMultisend {
             let preparedMessage = try prepareNonStoryMessage(
                 messageBody: destination.messageBody,
                 attachments: unsegmentedAttachments,
+                isViewOnce: isViewOnceMessage,
                 thread: thread,
                 tx: tx
             )
@@ -463,6 +460,7 @@ public class AttachmentMultisend {
     private class func prepareNonStoryMessage(
         messageBody: ValidatedMessageBody?,
         attachments: [SignalAttachment.ForSending],
+        isViewOnce: Bool,
         thread: TSThread,
         tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage {
@@ -470,6 +468,7 @@ public class AttachmentMultisend {
             thread: thread,
             messageBody: messageBody,
             mediaAttachments: attachments,
+            isViewOnce: isViewOnce,
             quotedReplyDraft: nil,
             linkPreviewDataSource: nil,
             transaction: tx

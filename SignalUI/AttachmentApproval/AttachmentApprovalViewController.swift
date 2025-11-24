@@ -11,10 +11,36 @@ import MediaPlayer
 import Photos
 public import SignalServiceKit
 
+public struct ApprovedAttachments {
+    public let isViewOnce: Bool
+    public let attachments: [SignalAttachment]
+
+    private init(isViewOnce: Bool, attachments: [SignalAttachment]) {
+        owsPrecondition(!isViewOnce || attachments.count <= 1)
+        self.isViewOnce = isViewOnce
+        self.attachments = attachments
+    }
+
+    public init(viewOnceAttachment: SignalAttachment) {
+        self.init(isViewOnce: true, attachments: [viewOnceAttachment])
+    }
+
+    public init(nonViewOnceAttachments: [SignalAttachment]) {
+        self.init(isViewOnce: false, attachments: nonViewOnceAttachments)
+    }
+
+    public static func empty() -> Self {
+        return Self(isViewOnce: false, attachments: [])
+    }
+}
+
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
+    )
 
     func attachmentApprovalDidCancel()
 
@@ -741,9 +767,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        let dstAttachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
-        dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
-        return dstAttachment
+        return try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
@@ -856,14 +880,22 @@ extension AttachmentApprovalViewController {
             do {
                 let attachments = try await self.prepareAttachments()
                 modalVC.dismiss {
-                    if self.options.contains(.canToggleViewOnce), self.isViewOnceEnabled {
-                        for attachment in attachments {
-                            attachment.isViewOnceAttachment = true
-                        }
-                        assert(attachments.count <= 1)
-                    }
-
-                    self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: self.attachmentTextToolbar.messageBodyForSending)
+                    let isViewOnce = self.options.contains(.canToggleViewOnce) && self.isViewOnceEnabled
+                    let messageBody = self.attachmentTextToolbar.messageBodyForSending
+                    owsPrecondition(!isViewOnce || messageBody == nil)
+                    self.approvalDelegate?.attachmentApproval(
+                        self,
+                        didApproveAttachments: {
+                            if isViewOnce {
+                                // The `options` property and UI layer enforce this requirement.
+                                owsPrecondition(attachments.count == 1)
+                                return ApprovedAttachments(viewOnceAttachment: attachments.first!)
+                            } else {
+                                return ApprovedAttachments(nonViewOnceAttachments: attachments)
+                            }
+                        }(),
+                        messageBody: messageBody,
+                    )
                 }
             } catch {
                 owsFailDebug("Error: \(error)")

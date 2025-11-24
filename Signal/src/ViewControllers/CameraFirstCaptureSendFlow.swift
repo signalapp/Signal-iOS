@@ -16,8 +16,8 @@ class CameraFirstCaptureSendFlow {
 
     private weak var delegate: CameraFirstCaptureDelegate?
 
-    private var approvedAttachments: [SignalAttachment]?
-    private var approvalMessageBody: MessageBody?
+    private var approvedAttachments: ApprovedAttachments?
+    private var approvedMessageBody: MessageBody?
     private var textAttachment: UnsentTextAttachment?
 
     private var mentionCandidates: [Aci] = []
@@ -62,13 +62,17 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         delegate?.cameraFirstCaptureSendFlowDidCancel(self)
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
-        self.approvedAttachments = attachments
-        self.approvalMessageBody = messageBody
+    func sendMediaNav(
+        _ sendMediaNavigationController: SendMediaNavigationController,
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
+    ) {
+        self.approvedAttachments = approvedAttachments
+        self.approvedMessageBody = messageBody
 
         let pickerVC = ConversationPickerViewController(
             selection: selection,
-            attachments: attachments
+            attachments: approvedAttachments.attachments,
         )
         pickerVC.pickerDelegate = self
         pickerVC.shouldBatchUpdateIdentityKeys = true
@@ -96,11 +100,17 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
-        self.approvalMessageBody = newMessageBody
+    func sendMediaNav(
+        _ sendMediaNavigationController: SendMediaNavigationController,
+        didChangeMessageBody newMessageBody: MessageBody?,
+    ) {
+        // Nothing to do -- this is a conversation view feature.
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeViewOnceState isViewOnce: Bool) {
+    func sendMediaNav(
+        _ sendMediaNavigationController: SendMediaNavigationController,
+        didChangeViewOnceState isViewOnce: Bool,
+    ) {
         guard !self.storiesOnly else { return }
         // Don't enable view once media to send to stories.
         self.showsStoriesInPicker = !isViewOnce
@@ -110,11 +120,11 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 extension CameraFirstCaptureSendFlow: SendMediaNavDataSource {
 
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
-        return approvalMessageBody
+        return nil
     }
 
     var sendMediaNavTextInputContextIdentifier: String? {
-        nil
+        return nil
     }
 
     var sendMediaNavRecipientNames: [String] {
@@ -169,7 +179,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         firstly {
             AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
-                approvedMessageBody: self.approvalMessageBody,
+                approvedMessageBody: self.approvedMessageBody,
                 approvedAttachments: approvedAttachments
             ).enqueuedPromise
         }.done { _ in

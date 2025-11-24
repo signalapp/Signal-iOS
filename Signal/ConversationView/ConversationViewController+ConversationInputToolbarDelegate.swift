@@ -364,14 +364,14 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
     @MainActor
     func tryToSendAttachments(
-        _ attachments: [SignalAttachment],
+        _ approvedAttachments: ApprovedAttachments,
         from viewController: UIViewController,
-        messageBody: MessageBody?
+        messageBody: MessageBody?,
     ) async throws(SendAttachmentError) {
         try await tryToSendAttachments(
-            attachments,
-            from: viewController,
+            approvedAttachments,
             messageBody: messageBody,
+            from: viewController,
             untrustedThreshold: Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
         )
     }
@@ -385,9 +385,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
     @MainActor
     private func tryToSendAttachments(
-        _ attachments: [SignalAttachment],
-        from viewController: UIViewController,
+        _ approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
+        from viewController: UIViewController,
         untrustedThreshold: Date
     ) async throws(SendAttachmentError) {
         AssertIsOnMainThread()
@@ -419,13 +419,13 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-        let hasViewOnceAttachment = attachments.contains(where: { $0.isViewOnceAttachment })
+        let hasViewOnceAttachment = approvedAttachments.isViewOnce
         owsPrecondition(!hasViewOnceAttachment || messageBody == nil)
         owsPrecondition(!hasViewOnceAttachment || inputToolbar.quotedReplyDraft == nil)
 
         ThreadUtil.enqueueMessage(
             body: messageBody,
-            mediaAttachments: attachments,
+            approvedAttachments: approvedAttachments,
             thread: self.thread,
             quotedReplyDraft: inputToolbar.quotedReplyDraft,
             persistenceCompletionHandler: {
@@ -722,7 +722,7 @@ extension ConversationViewController: LocationPickerDelegate {
 
             ThreadUtil.enqueueMessage(
                 body: MessageBody(text: location.messageText, ranges: .empty),
-                mediaAttachments: [attachment],
+                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: [attachment]),
                 thread: self.thread,
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
@@ -859,14 +859,14 @@ extension ConversationViewController: SendMediaNavDelegate {
 
     func sendMediaNav(
         _ sendMediaNavigationController: SendMediaNavigationController,
-        didApproveAttachments attachments: [SignalAttachment],
-        messageBody: MessageBody?
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
     ) {
         Task { @MainActor in
             await self.sendAttachments(
-                attachments,
+                approvedAttachments,
+                messageBody: messageBody,
                 from: sendMediaNavigationController,
-                messageBody: messageBody
             )
         }
     }
@@ -874,18 +874,22 @@ extension ConversationViewController: SendMediaNavDelegate {
     /// Attempts to send attachments. Handles prompting to unblock or un-verify safety numbers, as well as showing failure states.
     @MainActor
     func sendAttachments(
-        _ attachments: [SignalAttachment],
+        _ approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
         from viewController: UIViewController,
-        messageBody: MessageBody?
     ) async {
         do throws(SendAttachmentError) {
             try await tryToSendAttachments(
-                attachments,
+                approvedAttachments,
                 from: viewController,
-                messageBody: messageBody
+                messageBody: messageBody,
             )
 
-            if attachments.count == 1, let attachment = attachments.first, attachment.isBorderless {
+            if
+                approvedAttachments.attachments.count == 1,
+                let attachment = approvedAttachments.attachments.first,
+                attachment.isBorderless
+            {
                 // This looks like a sticker, we shouldn't clear the input toolbar.
             } else {
                 inputToolbar?.clearTextMessage(animated: false)

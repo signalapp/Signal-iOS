@@ -55,8 +55,12 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
 
 extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDelegate {
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
-        approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: attachments, messageBody: messageBody)
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
+    ) {
+        approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: approvedAttachments, messageBody: messageBody)
     }
 
     func attachmentApprovalDidCancel() {

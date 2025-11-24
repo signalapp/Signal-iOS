@@ -13,14 +13,14 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
 
     public func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
-        didApproveAttachments attachments: [SignalAttachment],
-        messageBody: MessageBody?
+        didApproveAttachments approvedAttachments: ApprovedAttachments,
+        messageBody: MessageBody?,
     ) {
         Task { @MainActor in
             await self.sendAttachments(
-                attachments,
+                approvedAttachments,
+                messageBody: messageBody,
                 from: attachmentApproval,
-                messageBody: messageBody
             )
         }
     }
@@ -254,7 +254,11 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         // and render it borderless.
         if attachments.count == 1, let a = attachments.first, a.isBorderless {
             Task {
-                await self.sendAttachments([a], from: self, messageBody: nil)
+                await self.sendAttachments(
+                    ApprovedAttachments(nonViewOnceAttachments: [a]),
+                    messageBody: nil,
+                    from: self,
+                )
             }
         } else {
             dismissKeyBoard()
