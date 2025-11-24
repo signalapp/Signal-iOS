@@ -185,7 +185,7 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
             loadViewControllerForProgress = initialLoadViewController
         }
 
-        let attachments: [SignalAttachment]
+        let typedItems: [TypedItem]
         do {
             // If buildAndValidateAttachments takes longer than 200ms, we want to show
             // the new load view. If it takes less than 200ms, we'll exit out of this
@@ -201,7 +201,7 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
                 try Task.checkCancellation()
                 self.setViewControllers([loadViewControllerToDisplay], animated: false)
             }()
-            attachments = try await buildAndValidateAttachments(
+            typedItems = try await buildAndValidateAttachments(
                 for: typedItemProviders,
                 setProgress: { loadViewControllerForProgress?.progress = $0 }
             )
@@ -210,8 +210,8 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
             return
         }
 
-        Logger.info("Setting picker attachments: \(attachments)")
-        conversationPicker.attachments = attachments
+        Logger.info("Setting picker attachments: \(typedItems.count)")
+        conversationPicker.typedItems = typedItems
 
         if let preSelectedThread {
             let approvalViewController = try conversationPicker.buildApprovalViewController(for: preSelectedThread)
@@ -377,7 +377,7 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
     private func buildAndValidateAttachments(
         for typedItemProviders: [TypedItemProvider],
         setProgress: @MainActor (Progress) -> Void
-    ) async throws -> [SignalAttachment] {
+    ) async throws -> [TypedItem] {
         let progress = Progress(totalUnitCount: Int64(typedItemProviders.count))
 
         let itemsAndProgresses = typedItemProviders.map {
@@ -388,15 +388,18 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
 
         setProgress(progress)
 
-        let attachments = try await self.buildAttachments(for: itemsAndProgresses)
+        let typedItems = try await self.buildAttachments(
+            for: itemsAndProgresses,
+            mustBeVisualMedia: itemsAndProgresses.count >= 2,
+        )
         try Task.checkCancellation()
 
         // Make sure the user is not trying to share more than our attachment limit.
-        guard attachments.filter({ !$0.isConvertibleToTextMessage }).count <= SignalAttachment.maxAttachmentsAllowed else {
+        guard typedItems.count <= SignalAttachment.maxAttachmentsAllowed else {
             throw ShareViewControllerError.tooManyAttachments
         }
 
-        return attachments
+        return typedItems
     }
 
     private func presentAttachmentError(_ error: any Error) {
@@ -453,11 +456,14 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
         throw ShareViewControllerError.noConformingInputItem
     }
 
-    nonisolated private func buildAttachments(for itemsAndProgresses: [(TypedItemProvider, Progress)]) async throws -> [SignalAttachment] {
+    private nonisolated func buildAttachments(
+        for itemsAndProgresses: [(TypedItemProvider, Progress)],
+        mustBeVisualMedia: Bool,
+    ) async throws -> [TypedItem] {
         // FIXME: does not use a task group because SignalAttachment likes to load things into RAM and resize them; doing this in parallel can exhaust available RAM
-        var result: [SignalAttachment] = []
+        var result: [TypedItem] = []
         for (typedItemProvider, progress) in itemsAndProgresses {
-            result.append(try await typedItemProvider.buildAttachment(progress: progress))
+            result.append(try await typedItemProvider.buildAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress))
         }
         return result
     }

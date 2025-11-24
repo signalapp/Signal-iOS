@@ -65,11 +65,6 @@ public class DataSourceValue: DataSource {
         self.init(data, fileExtension: fileExtension)
     }
 
-    public convenience init(oversizeText: String) {
-        let data = Data(oversizeText.filterForDisplay.utf8)
-        self.init(data, fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension)
-    }
-
     deinit {
         if let _dataUrl {
             try? OWSFileSystem.deleteFileIfExists(url: _dataUrl)

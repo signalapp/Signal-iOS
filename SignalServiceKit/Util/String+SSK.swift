@@ -16,6 +16,15 @@ extension NSString {
 
 // MARK: -
 
+public struct FilteredString {
+    public let rawValue: String
+    public init(rawValue: String) {
+        self.rawValue = rawValue.filterStringForDisplay()
+    }
+}
+
+// MARK: -
+
 public extension String {
     var stripped: String {
         ows_stripped()

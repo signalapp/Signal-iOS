@@ -171,8 +171,7 @@ extension UsernameLinkScanQRCodeViewController: PHPickerViewControllerDelegate {
             }()
 
             do {
-                let typedItemProvider = try TypedItemProvider.make(for: selectedItem.itemProvider)
-                let attachment = try await typedItemProvider.buildAttachment()
+                let attachment = try await TypedItemProvider.buildVisualMediaAttachment(forItemProvider: selectedItem.itemProvider)
                 guard
                     let image = attachment.image(),
                     let ciImage = CIImage(image: image)

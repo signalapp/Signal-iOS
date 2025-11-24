@@ -29,8 +29,8 @@ struct SendMessageUnapprovedContent {
 struct SendMessageApprovedContent {
     let messageBody: MessageBody
     let linkPreviewDraft: OWSLinkPreviewDraft?
-    init?(messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
-        guard let messageBody, !messageBody.text.isEmpty else {
+    init?(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?) {
+        guard !messageBody.text.isEmpty else {
             return nil
         }
         self.messageBody = messageBody
@@ -262,7 +262,7 @@ extension SendMessageFlow: ConversationPickerDelegate {
 // MARK: -
 
 extension SendMessageFlow: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?) {
         guard let approvedContent = SendMessageApprovedContent(messageBody: messageBody, linkPreviewDraft: linkPreviewDraft) else {
             owsFailDebug("Missing messageBody.")
             fireCancelled()

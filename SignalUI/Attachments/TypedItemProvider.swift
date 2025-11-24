@@ -23,6 +23,41 @@ private enum ItemProviderError: Error {
     case fileUrlWasBplist
 }
 
+// MARK: - TypedItem
+
+public enum TypedItem {
+    case text(InlineMessageText)
+    case contact(Data)
+    case other(SignalAttachment)
+
+    public struct InlineMessageText {
+        public let filteredValue: FilteredString
+        public init?(filteredValue: FilteredString) {
+            guard filteredValue.rawValue.utf8.count <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes else {
+                return nil
+            }
+            self.filteredValue = filteredValue
+        }
+    }
+
+    public var isVisualMedia: Bool {
+        switch self {
+        case .text, .contact: false
+        case .other(let attachment): attachment.isImage || attachment.isVideo
+        }
+    }
+
+    public var isStoriesCompatible: Bool {
+        switch self {
+        case .text: return true
+        case .contact: return false
+        case .other(let attachment):
+            // TODO: Consolidate with isVisualMedia after fixing validity checks.
+            return attachment.dataSource.isValidImage || attachment.dataSource.isValidVideo
+        }
+    }
+}
+
 // MARK: - TypedItemProvider
 
 public struct TypedItemProvider {
@@ -117,6 +152,16 @@ public struct TypedItemProvider {
     /// to come earlier in the list than their fallbacks.
     private static let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .plainText, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
 
+    public static func buildVisualMediaAttachment(forItemProvider itemProvider: NSItemProvider) async throws -> SignalAttachment {
+        let typedItem = try await make(for: itemProvider).buildAttachment(mustBeVisualMedia: true)
+        switch typedItem {
+        case .text, .contact:
+            owsFail("not possible because mustBeVisualMedia is true")
+        case .other(let attachment):
+            return attachment
+        }
+    }
+
     public static func make(for itemProvider: NSItemProvider) throws -> TypedItemProvider {
         for typeIdentifier in forcedDataTypeIdentifiers {
             if itemProvider.hasItemConformingToTypeIdentifier(typeIdentifier) {
@@ -136,7 +181,7 @@ public struct TypedItemProvider {
 
     // MARK: Methods
 
-    public nonisolated func buildAttachment(progress: Progress? = nil) async throws -> SignalAttachment {
+    public nonisolated func buildAttachment(mustBeVisualMedia: Bool, progress: Progress? = nil) async throws -> TypedItem {
         // Whenever this finishes, mark its progress as fully complete. This
         // handles item providers that can't provide partial progress updates.
         defer {
@@ -145,6 +190,7 @@ public struct TypedItemProvider {
             }
         }
 
+        let attachment: SignalAttachment
         switch itemType {
         case .image:
             // some apps send a usable file to us and some throw a UIImage at us, the UIImage can come in either directly
@@ -154,67 +200,72 @@ public struct TypedItemProvider {
             //   2) try to load a UIImage directly in the case that is what was sent over
             //   3) try to NSKeyedUnarchive NSData directly into a UIImage
             do {
-                return try await buildFileAttachment(progress: progress)
+                attachment = try await buildFileAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress)
             } catch SignalAttachmentError.couldNotParseImage, ItemProviderError.fileUrlWasBplist {
                 Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
                 let image: UIImage = try await loadObjectWithKeyedUnarchiverFallback(
                     cannotLoadError: .cannotLoadUIImageObject,
                     failedLoadError: .loadUIImageObjectFailed
                 )
-                return try Self.createAttachment(withImage: image)
+                attachment = try Self.createAttachment(withImage: image)
             }
         case .movie, .pdf, .data:
-            return try await self.buildFileAttachment(progress: progress)
+            attachment = try await self.buildFileAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress)
         case .fileUrl, .json:
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 overrideTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier,
                 cannotLoadError: .cannotLoadURLObject,
                 failedLoadError: .loadURLObjectFailed
             )
-
             let (dataSource, dataUTI) = try Self.copyFileUrl(
                 fileUrl: url as URL,
                 defaultTypeIdentifier: UTType.data.identifier
             )
-
-            return try await _buildFileAttachment(
+            attachment = try await _buildFileAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
-                progress: progress
+                mustBeVisualMedia: mustBeVisualMedia,
+                progress: progress,
             )
         case .webUrl:
+            if mustBeVisualMedia {
+                throw SignalAttachmentError.invalidFileFormat
+            }
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadURLObject,
                 failedLoadError: .loadURLObjectFailed
             )
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
-            let contactData = try await loadDataRepresentation()
-            let dataSource = DataSourceValue(contactData, utiType: itemType.typeIdentifier)
-            guard let dataSource else {
-                throw SignalAttachmentError.missingData
+            if mustBeVisualMedia {
+                throw SignalAttachmentError.invalidFileFormat
             }
-            let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
-            attachment.isConvertibleToContactShare = true
-            return attachment
+            let contactData = try await loadDataRepresentation()
+            return .contact(contactData)
         case .plainText, .text:
+            if mustBeVisualMedia {
+                throw SignalAttachmentError.invalidFileFormat
+            }
             let text: NSString = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadStringObject,
                 failedLoadError: .loadStringObjectFailed
             )
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
+            if mustBeVisualMedia {
+                throw SignalAttachmentError.invalidFileFormat
+            }
             let pkPass = try await loadDataRepresentation()
             let dataSource = DataSourceValue(pkPass, utiType: itemType.typeIdentifier)
             guard let dataSource else {
                 throw SignalAttachmentError.missingData
             }
-            let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
-            return attachment
+            attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
         }
+        return .other(attachment)
     }
 
-    private nonisolated func buildFileAttachment(progress: Progress?) async throws -> SignalAttachment {
+    private nonisolated func buildFileAttachment(mustBeVisualMedia: Bool, progress: Progress?) async throws -> SignalAttachment {
         let (dataSource, dataUTI): (DataSourcePath, String) = try await withCheckedThrowingContinuation { continuation in
             let typeIdentifier = itemType.typeIdentifier
             _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier)  { fileUrl, error in
@@ -236,7 +287,7 @@ public struct TypedItemProvider {
             }
         }
 
-        return try await _buildFileAttachment(dataSource: dataSource, dataUTI: dataUTI, progress: progress)
+        return try await _buildFileAttachment(dataSource: dataSource, dataUTI: dataUTI, mustBeVisualMedia: mustBeVisualMedia, progress: progress)
     }
 
     private nonisolated func loadDataRepresentation(
@@ -298,11 +349,21 @@ public struct TypedItemProvider {
         }
     }
 
-    private nonisolated static func createAttachment(withText text: String) throws -> SignalAttachment {
-        let dataSource = DataSourceValue(oversizeText: text)
-        let attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
-        attachment.isConvertibleToTextMessage = true
-        return attachment
+    private nonisolated static func createAttachment(withText text: String) throws -> TypedItem {
+        let filteredText = FilteredString(rawValue: text)
+        if let inlineMessageText = TypedItem.InlineMessageText(filteredValue: filteredText) {
+            return .text(inlineMessageText)
+        } else {
+            // If this is too large to send as an inline message, fall back to treating
+            // it as a generic attachment that happens to contain text.
+            return .other(try SignalAttachment.genericAttachment(
+                dataSource: DataSourceValue(
+                    Data(filteredText.rawValue.utf8),
+                    fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
+                ),
+                dataUTI: UTType.text.identifier,
+            ))
+        }
     }
 
     private nonisolated static func createAttachment(withImage image: UIImage) throws -> SignalAttachment {
@@ -339,6 +400,7 @@ public struct TypedItemProvider {
     private nonisolated func _buildFileAttachment(
         dataSource: DataSourcePath,
         dataUTI: String,
+        mustBeVisualMedia: Bool,
         progress: Progress?
     ) async throws -> SignalAttachment {
         if SignalAttachment.videoUTISet.contains(dataUTI) {
@@ -355,6 +417,10 @@ public struct TypedItemProvider {
                     progressPoller?.startPolling()
                 }
             )
+        } else if mustBeVisualMedia {
+            // If it's not a video but must be visual media, then we must parse it as
+            // an image or throw an error.
+            return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         } else {
             return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
         }

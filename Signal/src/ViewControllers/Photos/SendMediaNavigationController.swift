@@ -401,13 +401,8 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
             let attachment = PHPickerAttachment(
                 result: result,
                 attachmentApprovalItemPromise: Promise.wrapAsync {
-                    let attachment = try await TypedItemProvider
-                        .make(for: result.itemProvider)
-                        .buildAttachment()
-                    return AttachmentApprovalItem(
-                        attachment: attachment,
-                        canSave: false
-                    )
+                    let attachment = try await TypedItemProvider.buildVisualMediaAttachment(forItemProvider: result.itemProvider)
+                    return AttachmentApprovalItem(attachment: attachment, canSave: false)
                 }
             )
             return .phPicker(attachment: attachment)
@@ -441,13 +436,8 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
             PHPickerAttachment(
                 result: result,
                 attachmentApprovalItemPromise: Promise.wrapAsync {
-                    let attachment = try await TypedItemProvider
-                        .make(for: result.itemProvider)
-                        .buildAttachment()
-                    return AttachmentApprovalItem(
-                        attachment: attachment,
-                        canSave: false
-                    )
+                    let attachment = try await TypedItemProvider.buildVisualMediaAttachment(forItemProvider: result.itemProvider)
+                    return AttachmentApprovalItem(attachment: attachment, canSave: false)
                 }
             )
         }.forEach { attachment in

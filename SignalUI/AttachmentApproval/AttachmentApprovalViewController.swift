@@ -158,9 +158,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.receivedOptions = options
 
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
-        super.init(transitionStyle: .scroll,
-                   navigationOrientation: .horizontal,
-                   options: pageOptions)
+        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: pageOptions)
 
         let isAddMoreVisibleBlock = { [weak self] in
             return self?.isAddMoreVisible ?? false

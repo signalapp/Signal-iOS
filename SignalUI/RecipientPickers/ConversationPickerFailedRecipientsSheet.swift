@@ -4,24 +4,20 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 
 public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewController {
 
-    let failedAttachments: [SignalAttachment]
     let failedStoryConversationItems: [StoryConversationItem]
     let remainingConversationItems: [ConversationItem]
     let onApprove: () -> Void
 
     public init(
-        failedAttachments: [SignalAttachment],
         failedStoryConversationItems: [StoryConversationItem],
         remainingConversationItems: [ConversationItem],
         onApprove: @escaping () -> Void
     ) {
-        assert(failedAttachments.isEmpty.negated)
-        assert(failedStoryConversationItems.isEmpty.negated)
-        self.failedAttachments = failedAttachments
+        assert(!failedStoryConversationItems.isEmpty)
         self.failedStoryConversationItems = failedStoryConversationItems
         self.remainingConversationItems = remainingConversationItems
         self.onApprove = onApprove

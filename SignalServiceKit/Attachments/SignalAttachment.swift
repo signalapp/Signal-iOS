@@ -71,12 +71,6 @@ public class SignalAttachment: NSObject {
 
     public var captionText: String?
 
-    // This flag should be set for text attachments that can be sent as text messages.
-    public var isConvertibleToTextMessage = false
-
-    // This flag should be set for attachments that can be sent as contact shares.
-    public var isConvertibleToContactShare = false
-
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
@@ -147,8 +141,6 @@ public class SignalAttachment: NSObject {
     private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
         let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
         result.captionText = captionText
-        result.isConvertibleToTextMessage = isConvertibleToTextMessage
-        result.isConvertibleToContactShare = isConvertibleToContactShare
         result.isVoiceMessage = isVoiceMessage
         result.isBorderless = isBorderless
         result.isLoopingVideo = isLoopingVideo
