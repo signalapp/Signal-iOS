@@ -249,61 +249,52 @@ public class AttachmentMultisend {
 
         let qualityLevel = deps.databaseStorage.read(block: deps.imageQualityLevel.resolvedQuality(tx:))
 
-        let segmentedResults = try await withThrowingTaskGroup(
-            of: (Int, SegmentAttachmentResult).self
-        ) { taskGroup in
-            for (index, attachment) in approvedAttachments.attachments.enumerated() {
-                taskGroup.addTask(operation: {
-                    let segmentingResult = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
-                        .segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
+        var segmentedResults = [SegmentAttachmentResult]()
+        for attachment in approvedAttachments.attachments {
+            let segmentingResult = try await attachment
+                .preparedForOutput(qualityLevel: qualityLevel)
+                .segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
 
-                    let originalDataSource: AttachmentDataSource?
-                    if hasNonStoryDestination || segmentingResult.segmented == nil {
-                        // We need to prepare the original, either because there are no segments
-                        // or because we are sending to a non-story which doesn't segment.
-                        originalDataSource = try await deps.attachmentValidator.validateContents(
-                            dataSource: segmentingResult.original.dataSource,
-                            shouldConsume: true,
-                            mimeType: segmentingResult.original.mimeType,
-                            renderingFlag: segmentingResult.original.renderingFlag,
-                            sourceFilename: segmentingResult.original.dataSource.sourceFilename?.filterFilename(),
-                        )
-                    } else {
-                        originalDataSource = nil
-                    }
-
-                    let segmentedDataSources: [AttachmentDataSource]? = try await { () -> [AttachmentDataSource]? in
-                        guard let segments = segmentingResult.segmented, hasStoryDestination else {
-                            return nil
-                        }
-                        var segmentedDataSources = [AttachmentDataSource]()
-                        for segment in segments {
-                            let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
-                                dataSource: segment.dataSource,
-                                shouldConsume: true,
-                                mimeType: segment.mimeType,
-                                renderingFlag: segment.renderingFlag,
-                                sourceFilename: segment.dataSource.sourceFilename?.filterFilename(),
-                            )
-                            segmentedDataSources.append(dataSource)
-                        }
-                        return segmentedDataSources
-                    }()
-
-                    return try (index, .init(
-                        original: originalDataSource,
-                        segmented: segmentedDataSources,
-                        renderingFlag: attachment.renderingFlag
-                    ))
-                })
+            let originalDataSource: AttachmentDataSource?
+            if hasNonStoryDestination || segmentingResult.segmented == nil {
+                // We need to prepare the original, either because there are no segments
+                // (e.g., it's an image) or because we are sending to a non-story which
+                // doesn't segment.
+                originalDataSource = try await deps.attachmentValidator.validateContents(
+                    dataSource: segmentingResult.original.dataSource,
+                    shouldConsume: true,
+                    mimeType: segmentingResult.original.mimeType,
+                    renderingFlag: segmentingResult.original.renderingFlag,
+                    sourceFilename: segmentingResult.original.dataSource.sourceFilename?.filterFilename(),
+                )
+            } else {
+                originalDataSource = nil
             }
-            var segmentedResults = [SegmentAttachmentResult?].init(repeating: nil, count: approvedAttachments.attachments.count)
-            for try await result in taskGroup {
-                segmentedResults[result.0] = result.1
-            }
-            return segmentedResults.compacted()
+
+            let segmentedDataSources: [AttachmentDataSource]? = try await { () -> [AttachmentDataSource]? in
+                guard let segments = segmentingResult.segmented, hasStoryDestination else {
+                    return nil
+                }
+                var segmentedDataSources = [AttachmentDataSource]()
+                for segment in segments {
+                    let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
+                        dataSource: segment.dataSource,
+                        shouldConsume: true,
+                        mimeType: segment.mimeType,
+                        renderingFlag: segment.renderingFlag,
+                        sourceFilename: segment.dataSource.sourceFilename?.filterFilename(),
+                    )
+                    segmentedDataSources.append(dataSource)
+                }
+                return segmentedDataSources
+            }()
+
+            segmentedResults.append(try SegmentAttachmentResult(
+                original: originalDataSource,
+                segmented: segmentedDataSources,
+                renderingFlag: attachment.renderingFlag
+            ))
         }
-
         return segmentedResults
     }
 
