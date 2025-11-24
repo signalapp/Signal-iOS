@@ -397,6 +397,12 @@ class ImageEditorCropViewController: OWSViewController {
         case initial
         case final
     }
+    
+    private func updateControlsVisibility(hidden: Bool) {
+        self.footerView.alpha = hidden ? 0 : 1
+        self.cropView.setState(hidden ? .initial : .normal, animated: false)
+        self.bottomBar.setControls(hidden: hidden)
+    }
 
     private func transitionUI(toState state: UIState, animated: Bool, completion: ((Bool) -> Void)? = nil) {
         let layoutGuide: UILayoutGuide = {
@@ -407,12 +413,6 @@ class ImageEditorCropViewController: OWSViewController {
         }()
 
         let hideControls = state == .initial
-        let setControlsHiddenBlock = {
-            let alpha: CGFloat = hideControls ? 0 : 1
-            self.footerView.alpha = alpha
-            self.cropView.setState(state == .initial ? .initial : .normal, animated: false)
-            self.bottomBar.setControls(hidden: hideControls)
-        }
 
         let animationDuration: TimeInterval = 0.15
 
@@ -427,9 +427,10 @@ class ImageEditorCropViewController: OWSViewController {
         imageView.layer.cornerRadius = imageCornerRadius
 
         if animated {
+            
             UIView.animate(withDuration: animationDuration,
                            animations: {
-                setControlsHiddenBlock()
+                self.updateControlsVisibility(hidden: hideControls)
                 self.constrainContent(to: layoutGuide)
                 self.updateImageViewTransform()
                 // Animate layout changes made within bottomBar.setControls(hidden:).
@@ -438,7 +439,7 @@ class ImageEditorCropViewController: OWSViewController {
             },
                            completion: completion)
         } else {
-            setControlsHiddenBlock()
+            updateControlsVisibility(hidden: hideControls)
             constrainContent(to: layoutGuide)
             updateImageViewTransform()
             completion?(true)
@@ -951,7 +952,14 @@ extension ImageEditorCropViewController {
     @objc
     private func didTapCancel() {
         transitionUI(toState: .initial, animated: true) { finished in
-            guard finished else { return }
+            
+            // Fallback to reveal controls in case of an animation interruption
+            guard finished else {
+                    self.updateControlsVisibility(hidden: false)
+                    self.imageView.layer.cornerRadius = 0
+                    self.didTapReset()
+                    return
+                }
             self.dismiss(animated: false)
         }
     }
@@ -960,7 +968,14 @@ extension ImageEditorCropViewController {
     private func didTapDone() {
         model.replace(transform: transform)
         transitionUI(toState: .initial, animated: true) { finished in
-            guard finished else { return }
+            
+            // Fallback to reveal controls in case of an animation interruption
+            guard finished else {
+                    self.updateControlsVisibility(hidden: false)
+                    self.imageView.layer.cornerRadius = 0
+                    self.didTapReset()
+                    return
+                }
             self.dismiss(animated: false)
         }
     }
