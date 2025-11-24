@@ -443,7 +443,7 @@ private extension ConversationViewController {
                 primaryImageView.image = primaryImage
             }
             if let secondaryImage {
-                primaryImageView.image = secondaryImage
+                secondaryImageView.image = secondaryImage
             }
 
             primaryImageView.translatesAutoresizingMaskIntoConstraints = false
