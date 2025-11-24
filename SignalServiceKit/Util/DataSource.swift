@@ -171,7 +171,6 @@ public class DataSourceValue: DataSource {
         guard let path = dataUrl?.path else {
             return false
         }
-        owsFailDebug("Are we calling this anywhere? It seems quite inefficient.")
         do {
             try OWSMediaUtils.validateVideoExtension(ofPath: path)
             try OWSMediaUtils.validateVideoSize(atPath: path)
