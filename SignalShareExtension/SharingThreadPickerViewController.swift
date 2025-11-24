@@ -44,11 +44,6 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         return attachment.isConvertibleToContactShare
     }
 
-    private var approvedAttachments: ApprovedAttachments?
-    private var approvedMessageBody: MessageBody?
-    private var approvedContactShare: ContactShareDraft?
-    private var approvedLinkPreviewDraft: OWSLinkPreviewDraft?
-
     private var mentionCandidates: [Aci] = []
 
     private var selectedConversations: [ConversationItem] { selection.conversations }
@@ -188,7 +183,12 @@ extension SharingThreadPickerViewController {
 
 extension SharingThreadPickerViewController {
 
-    func send() {
+    fileprivate func send(
+        approvedAttachments: ApprovedAttachments = .empty(),
+        approvedContactShare: ContactShareDraft? = nil,
+        approvedLinkPreview: OWSLinkPreviewDraft? = nil,
+        approvedMessageBody: MessageBody? = nil,
+    ) {
         // Start presenting empty; the attachments will get set later.
         self.presentOrUpdateSendProgressSheet(attachmentIds: [])
 
@@ -201,7 +201,7 @@ extension SharingThreadPickerViewController {
                 isContactShare: isContactShare,
                 messageBody: approvedMessageBody,
                 attachments: approvedAttachments,
-                linkPreviewDraft: approvedLinkPreviewDraft,
+                linkPreviewDraft: approvedLinkPreview,
                 contactShareDraft: approvedContactShare
             ) {
             case .success:
@@ -633,11 +633,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
 extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
         assert(messageBody?.text.nilIfEmpty != nil)
-
-        approvedMessageBody = messageBody
-        approvedLinkPreviewDraft = linkPreviewDraft
-
-        send()
+        send(approvedLinkPreview: linkPreviewDraft, approvedMessageBody: messageBody)
     }
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {
@@ -666,8 +662,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
 extension SharingThreadPickerViewController: ContactShareViewControllerDelegate {
 
     func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareDraft) {
-        approvedContactShare = contactShare
-        send()
+        send(approvedContactShare: contactShare)
     }
 
     func contactShareViewControllerDidCancel(_ viewController: ContactShareViewController) {
@@ -712,10 +707,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
         didApproveAttachments approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
     ) {
-        self.approvedAttachments = approvedAttachments
-        self.approvedMessageBody = messageBody
-
-        send()
+        send(approvedAttachments: approvedAttachments, approvedMessageBody: messageBody)
     }
 
     func attachmentApprovalDidCancel() {
