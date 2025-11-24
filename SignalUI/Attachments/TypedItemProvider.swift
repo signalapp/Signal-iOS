@@ -26,14 +26,14 @@ private enum ItemProviderError: Error {
 // MARK: - TypedItem
 
 public enum TypedItem {
-    case text(InlineMessageText)
+    case text(MessageText)
     case contact(Data)
     case other(SignalAttachment)
 
-    public struct InlineMessageText {
+    public struct MessageText {
         public let filteredValue: FilteredString
         public init?(filteredValue: FilteredString) {
-            guard filteredValue.rawValue.utf8.count <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes else {
+            guard filteredValue.rawValue.utf8.count <= OWSMediaUtils.kMaxOversizeTextMessageSendSizeBytes else {
                 return nil
             }
             self.filteredValue = filteredValue
@@ -351,11 +351,11 @@ public struct TypedItemProvider {
 
     private nonisolated static func createAttachment(withText text: String) throws -> TypedItem {
         let filteredText = FilteredString(rawValue: text)
-        if let inlineMessageText = TypedItem.InlineMessageText(filteredValue: filteredText) {
-            return .text(inlineMessageText)
+        if let messageText = TypedItem.MessageText(filteredValue: filteredText) {
+            return .text(messageText)
         } else {
-            // If this is too large to send as an inline message, fall back to treating
-            // it as a generic attachment that happens to contain text.
+            // If this is too large to send as a message, fall back to treating it as a
+            // generic attachment that happens to contain text.
             return .other(try SignalAttachment.genericAttachment(
                 dataSource: DataSourceValue(
                     Data(filteredText.rawValue.utf8),
