@@ -514,16 +514,8 @@ extension ImageEditorViewController {
 
     @objc
     private func didTapAddSticker(sender: UIButton) {
-        let stickerPicker: StickerPickerSheet
-        if UIAccessibility.isReduceTransparencyEnabled {
-            stickerPicker = StickerPickerSheet(backgroundColor: Theme.darkThemeBackgroundColor)
-        } else {
-            stickerPicker = StickerPickerSheet(visualEffect: UIBlurEffect(style: .dark))
-        }
-
-        stickerPicker.pickerDelegate = self
+        let stickerPicker = StickerPickerSheet(pickerDelegate: self)
         stickerPicker.sheetDelegate = stickerSheetDelegate
-
         present(stickerPicker, animated: true)
     }
 
@@ -646,11 +638,8 @@ extension ImageEditorViewController: ColorPickerBarViewDelegate {
 // MARK: - StickerPickerDelegate
 
 extension ImageEditorViewController: StickerPickerDelegate {
-    var storyStickerConfiguration: StoryStickerConfiguration {
-        .showWithDelegate(self)
-    }
 
-    func didSelectSticker(stickerInfo: StickerInfo) {
+    func didSelectSticker(_ stickerInfo: StickerInfo) {
         let stickerItem = imageEditorView.createNewStickerItem(with: .regular(stickerInfo))
         selectStickerItem(stickerItem)
         dismiss(animated: true)
@@ -658,6 +647,7 @@ extension ImageEditorViewController: StickerPickerDelegate {
 }
 
 extension ImageEditorViewController: StoryStickerPickerDelegate {
+
     func didSelect(storySticker: EditorSticker.StorySticker) {
         let stickerItem = imageEditorView.createNewStickerItem(with: .story(storySticker))
         selectStickerItem(stickerItem)

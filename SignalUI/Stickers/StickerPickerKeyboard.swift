@@ -7,81 +7,69 @@ public import SignalServiceKit
 
 // MARK: - StickerKeyboard
 
+public protocol StickerKeyboardDelegate: AnyObject {
+
+    func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard)
+
+    func stickerKeyboard(_: StickerKeyboard, didSelect stickerInfo: StickerInfo)
+}
+
 public class StickerKeyboard: CustomKeyboard {
 
-    public typealias StickerKeyboardDelegate = StickerPickerDelegate & StickerPacksToolbarDelegate
     public weak var delegate: StickerKeyboardDelegate?
 
-    private let headerView = StickerPacksToolbar()
-    private lazy var stickerPickerPageView = StickerPickerPageView(delegate: self)
+    private lazy var stickerPickerView = StickerPickerView(delegate: self)
 
     public init(delegate: StickerKeyboardDelegate?) {
         self.delegate = delegate
 
         super.init()
 
-        let topInset: CGFloat
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-            topInset = 24
-            backgroundColor = .clear
-        } else {
-            topInset = 0
-            backgroundColor = .Signal.background
+        backgroundColor = if #available(iOS 26, *) { .clear } else { .Signal.background }
+
+        // Match rounded corners of the keyboard backdrop view.
+        if #available(iOS 26, *) {
+            contentView.clipsToBounds = true
+            contentView.cornerConfiguration = .uniformTopRadius(.fixed(26))
         }
 
-        let stackView = UIStackView(arrangedSubviews: [ headerView, stickerPickerPageView ])
-        contentView.addSubview(stackView)
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.autoPinEdges(toSuperviewEdgesExcludingEdge: .top)
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
-
-        headerView.delegate = self
+        // Need to set horizontal margins explicitly because they can't be inherited from the parent.
+        let hMargin = OWSTableViewController2.cellHInnerMargin
+        stickerPickerView.directionalLayoutMargins = .init(margin: hMargin)
+        stickerPickerView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(stickerPickerView)
+        NSLayoutConstraint.activate([
+            stickerPickerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            stickerPickerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            stickerPickerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            stickerPickerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
     }
 
     required public init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func wasPresented() {
-        super.wasPresented()
-        stickerPickerPageView.wasPresented()
+    public override func willPresent() {
+        super.willPresent()
+        stickerPickerView.willBePresented()
     }
 
+    public override func wasPresented() {
+        super.wasPresented()
+        stickerPickerView.wasPresented()
+    }
 }
 
 // MARK: StickerPacksToolbarDelegate
 
-extension StickerKeyboard: StickerPacksToolbarDelegate {
-    public var shouldShowManageButton: Bool { true }
+extension StickerKeyboard: StickerPickerViewDelegate {
 
-    public func manageButtonWasPressed() {
-        AssertIsOnMainThread()
-
-        delegate?.presentManageStickersView()
-    }
-}
-
-// MARK: StickerPickerPageViewDelegate
-
-extension StickerKeyboard: StickerPickerPageViewDelegate {
-    public func didSelectSticker(stickerInfo: StickerInfo) {
-        self.delegate?.didSelectSticker(stickerInfo: stickerInfo)
+    func presentManageStickersView(for stickerPickerView: StickerPickerView) {
+        delegate?.stickerKeyboardDidRequestPresentManageStickersView(self)
     }
 
-    public var storyStickerConfiguration: StoryStickerConfiguration {
-        .hide
-    }
-
-    public func presentManageStickersView() {
-        self.delegate?.presentManageStickersView()
-    }
-
-    public func setItems(_ items: [StickerHorizontalListViewItem]) {
-        headerView.packsCollectionView.items = items
-    }
-
-    public func updateSelections(scrollToSelectedItem: Bool) {
-        headerView.packsCollectionView.updateSelections(scrollToSelectedItem: scrollToSelectedItem)
+    public func didSelectSticker(_ stickerInfo: StickerInfo) {
+        delegate?.stickerKeyboard(self, didSelect: stickerInfo)
     }
 }

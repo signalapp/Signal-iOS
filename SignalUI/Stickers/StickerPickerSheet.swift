@@ -3,19 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 public import SignalServiceKit
 
-// MARK: - StickerPickerSheetDelegate
-
 public protocol StickerPickerSheetDelegate: AnyObject {
-    func makeManageStickersViewController() -> UIViewController
+    func makeManageStickersViewController(for: StickerPickerSheet) -> UIViewController
 }
 
-// MARK: - StickerPickerSheet
-
 public class StickerPickerSheet: InteractiveSheetViewController {
-    public override var interactiveScrollViews: [UIScrollView] { stickerPicker.stickerPackCollectionViews }
+
+    public override var interactiveScrollViews: [UIScrollView] { stickerPickerView.stickerPackCollectionViewPages }
+
     public override var sheetBackgroundColor: UIColor { .clear }
 
     /// Used for presenting the sticker manager from the toolbar.
@@ -25,93 +22,80 @@ public class StickerPickerSheet: InteractiveSheetViewController {
     /// on the toolbar.
     public weak var sheetDelegate: StickerPickerSheetDelegate? {
         didSet {
-            // The toolbar only shows the manage button if it has a delegate
+            // The picker view only shows the manage button if it has a delegate
             // If the sheet doesn't have a delegate, it can't present the
-            // manage stickers view controller, so only set the toolbar
+            // manage stickers view controller, so only set the picker view
             // delegate if there is a sheet delegate.
-            stickerPacksToolbar.delegate = sheetDelegate == nil ? nil : self
+            stickerPickerView.delegate = sheetDelegate == nil ? nil : self
         }
     }
     /// Used for handling sticker selection.
-    public weak var pickerDelegate: StickerPickerDelegate?
-    private let stickerPacksToolbar = StickerPacksToolbar(forceDarkTheme: true)
-    private lazy var stickerPicker = StickerPickerPageView(delegate: self, forceDarkTheme: true)
+    private weak var pickerDelegate: (StickerPickerDelegate&StoryStickerPickerDelegate)?
 
-    override init(visualEffect: UIVisualEffect? = nil) {
-        super.init(visualEffect: visualEffect)
-    }
+    private lazy var stickerPickerView = StickerPickerView(
+        delegate: self,
+        storyStickerConfiguration: .showWithDelegate(pickerDelegate!)
+    )
 
-    init(backgroundColor: UIColor) {
-        super.init()
-        stickerPicker.backgroundColor = backgroundColor
+    public init(pickerDelegate: StickerPickerDelegate&StoryStickerPickerDelegate) {
+        self.pickerDelegate = pickerDelegate
+
+        let useBlurEffect = !UIAccessibility.isReduceTransparencyEnabled
+        super.init(visualEffect: useBlurEffect ? UIBlurEffect(style: .dark) : nil)
+
+        if !useBlurEffect {
+            stickerPickerView.backgroundColor = .Signal.background
+        }
     }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        contentView.addSubview(stickerPicker)
-        stickerPicker.autoPinEdgesToSuperviewEdges()
-        stickerPicker.stickerPackCollectionViews.forEach { $0.alwaysBounceVertical = true }
+        overrideUserInterfaceStyle = .dark
 
-        view.addSubview(stickerPacksToolbar)
-        stickerPacksToolbar.autoPinEdges(toSuperviewEdgesExcludingEdge: .top)
-        stickerPacksToolbar.backgroundColor = .ows_gray90
+        stickerPickerView.directionalLayoutMargins = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: 8
+        )
+        contentView.addSubview(stickerPickerView)
+        stickerPickerView.autoPinEdgesToSuperviewEdges()
+        stickerPickerView.stickerPackCollectionViewPages.forEach { $0.alwaysBounceVertical = true }
     }
 
     private var viewHasAppeared = false
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        stickerPickerView.willBePresented()
+    }
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         viewHasAppeared = true
     }
 
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        // Ensure the scrollView's layout has completed
-        // as we're about to use its bounds to calculate
-        // the masking view and contentOffset.
-        contentView.layoutIfNeeded()
-
-        // Ensure you can scroll to the last sticker without
-        // them being stuck behind the toolbar.
-        let bottomInset = stickerPacksToolbar.height - stickerPacksToolbar.safeAreaInsets.bottom
-        let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: bottomInset, trailing: 0)
-        stickerPicker.stickerPackCollectionViews.forEach { collectionView in
-            collectionView.contentInset = contentInset
-            collectionView.scrollIndicatorInsets = contentInset
+        if !viewHasAppeared {
+            stickerPickerView.wasPresented()
         }
-
-        guard !viewHasAppeared else { return }
-        stickerPicker.wasPresented()
     }
 }
 
-// MARK: StickerPacksToolbarDelegate
+// MARK: StickerPickerViewDelegate
 
-extension StickerPickerSheet: StickerPacksToolbarDelegate {
-    public func presentManageStickersView() {
+extension StickerPickerSheet: StickerPickerViewDelegate {
+
+    func presentManageStickersView(for stickerPickerView: StickerPickerView) {
         guard let sheetDelegate else { return }
-        let manageStickersViewController = sheetDelegate.makeManageStickersViewController()
+        let manageStickersViewController = sheetDelegate.makeManageStickersViewController(for: self)
         presentFormSheet(manageStickersViewController, animated: true)
     }
-}
 
-// MARK: StickerPickerPageViewDelegate
-
-extension StickerPickerSheet: StickerPickerPageViewDelegate {
-    public func didSelectSticker(stickerInfo: StickerInfo) {
-        self.pickerDelegate?.didSelectSticker(stickerInfo: stickerInfo)
-    }
-
-    public var storyStickerConfiguration: StoryStickerConfiguration {
-        self.pickerDelegate?.storyStickerConfiguration ?? .hide
-    }
-
-    public func setItems(_ items: [StickerHorizontalListViewItem]) {
-        stickerPacksToolbar.packsCollectionView.items = items
-    }
-
-    public func updateSelections(scrollToSelectedItem: Bool) {
-        stickerPacksToolbar.packsCollectionView.updateSelections(scrollToSelectedItem: scrollToSelectedItem)
+    public func didSelectSticker(_ stickerInfo: StickerInfo) {
+        pickerDelegate?.didSelectSticker(stickerInfo)
     }
 }

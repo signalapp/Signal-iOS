@@ -632,7 +632,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSou
 }
 
 extension SendMediaNavigationController: StickerPickerSheetDelegate {
-    func makeManageStickersViewController() -> UIViewController {
+    func makeManageStickersViewController(for stickerPickerSheet: StickerPickerSheet) -> UIViewController {
         let manageStickersView = ManageStickersViewController()
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
         return navigationController

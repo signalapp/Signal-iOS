@@ -181,15 +181,10 @@ class StickerPackViewController: OWSViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard #available(iOS 26, *) else { return }
-
-        let topInset = headerView.frame.maxY + 16
-        stickerCollectionView.contentInset.top = topInset
-        stickerCollectionView.verticalScrollIndicatorInsets.top = topInset
-
-        let bottomInset = bottomButtonContainer.frame.height + 16
-        stickerCollectionView.contentInset.bottom = bottomInset
-        stickerCollectionView.verticalScrollIndicatorInsets.bottom = bottomInset
+        // Necessary to set top and bottom content insets.
+        DispatchQueue.main.async {
+            self.updateCollectionViewContentInset()
+        }
     }
 
     override func viewLayoutMarginsDidChange() {
@@ -199,6 +194,8 @@ class StickerPackViewController: OWSViewController {
             let leadingInset = view.layoutMargins.leading - view.safeAreaInsets.leading
             headerViewTopEdgeConstraint.constant = leadingInset
         }
+
+        updateCollectionViewContentInset()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -265,12 +262,27 @@ class StickerPackViewController: OWSViewController {
         return imageView
     }()
 
-    private let stickerCollectionView: StickerPackCollectionView = {
-        let collectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
-        collectionView.backgroundColor = .clear
-        collectionView.preservesSuperviewLayoutMargins = true
-        return collectionView
-    }()
+    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
+
+    private func updateCollectionViewContentInset() {
+        var contentInset = stickerCollectionView.contentInset
+
+        if #available(iOS 26, *) {
+            // On iOS 26 collection view extends underneath header and footer.
+            contentInset.top = headerView.frame.maxY + 16
+            contentInset.bottom = bottomButtonContainer.frame.height + 16
+
+            stickerCollectionView.verticalScrollIndicatorInsets.top = contentInset.top
+            stickerCollectionView.verticalScrollIndicatorInsets.bottom = contentInset.bottom
+        }
+        contentInset.leading = view.layoutMargins.leading - view.safeAreaInsets.leading
+        contentInset.trailing = view.layoutMargins.trailing - view.safeAreaInsets.trailing
+
+        guard contentInset != stickerCollectionView.contentInset else { return }
+
+        stickerCollectionView.contentInset = contentInset
+        stickerCollectionView.contentOffset.y = -contentInset.top
+    }
 
     private lazy var installButton: UIButton = {
         UIButton(
@@ -594,17 +606,11 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
 
 extension StickerPackViewController: StickerPackCollectionViewDelegate {
 
-    func didSelectSticker(stickerInfo: StickerInfo) {
-        AssertIsOnMainThread()
-    }
-
-    var storyStickerConfiguration: StoryStickerConfiguration {
-        .hide
+    func didSelectSticker(_: StickerInfo) {
+        // This view controller does nothing.
     }
 
     func stickerPreviewHostView() -> UIView? {
-        AssertIsOnMainThread()
-
         return view
     }
 

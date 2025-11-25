@@ -21,16 +21,20 @@ public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem
     private weak var cache: StickerViewCache?
 
     // This initializer can be used for cells which are never selected.
-    public convenience init(stickerInfo: StickerInfo,
-                            didSelectBlock: @escaping () -> Void,
-                            cache: StickerViewCache? = nil) {
+    public convenience init(
+        stickerInfo: StickerInfo,
+        didSelectBlock: @escaping () -> Void,
+        cache: StickerViewCache? = nil
+    ) {
         self.init(stickerInfo: stickerInfo, didSelectBlock: didSelectBlock, isSelectedBlock: { false }, cache: cache)
     }
 
-    public init(stickerInfo: StickerInfo,
-                didSelectBlock: @escaping () -> Void,
-                isSelectedBlock: @escaping () -> Bool,
-                cache: StickerViewCache? = nil) {
+    public init(
+        stickerInfo: StickerInfo,
+        didSelectBlock: @escaping () -> Void,
+        isSelectedBlock: @escaping () -> Bool,
+        cache: StickerViewCache? = nil
+    ) {
         self.stickerInfo = stickerInfo
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
@@ -76,22 +80,18 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
 
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
-    private let forceDarkTheme: Bool
 
     public init(
         didSelectBlock: @escaping () -> Void,
-        isSelectedBlock: @escaping () -> Bool,
-        forceDarkTheme: Bool = false
+        isSelectedBlock: @escaping () -> Bool
     ) {
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
-        self.forceDarkTheme = forceDarkTheme
     }
 
     public var view: UIView {
-        let imageView = UIImageView()
-        let tintColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-        imageView.setTemplateImageName("recent", tintColor: tintColor)
+        let imageView = UIImageView(image: UIImage(named: "recent"))
+        imageView.tintColor = .Signal.label
         return imageView
     }
 
@@ -109,8 +109,7 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
 public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
-    private let cellInset: CGFloat
-    private let forceDarkTheme: Bool
+    private let cellContentInset: CGFloat
 
     public typealias Item = StickerHorizontalListViewItem
 
@@ -123,24 +122,65 @@ public class StickerHorizontalListView: UICollectionView {
         }
     }
 
-    private let cellReuseIdentifier = "cellReuseIdentifier"
+    private var cellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, Item>!
 
-    public init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat, forceDarkTheme: Bool = false) {
+    public init(cellSize: CGFloat, cellContentInset: CGFloat, spacing: CGFloat) {
         self.cellSize = cellSize
-        self.cellInset = cellInset
-        let layout = LinearHorizontalLayout(itemSize: CGSize(square: cellSize), spacing: spacing)
+        self.cellContentInset = cellContentInset
 
-        self.forceDarkTheme = forceDarkTheme
+        let layout = LinearHorizontalLayout(
+            configuration: .init(itemSize: CGSize(square: cellSize), minimumInteritemSpacing: spacing)
+        )
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
-        showsHorizontalScrollIndicator = false
+        let selectedBackgroundColor = UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+            ? UIColor(white: 1, alpha: 0.2)
+            : UIColor(white: 0, alpha: 0.12)
+        }
+
+        cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item>
+        { cell, indexPath, item in
+
+            // Remove previous content.
+            cell.contentView.removeAllSubviews()
+
+            // Add custom view to the cell.
+            let itemView = item.view
+            itemView.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(itemView)
+            NSLayoutConstraint.activate([
+                itemView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: cellContentInset),
+                itemView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: cellContentInset),
+                itemView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -cellContentInset),
+                itemView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -cellContentInset),
+            ])
+
+            // Configure background - this closure is called whenever cell state changes.
+            cell.configurationUpdateHandler = { cell, state in
+                var background = UIBackgroundConfiguration.clear()
+                background.cornerRadius = cellSize / 2
+                if item.isSelected {
+                    background.backgroundColor = selectedBackgroundColor
+                } else {
+                    background.backgroundColor = .clear
+                }
+                cell.backgroundConfiguration = background
+            }
+        }
+
+        backgroundColor = .clear
         delegate = self
         dataSource = self
-        register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        showsHorizontalScrollIndicator = false
 
         setContentHuggingHorizontalLow()
         setCompressionResistanceHorizontalLow()
+    }
+
+    required public init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // Reload visible items to refresh the "selected" state
@@ -150,10 +190,6 @@ public class StickerHorizontalListView: UICollectionView {
         guard let (selectedIndex, _) = items.enumerated().first(where: { $1.isSelected }) else { return }
         scrollToItem(at: IndexPath(row: selectedIndex, section: 0), at: .centeredHorizontally, animated: true)
     }
-
-    required public init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -161,17 +197,13 @@ public class StickerHorizontalListView: UICollectionView {
 extension StickerHorizontalListView: UICollectionViewDelegate {
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Logger.debug("")
-
         guard let item = items[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return
         }
 
         item.didSelectBlock()
-
-        // Selection has changed; update cells to reflect that.
-        self.reloadData()
+        reloadItems(at: [indexPath])
     }
 }
 
@@ -188,36 +220,139 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // We could eventually use cells that lazy-load the sticker views
-        // when the cells becomes visible and eagerly unload them.
-        // But we probably won't need to do that.
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
-        for subview in cell.contentView.subviews {
-            subview.removeFromSuperview()
-        }
 
         guard let item = items[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
-            return cell
+            return UICollectionViewCell()
         }
 
-        if item.isSelected {
-            let selectionView = UIView()
-            selectionView.backgroundColor = (Theme.isDarkThemeEnabled || forceDarkTheme
-                ? UIColor.ows_gray75
-                : UIColor.ows_gray15)
-            selectionView.layer.cornerRadius = 8
-            cell.contentView.addSubview(selectionView)
-            selectionView.autoPinEdgesToSuperviewEdges()
+        return collectionView.dequeueConfiguredReusableCell(
+            using: cellRegistration,
+            for: indexPath,
+            item: item
+        )
+    }
+}
+
+// A trivial layout that places each item in a horizontal line.
+// Each item has uniform size.
+private class LinearHorizontalLayout: UICollectionViewLayout {
+
+    struct Configuration {
+        var itemSize: CGSize
+        var itemSpacing: CGFloat
+
+        init(
+            itemSize: CGSize,
+            minimumInteritemSpacing: CGFloat = 8,
+        ) {
+            self.itemSize = itemSize
+            self.itemSpacing = minimumInteritemSpacing
+        }
+    }
+
+    // MARK: - Properties
+
+    private let configuration: Configuration
+
+    private var cachedAttributes: [UICollectionViewLayoutAttributes] = []
+
+    private var contentWidth: CGFloat = 0
+
+    override var flipsHorizontallyInOppositeLayoutDirection: Bool {
+        true
+    }
+
+    override var collectionViewContentSize: CGSize {
+        guard let collectionView else { return .zero }
+
+        return CGSize(
+            width: contentWidth,
+            height: collectionView.bounds.height - collectionView.contentInset.totalHeight
+        )
+    }
+
+    // MARK: Initializers
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    init(configuration: Configuration) {
+        self.configuration = configuration
+
+        super.init()
+    }
+
+    // MARK: Methods
+
+    override func invalidateLayout() {
+        super.invalidateLayout()
+
+        cachedAttributes.removeAll()
+        contentWidth = 0
+    }
+
+    override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
+        super.invalidateLayout(with: context)
+
+        cachedAttributes.removeAll()
+        contentWidth = 0
+    }
+
+    override func prepare() {
+        super.prepare()
+
+        guard let collectionView, cachedAttributes.isEmpty else { return }
+
+        guard collectionView.numberOfSections == 1 else {
+            owsFailDebug("This layout only support a single section.")
+            return
+        }
+        let itemCount = collectionView.numberOfItems(inSection: 0)
+        guard itemCount > 0 else { return }
+
+        let itemSize = configuration.itemSize
+        let spacing = configuration.itemSpacing
+
+        // Calculate vertical centering
+        let collectionViewHeight = collectionView.bounds.height - collectionView.contentInset.totalHeight
+        let yPosition = (collectionViewHeight - itemSize.height) / 2
+
+        var xPosition: CGFloat = 0
+
+        // Create attributes for each item
+        for item in 0..<itemCount {
+            let indexPath = IndexPath(item: item, section: 0)
+            let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+
+            attributes.frame = CGRect(
+                x: xPosition,
+                y: yPosition,
+                width: itemSize.width,
+                height: itemSize.height
+            )
+
+            cachedAttributes.append(attributes)
+
+            xPosition += itemSize.width + spacing
         }
 
-        let itemView = item.view
-        cell.contentView.addSubview(itemView)
-        itemView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: cellInset, leading: cellInset, bottom: cellInset, trailing: cellInset))
+        // Remove trailing spacing and add trailing inset
+        contentWidth = xPosition - spacing
+    }
 
-        itemView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: item.accessibilityName + ".item")
-        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: item.accessibilityName + ".cell")
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        cachedAttributes.filter { $0.frame.intersects(rect) }
+    }
 
-        return cell
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        cachedAttributes[safe: indexPath.row]
+    }
+
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        guard let collectionView else { return false }
+        return newBounds.height != collectionView.bounds.height
     }
 }

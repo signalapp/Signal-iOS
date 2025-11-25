@@ -962,7 +962,7 @@ extension ConversationViewController: SendMediaNavDataSource {
 // MARK: - StickerPickerSheetDelegate
 
 extension ConversationViewController: StickerPickerSheetDelegate {
-    public func makeManageStickersViewController() -> UIViewController {
+    public func makeManageStickersViewController(for stickerPickerSheet: StickerPickerSheet) -> UIViewController {
         let manageStickersView = ManageStickersViewController()
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
         return navigationController

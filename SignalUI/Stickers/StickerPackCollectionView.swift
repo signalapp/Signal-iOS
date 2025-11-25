@@ -5,28 +5,10 @@
 
 public import SignalServiceKit
 
-// MARK: - Delegate Protocols
-
-public enum StoryStickerConfiguration {
-    case hide
-    case showWithDelegate(StoryStickerPickerDelegate)
-}
-
-public protocol StickerPickerDelegate: AnyObject {
-    func didSelectSticker(stickerInfo: StickerInfo)
-    var storyStickerConfiguration: StoryStickerConfiguration { get }
-}
-
 public protocol StickerPackCollectionViewDelegate: StickerPickerDelegate {
     func stickerPreviewHostView() -> UIView?
     func stickerPreviewHasOverlay() -> Bool
 }
-
-public protocol StoryStickerPickerDelegate: AnyObject {
-    func didSelect(storySticker: EditorSticker.StorySticker)
-}
-
-// MARK: - StickerPackCollectionView
 
 public class StickerPackCollectionView: UICollectionView {
 
@@ -34,14 +16,12 @@ public class StickerPackCollectionView: UICollectionView {
 
     private var stickerPackDataSource: StickerPackDataSource? {
         didSet {
-            AssertIsOnMainThread()
-
             stickerPackDataSource?.add(delegate: self)
 
             reloadStickers()
 
             // Scroll to the top.
-            contentOffset = .zero
+            contentOffset.y = -contentInset.top
         }
     }
 
@@ -54,7 +34,7 @@ public class StickerPackCollectionView: UICollectionView {
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
 
     private var shouldShowStoryStickers: Bool {
-        if case .showWithDelegate = stickerDelegate?.storyStickerConfiguration {
+        if case .showWithDelegate = storyStickerConfiguration {
             // Story sticker configuration must be `showWithDelegate`
             // while also being a "Recents" page.
             return stickerPackDataSource is RecentStickerPackDataSource
@@ -63,59 +43,80 @@ public class StickerPackCollectionView: UICollectionView {
         return false
     }
 
-    override public var frame: CGRect {
+    override public var bounds: CGRect {
         didSet {
-            updateLayout()
+            // This is necessary in case view width changes but safe areas don't.
+            if bounds.width != oldValue.width {
+                updateLayout()
+            }
         }
     }
 
-    override public var bounds: CGRect {
+    override public var contentInset: UIEdgeInsets {
         didSet {
-            updateLayout()
+            // Content insets affect width available for content.
+            if contentInset.totalWidth != oldValue.totalWidth {
+                updateLayout()
+            }
+            if let contentUnavailableViewConstraints {
+                contentUnavailableViewConstraints.update(with: contentInset)
+            }
         }
+    }
+
+    override public func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        // Update layout since we use `safeAreaLayoutGuide` to calculate layout attrs.
+        updateLayout()
     }
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
     private let headerReuseIdentifier = StickerPickerHeaderView.reuseIdentifier
     private let placeholderColor: UIColor
 
-    public init(placeholderColor: UIColor = .ows_gray45) {
+    private let storyStickerConfiguration: StoryStickerConfiguration
+
+    public init(
+        placeholderColor: UIColor = .ows_gray45,
+        storyStickerConfiguration: StoryStickerConfiguration = .hide
+    ) {
         self.placeholderColor = placeholderColor
+        self.storyStickerConfiguration = storyStickerConfiguration
 
         super.init(frame: .zero, collectionViewLayout: StickerPackCollectionView.buildLayout())
 
+        backgroundColor = .clear
+
         delegate = self
         dataSource = self
+
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
         register(StickerPickerHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerReuseIdentifier)
 
-        isUserInteractionEnabled = true
         addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
+    }
+
+    required public init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Modes
 
     public func showInstalledPack(stickerPack: StickerPack) {
-        AssertIsOnMainThread()
-
-        self.stickerPackDataSource = InstalledStickerPackDataSource(stickerPackInfo: stickerPack.info)
+        stickerPackDataSource = InstalledStickerPackDataSource(stickerPackInfo: stickerPack.info)
     }
 
     public func showUninstalledPack(stickerPack: StickerPack) {
-        AssertIsOnMainThread()
-
-        self.stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info,
-                                                                    shouldDownloadAllStickers: true)
+        stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info,
+                                                               shouldDownloadAllStickers: true)
     }
 
     public func showRecents() {
-        AssertIsOnMainThread()
-
-        self.stickerPackDataSource = RecentStickerPackDataSource()
+        stickerPackDataSource = RecentStickerPackDataSource()
     }
 
     public func showInstalledPackOrRecents(stickerPack: StickerPack?) {
-        if let stickerPack = stickerPack {
+        if let stickerPack {
             showInstalledPack(stickerPack: stickerPack)
         } else {
             showRecents()
@@ -123,23 +124,98 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     public func show(dataSource: StickerPackDataSource) {
-        AssertIsOnMainThread()
+        stickerPackDataSource = dataSource
+    }
 
-        self.stickerPackDataSource = dataSource
+    // MARK: Empty Content view
+
+    private struct EdgeConstraints {
+        let top: NSLayoutConstraint
+        let leading: NSLayoutConstraint
+        let bottom: NSLayoutConstraint
+        let trailing: NSLayoutConstraint
+
+        var constraints: [NSLayoutConstraint] {
+            [top, leading, bottom, trailing]
+        }
+
+        func update(with insets: UIEdgeInsets) {
+            top.constant = insets.top
+            leading.constant = insets.leading
+            bottom.constant = -insets.bottom
+            trailing.constant = -insets.trailing
+        }
+    }
+
+    private var contentUnavailableView: UIView?
+
+    private var contentUnavailableViewConstraints: EdgeConstraints?
+
+    private func createContentUnavailableView() -> UIView {
+        let view = UIView()
+        view.directionalLayoutMargins = .init(margin: 20)
+        let titleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
+            "STICKER_CATEGORY_RECENTS_EMPTY_TITLE",
+            comment: "Title of the helper text displayed when Recent stickers are empty."
+        ))
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.font = .dynamicTypeHeadline // slightly larger than subtitle
+        let subtitleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
+            "STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE",
+            comment: "Subtitle of the helper text displayed when Recent stickers are empty."
+        ))
+        subtitleLabel.adjustsFontForContentSizeCategory = true
+        let vStack = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        vStack.axis = .vertical
+        vStack.spacing = 2
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(vStack)
+        NSLayoutConstraint.activate([
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
+            vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            vStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        ])
+        return view
+    }
+
+    private func updateEmptyState() {
+        let isEmpty = stickerInfos.isEmpty
+
+        // "Content Unavailable" view is created on demand here.
+        if isEmpty, contentUnavailableView == nil {
+            let view  = createContentUnavailableView()
+            view.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(view)
+            let constraints = EdgeConstraints(
+                top: view.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+                leading: view.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+                bottom: view.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+                trailing: view.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
+            )
+            constraints.update(with: contentInset)
+            NSLayoutConstraint.activate(constraints.constraints)
+
+            contentUnavailableView = view
+            contentUnavailableViewConstraints = constraints
+        }
+
+        if isEmpty, let contentUnavailableView {
+            bringSubviewToFront(contentUnavailableView)
+            contentUnavailableView.isHidden = false
+        } else {
+            contentUnavailableView?.isHidden = true
+        }
     }
 
     // MARK: Events
-
-    required public init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     private func reloadStickers() {
         AssertIsOnMainThread()
 
         defer { reloadData() }
 
-        guard let stickerPackDataSource = stickerPackDataSource else {
+        guard let stickerPackDataSource else {
             stickerInfos = []
             return
         }
@@ -159,6 +235,14 @@ public class StickerPackCollectionView: UICollectionView {
             stickerInfos = installedStickerInfos
         }
     }
+
+    public override func reloadData() {
+        super.reloadData()
+
+        updateEmptyState()
+    }
+
+    // MARK: Sticker Preview
 
     @objc
     private func handleLongPress(sender: UIGestureRecognizer) {
@@ -186,22 +270,17 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private var previewView: UIView?
+
     private var previewStickerInfo: StickerInfo?
 
     private func hidePreview() {
-        AssertIsOnMainThread()
-
         previewView?.removeFromSuperview()
         previewView = nil
         previewStickerInfo = nil
     }
 
     private func ensurePreview(stickerInfo: StickerInfo) {
-        AssertIsOnMainThread()
-
-        if previewView != nil,
-            let previewStickerInfo = previewStickerInfo,
-            previewStickerInfo == stickerInfo {
+        if previewView != nil, let previewStickerInfo, previewStickerInfo == stickerInfo {
             // Already showing a preview for this sticker.
             return
         }
@@ -212,7 +291,7 @@ public class StickerPackCollectionView: UICollectionView {
             Logger.warn("Couldn't load sticker for display")
             return
         }
-        guard let stickerDelegate = stickerDelegate else {
+        guard let stickerDelegate else {
             owsFailDebug("Missing stickerDelegate")
             return
         }
@@ -228,7 +307,6 @@ public class StickerPackCollectionView: UICollectionView {
             overlayView.autoPinEdgesToSuperviewEdges()
             overlayView.setContentHuggingLow()
             overlayView.setCompressionResistanceLow()
-
             overlayView.addSubview(stickerView)
             previewView = overlayView
         } else {
@@ -250,7 +328,7 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private func imageView(forStickerInfo stickerInfo: StickerInfo) -> UIView? {
-        guard let stickerPackDataSource = stickerPackDataSource else {
+        guard let stickerPackDataSource else {
             owsFailDebug("Missing stickerPackDataSource.")
             return nil
         }
@@ -258,6 +336,7 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private let reusableStickerViewCache = StickerViewCache(maxSize: 32)
+
     private func reusableStickerView(forStickerInfo stickerInfo: StickerInfo) -> StickerReusableView {
         let view: StickerReusableView = {
             if let view = reusableStickerViewCache.object(forKey: stickerInfo) { return view }
@@ -282,6 +361,7 @@ public class StickerPackCollectionView: UICollectionView {
 // MARK: - UICollectionViewDelegate
 
 extension StickerPackCollectionView: UICollectionViewDelegate {
+
     private func isStoryStickerSection(sectionIndex: Int) -> Bool {
         return shouldShowStoryStickers && sectionIndex == 0
     }
@@ -294,16 +374,12 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
                 owsFailDebug("Invalid index path: \(indexPath)")
                 return
             }
-
-            switch stickerDelegate?.storyStickerConfiguration {
-            case .showWithDelegate(let storyStickerPickerDelegate):
-                storyStickerPickerDelegate.didSelect(storySticker: storySticker)
-            case .hide:
+            guard case .showWithDelegate(let storyStickerPickerDelegate) = storyStickerConfiguration else {
                 owsFailDebug("Unexpectedly found hidden story stickers.")
-            case .none:
-                owsFailDebug("Missing delegate.")
+                return
             }
 
+            storyStickerPickerDelegate.didSelect(storySticker: storySticker)
             return
         }
 
@@ -312,7 +388,7 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
             return
         }
 
-        self.stickerDelegate?.didSelectSticker(stickerInfo: stickerInfo)
+        self.stickerDelegate?.didSelectSticker(stickerInfo)
     }
 }
 
@@ -358,7 +434,11 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         return cell
     }
 
-    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseIdentifier, for: indexPath)
 
         guard
@@ -390,17 +470,22 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
 }
 
 extension StickerPackCollectionView: UICollectionViewDelegateFlowLayout {
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        guard let headerText = self.headerText(for: section) else { return .zero }
+
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        guard let headerText = headerText(for: section) else { return .zero }
 
         let headerView = StickerPickerHeaderView()
         headerView.label.text = headerText
-
         return headerView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
     }
 }
 
 private class StickerPickerHeaderView: UICollectionReusableView {
+
     static let reuseIdentifier = "StickerPickerHeaderView"
 
     let label = UILabel()
@@ -437,7 +522,6 @@ extension StickerPackCollectionView {
 
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInsetReference = .fromLayoutMargins
         layout.minimumInteritemSpacing = minimumCellSpacing
         layout.minimumLineSpacing = minimumCellSpacing
         return layout
@@ -449,7 +533,7 @@ extension StickerPackCollectionView {
             return
         }
 
-        let contentWidth = layoutMarginsGuide.layoutFrame.size.width
+        let contentWidth = safeAreaLayoutGuide.layoutFrame.size.width - contentInset.totalWidth
         let cellSpacing = Self.minimumCellSpacing
         let preferredCellSize: CGFloat = 80
         let columnCount = UInt((contentWidth + cellSpacing) / (preferredCellSize + cellSpacing))
@@ -466,9 +550,8 @@ extension StickerPackCollectionView {
 // MARK: -
 
 extension StickerPackCollectionView: StickerPackDataSourceDelegate {
-    public func stickerPackDataDidChange() {
-        AssertIsOnMainThread()
 
+    public func stickerPackDataDidChange() {
         reloadStickers()
     }
 }
