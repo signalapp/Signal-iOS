@@ -198,7 +198,7 @@ class LinkedDevicesViewModel: ObservableObject {
     func renameDevice(
         _ displayableDevice: DisplayableDevice,
         to newName: String
-    ) async throws(OWSDeviceRenameError) {
+    ) async throws {
         try await deviceService.renameDevice(
             device: displayableDevice.device,
             newName: newName,

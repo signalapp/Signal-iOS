@@ -61,7 +61,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
             )
 
             guard response.responseStatusCode == 201 else {
-                throw OWSAssertionError("Invalid statusCode: \(response.responseStatusCode).")
+                throw response.asError()
             }
             guard
                 let locationHeader = response.headers["location"],

@@ -594,7 +594,7 @@ enum EmojiSearchIndex {
         let urlSession = signalService.urlSessionForUpdates()
         let response = try await urlSession.performRequest("/dynamic/android/emoji/search/manifest.json", method: .get)
         guard response.responseStatusCode == 200 else {
-            throw OWSAssertionError("bad response code for emoji manifest fetch")
+            throw response.asError()
         }
         let manifest = try JSONDecoder().decode(Manifest.self, from: response.responseBodyData ?? Data())
 
@@ -673,7 +673,7 @@ enum EmojiSearchIndex {
             method: .get,
         )
         guard response.responseStatusCode == 200 else {
-            throw OWSAssertionError("Bad response code for emoji index fetch")
+            throw response.asError()
         }
         var searchIndex = [String: [String]]()
         for emojiTags in try JSONDecoder().decode([EmojiTags].self, from: response.responseBodyData ?? Data()) {

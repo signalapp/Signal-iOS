@@ -18,7 +18,7 @@ public protocol OWSDeviceService {
     func renameDevice(
         device: OWSDevice,
         newName: String,
-    ) async throws(OWSDeviceRenameError)
+    ) async throws
 }
 
 extension OWSDeviceService {
@@ -29,12 +29,6 @@ extension OWSDeviceService {
         }
         try await unlinkDevice(deviceId: deviceId)
     }
-}
-
-public enum OWSDeviceRenameError: Error {
-    case encryptionFailed
-    case networkError
-    case assertion
 }
 
 // MARK: -
@@ -210,36 +204,24 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     func renameDevice(
         device: OWSDevice,
         newName: String,
-    ) async throws(OWSDeviceRenameError) {
+    ) async throws {
         guard let identityKeyPair = db.read(block: { tx in
             identityManager.identityKeyPair(for: .aci, tx: tx)
         }) else {
-            throw .encryptionFailed
+            throw OWSAssertionError("can't rename device without identity key")
         }
 
-        let newNameEncrypted: String
-        do {
-            newNameEncrypted = try OWSDeviceNames.encryptDeviceName(
-                plaintext: newName,
-                identityKeyPair: identityKeyPair.keyPair
-            ).base64EncodedString()
-        } catch {
-            owsFailDebug("Failed to encrypt device name! \(error)")
-            throw .encryptionFailed
-        }
+        let newNameEncrypted = try OWSDeviceNames.encryptDeviceName(
+            plaintext: newName,
+            identityKeyPair: identityKeyPair.keyPair
+        ).base64EncodedString()
 
-        let response: HTTPResponse
-        do {
-            response = try await self.networkManager.asyncRequest(
-                .renameDevice(device: device, encryptedName: newNameEncrypted)
-            )
-        } catch {
-            throw .networkError
-        }
+        let response = try await self.networkManager.asyncRequest(
+            .renameDevice(device: device, encryptedName: newNameEncrypted)
+        )
 
         guard response.responseStatusCode == 204 else {
-            owsFailDebug("Unexpected response status code! \(response.responseStatusCode)")
-            throw OWSDeviceRenameError.assertion
+            throw response.asError()
         }
 
         await db.awaitableWrite { tx in

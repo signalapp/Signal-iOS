@@ -110,10 +110,10 @@ class CallLinkManagerImpl: CallLinkManager {
             ]
         )
         let httpResult = try await self.networkManager.asyncRequest(httpRequest)
-        guard httpResult.responseStatusCode == 200, let responseBodyData = httpResult.responseBodyData else {
-            throw OWSGenericError("Couldn't handle successful result from the server.")
+        guard httpResult.responseStatusCode == 200 else {
+            throw httpResult.asError()
         }
-        let httpResponse = try JSONDecoder().decode(CallLinkCreateAuthResponse.self, from: responseBodyData)
+        let httpResponse = try JSONDecoder().decode(CallLinkCreateAuthResponse.self, from: httpResult.responseBodyData ?? Data())
         let credentialResponse = try CreateCallLinkCredentialResponse(contents: httpResponse.credential)
         return try credentialRequestContext.receive(credentialResponse, userId: localAci, params: self.serverParams)
     }

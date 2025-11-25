@@ -31,9 +31,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             let response = try await performRequest(request: request)
 
             guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError(
-                    "Unexpected status code from successful request: \(response.responseStatusCode)"
-                )
+                throw response.asError()
             }
 
             guard let parser = response.responseBodyParamParser else {
@@ -97,7 +95,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             let response = try await performRequest(request: request)
 
             guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
+                throw response.asError()
             }
 
             guard let parser = response.responseBodyParamParser else {
@@ -139,7 +137,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
         let request = OWSRequestFactory.deleteExistingUsernameRequest()
         let response = try await performRequest(request: request)
         guard response.responseStatusCode == 204 else {
-            throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
+            throw response.asError()
         }
     }
 
@@ -167,7 +165,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
         let response = try await performRequest(request: request)
 
         guard response.responseStatusCode == 200 else {
-            throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
+            throw response.asError()
         }
 
         guard let parser = response.responseBodyParamParser else {
@@ -184,7 +182,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             let response = try await performRequest(request: request)
 
             guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
+                throw response.asError()
             }
 
             guard let parser = response.responseBodyParamParser else {

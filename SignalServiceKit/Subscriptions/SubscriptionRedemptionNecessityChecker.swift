@@ -232,10 +232,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
         )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
-            throw OWSAssertionError(
-                "Unexpected status code registering new Backup subscriber ID! \(registerSubscriberIdResponse.responseStatusCode)",
-                logger: logger
-            )
+            throw registerSubscriberIdResponse.asError()
         }
     }
 }

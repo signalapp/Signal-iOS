@@ -765,10 +765,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
-            throw OWSAssertionError(
-                "Unexpected status code registering new Backup subscriber ID! \(registerSubscriberIdResponse.responseStatusCode)",
-                logger: logger
-            )
+            throw registerSubscriberIdResponse.asError()
         }
 
         /// Next, we tell the server (unauthenticated) to associate the
@@ -784,10 +781,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         )
 
         guard associateIdsResponse.responseStatusCode == 200 else {
-            throw OWSAssertionError(
-                "Unexpected status code associating new Backup subscriber ID with originalTransactionId! \(associateIdsResponse.responseStatusCode)",
-                logger: logger
-            )
+            throw associateIdsResponse.asError()
         }
 
         let newSubscriberData = IAPSubscriberData(

@@ -170,16 +170,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             asyncBlock: { modal in
                 do {
                     let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-                    let status = response.responseStatusCode
-                    guard status == 200 else {
-                        throw OWSGenericError("Received a \(status) status code. The request failed")
+                    guard response.responseStatusCode == 200 else {
+                        throw response.asError()
                     }
-                    guard let rawData = response.responseBodyData else {
-                        throw OWSGenericError("Received an empty response")
-                    }
-                    guard let report = try? AccountDataReport(rawData: rawData) else {
-                        throw OWSGenericError("Couldn't parse account data report, presumably due to a bug")
-                    }
+                    let report = try AccountDataReport(rawData: response.responseBodyData ?? Data())
                     modal.dismissIfNotCanceled(completionIfNotCanceled: { [weak self] in
                         self?.confirmExport {
                             self?.didConfirmExport(of: report)

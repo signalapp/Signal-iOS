@@ -49,7 +49,7 @@ public class AccountChecker {
         do {
             let response = try await networkManager.asyncRequest(accountRequest)
             guard response.responseStatusCode == 200 else {
-                throw OWSGenericError("Unexpected server response.")
+                throw response.asError()
             }
             await db.awaitableWrite { tx in
                 var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)

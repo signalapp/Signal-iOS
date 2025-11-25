@@ -17,10 +17,8 @@ extension Stripe {
         let response = try await SSKEnvironment.shared.networkManagerRef
             .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
 
-        let statusCode = response.responseStatusCode
-
-        guard statusCode == 200 else {
-            throw OWSAssertionError("Got bad response code \(statusCode).")
+        guard response.responseStatusCode == 200 else {
+            throw response.asError()
         }
 
         guard let parser = response.responseBodyParamParser else {

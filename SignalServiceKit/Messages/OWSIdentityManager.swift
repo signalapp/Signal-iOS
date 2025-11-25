@@ -1022,7 +1022,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             let response = try await self.networkManager.asyncRequest(request)
 
             guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
+                throw response.asError()
             }
 
             guard let responseDictionary = response.responseBodyDict else {

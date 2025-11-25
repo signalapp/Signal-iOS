@@ -25,15 +25,11 @@ struct WhoAmIManagerImpl: WhoAmIManager {
         )
 
         guard response.responseStatusCode == 200 else {
-            throw OWSAssertionError("Unexpected status code from WhoAmI! \(response.responseStatusCode)")
-        }
-
-        guard let bodyData = response.responseBodyData else {
-            throw OWSAssertionError("Missing response body data from WhoAmI!")
+            throw response.asError()
         }
 
         do {
-            return try JSONDecoder().decode(WhoAmIResponse.self, from: bodyData)
+            return try JSONDecoder().decode(WhoAmIResponse.self, from: response.responseBodyData ?? Data())
         } catch {
             throw OWSAssertionError("Failed to parse WhoAmI response! \(error)")
         }
