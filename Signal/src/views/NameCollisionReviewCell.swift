@@ -61,8 +61,7 @@ final class NameCollisionCell: UITableViewCell {
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser)
     let nameLabel: UILabel = {
         let label = UILabel()
-
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .Signal.label
         label.font = UIFont.dynamicTypeHeadline
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
@@ -72,7 +71,7 @@ final class NameCollisionCell: UITableViewCell {
 
     let separatorView: UIView = {
         let hairline = UIView()
-        hairline.backgroundColor = Theme.tableView2SeparatorColor
+        hairline.backgroundColor = .Signal.opaqueSeparator
         hairline.autoSetDimension(.height, toSize: .hairlineWidth)
         let separator = UIView()
         separator.addSubview(hairline)
@@ -226,9 +225,9 @@ final class NameCollisionCell: UITableViewCell {
             var color: UIColor {
                 switch self {
                 case .normal:
-                    return Theme.primaryTextColor
+                    return .Signal.label
                 case .destructive:
-                    return .ows_accentRed
+                    return .Signal.red
                 }
             }
         }
@@ -282,25 +281,18 @@ final class NameCollisionCell: UITableViewCell {
     }
 
     private func createButton(for action: Action) -> UIButton {
-        let button = OWSButton(
-            title: action.title,
-            imageName: Theme.iconName(action.icon),
-            tintColor: action.role.color,
-            spacing: 12,
-            block: action.action
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { _ in
+                action.action()
+            }
         )
-
-        button.setTitleColor(action.role.color, for: .normal)
-        button.setTitleColor(action.role.color.withAlphaComponent(0.7), for: .highlighted)
-
-        button.titleLabel?.font = UIFont.dynamicTypeBody
-        button.titleLabel?.adjustsFontForContentSizeCategory = true
-        button.titleLabel?.numberOfLines = 0
+        button.configuration?.title = action.title
+        button.configuration?.baseForegroundColor = action.role.color
+        button.configuration?.image = Theme.iconImage(action.icon)
+        button.configuration?.imagePadding = 12
+        button.configuration?.contentInsets = .init(hMargin: 0, vMargin: 4)
         button.contentHorizontalAlignment = .leading
-
-        // By default, a button's label will grow outside of the buttons bounds
-        button.titleLabel?.autoMatch(.height, to: .height, of: button, withMultiplier: 1, relation: .lessThanOrEqual)
-        button.setContentHuggingHorizontalHigh()
         return button
     }
 }

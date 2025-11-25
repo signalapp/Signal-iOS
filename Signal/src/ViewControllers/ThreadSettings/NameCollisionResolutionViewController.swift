@@ -44,21 +44,16 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         super.init()
 
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
+
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.donePressed()
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         updateModel()
         tableView.separatorStyle = .none
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        navigationItem.leftBarButtonItem = nil
-        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
-            self?.donePressed()
-        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -70,7 +65,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         }
     }
 
-    func updateModel() {
+    private func updateModel() {
         cellModels = SSKEnvironment.shared.databaseStorageRef.read { readTx -> [[NameCollisionCellModel]] in
             if self.groupViewHelper == nil, self.thread.isGroupThread {
                 let threadViewModel = ThreadViewModel(thread: self.thread, forChatList: false, transaction: readTx)
@@ -95,7 +90,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         }
     }
 
-    func updateTableContents() {
+    private func updateTableContents() {
         let titleString: String
         if thread.isGroupThread {
             titleString = OWSLocalizedString(
@@ -124,14 +119,13 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         )
     }
 
-    func createHeaderSection() -> OWSTableSection {
+    private func createHeaderSection() -> OWSTableSection {
         OWSTableSection(header: {
-            let view = UIView()
             let label = UILabel()
-
-            label.textColor = Theme.secondaryTextAndIconColor
-            label.font = UIFont.dynamicTypeFootnote
+            label.textColor = .Signal.secondaryLabel
+            label.font = .dynamicTypeSubheadline
             label.adjustsFontForContentSizeCategory = true
+            label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
 
             if thread.isGroupThread, cellModels.count >= 2 {
@@ -150,8 +144,14 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
                     comment: "A header string informing the user about name collisions in a message request")
             }
 
+            let view = UIView()
             view.addSubview(label)
-            label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 32, vMargin: 12))
+            label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 16, vMargin: 12))
+            view.bounds.size = view.systemLayoutSizeFitting(
+                tableView.layoutMarginsGuide.layoutFrame.size,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
             return view
         })
     }
