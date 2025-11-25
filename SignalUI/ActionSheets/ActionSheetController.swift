@@ -88,9 +88,20 @@ open class ActionSheetController: OWSViewController {
     public var customHeader: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
-            guard let customHeader = customHeader else { return }
+            guard let customHeader else { return }
             stackView.insertArrangedSubview(customHeader, at: 0)
         }
+    }
+
+    /// Keep a reference in case we need to remove/replace it.
+    private var defaultHeader: UIView?
+
+    public func setTitle(_ title: String? = nil, message: String? = nil) {
+        createHeader(title: title, message: { if let message { .text(message) } else { nil } }())
+    }
+
+    public func setTitle(_ title: String? = nil, message: NSAttributedString) {
+        createHeader(title: title, message: .attributedText(message))
     }
 
     public var isCancelable = false
@@ -115,18 +126,12 @@ open class ActionSheetController: OWSViewController {
 
     public convenience init(title: String? = nil, message: String? = nil) {
         self.init()
-        createHeader(title: title, message: {
-            guard let message else { return nil }
-            return .text(message)
-        }())
+        setTitle(title, message: message)
     }
 
-    public convenience init(
-        title: String? = nil,
-        message: NSAttributedString,
-    ) {
+    public convenience init(title: String? = nil, message: NSAttributedString) {
         self.init()
-        createHeader(title: title, message: .attributedText(message))
+        setTitle(title, message: message)
     }
 
     var firstCancelAction: ActionSheetAction? {
@@ -345,6 +350,12 @@ open class ActionSheetController: OWSViewController {
     }
 
     private func createHeader(title: String? = nil, message: Message? = nil) {
+        if let defaultHeader {
+            stackView.removeArrangedSubview(defaultHeader)
+            defaultHeader.removeFromSuperview()
+            self.defaultHeader = nil
+        }
+
         guard title != nil || message != nil else { return }
 
         let headerStack = UIStackView()
@@ -354,8 +365,9 @@ open class ActionSheetController: OWSViewController {
         headerStack.layoutMargins = UIEdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 12)
         headerStack.spacing = 4
 
-        stackView.addArrangedSubview(headerStack)
+        stackView.insertArrangedSubview(headerStack, at: 0)
         stackView.setCustomSpacing(20, after: headerStack)
+        self.defaultHeader = headerStack
 
         // Title
         if let title = title {

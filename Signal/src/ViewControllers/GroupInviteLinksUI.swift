@@ -3,16 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 public import SignalUI
 
-public class GroupInviteLinksUI: UIView {
-
-    @available(*, unavailable, message: "Do not instantiate this class.")
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+public final class GroupInviteLinksUI {
 
     public static func openGroupInviteLink(_ url: URL, fromViewController: UIViewController) {
         AssertIsOnMainThread()
@@ -65,13 +59,146 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo
 
-    private let avatarView = AvatarImageView()
-    private let groupTitleLabel = UILabel()
-    private let groupSubtitleLabel = UILabel()
-    private let groupDescriptionPreview = GroupDescriptionPreviewView()
-
-    private var groupInviteLinkPreview: GroupInviteLinkPreview?
     private var downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?
+
+    // Group Preview UI elements.
+    private let avatarView = AvatarImageView()
+    private let groupNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
+        label.textColor = .Signal.label
+        // Reserve vertical space for group name.
+        label.text = " "
+        return label
+    }()
+    private let groupSubtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadline
+        label.textColor = .Signal.secondaryLabel
+        label.text = " "
+        return label
+    }()
+    private let groupDescriptionPreview: GroupDescriptionPreviewView = {
+        let view = GroupDescriptionPreviewView()
+        view.font = .dynamicTypeSubheadline
+        view.textColor = .Signal.secondaryLabel
+        view.numberOfLines = 2
+        view.textAlignment = .center
+        view.isHidden = true
+        return view
+    }()
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeBodyClamped
+        label.textColor = .Signal.label
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        label.text = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE",
+            comment: "Message text for the 'group invite link' action sheet."
+        )
+        return label
+    }()
+    private lazy var joinButton = UIButton(
+        configuration: .largePrimary(title: OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
+            comment: "Label for the 'join' button in the 'group invite link' action sheet."
+        )),
+        primaryAction: UIAction { [weak self] _ in
+            self?.didTapJoin()
+        }
+    )
+    private lazy var groupPreviewView: UIView = {
+        let textContentHMargin: CGFloat = 12
+
+        // Group avatar at the top.
+        let avatarViewContainer = UIView.container()
+        avatarView.translatesAutoresizingMaskIntoConstraints = false
+        avatarViewContainer.addSubview(avatarView)
+        NSLayoutConstraint.activate([
+            avatarView.topAnchor.constraint(equalTo: avatarViewContainer.topAnchor),
+            avatarView.leadingAnchor.constraint(greaterThanOrEqualTo: avatarViewContainer.leadingAnchor),
+            avatarView.centerXAnchor.constraint(equalTo: avatarViewContainer.centerXAnchor),
+            avatarView.bottomAnchor.constraint(equalTo: avatarViewContainer.bottomAnchor),
+        ])
+
+        // Multiple text lines in the middle.
+        let textStack = UIStackView(arrangedSubviews: [
+            groupNameLabel,
+            groupSubtitleLabel,
+            groupDescriptionPreview,
+        ])
+        textStack.axis = .vertical
+        textStack.alignment = .center
+        textStack.setCustomSpacing(8, after: groupNameLabel)
+        textStack.setCustomSpacing(10, after: groupSubtitleLabel)
+        textStack.isLayoutMarginsRelativeArrangement = true
+        textStack.directionalLayoutMargins = NSDirectionalEdgeInsets(hMargin: textContentHMargin, vMargin: 0)
+
+        let messageLabelContainer = UIView()
+        messageLabelContainer.layoutMargins = .init(hMargin: textContentHMargin, vMargin: 0)
+        messageLabelContainer.addSubview(messageLabel)
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            messageLabel.topAnchor.constraint(equalTo: messageLabelContainer.layoutMarginsGuide.topAnchor),
+            messageLabel.leadingAnchor.constraint(equalTo: messageLabelContainer.layoutMarginsGuide.leadingAnchor),
+            messageLabel.trailingAnchor.constraint(equalTo: messageLabelContainer.layoutMarginsGuide.trailingAnchor),
+            messageLabel.bottomAnchor.constraint(equalTo: messageLabelContainer.layoutMarginsGuide.bottomAnchor),
+        ])
+
+        // "Join" button at the bottom.
+
+        let view = UIStackView(arrangedSubviews: [
+            avatarViewContainer,
+            textStack,
+            messageLabelContainer,
+            joinButton
+        ])
+        view.axis = .vertical
+        view.spacing = 20
+        view.setCustomSpacing(12, after: avatarViewContainer)
+        view.isLayoutMarginsRelativeArrangement = true
+        view.directionalLayoutMargins = .init(top: 24, leading: 0, bottom: 2, trailing: 0)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    // Loading state UI elements.
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private lazy var loadingLinkInfoView: UIView = {
+        activityIndicator.tintColor = .Signal.secondaryLabel
+        let label = UILabel()
+        label.text = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
+            comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet."
+        )
+        label.textColor = .Signal.secondaryLabel
+        label.font = .dynamicTypeSubheadline
+        let vStack = UIStackView(arrangedSubviews: [activityIndicator, label])
+        vStack.spacing = 10
+        vStack.axis = .vertical
+        vStack.alignment = .center
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        let view = UIView()
+        view.addSubview(vStack)
+        NSLayoutConstraint.activate([
+            vStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            vStack.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor),
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.topAnchor),
+        ])
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private lazy var cancelAction = ActionSheetAction(
+        title: CommonStrings.cancelButton,
+        style: .cancel,
+        handler: { [weak self] _ in
+            self?.didTapCancel()
+        }
+    )
 
     init(groupInviteLinkInfo: GroupInviteLinkInfo, groupV2ContextInfo: GroupV2ContextInfo) {
         self.groupInviteLinkInfo = groupInviteLinkInfo
@@ -80,28 +207,13 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         super.init()
 
         isCancelable = true
-
-        createContents()
-        loadLinkPreview()
     }
 
-    private static let avatarSize: UInt = 80
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-    private let messageLabel = UILabel()
-
-    private var cancelButton: UIView!
-    private var joinButton: OWSFlatButton!
-    private var invalidOkayButton: UIView!
-
-    /// Fills out this view's contents before any group-invite-link-preview info
-    /// fetches have been attempted.
-    private func createContents() {
         let avatarBuilder = SSKEnvironment.shared.avatarBuilderRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-
-        let header = UIView()
-        header.layoutMargins = UIEdgeInsets(hMargin: 32, vMargin: 32)
-        self.customHeader = header
 
         avatarView.image = databaseStorage.read { tx in
             avatarBuilder.defaultAvatarImage(
@@ -112,108 +224,32 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         }
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
 
-        groupTitleLabel.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
-        groupTitleLabel.textColor = Theme.primaryTextColor
-        groupTitleLabel.text = OWSLocalizedString(
-            "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
-            comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet."
-        )
-        groupSubtitleLabel.text = ""
+        groupPreviewView.isHidden = true
 
-        groupSubtitleLabel.font = UIFont.dynamicTypeSubheadline
-        groupSubtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        let header = UIView()
+        header.addSubview(groupPreviewView)
+        header.addSubview(loadingLinkInfoView)
+        NSLayoutConstraint.activate([
+            groupPreviewView.topAnchor.constraint(equalTo: header.topAnchor),
+            groupPreviewView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
+            groupPreviewView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
+            groupPreviewView.bottomAnchor.constraint(equalTo: header.bottomAnchor),
 
-        groupDescriptionPreview.font = .dynamicTypeSubheadline
-        groupDescriptionPreview.textColor = Theme.secondaryTextAndIconColor
-        groupDescriptionPreview.numberOfLines = 2
-        groupDescriptionPreview.textAlignment = .center
-        groupDescriptionPreview.isHidden = true
-        groupDescriptionPreview.descriptionText = ""
-
-        let headerStack = UIStackView(arrangedSubviews: [
-            avatarView,
-            groupTitleLabel,
-            groupSubtitleLabel,
-            .spacer(withHeight: 4),
-            groupDescriptionPreview
+            loadingLinkInfoView.topAnchor.constraint(equalTo: header.topAnchor),
+            loadingLinkInfoView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
+            loadingLinkInfoView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
+            loadingLinkInfoView.bottomAnchor.constraint(equalTo: header.bottomAnchor),
         ])
-        headerStack.spacing = 8
-        headerStack.axis = .vertical
-        headerStack.alignment = .center
+        self.customHeader = header
 
-        messageLabel.font = .dynamicTypeFootnote
-        messageLabel.textColor = Theme.secondaryTextAndIconColor
-        messageLabel.numberOfLines = 0
-        messageLabel.lineBreakMode = .byWordWrapping
-        messageLabel.textAlignment = .center
-        messageLabel.setContentHuggingVerticalHigh()
+        addAction(cancelAction)
+    }
 
-        let buttonColor = ActionSheetAction.buttonBackgroundColor
-        let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
-                                                font: UIFont.dynamicTypeHeadline,
-                                                titleColor: Theme.secondaryTextAndIconColor,
-                                                backgroundColor: buttonColor,
-                                                target: self,
-                                                selector: #selector(didTapCancel))
-        cancelButton.enableMultilineLabel()
-        cancelButton.autoSetMinimumHeighUsingFont()
-        cancelButton.cornerRadius = 14
-        self.cancelButton = cancelButton
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
-        let joinButton = OWSFlatButton.button(title: "",
-                                              font: UIFont.dynamicTypeHeadline,
-                                              titleColor: .ows_accentBlue,
-                                              backgroundColor: buttonColor,
-                                              target: self,
-                                              selector: #selector(didTapJoin))
-        joinButton.enableMultilineLabel()
-        joinButton.autoSetMinimumHeighUsingFont()
-        joinButton.cornerRadius = 14
-        joinButton.isUserInteractionEnabled = false
-        self.joinButton = joinButton
-
-        let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
-                                              font: UIFont.dynamicTypeHeadline,
-                                              titleColor: Theme.primaryTextColor,
-                                              backgroundColor: buttonColor,
-                                              target: self,
-                                              selector: #selector(didTapInvalidOkay))
-        invalidOkayButton.enableMultilineLabel()
-        invalidOkayButton.autoSetMinimumHeighUsingFont()
-        invalidOkayButton.cornerRadius = 14
-        invalidOkayButton.isHidden = true
-        self.invalidOkayButton = invalidOkayButton
-
-        let buttonStack = UIStackView(arrangedSubviews: [
-            cancelButton,
-            joinButton,
-            invalidOkayButton
-        ])
-        buttonStack.axis = .horizontal
-        buttonStack.alignment = .fill
-        buttonStack.distribution = .fillEqually
-        buttonStack.spacing = 10
-
-        let divider = UIView()
-        divider.autoSetDimension(.height, toSize: .hairlineWidth)
-        divider.backgroundColor = UIColor.Signal.opaqueSeparator
-
-        let stackView = UIStackView(arrangedSubviews: [
-            headerStack,
-            UIView.spacer(withHeight: 32),
-            divider,
-            UIView.spacer(withHeight: 16),
-            messageLabel,
-            UIView.spacer(withHeight: 16),
-            buttonStack
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        header.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        headerStack.setContentHuggingVerticalHigh()
-        stackView.setContentHuggingVerticalHigh()
+        activityIndicator.startAnimating()
+        loadLinkPreview()
     }
 
     // MARK: - Load invite link preview
@@ -223,6 +259,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         case expiredLink
         case failure(Error)
     }
+
+    private static let avatarSize: UInt = 88
 
     private func loadLinkPreview() {
         Task { [weak self, groupInviteLinkInfo, groupV2ContextInfo] in
@@ -279,45 +317,29 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func applyLinkPreviewLoadResult(_ result: LinkPreviewLoadResult) {
-        AssertIsOnMainThread()
-
-        let joinGroupMessage = OWSLocalizedString(
-            "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE",
-            comment: "Message text for the 'group invite link' action sheet."
-        )
-        let joinGroupButtonTitle = OWSLocalizedString(
-            "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
-            comment: "Label for the 'join' button in the 'group invite link' action sheet."
-        )
-        let requestToJoinGroupMessage = OWSLocalizedString(
-            "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE",
-            comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join."
-        )
-        let requestToJoinGroupButtonTitle = OWSLocalizedString(
-            "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON",
-            comment: "Label for the 'request to join' button in the 'group invite link' action sheet."
-        )
-
         switch result {
         case .success(let groupInviteLinkPreview):
-            self.groupInviteLinkPreview = groupInviteLinkPreview
-
-            /// This button starts disabled since we don't know if it should be
-            /// "join" or "request to join", but now that we do we'll enable it.
-            joinButton.isUserInteractionEnabled = true
             switch groupInviteLinkPreview.addFromInviteLinkAccess {
             case .any:
-                joinButton.button.setTitle(joinGroupButtonTitle, for: .normal)
-                messageLabel.text = joinGroupMessage
+                // view is already configured for this state
+                break
+
             case .administrator:
-                joinButton.button.setTitle(requestToJoinGroupButtonTitle, for: .normal)
-                messageLabel.text = requestToJoinGroupMessage
+                joinButton.configuration?.title = OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST",
+                    comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join."
+                )
+                messageLabel.text = OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON",
+                    comment: "Label for the 'request to join' button in the 'group invite link' action sheet."
+                )
+
             case .member, .unsatisfiable, .unknown:
                 owsFailDebug("Invalid addFromInviteLinkAccess!")
             }
 
             let groupName = groupInviteLinkPreview.title.filterForDisplay.nilIfEmpty ?? TSGroupThread.defaultGroupName
-            groupTitleLabel.text = groupName
+            groupNameLabel.text = groupName
             groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
                 memberCount: Int(groupInviteLinkPreview.memberCount)
             )
@@ -326,15 +348,23 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 groupDescriptionPreview.groupName = groupName
                 groupDescriptionPreview.isHidden = false
             }
+
+            groupPreviewView.isHidden = false
+            loadingLinkInfoView.isHidden = true
+
         case .expiredLink:
-            groupTitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                                                      comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.")
-            groupSubtitleLabel.text = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                                                         comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
-            messageLabel.textColor = Theme.backgroundColor
-            cancelButton?.isHidden = true
-            joinButton?.isHidden = true
-            invalidOkayButton?.isHidden = false
+            setTitle(
+                OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                    comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                ),
+                message: OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet."
+                )
+            )
+            customHeader = nil
+
         case .failure(let error):
             owsFailDebugUnlessNetworkFailure(error)
 
@@ -348,37 +378,34 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             /// To that end, we'll enable it and default-populate it with the
             /// "join" strings (since we won't know until that re-attempt if it
             /// should've actually been "request to join").
-            joinButton.isUserInteractionEnabled = true
-            joinButton.button.setTitle(joinGroupButtonTitle, for: .normal)
-            messageLabel.text = joinGroupMessage
+
+            groupPreviewView.isHidden = false
+            loadingLinkInfoView.isHidden = true
         }
     }
 
     // MARK: - Actions
 
-    @objc
-    private func didTapCancel(_ sender: UIButton) {
+    private func didTapCancel() {
         dismiss(animated: true)
     }
 
-    @objc
-    private func didTapInvalidOkay(_ sender: UIButton) {
-        dismiss(animated: true)
+    private func showActionSheet(
+        title: String?,
+        message: String? = nil,
+        buttonTitle: String? = nil,
+        buttonAction: ActionSheetAction.Handler? = nil
+    ) {
+        OWSActionSheets.showActionSheet(
+            title: title,
+            message: message,
+            buttonTitle: buttonTitle,
+            buttonAction: buttonAction,
+            fromViewController: self
+        )
     }
 
-    private func showActionSheet(title: String?,
-                                 message: String? = nil,
-                                 buttonTitle: String? = nil,
-                                 buttonAction: ActionSheetAction.Handler? = nil) {
-        OWSActionSheets.showActionSheet(title: title,
-                                        message: message,
-                                        buttonTitle: buttonTitle,
-                                        buttonAction: buttonAction,
-                                        fromViewController: self)
-    }
-
-    @objc
-    private func didTapJoin(_ sender: UIButton) {
+    private func didTapJoin() {
         AssertIsOnMainThread()
 
         Logger.info("")
