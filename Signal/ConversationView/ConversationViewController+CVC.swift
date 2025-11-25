@@ -208,9 +208,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateNavigationBarSubtitleLabel()
         updateBarButtonItems()
 
+        let pinnedMessagesChanged = renderState.prevThreadViewModel?.pinnedMessages != threadViewModel.pinnedMessages
+
         // This will be nil for non-group threads.
         let newGroupModel = thread.groupModelIfGroupThread
-        if oldGroupModel != newGroupModel {
+        if oldGroupModel != newGroupModel || pinnedMessagesChanged {
             ensureBannerState()
         }
 

@@ -26,7 +26,7 @@ public class ThreadViewModel: NSObject {
     public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
-    public let pinnedMessageIds: [Int64]
+    public let pinnedMessages: [TSMessage]
 
     public var threadUniqueId: String {
         return threadRecord.uniqueId
@@ -107,10 +107,10 @@ public class ThreadViewModel: NSObject {
         isPinned = DependenciesBridge.shared.pinnedThreadStore.isThreadPinned(thread, tx: transaction)
 
         if let threadId = thread.grdbId?.int64Value {
-            pinnedMessageIds = DependenciesBridge.shared.pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: transaction)
+            pinnedMessages = DependenciesBridge.shared.pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: transaction)
         } else {
             owsFailDebug("missing thread Id")
-            pinnedMessageIds = []
+            pinnedMessages = []
         }
     }
 

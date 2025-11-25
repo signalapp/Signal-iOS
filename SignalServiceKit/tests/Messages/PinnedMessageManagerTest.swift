@@ -63,9 +63,9 @@ struct PinnedMessageManagerTest {
         }
 
         db.read { tx in
-            let pinnedMessageIds = pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: tx)
-            #expect(pinnedMessageIds.count == 1)
-            #expect(pinnedMessageIds.first! == interactionId2)
+            let pinnedMessages = pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: tx)
+            #expect(pinnedMessages.count == 1)
+            #expect(pinnedMessages.first!.grdbId?.int64Value == interactionId2)
         }
     }
 }

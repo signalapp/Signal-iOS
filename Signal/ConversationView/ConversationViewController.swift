@@ -44,6 +44,7 @@ public final class ConversationViewController: OWSViewController {
     public let layout: ConversationViewLayout
     public let collectionView: ConversationCollectionView
     public let searchController: ConversationSearchController
+    public var pinnedMessageIndex: Int
 
     var selectionToolbar: MessageActionsToolbar?
 
@@ -137,7 +138,7 @@ public final class ConversationViewController: OWSViewController {
         scrollToMessageId: String?,
         oldestUnreadMessage: TSInteraction?,
         chatColor: ColorOrGradientSetting,
-        wallpaperViewBuilder: WallpaperViewBuilder?
+        wallpaperViewBuilder: WallpaperViewBuilder?,
     ) {
         AssertIsOnMainThread()
 
@@ -159,6 +160,8 @@ public final class ConversationViewController: OWSViewController {
         self.layout = ConversationViewLayout(conversationStyle: conversationStyle)
         self.collectionView = ConversationCollectionView(frame: .zero, collectionViewLayout: self.layout)
         self.searchController = ConversationSearchController(thread: threadViewModel.threadRecord)
+
+        self.pinnedMessageIndex = 0
 
         super.init()
 

@@ -10,14 +10,19 @@ public class PinnedMessageManager {
     public func fetchPinnedMessagesForThread(
         threadId: Int64,
         tx: DBReadTransaction
-    ) -> [Int64] {
+        ) -> [TSMessage] {
         return failIfThrows {
-            return try PinnedMessageRecord
-                .filter(PinnedMessageRecord.Columns.threadId == threadId)
-                .select(PinnedMessageRecord.Columns.interactionId)
-                .asRequest(of: Row.self)
-                .fetchAll(tx.database)
-                .compactMap { $0[PinnedMessageRecord.Columns.interactionId] }
+            return try InteractionRecord.fetchAll(
+                tx.database,
+                sql: """
+                    SELECT m.* FROM \(InteractionRecord.databaseTableName) as m
+                    JOIN \(PinnedMessageRecord.databaseTableName) as p
+                    ON p.\(PinnedMessageRecord.CodingKeys.interactionId.rawValue) = m.\(InteractionRecord.CodingKeys.id.rawValue)
+                    WHERE \(PinnedMessageRecord.CodingKeys.threadId.rawValue) = ?
+                    ORDER BY p.\(PinnedMessageRecord.CodingKeys.id.rawValue) DESC
+                """,
+                arguments: [threadId]
+            ).compactMap { try TSInteraction.fromRecord($0) as? TSMessage }
         }
     }
 }

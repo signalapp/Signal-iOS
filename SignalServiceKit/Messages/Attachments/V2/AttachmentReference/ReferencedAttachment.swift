@@ -99,7 +99,7 @@ public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
 
 extension ReferencedAttachment {
 
-    public func previewText() -> String {
+    public func previewText(includeEmoji: Bool = true) -> String {
         let mimeType = attachment.mimeType
 
         let attachmentString: String
@@ -148,8 +148,11 @@ extension ReferencedAttachment {
             )
         }
 
-        let emoji = self.previewEmoji()
-        return String(format: "%@ %@", emoji, attachmentString)
+        if includeEmoji {
+            let emoji = self.previewEmoji()
+            return String(format: "%@ %@", emoji, attachmentString)
+        }
+        return attachmentString
     }
 
     public func previewEmoji() -> String {

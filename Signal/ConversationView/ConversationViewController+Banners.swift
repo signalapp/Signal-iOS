@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+import LibSignalClient
 
 // MARK: - Banner Management
 
@@ -48,6 +49,11 @@ extension ConversationViewController {
             banners.append(banner)
         }
 
+        // Pinned Messages
+        if let banner = createPinnedMessageBannerIfNecessary() {
+            banners.append(banner)
+        }
+
         guard !banners.isEmpty else {
             if hasViewDidAppearEverBegun {
                 updateContentInsets()
@@ -85,8 +91,14 @@ private class ConversationBannerView: UIView {
 
     /// Contains all the information necessary to construct any banner.
     struct ContentConfiguration: UIContentConfiguration {
-        /// Text displayed in the banner.
-        let title: String
+        /// Text displayed on the top row of the banner.
+        let title: String?
+
+        /// Text displayed in the banner, under the title if it exists
+        let body: NSAttributedString
+
+        /// Thumbnail to show with pinned messages
+        let thumbnail: UIImageView?
 
         /// Title for the button displayed at the trailing edge of the banner, typically something like "View".
         /// Both `viewButtonTitle` and `viewButtonAction` must be set in orded for "View" button to be displayed.
@@ -101,7 +113,14 @@ private class ConversationBannerView: UIView {
         let dismissButtonAction: UIAction?
 
         /// Small view displayed at the leading edge of the banner.
-        let accessoryView: UIView?
+        let leadingAccessoryView: UIView?
+
+        /// Small view displayed at the trailing edge of the banner.
+        let trailingAccessoryView: UIView?
+
+        /// Action to perform when the entire banner is tapped.
+        /// Banner will not be tappable if this is nil.
+        var bannerTapAction: (() -> Void)?
 
         func makeContentView() -> any UIView & UIContentView {
             return ConversationBannerContentView(configuration: self)
@@ -144,25 +163,44 @@ private class ConversationBannerView: UIView {
 
             guard let configuration = self.configuration as? ContentConfiguration else { return }
 
-            if let accessoryView = configuration.accessoryView {
-                let accessoryContainerView = UIView.container()
-                accessoryContainerView.addSubview(accessoryView)
-                accessoryView.translatesAutoresizingMaskIntoConstraints = false
+            if let leadingAccessoryView = configuration.leadingAccessoryView {
+                let leadingAccessoryContainerView = UIView.container()
+                leadingAccessoryContainerView.addSubview(leadingAccessoryView)
+                leadingAccessoryView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    accessoryView.topAnchor.constraint(greaterThanOrEqualTo: accessoryContainerView.topAnchor),
-                    accessoryView.centerYAnchor.constraint(equalTo: accessoryContainerView.centerYAnchor),
-                    accessoryView.leadingAnchor.constraint(equalTo: accessoryContainerView.leadingAnchor),
-                    accessoryView.trailingAnchor.constraint(equalTo: accessoryContainerView.trailingAnchor),
+                    leadingAccessoryView.topAnchor.constraint(greaterThanOrEqualTo: leadingAccessoryContainerView.topAnchor),
+                    leadingAccessoryView.centerYAnchor.constraint(equalTo: leadingAccessoryContainerView.centerYAnchor),
+                    leadingAccessoryView.leadingAnchor.constraint(equalTo: leadingAccessoryContainerView.leadingAnchor),
+                    leadingAccessoryView.trailingAnchor.constraint(equalTo: leadingAccessoryContainerView.trailingAnchor),
                 ])
-                addArrangedSubview(accessoryContainerView)
+                addArrangedSubview(leadingAccessoryContainerView)
             }
 
-            let titleLabel = UILabel()
-            titleLabel.numberOfLines = 0
-            titleLabel.font = UIFont.dynamicTypeSubheadlineClamped
-            titleLabel.textColor = .Signal.label
-            titleLabel.text = configuration.title
-            addArrangedSubview(titleLabel)
+            if let thumbnail = configuration.thumbnail {
+                addArrangedSubview(thumbnail)
+            }
+
+            let bodyLabel = UILabel()
+            bodyLabel.numberOfLines = 0
+            bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
+            bodyLabel.textColor = .Signal.label
+            bodyLabel.attributedText = configuration.body
+
+            if let title = configuration.title {
+                let titleLabel = UILabel()
+                titleLabel.numberOfLines = 0
+                titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
+                titleLabel.textColor = .Signal.label
+                titleLabel.text = title
+
+                let textStackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel])
+                textStackView.axis = .vertical
+                textStackView.spacing = 2
+
+                addArrangedSubview(textStackView)
+            } else {
+                addArrangedSubview(bodyLabel)
+            }
 
             if let viewButtonTitle = configuration.viewButtonTitle,
                let viewButtonAction = configuration.viewButtonAction
@@ -219,6 +257,29 @@ private class ConversationBannerView: UIView {
 
                 directionalLayoutMargins.trailing = 4 // 10 total with button's content padding
             }
+
+            if let trailingAccessoryView = configuration.trailingAccessoryView {
+                let trailingAccessoryContainerView = UIView.container()
+                trailingAccessoryContainerView.addSubview(trailingAccessoryView)
+                trailingAccessoryView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    trailingAccessoryView.topAnchor.constraint(greaterThanOrEqualTo: trailingAccessoryContainerView.topAnchor),
+                    trailingAccessoryView.centerYAnchor.constraint(equalTo: trailingAccessoryContainerView.centerYAnchor),
+                    trailingAccessoryView.leadingAnchor.constraint(equalTo: trailingAccessoryContainerView.leadingAnchor),
+                    trailingAccessoryView.trailingAnchor.constraint(equalTo: trailingAccessoryContainerView.trailingAnchor),
+                ])
+                addArrangedSubview(trailingAccessoryContainerView)
+            }
+
+            if configuration.bannerTapAction != nil {
+                addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapBanner)))
+            }
+        }
+
+        @objc
+        private func didTapBanner() {
+            guard let configuration = self.configuration as? ContentConfiguration, let bannerTapAction = configuration.bannerTapAction else { return }
+            bannerTapAction()
         }
 
         required init(coder: NSCoder) {
@@ -309,10 +370,12 @@ private extension ConversationViewController {
         }) else { return nil }
 
         let bannerConfiguration = ConversationBannerView.ContentConfiguration(
-            title: OWSLocalizedString(
+            title: nil,
+            body: OWSLocalizedString(
                 "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL",
                 comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact"
-            ),
+            ).attributedString(),
+            thumbnail: nil,
             viewButtonTitle: CommonStrings.viewButton,
             viewButtonAction: UIAction { [weak self] _ in
                 guard let self else { return }
@@ -326,7 +389,8 @@ private extension ConversationViewController {
                 }
                 self.ensureBannerState()
             },
-            accessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2)
+            leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
+            trailingAccessoryView: nil
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -395,7 +459,9 @@ private extension ConversationViewController {
         }) else { return nil }
 
         let bannerConfiguration = ConversationBannerView.ContentConfiguration(
-            title: title,
+            title: nil,
+            body: title.attributedString(),
+            thumbnail: nil,
             viewButtonTitle: CommonStrings.viewButton,
             viewButtonAction: UIAction { [weak self] _ in
                 guard let self else { return }
@@ -416,7 +482,8 @@ private extension ConversationViewController {
                     }
                 )
             },
-            accessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2)
+            leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
+            trailingAccessoryView: nil
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -559,7 +626,9 @@ private extension ConversationViewController {
         )
 
         let bannerConfiguration = ConversationBannerView.ContentConfiguration(
-            title: String.localizedStringWithFormat(format, pendingMemberRequests.count),
+            title: nil,
+            body: String.localizedStringWithFormat(format, pendingMemberRequests.count).attributedString(),
+            thumbnail: nil,
             viewButtonTitle: CommonStrings.viewButton,
             viewButtonAction: UIAction { [weak self] _ in
                 self?.showConversationSettingsAndShowMemberRequests()
@@ -574,13 +643,14 @@ private extension ConversationViewController {
 
                 self?.ensureBannerState()
             },
-            accessoryView: {
+            leadingAccessoryView: {
                 let imageView = UIImageView(image: UIImage(named: "group"))
                 imageView.tintColor = .Signal.label
                 imageView.setContentHuggingHigh()
                 imageView.setCompressionResistanceHigh()
                 return imageView
-            }()
+            }(),
+            trailingAccessoryView: nil
         )
         return ConversationBannerView(configuration: bannerConfiguration)
     }
@@ -628,7 +698,9 @@ private extension ConversationViewController {
         }
 
         let bannerConfiguration = ConversationBannerView.ContentConfiguration(
-            title: title,
+            title: nil,
+            body: title.attributedString(),
+            thumbnail: nil,
             viewButtonTitle: CommonStrings.viewButton,
             viewButtonAction: UIAction { [weak self] _ in
                 self?.noLongerVerifiedBannerViewWasTapped(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
@@ -636,13 +708,14 @@ private extension ConversationViewController {
             dismissButtonAction: UIAction { [weak self] _ in
                 self?.resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
             },
-            accessoryView: {
+            leadingAccessoryView: {
                 let imageView = UIImageView(image: UIImage(named: "safety-number"))
                 imageView.tintColor = .Signal.label
                 imageView.setContentHuggingHigh()
                 imageView.setCompressionResistanceHigh()
                 return imageView
-            }()
+            }(),
+            trailingAccessoryView: nil
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -682,5 +755,39 @@ private extension ConversationViewController {
 
         dismissKeyBoard()
         presentActionSheet(actionSheet)
+    }
+}
+
+// MARK: - Pinned Messages
+
+private extension ConversationViewController {
+    /// Displays the first pinned message, sorted by most recently pinned.
+    /// When tapped, it cycles to the next pinned message if one exists.
+    func createPinnedMessageBannerIfNecessary() -> ConversationBannerView? {
+        guard threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex),
+              let pinnedMessageData = pinnedMessageData(for: threadViewModel.pinnedMessages[pinnedMessageIndex]) else {
+            return nil
+        }
+
+        let bannerConfiguration = ConversationBannerView.ContentConfiguration(
+            title: pinnedMessageData.authorName,
+            body: pinnedMessageData.previewText,
+            thumbnail: pinnedMessageData.thumbnail,
+            viewButtonTitle: nil,
+            viewButtonAction: nil,
+            dismissButtonAction: nil,
+            leadingAccessoryView: pinnedMessageLeadingAccessoryView(),
+            trailingAccessoryView: {
+                let imageView = UIImageView(image: UIImage(named: "pin"))
+                imageView.tintColor = .Signal.label
+                imageView.setContentHuggingHigh()
+                imageView.setCompressionResistanceHigh()
+                return imageView
+            }(),
+            bannerTapAction: threadViewModel.pinnedMessages.count == 1 ? nil : { [weak self] in
+                self?.handleTappedPinnedMessage()
+            }
+        )
+        return ConversationBannerView(configuration: bannerConfiguration)
     }
 }

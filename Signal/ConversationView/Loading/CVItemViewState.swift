@@ -242,7 +242,7 @@ struct CVItemModelBuilder: CVItemBuilding {
 
         var isPinnedMessage: Bool = false
         if let interactionId = interaction.grdbId?.int64Value {
-            isPinnedMessage = threadViewModel.pinnedMessageIds.contains(interactionId)
+            isPinnedMessage = threadViewModel.pinnedMessages.contains(where: { $0.grdbId?.int64Value == interactionId })
         }
 
         if let paymentMessage = interaction as? OWSPaymentMessage {
