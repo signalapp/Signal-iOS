@@ -254,3 +254,40 @@ public extension ConversationViewController {
         return imageView
     }
 }
+
+extension ConversationViewController: UIContextMenuInteractionDelegate {
+    public func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            return UIMenu(children: [
+                UIAction(
+                    title: OWSLocalizedString(
+                        "PINNED_MESSAGES_UNPIN",
+                        comment: "Action menu item to unpin a message"
+                    ), image: .pinSlash) { _ in
+                    // TODO: implement!
+                },
+                UIAction(
+                    title: OWSLocalizedString(
+                        "PINNED_MESSAGES_GO_TO_MESSAGE",
+                        comment: "Action menu item to go to a message in the conversation view"
+                    ), image: .chatArrow) { _ in
+                        // TODO: implement!
+                },
+                UIAction(title: OWSLocalizedString(
+                    "PINNED_MESSAGES_SEE_ALL_MESSAGES",
+                    comment: "Action menu item to see all pinned messages"
+                ), image: .listBullet) { [weak self] _ in
+                    guard let self else { return }
+                    self.present(UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
+                        pinnedMessages: threadViewModel.pinnedMessages,
+                        threadViewModel: threadViewModel,
+                        database: DependenciesBridge.shared.db
+                    )), animated: true)
+                }
+            ])
+        }
+    }
+}

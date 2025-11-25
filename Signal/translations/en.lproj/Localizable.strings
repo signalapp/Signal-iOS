@@ -6586,6 +6586,18 @@
 /* Label for button to unpin a message */
 "PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
 
+/* Title for Pinned Messages detail view */
+"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+
+/* Action menu item to go to a message in the conversation view */
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+
+/* Action menu item to see all pinned messages */
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+
+/* Action menu item to unpin a message */
+"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Pinned";
 

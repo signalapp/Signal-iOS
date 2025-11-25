@@ -788,6 +788,11 @@ private extension ConversationViewController {
                 self?.handleTappedPinnedMessage()
             }
         )
-        return ConversationBannerView(configuration: bannerConfiguration)
+
+        let banner = ConversationBannerView(configuration: bannerConfiguration)
+        let longPressInteraction = UIContextMenuInteraction(delegate: self)
+        banner.addInteraction(longPressInteraction)
+
+        return banner
     }
 }

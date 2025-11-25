@@ -20,6 +20,7 @@
 		045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */; };
 		045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */; };
 		045B40922ECE406A002D3F9A /* ConversationViewController+PinnedMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */; };
+		045B40952ECF98C1002D3F9A /* PinnedMessagesDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
@@ -3884,6 +3885,7 @@
 		045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageRecord.swift; sourceTree = "<group>"; };
 		045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManagerTest.swift; sourceTree = "<group>"; };
 		045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+PinnedMessages.swift"; sourceTree = "<group>"; };
+		045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessagesDetailsViewController.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
@@ -7918,6 +7920,7 @@
 			isa = PBXGroup;
 			children = (
 				048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */,
+                045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */,
 			);
 			path = PinnedMessages;
 			sourceTree = "<group>";
@@ -17409,6 +17412,7 @@
 				887889A52476E999001B5FCF /* PinConfirmationViewController.swift in Sources */,
 				048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */,
 				0426758B2EC4D5C800124C5F /* PinnedMessageIconView.swift in Sources */,
+				045B40952ECF98C1002D3F9A /* PinnedMessagesDetailsViewController.swift in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				881677C522DD2B21007BAF49 /* PinReminderViewController.swift in Sources */,
 				881D85B822D92C2B00E118DF /* PinSetupViewController.swift in Sources */,
