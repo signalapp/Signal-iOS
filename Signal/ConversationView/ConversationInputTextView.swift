@@ -172,7 +172,7 @@ class ConversationInputTextView: BodyRangesTextView {
             return false
         }
         if action == #selector(paste(_:)) {
-            if pasteboardHasPossibleAttachment && !super.disallowsAnyPasteAction() {
+            if pasteboardHasPossibleAttachment && super.canPerformAction(action, withSender: sender) {
                 return true
             }
         }
