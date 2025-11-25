@@ -63,17 +63,11 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         enablesReturnKeyAutomatically = true
 
         if #available(iOS 16, *) {
-            for editMenuInteraction in interactions.compactMap({ $0 as? UIEditMenuInteraction }) {
-                removeInteraction(editMenuInteraction)
-            }
-
             iOS15EditMenu = nil
-            addInteraction(UIEditMenuInteraction(delegate: self))
         } else {
             iOS15EditMenu = BodyRangesTextViewIOS15EditMenu(
                 textView: self,
                 didSelectStyleBlock: { [unowned self] in didSelectStyle($0) },
-                didSelectClearStylesBlock: { [unowned self] in didSelectClearStyles() },
             )
         }
     }
@@ -228,7 +222,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         }
     }
 
-    private let editableBody: EditableMessageBodyTextStorage
+    fileprivate let editableBody: EditableMessageBodyTextStorage
 
     public var messageBodyForSending: MessageBody {
         return editableBody.messageBody.filterStringForDisplay()
@@ -716,29 +710,117 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
     // MARK: - Text Formatting
 
-    private func didSelectStyle(_ style: MessageBodyRanges.SingleStyle) {
+    private func didSelectStyle(_ style: MessageBodyRanges.SingleStyle?) {
         guard selectedRange.length > 0 else {
             return
         }
         editableBody.beginEditing()
-        editableBody.toggleStyle(style, in: selectedRange)
-        editableBody.endEditing()
-        textViewDidChange(self)
-    }
-
-    private func didSelectClearStyles() {
-        guard selectedRange.length > 0 else {
-            return
+        if let style {
+            editableBody.toggleStyle(style, in: selectedRange)
+        } else {
+            editableBody.clearFormatting(in: selectedRange)
         }
-        editableBody.beginEditing()
-        editableBody.clearFormatting(in: selectedRange)
         editableBody.endEditing()
         textViewDidChange(self)
     }
 
-    // MARK: - UIEditMenuInteractionDelegate
+    // MARK: - UIEditMenuInteractionDelegate-ish
 
-    // TODO: Implement delegate methods
+    /// Not technically part of `UIEditMenuInteractionDelegate`, but exposed by
+    /// `UITextInput` to allow us to configure the `UIEditMenuInteraction` that
+    /// comes pre-configured on ourselves as a `UITextView`.
+    open override func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
+        guard selectedRange.length > 0 else {
+            // Only add the format menu if we've got text selected.
+            return UIMenu(children: suggestedActions)
+        }
+
+        var formatMenuItems: [FormatEditMenuItem] = [
+            .applyBold,
+            .applyItalic,
+            .applySpoiler,
+            .applyStrikethrough,
+            .applyMonospace,
+        ]
+
+        if editableBody.hasFormatting(in: selectedRange) {
+            formatMenuItems.append(.clearFormatting)
+        }
+
+        let formatMenu = UIMenu(
+            title: FormatEditMenuItem.showFormatMenu.title,
+            options: [],
+            children: formatMenuItems.map { menuItem in
+                UIAction(title: menuItem.title) { [self] _ in
+                    let styleToApply: MessageBodyRanges.SingleStyle? = switch menuItem {
+                    case .showFormatMenu: owsFail("Not possible")
+                    case .clearFormatting: nil
+                    case .applyBold: .bold
+                    case .applyItalic: .italic
+                    case .applyMonospace: .monospace
+                    case .applyStrikethrough: .strikethrough
+                    case .applySpoiler: .spoiler
+                    }
+
+                    didSelectStyle(styleToApply)
+                }
+            },
+        )
+
+        return UIMenu(children: [formatMenu] + suggestedActions)
+    }
+}
+
+// MARK: -
+
+private enum FormatEditMenuItem: CaseIterable {
+    case showFormatMenu
+    case clearFormatting
+    case applyBold
+    case applyItalic
+    case applyMonospace
+    case applyStrikethrough
+    case applySpoiler
+
+    var title: String {
+        switch self {
+        case .showFormatMenu:
+            OWSLocalizedString(
+                "TEXT_MENU_FORMAT",
+                comment: "Option in selected text edit menu to view text formatting options"
+            )
+        case .clearFormatting:
+            OWSLocalizedString(
+                "TEXT_MENU_CLEAR_FORMATTING",
+                comment: "Option in selected text edit menu to clear all text formatting in the selected text range"
+            )
+        case .applyBold:
+            OWSLocalizedString(
+                "TEXT_MENU_BOLD",
+                comment: "Option in selected text edit menu to make text bold"
+            )
+        case .applyItalic:
+            OWSLocalizedString(
+                "TEXT_MENU_ITALIC",
+                comment: "Option in selected text edit menu to make text italic"
+            )
+        case .applyMonospace:
+            OWSLocalizedString(
+                "TEXT_MENU_MONOSPACE",
+                comment: "Option in selected text edit menu to make text monospace"
+            )
+        case .applyStrikethrough:
+            OWSLocalizedString(
+                "TEXT_MENU_STRIKETHROUGH",
+                comment: "Option in selected text edit menu to make text strikethrough"
+            )
+        case .applySpoiler:
+            OWSLocalizedString(
+                "TEXT_MENU_SPOILER",
+                comment: "Option in selected text edit menu to make text spoiler"
+            )
+        }
+    }
 }
 
 // MARK: -
@@ -756,20 +838,17 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 @available(iOS, obsoleted: 16.0)
 private class BodyRangesTextViewIOS15EditMenu {
 
-    private unowned let textView: UITextView
-    private let didSelectStyleBlock: (MessageBodyRanges.SingleStyle) -> Void
-    private let didSelectClearStylesBlock: () -> Void
+    private unowned let textView: BodyRangesTextView
+    private let didSelectStyleBlock: (MessageBodyRanges.SingleStyle?) -> Void
 
     private var isShowingFormatMenu = false
 
     init(
         textView: BodyRangesTextView,
-        didSelectStyleBlock: @escaping (MessageBodyRanges.SingleStyle) -> Void,
-        didSelectClearStylesBlock: @escaping () -> Void,
+        didSelectStyleBlock: @escaping (MessageBodyRanges.SingleStyle?) -> Void,
     ) {
         self.textView = textView
         self.didSelectStyleBlock = didSelectStyleBlock
-        self.didSelectClearStylesBlock = didSelectClearStylesBlock
 
         updateEditMenuItems()
     }
@@ -777,7 +856,7 @@ private class BodyRangesTextViewIOS15EditMenu {
     // MARK: -
 
     var selectorsHandledByThisType: [Selector] {
-        return EditMenuItem.allCases.map(\.selector)
+        return FormatEditMenuItem.allCases.map { selectorFor(formatEditMenuItem: $0) }
     }
 
     func allowAction(_ action: Selector) -> Bool? {
@@ -813,89 +892,40 @@ private class BodyRangesTextViewIOS15EditMenu {
         defer { UIMenuController.shared.update() }
 
         if isShowingFormatMenu {
-            let menuItems: [EditMenuItem] = [
+            var formatMenuItems: [FormatEditMenuItem] = [
                 .applyBold,
                 .applyItalic,
                 .applyMonospace,
                 .applyStrikethrough,
                 .applySpoiler,
-                .clearFormatting,
             ]
 
-            UIMenuController.shared.menuItems = menuItems.map { menuItem -> UIMenuItem in
-                return UIMenuItem(title: menuItem.title, action: menuItem.selector)
+            if textView.editableBody.hasFormatting(in: textView.selectedRange) {
+                formatMenuItems.append(.clearFormatting)
+            }
+
+            UIMenuController.shared.menuItems = formatMenuItems.map { menuItem -> UIMenuItem in
+                return UIMenuItem(title: menuItem.title, action: selectorFor(formatEditMenuItem: menuItem))
             }
         } else {
             UIMenuController.shared.menuItems = [
                 UIMenuItem(
-                    title: EditMenuItem.showFormatMenu.title,
-                    action: EditMenuItem.showFormatMenu.selector,
+                    title: FormatEditMenuItem.showFormatMenu.title,
+                    action: selectorFor(formatEditMenuItem: .showFormatMenu),
                 )
             ]
         }
     }
 
-    // MARK: -
-
-    private enum EditMenuItem: CaseIterable {
-        case showFormatMenu
-        case clearFormatting
-        case applyBold
-        case applyItalic
-        case applySpoiler
-        case applyStrikethrough
-        case applyMonospace
-
-        var title: String {
-            switch self {
-            case .showFormatMenu:
-                OWSLocalizedString(
-                    "TEXT_MENU_FORMAT",
-                    comment: "Option in selected text edit menu to view text formatting options"
-                )
-            case .clearFormatting:
-                OWSLocalizedString(
-                    "TEXT_MENU_CLEAR_FORMATTING",
-                    comment: "Option in selected text edit menu to clear all text formatting in the selected text range"
-                )
-            case .applyBold:
-                OWSLocalizedString(
-                    "TEXT_MENU_BOLD",
-                    comment: "Option in selected text edit menu to make text bold"
-                )
-            case .applyItalic:
-                OWSLocalizedString(
-                    "TEXT_MENU_ITALIC",
-                    comment: "Option in selected text edit menu to make text italic"
-                )
-            case .applySpoiler:
-                OWSLocalizedString(
-                    "TEXT_MENU_SPOILER",
-                    comment: "Option in selected text edit menu to make text spoiler"
-                )
-            case .applyStrikethrough:
-                OWSLocalizedString(
-                    "TEXT_MENU_STRIKETHROUGH",
-                    comment: "Option in selected text edit menu to make text strikethrough"
-                )
-            case .applyMonospace:
-                OWSLocalizedString(
-                    "TEXT_MENU_MONOSPACE",
-                    comment: "Option in selected text edit menu to make text monospace"
-                )
-            }
-        }
-
-        var selector: Selector {
-            switch self {
-            case .showFormatMenu: #selector(BodyRangesTextViewIOS15EditMenu.showFormatMenu)
-            case .clearFormatting: #selector(BodyRangesTextViewIOS15EditMenu.clearFormatting)
-            case .applyBold: #selector(BodyRangesTextViewIOS15EditMenu.applyBold)
-            case .applyItalic: #selector(BodyRangesTextViewIOS15EditMenu.applyItalic)
-            case .applySpoiler: #selector(BodyRangesTextViewIOS15EditMenu.applySpoiler)
-            case .applyStrikethrough: #selector(BodyRangesTextViewIOS15EditMenu.applyStrikethrough)
-            case .applyMonospace: #selector(BodyRangesTextViewIOS15EditMenu.applyMonospace)
-            }
+    private func selectorFor(formatEditMenuItem: FormatEditMenuItem) -> Selector {
+        switch formatEditMenuItem {
+        case .showFormatMenu: #selector(BodyRangesTextViewIOS15EditMenu.showFormatMenu)
+        case .clearFormatting: #selector(BodyRangesTextViewIOS15EditMenu.clearFormatting)
+        case .applyBold: #selector(BodyRangesTextViewIOS15EditMenu.applyBold)
+        case .applyItalic: #selector(BodyRangesTextViewIOS15EditMenu.applyItalic)
+        case .applySpoiler: #selector(BodyRangesTextViewIOS15EditMenu.applySpoiler)
+        case .applyStrikethrough: #selector(BodyRangesTextViewIOS15EditMenu.applyStrikethrough)
+        case .applyMonospace: #selector(BodyRangesTextViewIOS15EditMenu.applyMonospace)
         }
     }
 
@@ -928,8 +958,6 @@ private class BodyRangesTextViewIOS15EditMenu {
         }
     }
 
-    // MARK: -
-
     @objc
     private func clearFormatting() { selectStyle(nil) }
     @objc
@@ -945,11 +973,6 @@ private class BodyRangesTextViewIOS15EditMenu {
 
     private func selectStyle(_ style: MessageBodyRanges.SingleStyle?) {
         reset()
-
-        if let style {
-            didSelectStyleBlock(style)
-        } else {
-            didSelectClearStylesBlock()
-        }
+        didSelectStyleBlock(style)
     }
 }
