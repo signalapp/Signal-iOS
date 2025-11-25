@@ -44,7 +44,7 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         inputToolbar.setMessageBody(newMessageBody, animated: false)
     }
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachmentApprovalItem: AttachmentApprovalItem) { }
 
     public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
 

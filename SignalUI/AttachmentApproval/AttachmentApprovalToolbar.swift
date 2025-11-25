@@ -240,11 +240,9 @@ class AttachmentApprovalToolbar: UIView {
         // first responder;
     }
 
-    func update(currentAttachmentItem: AttachmentApprovalItem,
-                configuration: Configuration,
-                animated: Bool) {
+    func update(currentAttachmentItem: AttachmentApprovalItem, configuration: Configuration, animated: Bool) {
         // De-bounce
-        guard self.currentAttachmentItem != currentAttachmentItem || self.configuration != configuration else {
+        if currentAttachmentItem.isIdenticalTo(self.currentAttachmentItem as AttachmentApprovalItem?), self.configuration == configuration {
             updateFirstResponder()
             return
         }

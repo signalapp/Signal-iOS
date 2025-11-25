@@ -53,7 +53,7 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
         didChangeViewOnceState isViewOnce: Bool
     )
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachmentApprovalItem: AttachmentApprovalItem)
 
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
 }
@@ -451,7 +451,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Helpers
 
     func remove(attachmentApprovalItem: AttachmentApprovalItem) {
-        if attachmentApprovalItem == currentItem {
+        if attachmentApprovalItem.isIdenticalTo(currentItem) {
             if let nextItem = attachmentApprovalItemCollection.itemAfter(item: attachmentApprovalItem) {
                 setCurrentItem(nextItem, direction: .forward, animated: true)
             } else if let prevItem = attachmentApprovalItemCollection.itemBefore(item: attachmentApprovalItem) {
@@ -465,7 +465,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         attachmentApprovalItemCollection.remove(item: attachmentApprovalItem)
-        approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem.attachment)
+        approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem)
 
         // If media rail needs to be hidden, do it immediately.
         if attachmentApprovalItems.count < 2 {
@@ -574,15 +574,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return currentPageViewController?.attachmentApprovalItem
     }
 
-    private var cachedPages: [AttachmentApprovalItem: AttachmentPrepViewController] = [:]
+    private var cachedPages: [(key: AttachmentApprovalItem, value: AttachmentPrepViewController)] = []
     private func buildPage(item: AttachmentApprovalItem) -> AttachmentPrepViewController? {
-
-        if let cachedPage = cachedPages[item] {
-            Logger.debug("cache hit.")
-            return cachedPage
+        if let cachedPage = cachedPages.first(where: { $0.key.isIdenticalTo(item) }) {
+            return cachedPage.value
         }
 
-        Logger.debug("cache miss.")
         guard let viewController = AttachmentPrepViewController.viewController(
             for: item,
             stickerSheetDelegate: stickerSheetDelegate
@@ -592,15 +589,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         viewController.prepDelegate = self
-        cachedPages[item] = viewController
+        cachedPages.append((item, viewController))
 
         return viewController
     }
 
-    private func setCurrentItem(_ item: AttachmentApprovalItem,
-                                direction: UIPageViewController.NavigationDirection,
-                                animated: Bool) {
-
+    private func setCurrentItem(
+        _ item: AttachmentApprovalItem,
+        direction: UIPageViewController.NavigationDirection,
+        animated: Bool,
+    ) {
         guard let page = buildPage(item: item) else {
             owsFailDebug("unexpectedly unable to build new page")
             return
@@ -769,7 +767,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
-        guard let currentIndex = attachmentApprovalItems.firstIndex(of: currentItem) else {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(where: { $0.isIdenticalTo(currentItem) }) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -784,7 +782,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     func attachmentApprovalItem(after currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
-        guard let currentIndex = attachmentApprovalItems.firstIndex(of: currentItem) else {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(where: { $0.isIdenticalTo(currentItem) }) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -1334,17 +1332,19 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 // MARK: GalleryRail
 
 extension AttachmentApprovalItem: GalleryRailItem {
-
     public func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = getThumbnailImage()
         return imageView
     }
+
+    public func isEqualToGalleryRailItem(_ other: (any GalleryRailItem)?) -> Bool {
+        return self.isIdenticalTo(other as? Self)
+    }
 }
 
-extension AddMoreRailItem: GalleryRailItem {
-
+class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let button = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "plus-square-28"),
@@ -1354,6 +1354,10 @@ extension AddMoreRailItem: GalleryRailItem {
         button.layoutMargins = .zero
         button.ows_contentEdgeInsets = .zero
         return button
+    }
+
+    func isEqualToGalleryRailItem(_ other: (any GalleryRailItem)?) -> Bool {
+        return other is Self
     }
 }
 
@@ -1385,13 +1389,15 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        guard let currentItem = currentItem,
-              let currentIndex = attachmentApprovalItems.firstIndex(of: currentItem) else {
+        guard
+            let currentItem = currentItem,
+            let currentIndex = attachmentApprovalItems.firstIndex(where: { $0.isIdenticalTo(currentItem) })
+        else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return
         }
 
-        guard let targetIndex = attachmentApprovalItems.firstIndex(of: targetItem) else {
+        guard let targetIndex = attachmentApprovalItems.firstIndex(where: { $0.isIdenticalTo(targetItem) }) else {
             owsFailDebug("targetIndex was unexpectedly nil")
             return
         }

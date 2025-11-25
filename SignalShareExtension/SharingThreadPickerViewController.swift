@@ -669,7 +669,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
         // We can ignore this event.
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachmentApprovalItem: AttachmentApprovalItem) {
         // We can ignore this event.
     }
 

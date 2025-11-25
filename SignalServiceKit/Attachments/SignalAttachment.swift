@@ -63,7 +63,7 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
 //
 // TODO: Perhaps do conversion off the main thread?
 
-public class SignalAttachment: NSObject {
+public class SignalAttachment: CustomDebugStringConvertible {
 
     // MARK: Properties
 
@@ -94,7 +94,6 @@ public class SignalAttachment: NSObject {
     private init(dataSource: DataSource, dataUTI: String) {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
-        super.init()
 
         NotificationCenter.default.addObserver(
             self,
@@ -113,7 +112,7 @@ public class SignalAttachment: NSObject {
 
     // MARK: Methods
 
-    public override var debugDescription: String {
+    public var debugDescription: String {
         let fileSize = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
