@@ -283,6 +283,13 @@ public enum CommonStrings {
     static public var betaLabel: String {
         OWSLocalizedString("BETA_LABEL", comment: "Beta label")
     }
+
+    static public var dontShowAgainButton: String {
+        OWSLocalizedString(
+            "DONT_SHOW_AGAIN_BUTTON_TITLE",
+            comment: "Label for a button that says 'Don't show again'."
+        )
+    }
 }
 
 // MARK: -

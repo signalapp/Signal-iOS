@@ -16,7 +16,8 @@ struct PinnedMessageManagerTest {
     init() throws {
         pinnedMessageManager = PinnedMessageManager(
             interactionStore: MockInteractionStore(),
-            accountManager: MockTSAccountManager()
+            accountManager: MockTSAccountManager(),
+            db: db
         )
     }
 

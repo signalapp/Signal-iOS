@@ -283,4 +283,59 @@ extension ConversationViewController: MessageActionsDelegate {
             }
         }
     }
+
+    func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool) {
+        if !pin {
+            // TODO: send unpin message
+            presentToast(
+                text: OWSLocalizedString(
+                    "PINNED_MESSAGE_TOAST",
+                    comment: "Text to show on a toast when someone unpins a message"
+                )
+            )
+            return
+        }
+
+        guard let message = itemViewModel.renderItem.interaction as? TSMessage else {
+            return
+        }
+
+        let dmAction = { [weak self] in
+            if DependenciesBridge.shared.pinnedMessageManager.shouldShowDisappearingMessageWarning(message: message) {
+                DependenciesBridge.shared.pinnedMessageManager.incrementDisappearingMessageWarningCount()
+                self?.present(
+                    PinDisappearingMessageViewController(pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager),
+                    animated: true
+                )
+            }
+        }
+
+        if threadViewModel.pinnedMessages.count >= 3 {
+            let actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "PINNED_MESSAGE_REPLACE_OLDEST_TITLE",
+                    comment: "Title for an action sheet confirming the user wants to replace oldest pinned message."
+                ),
+                message: OWSLocalizedString(
+                    "PINNED_MESSAGE_REPLACE_OLDEST_BODY",
+                    comment: "Message for an action sheet confirming the user wants to replace oldest pinned message."
+                )
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "PINNED_MESSAGE_REPLACE_OLDEST_BUTTON",
+                    comment: "Option in pinned message action sheet to replace oldest pin."
+                ),
+                handler: { _ in
+                    dmAction()
+                    // TODO: send pin message
+                },
+            ))
+            actionSheet.addAction(.cancel)
+            presentActionSheet(actionSheet)
+        } else {
+            dmAction()
+            // TODO: send pin message
+        }
+    }
 }

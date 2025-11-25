@@ -10,13 +10,22 @@ import LibSignalClient
 public class PinnedMessageManager {
     private let accountManager: TSAccountManager
     private let interactionStore: InteractionStore
+    private let keyValueStore: NewKeyValueStore
+    private let db: DB
+
+    // Int value of how many times the disappearing message warning has been shown.
+    // If 3 or greater, don't show again.
+    private static let disappearingMessageWarningShownKey = "disappearingMessageWarningShownKey"
 
     init(
         interactionStore: InteractionStore,
         accountManager: TSAccountManager,
+        db: DB
     ) {
         self.interactionStore = interactionStore
         self.accountManager = accountManager
+        self.db = db
+        self.keyValueStore = NewKeyValueStore(collection: "PinnedMessage")
     }
 
     public func fetchPinnedMessagesForThread(
@@ -137,6 +146,29 @@ public class PinnedMessageManager {
                 .filter(PinnedMessageRecord.Columns.threadId == threadId)
                 .filter(!mostRecentPinnedMessageIds.contains(PinnedMessageRecord.Columns.id))
                 .deleteAll(transaction.database)
+        }
+    }
+
+    public func shouldShowDisappearingMessageWarning(message: TSMessage) -> Bool {
+        if message.expiresInSeconds == 0 {
+            return false
+        }
+        let numberOfTimesWarningShown: Int64 = db.read { tx in
+            keyValueStore.fetchValue(Int64.self, forKey: Self.disappearingMessageWarningShownKey, tx: tx) ?? 0
+        }
+        return numberOfTimesWarningShown < 3
+    }
+
+    public func incrementDisappearingMessageWarningCount() {
+        db.write { tx in
+            let numberOfTimesWarningShown = keyValueStore.fetchValue(Int64.self, forKey: Self.disappearingMessageWarningShownKey, tx: tx) ?? 0
+            keyValueStore.writeValue(numberOfTimesWarningShown + 1, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
+        }
+    }
+
+    public func stopShowingDisappearingMessageWarning() {
+        db.write { tx in
+            keyValueStore.writeValue(3, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
         }
     }
 }

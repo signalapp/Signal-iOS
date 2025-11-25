@@ -23,6 +23,7 @@
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
+		048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
 		04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */; };
@@ -3886,6 +3887,7 @@
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
+		048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisappearingMessageViewController.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
 		04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollTerminate.swift; sourceTree = "<group>"; };
@@ -7912,6 +7914,14 @@
 			path = PinnedMessages;
 			sourceTree = "<group>";
 		};
+		048D58342ED4FA7C00F26237 /* PinnedMessages */ = {
+			isa = PBXGroup;
+			children = (
+				048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */,
+			);
+			path = PinnedMessages;
+			sourceTree = "<group>";
+		};
 		04A5736E2E4D4BCB0019651F /* Polls */ = {
 			isa = PBXGroup;
 			children = (
@@ -8756,6 +8766,7 @@
 				34995F122411838C00C70546 /* NewGroupView */,
 				3497971D25DAA86100E99FA4 /* Payments */,
 				34969558219B605E00DCFE74 /* Photos */,
+				048D58342ED4FA7C00F26237 /* PinnedMessages */,
 				04CF4FCC2E7245F3009D6669 /* Polls */,
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				349767DE25B8744600ECE1B0 /* Stickers */,
@@ -17396,6 +17407,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				887889A52476E999001B5FCF /* PinConfirmationViewController.swift in Sources */,
+				048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */,
 				0426758B2EC4D5C800124C5F /* PinnedMessageIconView.swift in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				881677C522DD2B21007BAF49 /* PinReminderViewController.swift in Sources */,

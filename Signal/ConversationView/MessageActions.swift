@@ -16,6 +16,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsEndPoll(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool)
 }
 
 // MARK: -
@@ -179,6 +180,51 @@ struct MessageActionBuilder {
             }
         )
     }
+
+    static func changePinStatus(
+        itemViewModel: CVItemViewModelImpl,
+        delegate: MessageActionsDelegate
+    ) -> MessageAction? {
+        guard BuildFlags.PinnedMessages.send else {
+            return nil
+        }
+
+        if let groupThread = itemViewModel.thread as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2,
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
+            if groupModel.access.attributes == .administrator && !groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(localAci) {
+                Logger.info("Sender does not have permissions to pin/unpin message in group")
+                return nil
+            }
+        }
+
+        guard let footerState = itemViewModel.renderItem.itemViewState.footerState else {
+            return nil
+        }
+
+        if footerState.isPinnedMessage {
+            return MessageAction(
+                .unpin,
+                accessibilityLabel: OWSLocalizedString("PINNED_MESSAGE_UNPIN_ACTION_TITLE", comment: "Label for button to unpin a message"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "pin"),
+                contextMenuTitle: OWSLocalizedString("PINNED_MESSAGE_UNPIN_ACTION_TITLE", comment: "Label for button to unpin a message"),
+                contextMenuAttributes: [],
+                block: { [weak delegate] (_) in
+                    delegate?.messageActionsChangePinStatus(itemViewModel, pin: false)
+                }
+            )
+        }
+        return MessageAction(
+            .pin,
+            accessibilityLabel: OWSLocalizedString("PINNED_MESSAGE_PIN_ACTION_TITLE", comment: "Label for button to pin a message"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "pin"),
+            contextMenuTitle: OWSLocalizedString("PINNED_MESSAGE_PIN_ACTION_TITLE", comment: "Label for button to pin a message"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] (_) in
+                delegate?.messageActionsChangePinStatus(itemViewModel, pin: true)
+            }
+        )
+    }
 }
 
 class MessageActions: NSObject {
@@ -226,6 +272,10 @@ class MessageActions: NSObject {
             }
         }
 
+        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+            actions.append(pinAction)
+        }
+
         return actions
     }
 
@@ -265,6 +315,10 @@ class MessageActions: NSObject {
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
 
+        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+            actions.append(pinAction)
+        }
+
         return actions
     }
 
@@ -293,6 +347,10 @@ class MessageActions: NSObject {
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
+
+        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+            actions.append(pinAction)
+        }
 
         return actions
     }
@@ -336,6 +394,10 @@ class MessageActions: NSObject {
         )
         actions.append(selectAction)
 
+        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+            actions.append(pinAction)
+        }
+
         return actions
     }
 
@@ -375,6 +437,10 @@ class MessageActions: NSObject {
                 delegate: delegate
             )
             actions.append(endPollAction)
+        }
+
+        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+            actions.append(pinAction)
         }
 
         return actions

@@ -189,6 +189,9 @@ public enum ThemeIcon: UInt {
     case pollStop
     case pollStopLight
     case poll
+
+    case pin
+    case unpin
 }
 
 // MARK: -
@@ -579,6 +582,11 @@ public extension Theme {
 
         case .poll:
             return "poll"
+
+        case .pin:
+            return "pin"
+        case .unpin:
+            return "pin-slash"
         }
     }
 }
