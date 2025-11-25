@@ -16,6 +16,9 @@ public protocol StorageServiceManager {
     /// Called during app launch, registration, and change number.
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers)
 
+    /// Sets up Cron jobs.
+    func registerForCron(_ cron: Cron)
+
     /// The version of the latest known Storage Service manifest.
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64
     /// Whether the latest-known Storage Service manifest contains a `recordIkm`.
@@ -162,10 +165,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
-                // Schedule a restore. This will do nothing unless we've never
-                // registered a manifest before.
-                self.restoreOrCreateManifestIfNecessary(authedDevice: .implicit, masterKeySource: .implicit)
-
                 // If we have any pending changes since we last launch, back them up now.
                 self.backupPendingChanges(authedDevice: .implicit)
             }
@@ -174,6 +173,30 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 Task { await self.cleanUpDeletedCallLinks() }
             }
         }
+    }
+
+    private static let restoreManifestCronKey: Cron.UniqueKey = .fetchStorageService
+    private static let restoreManifestCronInterval: TimeInterval = .day
+
+    public func registerForCron(_ cron: Cron) {
+        cron.schedulePeriodically(
+            uniqueKey: Self.restoreManifestCronKey,
+            approximateInterval: Self.restoreManifestCronInterval,
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: {
+                try await self._restoreOrCreateManifestIfNecessary(
+                    authedDevice: .implicit,
+                    masterKeySource: .implicit,
+                    isRunningViaCron: true,
+                ).awaitableWithUncooperativeCancellationHandling()
+            },
+        )
+    }
+
+    fileprivate static func updateRestoreManifestCronDate(tx: DBWriteTransaction) {
+        CronStore(uniqueKey: restoreManifestCronKey)
+            .setMostRecentDate(Date(), jitter: restoreManifestCronInterval / Cron.jitterFactor, tx: tx)
     }
 
     @objc
@@ -243,6 +266,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         struct PendingRestore {
             var authedDevice: AuthedDevice
             var masterKeySource: StorageService.MasterKeySource
+            var isRunningViaCron: Bool
             var futures: [Future<Void>]
         }
         var pendingRestore: PendingRestore?
@@ -357,7 +381,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
             let restoreOperation = buildOperation(
                 managerState: managerState,
-                mode: .restoreOrCreate,
+                mode: .restoreOrCreate(isRunningViaCron: pendingRestore.isRunningViaCron),
                 authedDevice: pendingRestore.authedDevice,
                 masterKeySource: pendingRestore.masterKeySource
             )
@@ -521,18 +545,32 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     @discardableResult
     public func restoreOrCreateManifestIfNecessary(
         authedDevice: AuthedDevice,
-        masterKeySource: StorageService.MasterKeySource
+        masterKeySource: StorageService.MasterKeySource,
+    ) -> Promise<Void> {
+        return _restoreOrCreateManifestIfNecessary(
+            authedDevice: authedDevice,
+            masterKeySource: masterKeySource,
+            isRunningViaCron: false,
+        )
+    }
+
+    private func _restoreOrCreateManifestIfNecessary(
+        authedDevice: AuthedDevice,
+        masterKeySource: StorageService.MasterKeySource,
+        isRunningViaCron: Bool,
     ) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
             var pendingRestore = managerState.pendingRestore ?? .init(
                 authedDevice: .implicit,
                 masterKeySource: .implicit,
+                isRunningViaCron: false,
                 futures: []
             )
             pendingRestore.futures.append(future)
             pendingRestore.authedDevice = authedDevice.orIfImplicitUse(pendingRestore.authedDevice)
             pendingRestore.masterKeySource = masterKeySource.orIfImplicitUse(pendingRestore.masterKeySource)
+            pendingRestore.isRunningViaCron = isRunningViaCron || pendingRestore.isRunningViaCron
             managerState.pendingRestore = pendingRestore
         }
         return promise
@@ -680,7 +718,7 @@ class StorageServiceOperation {
     fileprivate enum Mode {
         case rotateManifest(mode: StorageServiceManager.ManifestRotationMode)
         case backup
-        case restoreOrCreate
+        case restoreOrCreate(isRunningViaCron: Bool)
         case cleanUpUnknownData
     }
     private let mode: Mode
@@ -715,7 +753,9 @@ class StorageServiceOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     private func _run() async throws {
-        let (currentStateIfRotatingManifest, masterKey) = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        let (currentStateIfRotatingManifest, masterKey) = databaseStorage.read { tx in
             let state: State?
             switch mode {
             case .rotateManifest:
@@ -742,7 +782,7 @@ class StorageServiceOperation {
             {
                 // This is a linked device, and keys are missing. There's nothing that can be done
                 // until we receive new keys, so send a key sync message and return early.
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                await databaseStorage.awaitableWrite { tx in
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: tx)
                 }
             } else {
@@ -771,8 +811,15 @@ class StorageServiceOperation {
             }
         case .backup:
             try await backupPendingChanges()
-        case .restoreOrCreate:
+        case .restoreOrCreate(let isRunningViaCron):
             try await restoreOrCreateManifestIfNecessary()
+            // If we weren't triggered via Cron, we can report the result to Cron to
+            // avoid fetching when unnecessary.
+            if !isRunningViaCron {
+                await databaseStorage.awaitableWrite { tx in
+                    StorageServiceManagerImpl.updateRestoreManifestCronDate(tx: tx)
+                }
+            }
         case .cleanUpUnknownData:
             await cleanUpUnknownData()
         }

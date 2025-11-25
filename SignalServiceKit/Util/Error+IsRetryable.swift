@@ -5,6 +5,7 @@
 
 import Foundation
 import ObjectiveC
+public import SwiftProtobuf
 
 extension Error {
     public var hasIsRetryable: Bool {
@@ -73,6 +74,14 @@ extension OWSGenericError: IsRetryableProvider {
 }
 
 extension CancellationError: IsRetryableProvider {
+    public var isRetryableProvider: Bool { false }
+}
+
+extension SwiftProtobuf.BinaryDecodingError: IsRetryableProvider {
+    public var isRetryableProvider: Bool { false }
+}
+
+extension SwiftProtobuf.BinaryEncodingError: IsRetryableProvider {
     public var isRetryableProvider: Bool { false }
 }
 

@@ -55,6 +55,8 @@ public class Cron {
     private let metadataStore: NewKeyValueStore
     private let jobs: AtomicValue<[(CronContext) async -> Void]>
 
+    public static let jitterFactor: Double = 20
+
     /// Unique keys that identify Cron jobs.
     ///
     /// All state related to these keys is cleared when the app's version number
@@ -73,6 +75,7 @@ public class Cron {
         case fetchSenderCertificates
         case fetchStaleGroup
         case fetchStaleProfiles
+        case fetchStorageService
         case fetchSubscriptionConfig
         case refreshBackup
         case updateAttributes
@@ -168,7 +171,7 @@ public class Cron {
                     // completed so that we wait for `approximateInterval` before retrying.
                     Logger.info("job \(uniqueKey) reached terminal result: \(result)")
                     await db.awaitableWrite { tx in
-                        store.setMostRecentDate(Date(), jitter: approximateInterval / 20, tx: tx)
+                        store.setMostRecentDate(Date(), jitter: approximateInterval / Self.jitterFactor, tx: tx)
                     }
                 }
             },

@@ -11,6 +11,7 @@ import XCTest
 
 private class MockStorageServiceManager: StorageServiceManager {
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
+    func registerForCron(_ cron: Cron) {}
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}

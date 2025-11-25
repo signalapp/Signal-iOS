@@ -637,6 +637,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     }
 
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) { owsFail("Not implemented!") }
+    func registerForCron(_ cron: Cron) { owsFail("Not implemented.") }
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { owsFail("Not implemented") }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { owsFail("Not implemented") }
     func waitForPendingRestores() async throws { owsFail("Not implemented") }

@@ -11,6 +11,7 @@ public import SignalRingRTC
 
 public class FakeStorageServiceManager: StorageServiceManager {
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
+    public func registerForCron(_ cron: Cron) {}
 
     public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
     public func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { false }

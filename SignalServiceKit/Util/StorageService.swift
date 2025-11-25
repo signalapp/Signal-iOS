@@ -6,7 +6,7 @@
 import LibSignalClient
 
 public struct StorageService {
-    public enum StorageError: Error {
+    public enum StorageError: Error, IsRetryableProvider {
         /// We found a manifest with a conflicting version number.
         case conflictingManifest(StorageServiceProtoManifestRecord)
 
@@ -15,6 +15,16 @@ public struct StorageService {
 
         case itemDecryptionFailed(identifier: StorageIdentifier)
         case itemProtoDeserializationFailed(identifier: StorageIdentifier)
+
+        public var isRetryableProvider: Bool {
+            switch self {
+            case .conflictingManifest: true
+            case .manifestDecryptionFailed: false
+            case .manifestProtoDeserializationFailed: false
+            case .itemDecryptionFailed: false
+            case .itemProtoDeserializationFailed: false
+            }
+        }
     }
 
     public enum MasterKeySource: Equatable {
