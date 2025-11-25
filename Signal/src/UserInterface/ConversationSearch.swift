@@ -306,6 +306,16 @@ public class SearchResultsBar: UIView {
     }
 
     func updateBarItems() {
+        defer {
+            if #available(iOS 26, *) {
+                if labelItem.title.isEmptyOrNil {
+                    toolbar.items = [ showLessRecentButton, showMoreRecentButton, .flexibleSpace() ]
+                } else {
+                    toolbar.items = [ showLessRecentButton, showMoreRecentButton, .flexibleSpace(), labelItem, .flexibleSpace() ]
+                }
+            }
+        }
+
         guard let resultSet else {
             labelItem.title = nil
             showMoreRecentButton.isEnabled = false
