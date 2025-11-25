@@ -32,7 +32,6 @@ public enum MimeType: String {
 public enum MimeTypeUtil {
 
     // MARK: - Constants
-    public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
     public static let oversizeTextAttachmentFileExtension = "txt"
     public static let syncMessageFileExtension = "bin"
 

@@ -281,9 +281,6 @@ public class SignalAttachment: NSObject {
                 }
             }
         }
-        if isOversizeText {
-            return MimeType.textXSignalPlain.rawValue
-        }
         return UTType(dataUTI)?.preferredMIMEType ?? MimeType.applicationOctetStream.rawValue
     }
 
@@ -316,9 +313,6 @@ public class SignalAttachment: NSObject {
             if !fileExtension.isEmpty {
                 return fileExtension.filterFilename()
             }
-        }
-        if isOversizeText {
-            return MimeTypeUtil.oversizeTextAttachmentFileExtension
         }
         guard let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI) else {
             return nil
@@ -395,15 +389,6 @@ public class SignalAttachment: NSObject {
 
     public var isAudio: Bool {
         return SignalAttachment.audioUTISet.contains(dataUTI)
-    }
-
-    public var isOversizeText: Bool {
-        return dataUTI == MimeTypeUtil.oversizeTextAttachmentUti
-    }
-
-    public var isText: Bool {
-        let isText = UTType(dataUTI)?.conforms(to: .text) ?? false
-        return isText || isOversizeText
     }
 
     public var isUrl: Bool {
