@@ -1178,7 +1178,6 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   /// Clears the value of `pollTerminate`. Subsequent reads from it will return its default value.
   mutating func clearPollTerminate() {_uniqueStorage()._pollTerminate = nil}
 
-  /// NEXT ID: 27
   var pollVote: SignalServiceProtos_DataMessage.PollVote {
     get {return _storage._pollVote ?? SignalServiceProtos_DataMessage.PollVote()}
     set {_uniqueStorage()._pollVote = newValue}
@@ -1187,6 +1186,25 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   var hasPollVote: Bool {return _storage._pollVote != nil}
   /// Clears the value of `pollVote`. Subsequent reads from it will return its default value.
   mutating func clearPollVote() {_uniqueStorage()._pollVote = nil}
+
+  var pinMessage: SignalServiceProtos_DataMessage.PinMessage {
+    get {return _storage._pinMessage ?? SignalServiceProtos_DataMessage.PinMessage()}
+    set {_uniqueStorage()._pinMessage = newValue}
+  }
+  /// Returns true if `pinMessage` has been explicitly set.
+  var hasPinMessage: Bool {return _storage._pinMessage != nil}
+  /// Clears the value of `pinMessage`. Subsequent reads from it will return its default value.
+  mutating func clearPinMessage() {_uniqueStorage()._pinMessage = nil}
+
+  /// NEXT ID: 29
+  var unpinMessage: SignalServiceProtos_DataMessage.UnpinMessage {
+    get {return _storage._unpinMessage ?? SignalServiceProtos_DataMessage.UnpinMessage()}
+    set {_uniqueStorage()._unpinMessage = newValue}
+  }
+  /// Returns true if `unpinMessage` has been explicitly set.
+  var hasUnpinMessage: Bool {return _storage._unpinMessage != nil}
+  /// Clears the value of `unpinMessage`. Subsequent reads from it will return its default value.
+  mutating func clearUnpinMessage() {_uniqueStorage()._unpinMessage = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2181,6 +2199,92 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetAuthorAciBinary: Data? = nil
     fileprivate var _targetSentTimestamp: UInt64? = nil
     fileprivate var _voteCount: UInt32? = nil
+  }
+
+  struct PinMessage: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// 16-byte UUID
+    var targetAuthorAciBinary: Data {
+      get {return _targetAuthorAciBinary ?? Data()}
+      set {_targetAuthorAciBinary = newValue}
+    }
+    /// Returns true if `targetAuthorAciBinary` has been explicitly set.
+    var hasTargetAuthorAciBinary: Bool {return self._targetAuthorAciBinary != nil}
+    /// Clears the value of `targetAuthorAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearTargetAuthorAciBinary() {self._targetAuthorAciBinary = nil}
+
+    var targetSentTimestamp: UInt64 {
+      get {return _targetSentTimestamp ?? 0}
+      set {_targetSentTimestamp = newValue}
+    }
+    /// Returns true if `targetSentTimestamp` has been explicitly set.
+    var hasTargetSentTimestamp: Bool {return self._targetSentTimestamp != nil}
+    /// Clears the value of `targetSentTimestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTargetSentTimestamp() {self._targetSentTimestamp = nil}
+
+    /// oneof pinDuration {
+    var pinDurationSeconds: UInt32 {
+      get {return _pinDurationSeconds ?? 0}
+      set {_pinDurationSeconds = newValue}
+    }
+    /// Returns true if `pinDurationSeconds` has been explicitly set.
+    var hasPinDurationSeconds: Bool {return self._pinDurationSeconds != nil}
+    /// Clears the value of `pinDurationSeconds`. Subsequent reads from it will return its default value.
+    mutating func clearPinDurationSeconds() {self._pinDurationSeconds = nil}
+
+    /// }
+    var pinDurationForever: Bool {
+      get {return _pinDurationForever ?? false}
+      set {_pinDurationForever = newValue}
+    }
+    /// Returns true if `pinDurationForever` has been explicitly set.
+    var hasPinDurationForever: Bool {return self._pinDurationForever != nil}
+    /// Clears the value of `pinDurationForever`. Subsequent reads from it will return its default value.
+    mutating func clearPinDurationForever() {self._pinDurationForever = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _targetAuthorAciBinary: Data? = nil
+    fileprivate var _targetSentTimestamp: UInt64? = nil
+    fileprivate var _pinDurationSeconds: UInt32? = nil
+    fileprivate var _pinDurationForever: Bool? = nil
+  }
+
+  struct UnpinMessage: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// 16-byte UUID
+    var targetAuthorAciBinary: Data {
+      get {return _targetAuthorAciBinary ?? Data()}
+      set {_targetAuthorAciBinary = newValue}
+    }
+    /// Returns true if `targetAuthorAciBinary` has been explicitly set.
+    var hasTargetAuthorAciBinary: Bool {return self._targetAuthorAciBinary != nil}
+    /// Clears the value of `targetAuthorAciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearTargetAuthorAciBinary() {self._targetAuthorAciBinary = nil}
+
+    var targetSentTimestamp: UInt64 {
+      get {return _targetSentTimestamp ?? 0}
+      set {_targetSentTimestamp = newValue}
+    }
+    /// Returns true if `targetSentTimestamp` has been explicitly set.
+    var hasTargetSentTimestamp: Bool {return self._targetSentTimestamp != nil}
+    /// Clears the value of `targetSentTimestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTargetSentTimestamp() {self._targetSentTimestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _targetAuthorAciBinary: Data? = nil
+    fileprivate var _targetSentTimestamp: UInt64? = nil
   }
 
   init() {}
@@ -5503,7 +5607,7 @@ extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNa
 
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DataMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}body\0\u{1}attachments\0\u{2}\u{2}flags\0\u{1}expireTimer\0\u{1}profileKey\0\u{1}timestamp\0\u{1}quote\0\u{1}contact\0\u{1}preview\0\u{1}sticker\0\u{1}requiredProtocolVersion\0\u{2}\u{2}isViewOnce\0\u{1}groupV2\0\u{1}reaction\0\u{1}delete\0\u{1}bodyRanges\0\u{1}groupCallUpdate\0\u{1}payment\0\u{1}storyContext\0\u{1}giftBadge\0\u{1}expireTimerVersion\0\u{1}pollCreate\0\u{1}pollTerminate\0\u{1}pollVote\0\u{c}\u{3}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}body\0\u{1}attachments\0\u{2}\u{2}flags\0\u{1}expireTimer\0\u{1}profileKey\0\u{1}timestamp\0\u{1}quote\0\u{1}contact\0\u{1}preview\0\u{1}sticker\0\u{1}requiredProtocolVersion\0\u{2}\u{2}isViewOnce\0\u{1}groupV2\0\u{1}reaction\0\u{1}delete\0\u{1}bodyRanges\0\u{1}groupCallUpdate\0\u{1}payment\0\u{1}storyContext\0\u{1}giftBadge\0\u{1}expireTimerVersion\0\u{1}pollCreate\0\u{1}pollTerminate\0\u{1}pollVote\0\u{1}pinMessage\0\u{1}unpinMessage\0\u{c}\u{3}\u{1}")
 
   fileprivate class _StorageClass {
     var _body: String? = nil
@@ -5530,6 +5634,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _pollCreate: SignalServiceProtos_DataMessage.PollCreate? = nil
     var _pollTerminate: SignalServiceProtos_DataMessage.PollTerminate? = nil
     var _pollVote: SignalServiceProtos_DataMessage.PollVote? = nil
+    var _pinMessage: SignalServiceProtos_DataMessage.PinMessage? = nil
+    var _unpinMessage: SignalServiceProtos_DataMessage.UnpinMessage? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -5564,6 +5670,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _pollCreate = source._pollCreate
       _pollTerminate = source._pollTerminate
       _pollVote = source._pollVote
+      _pinMessage = source._pinMessage
+      _unpinMessage = source._unpinMessage
     }
   }
 
@@ -5606,6 +5714,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 24: try { try decoder.decodeSingularMessageField(value: &_storage._pollCreate) }()
         case 25: try { try decoder.decodeSingularMessageField(value: &_storage._pollTerminate) }()
         case 26: try { try decoder.decodeSingularMessageField(value: &_storage._pollVote) }()
+        case 27: try { try decoder.decodeSingularMessageField(value: &_storage._pinMessage) }()
+        case 28: try { try decoder.decodeSingularMessageField(value: &_storage._unpinMessage) }()
         default: break
         }
       }
@@ -5690,6 +5800,12 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._pollVote {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 26)
       } }()
+      try { if let v = _storage._pinMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 27)
+      } }()
+      try { if let v = _storage._unpinMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 28)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5723,6 +5839,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._pollCreate != rhs_storage._pollCreate {return false}
         if _storage._pollTerminate != rhs_storage._pollTerminate {return false}
         if _storage._pollVote != rhs_storage._pollVote {return false}
+        if _storage._pinMessage != rhs_storage._pinMessage {return false}
+        if _storage._unpinMessage != rhs_storage._unpinMessage {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6894,6 +7012,94 @@ extension SignalServiceProtos_DataMessage.PollVote: SwiftProtobuf.Message, Swift
     if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
     if lhs.optionIndexes != rhs.optionIndexes {return false}
     if lhs._voteCount != rhs._voteCount {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.PinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".PinMessage"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0\u{1}pinDurationSeconds\0\u{1}pinDurationForever\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._targetAuthorAciBinary) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._targetSentTimestamp) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._pinDurationSeconds) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self._pinDurationForever) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._targetAuthorAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._targetSentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._pinDurationSeconds {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._pinDurationForever {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.PinMessage, rhs: SignalServiceProtos_DataMessage.PinMessage) -> Bool {
+    if lhs._targetAuthorAciBinary != rhs._targetAuthorAciBinary {return false}
+    if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
+    if lhs._pinDurationSeconds != rhs._pinDurationSeconds {return false}
+    if lhs._pinDurationForever != rhs._pinDurationForever {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.UnpinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".UnpinMessage"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._targetAuthorAciBinary) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._targetSentTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._targetAuthorAciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._targetSentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.UnpinMessage, rhs: SignalServiceProtos_DataMessage.UnpinMessage) -> Bool {
+    if lhs._targetAuthorAciBinary != rhs._targetAuthorAciBinary {return false}
+    if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

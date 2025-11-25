@@ -8463,6 +8463,382 @@ extension SSKProtoDataMessagePollVoteBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessagePinMessage
+
+@objc
+public class SSKProtoDataMessagePinMessage: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.PinMessage
+
+    @objc
+    public var targetAuthorAciBinary: Data? {
+        guard hasTargetAuthorAciBinary else {
+            return nil
+        }
+        return proto.targetAuthorAciBinary
+    }
+    @objc
+    public var hasTargetAuthorAciBinary: Bool {
+        return proto.hasTargetAuthorAciBinary
+    }
+
+    @objc
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
+    }
+    @objc
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
+    }
+
+    @objc
+    public var pinDurationSeconds: UInt32 {
+        return proto.pinDurationSeconds
+    }
+    @objc
+    public var hasPinDurationSeconds: Bool {
+        return proto.hasPinDurationSeconds
+    }
+
+    @objc
+    public var pinDurationForever: Bool {
+        return proto.pinDurationForever
+    }
+    @objc
+    public var hasPinDurationForever: Bool {
+        return proto.hasPinDurationForever
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.PinMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.PinMessage(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.PinMessage) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessagePinMessage {
+    @objc
+    public static func builder() -> SSKProtoDataMessagePinMessageBuilder {
+        return SSKProtoDataMessagePinMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePinMessageBuilder {
+        let builder = SSKProtoDataMessagePinMessageBuilder()
+        if let _value = targetAuthorAciBinary {
+            builder.setTargetAuthorAciBinary(_value)
+        }
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
+        }
+        if hasPinDurationSeconds {
+            builder.setPinDurationSeconds(pinDurationSeconds)
+        }
+        if hasPinDurationForever {
+            builder.setPinDurationForever(pinDurationForever)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessagePinMessageBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.PinMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetAuthorAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    public func setTargetAuthorAciBinary(_ valueParam: Data) {
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
+    }
+
+    @objc
+    public func setPinDurationSeconds(_ valueParam: UInt32) {
+        proto.pinDurationSeconds = valueParam
+    }
+
+    @objc
+    public func setPinDurationForever(_ valueParam: Bool) {
+        proto.pinDurationForever = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessagePinMessage {
+        return SSKProtoDataMessagePinMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessagePinMessage(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessagePinMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePinMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePinMessage? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessageUnpinMessage
+
+@objc
+public class SSKProtoDataMessageUnpinMessage: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.UnpinMessage
+
+    @objc
+    public var targetAuthorAciBinary: Data? {
+        guard hasTargetAuthorAciBinary else {
+            return nil
+        }
+        return proto.targetAuthorAciBinary
+    }
+    @objc
+    public var hasTargetAuthorAciBinary: Bool {
+        return proto.hasTargetAuthorAciBinary
+    }
+
+    @objc
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
+    }
+    @objc
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.UnpinMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.UnpinMessage(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.UnpinMessage) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessageUnpinMessage {
+    @objc
+    public static func builder() -> SSKProtoDataMessageUnpinMessageBuilder {
+        return SSKProtoDataMessageUnpinMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageUnpinMessageBuilder {
+        let builder = SSKProtoDataMessageUnpinMessageBuilder()
+        if let _value = targetAuthorAciBinary {
+            builder.setTargetAuthorAciBinary(_value)
+        }
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessageUnpinMessageBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.UnpinMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetAuthorAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    public func setTargetAuthorAciBinary(_ valueParam: Data) {
+        proto.targetAuthorAciBinary = valueParam
+    }
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageUnpinMessage {
+        return SSKProtoDataMessageUnpinMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessageUnpinMessage(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessageUnpinMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageUnpinMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageUnpinMessage? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -8587,6 +8963,12 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     public let pollVote: SSKProtoDataMessagePollVote?
 
     @objc
+    public let pinMessage: SSKProtoDataMessagePinMessage?
+
+    @objc
+    public let unpinMessage: SSKProtoDataMessageUnpinMessage?
+
+    @objc
     public var body: String? {
         guard hasBody else {
             return nil
@@ -8688,7 +9070,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                  giftBadge: SSKProtoDataMessageGiftBadge?,
                  pollCreate: SSKProtoDataMessagePollCreate?,
                  pollTerminate: SSKProtoDataMessagePollTerminate?,
-                 pollVote: SSKProtoDataMessagePollVote?) {
+                 pollVote: SSKProtoDataMessagePollVote?,
+                 pinMessage: SSKProtoDataMessagePinMessage?,
+                 unpinMessage: SSKProtoDataMessageUnpinMessage?) {
         self.proto = proto
         self.attachments = attachments
         self.groupV2 = groupV2
@@ -8706,6 +9090,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         self.pollCreate = pollCreate
         self.pollTerminate = pollTerminate
         self.pollVote = pollVote
+        self.pinMessage = pinMessage
+        self.unpinMessage = unpinMessage
     }
 
     @objc
@@ -8792,6 +9178,16 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             pollVote = SSKProtoDataMessagePollVote(proto.pollVote)
         }
 
+        var pinMessage: SSKProtoDataMessagePinMessage?
+        if proto.hasPinMessage {
+            pinMessage = SSKProtoDataMessagePinMessage(proto.pinMessage)
+        }
+
+        var unpinMessage: SSKProtoDataMessageUnpinMessage?
+        if proto.hasUnpinMessage {
+            unpinMessage = SSKProtoDataMessageUnpinMessage(proto.unpinMessage)
+        }
+
         self.init(proto: proto,
                   attachments: attachments,
                   groupV2: groupV2,
@@ -8808,7 +9204,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                   giftBadge: giftBadge,
                   pollCreate: pollCreate,
                   pollTerminate: pollTerminate,
-                  pollVote: pollVote)
+                  pollVote: pollVote,
+                  pinMessage: pinMessage,
+                  unpinMessage: unpinMessage)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -8920,6 +9318,12 @@ extension SSKProtoDataMessage {
         }
         if let _value = pollVote {
             builder.setPollVote(_value)
+        }
+        if let _value = pinMessage {
+            builder.setPinMessage(_value)
+        }
+        if let _value = unpinMessage {
+            builder.setUnpinMessage(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -9158,6 +9562,28 @@ public class SSKProtoDataMessageBuilder: NSObject {
 
     public func setPollVote(_ valueParam: SSKProtoDataMessagePollVote) {
         proto.pollVote = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPinMessage(_ valueParam: SSKProtoDataMessagePinMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.pinMessage = valueParam.proto
+    }
+
+    public func setPinMessage(_ valueParam: SSKProtoDataMessagePinMessage) {
+        proto.pinMessage = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUnpinMessage(_ valueParam: SSKProtoDataMessageUnpinMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.unpinMessage = valueParam.proto
+    }
+
+    public func setUnpinMessage(_ valueParam: SSKProtoDataMessageUnpinMessage) {
+        proto.unpinMessage = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

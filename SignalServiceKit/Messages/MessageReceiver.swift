@@ -1313,6 +1313,45 @@ public final class MessageReceiver {
             return nil
         }
 
+        if BuildFlags.PinnedMessages.receive,
+           thread.canUserEditPinnedMessages(aci: envelope.sourceAci) {
+            if let pinMessage = dataMessage.pinMessage,
+               let threadId = thread.grdbId?.int64Value
+            {
+                do {
+                    let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
+                        pinMessageProto: pinMessage,
+                        threadId: threadId,
+                        timestamp: Int64(dataMessage.timestamp),
+                        transaction: tx
+                    )
+
+                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                    return nil
+                } catch {
+                    owsFailDebug("Could not pin message \(error)")
+                    return nil
+                }
+            }
+
+            if let unpinMessage = dataMessage.unpinMessage {
+                do {
+                    let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.unpinMessage(
+                        unpinMessageProto: unpinMessage,
+                        transaction: tx
+                    )
+
+                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+
+                    return nil
+                } catch {
+                    owsFailDebug("Could not unpin message \(error)")
+                    return nil
+                }
+            }
+        }
+
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
         let messageBuilder = TSIncomingMessageBuilder(

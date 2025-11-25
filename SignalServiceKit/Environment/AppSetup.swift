@@ -1004,7 +1004,10 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore
         )
 
-        let pinnedMessageManager = PinnedMessageManager()
+        let pinnedMessageManager = PinnedMessageManager(
+            interactionStore: interactionStore,
+            accountManager: tsAccountManager
+        )
 
         let storyRecipientStore = StoryRecipientStore()
         let storyRecipientManager = StoryRecipientManager(
