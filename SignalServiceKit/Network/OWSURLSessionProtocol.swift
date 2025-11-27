@@ -76,7 +76,6 @@ public struct OWSUrlDownloadResponse {
 struct OWSUrlFrontingInfo {
     public let frontingURLWithoutPathPrefix: URL
     public let frontingURLWithPathPrefix: URL
-    public let unfrontedBaseUrl: URL
 
     func isFrontedUrl(_ urlString: String) -> Bool {
         urlString.lowercased().hasPrefix(frontingURLWithoutPathPrefix.absoluteString)
@@ -162,12 +161,6 @@ public protocol OWSURLSessionProtocol: AnyObject {
 }
 
 extension OWSURLSessionProtocol {
-    var unfrontedBaseUrl: URL? {
-        endpoint.frontingInfo?.unfrontedBaseUrl ?? endpoint.baseUrl
-    }
-
-    // MARK: Convenience Methods
-
     init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,

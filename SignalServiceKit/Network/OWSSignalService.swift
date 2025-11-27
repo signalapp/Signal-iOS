@@ -160,11 +160,9 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             let censorshipConfiguration = censorshipConfigurationParams.build()
             let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseUrl
             let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(censorshipCircumventionPathPrefix)
-            let unfrontedBaseUrl = baseUrl
             let frontingInfo = OWSUrlFrontingInfo(
                 frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
                 frontingURLWithPathPrefix: frontingURLWithPathPrefix,
-                unfrontedBaseUrl: unfrontedBaseUrl
             )
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
