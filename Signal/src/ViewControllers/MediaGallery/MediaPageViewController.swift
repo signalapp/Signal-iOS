@@ -70,15 +70,27 @@ class MediaPageViewController: UIPageViewController {
 
     // MARK: - Controls
 
-    private var needsCompactToolbars: Bool {
-        traitCollection.horizontalSizeClass == .compact && traitCollection.verticalSizeClass == .compact
-    }
-
     // Top Bar
-    private lazy var topPanel = buildChromePanelView()
-    private var topBarVerticalPositionConstraint: NSLayoutConstraint?
-    private var topBarHeightConstraint: NSLayoutConstraint?
-    private var topBarHeight: CGFloat { needsCompactToolbars ? 32 : 44 }
+    private lazy var topPanel: UIView = {
+        let view = UIView()
+        view.preservesSuperviewLayoutMargins = true
+
+        // iOS 26: Transparent bar with glass backgrounds for controls.
+        // Pre-iOS 26: blur background.
+        if #unavailable(iOS 26) {
+            let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+            blurBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(blurBackgroundView)
+            NSLayoutConstraint.activate([
+                blurBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+                blurBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                blurBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                blurBackgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
+        }
+        return view
+    }()
+    private var navigationBarVerticalPositionConstraint: NSLayoutConstraint?
 
     // Bottom Bar
     private lazy var bottomMediaPanel = MediaControlPanelView(
@@ -91,7 +103,7 @@ class MediaPageViewController: UIPageViewController {
     // MARK: UIViewController
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        guard !Theme.isDarkThemeEnabled else {
+        if Theme.isDarkThemeEnabled {
             return .lightContent
         }
 
@@ -121,7 +133,8 @@ class MediaPageViewController: UIPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.darkThemeBackgroundColor
+        overrideUserInterfaceStyle = .dark
+        view.backgroundColor = .Signal.background
 
         mediaInteractiveDismiss.addGestureRecognizer(to: view)
 
@@ -131,25 +144,46 @@ class MediaPageViewController: UIPageViewController {
         // Use UINavigation bar to ensure position of the < back button matches exactly of one in the presenting VC.
         let navigationBar = UINavigationBar()
         navigationBar.delegate = self
-        navigationBar.tintColor = Theme.darkThemePrimaryColor
+        navigationBar.tintColor = .Signal.label
+        navigationBar.isUserInteractionEnabled = true
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.overrideUserInterfaceStyle = .dark
         navigationBar.setItems([ UINavigationItem(title: ""), navigationItem ], animated: false)
+        navigationBar.translatesAutoresizingMaskIntoConstraints = false
         topPanel.addSubview(navigationBar)
-        navigationBar.autoPinEdge(toSuperviewSafeArea: .leading)
-        navigationBar.autoPinEdge(toSuperviewSafeArea: .trailing)
-        navigationBar.autoPinEdge(toSuperviewEdge: .bottom)
+
         // See `viewSafeAreaInsetsDidChange` why this is needed.
-        topBarVerticalPositionConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)
-        topBarHeightConstraint = navigationBar.autoSetDimension(.height, toSize: topBarHeight)
+        navigationBarVerticalPositionConstraint = navigationBar.topAnchor.constraint(equalTo: topPanel.topAnchor)
+        NSLayoutConstraint.activate([
+            navigationBarVerticalPositionConstraint!,
+            navigationBar.bottomAnchor.constraint(equalTo: topPanel.bottomAnchor),
+        ])
+
+        // On iOS 26 navigation bar extends all the way to left and right screen edges even in landscape.
+        if #available(iOS 26, *) {
+            NSLayoutConstraint.activate([
+                navigationBar.leadingAnchor.constraint(equalTo: topPanel.leadingAnchor),
+                navigationBar.trailingAnchor.constraint(equalTo: topPanel.trailingAnchor),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                navigationBar.leadingAnchor.constraint(equalTo: topPanel.safeAreaLayoutGuide.leadingAnchor),
+                navigationBar.trailingAnchor.constraint(equalTo: topPanel.safeAreaLayoutGuide.trailingAnchor),
+            ])
+        }
+
+        // Add top panel and constrain it to view's leading, top and trailing edges.
+        // Navigation bar (set up above) determines this panel's height.
+        topPanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(topPanel)
-        topPanel.autoPinWidthToSuperview()
-        topPanel.autoPinEdge(toSuperviewEdge: .top)
-        updateContextMenuButtonIcon()
+        NSLayoutConstraint.activate([
+            topPanel.topAnchor.constraint(equalTo: view.topAnchor),
+            topPanel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topPanel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
         // Bottom panel
         view.addSubview(bottomMediaPanel)
@@ -173,15 +207,11 @@ class MediaPageViewController: UIPageViewController {
         if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
             updateControlsForCurrentOrientation()
         }
-        if let topBarHeightConstraint {
-            topBarHeightConstraint.constant = topBarHeight
-        }
-        updateContextMenuButtonIcon()
     }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        if let topBarVerticalPositionConstraint {
+        if let navigationBarVerticalPositionConstraint {
             // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
             // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
             // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
@@ -190,7 +220,11 @@ class MediaPageViewController: UIPageViewController {
             if topInset == 59 {
                 topInset -= 5 + .hairlineWidth
             }
-            topBarVerticalPositionConstraint.constant = topInset
+            // On iOS 26 in landscape the navigation bar is offset 24 dp from the screen top edge.
+            if #available(iOS 26, *), topInset.isZero {
+                topInset = 24
+            }
+            navigationBarVerticalPositionConstraint.constant = topInset
         }
     }
 
@@ -262,7 +296,6 @@ class MediaPageViewController: UIPageViewController {
         )
 
         updateScreenTitle(using: currentViewController.galleryItem)
-        updateContextMenuActions()
         currentViewController.videoPlaybackStatusObserver = bottomMediaPanel
         showOrHideTopAndBottomPanelsAsNecessary(animated: animated)
     }
@@ -309,63 +342,53 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Context Menu
 
     private lazy var contextMenuBarButton: UIBarButtonItem = {
-        let contextButton = ContextMenuButton(empty: ())
-        contextButton.overrideUserInterfaceStyle = .dark
-        return UIBarButtonItem(customView: contextButton)
+        let buttonImageName: String = if #available(iOS 26, *) { "more" } else { "more-circle" }
+        let contextMenuBarButton = UIBarButtonItem(
+            image: UIImage(named: buttonImageName),
+            landscapeImagePhone: UIImage(named: buttonImageName + "-20"),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        contextMenuBarButton.menu = UIMenu(
+            title: "",
+            children: [
+                // TODO: Video Playback Speed
+                // TODO: Edit
+                UIAction(
+                    title: OWSLocalizedString(
+                        "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
+                        comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app."
+                    ),
+                    image: Theme.iconImage(.contextMenuSave),
+                    handler: { [weak self] _ in
+                        self?.saveCurrentMediaToPhotos()
+                    }
+                ),
+                UIAction(
+                    title: OWSLocalizedString(
+                        "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
+                        comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video."
+                    ),
+                    image: Theme.iconImage(.buttonMessage),
+                    handler: { [weak self] _ in
+                        self?.presentConversationForCurrentMedia()
+                    }
+                ),
+                UIAction(
+                    title: OWSLocalizedString(
+                        "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
+                        comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
+                    ),
+                    image: Theme.iconImage(.contextMenuDelete),
+                    attributes: .destructive,
+                    handler: { [weak self] _ in
+                        self?.deleteCurrentMedia()
+                    }
+                )
+            ])
+        return contextMenuBarButton
     }()
-
-    private func updateContextMenuButtonIcon() {
-        guard let button = contextMenuBarButton.customView as? UIButton else {
-            owsFailDebug("button is nil")
-            return
-        }
-        let imageResourceName = needsCompactToolbars ? "more-circle-20" : "more-circle"
-        let buttonImage = UIImage(imageLiteralResourceName: imageResourceName)
-        button.setImage(buttonImage, for: .normal)
-    }
-
-    private func updateContextMenuActions() {
-        guard let contextMenuButton = contextMenuBarButton.customView as? ContextMenuButton else {
-            owsFailDebug("contextMenuButton == nil")
-            return
-        }
-
-        var contextMenuActions = [UIAction]()
-        // TODO: Video Playback Speed
-        // TODO: Edit
-        contextMenuActions.append(UIAction(
-            title: OWSLocalizedString(
-                "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
-                comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app."
-            ),
-            image: Theme.iconImage(.contextMenuSave),
-            handler: { [weak self] _ in
-                self?.saveCurrentMediaToPhotos()
-            }
-        ))
-        contextMenuActions.append(UIAction(
-            title: OWSLocalizedString(
-                "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
-                comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video."
-            ),
-            image: Theme.iconImage(.buttonMessage),
-            handler: { [weak self] _ in
-                self?.presentConversationForCurrentMedia()
-            }
-        ))
-        contextMenuActions.append(UIAction(
-            title: OWSLocalizedString(
-                "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
-                comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
-            ),
-            image: Theme.iconImage(.contextMenuDelete),
-            attributes: .destructive,
-            handler: { [weak self] _ in
-                self?.deleteCurrentMedia()
-            }
-        ))
-        contextMenuButton.setActions(actions: contextMenuActions)
-    }
 
     // MARK: Bar Buttons
 
@@ -386,18 +409,6 @@ class MediaPageViewController: UIPageViewController {
     )
 
     // MARK: Helpers
-
-    private func buildChromePanelView() -> UIView {
-        let view = UIView()
-        view.tintColor = Theme.darkThemePrimaryColor
-        view.preservesSuperviewLayoutMargins = true
-
-        let blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
-        let blurBackgroundView = UIVisualEffectView(effect: blurEffect)
-        view.addSubview(blurBackgroundView)
-        blurBackgroundView.autoPinEdgesToSuperviewEdges()
-        return view
-    }
 
     private func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         guard let currentViewController else { return }
@@ -576,43 +587,71 @@ class MediaPageViewController: UIPageViewController {
 
     private lazy var headerNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.regularFont(ofSize: 17)
+        label.textColor = .Signal.label
+        if #available(iOS 26, *) {
+            label.font = .dynamicTypeSubheadlineClamped.semibold()
+        } else {
+            label.font = UIFont.regularFont(ofSize: 15)
+        }
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
-
         return label
     }()
 
     private lazy var headerDateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.regularFont(ofSize: 12)
+        label.textColor = .Signal.label
+        if #available(iOS 26, *) {
+            label.font = .dynamicTypeSubheadlineClamped
+        } else {
+            label.font = .regularFont(ofSize: 11)
+        }
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
-
         return label
     }()
 
     private lazy var headerView: UIView = {
         let stackView = UIStackView(arrangedSubviews: [ headerNameLabel, headerDateLabel ])
         stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 0
-        stackView.distribution = .fillProportionally
+        stackView.translatesAutoresizingMaskIntoConstraints = false
 
         let containerView = UIView()
-        containerView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: 4, right: 0)
-        containerView.addSubview(stackView)
+        if #available(iOS 26, *) {
+            // Can't return `glassEffectView` as `headerView` because UINavigationBar stretches it to fill width.
+            let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            glassEffectView.cornerConfiguration = .capsule()
+            glassEffectView.translatesAutoresizingMaskIntoConstraints = false
+            glassEffectView.contentView.addSubview(stackView)
 
-        stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        stackView.setContentHuggingHigh()
-        stackView.autoCenterInSuperview()
+            let contentInset = UIEdgeInsets(hMargin: 24, vMargin: 4)
+            NSLayoutConstraint.activate([
+                stackView.topAnchor.constraint(equalTo: glassEffectView.topAnchor, constant: contentInset.top),
+                stackView.leadingAnchor.constraint(equalTo: glassEffectView.leadingAnchor, constant: contentInset.leading),
+                stackView.trailingAnchor.constraint(equalTo: glassEffectView.trailingAnchor, constant: -contentInset.trailing),
+                stackView.bottomAnchor.constraint(equalTo: glassEffectView.bottomAnchor, constant: -contentInset.bottom),
+            ])
+
+            containerView.addSubview(glassEffectView)
+            NSLayoutConstraint.activate([
+                glassEffectView.topAnchor.constraint(greaterThanOrEqualTo: containerView.topAnchor),
+                glassEffectView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+
+                glassEffectView.leadingAnchor.constraint(greaterThanOrEqualTo: containerView.leadingAnchor),
+                glassEffectView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            ])
+        } else {
+            containerView.addSubview(stackView)
+            NSLayoutConstraint.activate([
+                stackView.topAnchor.constraint(greaterThanOrEqualTo: containerView.topAnchor),
+                stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+
+                stackView.leadingAnchor.constraint(greaterThanOrEqualTo: containerView.leadingAnchor),
+                stackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            ])
+        }
 
         return containerView
     }()
