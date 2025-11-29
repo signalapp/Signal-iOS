@@ -325,11 +325,11 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 break
 
             case .administrator:
-                joinButton.configuration?.title = OWSLocalizedString(
+                messageLabel.text = OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST",
                     comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join."
                 )
-                messageLabel.text = OWSLocalizedString(
+                joinButton.configuration?.title = OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON",
                     comment: "Label for the 'request to join' button in the 'group invite link' action sheet."
                 )
