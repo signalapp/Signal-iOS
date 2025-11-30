@@ -70,7 +70,7 @@ public extension UIButton {
     }
 
     func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
-        guard let image = UIImage(named: imageName) else {
+        guard let image = UIImage(named: imageName, in: Bundle.main.app, compatibleWith: nil) else {
             owsFailDebug("Couldn't load image: \(imageName)")
             return
         }

@@ -605,18 +605,18 @@ public class AvatarBuilder {
             return .tintedImage(
                 // The way we render avatars doesn't respect the asset catalog's
                 // icon direction, so the RTL variant needs to be specified
-                // here, but other uses of "note-resizable" automatically flip.
-                name: CurrentAppContext().isRTL ? "note-rtl" : "note-resizable",
+                // here, but other uses of "note" automatically flip.
+                name: CurrentAppContext().isRTL ? "note-rtl" : "note",
                 theme: theme
             )
         }
 
         static func groupDefault(theme: AvatarTheme) -> Self {
-            return .tintedImage(name: "group-resizable", theme: theme)
+            return .tintedImage(name: "group", theme: theme)
         }
 
         static func contactDefaultIcon(theme: AvatarTheme) -> Self {
-            return .tintedImage(name: "person-resizable", theme: theme)
+            return .tintedImage(name: "person", theme: theme)
         }
 
         fileprivate var cacheKey: String {

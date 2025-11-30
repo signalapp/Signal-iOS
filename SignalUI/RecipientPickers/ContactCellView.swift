@@ -112,7 +112,7 @@ public class ContactCellView: ManualStackView {
 
     private lazy var groupStoryBadgeView: UIView = {
         let backgroundView = UIView.container()
-        let symbolView = UIImageView(image: UIImage(named: "stories-fill-compact"))
+        let symbolView = UIImageView(image: UIImage.appImage(named: "stories-fill-compact"))
         backgroundView.addSubview(symbolView)
         symbolView.tintColor = .ows_white
         symbolView.autoSetDimensions(to: .square(12))

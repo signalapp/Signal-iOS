@@ -35,7 +35,7 @@ class ImageEditorView: UIView {
         let backgroundView = UIView()
         backgroundView.layoutMargins = .init(margin: 9)
 
-        let image = UIImage(named: "trash")
+        let image = UIImage.appImage(named: "trash")
         let imageView = UIImageView(image: image)
         imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFill

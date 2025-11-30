@@ -1049,7 +1049,7 @@ extension CVComponentThreadDetails {
 
         let membersAttributedText = NSAttributedString.composed(of: [
             NSAttributedString.with(
-                image: UIImage(named: "group-resizable")!,
+                image: UIImage(named: "group")!,
                 font: Self.mutualGroupsFont
             ),
             "  ",
@@ -1199,7 +1199,7 @@ extension CVComponentThreadDetails {
             detailsText: phoneNumberString,
             mutualGroupsText: NSAttributedString.composed(of: [
                 NSAttributedString.with(
-                    image: UIImage(named: "group-resizable")!,
+                    image: UIImage(named: "group")!,
                     font: Self.mutualGroupsFont
                 ),
                 "  ",

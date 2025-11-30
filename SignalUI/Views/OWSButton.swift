@@ -102,7 +102,7 @@ open class OWSButton: UIButton {
             setImage(nil, for: .normal)
             return
         }
-        if let image = UIImage(named: imageName) {
+        if let image = UIImage(named: imageName, in: Bundle.main.app, compatibleWith: nil) {
             setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
         } else {
             owsFailDebug("Missing asset: \(imageName)")

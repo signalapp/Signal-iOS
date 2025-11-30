@@ -227,7 +227,7 @@ open class HeroSheetViewController: StackSheetViewController {
 @available(iOS 17, *)
 #Preview("Image") {
     SheetPreviewViewController(sheet: HeroSheetViewController(
-        hero: .image(UIImage(named: "linked-devices")!),
+        hero: .image(UIImage.appImage(named: "linked-devices")!),
         title: LocalizationNotNeeded("Finish linking on your other device"),
         body: LocalizationNotNeeded("Finish linking Signal on your other device."),
         primaryButton: .dismissing(title: CommonStrings.continueButton)
@@ -248,7 +248,7 @@ open class HeroSheetViewController: StackSheetViewController {
 #Preview("Circle icon") {
     SheetPreviewViewController(sheet: HeroSheetViewController(
         hero: .circleIcon(
-            icon: UIImage(named: "key")!,
+            icon: UIImage.appImage(named: "key")!,
             iconSize: 35,
             tintColor: UIColor.Signal.label,
             backgroundColor: UIColor.Signal.background
@@ -263,7 +263,7 @@ open class HeroSheetViewController: StackSheetViewController {
 @available(iOS 17, *)
 #Preview("Footer animation") {
     SheetPreviewViewController(sheet: HeroSheetViewController(
-        hero: .image(UIImage(named: "transfer_complete")!),
+        hero: .image(UIImage.appImage(named: "transfer_complete")!),
         title: LocalizationNotNeeded("Continue on your other device"),
         body: LocalizationNotNeeded("Continue transferring your account on your other device."),
         primary: .hero(.animation(named: "circular_indeterminate", height: 60))

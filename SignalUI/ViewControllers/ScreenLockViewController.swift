@@ -33,7 +33,7 @@ open class ScreenLockViewController: UIViewController {
 
     // MARK: - UI
 
-    private lazy var imageViewLogo = UIImageView(image: UIImage(named: "signal-logo-128-launch-screen"))
+    private lazy var imageViewLogo = UIImageView(image: UIImage.appImage(named: "signal-logo-128-launch-screen"))
     private static var buttonHeight: CGFloat { 40 }
     private lazy var buttonUnlockUI = OWSFlatButton.button(
         title: OWSLocalizedString(
