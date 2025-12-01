@@ -836,6 +836,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             operation: { try await EmojiSearchIndex.updateManifest() },
         )
 
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: {
+                try await blockingManager.syncBlockListIfNecessary(force: false)
+            },
+            handleResult: { _ in
+                // Handled internally by BlockingManager.
+            },
+        )
+
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.

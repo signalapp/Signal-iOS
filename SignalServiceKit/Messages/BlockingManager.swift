@@ -37,25 +37,11 @@ public class BlockingManager {
     #endif
 
     init(
-        appReadiness: AppReadiness,
         blockedGroupStore: BlockedGroupStore,
         blockedRecipientStore: BlockedRecipientStore
     ) {
         self.blockedGroupStore = blockedGroupStore
         self.blockedRecipientStore = blockedRecipientStore
-
-        SwiftSingletons.register(self)
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.observeNotifications()
-            // Once we're ready to send a message, check to see if we need to sync.
-            self.syncIfNeeded()
-        }
-    }
-
-    private func syncIfNeeded() {
-        self.syncQueue.enqueue {
-            await self.sendBlockListSyncMessage(force: false)
-        }
     }
 
     private func didUpdate(wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
@@ -72,8 +58,12 @@ public class BlockingManager {
     private func setNeedsSync(tx: DBWriteTransaction) {
         setChangeToken(fetchChangeToken(tx: tx) + 1, tx: tx)
         tx.addSyncCompletion {
-            self.syncQueue.enqueue {
-                await self.sendBlockListSyncMessage(force: false)
+            self.syncQueue.enqueue { [self] in
+                do {
+                    try await syncBlockListIfNecessary(force: false)
+                } catch {
+                    Logger.warn("Failed to sync block list! \(error)")
+                }
             }
         }
     }
@@ -422,26 +412,7 @@ public class BlockingManager {
         }
     }
 
-    public func syncBlockList() -> Task<Void, any Error> {
-        return self.syncQueue.enqueue {
-            await self.sendBlockListSyncMessage(force: true)
-        }
-    }
-
-    private func sendBlockListSyncMessage(force: Bool) async {
-        do {
-            try await _sendBlockListSyncMessage(force: force)
-        } catch {
-            Logger.warn("\(error)")
-        }
-    }
-
-    private func _sendBlockListSyncMessage(force: Bool) async throws {
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            throw OWSGenericError("Not registered.")
-        }
-
+    public func syncBlockListIfNecessary(force: Bool) async throws {
         let sendResult = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (tx) -> (sendPromise: Promise<Void>, changeToken: UInt64)? in
             // If we're not forcing a sync, then we only sync if our last synced token is stale
             // and we're not in the NSE. We'll leaving syncing to the main app.
@@ -453,6 +424,11 @@ public class BlockingManager {
                 guard !CurrentAppContext().isNSE else {
                     throw OWSGenericError("Can't send in the NSE.")
                 }
+            }
+
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationState(tx: tx).isRegistered else {
+                throw OWSGenericError("Not registered.")
             }
 
             guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
@@ -521,22 +497,6 @@ public class BlockingManager {
 
     public static let blockListDidChange = Notification.Name("blockListDidChange")
     public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
-
-    fileprivate func observeNotifications() {
-        AssertIsOnMainThread()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil
-        )
-    }
-
-    @objc
-    private func applicationDidBecomeActive() {
-        syncIfNeeded()
-    }
 
     // MARK: - Persistence
 

@@ -286,7 +286,6 @@ extension AppSetup.GlobalsContinuation {
         )
         let blockedRecipientStore = BlockedRecipientStore()
         let blockingManager = BlockingManager(
-            appReadiness: appReadiness,
             blockedGroupStore: BlockedGroupStore(),
             blockedRecipientStore: blockedRecipientStore
         )

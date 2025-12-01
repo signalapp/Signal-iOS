@@ -792,7 +792,11 @@ public final class MessageReceiver {
             let pendingTask = Self.buildPendingTask()
             Task {
                 defer { pendingTask.complete() }
-                try? await SSKEnvironment.shared.blockingManagerRef.syncBlockList().value
+                do {
+                    try await SSKEnvironment.shared.blockingManagerRef.syncBlockListIfNecessary(force: true)
+                } catch {
+                    Logger.warn("Failed to send block list sync message! \(error)")
+                }
             }
 
         case .configuration:
