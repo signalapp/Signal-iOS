@@ -1068,17 +1068,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
         )
     }
 
-    public class func copyToVideoTempDir(url fromUrl: URL) throws -> URL {
-        let baseDir = SignalAttachment.videoTempPath.appendingPathComponent(UUID().uuidString, isDirectory: true)
-        OWSFileSystem.ensureDirectoryExists(baseDir.path)
-        let toUrl = baseDir.appendingPathComponent(fromUrl.lastPathComponent)
-
-        Logger.debug("moving \(fromUrl) -> \(toUrl)")
-        try FileManager.default.copyItem(at: fromUrl, to: toUrl)
-
-        return toUrl
-    }
-
     private class var videoTempPath: URL {
         let videoDir = URL(fileURLWithPath: OWSTemporaryDirectory()).appendingPathComponent("video")
         OWSFileSystem.ensureDirectoryExists(videoDir.path)
