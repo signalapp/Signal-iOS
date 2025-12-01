@@ -30,8 +30,9 @@ extension ThreadUtil {
                 let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
                     try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
+                let attachmentContentValidator = DependenciesBridge.shared.attachmentContentValidator
                 let attachments = try await approvedAttachments.attachments.mapAsync {
-                    try await $0.forSending()
+                    try await $0.forSending(attachmentContentValidator: attachmentContentValidator)
                 }
                 let quotedReplyDraft = try await quotedReplyDraft.mapAsync {
                     try await DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)

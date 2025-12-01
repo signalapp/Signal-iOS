@@ -17,11 +17,11 @@ extension SignalAttachment {
         }
     }
 
-    public func forSending() async throws -> ForSending {
-        let dataSource = try await self.buildAttachmentDataSource()
-        return .init(
+    public func forSending(attachmentContentValidator: any AttachmentContentValidator) async throws -> ForSending {
+        let dataSource = try await self.buildAttachmentDataSource(attachmentContentValidator: attachmentContentValidator)
+        return ForSending(
             dataSource: dataSource,
-            renderingFlag: self.renderingFlag
+            renderingFlag: self.renderingFlag,
         )
     }
 }

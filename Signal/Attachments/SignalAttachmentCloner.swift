@@ -36,7 +36,6 @@ enum SignalAttachmentCloner {
             signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
             signalAttachment.isLoopingVideo = true
         }
-        signalAttachment.captionText = attachment.reference.storyMediaCaption?.text
         return signalAttachment
     }
 }

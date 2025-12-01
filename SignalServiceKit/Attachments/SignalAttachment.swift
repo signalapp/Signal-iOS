@@ -69,8 +69,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     public let dataSource: DataSource
 
-    public var captionText: String?
-
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
@@ -139,30 +137,20 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
         let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
-        result.captionText = captionText
         result.isVoiceMessage = isVoiceMessage
         result.isBorderless = isBorderless
         result.isLoopingVideo = isLoopingVideo
         return result
     }
 
-    public func buildOutgoingAttachmentInfo(message: TSMessage? = nil) -> OutgoingAttachmentInfo {
-        return OutgoingAttachmentInfo(
+    public func buildAttachmentDataSource(attachmentContentValidator: any AttachmentContentValidator) async throws -> AttachmentDataSource {
+        return try await attachmentContentValidator.validateContents(
             dataSource: dataSource,
-            contentType: mimeType,
+            shouldConsume: true,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: filenameOrDefault,
-            caption: captionText,
-            albumMessageId: message?.uniqueId,
-            isBorderless: isBorderless,
-            isVoiceMessage: isVoiceMessage,
-            isLoopingVideo: isLoopingVideo
         )
-    }
-
-    public func buildAttachmentDataSource(
-        message: TSMessage? = nil
-    ) async throws -> AttachmentDataSource {
-        return try await buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
     }
 
     public func staticThumbnail() -> UIImage? {
