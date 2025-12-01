@@ -86,12 +86,28 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
     // MARK: -
 
+    /// Can we perform the ``paste(_:)`` action?
+    ///
+    /// False by default. Subclasses that can handle pasted contents should
+    /// override this method.
+    ///
+    /// - SeeAlso ``canPerformAction(_:withSender:)``
+    open func canPerformPasteAction() -> Bool {
+        return false
+    }
+
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if
             let iOS15EditMenu,
             let allowAction = iOS15EditMenu.allowAction(action)
         {
             return allowAction
+        }
+
+        // By default, canPerformAction returns false for the "paste" action. As
+        // a result, we need to manually intercept and potentially allow it.
+        if action == #selector(paste(_:)), canPerformPasteAction() {
+            return true
         }
 
         return super.canPerformAction(action, withSender: sender)

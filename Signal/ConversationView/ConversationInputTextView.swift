@@ -167,14 +167,13 @@ class ConversationInputTextView: BodyRangesTextView {
         return inputView == nil
     }
 
+    override func canPerformPasteAction() -> Bool {
+        return pasteboardHasPossibleAttachment
+    }
+
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         guard isTextInputMode else {
             return false
-        }
-        if action == #selector(paste(_:)) {
-            if pasteboardHasPossibleAttachment && super.canPerformAction(action, withSender: sender) {
-                return true
-            }
         }
         return super.canPerformAction(action, withSender: sender)
     }
