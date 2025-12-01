@@ -88,7 +88,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: UnsentTextAttachment) {
         self.textAttachment = textAttachment
 
-        let pickerVC = ConversationPickerViewController(selection: selection, textAttacment: textAttachment)
+        let pickerVC = ConversationPickerViewController(selection: selection, textAttachment: textAttachment)
         pickerVC.pickerDelegate = self
         pickerVC.shouldBatchUpdateIdentityKeys = true
         if showsStoriesInPicker || storiesOnly {

@@ -32,7 +32,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
-    private let attachments: [SignalAttachment]?
+    private let attachments: [SignalAttachment]
     private let textAttachment: UnsentTextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
@@ -73,25 +73,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         set { footerView.approvalTextMode = newValue }
     }
 
-    /// Include attachments to display an attachment preview at the top (if configured with the `mediaPreview` section option)
-    public convenience init(
-        selection: ConversationPickerSelection,
-        attachments: [SignalAttachment]
-    ) {
-        self.init(selection: selection, attachments: attachments, textAttachment: nil)
-    }
-
-    /// Include a text attachment to display an attachment preview at the top (if configured with the `mediaPreview` section option)
-    public convenience init(
-        selection: ConversationPickerSelection,
-        textAttacment: UnsentTextAttachment
-    ) {
-        self.init(selection: selection, attachments: nil, textAttachment: textAttacment)
-    }
-
     public init(
         selection: ConversationPickerSelection,
-        attachments: [SignalAttachment]? = nil,
+        attachments: [SignalAttachment] = [],
         textAttachment: UnsentTextAttachment? = nil,
         overrideTitle: String? = nil,
     ) {
@@ -99,7 +83,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         self.attachments = attachments
         self.textAttachment = textAttachment
 
-        let maxVideoAttachmentDuration: TimeInterval? = attachments?
+        let maxVideoAttachmentDuration: TimeInterval? = attachments
             .lazy
             .compactMap { attachment in
                 guard
@@ -555,14 +539,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             if
                 !conversationCollection.isSearchResults,
                 sectionOptions.contains(.mediaPreview),
-                let attachments = attachments,
                 !attachments.isEmpty
             {
                 addMediaPreview(to: section, attachments: attachments)
             } else if
                 !conversationCollection.isSearchResults,
                 sectionOptions.contains(.mediaPreview),
-                let textAttachment = textAttachment
+                let textAttachment
             {
                 addMediaPreview(to: section, textAttachment: textAttachment)
             }
