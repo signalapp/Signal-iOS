@@ -174,9 +174,22 @@ public class TSGroupModelV2: TSGroupModel {
             return false
         }
 
+        let avatarHasUserFacingChange: Bool
+        if avatarHash == otherGroupModel.avatarHash {
+            avatarHasUserFacingChange = false
+        } else if
+            otherGroupModel.lowTrustAvatarDownloadWasBlocked,
+            !self.lowTrustAvatarDownloadWasBlocked
+        {
+            // Avatar unblurred. No info message needed
+            avatarHasUserFacingChange = false
+        } else {
+            avatarHasUserFacingChange = true
+        }
+
         guard
             groupName == otherGroupModel.groupName,
-            avatarHash == otherGroupModel.avatarHash,
+            !avatarHasUserFacingChange,
             addedByAddress == otherGroupModel.addedByAddress,
             descriptionText == otherGroupModel.descriptionText,
             membership == otherGroupModel.membership,
