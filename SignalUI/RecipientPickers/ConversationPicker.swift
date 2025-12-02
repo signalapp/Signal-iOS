@@ -230,6 +230,15 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateTableContents(shouldReload: false)
     }
 
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        let userInterfaceStyleDidChange = previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle
+        if !CurrentAppContext().isMainApp, userInterfaceStyleDidChange {
+            Theme.shareExtensionThemeOverride = traitCollection.userInterfaceStyle
+        }
+    }
+
     // MARK: - ConversationCollection
 
     private func restoreSelection() {
