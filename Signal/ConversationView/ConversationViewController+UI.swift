@@ -8,28 +8,36 @@ import SignalServiceKit
 public import SignalUI
 
 extension ConversationViewController {
-
     public func updateNavigationTitle() {
         AssertIsOnMainThread()
 
-        let title = threadViewModel.name
+        self.title = nil
 
-        // Important as it will be displayed in <Back button popup in view controllers
-        // pushed over ConversationViewController.
-        navigationItem.title = title
+        if thread.isNoteToSelf {
+            headerView.titleIcon = Theme.iconImage(.official)
+            headerView.titleIconSize = 16
+        } else {
+            headerView.titleIcon = nil
+        }
 
-        headerView.titleIcon = thread.isNoteToSelf ? Theme.iconImage(.official) : nil
+        let attributedName = NSMutableAttributedString(
+            string: threadViewModel.name,
+            attributes: [
+                .foregroundColor: UIColor.Signal.label,
+            ]
+        )
 
         if conversationViewModel.isSystemContact {
-            // To ensure a single source of text color do not set `color` attributes unless you really need to.
             let contactIcon = SignalSymbol.personCircle.attributedString(
                 dynamicTypeBaseSize: 14,
                 weight: .bold,
                 leadingCharacter: .space
             )
-            headerView.titleLabel.attributedText = NSAttributedString(string: title).stringByAppendingString(contactIcon)
-        } else {
-            headerView.titleLabel.text = title
+            attributedName.append(contactIcon)
+        }
+
+        if headerView.attributedTitle != attributedName {
+            headerView.attributedTitle = attributedName
         }
     }
 
@@ -72,9 +80,10 @@ extension ConversationViewController {
     public func updateBarButtonItems() {
         AssertIsOnMainThread()
 
-        if #unavailable(iOS 26) {
-            // Don't include "Back" text on view controllers pushed above us, just use the arrow.
+        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             // iOS 26 already doesn't show back button text
+        } else {
+            // Don't include "Back" text on view controllers pushed above us, just use the arrow.
             navigationItem.backBarButtonItem = UIBarButtonItem(
                 title: "",
                 style: .plain,
@@ -85,31 +94,29 @@ extension ConversationViewController {
 
         navigationItem.hidesBackButton = false
         navigationItem.leftBarButtonItem = nil
-        groupCallBarButtonItem = nil
+        self.groupCallBarButtonItem = nil
 
         switch uiMode {
         case .search:
-            if userLeftGroup {
+            if self.userLeftGroup {
                 navigationItem.rightBarButtonItems = []
                 return
             }
             owsAssertDebug(navigationItem.searchController != nil)
             return
-
         case .selection:
-            navigationItem.rightBarButtonItems = [ cancelSelectionBarButtonItem ]
-            navigationItem.leftBarButtonItem = deleteAllBarButtonItem
+            navigationItem.rightBarButtonItems = [ self.cancelSelectionBarButtonItem ]
+            navigationItem.leftBarButtonItem = self.deleteAllBarButtonItem
             navigationItem.hidesBackButton = true
             return
-
         case .normal:
-            if userLeftGroup {
+            if self.userLeftGroup {
                 navigationItem.rightBarButtonItems = []
                 return
             }
             var barButtons = [UIBarButtonItem]()
-            if canCall {
-                if isGroupConversation {
+            if self.canCall {
+                if self.isGroupConversation {
                     let videoCallButton = UIBarButtonItem()
 
                     if conversationViewModel.groupCallInProgress {
@@ -125,11 +132,12 @@ extension ConversationViewController {
                         )
                         pill.buttonText = self.isCurrentCallForThread ? returnString : CallStrings.joinCallPillButtonTitle
                         videoCallButton.customView = pill
-
-                        if #available(iOS 26, *) {
+#if compiler(>=6.2)
+                        if #available(iOS 26.0, *) {
                             videoCallButton.tintColor = UIColor.Signal.green
                             videoCallButton.style = .prominent
                         }
+#endif
                     } else {
                         videoCallButton.image = Theme.iconImage(.buttonVideoCall)
                         videoCallButton.target = self
@@ -138,13 +146,13 @@ extension ConversationViewController {
 
                     videoCallButton.isEnabled = (
                         AppEnvironment.shared.callService.callServiceState.currentCall == nil
-                        || isCurrentCallForThread
+                        || self.isCurrentCallForThread
                     )
                     videoCallButton.accessibilityLabel = OWSLocalizedString(
                         "VIDEO_CALL_LABEL",
                         comment: "Accessibility label for placing a video call"
                     )
-                    groupCallBarButtonItem = videoCallButton
+                    self.groupCallBarButtonItem = videoCallButton
                     barButtons.append(videoCallButton)
                 } else {
                     let audioCallButton = UIBarButtonItem(
@@ -183,16 +191,24 @@ extension ConversationViewController {
     public func updateNavigationBarSubtitleLabel() {
         AssertIsOnMainThread()
 
-        // Shorter, more vertically compact navigation bar doesn't have second line of text.
-        if #unavailable(iOS 26), !UIDevice.current.isPlusSizePhone, traitCollection.verticalSizeClass == .compact {
-            headerView.subtitleLabel.text = nil
+        let hasCompactHeader = self.traitCollection.verticalSizeClass == .compact
+        if hasCompactHeader {
+            self.headerView.attributedSubtitle = nil
             return
         }
 
         let subtitleText = NSMutableAttributedString()
-        let subtitleFont = headerView.subtitleLabel.font!
-        // To ensure a single source of text color do not set `color` attributes unless you really need to.
-        let attributes: [NSAttributedString.Key: Any] = [ .font: subtitleFont ]
+        let subtitleFont = self.headerView.subtitleFont
+        // Use higher-contrast color for the blurred iOS 26 nav bars
+        let fontColor: UIColor = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            UIColor.Signal.label
+        } else {
+            Theme.navbarTitleColor.withAlphaComponent(0.9)
+        }
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: subtitleFont,
+            .foregroundColor: fontColor,
+        ]
         let hairSpace = "\u{200a}"
         let thinSpace = "\u{2009}"
         let iconSpacer = UIDevice.current.isNarrowerThanIPhone6 ? hairSpace : thinSpace
@@ -219,13 +235,11 @@ extension ConversationViewController {
 
             subtitleText.appendTemplatedImage(named: Theme.iconName(.timer16), font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
-            subtitleText.append(
-                DateUtil.formatDuration(
-                    seconds: disappearingMessagesConfiguration.durationSeconds,
-                    useShortFormat: true
-                ),
-                attributes: attributes
-            )
+            subtitleText.append(DateUtil.formatDuration(
+                seconds: disappearingMessagesConfiguration.durationSeconds,
+                useShortFormat: true
+            ),
+            attributes: attributes)
         }
 
         if isVerified {
@@ -242,7 +256,7 @@ extension ConversationViewController {
             )
         }
 
-        headerView.subtitleLabel.attributedText = subtitleText
+        headerView.attributedSubtitle = subtitleText
     }
 
     public var safeContentHeight: CGFloat {

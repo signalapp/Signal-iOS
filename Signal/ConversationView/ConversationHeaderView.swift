@@ -3,117 +3,136 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
+import Foundation
+public import SignalUI
+import UIKit
 
-protocol ConversationHeaderViewDelegate: AnyObject {
+public protocol ConversationHeaderViewDelegate: AnyObject {
     func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
     func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
-class ConversationHeaderView: UIView {
+public class ConversationHeaderView: UIView {
 
-    weak var delegate: ConversationHeaderViewDelegate?
+    public weak var delegate: ConversationHeaderViewDelegate?
 
-    var titleIcon: UIImage? {
+    public var attributedTitle: NSAttributedString? {
         get {
-            return titleIconView.image
+            return self.titleLabel.attributedText
         }
         set {
-            titleIconView.image = newValue
-            titleIconView.isHidden = newValue == nil
+            self.titleLabel.attributedText = newValue
         }
     }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = UIColor.Signal.label
-        label.lineBreakMode = .byTruncatingTail
-        label.font = .systemFont(ofSize: 17, weight: .semibold)
-        label.setContentHuggingHigh()
-        return label
-    }()
+    public var titleIcon: UIImage? {
+        get {
+            return self.titleIconView.image
+        }
+        set {
+            self.titleIconView.image = newValue
+            self.titleIconView.isHidden = newValue == nil
+        }
+    }
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .Signal.label
-        label.lineBreakMode = .byTruncatingTail
-        label.font = .systemFont(ofSize: 13, weight: .medium)
-        label.setContentHuggingHigh()
-        return label
-    }()
+    public var titleIconSize: CGFloat {
+        get {
+            return self.titleIconConstraints.first?.constant ?? 0
+        }
+        set {
+            self.titleIconConstraints.forEach { $0.constant = newValue }
+        }
+    }
 
-    private let titleIconView: UIImageView = {
-        let titleIconView = UIImageView()
-        titleIconView.isHidden = true
-        titleIconView.contentMode = .scaleAspectFit
-        titleIconView.setCompressionResistanceHigh()
-        return titleIconView
-    }()
-    private var titleIconSizeConstraint: NSLayoutConstraint!
+    public var attributedSubtitle: NSAttributedString? {
+        get {
+            return self.subtitleLabel.attributedText
+        }
+        set {
+            self.subtitleLabel.attributedText = newValue
+            self.subtitleLabel.isHidden = newValue == nil
+        }
+    }
+
+    public let titlePrimaryFont = UIFont.semiboldFont(ofSize: 17)
+    public let subtitleFont = UIFont.regularFont(ofSize: 13).medium()
+
+    private let titleLabel: UILabel
+    private let titleIconView: UIImageView
+    private let titleIconConstraints: [NSLayoutConstraint]
+    private let subtitleLabel: UILabel
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
-        // One size for the navigation bar on iOS 26.
-        guard #unavailable(iOS 26) else { return .thirtySix }
-
-        return traitCollection.verticalSizeClass == .compact && !UIDevice.current.isPlusSizePhone
-        ? .twentyFour
-        : .thirtySix
+        traitCollection.verticalSizeClass == .compact ? .twentyFour : .thirtySix
     }
     private(set) lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .noteToSelf)
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init() {
+        titleLabel = UILabel()
+        titleLabel.textColor = UIColor.Signal.label
+        titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.font = titlePrimaryFont
+        titleLabel.setContentHuggingHigh()
 
-        translatesAutoresizingMaskIntoConstraints = false
+        titleIconView = UIImageView()
+        titleIconView.contentMode = .scaleAspectFit
+        titleIconView.setCompressionResistanceHigh()
+        titleIconConstraints = titleIconView.autoSetDimensions(to: .square(20))
 
         let titleColumns = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
         titleColumns.spacing = 5
-        titleColumns.translatesAutoresizingMaskIntoConstraints = false
         // There is a strange bug where an initial height of 0
         // breaks the layout, so set an initial height.
-        titleColumns.heightAnchor.constraint(greaterThanOrEqualToConstant: titleLabel.font.lineHeight.rounded(.up)).isActive = true
+        titleColumns.autoSetDimension(
+            .height,
+            toSize: titleLabel.font.lineHeight,
+            relation: .greaterThanOrEqual
+        )
+
+        subtitleLabel = UILabel()
+        subtitleLabel.textColor = UIColor.Signal.label
+        subtitleLabel.lineBreakMode = .byTruncatingTail
+        subtitleLabel.font = subtitleFont
+        subtitleLabel.setContentHuggingHigh()
 
         let textRows = UIStackView(arrangedSubviews: [titleColumns, subtitleLabel])
         textRows.axis = .vertical
         textRows.alignment = .leading
         textRows.distribution = .fillProportionally
-        textRows.directionalLayoutMargins = .init(top: 0, leading: 8, bottom: 0, trailing: 0)
+        textRows.spacing = 0
+
+        textRows.layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 0)
         textRows.isLayoutMarginsRelativeArrangement = true
 
-        let rootStack = UIStackView(arrangedSubviews: [ avatarView, textRows ])
-        rootStack.directionalLayoutMargins = .init(hMargin: 0, vMargin: 4)
+        // low content hugging so that the text rows push container to the right bar button item(s)
+        textRows.setContentHuggingLow()
+
+        super.init(frame: .zero)
+
+        let rootStack = UIStackView()
+        rootStack.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
         rootStack.isLayoutMarginsRelativeArrangement = true
+
         rootStack.axis = .horizontal
         rootStack.alignment = .center
+        rootStack.spacing = 0
+        rootStack.addArrangedSubview(avatarView)
+        rootStack.addArrangedSubview(textRows)
 
         addSubview(rootStack)
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
-        titleIconView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleIconView.heightAnchor.constraint(equalToConstant: 16),
-            titleIconView.widthAnchor.constraint(equalTo: titleIconView.heightAnchor),
-
-            rootStack.topAnchor.constraint(equalTo: topAnchor),
-            rootStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            rootStack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            rootStack.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
-
-        if #available(iOS 26, *) {
-            heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
-        }
+        rootStack.autoPinEdgesToSuperviewEdges()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         rootStack.addGestureRecognizer(tapGesture)
     }
 
-    required init(coder: NSCoder) {
+    required public init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(threadViewModel: ThreadViewModel) {
+    public func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(threadViewModel.threadRecord)
             config.storyConfiguration = .autoUpdate()
@@ -121,18 +140,13 @@ class ConversationHeaderView: UIView {
         }
     }
 
-    override var intrinsicContentSize: CGSize {
+    public override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
-        return .init(width: .greatestFiniteMagnitude, height: UIView.noIntrinsicMetric)
+        return UIView.layoutFittingExpandedSize
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-
-        // One size for the navigation bar on iOS 26.
-        guard #unavailable(iOS 26) else { return }
-
-        guard traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass else { return }
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = avatarSizeClass
         }

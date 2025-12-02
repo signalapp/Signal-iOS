@@ -191,13 +191,13 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationHeaderViewDelegate {
-    func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView) {
+    public func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
 
         showConversationSettings()
     }
 
-    func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView) {
+    public func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
 
         if conversationHeaderView.avatarView.configuration.hasStoriesToDisplay {
