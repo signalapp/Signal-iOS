@@ -814,11 +814,11 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         }
 
         let attachment: SignalAttachment
-        do throws(SignalAttachmentError) {
+        do {
             attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentTypeIdentifier)
         } catch {
             DispatchQueue.main.async {
-                self.showErrorAlert(attachmentError: error)
+                self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
             }
             return
         }

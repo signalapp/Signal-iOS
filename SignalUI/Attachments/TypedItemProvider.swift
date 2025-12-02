@@ -53,7 +53,7 @@ public enum TypedItem {
         case .contact: return false
         case .other(let attachment):
             // TODO: Consolidate with isVisualMedia after fixing validity checks.
-            return attachment.dataSource.isValidImage || attachment.dataSource.isValidVideo
+            return attachment.dataSource.isValidImage || attachment.isVideo
         }
     }
 }

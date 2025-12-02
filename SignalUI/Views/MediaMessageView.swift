@@ -203,7 +203,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private func createVideoPreview() {
         guard
-            attachment.dataSource.isValidVideo,
+            attachment.isVideo,
             let image = attachment.videoPreview(),
             image.size.width > 0 && image.size.height > 0
         else {

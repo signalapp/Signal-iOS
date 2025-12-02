@@ -93,6 +93,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
 
+        // [15M] TODO: Enforce this at compile-time rather than runtime.
+        owsPrecondition(!self.isVideo || (dataSource is DataSourcePath))
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didReceiveMemoryWarningNotification),
@@ -372,6 +375,10 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     public var isVideo: Bool {
         return SignalAttachment.videoUTISet.contains(dataUTI)
+    }
+
+    public var dataSourceIfVideo: DataSourcePath? {
+        return self.isVideo ? (self.dataSource as! DataSourcePath) : nil
     }
 
     public var isAudio: Bool {
@@ -1059,7 +1066,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
     // MARK: Video Attachments
 
     // Factory method for video attachments.
-    public class func videoAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func videoAttachment(dataSource: DataSourcePath, dataUTI: String) throws -> SignalAttachment {
+        try OWSMediaUtils.validateVideoExtension(ofPath: dataSource.fileUrl.path)
+        try OWSMediaUtils.validateVideoAsset(atPath: dataSource.fileUrl.path)
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,
@@ -1165,6 +1174,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     // Factory method for generic attachments.
     public class func genericAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+        // [15M] TODO: Enforce this at compile-time rather than runtime.
+        owsPrecondition(!videoUTISet.contains(dataUTI))
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,
@@ -1184,7 +1195,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     // MARK: Attachments
 
     // Factory method for attachments of any kind.
-    public class func attachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func attachment(dataSource: DataSourcePath, dataUTI: String) throws -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
             return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         } else if videoUTISet.contains(dataUTI) {

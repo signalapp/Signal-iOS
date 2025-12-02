@@ -27,7 +27,6 @@ public protocol DataSource: AnyObject {
     /// Will return zero in the error case.
     var dataLength: UInt { get }
     var isValidImage: Bool { get }
-    var isValidVideo: Bool { get }
     var hasStickerLikeProperties: Bool { get }
     var imageMetadata: ImageMetadata? { get }
 
@@ -166,21 +165,6 @@ public class DataSourceValue: DataSource {
         return DataImageSource(data).ows_isValidImage
     }
 
-    public var isValidVideo: Bool {
-        owsAssertDebug(!isConsumed)
-        guard let path = dataUrl?.path else {
-            return false
-        }
-        do {
-            try OWSMediaUtils.validateVideoExtension(ofPath: path)
-            try OWSMediaUtils.validateVideoSize(atPath: path)
-            try OWSMediaUtils.validateVideoAsset(atPath: path)
-            return true
-        } catch {
-            return false
-        }
-    }
-
     public var hasStickerLikeProperties: Bool {
         owsAssertDebug(!isConsumed)
         return imageMetadata?.hasStickerLikeProperties ?? false
@@ -289,18 +273,6 @@ public class DataSourcePath: DataSource {
     public var isValidImage: Bool {
         owsAssertDebug(!isConsumed)
         return (try? DataImageSource.forPath(fileUrl.path))?.ows_isValidImage ?? false
-    }
-
-    public var isValidVideo: Bool {
-        owsAssertDebug(!isConsumed)
-        do {
-            try OWSMediaUtils.validateVideoExtension(ofPath: fileUrl.path)
-            try OWSMediaUtils.validateVideoSize(atPath: fileUrl.path)
-            try OWSMediaUtils.validateVideoAsset(atPath: fileUrl.path)
-            return true
-        } catch {
-            return false
-        }
     }
 
     public var hasStickerLikeProperties: Bool {

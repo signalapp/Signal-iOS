@@ -101,7 +101,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
-            firstItem.attachment.dataSource.isValidImage || firstItem.attachment.dataSource.isValidVideo,
+            firstItem.attachment.dataSource.isValidImage || firstItem.attachment.isVideo,
             !receivedOptions.contains(.disallowViewOnce)
         {
             options.insert(.canToggleViewOnce)
@@ -1454,7 +1454,7 @@ private extension SaveableAsset {
             }
 
             self = .imageUrl(imageUrl)
-        } else if attachment.dataSource.isValidVideo {
+        } else if attachment.isVideo {
             guard let videoUrl = attachment.dataSource.dataUrl else {
                 throw OWSAssertionError("videoUrl was unexpectedly nil")
             }

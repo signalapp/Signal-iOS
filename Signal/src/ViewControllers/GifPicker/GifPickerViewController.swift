@@ -498,9 +498,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    #if compiler(>=6.2)
     @concurrent
-    #endif
     private nonisolated func buildAttachment(forAsset asset: ProxiedContentAsset) async throws -> SignalAttachment {
         guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
             throw OWSAssertionError("Invalid asset description.")

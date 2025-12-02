@@ -715,7 +715,6 @@ extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
 enum QRCodeScanError: Error {
     case assertionError(description: String)
     case initializationFailed
-    case captureFailed
 }
 
 // MARK: -

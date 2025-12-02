@@ -1232,8 +1232,7 @@ extension PhotoCaptureViewController {
     }
 
     private func showFailureUI(error: Error) {
-        Logger.error("error: \(error)")
-
+        Logger.warn("error: \(error)")
         OWSActionSheets.showActionSheet(
             title: nil,
             message: error.userErrorDescription,
@@ -1444,7 +1443,7 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
     func cameraCaptureSession(_ session: CameraCaptureSession, didFailWith error: Error) {
         setIsRecordingVideo(false, animated: true)
 
-        if case PhotoCaptureError.invalidVideo = error {
+        if error is VideoCaptureFailedError {
             // Don't show an error if the user aborts recording before video
             // recording has begun.
             return

@@ -68,19 +68,10 @@ public class AttachmentApprovalItem {
     }
 
     private static func videoEditorModel(for attachment: SignalAttachment) -> VideoEditorModel? {
-        guard attachment.dataSource.isValidVideo, !attachment.isLoopingVideo else {
-            return nil
-        }
-        guard let dataUrl: URL = attachment.dataSource.dataUrl, dataUrl.isFileURL else {
-            owsFailDebug("Missing dataUrl.")
-            return nil
-        }
-
-        let path = dataUrl.path
         do {
-            return try VideoEditorModel(srcVideoPath: path)
+            return try VideoEditorModel(attachment)
         } catch {
-            owsFailDebug("Could not create image editor: \(error)")
+            owsFailDebug("couldn't create video editor: \(error)")
             return nil
         }
     }

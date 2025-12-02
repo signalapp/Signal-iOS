@@ -53,14 +53,13 @@ class VideoEditorModel: NSObject {
     //
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
-    init(srcVideoPath: String) throws {
-        self.srcVideoPath = srcVideoPath
+    init?(_ attachment: SignalAttachment) throws {
+        guard let dataSource = attachment.dataSourceIfVideo, !attachment.isLoopingVideo else {
+            return nil
+        }
+        let mediaUrl = dataSource.fileUrl
+        self.srcVideoPath = mediaUrl.path
 
-        try OWSMediaUtils.validateVideoExtension(ofPath: srcVideoPath)
-        try OWSMediaUtils.validateVideoSize(atPath: srcVideoPath)
-        try OWSMediaUtils.validateVideoAsset(atPath: srcVideoPath)
-
-        let mediaUrl = URL(fileURLWithPath: srcVideoPath)
         let asset = AVURLAsset(url: mediaUrl)
 
         let duration: CMTime = asset.duration
