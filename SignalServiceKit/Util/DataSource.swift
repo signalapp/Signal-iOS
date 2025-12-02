@@ -26,12 +26,12 @@ public protocol DataSource: AnyObject {
 
     /// Will return zero in the error case.
     var dataLength: UInt { get }
-    var hasStickerLikeProperties: Bool { get }
-    var imageMetadata: ImageMetadata? { get }
 
     func writeTo(_ dstUrl: URL) throws
 
     func consumeAndDelete() throws
+
+    func imageSource() throws -> any OWSImageSource
 }
 
 // MARK: -
@@ -86,21 +86,6 @@ public class DataSourceValue: DataSource {
             lock.withLock {
                 _isConsumed = newValue
             }
-        }
-    }
-
-    /// This property is lazily-populated.
-    /// Should only be accessed while holding `lock`.
-    private var _imageMetadata: ImageMetadata??
-    public var imageMetadata: ImageMetadata? {
-        return lock.withLock { () -> ImageMetadata? in
-            owsAssertDebug(!_isConsumed)
-            if let _imageMetadata {
-                return _imageMetadata
-            }
-            let cachedImageMetadata = DataImageSource(data).imageMetadata(ignorePerTypeFileSizeLimits: true)
-            _imageMetadata = cachedImageMetadata
-            return cachedImageMetadata
         }
     }
 
@@ -159,9 +144,8 @@ public class DataSourceValue: DataSource {
         }
     }
 
-    public var hasStickerLikeProperties: Bool {
-        owsAssertDebug(!isConsumed)
-        return imageMetadata?.hasStickerLikeProperties ?? false
+    public func imageSource() -> any OWSImageSource {
+        return DataImageSource(self.data)
     }
 }
 
@@ -264,24 +248,6 @@ public class DataSourcePath: DataSource {
         return fileUrl
     }
 
-    public var hasStickerLikeProperties: Bool {
-        owsAssertDebug(!isConsumed)
-        return imageMetadata?.hasStickerLikeProperties ?? false
-    }
-
-    private var _imageMetadata: ImageMetadata??
-    public var imageMetadata: ImageMetadata? {
-        lock.withLock { () -> ImageMetadata? in
-            owsAssertDebug(!_isConsumed)
-            if let _imageMetadata {
-                return _imageMetadata
-            }
-            let imageMetadata = (try? DataImageSource.forPath(fileUrl.path))?.imageMetadata(ignorePerTypeFileSizeLimits: true)
-            _imageMetadata = imageMetadata
-            return imageMetadata
-        }
-    }
-
     public func writeTo(_ dstUrl: URL) throws {
         owsAssertDebug(!isConsumed)
         do {
@@ -298,5 +264,9 @@ public class DataSourcePath: DataSource {
 
             try OWSFileSystem.deleteFileIfExists(url: fileUrl)
         }
+    }
+
+    public func imageSource() throws -> any OWSImageSource {
+        return try DataImageSource.forPath(self.fileUrl.path)
     }
 }

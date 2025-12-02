@@ -118,29 +118,35 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
-    #if compiler(>=6.2)
     @concurrent
-    #endif
     public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SignalAttachment {
         // We only bother converting/compressing non-animated images
-        guard isImage, !isAnimatedImage else { return self }
-
-        guard !Self.isValidOutputOriginalImage(
-            dataSource: dataSource,
-            dataUTI: dataUTI,
-            imageQuality: qualityLevel
-        ) else { return self }
-
-        return try Self.convertAndCompressImage(
-            dataSource: dataSource,
-            attachment: self,
-            imageQuality: qualityLevel
-        )
+        if isImage, !isAnimatedImage {
+            guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
+                throw .invalidData
+            }
+            let isValidOriginal = Self.isOriginalImageValid(
+                forImageQuality: qualityLevel,
+                fileSize: UInt64(safeCast: dataSource.dataLength),
+                dataUTI: dataUTI,
+                imageMetadata: imageMetadata,
+            )
+            if !isValidOriginal {
+                return try Self.convertAndCompressImage(
+                    toImageQuality: qualityLevel,
+                    dataSource: dataSource,
+                    attachment: self,
+                    imageMetadata: imageMetadata,
+                )
+            }
+        }
+        return self
     }
 
     private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
         let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
         result.isVoiceMessage = isVoiceMessage
+        result.isAnimatedImage = isAnimatedImage
         result.isBorderless = isBorderless
         result.isLoopingVideo = isLoopingVideo
         return result
@@ -163,9 +169,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
         return autoreleasepool {
             guard let image: UIImage = {
-                if isAnimatedImage {
-                    return image()
-                } else if isImage {
+                if isImage {
                     return image()
                 } else if isVideo {
                     return videoPreview()
@@ -362,16 +366,11 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
 
-    public var isAnimatedImage: Bool {
-        let mimeType = mimeType
-        if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
-            return true
-        }
-        if MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
-            return dataSource.imageMetadata?.isAnimated ?? false
-        }
-        return false
-    }
+    /// Only valid when `isImage` is true.
+    ///
+    /// If `isAnimatedImage` is true, then `isImage` must be true. In other
+    /// words, all animated images are images (but not all images are animated).
+    public var isAnimatedImage = false
 
     public var isVideo: Bool {
         return SignalAttachment.videoUTISet.contains(dataUTI)
@@ -558,16 +557,12 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 // There is a known bug with the iOS pasteboard where it will randomly give a
                 // single green pixel, and nothing else. Work around this by refetching the
                 // pasteboard after a brief delay (once, then give up).
-                if dataSource.imageMetadata?.pixelSize == CGSize(square: 1), retrySinglePixelImages {
+                if retrySinglePixelImages, dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true)?.pixelSize == CGSize(square: 1) {
                     try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * 50)
                     return try await attachmentFromPasteboard(pasteboardUTIs: pasteboardUTIs, index: index, retrySinglePixelImages: false)
                 }
 
-                // If the data source is sticker like AND we're pasting the attachment,
-                // we want to make it borderless.
-                let isBorderless = dataSource.hasStickerLikeProperties
-
-                return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, isBorderless: isBorderless)
+                return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
             }
         }
         for dataUTI in videoUTISet {
@@ -640,10 +635,12 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 guard let dataSource else {
                     throw .missingData
                 }
-                if !dataSource.hasStickerLikeProperties {
-                    owsFailDebug("Treating non-sticker data as a sticker")
+                let result = try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
+                if !result.isBorderless {
+                    owsFailDebug("treating non-sticker data as a sticker")
+                    result.isBorderless = true
                 }
-                return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, isBorderless: true)
+                return result
             }
         }
         return nil
@@ -659,11 +656,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
         guard let dataSource else {
             throw .missingData
         }
-        return try imageAttachment(
-            dataSource: dataSource,
-            dataUTI: dataUTI,
-            isBorderless: dataSource.hasStickerLikeProperties,
-        )
+        return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
     }
 
     private class func dataForPasteboardItem(dataUTI: String, index: IndexSet) -> Data? {
@@ -681,12 +674,10 @@ public class SignalAttachment: CustomDebugStringConvertible {
     // MARK: Image Attachments
 
     // Factory method for an image attachment.
-    public class func imageAttachment(dataSource: any DataSource, dataUTI: String, isBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func imageAttachment(dataSource: any DataSource, dataUTI: String, canBeBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-
-        attachment.isBorderless = isBorderless
 
         guard inputImageUTISet.contains(dataUTI) else {
             throw .invalidFileFormat
@@ -697,10 +688,14 @@ public class SignalAttachment: CustomDebugStringConvertible {
             throw .invalidData
         }
 
-        guard let imageMetadata = dataSource.imageMetadata else {
+        guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
             throw .invalidData
         }
+
+        attachment.isBorderless = canBeBorderless && imageMetadata.hasStickerLikeProperties
+
         let isAnimated = imageMetadata.isAnimated
+        attachment.isAnimatedImage = isAnimated
         if isAnimated {
             guard dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                 throw .fileSizeTooLarge
@@ -741,26 +736,34 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // context. The user can choose during sending whether they want the final send to be in
             // standard or high quality. We will do the final convert and compress before uploading.
 
-            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .maximumForCurrentAppContext) {
+            let isOriginalValid = self.isOriginalImageValid(
+                forImageQuality: .maximumForCurrentAppContext,
+                fileSize: UInt64(safeCast: dataSource.dataLength),
+                dataUTI: dataUTI,
+                imageMetadata: imageMetadata,
+            )
+            if isOriginalValid {
                 do {
                     return try attachment.removingImageMetadata()
                 } catch {}
             }
 
             return try convertAndCompressImage(
+                toImageQuality: .maximumForCurrentAppContext,
                 dataSource: dataSource,
                 attachment: attachment,
-                imageQuality: .maximumForCurrentAppContext
+                imageMetadata: imageMetadata,
             )
         }
     }
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputOriginalImage(
-        dataSource: DataSource,
+    private class func isOriginalImageValid(
+        forImageQuality imageQuality: ImageQualityLevel,
+        fileSize: UInt64,
         dataUTI: String,
-        imageQuality: ImageQualityLevel
+        imageMetadata: ImageMetadata,
     ) -> Bool {
         // 10-18-2023: Due to an issue with corrupt JPEG IPTC metadata causing a
         // crash in CGImageDestinationCopyImageSource, stop using the original
@@ -770,24 +773,26 @@ public class SignalAttachment: CustomDebugStringConvertible {
         guard dataUTI != UTType.jpeg.identifier else { return false }
 
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else { return false }
-        guard dataSource.dataLength <= imageQuality.maxFileSize else { return false }
-        if dataSource.hasStickerLikeProperties { return true }
-        guard dataSource.dataLength <= imageQuality.maxOriginalFileSize else { return false }
+        guard fileSize <= imageQuality.maxFileSize else { return false }
+        if imageMetadata.hasStickerLikeProperties { return true }
+        guard fileSize <= imageQuality.maxOriginalFileSize else { return false }
         return true
     }
 
     private class func convertAndCompressImage(
+        toImageQuality imageQuality: ImageQualityLevel,
         dataSource: DataSource,
         attachment: SignalAttachment,
-        imageQuality: ImageQualityLevel,
+        imageMetadata: ImageMetadata,
     ) throws(SignalAttachmentError) -> SignalAttachment {
         var nextImageUploadQuality: ImageQualityTier? = imageQuality.startingTier
         while let imageUploadQuality = nextImageUploadQuality {
             let result = try convertAndCompressImageAttempt(
+                toImageQuality: imageQuality,
+                imageUploadQuality: imageUploadQuality,
                 dataSource: dataSource,
                 attachment: attachment,
-                imageQuality: imageQuality,
-                imageUploadQuality: imageUploadQuality,
+                imageMetadata: imageMetadata,
             )
             if let result {
                 return result
@@ -800,28 +805,39 @@ public class SignalAttachment: CustomDebugStringConvertible {
     }
 
     private class func convertAndCompressImageAttempt(
+        toImageQuality imageQuality: ImageQualityLevel,
+        imageUploadQuality: ImageQualityTier,
         dataSource: DataSource,
         attachment: SignalAttachment,
-        imageQuality: ImageQualityLevel,
-        imageUploadQuality: ImageQualityTier,
+        imageMetadata: ImageMetadata,
     ) throws(SignalAttachmentError) -> SignalAttachment? {
         return try autoreleasepool { () throws(SignalAttachmentError) -> SignalAttachment? in
             let maxSize = imageUploadQuality.maxEdgeSize
-            let pixelSize = dataSource.imageMetadata?.pixelSize ?? .zero
+            let pixelSize = imageMetadata.pixelSize
             var imageProperties = [CFString: Any]()
+
+            guard let imageSource = cgImageSource(for: dataSource, imageFormat: imageMetadata.imageFormat) else {
+                throw .couldNotParseImage
+            }
 
             let cgImage: CGImage
             if pixelSize.width > maxSize || pixelSize.height > maxSize {
-                guard let downsampledCGImage = downsampleImage(dataSource: dataSource, toMaxSize: maxSize) else {
+                // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
+                // crashes reliably in the share extension after screen lock's auth UI has been presented.
+                // Resizing using a CGContext seems to work fine.
+
+                // Perform downsampling
+                let downsampleOptions = [
+                    kCGImageSourceCreateThumbnailFromImageAlways: true,
+                    kCGImageSourceShouldCacheImmediately: true,
+                    kCGImageSourceCreateThumbnailWithTransform: true,
+                    kCGImageSourceThumbnailMaxPixelSize: maxSize
+                ] as [CFString: Any] as CFDictionary
+                guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
                     throw .couldNotResizeImage
                 }
-
-                cgImage = downsampledCGImage
+                cgImage = downsampledImage
             } else {
-                guard let imageSource = cgImageSource(for: dataSource) else {
-                    throw .couldNotParseImage
-                }
-
                 guard let originalImageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, [
                     kCGImageSourceShouldCache: false
                 ] as CFDictionary) as? [CFString: Any] else {
@@ -856,7 +872,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // transparent pixels (all screenshots fall into this bucket)
             // and there is not a simple, performant way, to check if there
             // are any transparent pixels in an image.
-            if dataSource.hasStickerLikeProperties {
+            if imageMetadata.hasStickerLikeProperties {
                 dataFileExtension = "png"
                 dataType = .png
             } else {
@@ -910,8 +926,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return 0.6
     }
 
-    private class func cgImageSource(for dataSource: DataSource) -> CGImageSource? {
-        if dataSource.imageMetadata?.imageFormat == ImageFormat.webp {
+    private class func cgImageSource(for dataSource: DataSource, imageFormat: ImageFormat) -> CGImageSource? {
+        if imageFormat == .webp {
             // CGImageSource doesn't know how to handle webp, so we have
             // to pass it through YYImage. This is costly and we could
             // perhaps do better, but webp images are usually small.
@@ -931,32 +947,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
             return CGImageSourceCreateWithURL(dataUrl as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
         } else {
             return CGImageSourceCreateWithData(dataSource.data as CFData, nil)
-        }
-    }
-
-    // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
-    // crashes reliably in the share extension after screen lock's auth UI has been presented.
-    // Resizing using a CGContext seems to work fine.
-    private class func downsampleImage(dataSource: DataSource, toMaxSize maxSize: CGFloat) -> CGImage? {
-        autoreleasepool {
-            guard let imageSource: CGImageSource = cgImageSource(for: dataSource) else {
-                owsFailDebug("Failed to create CGImageSource for attachment")
-                return nil
-            }
-
-            // Perform downsampling
-            let downsampleOptions = [
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceShouldCacheImmediately: true,
-                kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: maxSize
-            ] as [CFString: Any] as CFDictionary
-            guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-                owsFailDebug("Failed to downsample attachment")
-                return nil
-            }
-
-            return downsampledImage
         }
     }
 

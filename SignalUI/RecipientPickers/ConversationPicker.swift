@@ -707,7 +707,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     private func makeMediaPreview(_ attachment: SignalAttachment) -> UIView? {
-        if attachment.isVideo || attachment.isImage || attachment.isAnimatedImage {
+        if attachment.isVideo || attachment.isImage {
             let mediaPreview = MediaMessageView(attachment: attachment, contentMode: .scaleAspectFill)
             mediaPreview.layer.masksToBounds = true
             mediaPreview.layer.cornerRadius = 18
