@@ -587,29 +587,34 @@ class MediaPageViewController: UIPageViewController {
 
     private lazy var headerNameLabel: UILabel = {
         let label = UILabel()
+        label.textAlignment = .center
         label.textColor = .Signal.label
         if #available(iOS 26, *) {
             label.font = .dynamicTypeSubheadlineClamped.semibold()
+            // "semibold" fonts aren't dynamic anymore - have to track changes manually.
+            label.registerForTraitChanges([ UITraitPreferredContentSizeCategory.self ]) { (label: UILabel, _) in
+                label.font = .dynamicTypeSubheadlineClamped.semibold()
+            }
         } else {
             label.font = UIFont.regularFont(ofSize: 15)
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.8
         }
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.8
         return label
     }()
 
     private lazy var headerDateLabel: UILabel = {
         let label = UILabel()
+        label.textAlignment = .center
         label.textColor = .Signal.label
         if #available(iOS 26, *) {
-            label.font = .dynamicTypeSubheadlineClamped
+            label.font = .dynamicTypeCaption1Clamped
+            label.adjustsFontForContentSizeCategory = true
         } else {
             label.font = .regularFont(ofSize: 11)
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.8
         }
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.8
         return label
     }()
 
@@ -621,27 +626,32 @@ class MediaPageViewController: UIPageViewController {
         let containerView = UIView()
         if #available(iOS 26, *) {
             // Can't return `glassEffectView` as `headerView` because UINavigationBar stretches it to fill width.
-            let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            let glassEffect = UIGlassEffect(style: .regular)
+            glassEffect.isInteractive = true
+            let glassEffectView = UIVisualEffectView(effect: glassEffect)
             glassEffectView.cornerConfiguration = .capsule()
             glassEffectView.translatesAutoresizingMaskIntoConstraints = false
             glassEffectView.contentView.addSubview(stackView)
 
             let contentInset = UIEdgeInsets(hMargin: 24, vMargin: 4)
             NSLayoutConstraint.activate([
-                stackView.topAnchor.constraint(equalTo: glassEffectView.topAnchor, constant: contentInset.top),
+                stackView.topAnchor.constraint(greaterThanOrEqualTo: glassEffectView.topAnchor, constant: contentInset.top),
+                stackView.centerYAnchor.constraint(equalTo: glassEffectView.centerYAnchor),
                 stackView.leadingAnchor.constraint(equalTo: glassEffectView.leadingAnchor, constant: contentInset.leading),
                 stackView.trailingAnchor.constraint(equalTo: glassEffectView.trailingAnchor, constant: -contentInset.trailing),
-                stackView.bottomAnchor.constraint(equalTo: glassEffectView.bottomAnchor, constant: -contentInset.bottom),
             ])
 
             containerView.addSubview(glassEffectView)
             NSLayoutConstraint.activate([
-                glassEffectView.topAnchor.constraint(greaterThanOrEqualTo: containerView.topAnchor),
-                glassEffectView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-
+                glassEffectView.topAnchor.constraint(equalTo: containerView.topAnchor),
                 glassEffectView.leadingAnchor.constraint(greaterThanOrEqualTo: containerView.leadingAnchor),
                 glassEffectView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                glassEffectView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             ])
+
+            // On iOS 26 navigation bar is transparent and can accomodate `titleView` of any height.
+            // Set minimum height to default 44pts thus allowing it to grow with font size.
+            containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         } else {
             containerView.addSubview(stackView)
             NSLayoutConstraint.activate([
