@@ -388,10 +388,7 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
 
         setProgress(progress)
 
-        let typedItems = try await self.buildAttachments(
-            for: itemsAndProgresses,
-            mustBeVisualMedia: itemsAndProgresses.count >= 2,
-        )
+        let typedItems = try await self.buildAttachments(for: itemsAndProgresses)
         try Task.checkCancellation()
 
         // Make sure the user is not trying to share more than our attachment limit.
@@ -456,14 +453,11 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
         throw ShareViewControllerError.noConformingInputItem
     }
 
-    private nonisolated func buildAttachments(
-        for itemsAndProgresses: [(TypedItemProvider, Progress)],
-        mustBeVisualMedia: Bool,
-    ) async throws -> [TypedItem] {
+    private nonisolated func buildAttachments(for itemsAndProgresses: [(TypedItemProvider, Progress)]) async throws -> [TypedItem] {
         // FIXME: does not use a task group because SignalAttachment likes to load things into RAM and resize them; doing this in parallel can exhaust available RAM
         var result: [TypedItem] = []
         for (typedItemProvider, progress) in itemsAndProgresses {
-            result.append(try await typedItemProvider.buildAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress))
+            result.append(try await typedItemProvider.buildAttachment(progress: progress))
         }
         return result
     }

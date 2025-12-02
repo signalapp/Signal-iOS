@@ -554,31 +554,6 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
-        // Check if the attachments are compatible with sending to stories.
-        let storySelections = selection.conversations.compactMap({ $0 as? StoryConversationItem })
-        if !storySelections.isEmpty {
-            if !self.canSendTypedItemsToStory() {
-                // Can't send to stories!
-                storySelections.forEach { self.selection.remove($0) }
-                self.updateUIForCurrentSelection(animated: false)
-                self.tableView.reloadData()
-                let vc = ConversationPickerFailedRecipientsSheet(
-                    failedStoryConversationItems: storySelections,
-                    remainingConversationItems: self.selection.conversations,
-                    onApprove: { [weak self] in
-                        guard
-                            let strongSelf = self,
-                            strongSelf.selection.conversations.isEmpty.negated
-                        else {
-                            return
-                        }
-                        strongSelf.conversationPickerDidCompleteSelection(strongSelf)
-                    })
-                self.present(vc, animated: true)
-                return
-            }
-        }
-
         approve()
     }
 

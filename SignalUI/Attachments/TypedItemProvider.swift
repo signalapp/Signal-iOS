@@ -43,17 +43,15 @@ public enum TypedItem {
     public var isVisualMedia: Bool {
         switch self {
         case .text, .contact: false
-        case .other(let attachment): attachment.isImage || attachment.isVideo
+        case .other(let attachment): attachment.isVisualMedia
         }
     }
 
     public var isStoriesCompatible: Bool {
         switch self {
-        case .text: return true
-        case .contact: return false
-        case .other(let attachment):
-            // TODO: Consolidate with isVisualMedia after fixing validity checks.
-            return attachment.isImage || attachment.isVideo
+        case .text: true
+        case .contact: false
+        case .other(let attachment): attachment.isVisualMedia
         }
     }
 }
@@ -153,12 +151,12 @@ public struct TypedItemProvider {
     private static let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .plainText, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
 
     public static func buildVisualMediaAttachment(forItemProvider itemProvider: NSItemProvider) async throws -> SignalAttachment {
-        let typedItem = try await make(for: itemProvider).buildAttachment(mustBeVisualMedia: true)
+        let typedItem = try await make(for: itemProvider).buildAttachment()
         switch typedItem {
-        case .text, .contact:
-            owsFail("not possible because mustBeVisualMedia is true")
-        case .other(let attachment):
+        case .other(let attachment) where attachment.isVisualMedia:
             return attachment
+        case .text, .contact, .other:
+            throw SignalAttachmentError.invalidFileFormat
         }
     }
 
@@ -181,7 +179,7 @@ public struct TypedItemProvider {
 
     // MARK: Methods
 
-    public nonisolated func buildAttachment(mustBeVisualMedia: Bool, progress: Progress? = nil) async throws -> TypedItem {
+    public nonisolated func buildAttachment(progress: Progress? = nil) async throws -> TypedItem {
         // Whenever this finishes, mark its progress as fully complete. This
         // handles item providers that can't provide partial progress updates.
         defer {
@@ -200,7 +198,7 @@ public struct TypedItemProvider {
             //   2) try to load a UIImage directly in the case that is what was sent over
             //   3) try to NSKeyedUnarchive NSData directly into a UIImage
             do {
-                attachment = try await buildFileAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress)
+                attachment = try await buildFileAttachment(mustBeVisualMedia: true, progress: progress)
             } catch SignalAttachmentError.couldNotParseImage, ItemProviderError.fileUrlWasBplist {
                 Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
                 let image: UIImage = try await loadObjectWithKeyedUnarchiverFallback(
@@ -209,8 +207,10 @@ public struct TypedItemProvider {
                 )
                 attachment = try Self.createAttachment(withImage: image)
             }
-        case .movie, .pdf, .data:
-            attachment = try await self.buildFileAttachment(mustBeVisualMedia: mustBeVisualMedia, progress: progress)
+        case .movie:
+            attachment = try await self.buildFileAttachment(mustBeVisualMedia: true, progress: progress)
+        case .pdf, .data:
+            attachment = try await self.buildFileAttachment(mustBeVisualMedia: false, progress: progress)
         case .fileUrl, .json:
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 overrideTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier,
@@ -224,37 +224,25 @@ public struct TypedItemProvider {
             attachment = try await _buildFileAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
-                mustBeVisualMedia: mustBeVisualMedia,
+                mustBeVisualMedia: false,
                 progress: progress,
             )
         case .webUrl:
-            if mustBeVisualMedia {
-                throw SignalAttachmentError.invalidFileFormat
-            }
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadURLObject,
                 failedLoadError: .loadURLObjectFailed
             )
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
-            if mustBeVisualMedia {
-                throw SignalAttachmentError.invalidFileFormat
-            }
             let contactData = try await loadDataRepresentation()
             return .contact(contactData)
         case .plainText, .text:
-            if mustBeVisualMedia {
-                throw SignalAttachmentError.invalidFileFormat
-            }
             let text: NSString = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadStringObject,
                 failedLoadError: .loadStringObjectFailed
             )
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
-            if mustBeVisualMedia {
-                throw SignalAttachmentError.invalidFileFormat
-            }
             let pkPass = try await loadDataRepresentation()
             let dataSource = DataSourceValue(pkPass, utiType: itemType.typeIdentifier)
             guard let dataSource else {

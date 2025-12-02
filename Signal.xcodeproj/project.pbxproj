@@ -892,7 +892,6 @@
 		663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DC2C06717900350632 /* UInt64SafeRecord.swift */; };
 		663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */; };
 		663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02E02C06E2F400350632 /* MockAttachmentReference.swift */; };
-		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		663F81D32E789E240033D2AE /* BackupAttachmentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */; };
 		663F81D52E78A70C0033D2AE /* BackupAttachmentDownloadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D42E78A6F10033D2AE /* BackupAttachmentDownloadScheduler.swift */; };
 		663F81D72E78BB9C0033D2AE /* BackupListMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D62E78B5950033D2AE /* BackupListMediaStore.swift */; };
@@ -4874,7 +4873,6 @@
 		663D02DC2C06717900350632 /* UInt64SafeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt64SafeRecord.swift; sourceTree = "<group>"; };
 		663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleanerTest.swift; sourceTree = "<group>"; };
 		663D02E02C06E2F400350632 /* MockAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentReference.swift; sourceTree = "<group>"; };
-		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentCoordinator.swift; sourceTree = "<group>"; };
 		663F81D42E78A6F10033D2AE /* BackupAttachmentDownloadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadScheduler.swift; sourceTree = "<group>"; };
 		663F81D62E78B5950033D2AE /* BackupListMediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupListMediaStore.swift; sourceTree = "<group>"; };
@@ -10987,7 +10985,6 @@
 				34A95536271B510400B05242 /* ContactTableViewCell.swift */,
 				34A9557C271B510500B05242 /* ConversationItem.swift */,
 				34A9557B271B510500B05242 /* ConversationPicker.swift */,
-				663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */,
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */,
 				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
@@ -16601,7 +16598,6 @@
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
 				3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */,
 				3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */,
-				663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */,
 				3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */,
 				34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */,
 				508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */,

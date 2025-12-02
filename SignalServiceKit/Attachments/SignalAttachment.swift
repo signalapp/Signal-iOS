@@ -381,6 +381,10 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return self.isVideo ? (self.dataSource as! DataSourcePath) : nil
     }
 
+    public var isVisualMedia: Bool {
+        return self.isImage || self.isVideo
+    }
+
     public var isAudio: Bool {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
