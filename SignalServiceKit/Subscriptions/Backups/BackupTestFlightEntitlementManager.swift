@@ -225,11 +225,9 @@ private struct AppAttestManager {
         case acquireBackupEntitlement = "backup"
     }
 
-    enum AttestationError: Error {
+    enum AppAttestError: Error {
         /// Attestation is not supported on this device or app instance.
         case notSupported
-        case networkError
-        case genericError
 
         /// iOS failed to generate an assertion using a previously-attested key.
         ///
@@ -280,17 +278,17 @@ private struct AppAttestManager {
         _ dcError: DCError,
         function: String = #function,
         line: Int = #line,
-    ) -> AttestationError {
+    ) -> Error {
         switch dcError.code {
         case .featureUnsupported:
-            return .notSupported
+            return AppAttestError.notSupported
         case .serverUnavailable:
-            return .networkError
+            return OWSHTTPError.networkFailure(.genericFailure)
         case .unknownSystemFailure, .invalidInput, .invalidKey:
             fallthrough
         @unknown default:
             owsFailDebug("Unexpected DCError code: \(dcError.code)", logger: logger, function: function, line: line)
-            return .genericError
+            return OWSGenericError("Unexpected DCError! \(dcError.code)")
         }
     }
 
@@ -305,9 +303,9 @@ private struct AppAttestManager {
     /// assertion will perform the action.
     func performAttestationAction(
         _ action: AttestationAction,
-    ) async throws(AttestationError) {
+    ) async throws {
         guard attestationService.isSupported else {
-            throw .notSupported
+            throw AppAttestError.notSupported
         }
 
         logger.info("Getting attested key.")
@@ -325,7 +323,7 @@ private struct AppAttestManager {
                 keyId: attestedKey.identifier,
                 requestAssertion: requestAssertion
             )
-        } catch .failedToGenerateAssertionWithPreviouslyAttestedKey {
+        } catch AppAttestError.failedToGenerateAssertionWithPreviouslyAttestedKey {
             // If we failed to generate an assertion with a previously-attested
             // key, throw that key away and try again.
             logger.warn("Failed to generate assertion with previously-attested key. Wiping key and starting over.")
@@ -337,32 +335,22 @@ private struct AppAttestManager {
     private func _performAttestationAction(
         keyId: String,
         requestAssertion: RequestAssertion,
-    ) async throws(AttestationError) {
+    ) async throws {
         guard let keyIdData = Data(base64Encoded: keyId) else {
-            owsFailDebug("Failed to convert keyId to data performing attestation action!")
-            throw .genericError
+            throw OWSAssertionError("Failed to convert keyId to data performing attestation action!", logger: logger)
         }
 
-        let response: HTTPResponse
-        do {
-            response = try await networkManager.asyncRequest(.performAttestationAction(
-                keyIdData: keyIdData,
-                assertedRequestData: requestAssertion.requestData,
-                assertion: requestAssertion.assertion
-            ))
-        } catch where error.isNetworkFailureOrTimeout {
-            throw .networkError
-        } catch {
-            owsFailDebug("Unexpected error performing attestation action! \(error)", logger: logger)
-            throw .genericError
-        }
+        let response = try await networkManager.asyncRequest(.performAttestationAction(
+            keyIdData: keyIdData,
+            assertedRequestData: requestAssertion.requestData,
+            assertion: requestAssertion.assertion
+        ))
 
         switch response.responseStatusCode {
         case 204:
             break
         default:
-            owsFailDebug("Unexpected status code performing attestation action! \(response.responseStatusCode)", logger: logger)
-            throw .genericError
+            throw response.asError()
         }
     }
 
@@ -371,7 +359,7 @@ private struct AppAttestManager {
     /// Returns an identifier for a attested key. Generates and attests a new
     /// key if necessary, or returns an existing key if attestation was
     /// performed in the past.
-    private func getOrGenerateAttestedKey() async throws(AttestationError) -> AttestedKey {
+    private func getOrGenerateAttestedKey() async throws -> AttestedKey {
         if let attestedKeyId = await readAttestedKeyId() {
             logger.info("Using previously-attested key.")
             return AttestedKey(identifier: attestedKeyId)
@@ -385,8 +373,7 @@ private struct AppAttestManager {
         } catch let dcError as DCError {
             throw parseDCError(dcError)
         } catch {
-            owsFailDebug("Unexpected error generating key! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Unexpected error generating key! \(error)", logger: logger)
         }
 
         logger.info("Attesting and registering new key.")
@@ -402,18 +389,10 @@ private struct AppAttestManager {
     ///
     /// Once a key has been attested and registered, it can be used to perform
     /// assertions on future requests.
-    private func attestAndRegisterKey(newKeyId: String) async throws(AttestationError) -> AttestedKey {
+    private func attestAndRegisterKey(newKeyId: String) async throws -> AttestedKey {
         // Get a challenge from Signal servers.
         let keyAttestationChallenge: String = try await getKeyAttestationChallenge()
-
-        guard
-            let keyAttestationChallengeHash = keyAttestationChallenge
-                .data(using: .utf8)
-                .map({ Data(SHA256.hash(data: $0)) })
-        else {
-            owsFailDebug("Failed to hash challenge string!", logger: logger)
-            throw .genericError
-        }
+        let keyAttestationChallengeHash = SHA256.hash(data: Data(keyAttestationChallenge.utf8))
 
         // Sign the challenge-known-to-Signal-servers using our new key (aka,
         // generate an attestation for this key).
@@ -421,13 +400,12 @@ private struct AppAttestManager {
         do {
             keyAttestation = try await attestationService.attestKey(
                 newKeyId,
-                clientDataHash: keyAttestationChallengeHash
+                clientDataHash: Data(keyAttestationChallengeHash)
             )
         } catch let dcError as DCError {
             throw parseDCError(dcError)
         } catch {
-            owsFailDebug("Unexpected error attesting key with Apple! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Unexpected error attesting key with Apple! \(error)", logger: logger)
         }
 
         // Give the signed challenge to Signal servers, who will validate that
@@ -448,28 +426,14 @@ private struct AppAttestManager {
 
     /// Get a challenge from Signal servers that we can use to attest that a new
     /// key is valid.
-    private func getKeyAttestationChallenge() async throws(AttestationError) -> String {
-        let response: HTTPResponse
-        do {
-            response = try await networkManager.asyncRequest(.getAttestationChallenge())
-        } catch where error.isNetworkFailureOrTimeout {
-            throw .networkError
-        } catch {
-            owsFailDebug("Unexpected error fetching attestation challenge! \(error)", logger: logger)
-            throw .genericError
-        }
+    private func getKeyAttestationChallenge() async throws -> String {
+        let response = try await networkManager.asyncRequest(.getAttestationChallenge())
 
-        switch response.responseStatusCode {
-        case 200:
-            break
-        default:
-            owsFailDebug("Unexpected status code fetching attestation challenge! \(response.responseStatusCode)", logger: logger)
-            throw .genericError
-        }
-
-        guard let responseBodyData = response.responseBodyData else {
-            owsFailDebug("Missing response body data fetching attestation challenge!", logger: logger)
-            throw .genericError
+        guard
+            response.responseStatusCode == 200,
+            let responseBodyData = response.responseBodyData
+        else {
+            throw response.asError()
         }
 
         struct AttestationChallengeResponseBody: Decodable {
@@ -482,8 +446,7 @@ private struct AppAttestManager {
                 from: responseBodyData
             )
         } catch {
-            owsFailDebug("Failed to decode response body fetching attestation challenge! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Failed to decode response body fetching attestation challenge! \(error)", logger: logger)
         }
 
         return responseBody.challenge
@@ -495,31 +458,21 @@ private struct AppAttestManager {
     private func _attestAndRegisterKey(
         keyId: String,
         keyAttestation: Data,
-    ) async throws(AttestationError) {
+    ) async throws {
         guard let keyIdData = Data(base64Encoded: keyId) else {
-            owsFailDebug("Failed to base64-decode keyId validating key attestation!")
-            throw .genericError
+            throw OWSAssertionError("Failed to base64-decode keyId validating key attestation!", logger: logger)
         }
 
-        let response: HTTPResponse
-        do {
-            response = try await networkManager.asyncRequest(.attestAndRegisterKey(
-                keyIdData: keyIdData,
-                keyAttestation: keyAttestation
-            ))
-        } catch where error.isNetworkFailureOrTimeout {
-            throw .networkError
-        } catch {
-            owsFailDebug("Unexpected error validating key attestation! \(error)", logger: logger)
-            throw .genericError
-        }
+        let response = try await networkManager.asyncRequest(.attestAndRegisterKey(
+            keyIdData: keyIdData,
+            keyAttestation: keyAttestation
+        ))
 
         switch response.responseStatusCode {
         case 204:
             break
         default:
-            owsFailDebug("Unexpected status code validating key attestation! \(response.responseStatusCode)", logger: logger)
-            throw .genericError
+            throw response.asError()
         }
     }
 
@@ -533,7 +486,7 @@ private struct AppAttestManager {
     private func generateAssertionForAction(
         _ action: AttestationAction,
         attestedKey: AttestedKey,
-    ) async throws(AttestationError) -> RequestAssertion {
+    ) async throws -> RequestAssertion {
         struct AssertableAttestationAction: Encodable {
             let action: String
             let challenge: String
@@ -547,8 +500,7 @@ private struct AppAttestManager {
         do {
             requestData = try JSONEncoder().encode(assertableAction)
         } catch {
-            owsFailDebug("Failed to encode request parameters for assertion! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Failed to encode request parameters for assertion! \(error)", logger: logger)
         }
 
         let assertion: Data
@@ -573,13 +525,12 @@ private struct AppAttestManager {
                 /// key invalid, so we should discard it and start over.
                 ///
                 /// For good measure, handle `.invalidKey` too.
-                throw .failedToGenerateAssertionWithPreviouslyAttestedKey
+                throw AppAttestError.failedToGenerateAssertionWithPreviouslyAttestedKey
             default:
                 throw parseDCError(dcError)
             }
         } catch {
-            owsFailDebug("Unexpected error generating assertion! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Unexpected error generating assertion! \(error)", logger: logger)
         }
 
         return RequestAssertion(
@@ -592,30 +543,16 @@ private struct AppAttestManager {
     /// perform the given action.
     private func getRequestAssertionChallenge(
         action: AttestationAction,
-    ) async throws(AttestationError) -> String {
-        let response: HTTPResponse
-        do {
-            response = try await networkManager.asyncRequest(.getAssertionChallenge(
-                action: action
-            ))
-        } catch where error.isNetworkFailureOrTimeout {
-            throw .networkError
-        } catch {
-            owsFailDebug("Unexpected error fetching assertion challenge! \(error)", logger: logger)
-            throw .genericError
-        }
+    ) async throws -> String {
+        let response = try await networkManager.asyncRequest(.getAssertionChallenge(
+            action: action
+        ))
 
-        switch response.responseStatusCode {
-        case 200:
-            break
-        default:
-            owsFailDebug("Unexpected status code fetching assertion challenge! \(response.responseStatusCode)", logger: logger)
-            throw .genericError
-        }
-
-        guard let responseBodyData = response.responseBodyData else {
-            owsFailDebug("Missing response body data fetching assertion challenge!", logger: logger)
-            throw .genericError
+        guard
+            response.responseStatusCode == 200,
+            let responseBodyData = response.responseBodyData
+        else {
+            throw response.asError()
         }
 
         struct AssertionChallengeResponseBody: Decodable {
@@ -628,8 +565,7 @@ private struct AppAttestManager {
                 from: responseBodyData
             )
         } catch {
-            owsFailDebug("Failed to decode response body fetching assertion challenge! \(error)", logger: logger)
-            throw .genericError
+            throw OWSAssertionError("Failed to decode response body fetching assertion challenge! \(error)", logger: logger)
         }
 
         return responseBody.challenge
