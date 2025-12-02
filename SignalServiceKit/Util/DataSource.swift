@@ -26,7 +26,6 @@ public protocol DataSource: AnyObject {
 
     /// Will return zero in the error case.
     var dataLength: UInt { get }
-    var isValidImage: Bool { get }
     var hasStickerLikeProperties: Bool { get }
     var imageMetadata: ImageMetadata? { get }
 
@@ -160,11 +159,6 @@ public class DataSourceValue: DataSource {
         }
     }
 
-    public var isValidImage: Bool {
-        owsAssertDebug(!isConsumed)
-        return DataImageSource(data).ows_isValidImage
-    }
-
     public var hasStickerLikeProperties: Bool {
         owsAssertDebug(!isConsumed)
         return imageMetadata?.hasStickerLikeProperties ?? false
@@ -268,11 +262,6 @@ public class DataSourcePath: DataSource {
     public var dataUrl: URL? {
         owsAssertDebug(!isConsumed)
         return fileUrl
-    }
-
-    public var isValidImage: Bool {
-        owsAssertDebug(!isConsumed)
-        return (try? DataImageSource.forPath(fileUrl.path))?.ows_isValidImage ?? false
     }
 
     public var hasStickerLikeProperties: Bool {

@@ -101,7 +101,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
-            firstItem.attachment.dataSource.isValidImage || firstItem.attachment.isVideo,
+            firstItem.attachment.isImage || firstItem.attachment.isVideo,
             !receivedOptions.contains(.disallowViewOnce)
         {
             options.insert(.canToggleViewOnce)
@@ -109,7 +109,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         if
             ImageQualityLevel.maximumForCurrentAppContext == .high,
-            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.dataSource.isValidImage }) {
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isImage }) {
             options.insert(.canChangeQualityLevel)
         }
 
@@ -1448,7 +1448,7 @@ private extension SaveableAsset {
     }
 
     private init(attachment: SignalAttachment) throws {
-        if attachment.dataSource.isValidImage {
+        if attachment.isImage {
             guard let imageUrl = attachment.dataSource.dataUrl else {
                 throw OWSAssertionError("imageUrl was unexpectedly nil")
             }

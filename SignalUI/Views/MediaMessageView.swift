@@ -136,7 +136,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private func createAnimatedPreview() {
         guard
-            attachment.dataSource.isValidImage,
+            attachment.isImage,
             let dataUrl = attachment.dataSource.dataUrl,
             let image = SDAnimatedImage(contentsOfFile: dataUrl.path),
             image.size.width > 0 && image.size.height > 0
@@ -182,7 +182,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private func createImagePreview() {
         guard
-            attachment.dataSource.isValidImage,
+            attachment.isImage,
             let image = attachment.image(),
             image.size.width > 0 && image.size.height > 0
         else {

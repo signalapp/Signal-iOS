@@ -693,8 +693,10 @@ public class SignalAttachment: CustomDebugStringConvertible {
             throw .invalidData
         }
 
-        let imageMetadata = dataSource.imageMetadata
-        let isAnimated = imageMetadata?.isAnimated ?? false
+        guard let imageMetadata = dataSource.imageMetadata else {
+            throw .invalidData
+        }
+        let isAnimated = imageMetadata.isAnimated
         if isAnimated {
             guard dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                 throw .fileSizeTooLarge
@@ -1176,6 +1178,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     public class func genericAttachment(dataSource: DataSource, dataUTI: String) throws(SignalAttachmentError) -> SignalAttachment {
         // [15M] TODO: Enforce this at compile-time rather than runtime.
         owsPrecondition(!videoUTISet.contains(dataUTI))
+        owsPrecondition(!inputImageUTISet.contains(dataUTI))
         return try newAttachment(
             dataSource: dataSource,
             dataUTI: dataUTI,

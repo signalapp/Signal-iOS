@@ -712,7 +712,7 @@ private struct ForwardMessageContent {
     var canSendToStories: Bool {
         return allItems.allSatisfy { item in
             if !item.attachments.isEmpty {
-                return item.attachments.allSatisfy({ $0.dataSource.isValidImage || $0.isVideo })
+                return item.attachments.allSatisfy({ $0.isImage || $0.isVideo })
             } else if item.textAttachment != nil {
                 return true
             } else if item.messageBody != nil {

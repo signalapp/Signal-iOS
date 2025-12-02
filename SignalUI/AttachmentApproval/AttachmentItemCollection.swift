@@ -50,7 +50,7 @@ public class AttachmentApprovalItem {
     }
 
     private static func imageEditorModel(for attachment: SignalAttachment) -> ImageEditorModel? {
-        guard attachment.dataSource.isValidImage, !attachment.isAnimatedImage else {
+        guard attachment.isImage, !attachment.isAnimatedImage else {
             return nil
         }
         guard let dataUrl: URL = attachment.dataSource.dataUrl, dataUrl.isFileURL else {
