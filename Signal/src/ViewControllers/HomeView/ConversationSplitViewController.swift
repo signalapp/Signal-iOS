@@ -91,14 +91,20 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             object: UIDevice.current
         )
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didStartTransfer), name: .outgoingDeviceTransferDidStart, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didEndTransfer), name: .outgoingDeviceTransferDidEnd, object: nil)
 
         applyTheme()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if let windowScene = view.window?.windowScene, windowScene.activationState == .foregroundActive {
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
+        }
     }
 
     @objc
@@ -122,19 +128,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         if let windowScene = view.window?.windowScene {
             lastActiveInterfaceOrientation = windowScene.interfaceOrientation
         }
-    }
-
-    @objc
-    private func didStartTransfer() {
-        // Disable the device transfer listener while the new device restore flow is active
-        AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
-        AppEnvironment.shared.deviceTransferServiceRef.stopListeningForNewDevices()
-    }
-
-    @objc
-    private func didEndTransfer() {
-        AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
-        AppEnvironment.shared.deviceTransferServiceRef.startListeningForNewDevices()
     }
 
     func closeSelectedConversation(animated: Bool) {
@@ -738,45 +731,4 @@ private class NoSelectedConversationViewController: OWSViewController {
 
         logoImageView.autoCenterInSuperview()
     }
-}
-
-extension ConversationSplitViewController: DeviceTransferServiceObserver {
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if !BuildFlags.Backups.registrationFlow {
-            AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
-            AppEnvironment.shared.deviceTransferServiceRef.startListeningForNewDevices()
-        }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        if let windowScene = view.window?.windowScene, windowScene.activationState == .foregroundActive {
-            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if !BuildFlags.Backups.registrationFlow {
-            AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
-            AppEnvironment.shared.deviceTransferServiceRef.stopListeningForNewDevices()
-        }
-    }
-
-    func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {
-        guard deviceTransferNavController?.presentingViewController == nil else { return }
-        let navController = OutgoingDeviceTransferNavigationController()
-        deviceTransferNavController = navController
-        navController.present(fromViewController: self)
-    }
-
-    func deviceTransferServiceDidStartTransfer(progress: Progress) {}
-
-    func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {}
-
-    func deviceTransferServiceDidRequestAppRelaunch() {}
 }

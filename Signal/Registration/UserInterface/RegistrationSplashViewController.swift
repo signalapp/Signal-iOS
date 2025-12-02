@@ -14,7 +14,6 @@ public protocol RegistrationSplashPresenter: AnyObject {
     func setHasOldDevice(_ hasOldDevice: Bool)
 
     func switchToDeviceLinkingMode()
-    func transferDevice()
 }
 
 // MARK: - RegistrationSplashViewController
@@ -39,7 +38,6 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
 
         // Buttons in the top right corner.
         let canSwitchModes = UIDevice.current.isIPad || BuildFlags.linkedPhones
-        var transferButtonTrailingAnchor: NSLayoutAnchor<NSLayoutXAxisAnchor> = contentLayoutGuide.trailingAnchor
         if canSwitchModes {
             let modeSwitchButton = UIButton(
                 configuration: .plain(),
@@ -58,28 +56,6 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
                 modeSwitchButton.heightAnchor.constraint(equalToConstant: 40),
                 modeSwitchButton.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
                 modeSwitchButton.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
-            ])
-
-            transferButtonTrailingAnchor = modeSwitchButton.leadingAnchor
-        }
-
-        if BuildFlags.preRegDeviceTransfer {
-            let transferButton = UIButton(
-                configuration: .plain(),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.didTapTransfer()
-                }
-            )
-            transferButton.configuration?.image = Theme.iconImage(.transfer).resizedImage(to: .square(24))
-            transferButton.accessibilityIdentifier = "registration.splash.transfer"
-
-            view.addSubview(transferButton)
-            transferButton.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                transferButton.widthAnchor.constraint(equalToConstant: 40),
-                transferButton.heightAnchor.constraint(equalToConstant: 40),
-                transferButton.trailingAnchor.constraint(equalTo: transferButtonTrailingAnchor),
-                transferButton.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             ])
         }
 
@@ -139,24 +115,19 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
         )
         continueButton.accessibilityIdentifier = "registration.splash.continueButton"
 
-        let largeButtonsContainer: UIView
-        if BuildFlags.Backups.registrationFlow {
-            let restoreOrTransferButton = UIButton(
-                configuration: .largeSecondary(title: OWSLocalizedString(
-                    "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",
-                    comment: "Button for restoring or transferring account in the 'onboarding splash' view."
-                )),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.didTapRestoreOrTransfer()
-                }
-            )
-            restoreOrTransferButton.enableMultilineLabel()
-            restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
+        let restoreOrTransferButton = UIButton(
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",
+                comment: "Button for restoring or transferring account in the 'onboarding splash' view."
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapRestoreOrTransfer()
+            }
+        )
+        restoreOrTransferButton.enableMultilineLabel()
+        restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
 
-            largeButtonsContainer = UIStackView.verticalButtonStack(buttons: [ continueButton, restoreOrTransferButton ])
-        } else {
-            largeButtonsContainer = UIStackView.verticalButtonStack(buttons: [ continueButton ])
-        }
+        let largeButtonsContainer = UIStackView.verticalButtonStack(buttons: [ continueButton, restoreOrTransferButton ])
 
         // Main content view.
         let stackView = addStaticContentStackView(arrangedSubviews: [
@@ -176,11 +147,6 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
     private func didTapModeSwitch() {
         Logger.info("")
         presenter?.switchToDeviceLinkingMode()
-    }
-
-    private func didTapTransfer() {
-        Logger.info("")
-        presenter?.transferDevice()
     }
 
     private func showTOSPP() {

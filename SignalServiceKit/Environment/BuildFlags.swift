@@ -31,8 +31,6 @@ public enum BuildFlags {
 
     public static let linkedPhones = build <= .internal
 
-    public static let preRegDeviceTransfer = build <= .dev
-
     public static let isPrerelease = build <= .beta
 
     public static let shouldUseTestIntervals = build <= .beta
@@ -42,7 +40,6 @@ public enum BuildFlags {
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
     public enum Backups {
-        public static let registrationFlow = true
         public static let showMegaphones = build <= .internal
         public static let showOptimizeMedia = build <= .dev
 

@@ -513,16 +513,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func skipDeviceTransfer() -> Guarantee<RegistrationStep> {
-        Logger.info("")
-        db.write { tx in
-            updatePersistedState(tx) {
-                $0.hasDeclinedTransfer = true
-            }
-        }
-        return Guarantee.wrapAsync { await self.nextStep() }
-    }
-
     public func skipRestoreFromBackup() -> Guarantee<RegistrationStep> {
         Logger.info("")
         inMemoryState.hasSkippedRestoreFromMessageBackup = true
@@ -1890,11 +1880,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && persistedState.restoreMethod == nil {
-            if BuildFlags.Backups.registrationFlow {
-                return .chooseRestoreMethod(.unspecified)
-            } else if !persistedState.hasDeclinedTransfer {
-                return .transferSelection
-            }
+            return .chooseRestoreMethod(.unspecified)
         } else if
             persistedState.restoreMethod?.isBackup == true,
             inMemoryState.accountEntropyPool == nil
@@ -2440,11 +2426,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
-            if BuildFlags.Backups.registrationFlow {
-                return .chooseRestoreMethod(.unspecified)
-            } else {
-                return .transferSelection
-            }
+            return .chooseRestoreMethod(.unspecified)
         }
 
         if session.verified {
@@ -2761,11 +2743,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
-            if BuildFlags.Backups.registrationFlow {
-                return .chooseRestoreMethod(.unspecified)
-            } else {
-                return .transferSelection
-            }
+            return .chooseRestoreMethod(.unspecified)
         case .networkError:
             if retriesLeft > 0 {
                 return await self.makeRegisterOrChangeNumberRequestFromSession(
@@ -4968,8 +4946,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             return
-                BuildFlags.Backups.registrationFlow
-                && inMemoryState.accountEntropyPool != nil
+                inMemoryState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
                 && inMemoryState.backupRestoreState == .none
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup

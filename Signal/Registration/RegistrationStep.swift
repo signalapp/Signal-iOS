@@ -31,12 +31,6 @@ public enum RegistrationStep: Equatable {
     /// If registering via session, the step to enter the verification code.
     case verificationCodeEntry(RegistrationVerificationState)
 
-    /// When registering, the server can inform the client that a device-to-device
-    /// transfer is possible. If so, the user must either do the transfer, or explicitly
-    /// elect not to. This step presents those options to the user.
-    /// Only happens if registering on a new device without local data.
-    case transferSelection
-
     /// For the first time we enter the pin. This can be
     /// for first account setup, creating a pin, or if
     /// re-registering and needing to confirm the pin.
@@ -157,7 +151,6 @@ public enum RegistrationStep: Equatable {
         case .scanQuickRegistrationQrCode: return "scanQuickRegistrationQrCode"
         case .phoneNumberEntry: return "phoneNumberEntry"
         case .verificationCodeEntry: return "verificationCodeEntry"
-        case .transferSelection: return "transferSelection"
         case .deviceTransfer: return "deviceTransfer"
         case .pinEntry: return "pinEntry"
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"

@@ -284,15 +284,6 @@ public class RegistrationNavigationController: OWSNavigationController {
                     return nil
                 }
             )
-        case .transferSelection:
-            return Controller(
-                type: RegistrationTransferChoiceViewController.self,
-                make: { presenter in
-                    return RegistrationTransferChoiceViewController(presenter: presenter)
-                },
-                // No state to update.
-                update: nil
-            )
         case .pinEntry(let state):
             return Controller(
                 type: RegistrationPinViewController.self,
@@ -632,35 +623,6 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
 extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter {
     func acknowledgePinGuessesExhausted() {
         pushNextController(Guarantee.wrapAsync { await self.coordinator.nextStep() })
-    }
-}
-
-extension RegistrationNavigationController: RegistrationTransferChoicePresenter {
-
-    public func transferDevice() {
-        Logger.info("Pushing device transfer")
-
-        do {
-            // TODO: [Backups] - Don't reach into app environment, but this should be removed
-            // once Backups launches
-            let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
-                mode: .primary
-            )
-
-            // We push these controllers right onto the same navigation stack, even though they
-            // are not coordinator "steps". They have their own internal logic to proceed and go
-            // back (direct calls to push and pop) and, when they complete, they will have _totally_
-            // overwritten our local database, thus wiping any in progress reg coordinator state
-            // and putting us into the chat list.
-            pushViewController(RegistrationTransferQRCodeViewController(url: url), animated: true)
-        } catch {
-            // TODO: [Backups] - update this error handling
-            Logger.error("Error transferring")
-        }
-    }
-
-    func continueRegistration() {
-        pushNextController(coordinator.skipDeviceTransfer())
     }
 }
 

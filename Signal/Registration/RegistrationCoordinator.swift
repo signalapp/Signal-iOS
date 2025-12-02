@@ -112,11 +112,6 @@ public protocol RegistrationCoordinator {
     /// If not allowed, an error step may be returned.
     func skipAndCreateNewPINCode() -> Guarantee<RegistrationStep>
 
-    /// When registering, the server will inform us (via an error code) if device transfer is
-    /// possible from an existing device. In this case, the user must either transfer or explicitly
-    /// decline transferring; this method informs the flow of the latter choice.
-    func skipDeviceTransfer() -> Guarantee<RegistrationStep>
-
     /// Set the target restore method to be used in the next step to restore the system.
     func updateRestoreMethod(method: RegistrationRestoreMethod) -> Guarantee<RegistrationStep>
 

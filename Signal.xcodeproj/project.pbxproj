@@ -1007,7 +1007,6 @@
 		667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */; };
 		6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */; };
 		6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */; };
-		66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */; };
 		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */; };
 		667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */; };
 		667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */; };
@@ -3215,7 +3214,6 @@
 		F94262A0289B1B5600460798 /* SMKSecretSessionCipherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */; };
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTest.swift */; };
-		F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */; };
 		F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */; };
 		F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */; };
 		F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */; };
@@ -4993,7 +4991,6 @@
 		667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintBuilder.swift; sourceTree = "<group>"; };
 		6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentPointerProto.swift; sourceTree = "<group>"; };
 		6676A40B2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedAttachmentInfo.swift; sourceTree = "<group>"; };
-		66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferQRCodeViewController.swift; sourceTree = "<group>"; };
 		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
 		667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift"; sourceTree = "<group>"; };
 		667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift"; sourceTree = "<group>"; };
@@ -7234,7 +7231,6 @@
 		F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSecretSessionCipherTest.swift; sourceTree = "<group>"; };
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTest.swift; path = SignalServiceKit/tests/SSKBaseTest.swift; sourceTree = SOURCE_ROOT; };
-		F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferChoiceViewController.swift; sourceTree = "<group>"; };
 		F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingToken.swift; sourceTree = "<group>"; };
 		F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenTest.swift; sourceTree = "<group>"; };
 		F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecord.swift; sourceTree = "<group>"; };
@@ -10085,9 +10081,7 @@
 				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
 				C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
-				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
 				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
-				66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */,
 				C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */,
 				C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */,
 				C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */,
@@ -17485,9 +17479,7 @@
 				C14366262DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
-				F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */,
 				66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */,
-				66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */,
 				C12DB5E72DD39051005039FE /* RegistrationTransferStatusState.swift in Sources */,
 				C147C1722D9C58D60026952D /* RegistrationTransferStatusViewController.swift in Sources */,
 				C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */,
