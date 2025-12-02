@@ -273,8 +273,11 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_GO_TO_MESSAGE",
                         comment: "Action menu item to go to a message in the conversation view"
-                    ), image: .chatArrow) { _ in
-                        // TODO: implement!
+                    ), image: .chatArrow) { [weak self] _ in
+                        guard let self = self else { return }
+                        if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
+                            goToMessage(message: threadViewModel.pinnedMessages[pinnedMessageIndex])
+                        }
                 },
                 UIAction(title: OWSLocalizedString(
                     "PINNED_MESSAGES_SEE_ALL_MESSAGES",
@@ -284,10 +287,21 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     self.present(UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
                         pinnedMessages: threadViewModel.pinnedMessages,
                         threadViewModel: threadViewModel,
-                        database: DependenciesBridge.shared.db
+                        database: DependenciesBridge.shared.db,
+                        delegate: self
                     )), animated: true)
                 }
             ])
         }
+    }
+}
+
+extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
+    func goToMessage(message: TSMessage) {
+        ensureInteractionLoadedThenScrollToInteraction(
+            message.uniqueId,
+            alignment: .centerIfNotEntirelyOnScreen,
+            isAnimated: true
+        )
     }
 }

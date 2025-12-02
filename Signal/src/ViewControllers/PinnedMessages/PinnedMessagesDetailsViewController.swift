@@ -7,19 +7,28 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
+@objc
+protocol PinnedMessageInteractionManagerDelegate: AnyObject {
+    func goToMessage(message: TSMessage)
+}
+
 class PinnedMessagesDetailsViewController: OWSViewController {
     private let pinnedMessages: [TSMessage]
     private let threadViewModel: ThreadViewModel
     private let db: DB
 
+    private weak var delegate: PinnedMessageInteractionManagerDelegate?
+
     init(
         pinnedMessages: [TSMessage],
         threadViewModel: ThreadViewModel,
-        database: DB
+        database: DB,
+        delegate: PinnedMessageInteractionManagerDelegate
     ) {
         self.pinnedMessages = pinnedMessages
         self.threadViewModel = threadViewModel
         self.db = database
+        self.delegate = delegate
 
         super.init()
 
@@ -57,7 +66,7 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         stack.spacing = 12
 
         var currentDaysBefore = -1
-        for message in pinnedMessages.reversed() {
+        for (index, message) in pinnedMessages.reversed().enumerated() {
             guard let renderItem = db.read(block: { tx in
                 buildRenderItem(thread: threadViewModel.threadRecord, threadAssociatedData: threadViewModel.associatedData, message: message, tx: tx)
             }) else {
@@ -81,13 +90,13 @@ class PinnedMessagesDetailsViewController: OWSViewController {
                     stack.addArrangedSubview(cellView)
                 }
             }
-
-            let cellView = CVCellView()
-            cellView.configure(renderItem: renderItem, componentDelegate: self)
-            cellView.isCellVisible = true
-            cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
-
-            stack.addArrangedSubview(cellView)
+            stack.addArrangedSubview(
+                buildButtonAndCellStack(
+                    renderItem: renderItem,
+                    message: message,
+                    reversedIndex: index
+                )
+            )
         }
 
         paddedContainerView.addSubview(stack)
@@ -98,6 +107,49 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         paddedContainerView.autoPinEdgesToSuperviewEdges()
         stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
         paddedContainerView.autoMatch(.width, to: .width, of: scrollView)
+    }
+
+    private func buildButtonAndCellStack(renderItem: CVRenderItem, message: TSMessage, reversedIndex: Int) -> UIStackView {
+        let cellHStack = UIStackView()
+        cellHStack.axis = .horizontal
+        cellHStack.alignment = .trailing
+        cellHStack.distribution = .fill
+
+        let goToMessageButton = UIButton()
+        goToMessageButton.setImage(.arrowRightCircle, for: .normal)
+        goToMessageButton.tintColor = UIColor.Signal.secondaryLabel
+        goToMessageButton.backgroundColor = UIColor.Signal.tertiaryFill
+        goToMessageButton.translatesAutoresizingMaskIntoConstraints = false
+        goToMessageButton.layer.cornerRadius = 18
+        goToMessageButton.clipsToBounds = true
+
+        goToMessageButton.tag = reversedIndex
+        goToMessageButton.addTarget(self, action: #selector(goToMessage), for: .touchUpInside)
+
+        let cellView = CVCellView()
+        cellView.configure(renderItem: renderItem, componentDelegate: self)
+        cellView.isCellVisible = true
+        cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
+        cellView.autoSetDimension(.width, toSize: renderItem.cellSize.width)
+
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        if message.isOutgoing {
+            cellHStack.addArrangedSubview(spacer)
+            cellHStack.addArrangedSubview(goToMessageButton)
+            cellHStack.addArrangedSubview(cellView)
+        } else {
+            cellHStack.addArrangedSubview(cellView)
+            cellHStack.addArrangedSubview(goToMessageButton)
+            cellHStack.addArrangedSubview(spacer)
+        }
+        NSLayoutConstraint.activate([
+            goToMessageButton.heightAnchor.constraint(equalToConstant: 36),
+            goToMessageButton.widthAnchor.constraint(equalToConstant: 36),
+        ])
+
+        return cellHStack
     }
 
     private func buildDateRenderItem(dateInteraction: DateHeaderInteraction, tx: DBReadTransaction) -> CVRenderItem? {
@@ -151,6 +203,21 @@ class PinnedMessagesDetailsViewController: OWSViewController {
             spoilerState: SpoilerRenderState(),
             transaction: tx
         )
+    }
+
+    // MARK: - Interactions
+
+    @objc
+    private func goToMessage(sender: UIButton) {
+        // We index in reverse order because of how UIKit lays out the pinned messages (top to bottom)
+        // versus how we store them for displaying in the CVC banner view (most -> least recent)
+        let reversedArray = pinnedMessages.reversed().map { $0 }
+        guard reversedArray.indices.contains(sender.tag) else {
+            return
+        }
+        let message = reversedArray[sender.tag]
+        delegate?.goToMessage(message: message)
+        dismiss(animated: true)
     }
 }
 
