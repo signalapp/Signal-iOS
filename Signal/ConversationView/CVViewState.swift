@@ -21,7 +21,7 @@ public class CVViewState: NSObject {
     public let threadUniqueId: String
     public var conversationStyle: ConversationStyle
     public var inputToolbar: ConversationInputToolbar?
-    public let headerView = ConversationHeaderView()
+    let headerView = ConversationHeaderView()
 
     public var bottomBarContainer = UIView.container()
     public var requestView: UIView?
