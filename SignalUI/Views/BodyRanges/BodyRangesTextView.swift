@@ -767,7 +767,10 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
             title: FormatEditMenuItem.showFormatMenu.title,
             options: [],
             children: formatMenuItems.map { menuItem in
-                UIAction(title: menuItem.title) { [self] _ in
+                UIAction(
+                    title: menuItem.title,
+                    image: menuItem.image,
+                ) { [self] _ in
                     let styleToApply: MessageBodyRanges.SingleStyle? = switch menuItem {
                     case .showFormatMenu: owsFail("Not possible")
                     case .clearFormatting: nil
@@ -835,6 +838,18 @@ private enum FormatEditMenuItem: CaseIterable {
                 "TEXT_MENU_SPOILER",
                 comment: "Option in selected text edit menu to make text spoiler"
             )
+        }
+    }
+
+    var image: UIImage? {
+        return switch self {
+        case .showFormatMenu: nil
+        case .clearFormatting: nil
+        case .applyBold: UIImage(named: "text-format-bold")
+        case .applyItalic: UIImage(named: "text-format-italic")
+        case .applyMonospace: UIImage(named: "text-format-monospace")
+        case .applyStrikethrough: UIImage(named: "text-format-strikethrough")
+        case .applySpoiler: UIImage(named: "text-format-spoiler")
         }
     }
 }

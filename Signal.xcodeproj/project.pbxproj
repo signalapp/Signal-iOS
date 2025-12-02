@@ -7918,7 +7918,7 @@
 			isa = PBXGroup;
 			children = (
 				048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */,
-                045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */,
+				045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */,
 			);
 			path = PinnedMessages;
 			sourceTree = "<group>";
