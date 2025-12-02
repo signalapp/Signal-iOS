@@ -1637,8 +1637,8 @@ fileprivate extension CVComponentState.Builder {
     ) -> CVComponentState {
 
         self.archivedPaymentAttachment = ArchivedPaymentAttachment(
-            amount: archivedPaymentMessage.archivedPaymentInfo.amount,
-            fee: archivedPaymentMessage.archivedPaymentInfo.fee,
+            amount: PaymentsFormat.formatFromArchive(amount: archivedPaymentMessage.archivedPaymentInfo.amount),
+            fee: PaymentsFormat.formatFromArchive(amount: archivedPaymentMessage.archivedPaymentInfo.fee),
             note: archivedPaymentMessage.archivedPaymentInfo.note,
             // Only used for 1:1 threads, but not enforced.
             otherUserShortName: threadViewModel.shortName ?? threadViewModel.name,

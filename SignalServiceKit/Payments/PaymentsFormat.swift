@@ -27,19 +27,6 @@ public enum PaymentsFormat {
         return numberFormatter
     }
 
-    private static let mobFormatShort: NumberFormatter = {
-        buildMobFormatter(isShortForm: true)
-    }()
-
-    private static let mobFormatLong: NumberFormatter = {
-        buildMobFormatter(isShortForm: false)
-    }()
-
-    // Used for formatting MOB (not picoMob) values for display.
-    private static func mobFormat(isShortForm: Bool) -> NumberFormatter {
-        isShortForm ? mobFormatShort : mobFormatLong
-    }
-
     // Used for formatting decimal numbers in the
     // send payment flow.  _NOT_ used for display.
     // The format is convenient to parse into an "input string"
@@ -132,9 +119,9 @@ public enum PaymentsFormat {
                isShortForm: isShortForm)
     }
 
-    public static func format(picoMob: UInt64, isShortForm: Bool) -> String? {
+    public static func format(picoMob: UInt64, isShortForm: Bool, locale: Locale? = nil) -> String? {
         let mob = PaymentsConstants.convertPicoMobToMob(picoMob)
-        let mobFormat = Self.mobFormat(isShortForm: isShortForm)
+        let mobFormat = Self.buildMobFormatter(isShortForm: isShortForm, locale: locale)
         guard let result = mobFormat.string(from: NSNumber(value: mob)) else {
             owsFailDebug("Couldn't format currency.")
             return nil
@@ -179,4 +166,27 @@ public enum PaymentsFormat {
         numberFormatter.maximumFractionDigits = maximumFractionDigits
         return numberFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
     }
+
+    public static func formatForArchive(picoMob: UInt64) -> String? {
+        let paymentFormatLocale = Locale(identifier: "en_US_POSIX")
+        return PaymentsFormat.format(
+            picoMob: picoMob,
+            isShortForm: false,
+            locale: paymentFormatLocale
+        )
+    }
+
+    public static func formatFromArchive(amount: String?) -> String? {
+        guard let amount else { return nil }
+        let posixNumberFormatter = NumberFormatter()
+        posixNumberFormatter.locale = Locale(identifier: "en_US_POSIX")
+        posixNumberFormatter.numberStyle = .decimal
+
+        if let amountMobDouble = posixNumberFormatter.number(from: amount)?.doubleValue {
+            // Now format to the current Locale
+            return PaymentsFormat.format(mob: amountMobDouble, isShortForm: true)
+        }
+        return nil
+    }
+
 }

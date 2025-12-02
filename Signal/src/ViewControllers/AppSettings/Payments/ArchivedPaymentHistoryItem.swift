@@ -66,7 +66,10 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     public var formattedFeeAmount: String? {
-        guard let fee = paymentInfo.fee else { return nil }
+        guard
+            let archivedFee = paymentInfo.fee,
+            let fee = PaymentsFormat.formatFromArchive(amount: archivedFee)
+        else { return nil }
         return PaymentsFormat.format(
             amountString: fee,
             withCurrencyCode: true,
@@ -103,7 +106,10 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     public var attributedPaymentAmount: NSAttributedString? {
-        guard let amount = paymentInfo.amount else { return nil }
+        guard
+            let archivedAmount = paymentInfo.amount,
+            let amount = PaymentsFormat.formatFromArchive(amount: archivedAmount)
+        else { return nil }
         let formattedAmount = PaymentsFormat.format(
             amountString: amount,
             withCurrencyCode: false,
@@ -114,7 +120,10 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     public var formattedPaymentAmount: String? {
-        guard let amount = paymentInfo.amount else { return nil }
+        guard
+            let archivedAmount = paymentInfo.amount,
+            let amount = PaymentsFormat.formatFromArchive(amount: archivedAmount)
+        else { return nil }
         return PaymentsFormat.format(
             amountString: amount,
             withCurrencyCode: true,

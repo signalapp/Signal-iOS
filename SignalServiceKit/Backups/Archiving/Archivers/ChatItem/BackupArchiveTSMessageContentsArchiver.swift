@@ -295,24 +295,17 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         var paymentNotificationProto = BackupProto_PaymentNotification()
-
         if
-            let amount = model.paymentAmount,
-            let amountString = PaymentsFormat.format(
-                picoMob: amount.picoMob,
-                isShortForm: true
-            )
+            let amount = model.paymentAmount?.picoMob,
+            let formattedAmount = PaymentsFormat.formatForArchive(picoMob: amount)
         {
-            paymentNotificationProto.amountMob = amountString
+            paymentNotificationProto.amountMob = formattedAmount
         }
         if
-            let fee = model.mobileCoin?.feeAmount,
-            let feeString = PaymentsFormat.format(
-                picoMob: fee.picoMob,
-                isShortForm: true
-            )
+            let fee = model.mobileCoin?.feeAmount?.picoMob,
+            let formattedFee = PaymentsFormat.formatForArchive(picoMob: fee)
         {
-            paymentNotificationProto.feeMob = feeString
+            paymentNotificationProto.feeMob = formattedFee
         }
         if let memoMessage = paymentNotification.memoMessage {
             paymentNotificationProto.note = memoMessage
