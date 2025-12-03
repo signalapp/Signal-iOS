@@ -57,6 +57,9 @@ public class NetworkManager: NetworkManagerProtocol {
             appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
                 // We did this once already, but doing it properly depends on RemoteConfig.
                 self.resetLibsignalNetProxySettings()
+                // This is redundant with the instance in ReachabilityManager, but that's ok.
+                let reachability = Reachability.forInternetConnection()!
+                Logger.info("Initial preferred network: \(reachability.currentReachabilityString()!)")
             }
         } else {
             self.reachabilityDidChangeObserver = nil
