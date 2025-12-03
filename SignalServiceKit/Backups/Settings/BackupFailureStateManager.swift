@@ -27,12 +27,21 @@ public class BackupFailureStateManager {
     }
 
     // MARK: -
+
     public func hasFailedBackup(tx: DBReadTransaction) -> Bool {
+        guard shouldBackupsBeRunning(tx: tx) else {
+            return false
+        }
+
         if backupSettingsStore.getInteractiveBackupErrorCount(tx: tx) >= Constants.requiredInteractiveFailuresForBadge {
             return true
         }
 
         if backupSettingsStore.getBackgroundBackupErrorCount(tx: tx) >= Constants.requiredBackgroundFailuresForBadge {
+            return true
+        }
+
+        if !lastBackupWasRecent(tx: tx) {
             return true
         }
 
@@ -46,24 +55,12 @@ public class BackupFailureStateManager {
         target: BackupSettingsStore.ErrorBadgeTarget,
         tx: DBReadTransaction,
     ) -> Bool {
-        guard shouldBackupsBeRunning(tx: tx) else {
-            return false
-        }
-
         // See if this badge has been muted
         if backupSettingsStore.getErrorBadgeMuted(target: target, tx: tx) {
             return false
         }
 
-        if hasFailedBackup(tx: tx) {
-            return true
-        }
-
-        if !lastBackupWasRecent(tx: tx) {
-            return true
-        }
-
-        return false
+        return hasFailedBackup(tx: tx)
     }
 
     // MARK: -

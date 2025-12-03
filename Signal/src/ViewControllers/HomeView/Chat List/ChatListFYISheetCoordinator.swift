@@ -46,7 +46,6 @@ class ChatListFYISheetCoordinator {
     }
 
     private let backupExportJobRunner: BackupExportJobRunner
-    private let backupFailureStateManager: BackupFailureStateManager
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let donationSubscriptionManager: DonationSubscriptionManager.Type
@@ -56,7 +55,6 @@ class ChatListFYISheetCoordinator {
 
     init(
         backupExportJobRunner: BackupExportJobRunner,
-        backupFailureStateManager: BackupFailureStateManager,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         donationSubscriptionManager: DonationSubscriptionManager.Type,
@@ -65,7 +63,6 @@ class ChatListFYISheetCoordinator {
         profileManager: ProfileManager,
     ) {
         self.backupExportJobRunner = backupExportJobRunner
-        self.backupFailureStateManager = backupFailureStateManager
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.donationSubscriptionManager = donationSubscriptionManager
