@@ -1749,7 +1749,7 @@ extension GroupCallViewController: GroupCallObserver {
         updateCallUI()
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         AssertIsOnMainThread()
         owsPrecondition(self.groupCall === call)
 
@@ -1822,6 +1822,24 @@ extension GroupCallViewController: GroupCallObserver {
             )
             message = nil
             shouldDismissCallAfterDismissingActionSheet = false
+
+        case
+                .localHangup,
+                .remoteHangup,
+                .remoteHangupNeedPermission,
+                .remoteHangupAccepted,
+                .remoteHangupDeclined,
+                .remoteHangupBusy,
+                .remoteBusy,
+                .remoteGlare,
+                .remoteReCall,
+                .timeout,
+                .internalFailure,
+                .signalingFailure,
+                .connectionFailure,
+                .appDroppedCall:
+            Logger.error("Received Direct Call reason in a Group Call context")
+            return
         }
 
         if self.isReadyToHandleObserver {

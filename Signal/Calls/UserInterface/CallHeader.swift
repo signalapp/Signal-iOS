@@ -509,7 +509,7 @@ extension CallHeader: GroupCallObserver {
         updateCallStatusLabel()
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         updateCallStatusLabel()
     }
 }

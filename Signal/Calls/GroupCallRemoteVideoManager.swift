@@ -136,7 +136,7 @@ extension GroupCallRemoteVideoManager: GroupCallObserver {
         }
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         videoViews.keys.forEach { destroyRemoteVideoView(for: $0) }
     }
 }

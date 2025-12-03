@@ -173,7 +173,7 @@ extension GroupCallSheetDataSource: GroupCallObserver {
         observers.elements.forEach { $0.callSheetMembershipDidChange(self) }
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         AssertIsOnMainThread()
         observers.elements.forEach { $0.callSheetMembershipDidChange(self) }
     }

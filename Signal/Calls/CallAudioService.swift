@@ -125,7 +125,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         stopPlayingAnySounds()
         ensureProperAudioSession(call: call)
     }

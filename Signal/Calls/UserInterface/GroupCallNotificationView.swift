@@ -141,7 +141,7 @@ extension GroupCallNotificationView: GroupCallObserver {
         updateActiveMembers()
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         AssertIsOnMainThread()
 
         hasJoined = false

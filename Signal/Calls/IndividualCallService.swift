@@ -455,38 +455,13 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     @MainActor
-    public func callManager(_ callManager: CallService.CallManagerType, onEvent call: SignalCall, event: CallManagerEvent) {
-        Logger.info("call: \(call), onEvent: \(event)")
+    public func callManager(_ callManager: CallService.CallManagerType, onCallEnded call: SignalCall, callId: UInt64, reason: CallEndReason, summary: CallSummary) {
+        Logger.info("call: \(call), onCallEnded: \(reason)")
 
-        switch event {
-        case .ringingLocal:
-            handleRinging(call: call)
+        // TODO: Handle the call summary.
 
-        case .ringingRemote:
-            handleRinging(call: call)
-
-        case .connectedLocal:
-            Logger.debug("")
-            // nothing further to do - already handled in handleAcceptCall().
-
-        case .connectedRemote:
-            defer {
-                callUIAdapter.recipientAcceptedCall(call.mode)
-            }
-
-            guard call === callServiceState.currentCall else {
-                cleanUpStaleCall(call)
-                return
-            }
-
-            // Set the audio session configuration before audio is enabled in WebRTC
-            // via recipientAcceptedCall().
-            handleConnected(call: call)
-
-            // Update the call interaction now that we've connected.
-            call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoing)
-
-        case .endedLocalHangup:
+        switch reason {
+        case .localHangup:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -513,7 +488,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
             callServiceState.terminateCall(call)
 
-        case .endedRemoteHangup:
+        case .remoteHangup:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -537,7 +512,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
             callServiceState.terminateCall(call)
 
-        case .endedRemoteHangupNeedPermission:
+        case .remoteHangupNeedPermission:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -559,7 +534,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
             callServiceState.terminateCall(call)
 
-        case .endedRemoteHangupAccepted:
+        case .remoteHangupAccepted:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -580,7 +555,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 Logger.info("ignoring 'endedRemoteHangupAccepted' since call is already finished")
             }
 
-        case .endedRemoteHangupDeclined:
+        case .remoteHangupDeclined:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -601,7 +576,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 Logger.info("ignoring 'endedRemoteHangupDeclined' since call is already finished")
             }
 
-        case .endedRemoteHangupBusy:
+        case .remoteHangupBusy:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -622,7 +597,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 Logger.info("ignoring 'endedRemoteHangupBusy' since call is already finished")
             }
 
-        case .endedRemoteBusy:
+        case .remoteBusy:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -638,7 +613,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
             callServiceState.terminateCall(call)
 
-        case .endedRemoteGlare, .endedRemoteReCall:
+        case .remoteGlare, .remoteReCall:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
                 return
@@ -669,7 +644,7 @@ final class IndividualCallService: CallServiceStateObserver {
             call.individualCall.state = .localHangup
             callServiceState.terminateCall(call)
 
-        case .endedTimeout:
+        case .timeout:
             let description: String
 
             if call.individualCall.direction == .outgoing {
@@ -680,20 +655,73 @@ final class IndividualCallService: CallServiceStateObserver {
 
             handleFailedCall(failedCall: call, error: CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
 
-        case .endedSignalingFailure, .endedGlareHandlingFailure:
-            handleFailedCall(failedCall: call, error: CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
-
-        case .endedInternalFailure:
+        case .internalFailure:
             handleFailedCall(failedCall: call, error: OWSAssertionError("call manager internal error"), shouldResetUI: true, shouldResetRingRTC: false)
 
-        case .endedConnectionFailure:
+        case .signalingFailure:
+            handleFailedCall(failedCall: call, error: CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
+
+        case .connectionFailure:
             handleFailedCall(failedCall: call, error: CallError.disconnected, shouldResetUI: true, shouldResetRingRTC: false)
 
-        case .endedDropped:
+        case .appDroppedCall:
             Logger.debug("")
 
             // An incoming call was dropped, ignoring because we have already
             // failed the call on the screen.
+
+        case
+                .deviceExplicitlyDisconnected,
+                .serverExplicitlyDisconnected,
+                .deniedRequestToJoinCall,
+                .removedFromCall,
+                .callManagerIsBusy,
+                .sfuClientFailedToJoin,
+                .failedToCreatePeerConnectionFactory,
+                .failedToNegotiateSrtpKeys,
+                .failedToCreatePeerConnection,
+                .failedToStartPeerConnection,
+                .failedToUpdatePeerConnection,
+                .failedToSetMaxSendBitrate,
+                .iceFailedWhileConnecting,
+                .iceFailedAfterConnected,
+                .serverChangedDemuxId,
+                .hasMaxDevices:
+            Logger.error("Received Group Call reason in a Direct Call context")
+        }
+    }
+
+    @MainActor
+    public func callManager(_ callManager: CallService.CallManagerType, onEvent call: SignalCall, event: CallManagerEvent) {
+        Logger.info("call: \(call), onEvent: \(event)")
+
+        switch event {
+        case .ringingLocal:
+            handleRinging(call: call)
+
+        case .ringingRemote:
+            handleRinging(call: call)
+
+        case .connectedLocal:
+            Logger.debug("")
+            // nothing further to do - already handled in handleAcceptCall().
+
+        case .connectedRemote:
+            defer {
+                callUIAdapter.recipientAcceptedCall(call.mode)
+            }
+
+            guard call === callServiceState.currentCall else {
+                cleanUpStaleCall(call)
+                return
+            }
+
+            // Set the audio session configuration before audio is enabled in WebRTC
+            // via recipientAcceptedCall().
+            handleConnected(call: call)
+
+            // Update the call interaction now that we've connected.
+            call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoing)
 
         case .remoteAudioEnable:
             guard call === callServiceState.currentCall else {
@@ -768,6 +796,9 @@ final class IndividualCallService: CallServiceStateObserver {
             // TODO - This should not be a failure.
             call.individualCall.state = .localFailure
             callServiceState.terminateCall(call)
+
+        case .glareHandlingFailure:
+            handleFailedCall(failedCall: call, error: CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
         }
     }
 

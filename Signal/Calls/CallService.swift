@@ -976,7 +976,7 @@ extension CallService: GroupCallObserver {
         }
     }
 
-    func groupCallEnded(_ groupCall: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ groupCall: GroupCall, reason: CallEndReason) {
         groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
 
         let call = callServiceState.currentCall
@@ -1280,6 +1280,22 @@ extension CallService: CallManagerDelegate {
             isOutgoing: isOutgoing,
             callMediaType: callMediaType,
             shouldEarlyRing: shouldEarlyRing
+        )
+    }
+
+    func callManager(
+        _ callManager: SignalRingRTC.CallManager<SignalCall, CallService>,
+        onCallEnded call: SignalCall,
+        callId: UInt64,
+        reason: CallEndReason,
+        summary: CallSummary
+    ) {
+        individualCallService.callManager(
+            callManager,
+            onCallEnded: call,
+            callId: callId,
+            reason: reason,
+            summary: summary
         )
     }
 

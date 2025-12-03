@@ -615,7 +615,7 @@ extension CallControlsViewModel: GroupCallObserver {
         refreshView?()
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         refreshView?()
     }
 }

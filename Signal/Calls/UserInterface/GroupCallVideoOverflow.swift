@@ -223,7 +223,7 @@ extension GroupCallVideoOverflow: GroupCallObserver {
         reloadData()
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         AssertIsOnMainThread()
         reloadData()
     }
