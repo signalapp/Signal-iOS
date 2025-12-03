@@ -1393,20 +1393,6 @@ class BackupSettingsViewController:
                 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON",
                 comment: "Button for a sheet explaining that the user's Backups subscription was not found on this device.",
             )),
-            secondaryButton: HeroSheetViewController.Button(
-                title: CommonStrings.contactSupport,
-                style: .secondary,
-                action: .custom({ sheet in
-                    sheet.dismiss(animated: true) { [weak self] in
-                        guard let self else { return }
-                        ContactSupportActionSheet.present(
-                            emailFilter: .custom("BackupIAPNotFoundLocally"),
-                            logDumper: .fromGlobals(),
-                            fromViewController: self,
-                        )
-                    }
-                }),
-            )
         )
 
         present(notFoundLocallySheet, animated: true)
