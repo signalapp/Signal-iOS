@@ -394,7 +394,7 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupMemberAddedUpdate(let proto):
-            switch (unwrapOptionalAci(proto, \.inviterAci), unwrapRequiredAci(proto, \.newMemberAci)) {
+            switch (unwrapOptionalAci(proto, \.updaterAci), unwrapRequiredAci(proto, \.newMemberAci)) {
             case (.unknown, .localUser):
                 return .success([.localUserAddedByUnknownUser])
             case (.localUser, .localUser):

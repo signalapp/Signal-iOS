@@ -47,55 +47,6 @@ class BackupArchiveIntegrationTests: XCTestCase {
         case minimalDiff
     }
 
-    private enum WhichIntegrationTestCases {
-        case all
-        case specific(names: Set<String>)
-
-        case standardFrames
-
-        case accountData
-
-        case adHocCall
-
-        case chat
-
-        case chatItem
-        case chatItemContactMessage
-        case chatItemExpirationTimerUpdate
-        case chatItemGiftBadge
-        case chatItemGroupCall
-        case chatItemGroupChangeChatUpdate
-        case chatItemGroupChangeChatMultipleUpdate
-        case chatItemIndividualCall
-        case chatItemLearnedProfile
-        case chatItemPaymentNotification
-        case chatItemProfileChange
-        case chatItemRemoteDeleteTombstone
-        case chatItemSessionSwitchover
-        case chatItemSimpleUpdates
-        case chatItemStandardMessageFormatted
-        case chatItemStandardMessageLinkPreview
-        case chatItemStandardMessageLongText
-        case chatItemStandardMessageSms
-        case chatItemStandardMessageSpecialAttachments
-        case chatItemStandardMessageStandardAttachments
-        case chatItemStandardMessageTextOnly
-        case chatItemStandardMessageWithEdits
-        case chatItemStandardMessageWithQuote
-        case chatItemStickerMessage
-        case chatItemThreadMerge
-        case chatItemViewOnceMessage
-        case chatItemDirectStoryReply
-
-        case recipient
-        case recipientCallLink
-        case recipientContact
-        case recipientDistributionList
-        case recipientGroup
-
-        case stickerPack
-    }
-
     /// The preferred log output for test failures.
     ///
     /// Set by default to `.minimalDiff` to reduce log noise in automated test
@@ -103,12 +54,14 @@ class BackupArchiveIntegrationTests: XCTestCase {
     /// development, for more thorough inspection of the failure case.
     private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
 
-    /// Specifies which integration test cases to run.
+    /// Specifies which integration test cases to run. If empty, runs them all.
     ///
-    /// Set by default to `.all`. May be toggled to a subset of tests during
-    /// local development for debugging purposes, but should never be committed
-    /// to `main` as anything other than `.all`.
-    private let whichIntegrationTestCases: WhichIntegrationTestCases = .all
+    /// Populate this during local development with a subset of test cases as
+    /// useful, but never commit this as anything other than empty.
+    ///
+    /// Passing a prefix (e.g., `account_data`) will run any test cases that
+    /// match said prefix.
+    private let whichIntegrationTestCases: [String] = []
 
     // MARK: -
 
@@ -124,85 +77,12 @@ class BackupArchiveIntegrationTests: XCTestCase {
             return allBinprotoUrls.filter { binprotoUrl in
                 let binprotoName = (binprotoUrl.lastPathComponent as NSString).deletingPathExtension
 
-                switch whichIntegrationTestCases {
-                case .all:
+                if whichIntegrationTestCases.isEmpty {
                     return true
-                case .specific(let names):
-                    return names.contains(binprotoName)
-                case .standardFrames:
-                    return binprotoName.contains("standard_frames")
-                case .accountData:
-                    return binprotoName.contains("account_data_")
-                case .adHocCall:
-                    return binprotoName.contains("ad_hoc_call_")
-                case .chat:
-                    return binprotoName.contains("chat_")
-                case .chatItem:
-                    return binprotoName.contains("chat_item_")
-                case .chatItemContactMessage:
-                    return binprotoName.contains("chat_item_contact_message_")
-                case .chatItemExpirationTimerUpdate:
-                    return binprotoName.contains("chat_item_expiration_timer_update_")
-                case .chatItemGiftBadge:
-                    return binprotoName.contains("chat_item_gift_badge_")
-                case .chatItemGroupCall:
-                    return binprotoName.contains("chat_item_group_call_update_")
-                case .chatItemGroupChangeChatUpdate:
-                    return binprotoName.contains("chat_item_group_change_chat_update_")
-                case .chatItemGroupChangeChatMultipleUpdate:
-                    return binprotoName.contains("chat_item_group_change_chat_multiple_update_")
-                case .chatItemIndividualCall:
-                    return binprotoName.contains("chat_item_individual_call_update_")
-                case .chatItemLearnedProfile:
-                    return binprotoName.contains("chat_item_learned_profile_update_")
-                case .chatItemPaymentNotification:
-                    return binprotoName.contains("chat_item_payment_notification_")
-                case .chatItemProfileChange:
-                    return binprotoName.contains("chat_item_profile_change_")
-                case .chatItemRemoteDeleteTombstone:
-                    return binprotoName.contains("chat_item_remote_delete_")
-                case .chatItemSessionSwitchover:
-                    return binprotoName.contains("chat_item_session_switchover_update_")
-                case .chatItemSimpleUpdates:
-                    return binprotoName.contains("chat_item_simple_updates_")
-                case .chatItemStandardMessageFormatted:
-                    return binprotoName.contains("chat_item_standard_message_formatted_")
-                case .chatItemStandardMessageLinkPreview:
-                    return binprotoName.contains("chat_item_standard_message_with_link_preview_")
-                case .chatItemStandardMessageLongText:
-                    return binprotoName.contains("chat_item_standard_message_long_text_")
-                case .chatItemStandardMessageSms:
-                    return binprotoName.contains("chat_item_standard_message_sms_")
-                case .chatItemStandardMessageSpecialAttachments:
-                    return binprotoName.contains("chat_item_standard_message_special_attachments_")
-                case .chatItemStandardMessageStandardAttachments:
-                    return binprotoName.contains("chat_item_standard_message_standard_attachments_")
-                case .chatItemStandardMessageTextOnly:
-                    return binprotoName.contains("chat_item_standard_message_text_only_")
-                case .chatItemStandardMessageWithEdits:
-                    return binprotoName.contains("chat_item_standard_message_with_edits_")
-                case .chatItemStandardMessageWithQuote:
-                    return binprotoName.contains("chat_item_standard_message_with_quote_")
-                case .chatItemStickerMessage:
-                    return binprotoName.contains("chat_item_sticker_message_")
-                case .chatItemThreadMerge:
-                    return binprotoName.contains("chat_item_thread_merge_")
-                case .chatItemViewOnceMessage:
-                    return binprotoName.contains("chat_item_view_once_")
-                case .chatItemDirectStoryReply:
-                    return binprotoName.contains("chat_item_direct_story_reply_")
-                case .recipient:
-                    return binprotoName.contains("recipient_")
-                case .recipientCallLink:
-                    return binprotoName.contains("recipient_call_link_")
-                case .recipientContact:
-                    return binprotoName.contains("recipient_contacts_")
-                case .recipientDistributionList:
-                    return binprotoName.contains("recipient_distribution_list_")
-                case .recipientGroup:
-                    return binprotoName.contains("recipient_groups_")
-                case .stickerPack:
-                    return binprotoName.contains("sticker_pack_")
+                }
+
+                return whichIntegrationTestCases.contains { testCasePrefix in
+                    binprotoName.starts(with: testCasePrefix)
                 }
             }
         }()
