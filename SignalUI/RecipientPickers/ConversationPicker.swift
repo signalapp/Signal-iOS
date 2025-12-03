@@ -207,13 +207,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             object: nil
         )
 
-        DispatchQueue.main.async {
-            if
-                !CurrentAppContext().isMainApp,
-                self.traitCollection.userInterfaceStyle != UITraitCollection.current.userInterfaceStyle
-            {
-                Theme.shareExtensionThemeOverride = self.traitCollection.userInterfaceStyle
-            }
+        // Works around a mysterious issue in which UITraitCollection.current's
+        // userInterfaceStyle doesn't match that of this view controller, which
+        // results in wonky colors.
+        DispatchQueue.main.async { [self] in
+            configureThemeForShareExtension()
         }
     }
 
@@ -224,19 +222,24 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         presentationTime = presentationTime ?? Date()
     }
 
+    // MARK: -
+
     open override func themeDidChange() {
         super.themeDidChange()
-
         updateTableContents(shouldReload: false)
     }
 
+    /// Manually observe `UITraitCollection` changes to manage `Theme`. This is
+    /// typically done by `OWSWindow`, but in the Share Extension we don't have
+    /// an `OWSWindow` to do this for us.
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        configureThemeForShareExtension()
+    }
 
-        let userInterfaceStyleDidChange = previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle
-        if !CurrentAppContext().isMainApp, userInterfaceStyleDidChange {
-            Theme.shareExtensionThemeOverride = traitCollection.userInterfaceStyle
-        }
+    private func configureThemeForShareExtension() {
+        guard CurrentAppContext().isShareExtension else { return }
+        Theme.shareExtensionInterfaceStyleOverride = traitCollection.userInterfaceStyle
     }
 
     // MARK: - ConversationCollection

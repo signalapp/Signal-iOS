@@ -9,11 +9,6 @@ public extension Notification.Name {
     static let themeDidChange = Notification.Name("ThemeDidChangeNotification")
 }
 
-@objc
-public extension NSNotification {
-    static var ThemeDidChange: NSString { Notification.Name.themeDidChange.rawValue as NSString }
-}
-
 final public class Theme {
 
     private static var shared = Theme(themeDataStore: ThemeDataStore())
@@ -108,12 +103,16 @@ final public class Theme {
     private var cachedIsDarkThemeEnabled: Bool?
     private var cachedCurrentMode: ThemeDataStore.Appearance?
 
-    public static var shareExtensionThemeOverride: UIUserInterfaceStyle = .unspecified {
+    public static var shareExtensionInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
         didSet {
-            guard !CurrentAppContext().isMainApp else {
-                return owsFailDebug("Should only be set in share extension")
+            owsPrecondition(
+                CurrentAppContext().isShareExtension,
+                "Must only be set in the share extension!"
+            )
+
+            if oldValue != shareExtensionInterfaceStyleOverride {
+                shared.themeDidChange()
             }
-            shared.themeDidChange()
         }
     }
 
@@ -131,7 +130,7 @@ final public class Theme {
 
         // Always respect the system theme in extensions.
         guard CurrentAppContext().isMainApp else {
-            return switch Self.shareExtensionThemeOverride {
+            return switch Self.shareExtensionInterfaceStyleOverride {
             case .dark:
                 true
             case .light:
