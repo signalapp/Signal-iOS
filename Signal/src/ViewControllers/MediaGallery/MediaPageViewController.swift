@@ -223,7 +223,7 @@ class MediaPageViewController: UIPageViewController {
             {
                 topInset = statusBarHeight
                 if #available(iOS 18, *) {
-                    topInset = statusBarHeight + 2 + .hairlineWidth
+                    topInset += (2 + .hairlineWidth)
                 } else if #available(iOS 16, *) {
                     topInset -= .hairlineWidth
                 }
