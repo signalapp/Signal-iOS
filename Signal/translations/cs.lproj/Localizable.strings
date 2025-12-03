@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "Žádná propojená zařízení";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Používejte Signal ve stolním počítači nebo iPadu.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Zprávy a informace o chatech jsou na všech zařízeních chráněny koncovým šifrováním";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spustit média";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Povolit hlasování pro více možností";

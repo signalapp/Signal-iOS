@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "沒有已連結裝置";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "在桌面電腦或 iPad 上使用 Signal。";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "所有裝置上的訊息和聊天資訊均受端對端加密的保護";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "允許多次投票";

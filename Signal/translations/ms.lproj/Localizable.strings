@@ -560,13 +560,13 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Kunci pemulihan betul. Pastikan kunci anda selamat.";
 
 /* Button label for action sheet to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Keluar daripada persediaan sandaran";
+"BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Keluar daripada Tetapan Sandaran";
 
 /* Message for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "Anda belum selesai menyediakan sandaran dan tiada sandaran telah dibuat. Anda boleh mendayakan sandaran dalam Tetapan.";
+"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "Anda belum selesai menetapkan sandaran, dan tiada sandaran telah dibuat. Anda boleh mendayakan sandaran dalam Tetapan.";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "Keluar daripada persediaan sandaran?";
+"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "Keluar daripada Tetapan Sandaran?";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "Signal tidak akan dapat membantu memulihkan sandaran jika anda kehilangan kunci. Simpannya di tempat yang selamat dan jangan kongsikannya dengan orang lain.";
@@ -659,7 +659,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "Pergi ke Tetapan";
 
 /* Message for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "Untuk membenarkan Signal menyandarkan mesej anda secara automatik, ketik \"Pergi ke Tetapan\" di bawah dan dayakan \"Muat Semula Apl Latar Belakang\"";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "Untuk membenarkan Signal menyandarkan mesej anda secara automatik, ketik \"Pergi ke Tetapan\" di bawah dan dayakan \"Penyegaran Aplikasi Latar Belakang\"";
 
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Sandaran Automatik Dinyahdayakan";
@@ -902,13 +902,13 @@
 "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Lihat kunci pemulihan";
 
 /* Body for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "Langganan anda tidak dapat dipulihkan pada peranti ini. Ini boleh berlaku jika anda log masuk ke App Store dengan akaun Apple yang berbeza atau anda memindahkan daripada telefon Android.\n\nJika anda mempunyai langganan aktif pada telefon lama, pertimbangkan untuk membatalkannya sebelum ia diperbaharui.";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "Langganan anda tidak dapat dipulihkan pada peranti ini. Perkara ini boleh berlaku jika anda log masuk ke App Store menggunakan akaun Apple yang berbeza atau anda berpindah daripada telefon Android.\n\nJika anda mempunyai langganan aktif pada telefon lama, pertimbangkan untuk membatalkannya sebelum ia diperbaharui.";
 
 /* Button for a sheet explaining that the user's Backups subscription was not found on this device. */
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "Faham";
 
 /* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Langganan tidak ditemui";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Langganan Tidak Ditemui";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Sandaran Sekarang";
@@ -971,7 +971,7 @@
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "Tidak dapat menebus langganan sandaran anda";
 
 /* Body for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "Terlalu banyak peranti telah cuba menebus langganan anda bulan ini.\n\nAnda mungkin telah mendaftarkan semula akaun Signal anda terlalu banyak kali atau mempunyai terlalu banyak peranti yang menggunakan langganan yang sama.";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "Terlalu banyak peranti telah cuba menebus langganan anda bulan ini.\n\nAnda mungkin telah mendaftar semula akaun Signal anda terlalu banyak kali, atau terdapat terlalu banyak peranti menggunakan langganan yang sama.";
 
 /* Button for a sheet explaining that the user's Backups subscription was already redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "Faham";
@@ -1724,7 +1724,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "Ralat semasa menebus pembelian anda. Sila hubungi sokongan.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Oleh kerana anda mencapai had kunci pemulihan baharu anda, untuk mengelakkan penyalahgunaan, anda tidak akan dapat mendayakan sandaran untuk %1$@. Tunggu %1$@ dan cuba lagi.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Oleh kerana anda telah mencapai had bagi kunci pemulihan baharu, untuk mengelakkan penyalahgunaan, anda tidak akan dapat mendayakan sandaran untuk %1$@. Tunggu %1$@ dan cuba lagi.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "Tidak Dapat Mendayakan Sandaran";
@@ -4679,7 +4679,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Selesai Memautkan";
 
 /* Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled. */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "Pindahkan mesej teks anda dan semua media anda";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "Pindahkan mesej teks dan semua media anda";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Pindahkan sejarah mesej";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "Tiada peranti dipautkan";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Gunakan Signal pada Desktop atau iPad.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Mesej dan maklumat sembang dilindungi oleh penyulitan hujung ke hujung pada semua peranti";
@@ -6583,6 +6583,12 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
 
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
+
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Benarkan Berbilang Undian";
 
@@ -7298,7 +7304,7 @@
 "RESET" = "Tetap semula";
 
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Media anda belum selesai dipulihkan. Jika anda memilih untuk membatalkan, anda boleh memulihkannya semula dengan memautkan semula peranti ini.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Media anda belum selesai dipulihkan. Jika anda memilih untuk membatalkannya, anda boleh memulihkannya semula dengan memautkan semula peranti ini.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "Teruskan Pemulihan";
@@ -7310,7 +7316,7 @@
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "Media Anda Sedang Dipulihkan";
 
 /* Message for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "Media anda belum selesai dipulihkan. Jika anda memilih untuk membatalkan, anda boleh memulihkannya semula dengan memautkan semula peranti ini.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "Media anda belum selesai dipulihkan. Jika anda memilih untuk membatalkannya, anda boleh memulihkannya semula dengan memautkan semula peranti ini.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "Teruskan Pemulihan";

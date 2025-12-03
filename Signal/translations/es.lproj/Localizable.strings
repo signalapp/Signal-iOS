@@ -71,7 +71,7 @@
 "ACTION_SEND_MESSAGE" = "Enviar mensaje";
 
 /* Message shown in an action sheet when a generic error occurs. */
-"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Se ha producido un error. Contacta con el equipo de asistencia.";
+"ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "Se ha producido un error. Contacta con el equipo de Asistencia.";
 
 /* Message shown in an action sheet when a network error occurs. */
 "ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "Se ha producido un error. Comprueba tu conexión e inténtalo de nuevo.";
@@ -665,7 +665,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Copias de seguridad automáticas desactivadas";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "No se ha podido crear tu copia de seguridad. Inténtalo de nuevo o contacta con nuestro equipo de asistencia.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "No se ha podido crear tu copia de seguridad. Inténtalo de nuevo o contacta con nuestro equipo de Asistencia.";
 
 /* Title for a button in an action sheet allowing users to perform a backup, ignoring that WiFi is required. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Permitir copias de seguridad con datos móviles";
@@ -701,7 +701,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Tu plan de copia de seguridad es gratuito";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de asistencia.";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de Asistencia.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "No se ha podido recuperar tu plan de copia de seguridad";
@@ -764,7 +764,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Se han desactivado las copias de seguridad: en este momento se están descargando los archivos multimedia que no se encuentren en el dispositivo. Una vez descargados, tus datos se eliminarán del servicio de almacenamiento seguro de Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de asistencia.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Se ha producido un error. Contacta con el equipo de Asistencia.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "No se han podido eliminar tus datos del servicio de almacenamiento seguro de Signal.";
@@ -1721,7 +1721,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Se ha producido un error. Inténtalo de nuevo.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "No se ha podido validar tu compra. Contacta con el equipo de asistencia.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "No se ha podido validar tu compra. Contacta con el equipo de Asistencia.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Has alcanzado tu límite de creación de claves de recuperación. Para evitar usos inadecuados, deberás esperar %1$@ antes de poder activar las copias de seguridad. Espera %1$@ y vuelve a intentarlo.";
@@ -2954,7 +2954,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Canjeada";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar su insignia de apoyo a Signal en su perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar su insignia de apoyo a Signal en su perfil.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donar en nombre de alguien más";
@@ -2978,7 +2978,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "No se ha podido completar el pago";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Tu pago se ha procesado, pero Signal no ha podido enviar tu mensaje de donación. Contacta con el equipo de asistencia.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Tu pago se ha procesado, pero Signal no ha podido enviar tu mensaje de donación. Contacta con el equipo de Asistencia.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "No se ha podido hacer la donación";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "No hay dispositivos vinculados";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Usa Signal para escritorio o iPad.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Los mensajes y chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
@@ -5144,7 +5144,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquear y eliminar";
 
 /* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Denunciar como spam y bloquear";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Denunciar spam y bloquear";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Las personas que bloquees no podrán llamarte ni enviarte mensajes.";
@@ -6365,7 +6365,7 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Nadie";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Tu número de teléfono no será visible para nadie a menos que lo tenga guardado en los contactos de su teléfono.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Tu número de teléfono no será visible para nadie a menos que lo tenga guardado en su teléfono.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Tu número de teléfono no será visible para nadie.";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir archivo";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Permitir varios votos";
@@ -6878,7 +6884,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Ha reaccionado a tu historia";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Ha reaccionado a la historia de %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Has reaccionado a la historia de %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "Historia de %1$@";
@@ -7064,13 +7070,13 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Reintentar";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Se ha producido un error al restaurar tu copia de seguridad. Tu copia de seguridad no se puede recuperar. Contacta con el equipo de asistencia para obtener ayuda.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Se ha producido un error al restaurar tu copia de seguridad. Tu copia de seguridad no se puede recuperar. Contacta con el equipo de Asistencia para obtener ayuda.";
 
 /* Title for a sheet telling users restoring a backup unrecoverably failed. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE" = "No se puede restaurar la copia de seguridad";
 
 /* Body for a sheet warning users about an incompatible backup version. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Para restaurar tu copia de seguridad, asegúrate de tener la última versión de Signal y vuelve a intentarlo. Si el problema persiste, ponte en contacto con el equipo de asistencia.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_BODY" = "Para restaurar tu copia de seguridad, asegúrate de tener la última versión de Signal y vuelve a intentarlo. Si el problema persiste, ponte en contacto con el equipo de Asistencia.";
 
 /* Title for a sheet warning users about an incompatible backup version. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNSUPPORTED_BACKUP_VERSION_TITLE" = "Actualización necesaria";
@@ -7436,13 +7442,13 @@
 "SAFETY_TIPS_FAKE_NAMES_TITLE" = "Cuentas y nombres falsos";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Revisa detenidamente esta solicitud. Ninguno de tus contactos o personas con las que chateas están en este grupo. Aquí hay algunas cosas a tener en cuenta:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Revisa detenidamente esta solicitud. Ninguno de tus contactos o personas con las que chateas están en este grupo. Aquí hay algunas recomendaciones a tener en cuenta:";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Consejos de seguridad";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Ten cuidado al aceptar solicitudes de mensajes de personas que no conoces. Presta atención a lo siguiente:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Ten cuidado al aceptar solicitudes de mensaje de personas que no conoces. Aquí hay algunas recomendaciones a tener en cuenta:";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Ten cuidado con los mensajes de personas que no conoces y que tienen enlaces a sitios web. Nunca abras enlaces de personas en las que no confías.";
@@ -7499,7 +7505,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloquear Signal";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nombre de perfil, alias o número";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nombre, alias o número";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nombre o número";
@@ -8546,7 +8552,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Desactivar";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "No se ha podido desactivar el bloqueo de registro. Contacta con el equipo de asistencia.";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC" = "No se ha podido desactivar el bloqueo de registro. Contacta con el equipo de Asistencia.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK" = "No se ha podido desactivar el bloqueo de registro. Comprueba tu conexión a Internet e inténtalo de nuevo.";
@@ -8558,7 +8564,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Activar";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "No se ha podido activar el bloqueo de registro. Contacta con el equipo de asistencia.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC" = "No se ha podido activar el bloqueo de registro. Contacta con el equipo de Asistencia.";
 
 /* Message shown in an action sheet when attempting to enable registration lock, but encountering a network error. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK" = "No se ha podido activar el bloqueo de registro. Comprueba tu conexión a Internet e inténtalo de nuevo.";
@@ -9140,7 +9146,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "¿Confirmar cancelación?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "No se ha podido añadir la insignia a tu perfil. Contacta con el equipo de asistencia.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "No se ha podido añadir la insignia a tu perfil. Contacta con el equipo de Asistencia.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "No se ha podido añadir tu insignia";
@@ -9698,10 +9704,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Atenuar fondo con tema oscuro";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "No se ha podido eliminar el fondo de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de asistencia si el problema persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "No se ha podido eliminar el fondo de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de Asistencia si el problema persiste.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "No se han podido restablecer todos los fondos de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de asistencia si el problema persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "No se han podido restablecer todos los fondos de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de Asistencia si el problema persiste.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Restablecer todos";

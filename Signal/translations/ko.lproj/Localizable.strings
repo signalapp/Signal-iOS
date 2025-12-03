@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "확인";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "이 대화에서 %1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어를 받지 못했습니다.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "이 대화에서 %1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어가 전달되지 못했습니다.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "배송 문제";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어를 받지 못했습니다. 사용자에게 직접 보내거나 그룹에서 보내려고 했을 수 있습니다.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어가 전달되지 못했습니다. 나에게 직접 보내거나 그룹 대화에서 보내려 했던 것으로 보여요.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "파기";
@@ -1178,7 +1178,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단한 사용자는 나에게 전화를 걸거나 메시지를 보낼 수 없습니다.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "사용자 정의 금액 입력";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "직접 금액 입력하기";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "추가";
@@ -1808,7 +1808,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "반응 구성";
+"CONFIGURE_REACTIONS" = "반응 설정";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "메시지를 삭제하고 애플리케이션이 재설정됩니다. 이 과정이 완료되면 애플리케이션이 종료됩니다.";
@@ -2339,7 +2339,7 @@
 "CREATE_CALL_LINK_LABEL" = "통화 링크 만들기";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "전화번호 개인 정보 보호와 선택적 사용자 이름 및 링크를 소개합니다.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "전화번호 보호와 사용자 이름, 그리고 링크 기능이 추가됐어요.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "새로운 연락 방법";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "연결된 기기 없음";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "데스크톱 또는 iPad에서 Signal을 이용하세요.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "메시지와 대화 정보는 모든 장치에서 엔드투엔드 암호화로 보호됩니다";
@@ -5369,13 +5369,13 @@
 "MY_STORIES_NO_STORIES" = "내 스토리에 대한 업데이트가 여기 표시됩니다.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "다음을 제외한 모든 사용자…";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "일부를 제외한 모든 사용자";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "모든 Signal 커넥션";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "다음 사용자와만 공유…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "일부 사용자와만 공유";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "내 스토리";
@@ -6583,6 +6583,12 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
 
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "대기 중";
+
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "복수 투표 허용";
 
@@ -6725,25 +6731,25 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "간략한 자기소개를 적어주세요…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "친절함";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "배려 있게 대화해요";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "커피 애호가";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "커피 없인 못 살아요";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "암호화됨";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "프라이버시가 중요해요";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "대화 가능";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "대화 가능해요";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "자유롭게 말하다";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "자유롭게 이야기해요";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "쉬는 중";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "휴식 모드";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "새로운 것에 도전하는 중";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "새로운 것에 도전하고 있어요";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "정보";
@@ -6821,7 +6827,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "프로필은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "프로필과 프로필 변경 사항이 사용자가 메시지를 보내는 사람과 연락처, 그룹에 표시됩니다.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "프로필과 프로필 변경 사항은 메시지를 주고받는 상대와 연락처, 그룹에 표시됩니다.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "프로필";
@@ -6875,10 +6881,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "메시지 원본을 찾을 수 없습니다.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "내 스토리에 반응함";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "내 스토리에 반응했어요";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ 님의 스토리에 반응했습니다.";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ 님의 스토리에 반응했어요";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · 스토리";
@@ -6917,40 +6923,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "모두 · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 음성에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 오디오에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "다음에 %1$@ 이모지로 반응함: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" 메시지에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번만 볼 수 있는 내 미디어에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번만 볼 수 있는 내 미디어에 %1$@ 이모지로 반응했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "내 음성 메시지에 %1$@ 이모지로 반응했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "내 음성 메시지에 %1$@ 이모지로 반응했어요";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "읽음";
@@ -8957,25 +8963,25 @@
 "STORY_PRIVACY_TITLE" = "스토리 개인정보보호";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "내 스토리에 %1$@ 이모지로 반응했습니다.";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "내 스토리에 %1$@ 이모지로 반응했어요";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "스토리에 %1$@ 이모지로 반응했습니다.";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "스토리에 %1$@ 이모지로 반응했어요";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "스토리에 %1$@ 이모지로 반응했습니다.";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "스토리에 %1$@ 이모지로 반응했어요";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ 님의 스토리에 %1$@ 이모지로 반응했습니다.";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ 님의 스토리에 %1$@ 이모지로 반응했어요";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "답장";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "스토리에 반응했습니다.";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "스토리에 반응했어요";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "스토리에 반응했습니다.";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "스토리에 반응했어요";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "답장";
@@ -8996,10 +9002,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "이 스토리를 일부 사용자에게 보낼 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "다음 사용자와만 공유…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "일부 사용자와만 공유";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "다음을 제외한 모든 사용자…";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "일부를 제외한 모든 사용자";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "전송에 실패했습니다.";
@@ -9458,7 +9464,7 @@
 "USE_PROXY_EXPLANATION" = "모바일 데이터 또는 Wi-Fi에서 Signal에 연결할 수 없는 경우에만 프록시를 사용하세요.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "사용자 이름에는 나와 빠르게 대화를 시작하도록 친구와 공유할 수 있는 고유한 QR 코드와 링크가 있습니다.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "사용자 이름에는 고유한 QR 코드와 링크가 함께 제공됩니다. 해당 코드나 링크를 친구와 공유하여 바로 대화를 시작해 보세요.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "QR 코드와 링크";
@@ -9467,7 +9473,7 @@
 "USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "이 대화에 내 전화번호가 더 이상 표시되지 않습니다. 내 전화번호를 연락처에 저장한 친구는 계속 내 전화번호를 볼 수 있습니다.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "전화번호 개인 정보 보호";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "전화번호 보호";
 
 /* Label for the 'set up' button on the username education sheet */
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "사용자 이름 설정";
@@ -9476,7 +9482,7 @@
 "USERNAME_EDUCATION_TITLE" = "새로운 연락 방법";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "이제 나에게 메시지를 보낼 때 선택적 사용자 이름을 사용할 수 있으므로 다른 사람과 전화번호를 공유할 필요가 없습니다. 사용자 이름은 프로필에 표시되지 않습니다.";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "이제 별도의 사용자 이름으로 메시지를 받을 수 있어 다른 사람과 전화번호를 공유하지 않아도 됩니다. 사용자 이름은 프로필에 표시되지 않습니다.";
 
 /* Title for usernames section on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_TITLE" = "사용자 이름";
@@ -9566,7 +9572,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "사용자 이름을 변경하면 기존 QR 코드와 링크가 초기화됩니다. 계속할까요?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "사용자 이름은 항상 숫자와 짝지어 쓰입니다. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "모든 사용자 이름에는 고유 번호가 부여됩니다. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "사용자 이름을 선택하세요.";
@@ -9578,7 +9584,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "사용자 이름이 잘못되었습니다. 2자 이상으로 입력해 주세요.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "이 일련번호는 사용자 이름을 비공개로 유지하여 원치 않는 메시지를 피할 수 있도록 도와줍니다. 대화를 원하는 사용자 및 그룹과만 사용자 이름을 공유하세요. 사용자 이름을 변경하면 새로운 일련번호가 부여됩니다.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "이 일련번호는 사용자 이름을 비공개로 보호해 원치 않는 메시지를 차단하는 데 도움이 됩니다. 사용자 이름은 신뢰하는 사용자나 그룹과만 공유해 주세요. 사용자 이름을 변경하면 새로운 일련번호가 생성됩니다.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "이 번호는 무엇인가요?";

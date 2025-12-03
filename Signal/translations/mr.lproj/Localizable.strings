@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "कोणताही लिंक केला डिव्हाइस नाही";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "डेस्कटॉप किंवा iPad वर Signal वापरा.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "संदेश आणि चॅट्ची माहिती सर्व डिव्हाइसेसवर एन्ड-टू-एन्ड एन्क्रिप्शनने संरक्षित आहेत";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "मिडिया प्ले करा";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "अनेक मते देण्यास परवानगी द्या";

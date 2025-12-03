@@ -1011,7 +1011,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d명이 %2$@ 이모지로 반응했습니다.</string>
+			<string>%1$d명이 %2$@ 이모지로 반응했어요.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1095,7 +1095,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>다음 사용자와만 공유 · 볼 수 있는 사람 %1$d명</string>
+			<string>일부 사용자와만 공유 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>

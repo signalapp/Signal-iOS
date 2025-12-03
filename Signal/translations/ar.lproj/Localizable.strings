@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "لا توجد أجهزة مُرتبِطة";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "استخدِم سيجنال على الحاسوب المكتبي أو جهاز الآيباد.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "معلومات الرسائل والدردشات محمية من خلال التشفير من طرف لِطرف على جميع الأجهزة.";
@@ -5834,7 +5834,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "قُم بتأكيد أنه يُمكنك تلقّي مكالمة هاتفية على هذا الرقم";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "تحقَّق من إدخال رقم هاتفك بشكلٍ صحيح.";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "تحقَّق من إدخال رقم هاتفك بشكلٍ صحيح";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "هل تواجه مشكلة في التسجيل؟";
@@ -6583,6 +6583,12 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "تشغيل الوسط";
 
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
+
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "السماح بالتصويت عدة مرّات";
 
@@ -6788,7 +6794,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "الإصلاح الآن";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدِّي هذا إلى إزالة اسم المُستخدم الخاص بك وتعطيل كود الـ QR والرابط الخاصين بك. ستُصبح \"%1$@\" متوفِّرة للآخرين ليستفيدوا منها. هل أنت متأكِّد؟";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدِّي هذا إلى إزالة اسم المُستخدم الخاص بك وتعطيل كود الـ QR والرابط الخاصين بك. سيصبح اسم المستخدم \"%1$@\" متوفِّرًا للآخرين ليستخدموه. هل أنت متأكِّد؟";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدِم";
@@ -8630,7 +8636,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل التسجيل";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "رقم التعريف الشخصي (PIN) على سيجنال مطلوب لتسجيل رقم هاتفك مع سيجنال مرّة أُخرى.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "إلزام رقم التعريف الشخصي (PIN) على سيجنال لتسجيل رقم هاتفك مع سيجنال مرّة أُخرى.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "مؤشِّرات الكتابة";
@@ -9035,7 +9041,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطِّلاع على منشوراتك في \"قصتي\" إلّا إذا أخفيتها عنهم.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>‫جهات اتصال سيجنال‬</strong> هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>‫جهات اتصال سيجنال</bold>‬ هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "القِصَص";
@@ -9458,7 +9464,7 @@
 "USE_PROXY_EXPLANATION" = "استخدِم البروكسي فقط إذا تعذَّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر شبكة الواي فاي.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدِمين لها كودات QR فريدة يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدِمين لها كودات QR فريدة يُمكنك مُشاركتُها مع أصدقائك لكي يبدؤوا الدردشة معك.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "روابط وكودات الـ QR";
@@ -9575,7 +9581,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدِمين على حروف a-z، وأرقام 0-9 وشرطة سُفلية _ فقط.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدِم غير صحيح. أدخِل رقمين على الأقل.";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدِم غير صحيح. أدخِل رقمين على الأقل";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "تُساعد هذه الأرقام في الحفاظ على خصوصية اسم المُستخدِم الخاص بك حتى تتجنَّب الرسائل غير المرغوب فيها. شارِك اسم المُستخدِم الخاص بك فقط مع الأشخاص والمجموعات الذين ترغب في الدردشة معهم. إذا غيَّرتَ أسماء المُستخدِم الخاصة بك، فسَتحصل على مجموعة جديدة من الأرقام.";

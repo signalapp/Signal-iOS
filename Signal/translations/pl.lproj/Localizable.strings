@@ -1325,7 +1325,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Każda osoba, która dołączy do rozmowy za pomocą linku, może wyświetlić Twoje imię oraz zdjęcie.";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on. */
-"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Każda osoba, która dołączy do rozmowy za pomocą linku, może wyświetlić Twoje imię, zdjęcie oraz numer telefonu.";
+"CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Każda osoba, która dołączy do połączenia za pomocą linku, może wyświetlić Twoje imię, zdjęcie oraz numer telefonu.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
 "CALL_LINK_MULTI_CONFIRM" = "Linki do połączenia utworzone przez Ciebie nie będą już działać u nikogo.";
@@ -1439,7 +1439,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Wyłącz wyciszenie";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Oczekiwanie na wpuszczenie…";
+"CALL_WAITING_TO_BE_LET_IN" = "Oczekiwanie, aż ktoś Cię wpuści…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Oddzwoń";
@@ -1853,7 +1853,7 @@
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Kontakt Signal";
 
 /* The title for a contact 'about' sheet. */
-"CONTACT_ABOUT_SHEET_TITLE" = "O mnie";
+"CONTACT_ABOUT_SHEET_TITLE" = "O kontakcie";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adres";
@@ -3653,7 +3653,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie można odebrać treści audio ani wideo, których nadawcą jest %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ta osoba mogła nie zweryfikować Twojego numeru bezpieczeństwa, ma problem z urządzeniem albo Cię zablokowała.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ta osoba mogła nie zweryfikować Twojego nowego numeru bezpieczeństwa, ma problem z urządzeniem albo Cię zablokowała.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie można odebrać połączenia audio ani wideo, którego nadawcą jest %1$@";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "Brak połączonych urządzeń";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Korzystaj z aplikacji Signal na komputerze lub iPadzie.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Wiadomości i informacje o czacie są zabezpieczane szyfrowaniem end-to-end na wszystkich urządzeniach";
@@ -5228,7 +5228,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Czy Ty i %1$@ dalej będziecie komunikować się ze sobą na tym czacie i czy udostępnić tej osobie Twoje imię i zdjęcie?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kontynuować czat z tą grupą i udostępnić jej Twoje imię i zdjęcie?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kontynuować czat z tą grupą i udostępnić jej Twoje imię oraz zdjęcie?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości oraz czy udostępnić tej osobie Twoje imię i zdjęcie? Nie dowie się ona, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
@@ -6583,6 +6583,12 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
 
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
+
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Zezwól na wiele odpowiedzi";
 
@@ -6788,7 +6794,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Zrób to teraz";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Spowoduje to usunięcie Twojej nazwy użytkownika i dezaktywację kodu QR oraz linku. Inne osoby będą mogły użyć nazwy „%1$@”. Chcesz kontynuować?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Spowoduje to usunięcie Twojej nazwy użytkownika i dezaktywację kodu QR oraz linku. Ktoś inny będzie mógł ustawić dla siebie nazwę „%1$@”. Chcesz kontynuować?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Usuń nazwę użytkownika";

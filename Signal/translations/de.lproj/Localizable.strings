@@ -2213,7 +2213,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Immer";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stummschalten";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stumm";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 Stunden";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "Keine gekoppelten Geräte";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Signal auf dem Computer oder iPad verwenden.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Nachrichten und Chat-Infos sind auf allen Geräten durch eine Ende-zu-Ende-Verschlüsselung geschützt";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medieninhalt wiedergeben";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Mehrere Stimmen zulassen";

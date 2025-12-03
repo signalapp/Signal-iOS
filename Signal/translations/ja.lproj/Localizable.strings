@@ -2045,7 +2045,7 @@
 "CONTEXT_MENU_DETAILS" = "詳細";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "編集する";
+"CONTEXT_MENU_EDIT_MESSAGE" = "編集";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "転送";
@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "リンク済み端末はありません";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "DesktopまたはiPadでSignalを使用してください。";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "メッセージ情報とチャット情報は、すべての端末でエンドツーエンドの暗号化で保護されています";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "メディアを再生";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "複数投票を許可";

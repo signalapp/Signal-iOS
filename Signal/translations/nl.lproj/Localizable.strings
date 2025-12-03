@@ -4796,7 +4796,7 @@
 "LINKED_DEVICES_EMPTY_STATE" = "Geen gekoppelde apparaten";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Gebruik Signal op een desktop of iPad.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Berichten en chatgegevens worden beschermd door end-to-end-versleuteling op al je apparaten";
@@ -4928,7 +4928,7 @@
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "Geen audio";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Documenten die je verstuurt en ontvangt, worden hier weergegeven";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Documenten die je verstuurt en ontvangt worden hier weergegeven";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
 "MEDIA_GALLERY_NO_FILES_TITLE" = "Geen documenten";
@@ -4937,7 +4937,7 @@
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "Geen media";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Foto's, video's en GIF's die je verstuurt en ontvangt, worden hier weergegeven";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Foto's, video's en GIF's die je verstuurt en ontvangt worden hier weergegeven";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_MEDIA_TITLE" = "Geen media";
@@ -6582,6 +6582,12 @@
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
+
+/* Accessibility label for poll message. Embeds {{ poll question }}. */
+"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+
+/* Accessibility label for a vote option that is not selected by the user. */
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "pending";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "Meerdere antwoorden toestaan";
