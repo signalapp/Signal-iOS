@@ -33,9 +33,13 @@ struct RegistrationPermissionsView: View {
     var body: some View {
         VStack {
             VStack(spacing: headerSpacing) {
-                Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
+                Text(OWSLocalizedString(
+                    "ONBOARDING_PERMISSIONS_TITLE",
+                    comment: "Title of the 'onboarding permissions' view."
+                ))
                     .font(.title.weight(.semibold))
                     .lineLimit(1)
+                    .accessibilityAddTraits(.isHeader)
                 Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_PREAMBLE", comment: "Preamble of the 'onboarding permissions' view."))
                     .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             }
@@ -155,6 +159,7 @@ private extension RegistrationPermissionsView {
                     HStack(spacing: 16) {
                         icon
                             .frame(width: 36)
+                            .accessibilityHidden(true)
                         title
                             .font(.headline)
                             .lineLimit(1)
@@ -164,9 +169,11 @@ private extension RegistrationPermissionsView {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityElement(children: .combine)
             } else {
                 HStack(alignment: .top, spacing: 16) {
                     icon
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 4) {
                         title
                             .font(.headline)
@@ -177,6 +184,7 @@ private extension RegistrationPermissionsView {
                             .layoutPriority(1)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
         }
     }

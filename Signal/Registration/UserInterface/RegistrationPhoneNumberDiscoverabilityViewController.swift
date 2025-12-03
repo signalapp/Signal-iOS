@@ -184,6 +184,19 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
+
+        // MARK: Accessibility
+
+        override var accessibilityLabel: String? {
+            get { phoneNumberDiscoverability.nameForDiscoverability }
+            set { super.accessibilityLabel = newValue }
+        }
+
+        override var accessibilityHint: String? {
+            get { phoneNumberDiscoverability.descriptionForDiscoverability }
+            set { super.accessibilityHint = newValue }
+        }
+
     }
 
     private struct PrivacySettingButtonContentConfiguration: UIContentConfiguration {

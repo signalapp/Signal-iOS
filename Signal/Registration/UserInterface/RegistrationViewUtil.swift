@@ -44,6 +44,7 @@ extension UILabel {
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
+        result.accessibilityTraits = [ .staticText, .header ]
         return result
     }
 
@@ -93,6 +94,9 @@ extension UIButton {
             contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor)
         ])
+
+        button.accessibilityLabel = contentConfiguration.title
+        button.accessibilityHint = contentConfiguration.subtitle
 
         return button as! Self
     }

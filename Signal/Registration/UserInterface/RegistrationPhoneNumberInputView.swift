@@ -133,12 +133,20 @@ class RegistrationPhoneNumberInputView: UIView {
             chevronIcon.centerYAnchor.constraint(equalTo: container.centerYAnchor),
             chevronIcon.trailingAnchor.constraint(equalTo: container.trailingAnchor),
         ])
-        container.accessibilityIdentifier = "registration.phonenumber.countryCode"
         container.isUserInteractionEnabled = true
         container.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
             action: #selector(didTapCountryCode)
         ))
+
+        container.isAccessibilityElement = true
+        container.accessibilityTraits = .button
+        container.accessibilityIdentifier = "registration.phonenumber.countryCode"
+        container.accessibilityLabel = OWSLocalizedString(
+            "REGISTRATION_DEFAULT_COUNTRY_NAME",
+            comment: "Label for the country code field"
+        )
+
         return container
     }()
 
@@ -160,6 +168,7 @@ class RegistrationPhoneNumberInputView: UIView {
 
     private func update() {
         countryCodeLabel.text = country.plusPrefixedCallingCode
+        countryCodeView.accessibilityValue = countryCodeLabel.text
         nationalNumberView.isEnabled = isEnabled
     }
 
