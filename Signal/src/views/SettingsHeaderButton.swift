@@ -61,6 +61,7 @@ class SettingsHeaderButton: UIView {
         }
 
         // Accessibility
+        isAccessibilityElement = true
         accessibilityTraits = .button
         accessibilityLabel = title
     }
@@ -121,10 +122,6 @@ class SettingsHeaderButton: UIView {
     }
 
     // MARK: Accessibility
-
-    override class func isAccessibilityElement() -> Bool {
-        true
-    }
 
     override func accessibilityActivate() -> Bool {
         if #available(iOS 17.4, *) {
