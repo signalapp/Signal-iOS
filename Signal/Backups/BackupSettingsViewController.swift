@@ -498,8 +498,6 @@ class BackupSettingsViewController:
         planSelection: BackupSettingsViewModel.EnableBackupsPlanSelection,
         shouldShowWelcomeToBackupsSheet: Bool,
     ) {
-        // TODO: [Backups] Show the rest of the onboarding flow.
-
         Task {
             switch planSelection {
             case .required(let planSelection):
