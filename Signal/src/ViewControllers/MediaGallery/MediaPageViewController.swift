@@ -213,12 +213,20 @@ class MediaPageViewController: UIPageViewController {
         super.viewSafeAreaInsetsDidChange()
         if let navigationBarVerticalPositionConstraint {
             // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
-            // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
+            // which is ~5 dp smaller than the top safe area inset (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
             // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
-            // the workaround is to detect exactly safe area of 59 points and decrease it.
+            // the workaround is to detect when top safe area inset is larger than the status bar height and adjust as needed.
             var topInset = view.safeAreaInsets.top
-            if topInset == 59 {
-                topInset -= 5 + .hairlineWidth
+            if #unavailable(iOS 26),
+               let statusBarHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height,
+               statusBarHeight < topInset
+            {
+                topInset = statusBarHeight
+                if #available(iOS 18, *) {
+                    topInset = statusBarHeight + 2 + .hairlineWidth
+                } else if #available(iOS 16, *) {
+                    topInset -= .hairlineWidth
+                }
             }
             // On iOS 26 in landscape the navigation bar is offset 24 dp from the screen top edge.
             if #available(iOS 26, *), topInset.isZero {
