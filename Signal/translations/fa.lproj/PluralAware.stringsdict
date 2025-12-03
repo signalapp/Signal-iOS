@@ -1448,22 +1448,6 @@
 			<string>%1$d تلاش</string>
 		</dict>
 	</dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>همه موارد را نمی‌توان به استوری انتخابی‌تان ارسال کرد، چون نوع فایل پشتیبانی نمی‌شود.</string>
-			<key>other</key>
-			<string>همه موارد را نمی‌توان به استوری‌های انتخابی‌تان ارسال کرد، چون نوع فایل پشتیبانی نمی‌شود.</string>
-		</dict>
-	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

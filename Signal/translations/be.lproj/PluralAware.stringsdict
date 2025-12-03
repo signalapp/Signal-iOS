@@ -1812,26 +1812,6 @@
 			<string>%1$d спроб</string>
 		</dict>
 	</dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Не ўсе элемент могуць быць адпраўлены ў выбраную вамі гісторыю, таму што гэты тып файла не падтрымліваецца.</string>
-			<key>few</key>
-			<string>Не ўсе элемента могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
-			<key>many</key>
-			<string>Не ўсе элементаў могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
-			<key>other</key>
-			<string>Не ўсе элементаў могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
-		</dict>
-	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

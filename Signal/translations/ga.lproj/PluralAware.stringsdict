@@ -1994,28 +1994,6 @@
 			<string>%1$d iarracht</string>
 		</dict>
 	</dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Níorbh fhéidir gach mír a sheoladh chuig an scéal a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
-			<key>two</key>
-			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
-			<key>few</key>
-			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
-			<key>many</key>
-			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
-			<key>other</key>
-			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
-		</dict>
-	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

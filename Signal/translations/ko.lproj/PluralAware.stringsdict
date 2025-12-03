@@ -1011,7 +1011,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d명이 %2$@ 이모지로 반응했습니다.</string>
+			<string>%1$d명이 %2$@ 이모지로 반응했어요.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1095,7 +1095,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>다음 사용자와만 공유 · 볼 수 있는 사람 %1$d명</string>
+			<string>일부 사용자와만 공유 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1264,20 +1264,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>%1$d번</string>
-		</dict>
-	</dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>지원되지 않는 파일 형식으로 인해 모든 항목을 선택한 스토리에 보낼 수 없습니다.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
