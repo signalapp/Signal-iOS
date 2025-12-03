@@ -1,2 +1,1 @@
-• Signal anketleri burada! Sen ve arkadaşların aynı fikirde misiniz, yoksa ters kutuplar mısınız? Anketler, grup sohbetinde herkesin gerçekte ne düşündüğünü görmenin kolay bir yoludur. Farklı akşam yemeği seçenekleri veya başka önemli konular için bir anket oluşturabilirsin. Gruptaki herkes oylayabilir ve birbirinin yanıtlarını görebilir, birden fazla oy kullanmaya izin verip vermeyeceğine sen karar verirsin.
-• Bu sürüm, yeni görsel unsurlar ve daha başarılı animasyonlarla iOS 26 ve iPadOS 26 için ilk tasarım geliştirmeleri de içeriyor. Gelecek güncellemelerde bu iyileştirmelerin daha da fazlası olacak.
+• Polls now include additional accessibility labels for improved VoiceOver support.

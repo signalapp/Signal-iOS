@@ -1,2 +1,1 @@
-• Signal ra mắt tính năng Hỏi ý kiến! Tính năng này giúp bạn biết các ý kiến của người trong nhóm của mình. Bạn sẽ có thể tạo một cuộc Hỏi ý kiến với các lựa chọn khác nhau, thành viên nhóm có thể bình chọn và xem phản hồi của nhau, và bạn có thể quyết định có cho phép có nhiều bình chọn hay không.
-• Bản cập nhật này mang đến các cải tiến thiết kế đầu tiên cho iOS 26 và iPadOS 26, với các yếu tố hình ảnh mới và hiệu ứng động tốt hơn. Các bản cập nhật trong tương lai sẽ còn có nhiều cải tiến hơn nữa.
+• Polls now include additional accessibility labels for improved VoiceOver support.

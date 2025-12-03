@@ -1,2 +1,1 @@
-• Ankety Signal sú tu! Ankety predstavujú jednoduchý spôsob, ako zistiť, čo si váš skupinový čet naozaj myslí. Vytvorte anketu s ponukou viacerých možností, kam zájsť na večeru alebo inými dôležitými témami. Každý v skupine môže hlasovať a vidieť odpovede ostatných a vy sa môžete rozhodnúť, či povolíte výber viacerých odpovedí.
-• Toto vydanie tiež zahŕňa prvé dizajnové vylepšenia pre iOS 26 a iPadOS 26 v podobe nových vizuálnych prvkov a lepších animácií. Budúce aktualizácie prinesú ešte viac vylepšení.
+• Polls now include additional accessibility labels for improved VoiceOver support.

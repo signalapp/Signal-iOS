@@ -1,2 +1,1 @@
-• Chegaram as enquetes do Signal! Você e seus amigos estão em sintonia ou têm opiniões completamente opostas? As enquetes são uma maneira fácil de ver o que o seu grupo realmente pensa. Crie uma enquete com opções para jantar, destinos de férias, preferências musicais para uma próxima viagem de carro ou outras escolhas importantes. Todos no grupo podem votar e ver as respostas uns dos outros, e você pode decidir se permite ou não votos múltiplos.
-• Esta atualização também inclui a primeira fase da reformulação do Liquid Glass para iOS 26 e iPadOS 26, com animações aprimoradas e novos elementos visuais. As próximas versões trarão ainda mais melhorias. 
+• Polls now include additional accessibility labels for improved VoiceOver support.

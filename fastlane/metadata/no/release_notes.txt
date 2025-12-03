@@ -1,2 +1,1 @@
-• Signal har nå avstemninger! Med avstemninger blir det lett å finne ut hva gruppechatten faktisk mener. Du kan f.eks. lage en avstemning med ulike middagsalternativer eller andre viktige avgjørelser. Alle i gruppen kan stemme og se hva de andre stemmer, og du kan bestemme om det er lov å stemme flere ganger.
-• Denne oppdateringen inkluderer også de første designforbedringene for iOS 26 og iPadOS 26, med livlige animasjoner og nye grafiske elementer. De neste utgivelsene kommer med enda flere forbedringer.
+• Polls now include additional accessibility labels for improved VoiceOver support.

@@ -1,2 +1,1 @@
-• Signal 投票功能上线啦！投票让您能轻松了解群聊成员的真实想法。您可以创建针对不同晚餐选项或其他重要选择的投票。群里的每个人都可投票并查看彼此的回应。您还能决定是否允许投多个选项或重复投票。
-• 此版本还包括对 iOS 26 和 iPadOS 26 的首次设计改进——新增了视觉元素和更优动画效果。未来的更新还会有更多此类提升。
+• Polls now include additional accessibility labels for improved VoiceOver support.

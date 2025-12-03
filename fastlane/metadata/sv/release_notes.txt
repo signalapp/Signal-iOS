@@ -1,2 +1,1 @@
-• Signal-omröstningar är här! Omröstningar är ett enkelt sätt att se vad din gruppchatt verkligen tycker. Skapa en omröstning med olika middagsalternativ eller andra viktiga val. Alla i gruppen kan rösta och se varandras svar, och du kan bestämma om du vill tillåta flera röster eller inte.
-• Denna version innehåller också de första designförbättringarna för iOS 26 och iPadOS 26, med nya visuella element och bättre animationer. Framtida uppdateringar kommer att innehålla ännu fler av dessa förbättringar.
+• Polls now include additional accessibility labels for improved VoiceOver support.

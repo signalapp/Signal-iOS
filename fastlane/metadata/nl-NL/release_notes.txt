@@ -1,2 +1,1 @@
-• Je kunt in Signal nu peilingen houden! Een peiling is een makkelijke manier om te zien wat je groepschat ergens van vindt. Maak een peiling voor de leukste restaurantopties, vakantiebestemmingen, muziekvoorkeuren voor een aanstaande roadtrip of andere belangrijke keuzes. Iedereen in de groep kan stemmen en elkaars antwoorden zien, en je kunt zelf bepalen of je meerdere stemmen wilt toestaan of niet.
-Deze update bevat ook de eerste  ‘Liquid Glass’-ontwerpverbeteringen voor iOS 26 en iPadOS 26 met nieuwe visuele elementen en betere animaties. In toekomstige updates kun je nog meer van dergelijke verbeteringen verwachten.
+• Polls now include additional accessibility labels for improved VoiceOver support.

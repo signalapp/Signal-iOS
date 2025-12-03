@@ -1,2 +1,1 @@
-• Ja són aquí les enquestes de Signal! Les enquestes són una manera fàcil de veure què pensa realment el teu xat de grup. Crea una enquesta amb diferents opcions de sopar o qualsevol altra decisió important. Tothom del grup pot votar i veure les respostes dels altres, i pots decidir si es permet o no votar més d'una opció.
-• Aquesta actualització també inclou les primeres millores de disseny per a iOS 26 i iPadOS 26, amb nous elements visuals i animacions millorades. Les futures versions tindran encara més millores.
+• Polls now include additional accessibility labels for improved VoiceOver support.

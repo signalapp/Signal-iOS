@@ -1,2 +1,1 @@
-• Ankete su stigle na Signal! Ankete su jednostavan alat koji vam omogućuje da saznate mišljenja članova vašeg grupnog razgovora o raznim temama. Možete izraditi anketu s opcijama za večeru ili bilo kojim drugim važnim izborima. Svi u grupi mogu glasati i vidjeti odgovore, a vi možete odlučiti hoćete li dozvoliti višestruke glasove ili ne.
-• Ovo ažuriranje također uključuje prva poboljšanja dizajna za iOS 26 i iPadOS 26, s novim vizualnim elementima i boljim animacijama. Buduća ažuriranja uključivat će još više sličnih poboljšanja.
+• Polls now include additional accessibility labels for improved VoiceOver support.

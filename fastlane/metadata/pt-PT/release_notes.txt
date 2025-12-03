@@ -1,2 +1,1 @@
-• Chegaram as sondagens do Signal! As sondagens são uma forma fácil de saber o que o seu chat de grupo pensa realmente. Crie uma sondagem com diferentes opções de restaurante ou quaisquer outras escolhas. Toda a gente no grupo pode votar e ver as respostas dos outros, e pode decidir permitir votos múltiplos.
-• Esta atualização também inclui as primeiras melhorias de design para iOS 26 e iPadOS 26, com novos elementos visuais e melhores animações. Atualizações futuras terão mais melhorias destas.
+• Polls now include additional accessibility labels for improved VoiceOver support.

@@ -1,2 +1,1 @@
-• Signalissa voi nyt tehdä kyselyitä! Kyselyillä saat helposti selville, mitä mieltä ryhmäkeskustelussa aidosti ollaan. Luo kysely, jossa on erilaisia illallisvaihtoehtoja tai muita tärkeitä valintoja. Kaikki ryhmän jäsenet voivat äänestää ja nähdä toistensa vastaukset, ja voitte päättää, sallitteko useita ääniä vai ette.
-• Tämä päivitys sisältää myös ensimmäisen aallon Liquid Glass -designin uudistuksista iOS 26:lle ja iPadOS 26:lle, sisältäen uusia visuaalisia elementtejä ja parempia animaatioita. Tulevissa julkaisuissa julkaistaan lisää parannuksia.
+• Polls now include additional accessibility labels for improved VoiceOver support.

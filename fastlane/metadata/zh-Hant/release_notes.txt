@@ -1,2 +1,1 @@
-• Signal 投票登場！你和你的朋友站在同一陣線，還是截然相反？投票是一個簡單的方式，能了解群組聊天成員的真正想法。建立投票，內容可包括晚餐選擇、度假地點、自駕遊的音樂播放偏好，或任何重要的選擇。群組中的每個人都可以投票並查看彼此的回覆，而且你可以決定是否允許投多個選項。
-• 此更新還配合 iOS 26 和 iPadOS 26 的 Liquid Glass 首輪重新設計，帶來精緻動畫和全新視覺元素。未來的發行版本將有更多改進，但如果你渴求新觀感，那麼這款 Liquid Glass 應已相當令你耳目一新了。
+• Polls now include additional accessibility labels for improved VoiceOver support.
