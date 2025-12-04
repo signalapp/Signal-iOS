@@ -9,6 +9,6 @@ extension FeatureBuild {
 #if DEBUG
     static let current: FeatureBuild = .dev
 #else
-    static let current: FeatureBuild = .internal
+    static let current: FeatureBuild = .beta
 #endif
 }
