@@ -40,6 +40,10 @@
 	</array>
 	<key>com.apple.security.hardened-process</key>
 	<true/>
+	<key>com.apple.security.hardened-process.checked-allocations</key>
+	<true/>
+	<key>com.apple.security.hardened-process.checked-allocations.soft-mode</key>
+	<true/>
 	<key>com.apple.security.hardened-process.dyld-ro</key>
 	<true/>
 	<key>com.apple.security.hardened-process.enhanced-security-version</key>
