@@ -195,18 +195,23 @@ class GroupsV2ProfileKeyUpdater {
         guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx) }) else {
             return
         }
+        let sendPromises: [Promise<Void>]
         do {
-            try await self.tryToUpdate(groupId: groupId)
+            sendPromises = try await self.tryToUpdate(groupId: groupId)
         } catch {
             Logger.warn("\(error)")
             switch error {
             case GroupsV2Error.localUserNotInGroup:
                 // If the update is no longer necessary, skip it.
-                break
+                sendPromises = []
             case let httpError as OWSHTTPError where (400...499).contains(httpError.responseStatusCode):
                 // If a non-recoverable error occurs (e.g. we've been kicked out of the
                 // group), give up.
-                break
+                sendPromises = []
+            case is CancellationError:
+                throw error
+            case URLError.cancelled:
+                throw error
             case is OWSHTTPError:
                 throw error
             case is AppExpiredError:
@@ -219,9 +224,20 @@ class GroupsV2ProfileKeyUpdater {
                 // This should never occur. If it does, we don't want to get stuck in a
                 // retry loop.
                 owsFailDebug("unexpected error: \(error)")
+                sendPromises = []
             }
         }
+
+        // Mark it as complete immediately; we don't need to check this group again
+        // if we get interrupted before sending the group update messages.
         await markAsComplete(groupIdKey: groupIdKey)
+
+        // Make a best-effort attempt to wait for group update messages to be sent;
+        // this adds back pressure and avoids overwhelming MessageSenderJobQueue.
+        for sendPromise in sendPromises {
+            try? await sendPromise.awaitableWithUncooperativeCancellationHandling()
+            try Task.checkCancellation()
+        }
     }
 
     private func markAsComplete(groupIdKey: String) async {
@@ -230,7 +246,9 @@ class GroupsV2ProfileKeyUpdater {
         }
     }
 
-    private func tryToUpdate(groupId: Data) async throws {
+    /// - Returns: A list of Promises for sending the group update message(s).
+    /// Each Promise represents sending a message to one or more recipients.
+    private func tryToUpdate(groupId: Data) async throws -> [Promise<Void>] {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             throw OWSGenericError("missing local address")
@@ -255,7 +273,7 @@ class GroupsV2ProfileKeyUpdater {
         )
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
-            return
+            return []
         }
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
@@ -265,11 +283,11 @@ class GroupsV2ProfileKeyUpdater {
         }
         guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKey.keyData else {
             // Group state already has our current key.
-            return
+            return []
         }
 
         Logger.info("Updating profile key for group.")
         try Task.checkCancellation()
-        try await GroupManager.updateLocalProfileKey(groupModel: groupModel)
+        return try await GroupManager.updateLocalProfileKey(groupModel: groupModel)
     }
 }

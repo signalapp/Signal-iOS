@@ -610,8 +610,11 @@ public class GroupManager: NSObject {
 
     // MARK: - Local profile key
 
-    public static func updateLocalProfileKey(groupModel: TSGroupModelV2) async throws {
-        try await updateGroupV2(groupModel: groupModel, description: "Update local profile key") { changes in
+    /// - Returns: A list of Promises for sending the group update message(s).
+    /// Each Promise represents sending a message to one or more recipients.
+    @discardableResult
+    public static func updateLocalProfileKey(groupModel: TSGroupModelV2) async throws -> [Promise<Void>] {
+        return try await updateGroupV2(groupModel: groupModel, description: "Update local profile key") { changes in
             changes.setShouldUpdateLocalProfileKey()
         }
     }
