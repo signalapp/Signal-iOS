@@ -734,7 +734,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         if let style {
             editableBody.toggleStyle(style, in: selectedRange)
         } else {
-            editableBody.clearFormatting(in: selectedRange)
+            editableBody.removeFormatting(in: selectedRange)
         }
         editableBody.endEditing()
         textViewDidChange(self)
@@ -760,7 +760,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         ]
 
         if editableBody.hasFormatting(in: selectedRange) {
-            formatMenuItems.append(.clearFormatting)
+            formatMenuItems.append(.removeFormatting)
         }
 
         let formatMenu = UIMenu(
@@ -773,7 +773,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
                 ) { [self] _ in
                     let styleToApply: MessageBodyRanges.SingleStyle? = switch menuItem {
                     case .showFormatMenu: owsFail("Not possible")
-                    case .clearFormatting: nil
+                    case .removeFormatting: nil
                     case .applyBold: .bold
                     case .applyItalic: .italic
                     case .applyMonospace: .monospace
@@ -794,7 +794,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
 private enum FormatEditMenuItem: CaseIterable {
     case showFormatMenu
-    case clearFormatting
+    case removeFormatting
     case applyBold
     case applyItalic
     case applyMonospace
@@ -808,10 +808,10 @@ private enum FormatEditMenuItem: CaseIterable {
                 "TEXT_MENU_FORMAT",
                 comment: "Option in selected text edit menu to view text formatting options"
             )
-        case .clearFormatting:
+        case .removeFormatting:
             OWSLocalizedString(
-                "TEXT_MENU_CLEAR_FORMATTING",
-                comment: "Option in selected text edit menu to clear all text formatting in the selected text range"
+                "TEXT_MENU_REMOVE_FORMATTING",
+                comment: "Option in selected text edit menu to remove all text formatting in the selected text range"
             )
         case .applyBold:
             OWSLocalizedString(
@@ -844,7 +844,7 @@ private enum FormatEditMenuItem: CaseIterable {
     var image: UIImage? {
         return switch self {
         case .showFormatMenu: nil
-        case .clearFormatting: nil
+        case .removeFormatting: UIImage(named: "minus-circle")
         case .applyBold: UIImage(named: "text-format-bold")
         case .applyItalic: UIImage(named: "text-format-italic")
         case .applyMonospace: UIImage(named: "text-format-monospace")
@@ -932,7 +932,7 @@ private class BodyRangesTextViewIOS15EditMenu {
             ]
 
             if textView.editableBody.hasFormatting(in: textView.selectedRange) {
-                formatMenuItems.append(.clearFormatting)
+                formatMenuItems.append(.removeFormatting)
             }
 
             UIMenuController.shared.menuItems = formatMenuItems.map { menuItem -> UIMenuItem in
@@ -951,7 +951,7 @@ private class BodyRangesTextViewIOS15EditMenu {
     private func selectorFor(formatEditMenuItem: FormatEditMenuItem) -> Selector {
         switch formatEditMenuItem {
         case .showFormatMenu: #selector(BodyRangesTextViewIOS15EditMenu.showFormatMenu)
-        case .clearFormatting: #selector(BodyRangesTextViewIOS15EditMenu.clearFormatting)
+        case .removeFormatting: #selector(BodyRangesTextViewIOS15EditMenu.removeFormatting)
         case .applyBold: #selector(BodyRangesTextViewIOS15EditMenu.applyBold)
         case .applyItalic: #selector(BodyRangesTextViewIOS15EditMenu.applyItalic)
         case .applySpoiler: #selector(BodyRangesTextViewIOS15EditMenu.applySpoiler)
@@ -990,7 +990,7 @@ private class BodyRangesTextViewIOS15EditMenu {
     }
 
     @objc
-    private func clearFormatting() { selectStyle(nil) }
+    private func removeFormatting() { selectStyle(nil) }
     @objc
     private func applyBold() { selectStyle(.bold) }
     @objc
