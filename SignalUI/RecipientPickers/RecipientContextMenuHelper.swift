@@ -119,7 +119,7 @@ class RecipientContextMenuHelper {
     ) -> UIAction {
         UIAction(
             title: blockActionTitle,
-            image: UIImage(named: "block"),
+            image: UIImage.appImage(named: "block"),
             attributes: .destructive
         ) { _ in
             BlockListUIUtils.showBlockAddressActionSheet(
@@ -136,7 +136,7 @@ class RecipientContextMenuHelper {
     ) -> UIAction {
         UIAction(
             title: blockActionTitle,
-            image: UIImage(named: "block"),
+            image: UIImage.appImage(named: "block"),
             attributes: .destructive
         ) { _ in
             BlockListUIUtils.showBlockThreadActionSheet(
@@ -165,7 +165,7 @@ class RecipientContextMenuHelper {
         )
         return UIAction(
             title: title,
-            image: UIImage(named: "minus-circle")
+            image: UIImage.appImage(named: "minus-circle")
         ) { [weak self] _ in
             guard let self else { return }
             if let e164 = address.e164, self.isSystemContact(e164: e164) {

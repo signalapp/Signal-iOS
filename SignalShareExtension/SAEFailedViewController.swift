@@ -43,7 +43,7 @@ class SAEFailedViewController: UIViewController {
 
         self.view.backgroundColor = Theme.launchScreenBackgroundColor
 
-        let logoImage = UIImage(named: "signal-logo-128-launch-screen")
+        let logoImage = UIImage(named: "signal-logo-128-launch-screen", in: Bundle.main.app, compatibleWith: nil)
         let logoImageView = UIImageView(image: logoImage)
         self.view.addSubview(logoImageView)
         logoImageView.autoCenterInSuperview()

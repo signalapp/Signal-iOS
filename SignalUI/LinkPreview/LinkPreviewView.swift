@@ -1473,7 +1473,7 @@ private class LinkPreviewImageView: ManualLayoutViewWithLayer {
         case let .loading(blurHash) where blurHash != nil:
             break
         case let .failed(blurHash) where blurHash != nil:
-            if let icon = UIImage(named: "photo-slash-36") {
+            if let icon = UIImage.appImage(named: "photo-slash-36") {
                 iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
                 iconView.image = icon
             }

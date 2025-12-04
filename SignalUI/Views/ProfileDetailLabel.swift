@@ -79,7 +79,7 @@ public class ProfileDetailLabel: UIStackView {
 
         if
             showDetailDisclosure,
-            let chevron = UIImage(named: "chevron-right-20")
+            let chevron = UIImage.appImage(named: "chevron-right-20")
         {
             let attachmentString = NSAttributedString.with(
                 image: chevron,

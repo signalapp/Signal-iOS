@@ -254,7 +254,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createHeroImageView(imageName: String) -> UIView {
         let imageSize = createHeroViewSize
 
-        let imageView = UIImageView(image: UIImage(named: imageName))
+        let imageView = UIImageView(image: UIImage.appImage(named: imageName))
         imageView.layer.shadowColor = UIColor.black.cgColor
         let shadowScaling: CGFloat = 5.0
         imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
@@ -348,10 +348,10 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func setAudioIconToPlay() {
-        audioPlayButton.setImage(UIImage(named: "play-circle-display"), for: .normal)
+        audioPlayButton.setImage(UIImage.appImage(named: "play-circle-display"), for: .normal)
     }
 
     private func setAudioIconToPause() {
-        audioPlayButton.setImage(UIImage(named: "pause-circle-display"), for: .normal)
+        audioPlayButton.setImage(UIImage.appImage(named: "pause-circle-display"), for: .normal)
     }
 }

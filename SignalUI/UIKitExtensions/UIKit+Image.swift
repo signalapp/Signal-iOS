@@ -8,7 +8,7 @@ import SignalServiceKit
 public extension UIImageView {
 
     func setImage(imageName: String) {
-        guard let image = UIImage(named: imageName) else {
+        guard let image = UIImage(named: imageName, in: Bundle.main.app, compatibleWith: nil) else {
             owsFailDebug("Couldn't load image: \(imageName)")
             return
         }
@@ -25,7 +25,7 @@ public extension UIImageView {
     }
 
     func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
-        guard let image = UIImage(named: imageName) else {
+        guard let image = UIImage(named: imageName, in: Bundle.main.app, compatibleWith: nil) else {
             owsFailDebug("Couldn't load image: \(imageName)")
             return
         }
@@ -69,8 +69,10 @@ public extension UIImageView {
 // MARK: -
 
 extension UIImage {
-    /// Redraw the image into a new image, with an added background color, and inset the
-    /// original image by the provided insets.
+    public static func appImage(named name: String) -> UIImage? {
+        UIImage(named: name, in: Bundle.main.app, compatibleWith: nil)
+    }
+
     public func withBackgroundColor(_ color: UIColor, insets: UIEdgeInsets = .zero) -> UIImage? {
         let bounds = CGRect(origin: .zero, size: size)
         return UIGraphicsImageRenderer(bounds: bounds).image { context in

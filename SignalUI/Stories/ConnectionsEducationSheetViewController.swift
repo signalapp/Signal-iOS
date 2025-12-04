@@ -35,7 +35,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
 
     let connectionsImageView: UIImageView = {
         let view = UIImageView()
-        view.image = UIImage(named: "connections-display-bold")
+        view.image = UIImage.appImage(named: "connections-display-bold")
         view.tintColor = .label
         view.contentMode = .scaleAspectFit
         view.autoSetDimension(.height, toSize: 56)

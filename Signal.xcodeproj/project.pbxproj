@@ -298,7 +298,6 @@
 		3470C8822559B23F00F5847C /* CVUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8812559B23F00F5847C /* CVUpdate.swift */; };
 		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
-		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
 		34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */; };
 		3479D6B226A762E200811069 /* ChatListViewController+Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3479D6B126A762E200811069 /* ChatListViewController+Reminders.swift */; };
@@ -1439,7 +1438,6 @@
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
 		76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76616C9C2A266A05005F7001 /* WindowManager.swift */; };
 		7665BC9D2A3A72910060279B /* Symbols.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7665BC9C2A3A72910060279B /* Symbols.xcassets */; };
-		7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7665BC9C2A3A72910060279B /* Symbols.xcassets */; };
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
@@ -15796,9 +15794,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
-				7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

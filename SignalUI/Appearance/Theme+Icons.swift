@@ -204,7 +204,7 @@ public extension Theme {
 
     class func iconImage(_ icon: ThemeIcon, isDarkThemeEnabled: Bool) -> UIImage {
         let name = iconName(icon, isDarkThemeEnabled: isDarkThemeEnabled)
-        guard let image = UIImage(named: name) else {
+        guard let image = UIImage(named: name, in: Bundle.main.app, compatibleWith: nil) else {
             owsFailDebug("image was unexpectedly nil: \(name)")
             return UIImage()
         }
@@ -302,9 +302,9 @@ public extension Theme {
         case .contactInfoPhone:
             return "phone"
         case .contactInfoGroups:
-            return "group-resizable"
+            return "group"
         case .contactInfoNote:
-            return "note-resizable"
+            return "note"
         case .groupInfoLeaveGroup:
             return "leave"
         case .groupInfoAddMembers:
@@ -472,13 +472,13 @@ public extension Theme {
 
             // Empty chat list
         case .composeNewGroupLarge:
-            return "group-resizable"
+            return "group"
         case .composeFindByUsernameLarge:
             return "at-display-bold"
         case .composeFindByPhoneNumberLarge:
-            return "number-resizable"
+            return "number"
         case .composeInviteLarge:
-            return "invite-resizable"
+            return "invite"
 
             // Error icon
         case .errorCircle:

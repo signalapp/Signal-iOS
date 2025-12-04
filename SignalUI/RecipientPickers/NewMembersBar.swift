@@ -192,7 +192,7 @@ private class NewMemberCell: UICollectionViewCell {
         textLabel.lineBreakMode = .byTruncatingTail
 
         let removeButton = UIButton()
-        removeButton.setImage(UIImage(named: "x-compact"), for: .normal)
+        removeButton.setImage(UIImage.appImage(named: "x-compact"), for: .normal)
         removeButton.tintColor = .Signal.label
         removeButton.addTarget(self, action: #selector(removeButtonWasPressed), for: .touchUpInside)
 

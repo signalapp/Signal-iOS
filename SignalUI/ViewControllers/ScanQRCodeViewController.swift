@@ -419,7 +419,7 @@ public class QRCodeScanViewController: OWSViewController {
         case .framed:
             let shouldAnimateScale = !UIAccessibility.isReduceMotionEnabled
 
-            let viewfinder = UIImage(named: "qr_viewfinder")
+            let viewfinder = UIImage.appImage(named: "qr_viewfinder")
             let frame = UIImageView(image: viewfinder)
             self.view.addSubview(frame)
             frame.autoHCenterInSuperview()
