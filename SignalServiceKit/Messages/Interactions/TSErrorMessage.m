@@ -201,7 +201,10 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                 NSString *senderName =
                     [SSKEnvironment.shared.contactManagerObjcRef shortDisplayNameStringForAddress:self.sender
                                                                                       transaction:transaction];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
                 return [[NSString alloc] initWithFormat:formatString, senderName];
+#pragma clang diagnostic pop
             } else {
                 return OWSLocalizedString(
                     @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");

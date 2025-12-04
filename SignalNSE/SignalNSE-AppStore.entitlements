@@ -4,8 +4,6 @@
 <dict>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>
-	<key>com.apple.developer.usernotifications.filtering</key>
-	<true/>
 	<key>com.apple.developer.networking.carrier-constrained.app-optimized</key>
 	<true/>
 	<key>com.apple.developer.networking.carrier-constrained.appcategory</key>
@@ -14,11 +12,21 @@
 	</array>
 	<key>com.apple.developer.pushkit.unrestricted-voip</key>
 	<true/>
+	<key>com.apple.developer.usernotifications.filtering</key>
+	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group</string>
 		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group.staging</string>
 	</array>
+	<key>com.apple.security.hardened-process</key>
+	<true/>
+	<key>com.apple.security.hardened-process.dyld-ro</key>
+	<true/>
+	<key>com.apple.security.hardened-process.enhanced-security-version</key>
+	<integer>1</integer>
+	<key>com.apple.security.hardened-process.platform-restrictions</key>
+	<integer>2</integer>
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)$(SIGNAL_BUNDLEID_PREFIX).signal</string>

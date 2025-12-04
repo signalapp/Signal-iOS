@@ -146,7 +146,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Should not be directly surfaced to user");
         NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
             @"Error message for a decryption failure. Embeds {{sender short name}}.");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
         return [[NSString alloc] initWithFormat:formatString, senderName];
+#pragma clang diagnostic pop
     } else {
         OWSFailDebug(@"Should not be directly surfaced to user");
         return OWSLocalizedString(

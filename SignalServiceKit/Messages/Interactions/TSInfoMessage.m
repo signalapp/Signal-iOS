@@ -280,7 +280,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
                 @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact "
                 @"name}}");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
             return [NSString stringWithFormat:format, recipientName];
+#pragma clang diagnostic pop
         }
         case TSInfoMessageSyncedThread:
             return @"";
@@ -298,7 +301,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
             return [NSString stringWithFormat:format, userName];
+#pragma clang diagnostic pop
         }
         case TSInfoMessageRecipientHidden: {
             /// This does not control whether to show the info message in the chat
