@@ -59,6 +59,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
         textField.textContentType = .URL
+        textField.keyboardType = .URL
         textField.delegate = self
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
