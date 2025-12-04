@@ -405,7 +405,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         return body.flattenedStyles.contains(where: { ($0.range.intersection(range)?.length ?? 0) > 0 })
     }
 
-    public func clearFormatting(in range: NSRange) {
+    public func removeFormatting(in range: NSRange) {
         // Check for overlaps with mentions; any styles we apply to a mention applies
         // to the whole mention.
         var range = range
