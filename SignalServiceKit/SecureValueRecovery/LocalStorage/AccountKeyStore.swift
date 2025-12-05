@@ -18,8 +18,8 @@ public class AccountKeyStore {
     }
 
     private let aepKvStore: KeyValueStore
-    private let mrbkKvStore: KeyValueStore
-    private let masterKeyKvStore: KeyValueStore
+    private let mrbkKvStore: NewKeyValueStore
+    private let masterKeyKvStore: NewKeyValueStore
 
     private let backupSettingsStore: BackupSettingsStore
 
@@ -27,8 +27,8 @@ public class AccountKeyStore {
         backupSettingsStore: BackupSettingsStore,
     ) {
         // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
-        self.masterKeyKvStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
-        self.mrbkKvStore = KeyValueStore(collection: "MediaRootBackupKey")
+        self.masterKeyKvStore = NewKeyValueStore(collection: "kOWSKeyBackupService_Keys")
+        self.mrbkKvStore = NewKeyValueStore(collection: "MediaRootBackupKey")
         self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
         self.backupSettingsStore = backupSettingsStore
     }
@@ -41,7 +41,7 @@ public class AccountKeyStore {
         }
         // No AEP? Try fetching from the legacy location
         do {
-            return try masterKeyKvStore.getData(Keys.masterKey, transaction: tx).map { try MasterKey(data: $0) }
+            return try masterKeyKvStore.fetchValue(Data.self, forKey: Keys.masterKey, tx: tx).map { try MasterKey(data: $0) }
         } catch {
             owsFailDebug("Failed to instantiate MasterKey")
         }
@@ -49,7 +49,7 @@ public class AccountKeyStore {
     }
 
     public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {
-        masterKeyKvStore.setData(masterKey?.rawData, key: Keys.masterKey, transaction: tx)
+        masterKeyKvStore.writeValue(masterKey?.rawData, forKey: Keys.masterKey, tx: tx)
     }
 
     // MARK: -
@@ -65,7 +65,7 @@ public class AccountKeyStore {
     /// Get the already-generated MRBK. Returns nil if none has been set. If you require an MRBK
     /// (e.g. you are creating a backup), use ``getOrGenerateMediaRootBackupKey``.
     public func getMediaRootBackupKey(tx: DBReadTransaction) -> MediaRootBackupKey? {
-        guard let data = mrbkKvStore.getData(Keys.mrbkKeyName, transaction: tx) else {
+        guard let data = mrbkKvStore.fetchValue(Data.self, forKey: Keys.mrbkKeyName, tx: tx) else {
             return nil
         }
         do {
@@ -84,16 +84,16 @@ public class AccountKeyStore {
             return value
         }
         let newValue = MediaRootBackupKey(backupKey: .generateRandom())
-        mrbkKvStore.setData(newValue.serialize(), key: Keys.mrbkKeyName, transaction: tx)
+        mrbkKvStore.writeValue(newValue.serialize(), forKey: Keys.mrbkKeyName, tx: tx)
         return newValue
     }
 
     public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction) {
-        mrbkKvStore.removeValue(forKey: Keys.mrbkKeyName, transaction: tx)
+        mrbkKvStore.removeValue(forKey: Keys.mrbkKeyName, tx: tx)
     }
 
     public func setMediaRootBackupKey(_ mrbk: MediaRootBackupKey, tx: DBWriteTransaction) {
-        mrbkKvStore.setData(mrbk.serialize(), key: Keys.mrbkKeyName, transaction: tx)
+        mrbkKvStore.writeValue(mrbk.serialize(), forKey: Keys.mrbkKeyName, tx: tx)
     }
 
     // MARK: -
@@ -130,7 +130,7 @@ public class AccountKeyStore {
     /// Callers who are unsure should refer to ``AccountEntropyPoolManager``.
     public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
         // Clear the old master key when setting the accountEntropyPool
-        masterKeyKvStore.removeValue(forKey: Keys.masterKey, transaction: tx)
+        masterKeyKvStore.removeValue(forKey: Keys.masterKey, tx: tx)
 
         // Setting the AEP means we need to set our Backup-ID again.
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
