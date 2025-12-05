@@ -274,7 +274,7 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                         "PINNED_MESSAGES_GO_TO_MESSAGE",
                         comment: "Action menu item to go to a message in the conversation view"
                     ), image: .chatArrow) { [weak self] _ in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
                             goToMessage(message: threadViewModel.pinnedMessages[pinnedMessageIndex])
                         }
@@ -288,7 +288,9 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                         pinnedMessages: threadViewModel.pinnedMessages,
                         threadViewModel: threadViewModel,
                         database: DependenciesBridge.shared.db,
-                        delegate: self
+                        delegate: self,
+                        databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
+                        pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager
                     )), animated: true)
                 }
             ])

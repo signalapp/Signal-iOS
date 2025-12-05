@@ -12,10 +12,12 @@ protocol PinnedMessageInteractionManagerDelegate: AnyObject {
     func goToMessage(message: TSMessage)
 }
 
-class PinnedMessagesDetailsViewController: OWSViewController {
-    private let pinnedMessages: [TSMessage]
+class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDelegate, PinnedMessageLongPressDelegate.ActionDelegate {
+    private var pinnedMessages: [TSMessage]
     private let threadViewModel: ThreadViewModel
     private let db: DB
+    private var messageLongPressDelegates: [PinnedMessageLongPressDelegate] = []
+    private var pinnedMessageManager: PinnedMessageManager
 
     private weak var delegate: PinnedMessageInteractionManagerDelegate?
 
@@ -23,14 +25,19 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         pinnedMessages: [TSMessage],
         threadViewModel: ThreadViewModel,
         database: DB,
-        delegate: PinnedMessageInteractionManagerDelegate
+        delegate: PinnedMessageInteractionManagerDelegate,
+        databaseChangeObserver: DatabaseChangeObserver,
+        pinnedMessageManager: PinnedMessageManager
     ) {
         self.pinnedMessages = pinnedMessages
         self.threadViewModel = threadViewModel
         self.db = database
         self.delegate = delegate
+        self.pinnedMessageManager = pinnedMessageManager
 
         super.init()
+
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         let titleLabel = UILabel()
         titleLabel.text = OWSLocalizedString(
@@ -55,8 +62,9 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         navigationItem.titleView = titleStackView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private func layoutPinnedMessages(tx: DBReadTransaction) {
+        messageLongPressDelegates = []
+        view.subviews.forEach { $0.removeFromSuperview() }
 
         let scrollView = UIScrollView()
         let paddedContainerView = UIView()
@@ -67,11 +75,14 @@ class PinnedMessagesDetailsViewController: OWSViewController {
 
         var currentDaysBefore = -1
         for (index, message) in pinnedMessages.reversed().enumerated() {
-            guard let renderItem = db.read(block: { tx in
-                buildRenderItem(thread: threadViewModel.threadRecord, threadAssociatedData: threadViewModel.associatedData, message: message, tx: tx)
-            }) else {
+            guard let renderItem = buildRenderItem(thread: threadViewModel.threadRecord, threadAssociatedData: threadViewModel.associatedData, message: message, tx: tx)
+            else {
                 continue
             }
+
+            let longPressDelegate = PinnedMessageLongPressDelegate(itemViewModel: CVItemViewModelImpl(renderItem: renderItem))
+            longPressDelegate.actionDelegate = self
+            messageLongPressDelegates.append(longPressDelegate)
 
             let itemDate = Date(millisecondsSince1970: message.timestamp)
             let daysPrior = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: Date())
@@ -79,9 +90,8 @@ class PinnedMessagesDetailsViewController: OWSViewController {
             if daysPrior != currentDaysBefore {
                 currentDaysBefore = daysPrior
                 let dateInteraction = DateHeaderInteraction(thread: threadViewModel.threadRecord, timestamp: message.timestamp)
-                if let dateItem = db.read(block: { tx in
-                    buildDateRenderItem(dateInteraction: dateInteraction, tx: tx)
-                }) {
+                if let dateItem = buildDateRenderItem(dateInteraction: dateInteraction, tx: tx)
+                {
                     let cellView = CVCellView()
                     cellView.configure(renderItem: dateItem, componentDelegate: self)
                     cellView.isCellVisible = true
@@ -107,6 +117,26 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         paddedContainerView.autoPinEdgesToSuperviewEdges()
         stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
         paddedContainerView.autoMatch(.width, to: .width, of: scrollView)
+
+    }
+
+    private func updatePinnedMessageState() {
+        guard let threadId = threadViewModel.threadRecord.sqliteRowId else {
+            return
+        }
+        db.read { tx in
+            pinnedMessages = pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: tx)
+            layoutPinnedMessages(tx: tx)
+        }
+        view.layoutIfNeeded()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        db.read { tx in
+            layoutPinnedMessages(tx: tx)
+        }
     }
 
     private func buildButtonAndCellStack(renderItem: CVRenderItem, message: TSMessage, reversedIndex: Int) -> UIStackView {
@@ -131,6 +161,9 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         cellView.isCellVisible = true
         cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
         cellView.autoSetDimension(.width, toSize: renderItem.cellSize.width)
+
+        let uiContextMenuInteraction = UIContextMenuInteraction(delegate: messageLongPressDelegates[reversedIndex])
+        cellView.addInteraction(uiContextMenuInteraction)
 
         let spacer = UIView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -218,6 +251,110 @@ class PinnedMessagesDetailsViewController: OWSViewController {
         let message = reversedArray[sender.tag]
         delegate?.goToMessage(message: message)
         dismiss(animated: true)
+    }
+
+    // MARK: - DatabaseChangeDelegate
+
+    func databaseChangesDidUpdate(databaseChanges: any SignalServiceKit.DatabaseChanges) {
+        let pinnedMessagesSet = Set(pinnedMessages.map(\.uniqueId))
+        guard Set(databaseChanges.interactionUniqueIds).isDisjoint(with: pinnedMessagesSet) == false else {
+            return
+        }
+        updatePinnedMessageState()
+    }
+
+    func databaseChangesDidUpdateExternally() {
+        updatePinnedMessageState()
+    }
+
+    func databaseChangesDidReset() {
+        updatePinnedMessageState()
+    }
+
+    // MARK: - PinnedMessageLongPressActionDelegate
+
+    func deleteMessage(itemViewModel: CVItemViewModelImpl) {
+        itemViewModel.interaction.presentDeletionActionSheet(from: self)
+    }
+}
+
+// MARK: - UIContextMenuInteractionDelegate
+
+private class PinnedMessageLongPressDelegate: NSObject, UIContextMenuInteractionDelegate {
+    fileprivate protocol ActionDelegate: AnyObject {
+        func deleteMessage(itemViewModel: CVItemViewModelImpl)
+    }
+
+    let itemViewModel: CVItemViewModelImpl
+
+    weak var actionDelegate: ActionDelegate?
+
+    init(itemViewModel: CVItemViewModelImpl) {
+        self.itemViewModel = itemViewModel
+    }
+
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint
+    ) -> UIContextMenuConfiguration? {
+
+        return UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil,
+            actionProvider: { [weak self] _ in
+                guard let self = self else { return UIMenu(children: []) }
+                var actions: [UIAction] = []
+                if itemViewModel.canCopyOrShareOrSpeakText {
+                    actions.append(
+                        UIAction(
+                            title: OWSLocalizedString(
+                                "CONTEXT_MENU_COPY",
+                                comment: "Context menu button title"
+                            ),
+                            image: .copyLight
+                        ) { [weak self] _ in
+                            self?.itemViewModel.copyTextAction()
+                    })
+                }
+
+                if itemViewModel.canSaveMedia {
+                    actions.append(
+                        UIAction(
+                            title: OWSLocalizedString(
+                                "CONTEXT_MENU_SAVE_MEDIA",
+                                comment: "Context menu button title"
+                            ),
+                            image: .saveLight
+                        ) { [weak self] _ in
+                            self?.itemViewModel.saveMediaAction()
+                    })
+                }
+
+                actions.append(contentsOf: [
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "PINNED_MESSAGES_UNPIN",
+                            comment: "Action menu item to unpin a message"
+                        ),
+                        image: .pinSlash
+                    ) { _ in
+                        // TODO: implement!
+                    },
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "CONTEXT_MENU_DELETE_MESSAGE",
+                            comment: "Context menu button title"
+                        ),
+                        image: .trashLight
+                    ) { [weak self] _ in
+                            guard let self = self else { return }
+                            actionDelegate?.deleteMessage(itemViewModel: itemViewModel)
+                    }]
+                )
+
+                return UIMenu(children: actions)
+            }
+        )
     }
 }
 
