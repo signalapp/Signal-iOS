@@ -253,32 +253,33 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
             return
         }
 
-        fetchingAttachmentIndex = indexPath
-
+        self.fetchingAttachmentIndex = indexPath
         let asset = collectionContents.asset(at: indexPath.item)
-        collectionContents.outgoingAttachment(
-            for: asset
-        ).done { [weak self] attachment in
-            self?.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
-        }.ensure { [weak self] in
-            self?.fetchingAttachmentIndex = nil
-        }.catch { error in
-            Logger.error("Error: \(error)")
-            switch error {
-            case SignalAttachmentError.fileSizeTooLarge:
-                OWSActionSheets.showActionSheet(
-                    title: OWSLocalizedString(
-                        "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
-                        comment: "Attachment error message for attachments whose data exceed file size limits"
+        Task {
+            defer {
+                self.fetchingAttachmentIndex = nil
+            }
+            do {
+                let attachment = try await collectionContents.outgoingAttachment(for: asset)
+                self.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
+            } catch {
+                Logger.warn("\(error)")
+                switch error {
+                case SignalAttachmentError.fileSizeTooLarge:
+                    OWSActionSheets.showActionSheet(
+                        title: OWSLocalizedString(
+                            "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
+                            comment: "Attachment error message for attachments whose data exceed file size limits"
+                        )
                     )
-                )
-            default:
-                OWSActionSheets.showActionSheet(
-                    title: OWSLocalizedString(
-                        "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS",
-                        comment: "alert title",
-                    ),
-                )
+                default:
+                    OWSActionSheets.showActionSheet(
+                        title: OWSLocalizedString(
+                            "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS",
+                            comment: "alert title",
+                        ),
+                    )
+                }
             }
         }
     }
