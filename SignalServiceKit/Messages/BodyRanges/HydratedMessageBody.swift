@@ -59,7 +59,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         mentionHydrator: MentionHydrator,
         isRTL: Bool = CurrentAppContext().isRTL
     ) {
-        guard messageBody.text.isEmpty.negated else {
+        if messageBody.text.isEmpty {
             self.hydratedText = ""
             self.unhydratedMentions = []
             self.mentionAttributes = []

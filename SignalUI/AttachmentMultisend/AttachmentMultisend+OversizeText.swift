@@ -16,13 +16,10 @@ extension AttachmentMultisend {
         public let messageBody: ValidatedMessageBody?
     }
 
-    public static func prepareForSending(
-        _ messageBody: MessageBody?,
-        to conversations: [ConversationItem],
-        db: SDSDatabaseStorage,
-        attachmentValidator: AttachmentContentValidator
+    public static func prepareDestinations(
+        forSendingMessageBody messageBody: MessageBody?,
+        toConversations conversations: [ConversationItem],
     ) async throws -> [Destination] {
-
         // If the message body has no mentions, we can "hydrate" once across all threads
         // and share it. We only need to re-generate per-thread if there are mentions.
         let canShareMessageBody = !(messageBody?.ranges.hasMentions ?? false)
@@ -33,7 +30,7 @@ extension AttachmentMultisend {
             let messageBody: HydratedMessageBody?
         }
 
-        let preDestinations: [PreDestination] = try await db.awaitableWrite { tx in
+        let preDestinations: [PreDestination] = try await deps.databaseStorage.awaitableWrite { tx in
             return try conversations.map { conversation in
                 guard let thread = conversation.getOrCreateThread(transaction: tx) else {
                     throw OWSAssertionError("Missing thread for conversation")
@@ -57,7 +54,7 @@ extension AttachmentMultisend {
             // We only prepare the single shared body.
             let validatedMessageBody: ValidatedMessageBody?
             if let messageBody {
-                validatedMessageBody = try await attachmentValidator.prepareOversizeTextIfNeeded(
+                validatedMessageBody = try await deps.attachmentValidator.prepareOversizeTextIfNeeded(
                     messageBody
                 )
             } else {
@@ -83,7 +80,7 @@ extension AttachmentMultisend {
                 ))
                 continue
             }
-            let validatedMessageBody = try await attachmentValidator.prepareOversizeTextIfNeeded(
+            let validatedMessageBody = try await deps.attachmentValidator.prepareOversizeTextIfNeeded(
                 hydratedMessageBody.asMessageBodyForForwarding()
             )
             destinations.append(.init(

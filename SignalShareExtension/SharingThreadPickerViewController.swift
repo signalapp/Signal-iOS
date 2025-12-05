@@ -193,28 +193,28 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                 selectedConversations: selectedConversations,
                 approvedSend: approvedSend,
             ) {
-            case .success:
+            case nil:
                 self.dismissSendProgressSheet {}
                 self.shareViewDelegate?.shareViewWasCompleted()
-            case .failure(let error):
-                self.dismissSendProgressSheet { self.showSendFailure(error: error) }
+            case .some(let failure):
+                self.dismissSendProgressSheet { self.showSendFailure(failure) }
             }
         }
     }
 
-    private struct SendError: Error {
+    private struct SendFailure {
         let outgoingMessages: [PreparedOutgoingMessage]
         let error: Error
     }
 
-    private nonisolated func tryToSend(
+    private func tryToSend(
         selectedConversations: [ConversationItem],
         approvedSend: ApprovedSend,
-    ) async -> Result<Void, SendError> {
+    ) async -> SendFailure? {
         switch approvedSend {
         case .text(let messageBody, let linkPreview):
             guard !messageBody.text.isEmpty else {
-                return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing body.")))
+                return SendFailure(outgoingMessages: [], error: OWSAssertionError("Missing body."))
             }
 
             let linkPreviewDataSource: LinkPreviewDataSource?
@@ -238,13 +238,13 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     )
                     return try unpreparedMessage.prepare(tx: tx)
                 },
-                storySendBlock: { storyConversations in
+                enqueueStory: { conversations in
                     // Send the text message to any selected story recipients
                     // as a text story with default styling.
-                    StorySharing.sendTextStory(
+                    try await StorySharing.enqueueTextStory(
                         with: messageBody,
                         linkPreviewDraft: linkPreview,
-                        to: storyConversations
+                        to: conversations
                     )
                 }
             )
@@ -254,7 +254,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                 let contactShareManager = DependenciesBridge.shared.contactShareManager
                 contactShareForSending = try await contactShareManager.validateAndPrepare(draft: contactShare)
             } catch {
-                return .failure(.init(outgoingMessages: [], error: error))
+                return SendFailure(outgoingMessages: [], error: error)
             }
             return await self.sendToOutgoingMessageThreads(
                 selectedConversations: selectedConversations,
@@ -277,32 +277,35 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     return try unpreparedMessage.prepare(tx: tx)
                 },
                 // We don't send contact shares to stories
-                storySendBlock: nil
+                enqueueStory: { _ in [] },
             )
         case .other(let attachments, let messageBody):
             // This method will also add threads to the profile whitelist.
-            let sendResult = AttachmentMultisend.sendApprovedMedia(
-                conversations: selectedConversations,
-                approvedMessageBody: messageBody,
-                approvedAttachments: attachments
-            )
-
-            let preparedMessages: [PreparedOutgoingMessage]
+            let enqueueResults: [AttachmentMultisend.EnqueueResult]
             do {
-                preparedMessages = try await sendResult.preparedPromise.awaitable()
-            } catch let error {
-                return .failure(.init(outgoingMessages: [], error: error))
-            }
-            await MainActor.run {
-                self.presentOrUpdateSendProgressSheet(outgoingMessages: preparedMessages)
+                enqueueResults = try await AttachmentMultisend.enqueueApprovedMedia(
+                    conversations: selectedConversations,
+                    approvedMessageBody: messageBody,
+                    approvedAttachments: attachments,
+                )
+            } catch {
+                return SendFailure(outgoingMessages: [], error: error)
             }
 
+            self.presentOrUpdateSendProgressSheet(outgoingMessages: enqueueResults.map(\.preparedMessage))
+
             do {
-                _ = try await sendResult.sentPromise.awaitable()
-            } catch let error {
-                return .failure(.init(outgoingMessages: preparedMessages, error: error))
+                try await withThrowingTaskGroup { taskGroup in
+                    for sendPromise in enqueueResults.map(\.sendPromise) {
+                        taskGroup.addTask { try await sendPromise.awaitable() }
+                    }
+                    try await taskGroup.waitForAll()
+                }
+            } catch {
+                return SendFailure(outgoingMessages: enqueueResults.map(\.preparedMessage), error: error)
             }
-            return .success(())
+
+            return nil
         }
     }
 
@@ -339,26 +342,25 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         }
     }
 
-    private nonisolated func sendToOutgoingMessageThreads(
+    private func sendToOutgoingMessageThreads(
         selectedConversations: [ConversationItem],
         messageBody: MessageBody?,
-        messageBlock: @escaping (AttachmentMultisend.Destination, DBWriteTransaction) throws -> PreparedOutgoingMessage,
-        storySendBlock: (([ConversationItem]) -> AttachmentMultisend.Result?)?
-    ) async -> Result<Void, SendError> {
+        messageBlock: (AttachmentMultisend.Destination, DBWriteTransaction) throws -> PreparedOutgoingMessage,
+        enqueueStory: (_ conversations: [ConversationItem]) async throws -> [AttachmentMultisend.EnqueueResult],
+    ) async -> SendFailure? {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
         let conversations = selectedConversations.filter { $0.outgoingMessageType == .message }
 
         let preparedNonStoryMessages: [PreparedOutgoingMessage]
         let nonStorySendPromises: [Promise<Void>]
-
         do {
-            let destinations = try await AttachmentMultisend.prepareForSending(
-                messageBody,
-                to: conversations,
-                db: SSKEnvironment.shared.databaseStorageRef,
-                attachmentValidator: DependenciesBridge.shared.attachmentContentValidator
+            let destinations = try await AttachmentMultisend.prepareDestinations(
+                forSendingMessageBody: messageBody,
+                toConversations: conversations,
             )
 
-            (preparedNonStoryMessages, nonStorySendPromises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            (preparedNonStoryMessages, nonStorySendPromises) = try await databaseStorage.awaitableWrite { tx in
                 let preparedMessages = try destinations.map { destination in
                     return try messageBlock(destination, tx)
                 }
@@ -380,41 +382,32 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                 }
                 return (preparedMessages, sendPromises)
             }
-        } catch let error {
-            return .failure(.init(outgoingMessages: [], error: error))
+        } catch {
+            return SendFailure(outgoingMessages: [], error: error)
         }
 
-        let storyConversations = selectedConversations.filter { $0.outgoingMessageType == .storyMessage }
-        let storySendResult = storySendBlock?(storyConversations)
-
-        let preparedStoryMessages: [PreparedOutgoingMessage]
+        let enqueueStoryResults: [AttachmentMultisend.EnqueueResult]
         do {
-            preparedStoryMessages = try await storySendResult?.preparedPromise.awaitable() ?? []
+            enqueueStoryResults = try await enqueueStory(selectedConversations)
         } catch let error {
-            return .failure(.init(outgoingMessages: [], error: error))
+            return SendFailure(outgoingMessages: [], error: error)
         }
 
-        let preparedMessages = preparedNonStoryMessages + preparedStoryMessages
-        await MainActor.run {
-            self.presentOrUpdateSendProgressSheet(outgoingMessages: preparedMessages)
-        }
+        let preparedMessages = preparedNonStoryMessages + enqueueStoryResults.map(\.preparedMessage)
+        self.presentOrUpdateSendProgressSheet(outgoingMessages: preparedMessages)
 
         do {
-            try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-                nonStorySendPromises.forEach { promise in
-                    taskGroup.addTask(operation: {
-                        try await promise.awaitable()
-                    })
+            try await withThrowingTaskGroup { taskGroup in
+                for sendPromise in nonStorySendPromises + enqueueStoryResults.map(\.sendPromise) {
+                    taskGroup.addTask { try await sendPromise.awaitable() }
                 }
-                taskGroup.addTask(operation: {
-                    try await _ = storySendResult?.sentPromise.awaitable()
-                })
                 try await taskGroup.waitForAll()
             }
-            return .success(())
-        } catch let error {
-            return .failure(.init(outgoingMessages: preparedMessages, error: error))
+        } catch {
+            return SendFailure(outgoingMessages: preparedMessages, error: error)
         }
+
+        return nil
     }
 
     private nonisolated func threads(for conversationItems: [ConversationItem], tx: DBWriteTransaction) -> [TSThread] {
@@ -427,10 +420,10 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         }
     }
 
-    private func showSendFailure(error: SendError) {
+    private func showSendFailure(_ failure: SendFailure) {
         AssertIsOnMainThread()
 
-        owsFailDebug("Error: \(error.error)")
+        Logger.warn("\(failure.error)")
 
         let cancelAction = ActionSheetAction(
             title: CommonStrings.cancelButton,
@@ -438,7 +431,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         ) { [weak self] _ in
             guard let self = self else { return }
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                for message in error.outgoingMessages {
+                for message in failure.outgoingMessages {
                     // If we sent the message to anyone, mark it as failed
                     message.updateWithAllSendingRecipientsMarkedAsFailed(tx: transaction)
                 }
@@ -448,7 +441,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         let failureTitle = OWSLocalizedString("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
 
-        if let untrustedIdentityError = error as? UntrustedIdentityError {
+        if let untrustedIdentityError = failure.error as? UntrustedIdentityError {
             let untrustedServiceId = untrustedIdentityError.serviceId
             let failureFormat = OWSLocalizedString(
                 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
@@ -501,7 +494,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                 }
 
                 // Resend
-                self.resendMessages(error.outgoingMessages)
+                self.resendMessages(failure.outgoingMessages)
             }
             actionSheet.addAction(confirmAction)
 
@@ -511,7 +504,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             actionSheet.addAction(cancelAction)
 
             let retryAction = ActionSheetAction(title: CommonStrings.retryButton, style: .default) { [weak self] _ in
-                self?.resendMessages(error.outgoingMessages)
+                self?.resendMessages(failure.outgoingMessages)
             }
             actionSheet.addAction(retryAction)
 
@@ -521,16 +514,15 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     func resendMessages(_ outgoingMessages: [PreparedOutgoingMessage]) {
         AssertIsOnMainThread()
-        owsAssertDebug(outgoingMessages.count > 0)
+        owsAssertDebug(!outgoingMessages.isEmpty)
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
 
         var promises = [Promise<Void>]()
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        databaseStorage.write { tx in
             for message in outgoingMessages {
-                promises.append(SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                    .promise,
-                    message: message,
-                    transaction: transaction
-                ))
+                promises.append(messageSenderJobQueue.add(.promise, message: message, transaction: tx))
             }
         }
 
@@ -540,7 +532,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             self.shareViewDelegate?.shareViewWasCompleted()
         }.catch { error in
             self.dismissSendProgressSheet {
-                self.showSendFailure(error: .init(outgoingMessages: outgoingMessages, error: error))
+                self.showSendFailure(SendFailure(outgoingMessages: outgoingMessages, error: error))
             }
         }
     }

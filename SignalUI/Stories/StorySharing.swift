@@ -6,19 +6,15 @@
 public import SignalServiceKit
 
 public enum StorySharing {
-    public static func sendTextStory(
+    public static func enqueueTextStory(
         with messageBody: MessageBody,
         linkPreviewDraft: OWSLinkPreviewDraft?,
-        to conversations: [ConversationItem]
-    ) -> AttachmentMultisend.Result? {
+        to conversations: [ConversationItem],
+    ) async throws -> [AttachmentMultisend.EnqueueResult] {
         let storyConversations = conversations.filter { $0.outgoingMessageType == .storyMessage }
-        owsAssertDebug(conversations.count == storyConversations.count)
-
-        guard !storyConversations.isEmpty else { return nil }
-
-        return AttachmentMultisend.sendTextAttachment(
+        return try await AttachmentMultisend.enqueueTextAttachment(
             buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
-            to: storyConversations
+            to: storyConversations,
         )
     }
 
