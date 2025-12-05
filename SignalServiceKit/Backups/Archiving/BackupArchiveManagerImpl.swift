@@ -276,18 +276,18 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         switch backupPurpose {
         case .remoteExport(let key, let chatAuth):
-            // If an SVR🐝 restore has been scheduled, do this restore before continuing
+            // If an SVRB restore has been scheduled, do this restore before continuing
             // with the remote backup.  This ensures the local and remote state are
             // consistent and avoids the possibility of a backup being created that
-            // can't be recovered using the material in SVR🐝.
-            if db.read(block: { needsRestoreFromSVR🐝BeforeRemoteExport(tx: $0) }) {
+            // can't be recovered using the material in SVRB.
+            if db.read(block: { needsRestoreFromSVRBBeforeRemoteExport(tx: $0) }) {
                 do {
-                    try await fetchRemoteSVR🐝ForwardSecrecyToken(key: key, auth: chatAuth)
-                } catch SVR🐝Error.unrecoverable {
+                    try await fetchRemoteSVRBForwardSecrecyToken(key: key, auth: chatAuth)
+                } catch SVRBError.unrecoverable {
                     // Not found, so consider a success and fallthrough
-                    Logger.info("SVR🐝 not found, skipping restore.")
+                    Logger.info("SVRB not found, skipping restore.")
                 } catch {
-                    Logger.warn("Encountered error restoring SVR🐝: \(error)")
+                    Logger.warn("Encountered error restoring SVRB: \(error)")
                     throw error
                 }
 
@@ -303,7 +303,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             break
         }
 
-        let encryptionMetadata = try await backupPurpose.deriveEncryptionMetadataWithSvr🐝IfNeeded(
+        let encryptionMetadata = try await backupPurpose.deriveEncryptionMetadataWithSVRBIfNeeded(
             backupRequestManager: backupRequestManager,
             db: db,
             libsignalNet: libsignalNet,
@@ -760,7 +760,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         progress progressSink: OWSProgressSink?
     ) async throws {
 
-        let backupEncryptionKey = try await source.deriveBackupEncryptionKeyWithSvr🐝IfNeeded(
+        let backupEncryptionKey = try await source.deriveBackupEncryptionKeyWithSVRBIfNeeded(
             backupRequestManager: backupRequestManager,
             db: db,
             libsignalNet: libsignalNet,
@@ -1525,7 +1525,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     // MARK: -
 
-    public func scheduleRestoreFromSVR🐝BeforeNextExport(tx: DBWriteTransaction) {
+    public func scheduleRestoreFromSVRBBeforeNextExport(tx: DBWriteTransaction) {
         kvStore.setBool(
             true,
             key: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
@@ -1533,7 +1533,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
     }
 
-    private func needsRestoreFromSVR🐝BeforeRemoteExport(tx: DBReadTransaction) -> Bool {
+    private func needsRestoreFromSVRBBeforeRemoteExport(tx: DBReadTransaction) -> Bool {
         kvStore.getBool(
             Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
             defaultValue: false,
@@ -1541,7 +1541,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
     }
 
-    private func fetchRemoteSVR🐝ForwardSecrecyToken(
+    private func fetchRemoteSVRBForwardSecrecyToken(
         key: MessageRootBackupKey,
         auth: ChatServiceAuth
     ) async throws {
@@ -1559,12 +1559,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             ).metadataHeader
         } catch let error as OWSHTTPError where error.responseStatusCode == 404 {
             // If no backup is found, treat this as unrecoverable
-            throw SVR🐝Error.unrecoverable
+            throw SVRBError.unrecoverable
         }
 
-        let nonceSource = BackupImportSource.NonceMetadataSource.svr🐝(header: metadataHeader, auth: auth)
+        let nonceSource = BackupImportSource.NonceMetadataSource.svrB(header: metadataHeader, auth: auth)
         let source = BackupImportSource.remote(key: key, nonceSource: nonceSource)
-        _ = try await source.deriveBackupEncryptionKeyWithSvr🐝IfNeeded(
+        _ = try await source.deriveBackupEncryptionKeyWithSVRBIfNeeded(
             backupRequestManager: backupRequestManager,
             db: db,
             libsignalNet: libsignalNet,

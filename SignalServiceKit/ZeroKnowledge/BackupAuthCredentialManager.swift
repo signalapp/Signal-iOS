@@ -47,7 +47,7 @@ public protocol BackupAuthCredentialManager {
         forceRefreshUnlessCachedPaidCredential: Bool
     ) async throws -> BackupServiceAuth
 
-    func fetchSvr🐝AuthCredential(
+    func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth: ChatServiceAuth,
         forceRefresh: Bool,
@@ -172,13 +172,13 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
     // MARK: -
 
-    func fetchSvr🐝AuthCredential(
+    func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefresh: Bool,
     ) async throws -> LibSignalClient.Auth {
         try await serialTaskQueue.run {
-            try await _fetchSvr🐝AuthCredential(
+            try await _fetchSVRBAuthCredential(
                 key: key,
                 chatServiceAuth: auth,
                 forceRefresh: forceRefresh,
@@ -186,14 +186,14 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         }
     }
 
-    private func _fetchSvr🐝AuthCredential(
+    private func _fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
         forceRefresh: Bool,
     ) async throws -> LibSignalClient.Auth {
         if
             !forceRefresh,
-            let cachedCredential = db.read(block: authCredentialStore.svr🐝AuthCredential(tx:))
+            let cachedCredential = db.read(block: authCredentialStore.svrBAuthCredential(tx:))
         {
             return cachedCredential
         }
@@ -205,22 +205,22 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             forceRefreshUnlessCachedPaidCredential: false
         )
         let response = try await networkManager.asyncRequest(
-            OWSRequestFactory.fetchSVR🐝AuthCredential(auth: backupServiceAuth),
+            OWSRequestFactory.fetchSVRBAuthCredential(auth: backupServiceAuth),
         )
         guard let bodyData = response.responseBodyData else {
             throw OWSAssertionError("Missing body data")
         }
-        let receivedSvr🐝AuthCredential = try JSONDecoder().decode(ReceivedSVR🐝AuthCredentials.self, from: bodyData)
-        let svr🐝Auth = LibSignalClient.Auth(
-            username: receivedSvr🐝AuthCredential.username,
-            password: receivedSvr🐝AuthCredential.password
+        let receivedSVRBAuthCredential = try JSONDecoder().decode(ReceivedSVRBAuthCredentials.self, from: bodyData)
+        let svrBAuth = LibSignalClient.Auth(
+            username: receivedSVRBAuthCredential.username,
+            password: receivedSVRBAuthCredential.password
         )
 
         await db.awaitableWrite { tx in
-            authCredentialStore.setSvr🐝AuthCredential(svr🐝Auth, tx: tx)
+            authCredentialStore.setSVRBAuthCredential(svrBAuth, tx: tx)
         }
 
-        return svr🐝Auth
+        return svrBAuth
     }
 
     // MARK: -
@@ -463,8 +463,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         var credential: BackupAuthCredential
     }
 
-    // swiftlint:disable:next type_name
-    private struct ReceivedSVR🐝AuthCredentials: Codable {
+    private struct ReceivedSVRBAuthCredentials: Codable {
         let username: String
         let password: String
     }

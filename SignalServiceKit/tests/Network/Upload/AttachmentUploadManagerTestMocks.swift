@@ -160,7 +160,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func redeemReceipt(receiptCredentialPresentation: Data) async throws {
     }
 
-    func fetchSvr🐝AuthCredential(
+    func fetchSVRBAuthCredential(
         key: SignalServiceKit.MessageRootBackupKey,
         chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
         forceRefresh: Bool

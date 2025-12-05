@@ -13,8 +13,8 @@ public enum RegistrationBackupRestoreError {
     case backupNotFound
     case incorrectRecoveryKey
     case versionMismatch
-    case retryableSVR🐝Error
-    case unretryableSVR🐝Error
+    case retryableSVRBError
+    case unretryableSVRBError
     case networkError
     case rateLimited
     case cancellation
@@ -78,12 +78,12 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             return .cancellation
         case BackupImportError.unsupportedVersion:
             return .versionMismatch
-        case let error as SVR🐝Error:
+        case let error as SVRBError:
             switch error {
             case .retryableAutomatically, .retryableByUser:
-                return .retryableSVR🐝Error
+                return .retryableSVRBError
             case .unrecoverable:
-                return .unretryableSVR🐝Error
+                return .unretryableSVRBError
             case .incorrectRecoveryKey:
                 return .incorrectRecoveryKey
             case .cancellationError:
@@ -270,7 +270,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                     )
                 }
             })
-        case .retryableSVR🐝Error, .cancellation:
+        case .retryableSVRBError, .cancellation:
             title = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE",
                 comment: "Title for a sheet telling users to try restoring a backup again after a server error."
@@ -286,7 +286,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             actions.append(ActionSheetAction(title: CommonStrings.cancelButton) { _ in
                 continuation.resume(returning: .skipRestore)
             })
-        case .unretryableSVR🐝Error:
+        case .unretryableSVRBError:
             title = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_TITLE",
                 comment: "Title for a sheet telling users restoring a backup unrecoverably failed."

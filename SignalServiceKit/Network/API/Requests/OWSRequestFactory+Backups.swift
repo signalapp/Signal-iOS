@@ -157,7 +157,7 @@ extension OWSRequestFactory {
         )
     }
 
-    public static func fetchSVR🐝AuthCredential(
+    public static func fetchSVRBAuthCredential(
         auth: BackupServiceAuth
     ) -> TSRequest {
         var request = TSRequest(

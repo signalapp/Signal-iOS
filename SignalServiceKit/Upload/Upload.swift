@@ -130,7 +130,7 @@ public enum Upload {
         /// backup eligibility.
         public let attachmentByteSize: UInt64
 
-        /// Metadata related to the SVR🐝 nonce used for forward secrecy that should be persisted
+        /// Metadata related to the SVRB nonce used for forward secrecy that should be persisted
         /// after upload success.
         let nonceMetadata: BackupExportPurpose.NonceMetadata?
 

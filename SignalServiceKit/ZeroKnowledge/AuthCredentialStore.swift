@@ -13,7 +13,7 @@ class AuthCredentialStore {
     private let groupAuthCredentialStore: KeyValueStore
     private let backupMessagesAuthCredentialStore: KeyValueStore
     private let backupMediaAuthCredentialStore: KeyValueStore
-    private let svr🐝AuthCredentialStore: KeyValueStore
+    private let svrBAuthCredentialStore: KeyValueStore
 
     init(dateProvider: @escaping DateProvider) {
         self.dateProvider = dateProvider
@@ -21,7 +21,7 @@ class AuthCredentialStore {
         self.groupAuthCredentialStore = KeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
         self.backupMessagesAuthCredentialStore = KeyValueStore(collection: "BackupAuthCredential")
         self.backupMediaAuthCredentialStore = KeyValueStore(collection: "MediaAuthCredential")
-        self.svr🐝AuthCredentialStore = KeyValueStore(collection: "SVR🐝AuthCredential")
+        self.svrBAuthCredentialStore = KeyValueStore(collection: "SVR🐝AuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {
@@ -139,16 +139,16 @@ class AuthCredentialStore {
         )
     }
 
-    static let svr🐝AuthCredentialExpirationTime: TimeInterval = .day - .hour
-    static let svr🐝AuthCredentialExpiryDateKey = "svr🐝AuthCredentialTimestampKey"
-    static let svr🐝AuthCredentialUsernameKey = "svr🐝AuthCredentialUsernameKey"
-    static let svr🐝AuthCredentialPasswordKey = "svr🐝AuthCredentialPasswordKey"
+    static let svrBAuthCredentialExpirationTime: TimeInterval = .day - .hour
+    static let svrBAuthCredentialExpiryDateKey = "svr🐝AuthCredentialTimestampKey"
+    static let svrBAuthCredentialUsernameKey = "svr🐝AuthCredentialUsernameKey"
+    static let svrBAuthCredentialPasswordKey = "svr🐝AuthCredentialPasswordKey"
 
-    func svr🐝AuthCredential(tx: DBReadTransaction) -> LibSignalClient.Auth? {
+    func svrBAuthCredential(tx: DBReadTransaction) -> LibSignalClient.Auth? {
         guard
-            let username = svr🐝AuthCredentialStore.getString(Self.svr🐝AuthCredentialUsernameKey, transaction: tx),
-            let password = svr🐝AuthCredentialStore.getString(Self.svr🐝AuthCredentialPasswordKey, transaction: tx),
-            let expiryDate = svr🐝AuthCredentialStore.getDate(Self.svr🐝AuthCredentialExpiryDateKey, transaction: tx)
+            let username = svrBAuthCredentialStore.getString(Self.svrBAuthCredentialUsernameKey, transaction: tx),
+            let password = svrBAuthCredentialStore.getString(Self.svrBAuthCredentialPasswordKey, transaction: tx),
+            let expiryDate = svrBAuthCredentialStore.getDate(Self.svrBAuthCredentialExpiryDateKey, transaction: tx)
         else {
             return nil
         }
@@ -161,19 +161,19 @@ class AuthCredentialStore {
         )
     }
 
-    func setSvr🐝AuthCredential(
+    func setSVRBAuthCredential(
         _ credential: LibSignalClient.Auth?,
         tx: DBWriteTransaction
     ) {
         guard let credential else {
-            svr🐝AuthCredentialStore.removeAll(transaction: tx)
+            svrBAuthCredentialStore.removeAll(transaction: tx)
             return
         }
-        svr🐝AuthCredentialStore.setString(credential.username, key: Self.svr🐝AuthCredentialUsernameKey, transaction: tx)
-        svr🐝AuthCredentialStore.setString(credential.password, key: Self.svr🐝AuthCredentialPasswordKey, transaction: tx)
-        svr🐝AuthCredentialStore.setDate(
-            dateProvider().addingTimeInterval(Self.svr🐝AuthCredentialExpirationTime),
-            key: Self.svr🐝AuthCredentialExpiryDateKey,
+        svrBAuthCredentialStore.setString(credential.username, key: Self.svrBAuthCredentialUsernameKey, transaction: tx)
+        svrBAuthCredentialStore.setString(credential.password, key: Self.svrBAuthCredentialPasswordKey, transaction: tx)
+        svrBAuthCredentialStore.setDate(
+            dateProvider().addingTimeInterval(Self.svrBAuthCredentialExpirationTime),
+            key: Self.svrBAuthCredentialExpiryDateKey,
             transaction: tx
         )
     }
@@ -190,7 +190,7 @@ class AuthCredentialStore {
         case .media:
             break
         case .messages:
-            svr🐝AuthCredentialStore.removeAll(transaction: tx)
+            svrBAuthCredentialStore.removeAll(transaction: tx)
         }
     }
 

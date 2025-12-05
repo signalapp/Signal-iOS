@@ -630,7 +630,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                 }
             } else if let metadataHeader = self.inMemoryState.backupMetadataHeader {
-                nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
+                nonceSource = .svrB(header: metadataHeader, auth: identity.chatServiceAuth)
             } else {
                 Logger.info("Missing metadata header; refetching from cdn")
                 let backupServiceAuth = try await self.fetchBackupServiceAuth(
@@ -642,7 +642,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     backupAuth: backupServiceAuth
                 ).metadataHeader
                 self.inMemoryState.backupMetadataHeader = metadataHeader
-                nonceSource = .svr🐝(header: metadataHeader, auth: identity.chatServiceAuth)
+                nonceSource = .svrB(header: metadataHeader, auth: identity.chatServiceAuth)
             }
 
             try await self.deps.backupArchiveManager.importEncryptedBackup(
@@ -1404,8 +1404,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         block: ((DBWriteTransaction) -> Void)? = nil
     ) async -> RegistrationStep {
         await db.awaitableWrite { tx in
-            if needsToScheduleRestoreFromSvr🐝() {
-                deps.backupArchiveManager.scheduleRestoreFromSVR🐝BeforeNextExport(tx: tx)
+            if needsToScheduleRestoreFromSVRB() {
+                deps.backupArchiveManager.scheduleRestoreFromSVRBBeforeNextExport(tx: tx)
             }
 
             if
@@ -4988,12 +4988,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     /// Any path that results in registration with an old AEP that doesn't go
-    /// through the backup restore needs to handle this. Note that the SVR🐝
+    /// through the backup restore needs to handle this. Note that the SVRB
     /// restore doesn't need to succeed here, but we do need to persist that a
     /// restore is needed to ensure the restore happens before the first backup.
     ///
     /// Registration paths to consider:
-    /// | Registration path | SVR🐝 action |
+    /// | Registration path | SVRB action |
     /// |---|---|
     /// | re-registration | **Scheduled fetch needed** |
     /// | basic reg - backup restore | Fetched during restore |
@@ -5004,7 +5004,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// | quick restore - backup restore | Fetched during restore |
     /// | quick restore - transfer | none |
     /// | quick restore - skip restore | **Scheduled fetch needed** |
-    private func needsToScheduleRestoreFromSvr🐝() -> Bool {
+    private func needsToScheduleRestoreFromSVRB() -> Bool {
         switch mode {
         case .reRegistering:
             return true

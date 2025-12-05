@@ -91,7 +91,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         source?.incrementCompletedUnitCount(by: 1)
     }
 
-    public func scheduleRestoreFromSVR🐝BeforeNextExport(tx: DBWriteTransaction) {
+    public func scheduleRestoreFromSVRBBeforeNextExport(tx: DBWriteTransaction) {
         // Do Nothing
     }
 }
