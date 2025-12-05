@@ -75,18 +75,12 @@ extension BGProcessingTaskRunner where Self: Sendable {
                         bgTask.setTaskCompleted(success: true)
                         logger.info("Success!")
                     } catch is CancellationError {
+                        // Re-schedule so we try to run it again. We do this unconditionally
+                        // because tasks we cancel haven't finished and have more work to do.
+                        await self.scheduleBGProcessingTask(startCondition: .asSoonAsPossible)
+
                         // Apple WWDC talk specifies tasks must be completed even if the expiration
                         // handler is called.
-                        // Re-schedule so we try to run it again if needed.
-                        let startCondition = self.startCondition()
-                        switch startCondition {
-                        case .never:
-                            logger.warn("Cancelled: not rescheduling.")
-                        case .asSoonAsPossible, .after:
-                            logger.warn("Cancelled: rescheduling.")
-                            await self.scheduleBGProcessingTask(startCondition: startCondition)
-                        }
-
                         bgTask.setTaskCompleted(success: false)
                     } catch {
                         logger.warn("Failed with error. \(error)")
