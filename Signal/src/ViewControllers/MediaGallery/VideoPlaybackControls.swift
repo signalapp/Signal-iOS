@@ -25,28 +25,41 @@ class VideoPlaybackControlView: UIView {
     // MARK: Subviews
 
     private func titleForRewindAndFFBUttons() -> NSAttributedString {
-        let fontSize: CGFloat = isLandscapeLayout ? 7 : 9
-        let string = NumberFormatter.localizedString(from: Int(Self.rewindAndFastForwardSkipDuration) as NSNumber, number: .decimal)
+        let string = NumberFormatter.localizedString(
+            from: Int(Self.rewindAndFastForwardSkipDuration) as NSNumber,
+            number: .decimal
+        )
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         return NSAttributedString(string: string, attributes: [
             .kern: -1,
-            .font: UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .bold),
+            .font: UIFont.monospacedDigitSystemFont(ofSize: 10, weight: .bold),
             .paragraphStyle: paragraphStyle
         ])
     }
 
+    // Size must match same constant in `MediaControlPanelView`.
+    private static let buttonContentInset: CGFloat = if #available(iOS 26, *) { 10 } else { 8 }
+
     private lazy var buttonPlay: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "play-fill"), for: .normal)
-        button.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
+        let button = UIButton(configuration: .plain(), primaryAction: UIAction { [weak self] _ in
+            self?.didTapPlay()
+        })
+        button.configuration?.image = .init(imageLiteralResourceName: "play-fill")
+        button.configuration?.contentInsets = .init(margin: Self.buttonContentInset)
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
         return button
     }()
 
     private lazy var buttonPause: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "pause-fill"), for: .normal)
-        button.addTarget(self, action: #selector(didTapPause), for: .touchUpInside)
+        let button = UIButton(configuration: .plain(), primaryAction: UIAction { [weak self] _ in
+            self?.didTapPause()
+        })
+        button.configuration?.image = .init(imageLiteralResourceName: "pause-fill")
+        button.configuration?.contentInsets = .init(margin: Self.buttonContentInset)
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
         return button
     }()
 
@@ -54,10 +67,9 @@ class VideoPlaybackControlView: UIView {
         let button = RewindAndFFButton(type: .system)
         button.setImage(.init(imageLiteralResourceName: "skip-backward"), for: .normal)
         button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
-        button.addTarget(self, action: #selector(didTapRewind), for: .touchDown)
-        button.addTarget(self, action: #selector(didReleaseRewind), for: .touchUpInside)
-        button.addTarget(self, action: #selector(didCancelRewindOrFF), for: [.touchCancel, .touchUpOutside])
-        button.isHidden = true
+        button.addAction(UIAction { [weak self] _ in self?.didTapRewind() }, for: .touchDown)
+        button.addAction(UIAction { [weak self] _ in self?.didReleaseRewind() }, for: .touchUpInside)
+        button.addAction(UIAction { [weak self] _ in self?.didCancelRewindOrFF() }, for: [.touchCancel, .touchUpOutside])
         return button
     }()
 
@@ -65,34 +77,64 @@ class VideoPlaybackControlView: UIView {
         let button = RewindAndFFButton(type: .system)
         button.setImage(.init(imageLiteralResourceName: "skip-forward"), for: .normal)
         button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
-        button.addTarget(self, action: #selector(didTapFastForward), for: .touchDown)
-        button.addTarget(self, action: #selector(didReleaseFastForward), for: .touchUpInside)
-        button.addTarget(self, action: #selector(didCancelRewindOrFF), for: [.touchCancel, .touchUpOutside])
-        button.isHidden = true
+        button.addAction(UIAction { [weak self] _ in self?.didTapFastForward() }, for: .touchDown)
+        button.addAction(UIAction { [weak self] _ in self?.didReleaseFastForward() }, for: .touchUpInside)
+        button.addAction(UIAction { [weak self] _ in self?.didCancelRewindOrFF() }, for: [.touchCancel, .touchUpOutside])
         return button
     }()
+
+    private var glassBackgroundView: UIVisualEffectView?
+
+    @available(iOS 26, *)
+    private func glassEffect() -> UIVisualEffect? {
+        let glassEffect = UIGlassEffect(style: .regular)
+        glassEffect.isInteractive = true
+        return glassEffect
+    }
 
     // MARK: UIView
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        semanticContentAttribute = .forceLeftToRight
+        semanticContentAttribute = .playback
 
-        // Order must match default value of `isLandscapeLayout`.
+        let selfOrVisualEffectContentView: UIView
+
+        // Glass background.
+        if #available(iOS 26, *) {
+            let glassEffectView = UIVisualEffectView(effect: glassEffect())
+            glassEffectView.clipsToBounds = true
+            glassEffectView.cornerConfiguration = .capsule()
+            glassEffectView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(glassEffectView)
+            NSLayoutConstraint.activate([
+                glassEffectView.topAnchor.constraint(equalTo: topAnchor),
+                glassEffectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                glassEffectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                glassEffectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+
+            selfOrVisualEffectContentView = glassEffectView.contentView
+            glassBackgroundView = glassEffectView
+        } else {
+            selfOrVisualEffectContentView = self
+        }
+
         let buttons = [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ]
         buttons.forEach { button in
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
-            addSubview(button)
+            selfOrVisualEffectContentView.addSubview(button)
         }
 
         // Default state for Play / Pause
         buttonPlay.isHidden = isVideoPlaying
         buttonPause.isHidden = !isVideoPlaying
+        buttonRewind.isHidden = true
+        buttonFastForward.isHidden = true
 
         // Permanent layout constraints.
-        addConstraints([
+        NSLayoutConstraint.activate([
             buttonPlay.centerYAnchor.constraint(equalTo: centerYAnchor),
             buttonPlay.topAnchor.constraint(equalTo: topAnchor),
             buttonPlay.heightAnchor.constraint(equalTo: buttonPlay.widthAnchor),
@@ -119,24 +161,14 @@ class VideoPlaybackControlView: UIView {
     override func updateConstraints() {
         super.updateConstraints()
         if let buttonLayoutConstraints {
-            removeConstraints(buttonLayoutConstraints)
+            NSLayoutConstraint.deactivate(buttonLayoutConstraints)
         }
         let constraints = layoutConstraintsForCurrentConfiguration()
-        addConstraints(constraints)
+        NSLayoutConstraint.activate(constraints)
         buttonLayoutConstraints = constraints
     }
 
     // MARK: Public
-
-    var isLandscapeLayout: Bool = false {
-        didSet {
-            guard oldValue != isLandscapeLayout else { return }
-            // Update buttons with larger or smaller font.
-            buttonRewind.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
-            buttonFastForward.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
-            setNeedsUpdateConstraints()
-        }
-    }
 
     weak var delegate: VideoPlaybackControlViewDelegate?
 
@@ -157,7 +189,7 @@ class VideoPlaybackControlView: UIView {
 
     private func updateDuration(_ duration: TimeInterval) {
         let durationThreshold: TimeInterval = 30
-        self.showRewindAndFastForward = duration >= durationThreshold
+        showRewindAndFastForward = duration >= durationThreshold
     }
 
     private var isVideoPlaying = false
@@ -190,18 +222,24 @@ class VideoPlaybackControlView: UIView {
         }
 
         let fromButton: UIButton // button that is currently visible, reflecting opposite to `isPlaying`
+        let fromButtonTransform: CGAffineTransform
         let toButton: UIButton   // button that should reflect `isPlaying` upon animation completion
+        let toButtonTransform: CGAffineTransform
         if isPlaying {
             fromButton = buttonPlay
+            fromButtonTransform = .scale(0.1).rotated(by: 0.5 * .pi)
             toButton = buttonPause
+            toButtonTransform = .scale(0.1).rotated(by: -0.5 * .pi)
         } else {
             fromButton = buttonPause
+            fromButtonTransform = .scale(0.1).rotated(by: -0.5 * .pi)
             toButton = buttonPlay
+            toButtonTransform = .scale(0.1).rotated(by: 0.5 * .pi)
         }
         // Prepare initial state for appearing button
         toButton.isHidden = false
         toButton.alpha = 0
-        toButton.transform = .scale(0.1).rotated(by: -0.5 * .pi)
+        toButton.transform = toButtonTransform
 
         let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
         animator.addAnimations {
@@ -210,7 +248,7 @@ class VideoPlaybackControlView: UIView {
         }
         animator.addAnimations {
             fromButton.alpha = 0
-            fromButton.transform = .scale(0.1).rotated(by: 0.5 * .pi)
+            fromButton.transform = fromButtonTransform
         }
         animator.addCompletion { [weak self] _ in
             fromButton.isHidden = true
@@ -224,6 +262,34 @@ class VideoPlaybackControlView: UIView {
 
         playPauseButtonAnimator = animator
         animatePlayPauseTransition = false
+    }
+
+    // MARK: Animations
+
+    private var viewsForOpacityAnimation: [UIView] {
+        [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ].filter { $0.isHidden == false }
+    }
+
+    func prepareToBeAnimatedIn() {
+        if #available(iOS 26, *), let glassBackgroundView {
+            glassBackgroundView.effect = nil
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 0 }
+        isHidden = false
+    }
+
+    func animateIn() {
+        if #available(iOS 26, *), let glassBackgroundView {
+            glassBackgroundView.effect = glassEffect()
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 1 }
+    }
+
+    func animateOut() {
+        if #available(iOS 26, *), let glassBackgroundView {
+            glassBackgroundView.effect = nil
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 0 }
     }
 
     // MARK: Helpers
@@ -241,6 +307,9 @@ class VideoPlaybackControlView: UIView {
 
     private var buttonLayoutConstraints: [NSLayoutConstraint]?
 
+    private static let horizontalMargin: CGFloat = 6
+    private static let buttonSpacing: CGFloat = 12
+
     private func layoutConstraintsForCurrentConfiguration() -> [NSLayoutConstraint] {
         guard showRewindAndFastForward else {
             // |[Play]|
@@ -250,25 +319,13 @@ class VideoPlaybackControlView: UIView {
             ]
         }
 
-        if isLandscapeLayout {
-            let buttonSpacing: CGFloat = 14
-            // |[Play] [Rewind] [FastF]|
-            return [
-                buttonPlay.leadingAnchor.constraint(equalTo: leadingAnchor),
-                buttonRewind.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: buttonSpacing),
-                buttonFastForward.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: buttonSpacing),
-                buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor)
-            ]
-        } else {
-            let buttonSpacing: CGFloat = 24
-            // |[Rewind] [Play] [FastF]|
-            return [
-                buttonRewind.leadingAnchor.constraint(equalTo: leadingAnchor),
-                buttonPlay.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: buttonSpacing),
-                buttonFastForward.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: buttonSpacing),
-                buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor)
-            ]
-        }
+        // |[Rewind] [Play] [FastF]|
+        return [
+            buttonRewind.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.horizontalMargin),
+            buttonPlay.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: Self.buttonSpacing),
+            buttonFastForward.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: Self.buttonSpacing),
+            buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.horizontalMargin)
+        ]
     }
 
     private var tapAndHoldTimer: Timer?
@@ -281,7 +338,7 @@ class VideoPlaybackControlView: UIView {
 
         let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
         animator.addAnimations {
-            self.buttonRewind.imageView?.transform = .rotate(-0.5 * .pi)
+            self.buttonRewind.transform = .rotate(-0.5 * .pi)
         }
         animator.startAnimation()
 
@@ -294,7 +351,7 @@ class VideoPlaybackControlView: UIView {
 
         let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
         animator.addAnimations {
-            self.buttonFastForward.imageView?.transform = .rotate(0.5 * .pi)
+            self.buttonFastForward.transform = .rotate(0.5 * .pi)
         }
         animator.startAnimation()
 
@@ -308,13 +365,13 @@ class VideoPlaybackControlView: UIView {
         let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
         if isRewindInProgress {
             animator.addAnimations {
-                self.buttonRewind.imageView?.transform = .identity
+                self.buttonRewind.transform = .identity
             }
             isRewindInProgress = false
         }
         if isFastForwardInProgress {
             animator.addAnimations {
-                self.buttonFastForward.imageView?.transform = .identity
+                self.buttonFastForward.transform = .identity
             }
             isFastForwardInProgress = false
         }
@@ -325,7 +382,6 @@ class VideoPlaybackControlView: UIView {
 
     // MARK: Actions
 
-    @objc
     private func didTapPlay() {
         guard !isRewindInProgress, !isFastForwardInProgress else { return }
 
@@ -333,7 +389,6 @@ class VideoPlaybackControlView: UIView {
         delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
-    @objc
     private func didTapPause() {
         guard !isRewindInProgress, !isFastForwardInProgress else { return }
 
@@ -341,7 +396,6 @@ class VideoPlaybackControlView: UIView {
         delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
-    @objc
     private func didTapRewind() {
         guard !isRewindInProgress, !isFastForwardInProgress, tapAndHoldTimer == nil else { return }
 
@@ -352,7 +406,6 @@ class VideoPlaybackControlView: UIView {
         })
     }
 
-    @objc
     private func didReleaseRewind() {
         // Timer not yet fired - single tap.
         if let tapAndHoldTimer {
@@ -364,7 +417,6 @@ class VideoPlaybackControlView: UIView {
         stopContinuousRewindOrFastForward()
     }
 
-    @objc
     private func didTapFastForward() {
         guard !isRewindInProgress, !isFastForwardInProgress, tapAndHoldTimer == nil else { return }
 
@@ -375,7 +427,6 @@ class VideoPlaybackControlView: UIView {
         })
     }
 
-    @objc
     private func didReleaseFastForward() {
         // Timer not yet fired - single tap.
         if let tapAndHoldTimer {
@@ -387,7 +438,6 @@ class VideoPlaybackControlView: UIView {
         stopContinuousRewindOrFastForward()
     }
 
-    @objc
     private func didCancelRewindOrFF() {
         if let tapAndHoldTimer {
             tapAndHoldTimer.invalidate()
@@ -449,10 +499,21 @@ class PlayerProgressView: UIView {
         }
     }
 
+    private var _hasGlassBackground: Bool = true
+
+    @available(iOS 26, *)
+    var hasGlassBackground: Bool {
+        get { _hasGlassBackground }
+        set {
+            _hasGlassBackground = newValue
+            updateBackground()
+        }
+    }
+
     private func createLabel() -> UILabel {
         let label = UILabel()
-        label.font = UIFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
-        label.textColor = .ows_whiteAlpha80
+        label.font = UIFont.monospacedDigitSystemFont(ofSize: 13, weight: .regular)
+        label.textColor = .Signal.label
         label.setContentHuggingHorizontalHigh()
         label.setCompressionResistanceHorizontalHigh()
         return label
@@ -461,91 +522,88 @@ class PlayerProgressView: UIView {
     private lazy var remainingLabel = createLabel()
 
     private lazy var slider: UISlider = {
-        let slider = TrackingSlider()
+        let slider = VideoPlaybackSlider()
         slider.semanticContentAttribute = .playback
-        slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumb"), for: .normal)
-        slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumbLarge"), for: .highlighted)
-        slider.maximumTrackTintColor = .ows_whiteAlpha20
-        slider.minimumTrackTintColor = .ows_gray05
-        slider.addTarget(self, action: #selector(handleSliderTouchDown), for: .touchDown)
-        slider.addTarget(self, action: #selector(handleSliderTouchUp), for: [ .touchUpInside, .touchUpOutside ])
-        slider.addTarget(self, action: #selector(handleSliderValueChanged), for: .valueChanged)
+        slider.setThumbImage(UIImage(), for: .normal)
+        slider.setThumbImage(UIImage(), for: .highlighted)
+        slider.minimumTrackTintColor = .Signal.label
+        slider.maximumTrackTintColor = .Signal.quaternaryLabel
+        slider.addAction(UIAction { [weak self] _ in self?.handleSliderTouchDown() }, for: .touchDown)
+        slider.addAction(UIAction { [weak self] _ in self?.handleSliderTouchUp() }, for: [ .touchUpInside, .touchUpOutside ])
+        slider.addAction(UIAction { [weak self] _ in self?.handleSliderValueChanged() }, for: .valueChanged)
         return slider
     }()
+
+    // Glass on iOS 26, `nil` otherwise.
+    private var glassBackgroundView: UIVisualEffectView?
+
+    @available(iOS 26, *)
+    private func interactiveGlassEffect() -> UIVisualEffect? {
+        let glassEffect = UIGlassEffect(style: .regular)
+        glassEffect.isInteractive = true
+        return glassEffect
+    }
 
     private weak var progressObserver: AnyObject?
 
     private static let preferredTimeScale: CMTimeScale = 100
 
-    var isVerticallyCompactLayout: Bool {
-        didSet {
-            if isVerticallyCompactLayout {
-                removeConstraints(normalLayoutConstraints)
-                addConstraints(compactLayoutConstraints)
-            } else {
-                removeConstraints(compactLayoutConstraints)
-                addConstraints(normalLayoutConstraints)
-            }
-        }
-    }
-
-    private var compactLayoutConstraints = [NSLayoutConstraint]()
-    private var normalLayoutConstraints = [NSLayoutConstraint]()
-
     // MARK: UIView
 
-    init(forVerticallyCompactLayout compactLayout: Bool) {
-        isVerticallyCompactLayout = compactLayout
-
+    init() {
         super.init(frame: .zero)
 
         semanticContentAttribute = .forceLeftToRight
-        preservesSuperviewLayoutMargins = true
 
-        addSubview(slider)
-        addSubview(positionLabel)
-        addSubview(remainingLabel)
+        let selfOrVisualEffectContentView: UIView
+        if #available(iOS 26, *) {
+            let glassEffectView = UIVisualEffectView(effect: interactiveGlassEffect())
+            glassEffectView.translatesAutoresizingMaskIntoConstraints = false
+            glassEffectView.clipsToBounds = true
+            glassEffectView.cornerConfiguration = .capsule()
+            addSubview(glassEffectView)
+            NSLayoutConstraint.activate([
+                glassEffectView.topAnchor.constraint(equalTo: topAnchor),
+                glassEffectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                glassEffectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                glassEffectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
 
-        // Layout
-        positionLabel.autoPinEdge(toSuperviewEdge: .leading)
-        remainingLabel.autoPinEdge(toSuperviewEdge: .trailing)
-        slider.autoSetDimension(.height, toSize: 35)
-
-        // Compact Layout (landscape screen orientation).
-        // |[X:XX] ========================= [X:XX]|
-        compactLayoutConstraints = [
-            positionLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
-            slider.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor, constant: -.hairlineWidth),
-
-            positionLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
-            remainingLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
-            slider.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
-
-            slider.leadingAnchor.constraint(equalTo: positionLabel.trailingAnchor, constant: 12),
-            slider.trailingAnchor.constraint(equalTo: remainingLabel.leadingAnchor, constant: -12)
-        ]
-
-        // Two-row layout (portrait screen orientation).
-        // |=======================================|
-        // |[X:XX]                           [X:XX]|
-        normalLayoutConstraints = [
-            slider.topAnchor.constraint(equalTo: topAnchor),
-            slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
-            slider.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2),
-
-            positionLabel.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 1),
-            positionLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-
-            remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
-            remainingLabel.leadingAnchor.constraint(greaterThanOrEqualTo: positionLabel.trailingAnchor, constant: 8)
-        ]
-
-        if isVerticallyCompactLayout {
-            addConstraints(compactLayoutConstraints)
+            selfOrVisualEffectContentView = glassEffectView.contentView
+            glassBackgroundView = glassEffectView
         } else {
-            addConstraints(normalLayoutConstraints)
+            selfOrVisualEffectContentView = self
         }
+
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        positionLabel.translatesAutoresizingMaskIntoConstraints = false
+        remainingLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        selfOrVisualEffectContentView.addSubview(slider)
+        selfOrVisualEffectContentView.addSubview(positionLabel)
+        selfOrVisualEffectContentView.addSubview(remainingLabel)
+
+        // |[X:XX] ========================= [X:XX]|
+
+        // Extra margin on iOS 26 because of the glass background.
+        let hMargin: CGFloat = if #available(iOS 26, *) { 16 } else { 0 }
+        let height: CGFloat = if #available(iOS 26, *) { 44 } else { 36 }
+        NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: height),
+
+            positionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: hMargin),
+            positionLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            positionLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+
+            slider.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            slider.centerYAnchor.constraint(equalTo: centerYAnchor),
+            slider.leadingAnchor.constraint(equalTo: positionLabel.trailingAnchor, constant: 12),
+            slider.trailingAnchor.constraint(equalTo: remainingLabel.leadingAnchor, constant: -12),
+
+            remainingLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
+            remainingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -hMargin),
+        ])
 
         // Panning is a no-op. We just absorb pan gesture's originating in the video controls
         // from propagating so we don't inadvertently change pages while trying to scrub in
@@ -557,6 +615,47 @@ class PlayerProgressView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @available(iOS 26, *)
+    private func updateBackground() {
+        if hasGlassBackground {
+            if let glassBackgroundView, glassBackgroundView.effect == nil {
+                glassBackgroundView.effect = interactiveGlassEffect()
+            }
+        } else {
+            if let glassBackgroundView {
+                glassBackgroundView.effect = nil
+            }
+        }
+    }
+
+    // MARK: Animations
+
+    private var viewsForOpacityAnimation: [UIView] {
+        [ positionLabel, slider, remainingLabel ]
+    }
+
+    func prepareToBeAnimatedIn() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = nil
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 0 }
+        isHidden = false
+    }
+
+    func animateIn() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = interactiveGlassEffect()
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 1 }
+    }
+
+    func animateOut() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = nil
+        }
+        viewsForOpacityAnimation.forEach { $0.alpha = 0 }
+    }
+
     // MARK: Slider Handling
 
     private var wasPlayingWhenScrubbingStarted: Bool = false
@@ -565,8 +664,7 @@ class PlayerProgressView: UIView {
         return CMTime(seconds: Double(slider.value), preferredTimescale: Self.preferredTimeScale)
     }
 
-    @objc
-    private func handleSliderTouchDown(_ slider: UISlider) {
+    private func handleSliderTouchDown() {
         guard let videoPlayer else {
             owsFailBeta("player is nil")
             return
@@ -575,8 +673,7 @@ class PlayerProgressView: UIView {
         videoPlayer.pause()
     }
 
-    @objc
-    private func handleSliderTouchUp(_ slider: UISlider) {
+    private func handleSliderTouchUp() {
         guard let videoPlayer else {
             owsFailBeta("player is nil")
             return
@@ -588,8 +685,7 @@ class PlayerProgressView: UIView {
         }
     }
 
-    @objc
-    private func handleSliderValueChanged(_ slider: UISlider) {
+    private func handleSliderValueChanged() {
         guard let videoPlayer else {
             owsFailBeta("player is nil")
             return
@@ -634,11 +730,19 @@ class PlayerProgressView: UIView {
         remainingLabel.text = "-\(remainingString)"
     }
 
-    // Allows the user to tap anywhere on the slider to set it's position,
-    // without first having to grab the thumb.
-    private class TrackingSlider: UISlider {
-        override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
-            return true
+    // Overriden to allow to set custom track height.
+    private class VideoPlaybackSlider: UISlider {
+        private static let trackHeight: CGFloat = 10
+
+        override var intrinsicContentSize: CGSize {
+            CGSize(width: UIView.noIntrinsicMetric, height: Self.trackHeight)
+        }
+
+        override func trackRect(forBounds bounds: CGRect) -> CGRect {
+            var rect = super.trackRect(forBounds: bounds)
+            rect.size.height = Self.trackHeight
+            rect.origin.y = (bounds.height - Self.trackHeight) / 2
+            return rect
         }
     }
 }

@@ -23,6 +23,15 @@ class MediaCaptionView: UIView {
             }
         }
 
+        var isEmpty: Bool {
+            switch self {
+            case .attachmentStreamCaption(let string):
+                return string.isEmpty
+            case .messageBody(let messageBody, _):
+                return messageBody.isEmpty
+            }
+        }
+
         var interactionIdentifier: InteractionSnapshotIdentifier? {
             switch self {
             case .attachmentStreamCaption:
@@ -46,8 +55,9 @@ class MediaCaptionView: UIView {
         }
     }
 
-    var hasNilOrEmptyContent: Bool {
-        return content?.nilIfEmpty == nil
+    var isEmpty: Bool {
+        guard let content else { return true }
+        return content.isEmpty
     }
 
     var canBeExpanded: Bool {
@@ -68,12 +78,41 @@ class MediaCaptionView: UIView {
         self.spoilerState = spoilerState
         super.init(frame: frame)
 
-        preservesSuperviewLayoutMargins = true
         clipsToBounds = true
 
-        addSubview(captionTextView)
-        captionTextView.autoPinWidthToSuperviewMargins()
-        captionTextView.autoPinHeightToSuperview()
+        let selfOrVisualEffectContentView: UIView
+        if #available(iOS 26, *) {
+            let glassEffectView = UIVisualEffectView(effect: glassEffect())
+            glassEffectView.translatesAutoresizingMaskIntoConstraints = false
+            glassEffectView.clipsToBounds = true
+            glassEffectView.cornerConfiguration = .uniformCorners(radius: .containerConcentric(minimum: 26))
+            addSubview(glassEffectView)
+            NSLayoutConstraint.activate([
+                glassEffectView.topAnchor.constraint(equalTo: topAnchor),
+                glassEffectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                glassEffectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                glassEffectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+
+            selfOrVisualEffectContentView = glassEffectView.contentView
+            glassBackgroundView = glassEffectView
+
+            directionalLayoutMargins = .init(margin: 16)
+            insetsLayoutMarginsFromSafeArea = false
+        } else {
+            selfOrVisualEffectContentView = self
+
+            directionalLayoutMargins = .init(hMargin: 0, vMargin: 4)
+        }
+
+        selfOrVisualEffectContentView.addSubview(captionTextView)
+        captionTextView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            captionTextView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            captionTextView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            captionTextView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            captionTextView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+        ])
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -91,10 +130,7 @@ class MediaCaptionView: UIView {
             interactionIdentifier = id
         }
 
-        let location = gestureRecognizer.location(in: captionTextView).offsetBy(
-            dx: -Self.captionTextContainerInsets.left,
-            dy: -Self.captionTextContainerInsets.top
-        )
+        let location = gestureRecognizer.location(in: captionTextView)
         guard let characterIndex = captionTextView.characterIndex(of: location) else {
             return false
         }
@@ -124,9 +160,67 @@ class MediaCaptionView: UIView {
         captionTextView.didUpdateRevealedSpoilers()
     }
 
-    // MARK: Subviews
+    // MARK: Glass background
 
-    private static let captionTextContainerInsets = UIEdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0)
+    private var _hasGlassBackground: Bool = true
+
+    @available(iOS 26, *)
+    var hasGlassBackground: Bool {
+        get { _hasGlassBackground }
+        set {
+            _hasGlassBackground = newValue
+            updateBackground()
+        }
+    }
+
+    // Glass on iOS 26, `nil` otherwise.
+    private var glassBackgroundView: UIVisualEffectView?
+
+    @available(iOS 26, *)
+    private func glassEffect() -> UIVisualEffect? {
+        let glassEffect = UIGlassEffect(style: .regular)
+        glassEffect.isInteractive = true
+        return glassEffect
+    }
+
+    @available(iOS 26, *)
+    private func updateBackground() {
+        if hasGlassBackground {
+            if let glassBackgroundView, glassBackgroundView.effect == nil {
+                glassBackgroundView.effect = glassEffect()
+            }
+        } else {
+            if let glassBackgroundView {
+                glassBackgroundView.effect = nil
+            }
+        }
+    }
+
+    // MARK: Animations
+
+    func prepareToBeAnimatedIn() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = nil
+        }
+        captionTextView.alpha = 0
+        isHidden = false
+    }
+
+    func animateIn() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = glassEffect()
+        }
+        captionTextView.alpha = 1
+    }
+
+    func animateOut() {
+        if #available(iOS 26, *), let glassBackgroundView, hasGlassBackground {
+            glassBackgroundView.effect = nil
+        }
+        captionTextView.alpha = 0
+    }
+
+    // MARK: Subviews
 
     private class func buildCaptionTextView(spoilerState: SpoilerRenderState) -> CaptionTextView {
         let textView = CaptionTextView(spoilerState: spoilerState)
@@ -134,7 +228,7 @@ class MediaCaptionView: UIView {
         textView.font = config.baseFont
         textView.textColor = config.baseTextColor.forCurrentTheme
         textView.backgroundColor = .clear
-        textView.textContainerInset = Self.captionTextContainerInsets
+        textView.textContainerInset = .zero
         return textView
     }
     private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerState: spoilerState)

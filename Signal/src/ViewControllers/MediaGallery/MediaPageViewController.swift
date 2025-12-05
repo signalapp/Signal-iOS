@@ -96,8 +96,7 @@ class MediaPageViewController: UIPageViewController {
     private lazy var bottomMediaPanel = MediaControlPanelView(
         mediaGallery: mediaGallery,
         delegate: self,
-        spoilerState: spoilerState,
-        isLandscapeLayout: traitCollection.verticalSizeClass == .compact
+        spoilerState: spoilerState
     )
 
     // MARK: UIViewController
@@ -186,9 +185,13 @@ class MediaPageViewController: UIPageViewController {
         ])
 
         // Bottom panel
+        bottomMediaPanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomMediaPanel)
-        bottomMediaPanel.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
+        NSLayoutConstraint.activate([
+            bottomMediaPanel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomMediaPanel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bottomMediaPanel.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
         updateControlsForCurrentOrientation()
 
         // Load initial page and update all UI to reflect it.
@@ -334,12 +337,10 @@ class MediaPageViewController: UIPageViewController {
     }
 
     private func updateControlsForCurrentOrientation() {
-        bottomMediaPanel.isLandscapeLayout = traitCollection.verticalSizeClass == .compact
-
         // Bottom bar might be hidden while in landscape and visible in portrait, for the same media.
         showOrHideTopAndBottomPanelsAsNecessary(animated: false)
 
-        if bottomMediaPanel.isLandscapeLayout {
+        if traitCollection.verticalSizeClass == .compact {
             // Order of buttons is reversed: first button in array is the outermost in the navbar.
             navigationItem.rightBarButtonItems = [ contextMenuBarButton, barButtonForwardMedia, barButtonShareMedia ]
         } else {
