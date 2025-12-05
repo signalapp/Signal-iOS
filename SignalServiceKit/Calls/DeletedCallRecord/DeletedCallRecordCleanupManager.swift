@@ -196,8 +196,6 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
 
         await sleepProvider(secondsUntilNextCleanupPass)
 
-        try! await Task.sleep(nanoseconds: secondsUntilNextCleanupPass.clampedNanoseconds)
-
         let nextRecordToSchedule = await self.cleanUpAlreadyExpiredRecords()
 
         if let nextRecordToSchedule {
