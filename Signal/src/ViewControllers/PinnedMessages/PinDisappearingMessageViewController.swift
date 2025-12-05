@@ -8,7 +8,10 @@ import SignalUI
 import SignalServiceKit
 
 class PinDisappearingMessageViewController: HeroSheetViewController {
-    init(pinnedMessageManager: PinnedMessageManager) {
+    init(
+        pinnedMessageManager: PinnedMessageManager,
+        db: DB = DependenciesBridge.shared.db
+    ) {
         super.init(
             hero: .image(.timer),
             title: OWSLocalizedString(
@@ -30,8 +33,9 @@ class PinDisappearingMessageViewController: HeroSheetViewController {
                 style: .secondary,
                 action: .custom({ sheet in
                     sheet.dismiss(animated: true)
-                    // TODO: retention?
-                    pinnedMessageManager.stopShowingDisappearingMessageWarning()
+                    db.write { tx in
+                        pinnedMessageManager.stopShowingDisappearingMessageWarning(tx: tx)
+                    }
                 }),
             )),
         )

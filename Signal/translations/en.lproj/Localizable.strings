@@ -6553,6 +6553,12 @@
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
 
+/* Body for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+
+/* Title for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+
 /* Text to show on a toast when someone unpins a message */
 "PINNED_MESSAGE_TOAST" = "Message unpinned";
 

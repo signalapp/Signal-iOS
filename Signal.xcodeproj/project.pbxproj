@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		041A5F072E05B3F900FAED05 /* BackupEnablementMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */; };
 		041C24ED2DF782AF0065B685 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
+		042223BA2EDF30BA00158556 /* OutgoingUnpinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042223B92EDF30B300158556 /* OutgoingUnpinMessage.swift */; };
 		0426758B2EC4D5C800124C5F /* PinnedMessageIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */; };
 		0436E4B02E5E2DC20011E125 /* OWSPollTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */; };
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
@@ -25,6 +26,7 @@
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */; };
+		048D58382EDDD57E00F26237 /* OutgoingPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
 		04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */; };
@@ -4064,6 +4066,7 @@
 /* Begin PBXFileReference section */
 		041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementMegaphone.swift; sourceTree = "<group>"; };
 		041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementReminderMegaphoneTests.swift; sourceTree = "<group>"; };
+		042223B92EDF30B300158556 /* OutgoingUnpinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingUnpinMessage.swift; sourceTree = "<group>"; };
 		0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageIconView.swift; sourceTree = "<group>"; };
 		0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPollTest.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
@@ -4080,6 +4083,7 @@
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisappearingMessageViewController.swift; sourceTree = "<group>"; };
+		048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPinMessage.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
 		04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollTerminate.swift; sourceTree = "<group>"; };
@@ -8290,6 +8294,8 @@
 		045B408A2EC67BDB002D3F9A /* PinnedMessages */ = {
 			isa = PBXGroup;
 			children = (
+				048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */,
+				042223B92EDF30B300158556 /* OutgoingUnpinMessage.swift */,
 				045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */,
 				045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */,
 			);
@@ -19090,11 +19096,13 @@
 				F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */,
 				F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */,
 				F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */,
+				048D58382EDDD57E00F26237 /* OutgoingPinMessage.swift in Sources */,
 				04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */,
 				04472D5E2E8AD74200D69EE0 /* OutgoingPollVote.swift in Sources */,
 				50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */,
 				F9C5CC5A289453B300548EEE /* OutgoingStoryMessage.swift in Sources */,
 				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,
+				042223BA2EDF30BA00158556 /* OutgoingUnpinMessage.swift in Sources */,
 				C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */,
 				664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */,
 				6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */,

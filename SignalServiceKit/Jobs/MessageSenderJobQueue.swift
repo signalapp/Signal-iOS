@@ -477,13 +477,22 @@ public class MessageSenderJobQueue {
         }
     }
 
+    /// Use max-retries as a stand-in for a timeout for messages we want sent or cancelled in less than 24 hours.
+    /// Eventually this will be replaced with support for actual timeouts.
+    private func getMaxRetriesForMessageType(message: PreparedOutgoingMessage) -> Int {
+        if message.isPinChange {
+            return 2
+        }
+        return 110
+    }
+
     /// Runs a job to send a particular message.
     ///
     /// This methods returns after the operation has reached a terminal result
     /// but before that result has been processed.
     private func _runOperation(_ operation: ActiveOperationState) async throws {
         var attemptCount = Int(operation.job.record.failureCount)
-        let maxRetries = 110
+        let maxRetries = getMaxRetriesForMessageType(message: operation.message)
         while true {
             assert(!Task.isCancelled, "Cancellation isn't supported.")
             operation.clearExternalRetryTriggers()

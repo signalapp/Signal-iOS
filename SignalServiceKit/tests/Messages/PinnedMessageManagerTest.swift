@@ -15,9 +15,11 @@ struct PinnedMessageManagerTest {
 
     init() throws {
         pinnedMessageManager = PinnedMessageManager(
+            disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
             interactionStore: MockInteractionStore(),
             accountManager: MockTSAccountManager(),
-            db: db
+            db: db,
+            threadStore: MockThreadStore()
         )
     }
 

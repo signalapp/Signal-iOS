@@ -356,6 +356,15 @@ public class PreparedOutgoingMessage {
             return message
         }
     }
+
+    public var isPinChange: Bool {
+        switch messageType {
+        case .persisted, .editMessage, .story:
+            return false
+        case .transient(let message):
+            return message is OutgoingPinMessage || message is OutgoingUnpinMessage
+        }
+    }
 }
 
 extension Array where Element == PreparedOutgoingMessage {

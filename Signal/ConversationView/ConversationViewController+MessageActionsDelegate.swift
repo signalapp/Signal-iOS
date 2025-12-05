@@ -284,29 +284,89 @@ extension ConversationViewController: MessageActionsDelegate {
         }
     }
 
-    func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool) {
-        if !pin {
-            // TODO: send unpin message
-            presentToast(
-                text: OWSLocalizedString(
-                    "PINNED_MESSAGE_TOAST",
-                    comment: "Text to show on a toast when someone unpins a message"
-                )
+    func sendPinMessageChange(pinMessage: TSOutgoingMessage) async throws {
+        let db = DependenciesBridge.shared.db
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+
+        let sendPromise = await db.awaitableWrite { tx in
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: pinMessage
+            )
+
+            return messageSenderJobQueue.add(
+                .promise,
+                message: preparedMessage,
+                transaction: tx
+            )
+        }
+
+        try await sendPromise.awaitable()
+    }
+
+    func queuePinMessageChangeWithModal(
+        message: TSMessage,
+        pinMessage: TSOutgoingMessage,
+        completion: (() -> Void)?
+    ) async {
+        do {
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: self) {
+                try await self.sendPinMessageChange(pinMessage: pinMessage)
+            }
+        } catch {
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE",
+                    comment: "Title for error sheet shown if the pinned message failed to send"
+                ),
+                message: OWSLocalizedString(
+                    "PINNED_MESSAGE_SEND_ERROR_SHEET_BODY",
+                    comment: "Body for error sheet shown if the pinned message failed to send"
+                ),
             )
             return
         }
+        completion?()
+    }
 
-        guard let message = itemViewModel.renderItem.interaction as? TSMessage else {
+    private func handleActionPin(message: TSMessage) {
+        let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
+        let db = DependenciesBridge.shared.db
+
+        let pinMessage = db.write { tx in
+            pinnedMessageManager.getOutgoingPinMessage(
+                interaction: message,
+                thread: thread,
+                expiresAt: nil,
+                tx: tx
+            )
+        }
+
+        guard let pinMessage else {
             return
         }
 
-        let dmAction = { [weak self] in
-            if DependenciesBridge.shared.pinnedMessageManager.shouldShowDisappearingMessageWarning(message: message) {
-                DependenciesBridge.shared.pinnedMessageManager.incrementDisappearingMessageWarningCount()
-                self?.present(
-                    PinDisappearingMessageViewController(pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager),
+        let sendPinMessageWithOptionalDMWarning: () -> Void = {
+            let shouldShowDMWarning = db.write { tx in
+                if pinnedMessageManager.shouldShowDisappearingMessageWarning(message: message, tx: tx) {
+                    pinnedMessageManager.incrementDisappearingMessageWarningCount(tx: tx)
+                    return true
+                }
+                return false
+            }
+
+            if shouldShowDMWarning {
+                self.present(
+                    PinDisappearingMessageViewController(pinnedMessageManager: pinnedMessageManager),
                     animated: true
-                )
+                ) {
+                    Task {
+                        await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                    }
+                }
+            } else {
+                Task {
+                    await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                }
             }
         }
 
@@ -327,15 +387,57 @@ extension ConversationViewController: MessageActionsDelegate {
                     comment: "Option in pinned message action sheet to replace oldest pin."
                 ),
                 handler: { _ in
-                    dmAction()
-                    // TODO: send pin message
+                    sendPinMessageWithOptionalDMWarning()
                 },
             ))
             actionSheet.addAction(.cancel)
             presentActionSheet(actionSheet)
         } else {
-            dmAction()
-            // TODO: send pin message
+            sendPinMessageWithOptionalDMWarning()
         }
+    }
+
+    private func handleActionUnpin(message: TSMessage) {
+        let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
+        let db = DependenciesBridge.shared.db
+
+        let unpinMessage = db.write { tx in
+            pinnedMessageManager.getOutgoingUnpinMessage(
+                interaction: message,
+                thread: thread,
+                expiresAt: nil,
+                tx: tx
+            )
+        }
+        guard let unpinMessage else {
+            return
+        }
+
+        Task {
+            await queuePinMessageChangeWithModal(
+                message: message,
+                pinMessage: unpinMessage,
+                completion: { [weak self] in
+                    self?.presentToast(
+                        text: OWSLocalizedString(
+                            "PINNED_MESSAGE_TOAST",
+                            comment: "Text to show on a toast when someone unpins a message"
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool) {
+        guard let message = itemViewModel.renderItem.interaction as? TSMessage else {
+            return
+        }
+
+        if pin {
+            handleActionPin(message: message)
+            return
+        }
+        handleActionUnpin(message: message)
     }
 }

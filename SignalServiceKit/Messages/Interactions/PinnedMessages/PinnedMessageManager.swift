@@ -5,26 +5,36 @@
 
 import Foundation
 import GRDB
-import LibSignalClient
+public import LibSignalClient
+
+public enum PinnedMessageError: Error {
+    case messageSendTimeout
+}
 
 public class PinnedMessageManager {
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let accountManager: TSAccountManager
     private let interactionStore: InteractionStore
     private let keyValueStore: NewKeyValueStore
     private let db: DB
+    private let threadStore: ThreadStore
 
     // Int value of how many times the disappearing message warning has been shown.
     // If 3 or greater, don't show again.
     private static let disappearingMessageWarningShownKey = "disappearingMessageWarningShownKey"
 
     init(
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
         accountManager: TSAccountManager,
-        db: DB
+        db: DB,
+        threadStore: ThreadStore
     ) {
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
         self.accountManager = accountManager
         self.db = db
+        self.threadStore = threadStore
         self.keyValueStore = NewKeyValueStore(collection: "PinnedMessage")
     }
 
@@ -128,7 +138,7 @@ public class PinnedMessageManager {
         return targetMessage
     }
 
-    private func pruneOldestPinnedMessagesIfNecessary(
+    public func pruneOldestPinnedMessagesIfNecessary(
         threadId: Int64,
         transaction: DBWriteTransaction
     ) {
@@ -149,26 +159,152 @@ public class PinnedMessageManager {
         }
     }
 
-    public func shouldShowDisappearingMessageWarning(message: TSMessage) -> Bool {
+    public func shouldShowDisappearingMessageWarning(
+        message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Bool {
         if message.expiresInSeconds == 0 {
             return false
         }
-        let numberOfTimesWarningShown: Int64 = db.read { tx in
-            keyValueStore.fetchValue(Int64.self, forKey: Self.disappearingMessageWarningShownKey, tx: tx) ?? 0
-        }
+        let numberOfTimesWarningShown = keyValueStore.fetchValue(
+            Int64.self,
+            forKey: Self.disappearingMessageWarningShownKey,
+            tx: tx
+        ) ?? 0
+
         return numberOfTimesWarningShown < 3
     }
 
-    public func incrementDisappearingMessageWarningCount() {
-        db.write { tx in
-            let numberOfTimesWarningShown = keyValueStore.fetchValue(Int64.self, forKey: Self.disappearingMessageWarningShownKey, tx: tx) ?? 0
-            keyValueStore.writeValue(numberOfTimesWarningShown + 1, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
+    public func incrementDisappearingMessageWarningCount(tx: DBWriteTransaction) {
+        let numberOfTimesWarningShown = keyValueStore.fetchValue(Int64.self, forKey: Self.disappearingMessageWarningShownKey, tx: tx) ?? 0
+
+        keyValueStore.writeValue(numberOfTimesWarningShown + 1, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
+    }
+
+    public func stopShowingDisappearingMessageWarning(tx: DBWriteTransaction) {
+        keyValueStore.writeValue(3, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
+    }
+
+    public func applyPinMessageChangeToLocalState(
+        targetTimestamp: UInt64,
+        targetAuthorAci: Aci,
+        expiresAt: Int64?,
+        isPin: Bool,
+        tx: DBWriteTransaction
+    ) {
+        guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+            owsFailDebug("User not registered")
+            return
+        }
+
+        guard let targetMessage = try? interactionStore.fetchMessage(
+            timestamp: targetTimestamp,
+            incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
+            transaction: tx
+        ), let threadId = threadStore.fetchThread(
+            uniqueId: targetMessage.uniqueThreadId,
+            tx: tx
+        )?.sqliteRowId,
+            let interactionId = targetMessage.sqliteRowId
+        else {
+            return
+        }
+
+        if !isPin {
+            return failIfThrows {
+                try PinnedMessageRecord
+                    .filter(PinnedMessageRecord.Columns.interactionId == interactionId)
+                    .deleteAll(tx.database)
+
+                db.touch(
+                    interaction: targetMessage,
+                    shouldReindex: false,
+                    tx: tx
+                )
+            }
+        }
+
+        pruneOldestPinnedMessagesIfNecessary(
+            threadId: threadId,
+            transaction: tx
+        )
+
+        failIfThrows {
+            _ = try PinnedMessageRecord.insertRecord(
+                interactionId: interactionId,
+                threadId: threadId,
+                expiresAt: expiresAt,
+                tx: tx
+            )
+        }
+
+        db.touch(
+            interaction: targetMessage,
+            shouldReindex: false,
+            tx: tx
+        )
+    }
+
+    private func getMessageAuthorAci(interaction: TSMessage, tx: DBReadTransaction) -> Aci? {
+        guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
+            owsFailDebug("Can't find data for original message")
+            return nil
+        }
+
+        if let _ = interaction as? TSOutgoingMessage {
+            return localAci
+        } else if let incomingMessage = interaction as? TSIncomingMessage,
+                  let authorUUID = incomingMessage.authorUUID,
+                  let incomingAci = try? Aci.parseFrom(serviceIdString: authorUUID) {
+            return incomingAci
+        } else {
+            return nil
         }
     }
 
-    public func stopShowingDisappearingMessageWarning() {
-        db.write { tx in
-            keyValueStore.writeValue(3, forKey: Self.disappearingMessageWarningShownKey, tx: tx)
+    public func getOutgoingPinMessage(
+        interaction: TSMessage,
+        thread: TSThread,
+        expiresAt: Int64?,
+        tx: DBWriteTransaction
+    ) -> OutgoingPinMessage? {
+        guard let authorAci = getMessageAuthorAci(interaction: interaction, tx: tx) else {
+            owsFailDebug("unable to parse authorAci")
+            return nil
         }
+
+        var pinDurationSeconds: UInt32?
+        if let expiresAt {
+            pinDurationSeconds = UInt32(expiresAt)
+        }
+
+        return OutgoingPinMessage(
+            thread: thread,
+            targetMessageTimestamp: interaction.timestamp,
+            targetMessageAuthorAciBinary: authorAci,
+            pinDurationSeconds: pinDurationSeconds ?? 0,
+            pinDurationForever: expiresAt == nil,
+            messageExpiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
+            tx: tx)
+    }
+
+    public func getOutgoingUnpinMessage(
+        interaction: TSMessage,
+        thread: TSThread,
+        expiresAt: Int64?,
+        tx: DBWriteTransaction
+    ) -> OutgoingUnpinMessage? {
+
+        guard let authorAci = getMessageAuthorAci(interaction: interaction, tx: tx) else {
+            owsFailDebug("unable to parse authorAci")
+            return nil
+        }
+
+        return OutgoingUnpinMessage(
+            thread: thread,
+            targetMessageTimestamp: interaction.timestamp,
+            targetMessageAuthorAciBinary: authorAci,
+            messageExpiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
+            tx: tx)
     }
 }
