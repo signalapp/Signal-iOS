@@ -16,7 +16,8 @@ extension BackupArchive {
         public enum ErrorType {
             /// Message types for which edit history is unexpected.
             public enum UnexpectedRevisionsMessageType {
-                case contactMessgae
+                case remoteDeletedMessage
+                case contactMessage
                 case stickerMessage
                 case updateMessage
                 case paymentNotification
@@ -223,8 +224,10 @@ extension BackupArchive {
             /// An ad hoc call has an invalid start timestamp.
             case invalidAdHocCallTimestamp
 
-            /// A message unexpectedly had edit history.
-            case unexpectedRevisionsOnMessage(UnexpectedRevisionsMessageType)
+            /// A message of an unexpected type had edit history.
+            case revisionsPresentOnUnexpectedMessage(UnexpectedRevisionsMessageType)
+            /// A message's edit history contained an unexpected type.
+            case revisionWasUnexpectedMessage(UnexpectedRevisionsMessageType)
 
             /// A poll terminate message was missing a question
             case pollEndMissingQuestion
@@ -369,7 +372,8 @@ extension BackupArchive {
                     .unviewedViewOnceMessageTooManyAttachments,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
                     .invalidAdHocCallTimestamp,
-                    .unexpectedRevisionsOnMessage,
+                    .revisionsPresentOnUnexpectedMessage,
+                    .revisionWasUnexpectedMessage,
                     .pollMissing,
                     .pollOptionIdMissing,
                     .invalidPollRecordDatabaseRow,
@@ -442,7 +446,8 @@ extension BackupArchive {
                     .unviewedViewOnceMessageTooManyAttachments,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
                     .invalidAdHocCallTimestamp,
-                    .unexpectedRevisionsOnMessage,
+                    .revisionsPresentOnUnexpectedMessage,
+                    .revisionWasUnexpectedMessage,
                     .pollMissing,
                     .pollOptionIdMissing,
                     .invalidPollRecordDatabaseRow,

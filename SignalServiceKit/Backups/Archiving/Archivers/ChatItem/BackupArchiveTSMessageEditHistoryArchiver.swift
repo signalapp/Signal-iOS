@@ -162,7 +162,22 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
         context: BackupArchive.ChatArchivingContext,
         builder: Builder
     ) -> BackupArchive.ArchiveInteractionResult<Void> {
-        let unexpectedRevisionsMessageType: ArchiveFrameError.ErrorType.UnexpectedRevisionsMessageType?
+        /// Returns `nil` if the given `Details` are allowed to have or be a
+        /// past revision, or an error type if not.
+        func areRevisionsLegal(_ details: Details) -> ArchiveFrameError.ErrorType.UnexpectedRevisionsMessageType? {
+            return switch details.chatItemType {
+            case .standardMessage, .directStoryReplyMessage: nil
+            case .remoteDeletedMessage: .remoteDeletedMessage
+            case .contactMessage: .contactMessage
+            case .stickerMessage: .stickerMessage
+            case .updateMessage: .updateMessage
+            case .paymentNotification: .paymentNotification
+            case .giftBadge: .giftBadge
+            case .viewOnceMessage: .viewOnceMessage
+            case .poll: .poll
+            }
+        }
+
         switch latestRevisionDetails.chatItemType {
         case .remoteDeletedMessage:
             // Remote-deleted messages with edit history delete the contents of
@@ -170,29 +185,14 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
             // placeholders. We don't want to archive those, nor do we need to
             // produce an error, so we bail early.
             return .success(())
-        case .standardMessage, .directStoryReplyMessage:
-            // These message types are the only ones expected/allowed to have
-            // edit history we want to archive. If we unexpectedly find it on
-            // another message type, we'll drop it and record an error.
-            unexpectedRevisionsMessageType = nil
-        case .contactMessage:
-            unexpectedRevisionsMessageType = .contactMessgae
-        case .stickerMessage:
-            unexpectedRevisionsMessageType = .stickerMessage
-        case .updateMessage:
-            unexpectedRevisionsMessageType = .updateMessage
-        case .paymentNotification:
-            unexpectedRevisionsMessageType = .paymentNotification
-        case .giftBadge:
-            unexpectedRevisionsMessageType = .giftBadge
-        case .viewOnceMessage:
-            unexpectedRevisionsMessageType = .viewOnceMessage
-        case .poll:
-            unexpectedRevisionsMessageType = .poll
+        default:
+            break
         }
-        if let unexpectedRevisionsMessageType {
+
+        // Short-circuit if this message type shouldn't have edit history.
+        if let illegalRevisionType = areRevisionsLegal(latestRevisionDetails) {
             return .partialFailure((), [.archiveFrameError(
-                .unexpectedRevisionsOnMessage(unexpectedRevisionsMessageType),
+                .revisionsPresentOnUnexpectedMessage(illegalRevisionType),
                 latestRevisionMessage.uniqueInteractionId
             )])
         }
@@ -246,10 +246,18 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 continue
             }
 
-            /// We're iterating the edit history from oldest to newest, so the
-            /// past revision details stored on `latestRevisionDetails` will
-            /// also be ordered oldest to newest.
-            latestRevisionDetails.addPastRevision(pastRevisionDetails)
+            // We have a past revision that's not of a legal type. Skip it.
+            if let illegalRevisionType = areRevisionsLegal(pastRevisionDetails) {
+                partialErrors.append(.archiveFrameError(
+                    .revisionWasUnexpectedMessage(illegalRevisionType),
+                    pastRevisionMessage.uniqueInteractionId,
+                ))
+            } else {
+                /// We're iterating the edit history from oldest to newest, so
+                /// the past revision details stored on `latestRevisionDetails`
+                /// will also be ordered oldest to newest.
+                latestRevisionDetails.addPastRevision(pastRevisionDetails)
+            }
         }
 
         if partialErrors.isEmpty {
