@@ -53,7 +53,7 @@ class ConversationHeaderView: UIView {
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         // One size for the navigation bar on iOS 26.
-        guard #unavailable(iOS 26) else { return .thirtySix }
+        guard #unavailable(iOS 26) else { return .forty }
 
         return traitCollection.verticalSizeClass == .compact && !UIDevice.current.isPlusSizePhone
         ? .twentyFour
@@ -79,14 +79,19 @@ class ConversationHeaderView: UIView {
         textRows.axis = .vertical
         textRows.alignment = .leading
         textRows.distribution = .fillProportionally
-        textRows.directionalLayoutMargins = .init(top: 0, leading: 8, bottom: 0, trailing: 0)
-        textRows.isLayoutMarginsRelativeArrangement = true
 
         let rootStack = UIStackView(arrangedSubviews: [ avatarView, textRows ])
         rootStack.directionalLayoutMargins = .init(hMargin: 0, vMargin: 4)
+        if #available(iOS 26, *) {
+            // Default iOS 26 spacing between round back button and this view's leading edge is 12 pts.
+            // We want 16 pts between back button and profile picture.
+            rootStack.directionalLayoutMargins.leading = 4
+        }
         rootStack.isLayoutMarginsRelativeArrangement = true
         rootStack.axis = .horizontal
         rootStack.alignment = .center
+        // Larger profile picture on iOS 26 requires larger padding on both sides.
+        rootStack.spacing = if #available(iOS 26, *) { 12 } else { 8 }
 
         addSubview(rootStack)
         rootStack.translatesAutoresizingMaskIntoConstraints = false
