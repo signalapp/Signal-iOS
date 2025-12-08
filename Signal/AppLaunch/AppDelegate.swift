@@ -191,7 +191,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         MessageFetchBGRefreshTask.register(appReadiness: appReadiness)
 
-        let deviceBatteryLevelManager = DeviceBatteryLevelManagerImpl()
         let deviceSleepManager = DeviceSleepManagerImpl()
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let deviceTransferService = DeviceTransferService(
@@ -273,7 +272,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
-            deviceBatteryLevelManager: deviceBatteryLevelManager,
             deviceSleepManager: deviceSleepManager,
             keychainStorage: keychainStorage,
             launchStartedAt: launchStartedAt,
@@ -396,14 +394,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private struct LaunchContext {
-        var appContext: MainAppContext
+        let appContext: MainAppContext
         var databaseStorage: SDSDatabaseStorage
-        var deviceBatteryLevelManager: DeviceBatteryLevelManagerImpl
-        var deviceSleepManager: DeviceSleepManagerImpl
-        var keychainStorage: any KeychainStorage
-        var launchStartedAt: CFTimeInterval
-        var incrementalMessageTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore
-        var incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory
+        let deviceSleepManager: DeviceSleepManagerImpl
+        let keychainStorage: any KeychainStorage
+        let launchStartedAt: CFTimeInterval
+        let incrementalMessageTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore
+        let incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory
     }
 
     private func launchApp(
@@ -447,7 +444,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let dataMigrationContinuation = globalsContinuation.initGlobals(
             appReadiness: appReadiness,
             backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactoryInternal(),
-            deviceBatteryLevelManager: launchContext.deviceBatteryLevelManager,
+            deviceBatteryLevelManager: DeviceBatteryLevelManagerImpl(),
             deviceSleepManager: launchContext.deviceSleepManager,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
