@@ -29,7 +29,7 @@ public extension ConversationViewController {
         let currentPin = threadViewModel.pinnedMessages[pinnedMessageIndex]
         pinnedMessageIndex = (pinnedMessageIndex + 1) % threadViewModel.pinnedMessages.count
 
-        ensureBannerState()
+        animateToNextPinnedMessage()
         ensureInteractionLoadedThenScrollToInteraction(
             currentPin.uniqueId,
             alignment: .centerIfNotEntirelyOnScreen,

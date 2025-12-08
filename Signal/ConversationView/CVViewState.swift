@@ -25,7 +25,7 @@ public class CVViewState: NSObject {
 
     public var bottomBarContainer = UIView.container()
     public var requestView: UIView?
-    public var bannerStackView: UIView?
+    public var bannerStackView: UIStackView?
     public var groupNameCollisionFinder: GroupMembershipNameCollisionFinder?
 
     public var isDismissingInteractively = false
@@ -199,7 +199,7 @@ extension ConversationViewController {
         set { viewState.requestView = newValue }
     }
 
-    var bannerStackView: UIView? {
+    var bannerStackView: UIStackView? {
         get { viewState.bannerStackView }
         set { viewState.bannerStackView = newValue }
     }
