@@ -46,18 +46,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
         try await runWithChatConnection(
             backgroundMessageFetcherFactory: backgroundMessageFetcherFactory(),
             operation: {
-                do throws(BackupExportJobError) {
-                    try await exportJob().exportAndUploadBackup(mode: .bgProcessingTask)
-                } catch {
-                    switch error {
-                    case .cancellationError:
-                        // Unwrap to a CancellationError so that the generic
-                        // BGProcessingTask host reschedules the job.
-                        throw CancellationError()
-                    default:
-                        throw error
-                    }
-                }
+                try await exportJob().exportAndUploadBackup(mode: .bgProcessingTask)
 
                 await db.awaitableWrite { tx in
                     kvStore.setDate(dateProvider(), key: StoreKeys.lastCompletionDate, transaction: tx)

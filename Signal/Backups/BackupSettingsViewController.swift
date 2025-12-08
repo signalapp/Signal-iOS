@@ -245,15 +245,8 @@ class BackupSettingsViewController:
                         switch result {
                         case .success:
                             break
-                        case .failure(let exportJobError):
-                            switch exportJobError {
-                            case .cancellationError, .needsWifi, .networkRequestError:
-                                Logger.warn("Failed to perform manual backup! \(exportJobError)")
-                            case .backupError, .backupKeyError, .unregistered:
-                                owsFailDebug("Failed to perform manual backup! \(exportJobError)")
-                            }
-
-                            showSheetForBackupExportJobError(exportJobError)
+                        case .failure(let error):
+                            showSheetForBackupExportJobError(error)
                         }
 
                         db.read { tx in
@@ -883,13 +876,13 @@ class BackupSettingsViewController:
         }
     }
 
-    private func showSheetForBackupExportJobError(_ error: BackupExportJobError) {
+    private func showSheetForBackupExportJobError(_ error: Error) {
         let actionSheet: ActionSheetController
         switch error {
-        case .cancellationError:
+        case is CancellationError:
             return
 
-        case .needsWifi:
+        case BackupExportJobError.needsWifi:
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE",
@@ -914,7 +907,7 @@ class BackupSettingsViewController:
             ))
             actionSheet.addAction(.cancel)
 
-        case .networkRequestError:
+        case _ where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse:
             actionSheet = ActionSheetController(
                 message: OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR",
@@ -923,7 +916,7 @@ class BackupSettingsViewController:
             )
             actionSheet.addAction(.okay)
 
-        case .unregistered, .backupKeyError, .backupError:
+        default:
             actionSheet = ActionSheetController(
                 message: OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR",
