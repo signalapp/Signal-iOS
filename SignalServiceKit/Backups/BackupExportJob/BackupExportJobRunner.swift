@@ -5,7 +5,7 @@
 
 public enum BackupExportJobRunnerUpdate {
     case progress(OWSSequentialProgress<BackupExportJobStep>)
-    case completion(Result<Void, BackupExportJobError>)
+    case completion(Result<Void, Error>)
 }
 
 /// A wrapper around ``BackupExportJob`` that prevents overlapping job runs and
@@ -121,9 +121,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
             }
 
             _state.currentExportJobTask = Task { () async -> Void in
-                let result: Result<Void, BackupExportJobError>
-
-                do throws(BackupExportJobError) {
+                let result = await Result(catching: {
                     try await backupExportJob.exportAndUploadBackup(
                         mode: .manual(OWSSequentialProgress<BackupExportJobStep>
                             .createSink { [weak self] exportJobProgress in
@@ -131,10 +129,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                             }
                         )
                     )
-                    result = .success(())
-                } catch {
-                    result = .failure(error)
-                }
+                })
 
                 exportJobDidComplete(result: result)
             }
@@ -177,7 +172,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
         }
     }
 
-    private func exportJobDidComplete(result: Result<Void, BackupExportJobError>) {
+    private func exportJobDidComplete(result: Result<Void, Error>) {
         self.state.enqueueUpdate { _state in
             _state.currentExportJobTask = nil
 

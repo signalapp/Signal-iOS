@@ -40,13 +40,7 @@ public enum BackupExportJobMode: CustomStringConvertible {
 }
 
 public enum BackupExportJobError: Error {
-    case cancellationError
-    case unregistered
     case needsWifi
-    case backupKeyError
-    // catch-all for errors thrown by backup steps
-    case backupError(Error)
-    case networkRequestError(Error)
 }
 
 // MARK: -
@@ -65,7 +59,7 @@ public protocol BackupExportJob {
     /// Cooperatively cancellable.
     func exportAndUploadBackup(
         mode: BackupExportJobMode
-    ) async throws(BackupExportJobError)
+    ) async throws
 }
 
 // MARK: -
@@ -119,15 +113,15 @@ class BackupExportJobImpl: BackupExportJob {
 
     func exportAndUploadBackup(
         mode: BackupExportJobMode
-    ) async throws(BackupExportJobError) {
+    ) async throws {
         switch mode {
         case .manual:
             try await _exportAndUploadBackup(mode: mode)
         case .bgProcessingTask:
             await backupAttachmentDownloadQueueStatusManager.setIsMainAppAndActiveOverride(true)
             await backupAttachmentUploadQueueStatusManager.setIsMainAppAndActiveOverride(true)
-            let result = await Result<Void, BackupExportJobError>(
-                catching: { () async throws(BackupExportJobError) -> Void in
+            let result = await Result(
+                catching: { () async throws -> Void in
                     try await _exportAndUploadBackup(mode: mode)
                 }
             )
@@ -139,7 +133,7 @@ class BackupExportJobImpl: BackupExportJob {
 
     private func _exportAndUploadBackup(
         mode: BackupExportJobMode
-    ) async throws(BackupExportJobError) {
+    ) async throws {
         let logger = logger.suffixed(with: "[\(mode)]")
         logger.info("Starting...")
 
@@ -152,18 +146,16 @@ class BackupExportJobImpl: BackupExportJob {
             backupKey,
             shouldAllowBackupUploadsOnCellular,
             currentBackupPlan,
-        ) = try db.read { (tx) throws(BackupExportJobError) in
+        ) = try db.read { (tx) throws in
             guard
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
             else {
-                owsFailDebug("Creating a backup when unregistered?")
-                throw .unregistered
+                throw NotRegisteredError()
             }
 
             guard let backupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
-                owsFailDebug("Failed to read backup key")
-                throw .backupKeyError
+                throw OWSAssertionError("Missing or invalid message root backup key.")
             }
 
             return (
@@ -179,21 +171,17 @@ class BackupExportJobImpl: BackupExportJob {
             // and therefore can't upload don't even bother generating the backup.
             if !reachabilityManager.isReachable(via: .wifi) {
                 logger.info("Giving up; not connected to wifi & cellular uploads disabled")
-                throw .needsWifi
+                throw BackupExportJobError.needsWifi
             }
         }
 
-        logger.info("Waiting on message processing...")
         // We wait for message processing to finish before emitting a backup, to ensure
         // we put as much up-to-date message history into the backup as possible.
         // This is especially important for users with notifications disabled;
         // the launch of the BGProcessingTask may be the first chance we get
         // to fetch messages in a while, and its good practice to back those up.
-        do throws(CancellationError) {
-            try await messageProcessor.waitForFetchingAndProcessing()
-        } catch {
-            throw .cancellationError
-        }
+        logger.info("Waiting on message processing...")
+        try await messageProcessor.waitForFetchingAndProcessing()
 
         let progress: OWSSequentialProgressRootSink<BackupExportJobStep>?
         switch mode {
@@ -342,7 +330,7 @@ class BackupExportJobImpl: BackupExportJob {
             }
 
             logger.info("Done!")
-        } catch is CancellationError {
+        } catch let error as CancellationError {
             await db.awaitableWrite {
                 switch mode {
                 case .bgProcessingTask:
@@ -352,8 +340,9 @@ class BackupExportJobImpl: BackupExportJob {
                 }
             }
 
-            throw .cancellationError
-        } catch {
+            logger.warn("Canceled!")
+            throw error
+        } catch let error {
             await db.awaitableWrite {
                 switch mode {
                 case .bgProcessingTask:
@@ -363,11 +352,8 @@ class BackupExportJobImpl: BackupExportJob {
                 }
             }
 
-            if error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
-                throw .networkRequestError(error)
-            } else {
-                throw .backupError(error)
-            }
+            logger.warn("Failed! \(error)")
+            throw error
         }
     }
 
