@@ -55,29 +55,32 @@ final class BackupEnablingManager {
         planSelection: ChooseBackupPlanViewController.PlanSelection,
     ) async throws(ActionSheetDisplayableError) {
         let (
-            isRegisteredPrimaryDevice,
+            registrationState,
             localIdentifiers,
         ): (
-            Bool,
+            TSRegistrationState,
             LocalIdentifiers?
         ) = db.read { tx in
             return (
-                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                tsAccountManager.registrationState(tx: tx),
                 tsAccountManager.localIdentifiers(tx: tx),
             )
         }
 
-        owsPrecondition(
-            isRegisteredPrimaryDevice,
-            "Attempting to enable Backups on a non-primary device!"
-        )
-
-        guard let localIdentifiers else {
+        guard
+            let localIdentifiers,
+            registrationState.isRegistered
+        else {
             throw .custom(localizedMessage: OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED",
                 comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."
             ))
         }
+
+        owsPrecondition(
+            registrationState.isRegisteredPrimaryDevice,
+            "Attempting to enable Backups on a non-primary device!"
+        )
 
         try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController
