@@ -104,6 +104,12 @@ public class MediaGalleryAccessoriesHelper {
         viewController.view.addSubview(footerBar)
         footerBar.autoPinEdge(toSuperviewSafeArea: .leading)
         footerBar.autoPinEdge(toSuperviewSafeArea: .trailing)
+        if #available(iOS 26, *) {
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.scrollView = viewController.scrollView
+            interaction.edge = .bottom
+            footerBar.addInteraction(interaction)
+        }
 
         updateDeleteButton()
         updateSelectionModeControls()
