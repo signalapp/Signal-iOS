@@ -118,15 +118,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
-    private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
-        let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
-        result.isVoiceMessage = isVoiceMessage
-        result.isAnimatedImage = isAnimatedImage
-        result.isBorderless = isBorderless
-        result.isLoopingVideo = isLoopingVideo
-        return result
-    }
-
     public func staticThumbnail() -> UIImage? {
         if let cachedThumbnail = cachedThumbnail {
             return cachedThumbnail
@@ -626,8 +617,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
     public class func imageAttachment(dataSource: any DataSource, dataUTI: String, canBeBorderless: Bool = false) throws(SignalAttachmentError) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
 
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-
         guard inputImageUTISet.contains(dataUTI) else {
             throw .invalidFileFormat
         }
@@ -641,25 +630,26 @@ public class SignalAttachment: CustomDebugStringConvertible {
             throw .invalidData
         }
 
-        attachment.isBorderless = canBeBorderless && imageMetadata.hasStickerLikeProperties
+        let newDataSource: any DataSource
+        let newDataUTI: String
 
         let isAnimated = imageMetadata.isAnimated
-        attachment.isAnimatedImage = isAnimated
+        // Never re-encode animated images (i.e. GIFs) as JPEGs.
         if isAnimated {
             guard dataSource.dataLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
                 throw .fileSizeTooLarge
             }
 
-            // Never re-encode animated images (i.e. GIFs) as JPEGs.
             if dataUTI == UTType.png.identifier {
-                do {
-                    return try attachment.removingImageMetadata()
-                } catch {
-                    Logger.warn("Failed to remove metadata from animated PNG. Error: \(error)")
+                let strippedData = try Self.removeImageMetadata(fromPngData: dataSource.data)
+                guard let strippedDataSource = DataSourceValue(strippedData, utiType: dataUTI) else {
                     throw .couldNotRemoveMetadata
                 }
+                newDataSource = strippedDataSource
+                newDataUTI = dataUTI
             } else {
-                return attachment
+                newDataSource = dataSource
+                newDataUTI = dataUTI
             }
         } else {
             if
@@ -691,19 +681,29 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 dataUTI: dataUTI,
                 imageMetadata: imageMetadata,
             )
-            if isOriginalValid {
-                do {
-                    return try attachment.removingImageMetadata()
-                } catch {}
-            }
 
-            return try convertAndCompressImage(
-                toImageQuality: .maximumForCurrentAppContext,
-                dataSource: dataSource,
-                attachment: attachment,
-                imageMetadata: imageMetadata,
-            )
+            // If the original is valid and we can remove the metadata, go that route.
+            if isOriginalValid, let strippedData = try? Self.removeImageMetadata(fromData: dataSource.data, dataUti: dataUTI) {
+                guard let strippedDataSource = DataSourceValue(strippedData, utiType: dataUTI) else {
+                    throw .couldNotRemoveMetadata
+                }
+                newDataSource = strippedDataSource
+                newDataUTI = dataUTI
+            } else {
+                // Otherwise, resize & convert to a PNG or JPG before previewing it.
+                let containerType: ContainerType
+                (newDataSource, containerType) = try convertAndCompressImage(
+                    toImageQuality: .maximumForCurrentAppContext,
+                    dataSource: dataSource,
+                    imageMetadata: imageMetadata,
+                )
+                newDataUTI = containerType.dataType.identifier
+            }
         }
+        let result = SignalAttachment(dataSource: newDataSource, dataUTI: newDataUTI)
+        result.isBorderless = canBeBorderless && imageMetadata.hasStickerLikeProperties
+        result.isAnimatedImage = isAnimated
+        return result
     }
 
     // If the proposed attachment already conforms to the
@@ -728,19 +728,40 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return true
     }
 
+    enum ContainerType {
+        case jpg
+        case png
+
+        var dataType: UTType {
+            switch self {
+            case .jpg: UTType.jpeg
+            case .png: UTType.png
+            }
+        }
+
+        var mimeType: String {
+            self.dataType.preferredMIMEType!
+        }
+
+        var fileExtension: String {
+            switch self {
+            case .jpg: "jpg"
+            case .png: "png"
+            }
+        }
+    }
+
     static func convertAndCompressImage(
         toImageQuality imageQuality: ImageQualityLevel,
         dataSource: DataSource,
-        attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SignalAttachment {
+    ) throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType) {
         var nextImageUploadQuality: ImageQualityTier? = imageQuality.startingTier
         while let imageUploadQuality = nextImageUploadQuality {
             let result = try convertAndCompressImageAttempt(
                 toImageQuality: imageQuality,
                 imageUploadQuality: imageUploadQuality,
                 dataSource: dataSource,
-                attachment: attachment,
                 imageMetadata: imageMetadata,
             )
             if let result {
@@ -757,10 +778,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
         toImageQuality imageQuality: ImageQualityLevel,
         imageUploadQuality: ImageQualityTier,
         dataSource: DataSource,
-        attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SignalAttachment? {
-        return try autoreleasepool { () throws(SignalAttachmentError) -> SignalAttachment? in
+    ) throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? {
+        return try autoreleasepool { () throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? in
             let maxSize = imageUploadQuality.maxEdgeSize
             let pixelSize = imageMetadata.pixelSize
             var imageProperties = [CFString: Any]()
@@ -813,25 +833,22 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // Write to disk and convert to file based data source,
             // so we can keep the image out of memory.
 
-            let dataFileExtension: String
-            let dataType: UTType
+            let containerType: ContainerType
 
             // We convert everything that's not sticker-like to jpg, because
             // often images with alpha channels don't actually have any
             // transparent pixels (all screenshots fall into this bucket)
-            // and there is not a simple, performant way, to check if there
+            // and there is not a simple, performant way to check if there
             // are any transparent pixels in an image.
             if imageMetadata.hasStickerLikeProperties {
-                dataFileExtension = "png"
-                dataType = .png
+                containerType = .png
             } else {
-                dataFileExtension = "jpg"
-                dataType = .jpeg
+                containerType = .jpg
                 imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
             }
 
-            let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
-            guard let destination = CGImageDestinationCreateWithURL(tempFileUrl as CFURL, dataType.identifier as CFString, 1, nil) else {
+            let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: containerType.fileExtension)
+            guard let destination = CGImageDestinationCreateWithURL(tempFileUrl as CFURL, containerType.dataType.identifier as CFString, 1, nil) else {
                 owsFailDebug("Failed to create CGImageDestination for attachment")
                 throw .couldNotConvertImage
             }
@@ -841,7 +858,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 throw .couldNotConvertImage
             }
 
-            let outputDataSource: DataSource
+            let outputDataSource: DataSourcePath
             do {
                 outputDataSource = try DataSourcePath(fileUrl: tempFileUrl, shouldDeleteOnDeallocation: false)
             } catch {
@@ -853,15 +870,14 @@ public class SignalAttachment: CustomDebugStringConvertible {
             let outputFilename: String?
             if let sourceFilename = dataSource.sourceFilename {
                 let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
-                outputFilename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(dataFileExtension) ?? sourceFilenameWithoutExtension
+                outputFilename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(containerType.fileExtension) ?? sourceFilenameWithoutExtension
             } else {
                 outputFilename = nil
             }
             outputDataSource.sourceFilename = outputFilename
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= OWSMediaUtils.kMaxFileSizeImage {
-                let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
-                return recompressedAttachment
+                return (dataSource: outputDataSource, containerType: containerType)
             }
 
             return nil
@@ -920,10 +936,18 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return Set(asBytes)
     }()
 
+    private static func removeImageMetadata(fromData dataValue: Data, dataUti: String) throws(SignalAttachmentError) -> Data {
+        if dataUti == UTType.png.identifier {
+            return try self.removeImageMetadata(fromPngData: dataValue)
+        } else {
+            return try self.removeImageMetadata(fromNonPngData: dataValue)
+        }
+    }
+
     /// Remove nonessential chunks from PNG data.
     /// - Returns: Cleaned PNG data.
     /// - Throws: `SignalAttachmentError.couldNotRemoveMetadata` if the PNG parser fails.
-    private static func removeMetadata(fromPng pngData: Data) throws(SignalAttachmentError) -> Data {
+    private static func removeImageMetadata(fromPngData pngData: Data) throws(SignalAttachmentError) -> Data {
         do {
             let chunker = try PngChunker(source: DataImageSource(pngData))
             var result = PngChunker.pngSignature
@@ -939,18 +963,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
         }
     }
 
-    private func removingImageMetadata() throws(SignalAttachmentError) -> SignalAttachment {
-        owsAssertDebug(isImage)
-
-        if dataUTI == UTType.png.identifier {
-            let cleanedData = try Self.removeMetadata(fromPng: dataSource.data)
-            guard let dataSource = DataSourceValue(cleanedData, utiType: dataUTI) else {
-                throw .couldNotRemoveMetadata
-            }
-            return replacingDataSource(with: dataSource)
-        }
-
-        guard let source = CGImageSourceCreateWithData(dataSource.data as CFData, nil) else {
+    private static func removeImageMetadata(fromNonPngData dataValue: Data) throws(SignalAttachmentError) -> Data {
+        guard let source = CGImageSourceCreateWithData(dataValue as CFData, nil) else {
             throw .missingData
         }
 
@@ -1001,11 +1015,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             throw .couldNotRemoveMetadata
         }
 
-        guard let dataSource = DataSourceValue(mutableData as Data, utiType: dataUTI) else {
-            throw .couldNotRemoveMetadata
-        }
-
-        return self.replacingDataSource(with: dataSource)
+        return mutableData as Data
     }
 
     // MARK: Video Attachments

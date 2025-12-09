@@ -59,17 +59,16 @@ public struct SendableAttachment {
                 imageMetadata: imageMetadata,
             )
             if !isValidOriginal {
-                let compressedAttachment = try SignalAttachment.convertAndCompressImage(
+                let (dataSource, containerType) = try SignalAttachment.convertAndCompressImage(
                     toImageQuality: imageQuality,
                     dataSource: dataSource,
-                    attachment: previewableAttachment.rawValue,
                     imageMetadata: imageMetadata,
                 )
                 return SendableAttachment(
-                    dataSource: compressedAttachment.dataSource,
-                    dataUTI: compressedAttachment.dataUTI,
-                    mimeType: compressedAttachment.mimeType,
-                    renderingFlag: compressedAttachment.renderingFlag,
+                    dataSource: dataSource,
+                    dataUTI: containerType.dataType.identifier,
+                    mimeType: containerType.mimeType,
+                    renderingFlag: previewableAttachment.renderingFlag,
                 )
             }
         }
