@@ -404,6 +404,13 @@ public final class MessageReceiver {
                     }
                 }
 
+                if dataMessage.pinMessage != nil || dataMessage.unpinMessage != nil {
+                    guard BuildFlags.PinnedMessages.receive else {
+                        Logger.warn("Pinned messages are not supported on this device")
+                        return
+                    }
+                }
+
                 if dataMessage.hasProfileKey {
                     if let groupId {
                         SSKEnvironment.shared.profileManagerRef.addGroupId(
@@ -540,25 +547,56 @@ public final class MessageReceiver {
                         return
                     }
                 } else if let pollVote = dataMessage.pollVote {
-                       guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                           owsFailDebug("Missing local identifiers!")
-                           return
-                       }
-                       do {
-                           guard let (targetMessage, _) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
-                                voteAuthor: localIdentifiers.aci,
-                                pollVoteProto: pollVote,
-                                transaction: tx
-                           ) else {
-                               Logger.error("error processing poll vote!")
-                               return
-                           }
+                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+                        owsFailDebug("Missing local identifiers!")
+                        return
+                    }
+                    do {
+                        guard let (targetMessage, _) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
+                            voteAuthor: localIdentifiers.aci,
+                            pollVoteProto: pollVote,
+                            transaction: tx
+                        ) else {
+                            Logger.error("error processing poll vote!")
+                            return
+                        }
 
-                            SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
-                       } catch {
-                           Logger.error("Failed to vote in poll \(error)")
-                           return
-                       }
+                        SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                    } catch {
+                        Logger.error("Failed to vote in poll \(error)")
+                        return
+                    }
+                } else if let pinMessage = dataMessage.pinMessage {
+                    guard let thread = transcript.threadForDataMessage else {
+                        owsFailDebug("Could not process pin message from sync transcript.")
+                        return
+                    }
+                    do {
+                         let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
+                             pinMessageProto: pinMessage,
+                             pinAuthor: localIdentifiers.aci,
+                             thread: thread,
+                             timestamp: dataMessage.timestamp,
+                             expireTimer: dataMessage.expireTimer,
+                             expireTimerVersion: dataMessage.expireTimerVersion,
+                             transaction: tx
+                         )
+                         SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                     } catch {
+                         owsFailDebug("Could not pin message \(error)")
+                         return
+                     }
+                } else if let unpinMessage = dataMessage.unpinMessage {
+                     do {
+                         let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.unpinMessage(
+                             unpinMessageProto: unpinMessage,
+                             transaction: tx
+                         )
+
+                         SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                     } catch {
+                         owsFailDebug("Could not unpin message \(error)")
+                     }
                 } else {
                     guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                         owsFailDebug("Missing local identifiers!")
@@ -1319,14 +1357,16 @@ public final class MessageReceiver {
 
         if BuildFlags.PinnedMessages.receive,
            thread.canUserEditPinnedMessages(aci: envelope.sourceAci) {
-            if let pinMessage = dataMessage.pinMessage,
-               let threadId = thread.grdbId?.int64Value
+            if let pinMessage = dataMessage.pinMessage
             {
                 do {
                     let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
                         pinMessageProto: pinMessage,
-                        threadId: threadId,
-                        timestamp: Int64(dataMessage.timestamp),
+                        pinAuthor: envelope.sourceAci,
+                        thread: thread,
+                        timestamp: dataMessage.timestamp,
+                        expireTimer: dataMessage.expireTimer,
+                        expireTimerVersion: dataMessage.expireTimerVersion,
                         transaction: tx
                     )
 

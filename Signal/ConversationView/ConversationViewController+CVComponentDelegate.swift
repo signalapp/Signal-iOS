@@ -1371,6 +1371,14 @@ extension ConversationViewController: CVComponentDelegate {
             Logger.error("Unable to update local poll state with votes: \(error)")
         }
     }
+
+    public func didTapViewPinnedMessage(pinnedMessageUniqueId: String) {
+        ensureInteractionLoadedThenScrollToInteraction(
+            pinnedMessageUniqueId,
+            alignment: .centerIfNotEntirelyOnScreen,
+            isAnimated: true
+        )
+    }
 }
 
 // MARK: - OWSNavigationChildController

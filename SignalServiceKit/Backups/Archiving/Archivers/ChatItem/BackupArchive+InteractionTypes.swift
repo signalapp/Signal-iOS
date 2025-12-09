@@ -333,6 +333,9 @@ extension BackupArchive {
         /// own stories; these replies would go into the Note To Self thread.
         /// We just drop these on export as they're meant to be impossible.
         case directStoryReplyInNoteToSelf
+
+        // TODO: remove once pinned messages are implemented in backups
+        case pinnedMessage
     }
 
     enum ArchiveInteractionResult<Component> {

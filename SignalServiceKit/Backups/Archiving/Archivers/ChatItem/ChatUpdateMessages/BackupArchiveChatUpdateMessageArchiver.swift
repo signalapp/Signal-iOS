@@ -203,6 +203,10 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
                 threadInfo: threadInfo,
                 context: context
             )
+
+            // TODO: replace once pinned messages are in backups
+        case .typePinnedMessage:
+            return .skippableInteraction(.pinnedMessage)
         }
     }
 

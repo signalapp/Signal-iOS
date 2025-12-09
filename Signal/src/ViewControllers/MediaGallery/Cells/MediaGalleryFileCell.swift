@@ -522,4 +522,6 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapViewPoll(pollInteractionUniqueId: String) {}
 
     func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool) {}
+
+    func didTapViewPinnedMessage(pinnedMessageUniqueId: String) {}
 }

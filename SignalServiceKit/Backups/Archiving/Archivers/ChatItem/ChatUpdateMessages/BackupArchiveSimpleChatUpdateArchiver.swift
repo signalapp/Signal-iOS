@@ -75,7 +75,8 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                 .threadMerge,
                 .sessionSwitchover,
                 .learnedProfileName,
-                .typeEndPoll:
+                .typeEndPoll,
+                .typePinnedMessage:
             // Non-simple chat update types
             return .completeFailure(.fatalArchiveError(
                 .developerError(OWSAssertionError("Unexpected info message type: \(infoMessage.messageType)"))

@@ -891,6 +891,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.threadCompact)
             case .typeEndPoll:
                 return Theme.iconImage(.poll)
+            case .typePinnedMessage:
+                return Theme.iconImage(.pin)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1357,6 +1359,15 @@ extension CVComponentSystemMessage {
             return nil
         case .unblockedGroup:
             return nil
+        case .typePinnedMessage:
+            guard let pinnedMessageUniqueId = infoMessage.pinnedMessageUniqueId(transaction: transaction) else {
+                return nil
+            }
+            return CVMessageAction(
+                title: OWSLocalizedString("BUTTON_VIEW", comment: "Label for the 'view' button."),
+                accessibilityIdentifier: "view_button",
+                action: .didTapViewPinnedMessage(pinnedMessageUniqueId: pinnedMessageUniqueId)
+            )
         case .typeEndPoll:
             guard let pollInteractionUniqueId = infoMessage.pollInteractionUniqueId(transaction: transaction) else {
                 return nil

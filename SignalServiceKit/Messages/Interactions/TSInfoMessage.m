@@ -37,6 +37,7 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeL
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName
     = @"InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyEndPoll = @"InfoMessageUserInfoKeyEndPoll";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyPinnedMessage = @"InfoMessageUserInfoKeyPinnedMessage";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -353,6 +354,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageTypeEndPoll: {
             return [self endPollDescriptionWithTransaction:transaction];
         }
+        case TSInfoMessageTypePinnedMessage:
+            return [self pinnedMessageDescriptionWithTransaction:transaction];
     }
 
     OWSFailDebug(@"Unknown info message type");

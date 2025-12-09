@@ -55,6 +55,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     /// - SeeAlso: ``TSInfoMessageTypeLocalUserEndedSession``
     TSInfoMessageTypeRemoteUserEndedSession,
     TSInfoMessageTypeEndPoll,
+    TSInfoMessageTypePinnedMessage,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
@@ -78,6 +79,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyEndPoll;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPinnedMessage;
 
 @property (nonatomic, readonly) TSInfoMessageType messageType;
 @property (nonatomic, readonly, nullable) NSString *customMessage;

@@ -59,8 +59,11 @@ public class PinnedMessageManager {
 
     public func pinMessage(
         pinMessageProto: SSKProtoDataMessagePinMessage,
-        threadId: Int64,
-        timestamp: Int64,
+        pinAuthor: Aci,
+        thread: TSThread,
+        timestamp: UInt64,
+        expireTimer: UInt32?,
+        expireTimerVersion: UInt32?,
         transaction: DBWriteTransaction
     ) throws -> TSInteraction {
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
@@ -83,11 +86,15 @@ public class PinnedMessageManager {
 
         var expiresAt: Int64?
         if pinMessageProto.hasPinDurationSeconds {
-            expiresAt = timestamp + Int64(pinMessageProto.pinDurationSeconds)
+            expiresAt = Int64(timestamp) + Int64(pinMessageProto.pinDurationSeconds)
         } else if pinMessageProto.hasPinDurationForever {
             // expiresAt should stay nil
         } else {
             throw OWSAssertionError("Pin message has no duration")
+        }
+
+        guard let threadId = thread.sqliteRowId else {
+            throw OWSAssertionError("threadId not found")
         }
 
         pruneOldestPinnedMessagesIfNecessary(
@@ -103,8 +110,21 @@ public class PinnedMessageManager {
                 tx: transaction
             )
         }
+
+        let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
+
+        insertInfoMessageForPinnedMessage(
+            timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+            thread: thread,
+            targetMessageTimestamp: pinMessageProto.targetSentTimestamp,
+            targetMessageAuthor: targetAuthorAci,
+            pinAuthor: pinAuthor,
+            expireTimer: dmConfig.durationSeconds,
+            expireTimerVersion: dmConfig.timerVersion,
+            tx: transaction
+        )
+
         return targetMessage
-        // TODO: insert info message.
     }
 
     public func unpinMessage(
@@ -203,11 +223,11 @@ public class PinnedMessageManager {
             timestamp: targetTimestamp,
             incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
             transaction: tx
-        ), let threadId = threadStore.fetchThread(
+        ), let thread = threadStore.fetchThread(
             uniqueId: targetMessage.uniqueThreadId,
             tx: tx
-        )?.sqliteRowId,
-            let interactionId = targetMessage.sqliteRowId
+        ), let threadId = thread.sqliteRowId,
+           let interactionId = targetMessage.sqliteRowId
         else {
             return
         }
@@ -243,6 +263,19 @@ public class PinnedMessageManager {
         db.touch(
             interaction: targetMessage,
             shouldReindex: false,
+            tx: tx
+        )
+
+        let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
+
+        insertInfoMessageForPinnedMessage(
+            timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+            thread: thread,
+            targetMessageTimestamp: targetTimestamp,
+            targetMessageAuthor: targetAuthorAci,
+            pinAuthor: localAci,
+            expireTimer: dmConfig.durationSeconds,
+            expireTimerVersion: dmConfig.timerVersion,
             tx: tx
         )
     }
@@ -308,5 +341,40 @@ public class PinnedMessageManager {
             targetMessageAuthorAciBinary: authorAci,
             messageExpiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
             tx: tx)
+    }
+
+    public func insertInfoMessageForPinnedMessage(
+        timestamp: UInt64,
+        thread: TSThread,
+        targetMessageTimestamp: UInt64,
+        targetMessageAuthor: Aci,
+        pinAuthor: Aci,
+        expireTimer: UInt32?,
+        expireTimerVersion: UInt32?,
+        tx: DBWriteTransaction
+    ) {
+        var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
+        userInfoForNewMessage[.pinnedMessage] = PersistablePinnedMessageItem(
+            pinnedMessageAuthorAci: pinAuthor,
+            originalMessageAuthorAci: targetMessageAuthor,
+            timestamp: Int64(targetMessageTimestamp)
+        )
+
+        var timerVersion: NSNumber?
+        if let expireTimerVersion {
+            timerVersion = NSNumber(value: expireTimerVersion)
+        }
+
+        let infoMessage = TSInfoMessage(
+            thread: thread,
+            timestamp: timestamp,
+            serverGuid: nil,
+            messageType: .typePinnedMessage,
+            expireTimerVersion: timerVersion,
+            expiresInSeconds: expireTimer ?? 0,
+            infoMessageUserInfo: userInfoForNewMessage
+        )
+
+        infoMessage.anyInsert(transaction: tx)
     }
 }
