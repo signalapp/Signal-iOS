@@ -313,7 +313,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             return .failure(archiveFrameError)
         }
 
-        accountSettings.showSealedSenderIndicators = udManager.shouldAllowUnrestrictedAccessLocal(tx: context.tx)
+        accountSettings.allowSealedSenderFromAnyone = udManager.shouldAllowUnrestrictedAccessLocal(tx: context.tx)
         accountSettings.defaultSentMediaQuality = (imageQuality.resolvedQuality(tx: context.tx) == .high ? .high : .standard)
 
         var downloadSettings = BackupProto_AccountData.AutoDownloadSettings()
@@ -565,7 +565,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 return .failure(errors)
             }
 
-            udManager.setShouldAllowUnrestrictedAccessLocal(settings.showSealedSenderIndicators, tx: context.tx)
+            udManager.setShouldAllowUnrestrictedAccessLocal(settings.allowSealedSenderFromAnyone, tx: context.tx)
 
             switch settings.defaultSentMediaQuality {
             case .unknownQuality, .UNRECOGNIZED, .standard:

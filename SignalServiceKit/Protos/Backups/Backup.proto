@@ -129,7 +129,7 @@ message AccountData {
     bool optimizeOnDeviceStorage = 20;
     // See zkgroup for integer particular values. Unset if backups are not enabled.
     optional uint64 backupTier = 21;
-    bool showSealedSenderIndicators = 22;
+    reserved /* showSealedSenderIndicators */ 22;
     SentMediaQuality defaultSentMediaQuality = 23;
     AutoDownloadSettings autoDownloadSettings = 24;
     reserved /* wifiAutoDownloadSettings */ 25;
@@ -137,6 +137,7 @@ message AccountData {
     optional bool pinReminders = 27; // If unset, consider pin reminders to be enabled.
     AppTheme appTheme = 28;  // If unset, treat the same as "Unknown" case
     CallsUseLessDataSetting callsUseLessDataSetting = 29;  // If unset, treat the same as "Unknown" case
+    bool allowSealedSenderFromAnyone = 30;
   }
 
   message SubscriberData {

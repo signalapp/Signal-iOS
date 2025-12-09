@@ -820,11 +820,6 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     /// Clears the value of `backupTier`. Subsequent reads from it will return its default value.
     public mutating func clearBackupTier() {_uniqueStorage()._backupTier = nil}
 
-    public var showSealedSenderIndicators: Bool {
-      get {return _storage._showSealedSenderIndicators}
-      set {_uniqueStorage()._showSealedSenderIndicators = newValue}
-    }
-
     public var defaultSentMediaQuality: BackupProto_AccountData.SentMediaQuality {
       get {return _storage._defaultSentMediaQuality}
       set {_uniqueStorage()._defaultSentMediaQuality = newValue}
@@ -869,6 +864,11 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public var callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting {
       get {return _storage._callsUseLessDataSetting}
       set {_uniqueStorage()._callsUseLessDataSetting = newValue}
+    }
+
+    public var allowSealedSenderFromAnyone: Bool {
+      get {return _storage._allowSealedSenderFromAnyone}
+      set {_uniqueStorage()._allowSealedSenderFromAnyone = newValue}
     }
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -6853,7 +6853,7 @@ extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: Swift
 
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{1}showSealedSenderIndicators\0\u{1}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -6877,13 +6877,13 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _customChatColors: [BackupProto_ChatStyle.CustomChatColor] = []
     var _optimizeOnDeviceStorage: Bool = false
     var _backupTier: UInt64? = nil
-    var _showSealedSenderIndicators: Bool = false
     var _defaultSentMediaQuality: BackupProto_AccountData.SentMediaQuality = .unknownQuality
     var _autoDownloadSettings: BackupProto_AccountData.AutoDownloadSettings? = nil
     var _screenLockTimeoutMinutes: UInt32? = nil
     var _pinReminders: Bool? = nil
     var _appTheme: BackupProto_AccountData.AppTheme = .unknownAppTheme
     var _callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting = .unknownCallDataSetting
+    var _allowSealedSenderFromAnyone: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -6915,13 +6915,13 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _customChatColors = source._customChatColors
       _optimizeOnDeviceStorage = source._optimizeOnDeviceStorage
       _backupTier = source._backupTier
-      _showSealedSenderIndicators = source._showSealedSenderIndicators
       _defaultSentMediaQuality = source._defaultSentMediaQuality
       _autoDownloadSettings = source._autoDownloadSettings
       _screenLockTimeoutMinutes = source._screenLockTimeoutMinutes
       _pinReminders = source._pinReminders
       _appTheme = source._appTheme
       _callsUseLessDataSetting = source._callsUseLessDataSetting
+      _allowSealedSenderFromAnyone = source._allowSealedSenderFromAnyone
     }
   }
 
@@ -6961,13 +6961,13 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 19: try { try decoder.decodeRepeatedMessageField(value: &_storage._customChatColors) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._optimizeOnDeviceStorage) }()
         case 21: try { try decoder.decodeSingularUInt64Field(value: &_storage._backupTier) }()
-        case 22: try { try decoder.decodeSingularBoolField(value: &_storage._showSealedSenderIndicators) }()
         case 23: try { try decoder.decodeSingularEnumField(value: &_storage._defaultSentMediaQuality) }()
         case 24: try { try decoder.decodeSingularMessageField(value: &_storage._autoDownloadSettings) }()
         case 26: try { try decoder.decodeSingularUInt32Field(value: &_storage._screenLockTimeoutMinutes) }()
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._pinReminders) }()
         case 28: try { try decoder.decodeSingularEnumField(value: &_storage._appTheme) }()
         case 29: try { try decoder.decodeSingularEnumField(value: &_storage._callsUseLessDataSetting) }()
+        case 30: try { try decoder.decodeSingularBoolField(value: &_storage._allowSealedSenderFromAnyone) }()
         default: break
         }
       }
@@ -7043,9 +7043,6 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       try { if let v = _storage._backupTier {
         try visitor.visitSingularUInt64Field(value: v, fieldNumber: 21)
       } }()
-      if _storage._showSealedSenderIndicators != false {
-        try visitor.visitSingularBoolField(value: _storage._showSealedSenderIndicators, fieldNumber: 22)
-      }
       if _storage._defaultSentMediaQuality != .unknownQuality {
         try visitor.visitSingularEnumField(value: _storage._defaultSentMediaQuality, fieldNumber: 23)
       }
@@ -7063,6 +7060,9 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       }
       if _storage._callsUseLessDataSetting != .unknownCallDataSetting {
         try visitor.visitSingularEnumField(value: _storage._callsUseLessDataSetting, fieldNumber: 29)
+      }
+      if _storage._allowSealedSenderFromAnyone != false {
+        try visitor.visitSingularBoolField(value: _storage._allowSealedSenderFromAnyone, fieldNumber: 30)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -7094,13 +7094,13 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._customChatColors != rhs_storage._customChatColors {return false}
         if _storage._optimizeOnDeviceStorage != rhs_storage._optimizeOnDeviceStorage {return false}
         if _storage._backupTier != rhs_storage._backupTier {return false}
-        if _storage._showSealedSenderIndicators != rhs_storage._showSealedSenderIndicators {return false}
         if _storage._defaultSentMediaQuality != rhs_storage._defaultSentMediaQuality {return false}
         if _storage._autoDownloadSettings != rhs_storage._autoDownloadSettings {return false}
         if _storage._screenLockTimeoutMinutes != rhs_storage._screenLockTimeoutMinutes {return false}
         if _storage._pinReminders != rhs_storage._pinReminders {return false}
         if _storage._appTheme != rhs_storage._appTheme {return false}
         if _storage._callsUseLessDataSetting != rhs_storage._callsUseLessDataSetting {return false}
+        if _storage._allowSealedSenderFromAnyone != rhs_storage._allowSealedSenderFromAnyone {return false}
         return true
       }
       if !storagesAreEqual {return false}
