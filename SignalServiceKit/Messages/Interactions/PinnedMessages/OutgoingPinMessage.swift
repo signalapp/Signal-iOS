@@ -63,6 +63,13 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         with thread: TSThread,
         transaction: DBReadTransaction
     ) -> SSKProtoDataMessageBuilder? {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci,
+              thread.canUserEditPinnedMessages(aci: localAci) else
+        {
+            Logger.error("Local user no longer has permission to change pin status")
+            return nil
+        }
+
         guard let dataMessageBuilder = super.dataMessageBuilder(
             with: thread,
             transaction: transaction

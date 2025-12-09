@@ -10,7 +10,8 @@ import SignalServiceKit
 class PinDisappearingMessageViewController: HeroSheetViewController {
     init(
         pinnedMessageManager: PinnedMessageManager,
-        db: DB = DependenciesBridge.shared.db
+        db: DB,
+        completion: @escaping () -> Void
     ) {
         super.init(
             hero: .image(.timer),
@@ -26,6 +27,7 @@ class PinDisappearingMessageViewController: HeroSheetViewController {
                 title: CommonStrings.okButton,
                 action: { sheet in
                     sheet.dismiss(animated: true)
+                    completion()
                 }
             )),
             secondary: .button(HeroSheetViewController.Button(
@@ -36,6 +38,7 @@ class PinDisappearingMessageViewController: HeroSheetViewController {
                     db.write { tx in
                         pinnedMessageManager.stopShowingDisappearingMessageWarning(tx: tx)
                     }
+                    completion()
                 }),
             )),
         )

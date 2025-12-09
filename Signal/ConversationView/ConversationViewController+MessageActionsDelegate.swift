@@ -4,7 +4,7 @@
 //
 
 import AVFAudio
-import SignalServiceKit
+public import SignalServiceKit
 import SignalUI
 
 extension ConversationViewController: MessageActionsDelegate {
@@ -356,7 +356,14 @@ extension ConversationViewController: MessageActionsDelegate {
 
             if shouldShowDMWarning {
                 self.present(
-                    PinDisappearingMessageViewController(pinnedMessageManager: pinnedMessageManager),
+                    PinDisappearingMessageViewController(
+                        pinnedMessageManager: pinnedMessageManager,
+                        db: DependenciesBridge.shared.db,
+                        completion: {
+                            Task {
+                                await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                            }
+                        }),
                     animated: true
                 ) {
                     Task {
@@ -397,7 +404,7 @@ extension ConversationViewController: MessageActionsDelegate {
         }
     }
 
-    private func handleActionUnpin(message: TSMessage) {
+    public func handleActionUnpin(message: TSMessage) {
         let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
         let db = DependenciesBridge.shared.db
 

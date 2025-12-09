@@ -266,8 +266,11 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_UNPIN",
                         comment: "Action menu item to unpin a message"
-                    ), image: .pinSlash) { _ in
-                    // TODO: implement!
+                    ), image: .pinSlash) { [weak self] _ in
+                        guard let self else { return }
+                        if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
+                            handleActionUnpin(message: threadViewModel.pinnedMessages[pinnedMessageIndex])
+                        }
                 },
                 UIAction(
                     title: OWSLocalizedString(
