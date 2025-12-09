@@ -9,14 +9,14 @@ import SDWebImage
 
 class MediaMessageView: UIView, AudioPlayerDelegate {
 
-    private let attachment: SignalAttachment
+    private let attachment: PreviewableAttachment
 
     private var audioPlayer: AudioPlayer?
     private lazy var audioPlayButton = UIButton()
 
     // MARK: Initializers
 
-    init(attachment: SignalAttachment, contentMode: UIView.ContentMode = .scaleAspectFit) {
+    init(attachment: PreviewableAttachment, contentMode: UIView.ContentMode = .scaleAspectFit) {
         self.attachment = attachment
 
         super.init(frame: CGRect.zero)
@@ -54,9 +54,9 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func recreateViews() {
         subviews.forEach { $0.removeFromSuperview() }
 
-        if attachment.isLoopingVideo {
+        if attachment.rawValue.isLoopingVideo {
             createLoopingVideoPreview()
-        } else if attachment.isAnimatedImage {
+        } else if attachment.rawValue.isAnimatedImage {
             createAnimatedPreview()
         } else if attachment.isImage {
             createImagePreview()
@@ -119,7 +119,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createLoopingVideoPreview() {
         guard
             let video = LoopingVideo(attachment),
-            let previewImage = attachment.videoPreview()
+            let previewImage = attachment.rawValue.videoPreview()
         else {
             createGenericPreview()
             return
@@ -137,7 +137,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createAnimatedPreview() {
         guard
             attachment.isImage,
-            let dataUrl = attachment.dataSource.dataUrl,
+            let dataUrl = attachment.rawValue.dataSource.dataUrl,
             let image = SDAnimatedImage(contentsOfFile: dataUrl.path),
             image.size.width > 0 && image.size.height > 0
         else {
@@ -183,7 +183,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createImagePreview() {
         guard
             attachment.isImage,
-            let image = attachment.image(),
+            let image = attachment.rawValue.image(),
             image.size.width > 0 && image.size.height > 0
         else {
             createGenericPreview()
@@ -204,7 +204,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createVideoPreview() {
         guard
             attachment.isVideo,
-            let image = attachment.videoPreview(),
+            let image = attachment.rawValue.videoPreview(),
             image.size.width > 0 && image.size.height > 0
         else {
             createGenericPreview()
@@ -271,7 +271,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func formattedFileExtension() -> String? {
-        guard let fileExtension = attachment.fileExtension else {
+        guard let fileExtension = attachment.rawValue.fileExtension else {
             return nil
         }
 
@@ -281,7 +281,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func formattedFileName() -> String? {
-        guard let sourceFilename = attachment.dataSource.sourceFilename?.filterFilename() else {
+        guard let sourceFilename = attachment.rawValue.dataSource.sourceFilename?.filterFilename() else {
             return nil
         }
         let filename = sourceFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -307,7 +307,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private func createFileSizeLabel() -> UIView {
         let label = UILabel()
-        let fileSize = attachment.dataSource.dataLength
+        let fileSize = attachment.rawValue.dataSource.dataLength
         label.text = String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             OWSFormat.localizedFileSizeString(from: Int64(fileSize)))

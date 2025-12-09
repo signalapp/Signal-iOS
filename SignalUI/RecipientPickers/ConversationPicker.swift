@@ -32,7 +32,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
-    private let attachments: [SignalAttachment]
+    private let attachments: [SendableAttachment]
     private let textAttachment: UnsentTextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
@@ -75,7 +75,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public init(
         selection: ConversationPickerSelection,
-        attachments: [SignalAttachment] = [],
+        attachments: [SendableAttachment] = [],
         textAttachment: UnsentTextAttachment? = nil,
         overrideTitle: String? = nil,
     ) {
@@ -87,8 +87,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             .lazy
             .compactMap { attachment in
                 guard
-                    attachment.isVideo,
-                    let url = attachment.dataSource.dataUrl
+                    attachment.rawValue.isVideo,
+                    let url = attachment.rawValue.dataSource.dataUrl
                 else {
                     return nil
                 }
@@ -685,19 +685,22 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private func addMediaPreview(
         to section: OWSTableSection,
-        attachments: [SignalAttachment]
+        attachments: [SendableAttachment]
     ) {
         guard let firstAttachment = attachments.first else {
             owsFailDebug("Cannot add media preview section without attachments")
             return
         }
 
-        guard let mediaPreview = makeMediaPreview(firstAttachment) else {
+        guard let mediaPreview = makeMediaPreview(PreviewableAttachment(rawValue: firstAttachment.rawValue)) else {
             return
         }
         let container = addPrimaryMediaPreviewView(mediaPreview, to: section)
 
-        if let secondAttachment = attachments[safe: 1], let secondMediaPreview = makeMediaPreview(secondAttachment) {
+        if
+            let secondAttachment = attachments.dropFirst().first,
+            let secondMediaPreview = makeMediaPreview(PreviewableAttachment(rawValue: secondAttachment.rawValue))
+        {
             let mediaPreviewBorder = UIView()
             mediaPreviewBorder.backgroundColor = self.tableBackgroundColor
             mediaPreviewBorder.layer.masksToBounds = true
@@ -718,7 +721,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    private func makeMediaPreview(_ attachment: SignalAttachment) -> UIView? {
+    private func makeMediaPreview(_ attachment: PreviewableAttachment) -> UIView? {
         if attachment.isVideo || attachment.isImage {
             let mediaPreview = MediaMessageView(attachment: attachment, contentMode: .scaleAspectFill)
             mediaPreview.layer.masksToBounds = true

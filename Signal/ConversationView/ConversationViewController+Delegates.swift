@@ -242,7 +242,7 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         })
     }
 
-    func didPasteAttachments(_ attachments: [SignalAttachment]?) {
+    func didPasteAttachments(_ attachments: [PreviewableAttachment]?) {
         AssertIsOnMainThread()
 
         guard let attachments, attachments.count > 0 else {
@@ -252,10 +252,11 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
 
         // If the thing we pasted is sticker-like, send it immediately
         // and render it borderless.
-        if attachments.count == 1, let a = attachments.first, a.isBorderless {
+        if attachments.count == 1, let a = attachments.first, a.rawValue.isBorderless {
+            let sendableAttachment = SendableAttachment(rawValue: a.rawValue)
             Task {
                 await self.sendAttachments(
-                    ApprovedAttachments(nonViewOnceAttachments: [a]),
+                    ApprovedAttachments(nonViewOnceAttachments: [sendableAttachment]),
                     messageBody: nil,
                     from: self,
                 )

@@ -13,19 +13,19 @@ public import SignalServiceKit
 
 public struct ApprovedAttachments {
     public let isViewOnce: Bool
-    public let attachments: [SignalAttachment]
+    public let attachments: [SendableAttachment]
 
-    private init(isViewOnce: Bool, attachments: [SignalAttachment]) {
+    private init(isViewOnce: Bool, attachments: [SendableAttachment]) {
         owsPrecondition(!isViewOnce || attachments.count <= 1)
         self.isViewOnce = isViewOnce
         self.attachments = attachments
     }
 
-    public init(viewOnceAttachment: SignalAttachment) {
+    public init(viewOnceAttachment: SendableAttachment) {
         self.init(isViewOnce: true, attachments: [viewOnceAttachment])
     }
 
-    public init(nonViewOnceAttachments: [SignalAttachment]) {
+    public init(nonViewOnceAttachments: [SendableAttachment]) {
         self.init(isViewOnce: false, attachments: nonViewOnceAttachments)
     }
 
@@ -188,7 +188,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     public class func wrappedInNavController(
-        attachments: [SignalAttachment],
+        attachments: [PreviewableAttachment],
         initialMessageBody: MessageBody?,
         hasQuotedReplyDraft: Bool,
         approvalDelegate: AttachmentApprovalViewControllerDelegate,
@@ -612,7 +612,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         page.loadViewIfNeeded()
         updateContentLayoutMargins(for: page)
 
-        Logger.debug("currentItem for attachment: \(item.attachment.debugDescription)")
         setViewControllers([page], direction: direction, animated: animated) { _ in
             previousPage?.zoomOut(animated: false)
         }
@@ -670,44 +669,42 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return attachmentApprovalItemCollection.attachmentApprovalItems
     }
 
-    private func prepareAttachments() async throws -> [SignalAttachment] {
-        let outputQualityLevel = self.outputQualityLevel
-        var results = [SignalAttachment]()
+    private func prepareAttachments() async throws -> [SendableAttachment] {
+        var results = [SendableAttachment]()
         for attachmentApprovalItem in attachmentApprovalItems {
             results.append(
-                try await self
-                    .prepareAttachment(attachmentApprovalItem: attachmentApprovalItem)
-                    .preparedForOutput(qualityLevel: outputQualityLevel)
+                try await self.prepareAttachment(attachmentApprovalItem: attachmentApprovalItem)
             )
         }
         return results
     }
 
     /// Returns a new SignalAttachment that reflects changes made in the editor.
-    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> SignalAttachment {
+    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> SendableAttachment {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
             return try await self.prepareImageAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 imageEditorModel: imageEditorModel,
+                outputQualityLevel: self.outputQualityLevel,
             )
         }
         if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
             return try await self.prepareVideoAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 videoEditorModel: videoEditorModel,
+                outputQualityLevel: self.outputQualityLevel,
             )
         }
         // No editor applies. Use original, un-edited attachment.
-        return attachmentApprovalItem.attachment
+        return try await attachmentApprovalItem.attachment.preparedForOutput(qualityLevel: outputQualityLevel)
     }
 
-    #if compiler(>=6.2)
     @concurrent
-    #endif
     private nonisolated func prepareImageAttachment(
         attachmentApprovalItem: AttachmentApprovalItem,
         imageEditorModel: ImageEditorModel,
-    ) async throws -> SignalAttachment {
+        outputQualityLevel: ImageQualityLevel,
+    ) async throws -> SendableAttachment {
         assert(imageEditorModel.isDirty())
 
         guard let dstImage = await imageEditorModel.renderOutput() else {
@@ -716,7 +713,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         var dataType = UTType.image
         guard let dstData: Data = {
-            let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
+            let isLossy: Bool = attachmentApprovalItem.attachment.rawValue.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
             if isLossy {
                 dataType = .jpeg
                 return dstImage.jpegData(compressionQuality: 0.9)
@@ -732,8 +729,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename()
-        if let sourceFilename = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename() {
+        var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
+        if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {
             if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
                 let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
                 filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
@@ -741,13 +738,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
+        return try await SignalAttachment
+            .imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
+            .preparedForOutput(qualityLevel: outputQualityLevel)
     }
 
     private func prepareVideoAttachment(
         attachmentApprovalItem: AttachmentApprovalItem,
         videoEditorModel: VideoEditorModel,
-    ) async throws -> SignalAttachment {
+        outputQualityLevel: ImageQualityLevel,
+    ) async throws -> SendableAttachment {
         assert(videoEditorModel.needsRender)
         let fileUrl = try await videoEditorModel.render()
         let fileExtension = fileUrl.pathExtension
@@ -756,14 +756,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         let dataSource = try DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
         // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename()
-        if let sourceFilename = attachmentApprovalItem.attachment.dataSource.sourceFilename?.filterFilename() {
+        var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
+        if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {
             let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
             filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
         }
         dataSource.sourceFilename = filename
 
-        return try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        return try await SignalAttachment
+            .videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
+            .preparedForOutput(qualityLevel: outputQualityLevel)
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
@@ -1447,15 +1449,15 @@ private extension SaveableAsset {
         self = .image(image)
     }
 
-    private init(attachment: SignalAttachment) throws {
+    private init(attachment: PreviewableAttachment) throws {
         if attachment.isImage {
-            guard let imageUrl = attachment.dataSource.dataUrl else {
+            guard let imageUrl = attachment.rawValue.dataSource.dataUrl else {
                 throw OWSAssertionError("imageUrl was unexpectedly nil")
             }
 
             self = .imageUrl(imageUrl)
         } else if attachment.isVideo {
-            guard let videoUrl = attachment.dataSource.dataUrl else {
+            guard let videoUrl = attachment.rawValue.dataSource.dataUrl else {
                 throw OWSAssertionError("videoUrl was unexpectedly nil")
             }
 

@@ -32,7 +32,7 @@ extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
 protocol CameraCaptureSessionDelegate: AnyObject {
 
     func cameraCaptureSessionDidStart(_ session: CameraCaptureSession)
-    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishProcessing attachment: SignalAttachment)
+    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishProcessing attachment: PreviewableAttachment)
     func cameraCaptureSession(_ session: CameraCaptureSession, didFailWith error: Error)
 
     // MARK: Video
@@ -836,7 +836,7 @@ class CameraCaptureSession: NSObject {
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
         )
-        delegate?.cameraCaptureSession(self, didFinishProcessing: attachment)
+        delegate?.cameraCaptureSession(self, didFinishProcessing: PreviewableAttachment(rawValue: attachment))
     }
 
     private func handleVideoCaptureError(_ error: Error) {
@@ -1003,7 +1003,7 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
                 delegate.cameraCaptureSession(self, didFailWith: error)
                 return
             }
-            delegate.cameraCaptureSession(self, didFinishProcessing: attachment)
+            delegate.cameraCaptureSession(self, didFinishProcessing: PreviewableAttachment(rawValue: attachment))
         }
     }
 }

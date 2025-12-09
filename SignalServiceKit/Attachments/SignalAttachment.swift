@@ -119,7 +119,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     }
 
     @concurrent
-    public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SignalAttachment {
+    public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SendableAttachment {
         // We only bother converting/compressing non-animated images
         if isImage, !isAnimatedImage {
             guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
@@ -140,7 +140,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 )
             }
         }
-        return self
+        return SendableAttachment(rawValue: self)
     }
 
     private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
@@ -481,7 +481,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     /// Returns an attachment from the pasteboard, or nil if no attachment
     /// can be found.
-    public class func attachmentsFromPasteboard() async throws(SignalAttachmentError) -> [SignalAttachment]? {
+    public class func attachmentsFromPasteboard() async throws(SignalAttachmentError) -> [PreviewableAttachment]? {
         guard
             UIPasteboard.general.numberOfItems >= 1,
             let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: nil)
@@ -489,7 +489,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             return nil
         }
 
-        var attachments = [SignalAttachment]()
+        var attachments = [PreviewableAttachment]()
         for (index, utiSet) in pasteboardUTITypes.enumerated() {
             let attachment = try await attachmentFromPasteboard(
                 pasteboardUTIs: utiSet,
@@ -503,7 +503,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             }
 
             if attachments.isEmpty {
-                if attachment.allowMultipleAttachments() == false {
+                if attachment.rawValue.allowMultipleAttachments() == false {
                     // If this is a non-visual-media attachment, we only allow 1 pasted item at a time.
                     return [attachment]
                 }
@@ -511,7 +511,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
             // Otherwise, continue with any visual media attachments, dropping
             // any non-visual-media ones based on the first pasteboard item.
-            if attachment.allowMultipleAttachments() {
+            if attachment.rawValue.allowMultipleAttachments() {
                 attachments.append(attachment)
             } else {
                 Logger.warn("Dropping non-visual media attachment in paste action")
@@ -527,8 +527,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 || MimeTypeUtil.isSupportedImageMimeType(self.mimeType))
     }
 
-    private class func attachmentFromPasteboard(pasteboardUTIs: [String], index: IndexSet, retrySinglePixelImages: Bool) async throws(SignalAttachmentError) -> SignalAttachment? {
-
+    private class func attachmentFromPasteboard(pasteboardUTIs: [String], index: IndexSet, retrySinglePixelImages: Bool) async throws(SignalAttachmentError) -> PreviewableAttachment? {
         var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTIs))
         guard pasteboardUTISet.count > 0 else {
             return nil
@@ -562,7 +561,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
                     return try await attachmentFromPasteboard(pasteboardUTIs: pasteboardUTIs, index: index, retrySinglePixelImages: false)
                 }
 
-                return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
+                let attachment = try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
+                return PreviewableAttachment(rawValue: attachment)
             }
         }
         for dataUTI in videoUTISet {
@@ -576,7 +576,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
                     return nil
                 }
 
-                return try? await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
+                // [15M] TODO: Don't ignore errors for pasteboard videos.
+                let attachment = try? await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
+                return attachment.map(PreviewableAttachment.init(rawValue:))
             }
         }
         for dataUTI in audioUTISet {
@@ -589,7 +591,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 guard let dataSource else {
                     throw .missingData
                 }
-                return try audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
+                let attachment = try audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
+                return PreviewableAttachment(rawValue: attachment)
             }
         }
 
@@ -602,10 +605,11 @@ public class SignalAttachment: CustomDebugStringConvertible {
         guard let dataSource else {
             throw .missingData
         }
-        return try genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        let attachment = try genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        return PreviewableAttachment(rawValue: attachment)
     }
 
-    public class func stickerAttachmentFromPasteboard() throws(SignalAttachmentError) -> SignalAttachment? {
+    public class func stickerAttachmentFromPasteboard() throws(SignalAttachmentError) -> PreviewableAttachment? {
         guard
             UIPasteboard.general.numberOfItems >= 1,
             let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: IndexSet(integer: 0))
@@ -640,14 +644,14 @@ public class SignalAttachment: CustomDebugStringConvertible {
                     owsFailDebug("treating non-sticker data as a sticker")
                     result.isBorderless = true
                 }
-                return result
+                return PreviewableAttachment(rawValue: result)
             }
         }
         return nil
     }
 
     /// Returns an attachment from the memoji.
-    public class func attachmentFromMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) throws(SignalAttachmentError) -> SignalAttachment {
+    public class func attachmentFromMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) throws(SignalAttachmentError) -> PreviewableAttachment {
         let dataUTI = filterDynamicUTITypes([memojiGlyph.contentType.identifier]).first
         guard let dataUTI else {
             throw .invalidFileFormat
@@ -656,7 +660,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
         guard let dataSource else {
             throw .missingData
         }
-        return try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
+        let attachment = try imageAttachment(dataSource: dataSource, dataUTI: dataUTI, canBeBorderless: true)
+        return PreviewableAttachment(rawValue: attachment)
     }
 
     private class func dataForPasteboardItem(dataUTI: String, index: IndexSet) -> Data? {
@@ -753,7 +758,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 dataSource: dataSource,
                 attachment: attachment,
                 imageMetadata: imageMetadata,
-            )
+            ).rawValue
         }
     }
 
@@ -784,7 +789,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
         dataSource: DataSource,
         attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SignalAttachment {
+    ) throws(SignalAttachmentError) -> SendableAttachment {
         var nextImageUploadQuality: ImageQualityTier? = imageQuality.startingTier
         while let imageUploadQuality = nextImageUploadQuality {
             let result = try convertAndCompressImageAttempt(
@@ -810,8 +815,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
         dataSource: DataSource,
         attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SignalAttachment? {
-        return try autoreleasepool { () throws(SignalAttachmentError) -> SignalAttachment? in
+    ) throws(SignalAttachmentError) -> SendableAttachment? {
+        return try autoreleasepool { () throws(SignalAttachmentError) -> SendableAttachment? in
             let maxSize = imageUploadQuality.maxEdgeSize
             let pixelSize = imageMetadata.pixelSize
             var imageProperties = [CFString: Any]()
@@ -912,7 +917,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= OWSMediaUtils.kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
-                return recompressedAttachment
+                return SendableAttachment(rawValue: recompressedAttachment)
             }
 
             return nil

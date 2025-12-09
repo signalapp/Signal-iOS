@@ -29,7 +29,7 @@ protocol PhotoCaptureViewControllerDelegate: AnyObject {
 
 protocol PhotoCaptureViewControllerDataSource: AnyObject {
     var numberOfMediaItems: Int { get }
-    func addMedia(attachment: SignalAttachment)
+    func addMedia(attachment: PreviewableAttachment)
 }
 
 class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController {
@@ -1428,7 +1428,7 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
         }
     }
 
-    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishProcessing attachment: SignalAttachment) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishProcessing attachment: PreviewableAttachment) {
         dataSource?.addMedia(attachment: attachment)
 
         updateDoneButtonAppearance()

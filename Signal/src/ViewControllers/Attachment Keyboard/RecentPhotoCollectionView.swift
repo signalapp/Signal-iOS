@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol RecentPhotosDelegate: AnyObject {
-    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
+    func didSelectRecentPhoto(asset: PHAsset, attachment: PreviewableAttachment)
 }
 
 class RecentPhotosCollectionView: UICollectionView {

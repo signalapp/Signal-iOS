@@ -42,6 +42,13 @@ private let nonPrintingCharacterSet = {
 // for example.
 private let unsafeFilenameCharacterSet: CharacterSet = [bidiLeftToRightOverride, bidiRightToLeftOverride]
 
+public struct FilteredFilename {
+    public let rawValue: String
+    public init(rawValue: String) {
+        self.rawValue = rawValue.filterFilename()
+    }
+}
+
 extension String {
 
     private func sanitized() -> String {

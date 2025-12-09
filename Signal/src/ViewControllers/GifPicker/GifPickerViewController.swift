@@ -31,7 +31,7 @@ class GifPickerNavigationViewController: OWSNavigationController {
 }
 
 extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
-    func gifPickerDidSelect(attachment: SignalAttachment) {
+    func gifPickerDidSelect(attachment: PreviewableAttachment) {
         AssertIsOnMainThread()
 
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
@@ -98,7 +98,7 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
 }
 
 protocol GifPickerViewControllerDelegate: AnyObject {
-    @MainActor func gifPickerDidSelect(attachment: SignalAttachment)
+    @MainActor func gifPickerDidSelect(attachment: PreviewableAttachment)
     @MainActor func gifPickerDidCancel()
 }
 
@@ -499,7 +499,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     @concurrent
-    private nonisolated func buildAttachment(forAsset asset: ProxiedContentAsset) async throws -> SignalAttachment {
+    private nonisolated func buildAttachment(forAsset asset: ProxiedContentAsset) async throws -> PreviewableAttachment {
         guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
             throw OWSAssertionError("Invalid asset description.")
         }
@@ -514,7 +514,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
         attachment.isLoopingVideo = attachment.isVideo
-        return attachment
+        return PreviewableAttachment(rawValue: attachment)
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

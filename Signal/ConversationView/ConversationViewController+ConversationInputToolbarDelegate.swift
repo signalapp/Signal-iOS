@@ -526,7 +526,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         present(OWSNavigationController(rootViewController: newPollViewController), animated: true)
     }
 
-    public func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
+    public func didSelectRecentPhoto(asset: PHAsset, attachment: PreviewableAttachment) {
         AssertIsOnMainThread()
 
         dismissKeyBoard()
@@ -559,7 +559,7 @@ public extension ConversationViewController {
         )
     }
 
-    func showApprovalDialog(forAttachments attachments: [SignalAttachment]) {
+    func showApprovalDialog(forAttachments attachments: [PreviewableAttachment]) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -708,7 +708,7 @@ extension ConversationViewController: LocationPickerDelegate {
         AssertIsOnMainThread()
 
         Task { @MainActor in
-            let attachment: SignalAttachment
+            let attachment: SendableAttachment
             do {
                 attachment = try await location.prepareAttachment()
             } catch {
@@ -823,7 +823,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return
         }
 
-        showApprovalDialog(forAttachments: [attachment])
+        showApprovalDialog(forAttachments: [PreviewableAttachment(rawValue: attachment)])
     }
 
     private func showApprovalDialogAfterProcessingVideo(dataSource: DataSourcePath) {
@@ -836,7 +836,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                 do {
                     let attachment = try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
                     modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showApprovalDialog(forAttachments: [attachment])
+                        self.showApprovalDialog(forAttachments: [PreviewableAttachment(rawValue: attachment)])
                     })
                 } catch {
                     owsFailDebug("Error: \(error).")
@@ -888,7 +888,7 @@ extension ConversationViewController: SendMediaNavDelegate {
             if
                 approvedAttachments.attachments.count == 1,
                 let attachment = approvedAttachments.attachments.first,
-                attachment.isBorderless
+                attachment.rawValue.isBorderless
             {
                 // This looks like a sticker, we shouldn't clear the input toolbar.
             } else {

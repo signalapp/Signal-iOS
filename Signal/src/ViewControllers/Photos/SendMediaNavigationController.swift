@@ -139,7 +139,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     class func showingApprovalWithPickedLibraryMedia(
         asset: PHAsset,
-        attachment: SignalAttachment,
+        attachment: PreviewableAttachment,
         hasQuotedReplyDraft: Bool,
         delegate: SendMediaNavDelegate,
         dataSource: SendMediaNavDataSource
@@ -362,7 +362,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
         return self.pendingAttachments.count
     }
 
-    func addMedia(attachment: SignalAttachment) {
+    func addMedia(attachment: PreviewableAttachment) {
         self.pendingAttachments.append(PendingAttachment(
             source: .camera,
             approvalItem: AttachmentApprovalItem(attachment: attachment, canSave: true),

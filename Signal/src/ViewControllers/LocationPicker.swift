@@ -475,7 +475,7 @@ public class Location: NSObject {
         self.placemark = placemark
     }
 
-    public func prepareAttachment() async throws -> SignalAttachment {
+    public func prepareAttachment() async throws -> SendableAttachment {
         let image = try await generateSnapshot()
         guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
             throw LocationError.assertion
@@ -484,7 +484,7 @@ public class Location: NSObject {
         guard let dataSource else {
             throw SignalAttachmentError.missingData
         }
-        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+        return try SendableAttachment(rawValue: SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier))
     }
 
     public var messageText: String {

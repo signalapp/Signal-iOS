@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol AttachmentKeyboardDelegate: AnyObject {
-    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
+    func didSelectRecentPhoto(asset: PHAsset, attachment: PreviewableAttachment)
     func didTapPhotos()
     func didTapGif()
     func didTapFile()
@@ -122,7 +122,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
 extension AttachmentKeyboard: RecentPhotosDelegate {
 
-    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
+    func didSelectRecentPhoto(asset: PHAsset, attachment: PreviewableAttachment) {
         delegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
     }
 }

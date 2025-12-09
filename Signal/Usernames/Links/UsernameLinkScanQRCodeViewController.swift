@@ -173,7 +173,7 @@ extension UsernameLinkScanQRCodeViewController: PHPickerViewControllerDelegate {
             do {
                 let attachment = try await TypedItemProvider.buildVisualMediaAttachment(forItemProvider: selectedItem.itemProvider)
                 guard
-                    let image = attachment.image(),
+                    let image = attachment.rawValue.image(),
                     let ciImage = CIImage(image: image)
                 else {
                     throw QRCodeImagePickerError.noAttachmentImage

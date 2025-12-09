@@ -28,7 +28,7 @@ private enum ItemProviderError: Error {
 public enum TypedItem {
     case text(MessageText)
     case contact(Data)
-    case other(SignalAttachment)
+    case other(PreviewableAttachment)
 
     public struct MessageText {
         public let filteredValue: FilteredString
@@ -150,7 +150,7 @@ public struct TypedItemProvider {
     /// to come earlier in the list than their fallbacks.
     private static let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .plainText, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
 
-    public static func buildVisualMediaAttachment(forItemProvider itemProvider: NSItemProvider) async throws -> SignalAttachment {
+    public static func buildVisualMediaAttachment(forItemProvider itemProvider: NSItemProvider) async throws -> PreviewableAttachment {
         let typedItem = try await make(for: itemProvider).buildAttachment()
         switch typedItem {
         case .other(let attachment) where attachment.isVisualMedia:
@@ -188,7 +188,7 @@ public struct TypedItemProvider {
             }
         }
 
-        let attachment: SignalAttachment
+        let attachment: PreviewableAttachment
         switch itemType {
         case .image:
             // some apps send a usable file to us and some throw a UIImage at us, the UIImage can come in either directly
@@ -248,12 +248,14 @@ public struct TypedItemProvider {
             guard let dataSource else {
                 throw SignalAttachmentError.missingData
             }
-            attachment = try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
+            attachment = PreviewableAttachment(
+                rawValue: try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier),
+            )
         }
         return .other(attachment)
     }
 
-    private nonisolated func buildFileAttachment(mustBeVisualMedia: Bool, progress: Progress?) async throws -> SignalAttachment {
+    private nonisolated func buildFileAttachment(mustBeVisualMedia: Bool, progress: Progress?) async throws -> PreviewableAttachment {
         let (dataSource, dataUTI): (DataSourcePath, String) = try await withCheckedThrowingContinuation { continuation in
             let typeIdentifier = itemType.typeIdentifier
             _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier)  { fileUrl, error in
@@ -344,17 +346,17 @@ public struct TypedItemProvider {
         } else {
             // If this is too large to send as a message, fall back to treating it as a
             // generic attachment that happens to contain text.
-            return .other(try SignalAttachment.genericAttachment(
+            return .other(PreviewableAttachment(rawValue: try SignalAttachment.genericAttachment(
                 dataSource: DataSourceValue(
                     Data(filteredText.rawValue.utf8),
                     fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
                 ),
                 dataUTI: UTType.plainText.identifier,
-            ))
+            )))
         }
     }
 
-    private nonisolated static func createAttachment(withImage image: UIImage) throws -> SignalAttachment {
+    private nonisolated static func createAttachment(withImage image: UIImage) throws -> PreviewableAttachment {
         guard let imagePng = image.pngData() else {
             throw ItemProviderError.uiImageMissingOrCorruptImageData
         }
@@ -363,7 +365,8 @@ public struct TypedItemProvider {
         guard let dataSource else {
             throw SignalAttachmentError.missingData
         }
-        return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: type.identifier)
+        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: type.identifier)
+        return PreviewableAttachment(rawValue: attachment)
     }
 
     private nonisolated static func copyFileUrl(
@@ -390,14 +393,14 @@ public struct TypedItemProvider {
         dataUTI: String,
         mustBeVisualMedia: Bool,
         progress: Progress?
-    ) async throws -> SignalAttachment {
+    ) async throws -> PreviewableAttachment {
         if SignalAttachment.videoUTISet.contains(dataUTI) {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
             var progressPoller: ProgressPoller?
             defer {
                 progressPoller?.stopPolling()
             }
-            return try await SignalAttachment.compressVideoAsMp4(
+            let attachment = try await SignalAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
                 sessionCallback: { exportSession in
                     guard let progress else { return }
@@ -405,12 +408,15 @@ public struct TypedItemProvider {
                     progressPoller?.startPolling()
                 }
             )
+            return PreviewableAttachment(rawValue: attachment)
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as
             // an image or throw an error.
-            return try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
+            let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
+            return PreviewableAttachment(rawValue: attachment)
         } else {
-            return try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+            return PreviewableAttachment(rawValue: attachment)
         }
     }
 }

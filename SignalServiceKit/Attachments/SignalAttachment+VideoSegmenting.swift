@@ -6,14 +6,14 @@
 import Foundation
 import AVFoundation
 
-extension SignalAttachment {
+extension SendableAttachment {
 
     public struct SegmentAttachmentResult {
-        public let original: SignalAttachment
-        public let segmented: [SignalAttachment]?
+        public let original: SendableAttachment
+        public let segmented: [SendableAttachment]?
 
-        public init(_ original: SignalAttachment, segmented: [SignalAttachment]? = nil) {
-            assert(segmented == nil || !(segmented?.isEmpty ?? true))
+        public init(_ original: SendableAttachment, segmented: [SendableAttachment]? = nil) {
+            assert(segmented?.isEmpty != true)
             self.original = original
             self.segmented = segmented
         }
@@ -23,15 +23,12 @@ extension SignalAttachment {
     /// segments into separate attachments under that duration.
     /// Otherwise returns a result with only the original and nil segmented attachments.
     public func segmentedIfNecessary(segmentDuration: TimeInterval) async throws -> SegmentAttachmentResult {
-        guard isVideo else {
-            return .init(self, segmented: nil)
+        guard rawValue.isVideo else {
+            return SegmentAttachmentResult(self, segmented: nil)
         }
 
         // Write to disk so we can edit with AVKit
-        guard
-            let url = dataSource.dataUrl,
-            url.isFileURL
-        else {
+        guard let url = rawValue.dataSource.dataUrl, url.isFileURL else {
             // Nil URL means failure to write to disk.
             // This should almost never happens, but if it does we have to fail
             // because we don't know if the video is too long to send.
@@ -43,10 +40,10 @@ extension SignalAttachment {
         let duration = cmDuration.seconds
         guard duration > segmentDuration else {
             // No need to segment, we are done.
-            return .init(self, segmented: nil)
+            return SegmentAttachmentResult(self, segmented: nil)
         }
 
-        let dataUTI = self.dataUTI
+        let dataUTI = self.rawValue.dataUTI
 
         var startTime: TimeInterval = 0
         var segmentFileUrls = [URL]()
@@ -60,15 +57,15 @@ extension SignalAttachment {
             startTime += segmentDuration
         }
         let segments = try segmentFileUrls.map { url in
-            return try SignalAttachment.videoAttachment(
+            return try SendableAttachment(rawValue: SignalAttachment.videoAttachment(
                 dataSource: try DataSourcePath(
                     fileUrl: url,
                     shouldDeleteOnDeallocation: true
                 ),
                 dataUTI: dataUTI
-            )
+            ))
         }
-        return .init(self, segmented: segments)
+        return SegmentAttachmentResult(self, segmented: segments)
     }
 
     fileprivate static func trimAsset(

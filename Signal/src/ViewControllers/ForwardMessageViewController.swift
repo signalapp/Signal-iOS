@@ -124,7 +124,7 @@ class ForwardMessageViewController: OWSNavigationController {
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
     ) {
-        var attachments: [SignalAttachment] = []
+        var attachments: [PreviewableAttachment] = []
         var textAttachment: TextAttachment?
         switch storyMessage.attachment {
         case .media:
@@ -342,10 +342,12 @@ extension ForwardMessageViewController {
         } else if !item.attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
+            // [15M] TODO: Run validation/transcoding here rather than at the beginning.
+            let sendableAttachments = item.attachments.map { SendableAttachment(rawValue: $0.rawValue) }
             _ = try await AttachmentMultisend.enqueueApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: item.messageBody,
-                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: item.attachments),
+                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: sendableAttachments),
             )
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
@@ -524,7 +526,7 @@ extension ForwardMessageViewController {
 struct ForwardMessageItem {
     let interaction: TSInteraction?
 
-    let attachments: [SignalAttachment]
+    let attachments: [PreviewableAttachment]
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
@@ -534,7 +536,7 @@ struct ForwardMessageItem {
 
     fileprivate init(
         interaction: TSInteraction? = nil,
-        attachments: [SignalAttachment] = [],
+        attachments: [PreviewableAttachment] = [],
         contactShare: ContactShareViewModel? = nil,
         messageBody: MessageBody? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
@@ -590,7 +592,7 @@ struct ForwardMessageItem {
             }
         }
 
-        var attachments: [SignalAttachment] = []
+        var attachments: [PreviewableAttachment] = []
         var contactShare: ContactShareViewModel?
         var stickerMetadata: (any StickerMetadata)?
         var stickerAttachment: AttachmentStream?

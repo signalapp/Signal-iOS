@@ -184,7 +184,7 @@ extension UnpreparedOutgoingMessage {
         thread: TSThread,
         timestamp: UInt64? = nil,
         messageBody: ValidatedMessageBody?,
-        mediaAttachments: [SignalAttachment.ForSending] = [],
+        mediaAttachments: [SendableAttachment.ForSending] = [],
         isViewOnce: Bool = false,
         quotedReplyDraft: DraftQuotedReplyModel.ForSending?,
         linkPreviewDataSource: LinkPreviewDataSource?,

@@ -188,6 +188,19 @@ public protocol AttachmentContentValidator {
 extension AttachmentContentValidator {
 
     public func validateContents(
+        sendableAttachment: SendableAttachment,
+        shouldConsume: Bool,
+    ) async throws -> AttachmentDataSource {
+        return try await validateContents(
+            dataSource: sendableAttachment.rawValue.dataSource,
+            shouldConsume: shouldConsume,
+            mimeType: sendableAttachment.mimeType,
+            renderingFlag: sendableAttachment.renderingFlag,
+            sourceFilename: sendableAttachment.sourceFilename?.rawValue,
+        )
+    }
+
+    public func validateContents(
         dataSource: DataSource,
         shouldConsume: Bool,
         mimeType: String,

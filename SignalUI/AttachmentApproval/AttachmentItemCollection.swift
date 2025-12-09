@@ -12,7 +12,7 @@ public class AttachmentApprovalItem {
         case noThumbnail
     }
 
-    public let attachment: SignalAttachment
+    public let attachment: PreviewableAttachment
 
     enum `Type` {
         case generic
@@ -36,7 +36,7 @@ public class AttachmentApprovalItem {
     let videoEditorModel: VideoEditorModel?
     let canSave: Bool
 
-    public init(attachment: SignalAttachment, canSave: Bool) {
+    public init(attachment: PreviewableAttachment, canSave: Bool) {
         self.attachment = attachment
         self.canSave = canSave
 
@@ -49,11 +49,11 @@ public class AttachmentApprovalItem {
         }
     }
 
-    private static func imageEditorModel(for attachment: SignalAttachment) -> ImageEditorModel? {
-        guard attachment.isImage, !attachment.isAnimatedImage else {
+    private static func imageEditorModel(for attachment: PreviewableAttachment) -> ImageEditorModel? {
+        guard attachment.rawValue.isImage, !attachment.rawValue.isAnimatedImage else {
             return nil
         }
-        guard let dataUrl: URL = attachment.dataSource.dataUrl, dataUrl.isFileURL else {
+        guard let dataUrl: URL = attachment.rawValue.dataSource.dataUrl, dataUrl.isFileURL else {
             owsFailDebug("Missing dataUrl.")
             return nil
         }
@@ -67,7 +67,7 @@ public class AttachmentApprovalItem {
         }
     }
 
-    private static func videoEditorModel(for attachment: SignalAttachment) -> VideoEditorModel? {
+    private static func videoEditorModel(for attachment: PreviewableAttachment) -> VideoEditorModel? {
         do {
             return try VideoEditorModel(attachment)
         } catch {
@@ -77,7 +77,7 @@ public class AttachmentApprovalItem {
     }
 
     func getThumbnailImage() -> UIImage? {
-        return self.attachment.staticThumbnail()
+        return self.attachment.rawValue.staticThumbnail()
     }
 
     public func isIdenticalTo(_ other: AttachmentApprovalItem?) -> Bool {

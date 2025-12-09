@@ -23,7 +23,7 @@ public class AttachmentPrepViewController: OWSViewController {
     weak var prepDelegate: AttachmentPrepViewControllerDelegate?
 
     let attachmentApprovalItem: AttachmentApprovalItem
-    var attachment: SignalAttachment {
+    var attachment: PreviewableAttachment {
         return attachmentApprovalItem.attachment
     }
 

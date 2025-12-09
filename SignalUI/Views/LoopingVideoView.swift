@@ -11,8 +11,8 @@ public import SignalServiceKit
 public class LoopingVideo: NSObject {
     fileprivate var asset: AVAsset
 
-    public convenience init?(_ attachment: SignalAttachment) {
-        guard let url = attachment.dataSource.dataUrl else {
+    public convenience init?(_ attachment: PreviewableAttachment) {
+        guard let url = attachment.rawValue.dataSource.dataUrl else {
             return nil
         }
         self.init(decryptedLocalFileUrl: url)
