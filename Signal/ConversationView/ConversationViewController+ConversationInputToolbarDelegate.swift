@@ -398,11 +398,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let imageQuality = approvedAttachments.imageQuality
         let sendableAttachments = try await approvedAttachments.attachments.mapAsync {
-            if let imageQuality {
-                return try await $0.rawValue.preparedForOutput(qualityLevel: imageQuality)
-            } else {
-                return SendableAttachment(rawValue: $0.rawValue)
-            }
+            return try await SendableAttachment.forPreviewableAttachment($0, imageQuality: imageQuality)
         }
 
         if self.isBlockedConversation() {

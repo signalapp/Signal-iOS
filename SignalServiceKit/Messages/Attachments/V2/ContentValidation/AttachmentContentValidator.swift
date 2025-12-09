@@ -192,7 +192,7 @@ extension AttachmentContentValidator {
         shouldConsume: Bool,
     ) async throws -> AttachmentDataSource {
         return try await validateContents(
-            dataSource: sendableAttachment.rawValue.dataSource,
+            dataSource: sendableAttachment.dataSource,
             shouldConsume: shouldConsume,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,

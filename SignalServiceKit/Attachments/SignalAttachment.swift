@@ -118,31 +118,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return "[SignalAttachment] mimeType: \(mimeType), fileSize: \(fileSize)"
     }
 
-    @concurrent
-    public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SendableAttachment {
-        // We only bother converting/compressing non-animated images
-        if isImage, !isAnimatedImage {
-            guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
-                throw .invalidData
-            }
-            let isValidOriginal = Self.isOriginalImageValid(
-                forImageQuality: qualityLevel,
-                fileSize: UInt64(safeCast: dataSource.dataLength),
-                dataUTI: dataUTI,
-                imageMetadata: imageMetadata,
-            )
-            if !isValidOriginal {
-                return try Self.convertAndCompressImage(
-                    toImageQuality: qualityLevel,
-                    dataSource: dataSource,
-                    attachment: self,
-                    imageMetadata: imageMetadata,
-                )
-            }
-        }
-        return SendableAttachment(rawValue: self)
-    }
-
     private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
         let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
         result.isVoiceMessage = isVoiceMessage
@@ -150,16 +125,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
         result.isBorderless = isBorderless
         result.isLoopingVideo = isLoopingVideo
         return result
-    }
-
-    public func buildAttachmentDataSource(attachmentContentValidator: any AttachmentContentValidator) async throws -> AttachmentDataSource {
-        return try await attachmentContentValidator.validateContents(
-            dataSource: dataSource,
-            shouldConsume: true,
-            mimeType: mimeType,
-            renderingFlag: renderingFlag,
-            sourceFilename: filenameOrDefault,
-        )
     }
 
     public func staticThumbnail() -> UIImage? {
@@ -276,27 +241,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
             }
         }
         return UTType(dataUTI)?.preferredMIMEType ?? MimeType.applicationOctetStream.rawValue
-    }
-
-    // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
-    // like: "signal-2017-04-24-095918.zip"
-    public var filenameOrDefault: String {
-        if let filename = dataSource.sourceFilename?.filterFilename() {
-            return filename.filterFilename()
-        } else {
-            let kDefaultAttachmentName = "signal"
-
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd-HHmmss"
-            let dateString = dateFormatter.string(from: Date())
-
-            let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)"
-            if let fileExtension = self.fileExtension {
-                return "\(withoutExtension).\(fileExtension)"
-            }
-
-            return withoutExtension
-        }
     }
 
     // Returns the file extension for this attachment or nil if no file extension
@@ -758,13 +702,13 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 dataSource: dataSource,
                 attachment: attachment,
                 imageMetadata: imageMetadata,
-            ).rawValue
+            )
         }
     }
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isOriginalImageValid(
+    static func isOriginalImageValid(
         forImageQuality imageQuality: ImageQualityLevel,
         fileSize: UInt64,
         dataUTI: String,
@@ -784,12 +728,12 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return true
     }
 
-    private class func convertAndCompressImage(
+    static func convertAndCompressImage(
         toImageQuality imageQuality: ImageQualityLevel,
         dataSource: DataSource,
         attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SendableAttachment {
+    ) throws(SignalAttachmentError) -> SignalAttachment {
         var nextImageUploadQuality: ImageQualityTier? = imageQuality.startingTier
         while let imageUploadQuality = nextImageUploadQuality {
             let result = try convertAndCompressImageAttempt(
@@ -809,14 +753,14 @@ public class SignalAttachment: CustomDebugStringConvertible {
         throw .fileSizeTooLarge
     }
 
-    private class func convertAndCompressImageAttempt(
+    private static func convertAndCompressImageAttempt(
         toImageQuality imageQuality: ImageQualityLevel,
         imageUploadQuality: ImageQualityTier,
         dataSource: DataSource,
         attachment: SignalAttachment,
         imageMetadata: ImageMetadata,
-    ) throws(SignalAttachmentError) -> SendableAttachment? {
-        return try autoreleasepool { () throws(SignalAttachmentError) -> SendableAttachment? in
+    ) throws(SignalAttachmentError) -> SignalAttachment? {
+        return try autoreleasepool { () throws(SignalAttachmentError) -> SignalAttachment? in
             let maxSize = imageUploadQuality.maxEdgeSize
             let pixelSize = imageMetadata.pixelSize
             var imageProperties = [CFString: Any]()
@@ -917,7 +861,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= OWSMediaUtils.kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
-                return SendableAttachment(rawValue: recompressedAttachment)
+                return recompressedAttachment
             }
 
             return nil

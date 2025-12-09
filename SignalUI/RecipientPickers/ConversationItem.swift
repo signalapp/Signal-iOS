@@ -38,7 +38,7 @@ public protocol ConversationItem {
     /// `StoryMessage.videoAttachmentDurationLimit` and limited in quality.
     var limitsVideoAttachmentLengthForStories: Bool { get }
 
-    /// If non-nill, tooltip text that will be shown when attempting to send a video to this
+    /// If non-nil, tooltip text that will be shown when attempting to send a video to this
     /// conversation that exceeds the story video attachment duration.
     /// Should be set if `limitsVideoAttachmentLengthForStories` is true.
     var videoAttachmentStoryLengthTooltipString: String? { get }

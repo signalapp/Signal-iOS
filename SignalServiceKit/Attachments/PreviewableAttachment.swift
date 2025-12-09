@@ -32,9 +32,4 @@ public struct PreviewableAttachment {
     public var isVideo: Bool { self.rawValue.isVideo }
     public var isVisualMedia: Bool { self.rawValue.isVisualMedia }
     public var isAudio: Bool { self.rawValue.isAudio }
-
-    @concurrent
-    public func preparedForOutput(qualityLevel: ImageQualityLevel) async throws(SignalAttachmentError) -> SendableAttachment {
-        return try await self.rawValue.preparedForOutput(qualityLevel: qualityLevel)
-    }
 }
