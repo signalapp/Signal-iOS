@@ -109,7 +109,7 @@ extension ConversationViewController {
             let attachment = try voiceMemoDraft.prepareAttachment()
             Task { @MainActor in
                 await self.sendAttachments(
-                    ApprovedAttachments(nonViewOnceAttachments: [attachment]),
+                    ApprovedAttachments(nonViewOnceAttachments: [attachment], imageQuality: nil),
                     messageBody: nil,
                     from: self,
                 )

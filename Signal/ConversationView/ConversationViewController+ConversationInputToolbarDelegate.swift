@@ -367,8 +367,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         _ approvedAttachments: ApprovedAttachments,
         from viewController: UIViewController,
         messageBody: MessageBody?,
-    ) async throws(SendAttachmentError) {
-        try await tryToSendAttachments(
+    ) async throws -> Bool {
+        return try await tryToSendAttachments(
             approvedAttachments,
             messageBody: messageBody,
             from: viewController,
@@ -389,20 +389,27 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         messageBody: MessageBody?,
         from viewController: UIViewController,
         untrustedThreshold: Date
-    ) async throws(SendAttachmentError) {
+    ) async throws -> Bool {
         AssertIsOnMainThread()
 
-        guard hasViewWillAppearEverBegun else {
-            throw .inputToolbarNotReady
+        guard hasViewWillAppearEverBegun, let inputToolbar else {
+            return false
         }
-        guard let inputToolbar = inputToolbar else {
-            throw .inputToolbarMissing
+
+        let imageQuality = approvedAttachments.imageQuality
+        let sendableAttachments = try await approvedAttachments.attachments.mapAsync {
+            if let imageQuality {
+                return try await $0.rawValue.preparedForOutput(qualityLevel: imageQuality)
+            } else {
+                return SendableAttachment(rawValue: $0.rawValue)
+            }
         }
 
         if self.isBlockedConversation() {
             let isBlocked = await self.showUnblockConversationUI()
-            guard !isBlocked else {
-                throw .conversationBlocked
+            if isBlocked {
+                // They're still blocked, so stop trying to send.
+                return false
             }
         }
 
@@ -414,7 +421,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         )
 
         guard identityIsConfirmed else {
-            throw .untrustedContacts
+            // They're still untrusted, so stop trying to send.
+            return false
         }
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
@@ -425,7 +433,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         ThreadUtil.enqueueMessage(
             body: messageBody,
-            approvedAttachments: approvedAttachments,
+            attachments: (sendableAttachments, isViewOnce: approvedAttachments.isViewOnce),
             thread: self.thread,
             quotedReplyDraft: inputToolbar.quotedReplyDraft,
             persistenceCompletionHandler: {
@@ -441,6 +449,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
 
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+
+        return true
     }
 
     // MARK: - Accessory View
@@ -722,7 +732,7 @@ extension ConversationViewController: LocationPickerDelegate {
 
             ThreadUtil.enqueueMessage(
                 body: MessageBody(text: location.messageText, ranges: .empty),
-                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: [attachment]),
+                attachments: ([attachment], isViewOnce: false),
                 thread: self.thread,
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
@@ -878,38 +888,34 @@ extension ConversationViewController: SendMediaNavDelegate {
         messageBody: MessageBody?,
         from viewController: UIViewController,
     ) async {
-        do throws(SendAttachmentError) {
-            try await tryToSendAttachments(
+        let didSend: Bool
+        do {
+            didSend = try await tryToSendAttachments(
                 approvedAttachments,
                 from: viewController,
                 messageBody: messageBody,
             )
-
-            if
-                approvedAttachments.attachments.count == 1,
-                let attachment = approvedAttachments.attachments.first,
-                attachment.rawValue.isBorderless
-            {
-                // This looks like a sticker, we shouldn't clear the input toolbar.
-            } else {
-                inputToolbar?.clearTextMessage(animated: false)
-            }
-
-            // we want to already be at the bottom when the user returns, rather than have to watch
-            // the new message scroll into view.
-            scrollToBottomOfConversation(animated: true)
-            self.dismiss(animated: true)
         } catch {
-            switch error {
-            case .inputToolbarNotReady:
-                owsFailDebug("InputToolbar not yet ready.")
-            case .inputToolbarMissing:
-                break
-            case .conversationBlocked, .untrustedContacts:
-                // User was prompted but chose not to make changes. Stop here.
-                break
-            }
+            self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
+            return
         }
+        guard didSend else {
+            return
+        }
+        if
+            approvedAttachments.attachments.count == 1,
+            let attachment = approvedAttachments.attachments.first,
+            attachment.rawValue.isBorderless
+        {
+            // This looks like a sticker, we shouldn't clear the input toolbar.
+        } else {
+            inputToolbar?.clearTextMessage(animated: false)
+        }
+
+        // we want to already be at the bottom when the user returns, rather than have to watch
+        // the new message scroll into view.
+        scrollToBottomOfConversation(animated: true)
+        self.dismiss(animated: true)
     }
 
     func sendMediaNav(_ sendMediaNavifationController: SendMediaNavigationController,

@@ -32,7 +32,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
-    private let attachments: [SendableAttachment]
+    private let attachments: [PreviewableAttachment]
     private let textAttachment: UnsentTextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
@@ -75,7 +75,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public init(
         selection: ConversationPickerSelection,
-        attachments: [SendableAttachment] = [],
+        attachments: [PreviewableAttachment] = [],
         textAttachment: UnsentTextAttachment? = nil,
         overrideTitle: String? = nil,
     ) {
@@ -685,21 +685,21 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private func addMediaPreview(
         to section: OWSTableSection,
-        attachments: [SendableAttachment]
+        attachments: [PreviewableAttachment]
     ) {
         guard let firstAttachment = attachments.first else {
             owsFailDebug("Cannot add media preview section without attachments")
             return
         }
 
-        guard let mediaPreview = makeMediaPreview(PreviewableAttachment(rawValue: firstAttachment.rawValue)) else {
+        guard let mediaPreview = makeMediaPreview(firstAttachment) else {
             return
         }
         let container = addPrimaryMediaPreviewView(mediaPreview, to: section)
 
         if
             let secondAttachment = attachments.dropFirst().first,
-            let secondMediaPreview = makeMediaPreview(PreviewableAttachment(rawValue: secondAttachment.rawValue))
+            let secondMediaPreview = makeMediaPreview(secondAttachment)
         {
             let mediaPreviewBorder = UIView()
             mediaPreviewBorder.backgroundColor = self.tableBackgroundColor

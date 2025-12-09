@@ -342,12 +342,10 @@ extension ForwardMessageViewController {
         } else if !item.attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
-            // [15M] TODO: Run validation/transcoding here rather than at the beginning.
-            let sendableAttachments = item.attachments.map { SendableAttachment(rawValue: $0.rawValue) }
             _ = try await AttachmentMultisend.enqueueApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: item.messageBody,
-                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: sendableAttachments),
+                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: item.attachments, imageQuality: nil),
             )
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading

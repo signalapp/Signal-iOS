@@ -39,9 +39,18 @@ public class AttachmentMultisend {
             }
         }
 
+        let imageQuality = approvedAttachments.imageQuality
+        let sendableAttachments = try await approvedAttachments.attachments.mapAsync {
+            if let imageQuality {
+                return try await $0.rawValue.preparedForOutput(qualityLevel: imageQuality)
+            } else {
+                return SendableAttachment(rawValue: $0.rawValue)
+            }
+        }
+
         let segmentedAttachments = try await segmentAttachmentsIfNecessary(
             for: conversations,
-            approvedAttachments: approvedAttachments,
+            sendableAttachments: sendableAttachments,
             hasNonStoryDestination: hasNonStoryDestination,
             hasStoryDestination: hasStoryDestination,
         )
@@ -142,7 +151,7 @@ public class AttachmentMultisend {
 
     private class func segmentAttachmentsIfNecessary(
         for conversations: [ConversationItem],
-        approvedAttachments: ApprovedAttachments,
+        sendableAttachments: [SendableAttachment],
         hasNonStoryDestination: Bool,
         hasStoryDestination: Bool
     ) async throws -> [SegmentAttachmentResult] {
@@ -150,7 +159,7 @@ public class AttachmentMultisend {
         guard hasStoryDestination, !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
             // No need to segment!
             var results = [SegmentAttachmentResult]()
-            for attachment in approvedAttachments.attachments {
+            for attachment in sendableAttachments {
                 let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
                     sendableAttachment: attachment,
                     shouldConsume: true,
@@ -165,7 +174,7 @@ public class AttachmentMultisend {
         }
 
         var segmentedResults = [SegmentAttachmentResult]()
-        for attachment in approvedAttachments.attachments {
+        for attachment in sendableAttachments {
             let segmentingResult = try await attachment.segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
 
             let originalDataSource: AttachmentDataSource?

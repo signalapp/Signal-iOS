@@ -24,12 +24,12 @@ extension VoiceMessageSendableDraft {
         )
     }
 
-    func prepareAttachment() throws -> SendableAttachment {
+    func prepareAttachment() throws -> PreviewableAttachment {
         let attachmentUrl = try prepareForSending()
 
         let dataSource = try DataSourcePath(fileUrl: attachmentUrl, shouldDeleteOnDeallocation: true)
         dataSource.sourceFilename = userVisibleFilename(currentDate: Date())
 
-        return SendableAttachment(rawValue: try SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier))
+        return PreviewableAttachment(rawValue: try SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier))
     }
 }

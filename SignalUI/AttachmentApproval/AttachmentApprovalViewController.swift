@@ -13,24 +13,27 @@ public import SignalServiceKit
 
 public struct ApprovedAttachments {
     public let isViewOnce: Bool
-    public let attachments: [SendableAttachment]
+    // [15M] TODO: Make this non-optional and always downsample in the same location.
+    public let imageQuality: ImageQualityLevel?
+    public let attachments: [PreviewableAttachment]
 
-    private init(isViewOnce: Bool, attachments: [SendableAttachment]) {
+    private init(isViewOnce: Bool, imageQuality: ImageQualityLevel?, attachments: [PreviewableAttachment]) {
         owsPrecondition(!isViewOnce || attachments.count <= 1)
         self.isViewOnce = isViewOnce
+        self.imageQuality = imageQuality
         self.attachments = attachments
     }
 
-    public init(viewOnceAttachment: SendableAttachment) {
-        self.init(isViewOnce: true, attachments: [viewOnceAttachment])
+    public init(viewOnceAttachment: PreviewableAttachment, imageQuality: ImageQualityLevel?) {
+        self.init(isViewOnce: true, imageQuality: imageQuality, attachments: [viewOnceAttachment])
     }
 
-    public init(nonViewOnceAttachments: [SendableAttachment]) {
-        self.init(isViewOnce: false, attachments: nonViewOnceAttachments)
+    public init(nonViewOnceAttachments: [PreviewableAttachment], imageQuality: ImageQualityLevel?) {
+        self.init(isViewOnce: false, imageQuality: imageQuality, attachments: nonViewOnceAttachments)
     }
 
     public static func empty() -> Self {
-        return Self(isViewOnce: false, attachments: [])
+        return Self(isViewOnce: false, imageQuality: nil, attachments: [])
     }
 }
 
@@ -669,8 +672,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return attachmentApprovalItemCollection.attachmentApprovalItems
     }
 
-    private func prepareAttachments() async throws -> [SendableAttachment] {
-        var results = [SendableAttachment]()
+    private func prepareAttachments() async throws -> [PreviewableAttachment] {
+        var results = [PreviewableAttachment]()
         for attachmentApprovalItem in attachmentApprovalItems {
             results.append(
                 try await self.prepareAttachment(attachmentApprovalItem: attachmentApprovalItem)
@@ -680,31 +683,28 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     /// Returns a new SignalAttachment that reflects changes made in the editor.
-    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> SendableAttachment {
+    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> PreviewableAttachment {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
             return try await self.prepareImageAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 imageEditorModel: imageEditorModel,
-                outputQualityLevel: self.outputQualityLevel,
             )
         }
         if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
             return try await self.prepareVideoAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 videoEditorModel: videoEditorModel,
-                outputQualityLevel: self.outputQualityLevel,
             )
         }
         // No editor applies. Use original, un-edited attachment.
-        return try await attachmentApprovalItem.attachment.preparedForOutput(qualityLevel: outputQualityLevel)
+        return attachmentApprovalItem.attachment
     }
 
     @concurrent
     private nonisolated func prepareImageAttachment(
         attachmentApprovalItem: AttachmentApprovalItem,
         imageEditorModel: ImageEditorModel,
-        outputQualityLevel: ImageQualityLevel,
-    ) async throws -> SendableAttachment {
+    ) async throws -> PreviewableAttachment {
         assert(imageEditorModel.isDirty())
 
         guard let dstImage = await imageEditorModel.renderOutput() else {
@@ -738,16 +738,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        return try await SignalAttachment
-            .imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
-            .preparedForOutput(qualityLevel: outputQualityLevel)
+        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
+        return PreviewableAttachment(rawValue: attachment)
     }
 
     private func prepareVideoAttachment(
         attachmentApprovalItem: AttachmentApprovalItem,
         videoEditorModel: VideoEditorModel,
-        outputQualityLevel: ImageQualityLevel,
-    ) async throws -> SendableAttachment {
+    ) async throws -> PreviewableAttachment {
         assert(videoEditorModel.needsRender)
         let fileUrl = try await videoEditorModel.render()
         let fileExtension = fileUrl.pathExtension
@@ -763,9 +761,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        return try await SignalAttachment
-            .videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            .preparedForOutput(qualityLevel: outputQualityLevel)
+        let attachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        return PreviewableAttachment(rawValue: attachment)
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
@@ -876,6 +873,7 @@ extension AttachmentApprovalViewController {
         // make below are reflected afterwards.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, asyncBlock: { modalVC in
             do {
+                let imageQuality = self.outputQualityLevel
                 let attachments = try await self.prepareAttachments()
                 modalVC.dismiss {
                     let isViewOnce = self.options.contains(.canToggleViewOnce) && self.isViewOnceEnabled
@@ -887,9 +885,9 @@ extension AttachmentApprovalViewController {
                             if isViewOnce {
                                 // The `options` property and UI layer enforce this requirement.
                                 owsPrecondition(attachments.count == 1)
-                                return ApprovedAttachments(viewOnceAttachment: attachments.first!)
+                                return ApprovedAttachments(viewOnceAttachment: attachments.first!, imageQuality: imageQuality)
                             } else {
-                                return ApprovedAttachments(nonViewOnceAttachments: attachments)
+                                return ApprovedAttachments(nonViewOnceAttachments: attachments, imageQuality: imageQuality)
                             }
                         }(),
                         messageBody: messageBody,

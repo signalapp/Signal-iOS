@@ -11,7 +11,7 @@ extension ThreadUtil {
 
     public class func enqueueMessage(
         body messageBody: MessageBody?,
-        approvedAttachments: ApprovedAttachments = .empty(),
+        attachments: ([SendableAttachment], isViewOnce: Bool) = ([], isViewOnce: false),
         thread: TSThread,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
@@ -31,7 +31,7 @@ extension ThreadUtil {
                     try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
                 let attachmentContentValidator = DependenciesBridge.shared.attachmentContentValidator
-                let attachments = try await approvedAttachments.attachments.mapAsync {
+                let attachmentsForSending = try await attachments.0.mapAsync {
                     try await $0.forSending(attachmentContentValidator: attachmentContentValidator)
                 }
                 let quotedReplyDraft = try await quotedReplyDraft.mapAsync {
@@ -43,8 +43,8 @@ extension ThreadUtil {
                         thread: thread,
                         timestamp: messageTimestamp,
                         messageBody: messageBody,
-                        mediaAttachments: attachments,
-                        isViewOnce: approvedAttachments.isViewOnce,
+                        mediaAttachments: attachmentsForSending,
+                        isViewOnce: attachments.isViewOnce,
                         quotedReplyDraft: quotedReplyDraft,
                         linkPreviewDataSource: linkPreviewDataSource,
                         transaction: readTransaction
