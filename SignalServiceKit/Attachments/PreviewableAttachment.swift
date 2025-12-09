@@ -28,7 +28,14 @@ public struct PreviewableAttachment {
         self.rawValue = rawValue
     }
 
+    public var dataSource: any DataSource { self.rawValue.dataSource }
+
+    public var dataUTI: String { self.rawValue.dataUTI }
+    public var mimeType: String { self.rawValue.mimeType }
+    public var renderingFlag: AttachmentReference.RenderingFlag { self.rawValue.renderingFlag }
+
     public var isImage: Bool { self.rawValue.isImage }
+    public var isAnimatedImage: Bool { self.rawValue.isAnimatedImage }
     public var isVideo: Bool { self.rawValue.isVideo }
     public var isVisualMedia: Bool { self.rawValue.isVisualMedia }
     public var isAudio: Bool { self.rawValue.isAudio }

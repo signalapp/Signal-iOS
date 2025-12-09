@@ -190,13 +190,14 @@ extension AttachmentContentValidator {
     public func validateContents(
         sendableAttachment: SendableAttachment,
         shouldConsume: Bool,
+        shouldUseDefaultFilename: Bool,
     ) async throws -> AttachmentDataSource {
         return try await validateContents(
             dataSource: sendableAttachment.dataSource,
             shouldConsume: shouldConsume,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,
-            sourceFilename: sendableAttachment.sourceFilename?.rawValue,
+            sourceFilename: sendableAttachment.sourceFilename?.rawValue ?? (shouldUseDefaultFilename ? sendableAttachment.defaultFilename : nil),
         )
     }
 

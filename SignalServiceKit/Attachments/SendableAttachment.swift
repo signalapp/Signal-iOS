@@ -13,10 +13,32 @@ import Foundation
 /// send as-is. The bytes representing these attachments meet the criteria
 /// for sending via Signal.
 public struct SendableAttachment {
-    private let rawValue: SignalAttachment
+    public let dataSource: any DataSource
+    public let dataUTI: String
+    public let sourceFilename: FilteredFilename?
+    public let mimeType: String
+    public let renderingFlag: AttachmentReference.RenderingFlag
 
-    private init(rawValue: SignalAttachment) {
-        self.rawValue = rawValue
+    private init(
+        dataSource: any DataSource,
+        dataUTI: String,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+    ) {
+        self.dataSource = dataSource
+        self.dataUTI = dataUTI
+        self.sourceFilename = dataSource.sourceFilename.map(FilteredFilename.init(rawValue:))
+        self.mimeType = mimeType
+        self.renderingFlag = renderingFlag
+    }
+
+    private init(nonImagePreviewableAttachment previewableAttachment: PreviewableAttachment) {
+        self.init(
+            dataSource: previewableAttachment.dataSource,
+            dataUTI: previewableAttachment.dataUTI,
+            mimeType: previewableAttachment.mimeType,
+            renderingFlag: previewableAttachment.renderingFlag,
+        )
     }
 
     @concurrent
@@ -25,67 +47,48 @@ public struct SendableAttachment {
         imageQuality: ImageQualityLevel? = nil,
     ) async throws(SignalAttachmentError) -> Self {
         // We only bother converting/compressing non-animated images
-        if let imageQuality, previewableAttachment.isImage, !previewableAttachment.rawValue.isAnimatedImage {
-            let dataSource = previewableAttachment.rawValue.dataSource
+        if let imageQuality, previewableAttachment.isImage, !previewableAttachment.isAnimatedImage {
+            let dataSource = previewableAttachment.dataSource
             guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
                 throw .invalidData
             }
             let isValidOriginal = SignalAttachment.isOriginalImageValid(
                 forImageQuality: imageQuality,
                 fileSize: UInt64(safeCast: dataSource.dataLength),
-                dataUTI: previewableAttachment.rawValue.dataUTI,
+                dataUTI: previewableAttachment.dataUTI,
                 imageMetadata: imageMetadata,
             )
             if !isValidOriginal {
+                let compressedAttachment = try SignalAttachment.convertAndCompressImage(
+                    toImageQuality: imageQuality,
+                    dataSource: dataSource,
+                    attachment: previewableAttachment.rawValue,
+                    imageMetadata: imageMetadata,
+                )
                 return SendableAttachment(
-                    rawValue: try SignalAttachment.convertAndCompressImage(
-                        toImageQuality: imageQuality,
-                        dataSource: dataSource,
-                        attachment: previewableAttachment.rawValue,
-                        imageMetadata: imageMetadata,
-                    ),
+                    dataSource: compressedAttachment.dataSource,
+                    dataUTI: compressedAttachment.dataUTI,
+                    mimeType: compressedAttachment.mimeType,
+                    renderingFlag: compressedAttachment.renderingFlag,
                 )
             }
         }
-        return Self(rawValue: previewableAttachment.rawValue)
+        return Self(nonImagePreviewableAttachment: previewableAttachment)
     }
 
-    public var mimeType: String { self.rawValue.mimeType }
-    public var renderingFlag: AttachmentReference.RenderingFlag { self.rawValue.renderingFlag }
-    public var sourceFilename: FilteredFilename? {
-        return self.rawValue.dataSource.sourceFilename.map(FilteredFilename.init(rawValue:))
-    }
+    /// A default filename to use if one isn't provided by the user.
+    var defaultFilename: String {
+        let kDefaultAttachmentName = "signal"
 
-    public var dataSource: any DataSource { self.rawValue.dataSource }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HHmmss"
+        let dateString = dateFormatter.string(from: Date())
 
-    public func buildAttachmentDataSource(attachmentContentValidator: any AttachmentContentValidator) async throws -> AttachmentDataSource {
-        return try await attachmentContentValidator.validateContents(
-            dataSource: rawValue.dataSource,
-            shouldConsume: true,
-            mimeType: mimeType,
-            renderingFlag: renderingFlag,
-            sourceFilename: filenameOrDefault,
-        )
-    }
-
-    /// The user-provided filename, if known. Otherwise, we'll generate a
-    /// filename similar to "signal-2017-04-24-095918.zip".
-    private var filenameOrDefault: String {
-        if let sourceFilename {
-            return sourceFilename.rawValue
-        } else {
-            let kDefaultAttachmentName = "signal"
-
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd-HHmmss"
-            let dateString = dateFormatter.string(from: Date())
-
-            var defaultFilename = "\(kDefaultAttachmentName)-\(dateString)"
-            if let fileExtension = MimeTypeUtil.fileExtensionForUtiType(self.rawValue.dataUTI) {
-                defaultFilename += ".\(fileExtension)"
-            }
-            return defaultFilename
+        var defaultFilename = "\(kDefaultAttachmentName)-\(dateString)"
+        if let fileExtension = MimeTypeUtil.fileExtensionForUtiType(self.dataUTI) {
+            defaultFilename += ".\(fileExtension)"
         }
+        return defaultFilename
     }
 
     // MARK: - Video Segmenting
@@ -105,9 +108,10 @@ public struct SendableAttachment {
     /// segments into separate attachments under that duration.
     /// Otherwise returns a result with only the original and nil segmented attachments.
     public func segmentedIfNecessary(segmentDuration: TimeInterval) async throws -> SegmentAttachmentResult {
-        guard let dataSource = self.rawValue.dataSourceIfVideo else {
+        guard SignalAttachment.videoUTISet.contains(self.dataUTI) else {
             return SegmentAttachmentResult(self, segmented: nil)
         }
+        let dataSource = self.dataSource as! DataSourcePath
 
         let asset = AVURLAsset(url: dataSource.fileUrl)
         let cmDuration = asset.duration
@@ -116,8 +120,6 @@ public struct SendableAttachment {
             // No need to segment, we are done.
             return SegmentAttachmentResult(self, segmented: nil)
         }
-
-        let dataUTI = self.rawValue.dataUTI
 
         var startTime: TimeInterval = 0
         var segmentFileUrls = [URL]()
@@ -130,14 +132,12 @@ public struct SendableAttachment {
             ))
             startTime += segmentDuration
         }
+
         let segments = try segmentFileUrls.map { url in
-            return try SendableAttachment(rawValue: SignalAttachment.videoAttachment(
-                dataSource: try DataSourcePath(
-                    fileUrl: url,
-                    shouldDeleteOnDeallocation: true
-                ),
-                dataUTI: dataUTI
-            ))
+            let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: true)
+            // [15M] TODO: This doesn't transfer all SignalAttachment fields.
+            let attachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: self.dataUTI)
+            return Self(nonImagePreviewableAttachment: PreviewableAttachment(rawValue: attachment))
         }
         return SegmentAttachmentResult(self, segmented: segments)
     }
