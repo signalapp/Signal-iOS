@@ -250,13 +250,16 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.preservesSuperviewLayoutMargins = true
-        collectionView.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableView2PresentedBackgroundColor })
+        collectionView.backgroundColor = .Signal.groupedBackground
 
         accessoriesHelper.installViews()
 
         NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
-        applyTheme()
+
+        if #unavailable(iOS 26) {
+            NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
+            applyTheme()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -321,6 +324,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     // MARK: Theme
 
     @objc
+    @available(iOS, obsoleted: 26)
     private func applyTheme() {
         accessoriesHelper.applyTheme()
     }
@@ -547,9 +551,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
         guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
@@ -563,9 +564,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
         guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
@@ -579,9 +577,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
         guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
@@ -595,8 +590,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Logger.info("")
-
         guard let galleryItem = galleryItem(at: indexPath) else {
             owsFailDebug("galleryCell was unexpectedly nil")
             return
@@ -620,16 +613,12 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        Logger.debug("")
-
         accessoriesHelper.didModifySelection()
     }
 
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        Logger.debug("")
-
         let dates = mediaGallery.galleryDates
         guard !dates.isEmpty else {
             // empty gallery
@@ -747,8 +736,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        Logger.debug("indexPath: \(indexPath)")
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: layout.reuseIdentifier(mediaCategory: mediaCategory), for: indexPath) as? Cell else {
             owsFailDebug("unexpected cell for indexPath: \(indexPath)")
             return UICollectionViewCell()
@@ -1109,16 +1096,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         }
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
-        Logger.debug("")
-    }
+    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) { }
 
-    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
-        Logger.debug("")
-    }
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) { }
 
-    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
-    }
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) { }
 
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
         _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
@@ -1162,14 +1144,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     private var eagerLoadOutstanding = false
 
     private func eagerlyLoadMoreIfPossible() {
-        Logger.debug("")
         guard !mediaGallery.hasFetchedOldest else {
-            Logger.debug("done")
             eagerLoadingDidComplete = true
             return
         }
         guard !eagerLoadOutstanding else {
-            Logger.debug("Already doing an eager load")
             return
         }
         let userData = MediaGalleryUpdateUserData(disableAnimations: true,
@@ -1177,11 +1156,9 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         eagerLoadOutstanding = true
         // This is a low priority update because we never want eager loads to starve user-initiated
         // loads (such as loading more sections because of scrolling or loading items to display).
-        Logger.debug("Will eagerly load earlier sections")
         mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize,
                                               highPriority: false,
                                               userData: userData) { [weak self] newSections in
-            Logger.debug("Eagerly loaded \(newSections)")
             self?.eagerLoadOutstanding = false
             self?.eagerlyLoadMoreIfPossible()
         }
@@ -1214,7 +1191,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         }
 
         guard !isFetchingMoreData else {
-            Logger.debug("already fetching more data")
             return
         }
 
@@ -1227,12 +1203,10 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize,
                                                   highPriority: true,
                                                   userData: userData) { [weak self] newSections in
-                Logger.debug("found new sections: \(newSections)")
                 self?.isFetchingMoreData = false
             }
         case .after:
             mediaGallery.asyncLoadLaterSections(batchSize: kLoadBatchSize, userData: userData) { [weak self] newSections in
-                Logger.debug("found new sections: \(newSections)")
                 self?.isFetchingMoreData = false
             }
         case .around:
@@ -1259,7 +1233,6 @@ extension MediaTileViewController: MediaPresentationContextProvider {
         let indexPath = self.indexPath(underlyingPath)
 
         guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
-            Logger.debug("visibleIndex was nil, swiped to offscreen gallery item")
             return nil
         }
 
@@ -1287,7 +1260,7 @@ private class MediaGalleryStaticHeader: UICollectionReusableView {
         label.textAlignment = .center
         label.font = .dynamicTypeHeadlineClamped
         label.numberOfLines = 2
-        label.textColor = UIColor(dynamicProvider: { _ in return Theme.secondaryTextAndIconColor })
+        label.textColor = .Signal.secondaryLabel
         return label
     }()
 
@@ -1312,7 +1285,7 @@ private class MediaGalleryDateHeader: UICollectionReusableView {
         label.adjustsFontForContentSizeCategory = true
         label.font = .dynamicTypeHeadlineClamped
         label.textAlignment = .natural
-        label.textColor = UIColor(dynamicProvider: { _ in return Theme.primaryTextColor })
+        label.textColor = .Signal.label
         return label
     }()
 
@@ -1366,7 +1339,7 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
         label.font = .dynamicTypeSubheadlineClamped.semibold()
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.textColor = .Signal.label
         return label
     }()
 
@@ -1377,23 +1350,19 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
         label.font = .dynamicTypeSubheadlineClamped
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.textColor = .Signal.label
         return label
     }()
 
-    private lazy var clearFilterButton: UIButton = {
-        let buttonTitle = OWSLocalizedString(
+    private lazy var clearFilterButton = UIButton(
+        configuration: .smallSecondary(title: OWSLocalizedString(
             "MEDIA_GALLERY_CLEAR_FILTER_BUTTON",
             comment: "Button to reset media filter. Displayed when filter results in no media visible."
-        )
-        let button = OutlineButton(type: .custom)
-        button.setTitle(buttonTitle, for: .normal)
-        button.titleLabel?.font = .dynamicTypeCaption1.semibold()
-        button.setTitleColor(UIColor(dynamicProvider: { _ in Theme.secondaryTextAndIconColor }), for: .normal)
-        button.setTitleColor(UIColor(dynamicProvider: { _ in Theme.secondaryTextAndIconColor.withAlphaComponent(0.5) }), for: .highlighted)
-        button.addTarget(self, action: #selector(clearFilterPressed), for: .touchUpInside)
-        return button
-    }()
+        )),
+        primaryAction: UIAction { [weak self] _ in
+            self?.clearFilterPressed()
+        }
+    )
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
@@ -1421,8 +1390,7 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
 
     var clearFilterAction: (() -> Void)?
 
-    @objc
-    private func clearFilterPressed(_ sender: Any) {
+    private func clearFilterPressed() {
         clearFilterAction?()
     }
 
@@ -1431,11 +1399,11 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
         let subtitle: String?
 
         if isFilterOn {
-            title = nil
-            subtitle = NSLocalizedString(
+            title = NSLocalizedString(
                 "MEDIA_GALLERY_NO_FILTER_RESULTS",
                 comment: "Displayed in All Media screen when there's no media - first line."
             )
+            subtitle = nil
         } else {
             switch contentType {
             case .photoVideo:
@@ -1493,38 +1461,6 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private class OutlineButton: UIButton {
-
-        private lazy var backgroundPillView: UIView = {
-            let view = PillView()
-            view.layer.borderWidth = 1.5
-            view.layer.borderColor = Self.normalBorderColor.cgColor
-            view.isUserInteractionEnabled = false
-            return view
-        }()
-
-        private static let normalBorderColor = UIColor.ows_gray45
-        private static let highlightedBorderColor = UIColor.ows_gray45.withAlphaComponent(0.5)
-
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-            ows_contentEdgeInsets = UIEdgeInsets(hMargin: 22, vMargin: 12)
-            addSubview(backgroundPillView)
-            sendSubviewToBack(backgroundPillView)
-            backgroundPillView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 8))
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        override var isHighlighted: Bool {
-            didSet {
-                backgroundPillView.layer.borderColor = (isHighlighted ? Self.highlightedBorderColor : Self.normalBorderColor).cgColor
-            }
-        }
     }
 }
 

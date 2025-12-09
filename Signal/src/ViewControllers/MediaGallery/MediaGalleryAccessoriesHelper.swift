@@ -22,7 +22,8 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func set(mediaCategory: AllMediaCategory, isGridLayout: Bool)
 }
 
-public class MediaGalleryAccessoriesHelper {
+@MainActor
+class MediaGalleryAccessoriesHelper {
     private var footerBarBottomConstraint: NSLayoutConstraint?
     weak var viewController: MediaGalleryPrimaryViewController?
 
@@ -74,26 +75,19 @@ public class MediaGalleryAccessoriesHelper {
             AllMediaCategory.otherFiles,
         ].map { $0.titleString }
         let segmentedControl = UISegmentedControl(items: items)
-        segmentedControl.selectedSegmentTintColor = .init(dynamicProvider: { _ in
-            Theme.isDarkThemeEnabled ? UIColor.init(rgbHex: 0x636366) : .white
-        })
         segmentedControl.backgroundColor = .clear
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
+        segmentedControl.addAction(
+            UIAction { [weak self] action in
+                self?.segmentedControlValueChanged(action.sender as! UISegmentedControl)
+            },
+            for: .valueChanged
+        )
         return segmentedControl
     }()
 
-    init() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(contentSizeCategoryDidChange),
-            name: UIContentSizeCategory.didChangeNotification,
-            object: nil
-        )
-    }
-
     func installViews() {
-        guard let viewController else { return }
+        guard let viewController, let view = viewController.view else { return }
 
         headerView.sizeToFit()
         var frame = headerView.frame
@@ -101,30 +95,35 @@ public class MediaGalleryAccessoriesHelper {
         headerView.frame = frame
         viewController.navigationItem.titleView = headerView
 
-        viewController.view.addSubview(footerBar)
-        footerBar.autoPinEdge(toSuperviewSafeArea: .leading)
-        footerBar.autoPinEdge(toSuperviewSafeArea: .trailing)
+        view.addSubview(footerBar)
+        footerBar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            footerBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            footerBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+        ])
         if #available(iOS 26, *) {
             let interaction = UIScrollEdgeElementContainerInteraction()
             interaction.scrollView = viewController.scrollView
             interaction.edge = .bottom
             footerBar.addInteraction(interaction)
         }
+        if #available(iOS 17, *) {
+            footerBar.registerForTraitChanges([ UITraitPreferredContentSizeCategory.self ]) { [weak self] (_: UIView, _) in
+                self?.updateFilterButton()
+            }
+        }
 
         updateDeleteButton()
         updateSelectionModeControls()
     }
 
+    @available(iOS, obsoleted: 26)
     func applyTheme() {
+        guard #unavailable(iOS 26) else { return }
         footerBar.barTintColor = Theme.navbarBackgroundColor
         footerBar.tintColor = Theme.primaryIconColor
         deleteButton.tintColor = Theme.primaryIconColor
         shareButton.tintColor = Theme.primaryIconColor
-    }
-
-    @objc
-    private func contentSizeCategoryDidChange(_ notification: Notification) {
-        updateFilterButton()
     }
 
     // MARK: - Menu
@@ -139,6 +138,7 @@ public class MediaGalleryAccessoriesHelper {
             return isChecked ? .on : .off
         }
 
+        @MainActor
         var uiAction: UIAction {
             return UIAction(title: title, image: icon, state: state) { _ in handler() }
         }
@@ -231,15 +231,12 @@ public class MediaGalleryAccessoriesHelper {
 
     // MARK: - Filter
 
-    private func filterMenuItemsAndCurrentValue() -> (title: NSAttributedString, items: [MenuItem]) {
+    private func filterMenuItemsAndCurrentValue() -> (title: String, items: [MenuItem]) {
         guard let items = viewController?.mediaGalleryFilterMenuItems, !items.isEmpty else {
-            return ( NSAttributedString(string: ""), [] )
+            return ( "", [] )
         }
         let currentTitle = items.first(where: { $0.isChecked })?.title ?? ""
-        return (
-            NSAttributedString(string: currentTitle, attributes: [ .font: UIFont.dynamicTypeHeadlineClamped ] ),
-            items
-        )
+        return ( currentTitle, items )
     }
 
     private lazy var filterButton: UIBarButtonItem = {
@@ -247,29 +244,46 @@ public class MediaGalleryAccessoriesHelper {
         configuration.imagePlacement = .trailing
         configuration.image = UIImage(imageLiteralResourceName: "chevron-down-compact-bold")
         configuration.imagePadding = 4
+        // For iOS 15-16.
+        configuration.titleTextAttributesTransformer = .defaultFont(.systemFont(ofSize: 17, weight: .semibold))
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.showsMenuAsPrimaryAction = true
+        if #available(iOS 26, *) {
+            // Otherwise title will be blue when the button is pressed.
+            // On earlier iOS version color is applied in `applyTheme`.
+            button.tintColor = .Signal.label
+        }
         return UIBarButtonItem(customView: button)
     }()
 
     func updateFilterButton() {
         let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
         if let button = filterButton.customView as? UIButton {
-            button.setAttributedTitle(buttonTitle, for: .normal)
+            button.configuration?.title = buttonTitle
             button.menu = menuItems.menu()
             button.sizeToFit()
             button.isHidden = menuItems.isEmpty
+
+            if #available(iOS 17, *) {
+                // UIKit uses three different font sizes for text buttons in the toolbar.
+                // Reverse engineered logic is below.
+                let preferredContentSizeCategory = UIApplication.shared.preferredContentSizeCategory
+                let fontSize: CGFloat = switch preferredContentSizeCategory {
+                case .extraSmall, .small, .medium, .large: 17
+                case .extraLarge: 19
+                default: 21
+                }
+                button.configuration?.titleTextAttributesTransformer = .defaultFont(.systemFont(ofSize: fontSize, weight: .semibold))
+            }
         }
-#if compiler(>=6.2)
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26, *) {
             // I tried just setting .isHidden on the bar button item here, but
             // for some reason it would never reappear when I do that. But if
             // the content is blank and the shared background is hidden, then it
             // appears completely invisible.
             filterButton.hidesSharedBackground = menuItems.isEmpty
         }
-#endif
     }
 
     // MARK: - List/Grid
@@ -415,13 +429,18 @@ public class MediaGalleryAccessoriesHelper {
             NSLayoutConstraint.deactivate([footerBarBottomConstraint])
         }
 
-        footerBarBottomConstraint = footerBar.autoPin(toBottomLayoutGuideOf: viewController, withInset: 0)
+        footerBar.translatesAutoresizingMaskIntoConstraints = false
+        let constraint = footerBar.bottomAnchor.constraint(
+            equalTo: viewController.view.layoutMarginsGuide.bottomAnchor
+        )
+        NSLayoutConstraint.activate([constraint])
+        footerBarBottomConstraint = constraint
 
         viewController.view.layoutIfNeeded()
-
         let bottomInset = viewController.view.bounds.maxY - footerBar.frame.minY
         viewController.scrollView.contentInset.bottom = bottomInset
         viewController.scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+
     }
 
     private func hideToolbar(animated: Bool) {
@@ -473,9 +492,9 @@ public class MediaGalleryAccessoriesHelper {
 
     private lazy var shareButton = UIBarButtonItem(
         image: Theme.iconImage(.buttonShare),
-        style: .plain,
-        target: self,
-        action: #selector(didPressShare)
+        primaryAction: UIAction { [weak self] action in
+            self?.didPressShare(action.sender!)
+        }
     )
 
     private func updateShareButton() {
@@ -484,7 +503,6 @@ public class MediaGalleryAccessoriesHelper {
         shareButton.isEnabled = viewController.hasSelection
     }
 
-    @objc
     private func didPressShare(_ sender: Any) {
         Logger.debug("")
         viewController?.shareSelectedItems(sender)
@@ -495,7 +513,7 @@ public class MediaGalleryAccessoriesHelper {
     private lazy var selectionCountLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.textColor = .Signal.label
         label.font = .dynamicTypeSubheadlineClamped.semibold()
         label.adjustsFontForContentSizeCategory = true
         return label
@@ -504,7 +522,7 @@ public class MediaGalleryAccessoriesHelper {
     private lazy var selectionSizeLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.textColor = .Signal.label
         label.font = .dynamicTypeSubheadlineClamped
         label.adjustsFontForContentSizeCategory = true
         return label
@@ -526,18 +544,14 @@ public class MediaGalleryAccessoriesHelper {
             selectionCountLabel.text = ""
             selectionSizeLabel.text = ""
             selectionInfoButton.customView?.sizeToFit()
-#if compiler(>=6.2)
             if #available(iOS 26, *) {
                 selectionInfoButton.hidesSharedBackground = true
             }
-#endif
             return
         }
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             selectionInfoButton.hidesSharedBackground = false
         }
-#endif
         selectionCountLabel.text = String.localizedStringWithFormat(
             OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware", comment: ""),
             selectionCount
@@ -551,22 +565,24 @@ public class MediaGalleryAccessoriesHelper {
         return AllMediaCategory(rawValue: headerView.selectedSegmentIndex) ?? .defaultValue
     }
 
-    @objc
     private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        if let mediaCategory = AllMediaCategory(rawValue: sender.selectedSegmentIndex) {
-            if let previousMediaCategory = viewController?.mediaCategory {
-                lastUsedLayoutMap[previousMediaCategory] = layout
-            }
-            if mediaCategory.supportsGridView {
-                // Return to the previous mode
-                _layout = lastUsedLayoutMap[mediaCategory, default: .grid]
-            } else if layout == .grid {
-                // This file type requires a switch to list mode
-                _layout = .list
-            }
-            updateBottomToolbarControls()
-            viewController?.set(mediaCategory: mediaCategory, isGridLayout: layout == .grid)
+        guard let mediaCategory = AllMediaCategory(rawValue: sender.selectedSegmentIndex) else {
+            owsFailDebug("Invalid segment index")
+            return
         }
+
+        if let previousMediaCategory = viewController?.mediaCategory {
+            lastUsedLayoutMap[previousMediaCategory] = layout
+        }
+        if mediaCategory.supportsGridView {
+            // Return to the previous mode
+            _layout = lastUsedLayoutMap[mediaCategory, default: .grid]
+        } else if layout == .grid {
+            // This file type requires a switch to list mode
+            _layout = .list
+        }
+        updateBottomToolbarControls()
+        viewController?.set(mediaCategory: mediaCategory, isGridLayout: layout == .grid)
     }
 }
 
@@ -601,6 +617,7 @@ extension AllMediaCategory {
     }
 }
 
+@MainActor
 private extension Array where Element == MediaGalleryAccessoriesHelper.MenuItem {
     func menu(with options: UIMenu.Options = []) -> UIMenu {
         return UIMenu(title: "", options: options, children: reversed().map({ $0.uiAction }))
