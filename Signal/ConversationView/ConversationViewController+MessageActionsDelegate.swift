@@ -377,7 +377,7 @@ extension ConversationViewController: MessageActionsDelegate {
             }
         }
 
-        if threadViewModel.pinnedMessages.count >= 3 {
+        if threadViewModel.pinnedMessages.count >= RemoteConfig.current.pinnedMessageLimit {
             let actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "PINNED_MESSAGE_REPLACE_OLDEST_TITLE",

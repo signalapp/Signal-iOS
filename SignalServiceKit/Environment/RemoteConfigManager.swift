@@ -318,6 +318,13 @@ public class RemoteConfig {
         return !isEnabled(.pollReceiveKillSwitch)
     }
 
+    public var pinnedMessageLimit: UInt {
+        return getUIntValue(
+            forFlag: .pinnedMessageLimit,
+            defaultValue: UInt(3)
+        )
+    }
+
     #if TESTABLE_BUILD
     public var testHotSwappable: Bool? {
         if self.valueFlags[IsEnabledFlag.hotSwappable.rawValue] != nil {
@@ -604,6 +611,7 @@ private enum ValueFlag: String, FlagType {
     case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
     case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
     case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
+    case pinnedMessageLimit = "global.pinned_message_limit"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.value"
@@ -638,6 +646,7 @@ private enum ValueFlag: String, FlagType {
         case .tsAttachmentMigrationBatchDelayMs: true
         case .backupListMediaDefaultRefreshIntervalMs: true
         case .backupListMediaOutOfQuotaRefreshIntervalMs: true
+        case .pinnedMessageLimit: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true

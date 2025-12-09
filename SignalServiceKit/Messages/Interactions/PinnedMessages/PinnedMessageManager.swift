@@ -142,12 +142,14 @@ public class PinnedMessageManager {
         threadId: Int64,
         transaction: DBWriteTransaction
     ) {
+        let maxNumberOfPinnedMessages = RemoteConfig.current.pinnedMessageLimit
+
         failIfThrows {
-            // Keep the newest 2 pinned messages
+            // Keep the newest pinned messages up to the limit minus one, since we're about to insert.
             let mostRecentPinnedMessageIds: [Int64] = try PinnedMessageRecord
                 .filter(PinnedMessageRecord.Columns.threadId == threadId)
                 .order(PinnedMessageRecord.Columns.id.desc)
-                .limit(2)
+                .limit(Int(maxNumberOfPinnedMessages) - 1)
                 .select(PinnedMessageRecord.Columns.id)
                 .fetchAll(transaction.database)
 
