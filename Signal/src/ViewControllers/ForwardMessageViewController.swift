@@ -345,7 +345,7 @@ extension ForwardMessageViewController {
             _ = try await AttachmentMultisend.enqueueApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: item.messageBody,
-                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: item.attachments, imageQuality: nil),
+                approvedAttachments: ApprovedAttachments(nonViewOnceAttachments: item.attachments, imageQuality: .high),
             )
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading

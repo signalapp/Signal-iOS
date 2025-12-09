@@ -35,9 +35,9 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
         AssertIsOnMainThread()
 
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
-        let attachmentApproval = AttachmentApprovalViewController(
-            options: self.hasQuotedReplyDraft ? [.disallowViewOnce] : [],
+        let attachmentApproval = AttachmentApprovalViewController.loadWithSneakyTransaction(
             attachmentApprovalItems: [attachmentApprovalItem],
+            options: self.hasQuotedReplyDraft ? [.disallowViewOnce] : [],
         )
         attachmentApproval.approvalDataSource = self
         attachmentApproval.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)

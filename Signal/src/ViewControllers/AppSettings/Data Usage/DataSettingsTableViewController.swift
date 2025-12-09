@@ -106,7 +106,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
                 comment: "Item title for the sent media quality setting"
             ),
-            accessoryText: SSKEnvironment.shared.databaseStorageRef.read(block: ImageQualityLevel.resolvedQuality(tx:)).localizedString,
+            accessoryText: SSKEnvironment.shared.databaseStorageRef.read(block: ImageQuality.fetchValue(tx:)).localizedString,
             actionBlock: { [weak self] in
                 self?.showSentMediaQualityPreferences()
             }
@@ -170,11 +170,10 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func showSentMediaQualityPreferences() {
-        let vc = SentMediaQualitySettingsViewController { [weak self] isHighQuality in
+        let vc = SentMediaQualitySettingsViewController.loadWithSneakyTransaction { [weak self] imageQuality in
             guard let self else { return }
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                ImageQualityLevel.setUserSelectedHighQuality(isHighQuality, tx: tx)
-            }
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            databaseStorage.write { tx in ImageQuality.setValue(imageQuality, tx: tx) }
             self.updateTableContents()
         }
         navigationController?.pushViewController(vc, animated: true)

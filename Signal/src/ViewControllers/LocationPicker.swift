@@ -484,7 +484,10 @@ public class Location: NSObject {
         guard let dataSource else {
             throw SignalAttachmentError.missingData
         }
-        return try await SendableAttachment.forPreviewableAttachment(PreviewableAttachment(rawValue: SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)))
+        return try await SendableAttachment.forPreviewableAttachment(
+            PreviewableAttachment(rawValue: SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)),
+            imageQualityLevel: .one,
+        )
     }
 
     public var messageText: String {

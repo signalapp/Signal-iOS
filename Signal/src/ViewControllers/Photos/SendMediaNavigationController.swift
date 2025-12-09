@@ -206,7 +206,10 @@ class SendMediaNavigationController: OWSNavigationController {
         if hasQuotedReplyDraft {
             options.insert(.disallowViewOnce)
         }
-        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: pendingAttachments.map(\.approvalItem))
+        let approvalViewController = AttachmentApprovalViewController.loadWithSneakyTransaction(
+            attachmentApprovalItems: pendingAttachments.map(\.approvalItem),
+            options: options,
+        )
         approvalViewController.approvalDelegate = self
         approvalViewController.approvalDataSource = self
         approvalViewController.stickerSheetDelegate = self

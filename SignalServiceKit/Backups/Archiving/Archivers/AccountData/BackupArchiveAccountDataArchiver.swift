@@ -314,7 +314,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         }
 
         accountSettings.allowSealedSenderFromAnyone = udManager.shouldAllowUnrestrictedAccessLocal(tx: context.tx)
-        accountSettings.defaultSentMediaQuality = (imageQuality.resolvedQuality(tx: context.tx) == .high ? .high : .standard)
+        accountSettings.defaultSentMediaQuality = imageQuality.fetchValue(tx: context.tx) == .high ? .high : .standard
 
         var downloadSettings = BackupProto_AccountData.AutoDownloadSettings()
         for type in MediaBandwidthPreferences.MediaType.allCases {
@@ -568,10 +568,10 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             udManager.setShouldAllowUnrestrictedAccessLocal(settings.allowSealedSenderFromAnyone, tx: context.tx)
 
             switch settings.defaultSentMediaQuality {
-            case .unknownQuality, .UNRECOGNIZED, .standard:
-                imageQuality.setUserSelectedHighQuality(false, tx: context.tx)
             case .high:
-                imageQuality.setUserSelectedHighQuality(true, tx: context.tx)
+                imageQuality.setValue(.high, tx: context.tx)
+            case .unknownQuality, .UNRECOGNIZED, .standard:
+                imageQuality.setValue(.standard, tx: context.tx)
             }
 
             if settings.hasAutoDownloadSettings {

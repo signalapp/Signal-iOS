@@ -6,15 +6,26 @@
 import SignalServiceKit
 import SignalUI
 
-class SentMediaQualitySettingsViewController: OWSTableViewController2 {
-    private let updateHandler: (_ isHighQuality: Bool) -> Void
-    init(updateHandler: @escaping (_ isHighQuality: Bool) -> Void) {
+final class SentMediaQualitySettingsViewController: OWSTableViewController2 {
+    private var imageQuality: ImageQuality
+    private let updateHandler: (_ imageQuality: ImageQuality) -> Void
+
+    static func loadWithSneakyTransaction(updateHandler: @escaping (_ imageQuality: ImageQuality) -> Void) -> Self {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return Self(
+            imageQuality: databaseStorage.read(block: ImageQuality.fetchValue(tx:)),
+            updateHandler: updateHandler,
+        )
+    }
+
+    init(
+        imageQuality: ImageQuality,
+        updateHandler: @escaping (_ imageQuality: ImageQuality) -> Void,
+    ) {
+        self.imageQuality = imageQuality
         self.updateHandler = updateHandler
         super.init()
     }
-
-    private var remoteDefaultLevel: ImageQualityLevel!
-    private var currentQualityLevel: ImageQualityLevel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,13 +34,6 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
             comment: "Item title for the sent media quality setting"
         )
-
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx)?.phoneNumber
-            remoteDefaultLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)
-            currentQualityLevel = ImageQualityLevel.resolvedQuality(tx: tx)
-        }
 
         updateTableContents()
     }
@@ -48,24 +52,24 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             comment: "The footer for the photos and videos section in the sent media quality settings."
         )
 
-        section.add(qualityItem(remoteDefaultLevel))
+        section.add(qualityItem(.standard))
         section.add(qualityItem(.high))
 
         contents.add(section)
     }
 
-    func qualityItem(_ level: ImageQualityLevel) -> OWSTableItem {
+    func qualityItem(_ imageQuality: ImageQuality) -> OWSTableItem {
         return OWSTableItem(
-            text: level.localizedString,
+            text: imageQuality.localizedString,
             actionBlock: { [weak self] in
-                self?.changeLevel(isHighQuality: level == .high)
+                self?.changeImageQuality(imageQuality)
             },
-            accessoryType: currentQualityLevel == level ? .checkmark : .none
+            accessoryType: self.imageQuality == imageQuality ? .checkmark : .none
         )
     }
 
-    func changeLevel(isHighQuality: Bool) {
-        updateHandler(isHighQuality)
+    func changeImageQuality(_ imageQuality: ImageQuality) {
+        updateHandler(imageQuality)
         navigationController?.popViewController(animated: true)
     }
 }

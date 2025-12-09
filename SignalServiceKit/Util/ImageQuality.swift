@@ -5,20 +5,65 @@
 
 import Foundation
 
+/// The user-selected quality for images. Users are offered a choice between
+/// "standard" and "high" quality. The former may correspond to level "one"
+/// or "two" (depending on a remote config); the latter always corresponds
+/// to level "three". Most callers should use ImageQuality; typically only
+/// the compression logic needs access to ImageQualityLevel.
+public enum ImageQuality {
+    /// Indirectly translates to ImageQualityLevel.one or ImageQualityLevel.two.
+    case standard
+
+    /// Always translates to ImageQualityLevel.three.
+    case high
+
+    private static let keyValueStore = KeyValueStore(collection: "ImageQualityLevel")
+    private static let userSelectedHighQualityKey = "defaultQuality"
+    private static let userSelectedHighQualityValue = 3 as UInt
+
+    public static func fetchValue(tx: DBReadTransaction) -> Self {
+        let highQualityValue = keyValueStore.getUInt(userSelectedHighQualityKey, transaction: tx)
+        return highQualityValue == userSelectedHighQualityValue ? .high : .standard
+    }
+
+    public static func setValue(_ imageQuality: Self, tx: DBWriteTransaction) {
+        switch imageQuality {
+        case .high:
+            keyValueStore.setUInt(userSelectedHighQualityValue, key: userSelectedHighQualityKey, transaction: tx)
+        case .standard:
+            keyValueStore.removeValue(forKey: userSelectedHighQualityKey, transaction: tx)
+        }
+    }
+
+    public var localizedString: String {
+        switch self {
+        case .standard:
+            return OWSLocalizedString("SENT_MEDIA_QUALITY_STANDARD", comment: "String describing standard quality sent media")
+        case .high:
+            return OWSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
+        }
+    }
+}
+
 public enum ImageQualityLevel: UInt, Comparable {
     case one = 1
     case two = 2
     case three = 3
 
-    public static let high: ImageQualityLevel = .three
-
-    // We calculate the "standard" media quality remotely
-    // based on country code. For some regions, we use
-    // a lower "standard" quality than others. High quality
-    // is always level three. If not remotely specified,
-    // standard uses quality level two.
-    public static func remoteDefault(localPhoneNumber: String?) -> ImageQualityLevel {
-        return RemoteConfig.current.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber) ?? .two
+    // We calculate the "standard" media quality remotely based on country
+    // code. For some regions, we use a lower "standard" quality than others.
+    // High quality is always level three. If not remotely specified, standard
+    // uses quality level two.
+    public static func standardQualityLevel(
+        remoteConfig: RemoteConfig = .current,
+        callingCode: Int? = { () -> Int? in
+            let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+            return localIdentifiers.flatMap({ phoneNumberUtil.parseE164($0.phoneNumber) })?.getCallingCode()
+        }(),
+    ) -> ImageQualityLevel {
+        return remoteConfig.standardMediaQualityLevel(callingCode: callingCode) ?? .two
     }
 
     public var startingTier: ImageQualityTier {
@@ -51,8 +96,8 @@ public enum ImageQualityLevel: UInt, Comparable {
         }
     }
 
-    public static var maximumForCurrentAppContext: ImageQualityLevel {
-        if CurrentAppContext().isMainApp {
+    public static func maximumForCurrentAppContext(_ currentAppContext: any AppContext = CurrentAppContext()) -> Self {
+        if currentAppContext.isMainApp {
             return .three
         } else {
             // Outside of the main app (like in the share extension)
@@ -62,49 +107,21 @@ public enum ImageQualityLevel: UInt, Comparable {
         }
     }
 
-    private static let keyValueStore = KeyValueStore(collection: "ImageQualityLevel")
-    private static var userSelectedHighQualityKey: String { "defaultQuality" }
-
-    public static func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
+    public static func resolvedValue(
+        imageQuality: ImageQuality,
+        standardQualityLevel: @autoclosure () -> Self = .standardQualityLevel(),
+        maximumForCurrentAppContext: Self = .maximumForCurrentAppContext(),
+    ) -> ImageQualityLevel {
+        let targetQualityLevel: Self
+        switch imageQuality {
+        case .high:
+            targetQualityLevel = .three
+        case .standard:
+            targetQualityLevel = standardQualityLevel()
+        }
         // If the max quality we allow is less than the stored preference,
         // we have to restrict ourselves to the max allowed.
-        return min(_resolvedQuality(tx: tx), maximumForCurrentAppContext)
-    }
-
-    private static func _resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
-        let isHighQuality: Bool = {
-            // All that matters is "did the user choose high quality explicity?". If
-            // they didn't, we always fall back to the current server-provided value
-            // for standard quality. In the past, we stored low/medium values
-            // explicitly, but this was wrong.
-            guard let rawValue = keyValueStore.getUInt(userSelectedHighQualityKey, transaction: tx) else {
-                return false
-            }
-            return ImageQualityLevel(rawValue: rawValue) == .high
-        }()
-        if isHighQuality {
-            return .high
-        }
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx)?.phoneNumber
-        return remoteDefault(localPhoneNumber: localPhoneNumber)
-    }
-
-    public static func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction) {
-        if isHighQuality {
-            keyValueStore.setUInt(ImageQualityLevel.three.rawValue, key: userSelectedHighQualityKey, transaction: tx)
-        } else {
-            keyValueStore.removeValue(forKey: userSelectedHighQualityKey, transaction: tx)
-        }
-    }
-
-    public var localizedString: String {
-        switch self {
-        case .one, .two:
-            return OWSLocalizedString("SENT_MEDIA_QUALITY_STANDARD", comment: "String describing standard quality sent media")
-        case .three:
-            return OWSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
-        }
+        return min(targetQualityLevel, maximumForCurrentAppContext)
     }
 
     public static func < (lhs: ImageQualityLevel, rhs: ImageQualityLevel) -> Bool {

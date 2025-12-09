@@ -44,23 +44,23 @@ public struct SendableAttachment {
     @concurrent
     public static func forPreviewableAttachment(
         _ previewableAttachment: PreviewableAttachment,
-        imageQuality: ImageQualityLevel? = nil,
+        imageQualityLevel: ImageQualityLevel,
     ) async throws(SignalAttachmentError) -> Self {
         // We only bother converting/compressing non-animated images
-        if let imageQuality, previewableAttachment.isImage, !previewableAttachment.isAnimatedImage {
+        if previewableAttachment.isImage, !previewableAttachment.isAnimatedImage {
             let dataSource = previewableAttachment.dataSource
             guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
                 throw .invalidData
             }
             let isValidOriginal = SignalAttachment.isOriginalImageValid(
-                forImageQuality: imageQuality,
+                forImageQuality: imageQualityLevel,
                 fileSize: UInt64(safeCast: dataSource.dataLength),
                 dataUTI: previewableAttachment.dataUTI,
                 imageMetadata: imageMetadata,
             )
             if !isValidOriginal {
                 let (dataSource, containerType) = try SignalAttachment.convertAndCompressImage(
-                    toImageQuality: imageQuality,
+                    toImageQuality: imageQualityLevel,
                     dataSource: dataSource,
                     imageMetadata: imageMetadata,
                 )

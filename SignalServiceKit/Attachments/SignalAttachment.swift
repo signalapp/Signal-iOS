@@ -676,7 +676,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // standard or high quality. We will do the final convert and compress before uploading.
 
             let isOriginalValid = self.isOriginalImageValid(
-                forImageQuality: .maximumForCurrentAppContext,
+                forImageQuality: .maximumForCurrentAppContext(),
                 fileSize: UInt64(safeCast: dataSource.dataLength),
                 dataUTI: dataUTI,
                 imageMetadata: imageMetadata,
@@ -693,7 +693,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 // Otherwise, resize & convert to a PNG or JPG before previewing it.
                 let containerType: ContainerType
                 (newDataSource, containerType) = try convertAndCompressImage(
-                    toImageQuality: .maximumForCurrentAppContext,
+                    toImageQuality: .maximumForCurrentAppContext(),
                     dataSource: dataSource,
                     imageMetadata: imageMetadata,
                 )

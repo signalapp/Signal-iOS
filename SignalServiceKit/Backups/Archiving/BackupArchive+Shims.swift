@@ -14,7 +14,7 @@ extension BackupArchive {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
         public typealias ContactManager = _MessageBackup_ContactManagerShim
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
-        public typealias ImageQuality = _MessageBackup_ImageQualityLevelShim
+        public typealias ImageQuality = _MessageBackup_ImageQualityShim
         public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerShim
         public typealias Preferences = _MessageBackup_PreferencesShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
@@ -32,7 +32,7 @@ extension BackupArchive {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
         public typealias ContactManager = _MessageBackup_ContactManagerWrapper
         public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
-        public typealias ImageQuality = _MessageBackup_ImageQualityLevelWrapper
+        public typealias ImageQuality = _MessageBackup_ImageQualityWrapper
         public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerWrapper
         public typealias Preferences = _MessageBackup_PreferencesWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
@@ -159,18 +159,18 @@ public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_D
 
 // MARK: - ImageQuality
 
-public protocol _MessageBackup_ImageQualityLevelShim {
-    func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction)
-    func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel
+public protocol _MessageBackup_ImageQualityShim {
+    func setValue(_ imageQuality: ImageQuality, tx: DBWriteTransaction)
+    func fetchValue(tx: DBReadTransaction) -> ImageQuality
 }
 
-public class _MessageBackup_ImageQualityLevelWrapper: _MessageBackup_ImageQualityLevelShim {
-    public func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction) {
-        ImageQualityLevel.setUserSelectedHighQuality(isHighQuality, tx: tx)
+public class _MessageBackup_ImageQualityWrapper: _MessageBackup_ImageQualityShim {
+    public func setValue(_ imageQuality: ImageQuality, tx: DBWriteTransaction) {
+        ImageQuality.setValue(imageQuality, tx: tx)
     }
 
-    public func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
-        ImageQualityLevel.resolvedQuality(tx: tx)
+    public func fetchValue(tx: DBReadTransaction) -> ImageQuality {
+        return ImageQuality.fetchValue(tx: tx)
     }
 }
 

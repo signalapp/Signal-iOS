@@ -253,10 +253,9 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         // If the thing we pasted is sticker-like, send it immediately
         // and render it borderless.
         if attachments.count == 1, let a = attachments.first, a.rawValue.isBorderless {
-            // [15M] TODO: We should compress images here to ensure they're valid.
             Task {
                 await self.sendAttachments(
-                    ApprovedAttachments(nonViewOnceAttachments: [a], imageQuality: nil),
+                    ApprovedAttachments(nonViewOnceAttachments: [a], imageQuality: .standard),
                     messageBody: nil,
                     from: self,
                 )

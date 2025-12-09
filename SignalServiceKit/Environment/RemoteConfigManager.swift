@@ -165,11 +165,10 @@ public class RemoteConfig {
         !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
-    public func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
-        let rawValue: String = ValueFlag.standardMediaQualityLevel.rawValue
+    public func standardMediaQualityLevel(callingCode: Int?) -> ImageQualityLevel? {
         guard
-            let csvString = valueFlags[rawValue],
-            let stringValue = Self.countryCodeValue(csvString: csvString, csvDescription: rawValue, localPhoneNumber: localPhoneNumber),
+            let csvString = self.value(.standardMediaQualityLevel),
+            let stringValue = Self.countryCodeValue(csvString: csvString, callingCode: callingCode),
             let uintValue = UInt(stringValue),
             let defaultMediaQuality = ImageQualityLevel(rawValue: uintValue)
         else {
@@ -404,9 +403,11 @@ public class RemoteConfig {
     ///
     /// - Parameter csvString: a CSV containing `<country-code>:<parts-per-million>` pairs
     /// - Parameter key: a key to use as part of bucketing
-    static func isCountryCodeBucketEnabled(csvString: String, key: String, csvDescription: String, localIdentifiers: LocalIdentifiers) -> Bool {
+    static func isCountryCodeBucketEnabled(csvString: String, key: String, localIdentifiers: LocalIdentifiers) -> Bool {
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let callingCode = phoneNumberUtil.parseE164(localIdentifiers.phoneNumber)?.getCallingCode()
         guard
-            let countryCodeValue = countryCodeValue(csvString: csvString, csvDescription: csvDescription, localPhoneNumber: localIdentifiers.phoneNumber),
+            let countryCodeValue = countryCodeValue(csvString: csvString, callingCode: callingCode),
             let countEnabled = UInt64(countryCodeValue)
         else {
             return false
@@ -415,44 +416,27 @@ public class RemoteConfig {
         return isBucketEnabled(key: key, countEnabled: countEnabled, bucketSize: 1_000_000, localAci: localIdentifiers.aci)
     }
 
-    private static func isCountryCodeBucketEnabled(flag: ValueFlag, valueFlags: [String: String], localIdentifiers: LocalIdentifiers) -> Bool {
-        let rawValue = flag.rawValue
-        guard let csvString = valueFlags[rawValue] else { return false }
-
-        return isCountryCodeBucketEnabled(csvString: csvString, key: rawValue, csvDescription: rawValue, localIdentifiers: localIdentifiers)
-    }
-
     /// Given a CSV of `<country-code>:<value>` pairs, extract the `<value>`
-    /// corresponding to the current user's country.
-    private static func countryCodeValue(csvString: String, csvDescription: String, localPhoneNumber: String?) -> String? {
-        guard !csvString.isEmpty else { return nil }
-
-        // The value should always be a comma-separated list of country codes
-        // colon-separated from a value. There all may be an optional be a wildcard
-        // "*" country code that any unspecified country codes should use. If
-        // neither the local country code or the wildcard is specified, we assume
-        // the value is not set.
+    /// corresponding to the current user's country. The value should always be
+    /// a comma-separated list of country codes colon-separated from a value.
+    /// There may be an optional "*" wildcard country code that any unspecified
+    /// country codes should use. If we can't parse the country code from our
+    /// own phone number, we fall back to this wildcard value.
+    private static func countryCodeValue(csvString: String, callingCode: Int?) -> String? {
         let callingCodeToValueMap = csvString
             .components(separatedBy: ",")
             .reduce(into: [String: String]()) { result, value in
                 let components = value.components(separatedBy: ":")
-                guard components.count == 2 else { return owsFailDebug("Invalid \(csvDescription) value \(value)") }
+                guard components.count == 2 else {
+                    owsFailDebug("malformed country-code:value remote config value")
+                    return
+                }
                 let callingCode = components[0]
                 let countryValue = components[1]
                 result[callingCode] = countryValue
             }
 
-        guard !callingCodeToValueMap.isEmpty else { return nil }
-
-        guard
-            let localPhoneNumber,
-            let localCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localPhoneNumber)?.getCallingCode()
-        else {
-            owsFailDebug("Invalid local number")
-            return nil
-        }
-
-        return callingCodeToValueMap[String(localCallingCode)] ?? callingCodeToValueMap["*"]
+        return callingCode.flatMap({ callingCodeToValueMap[String($0)] }) ?? callingCodeToValueMap["*"]
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, localAci: Aci) -> Bool {

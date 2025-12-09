@@ -786,7 +786,6 @@ extension ExperienceUpgradeManifest {
         guard RemoteConfig.isCountryCodeBucketEnabled(
             csvString: megaphone.manifest.countries,
             key: megaphone.manifest.id,
-            csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)",
             localIdentifiers: localIdentifiers
         ) else {
             return false

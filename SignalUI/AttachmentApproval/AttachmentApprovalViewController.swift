@@ -13,27 +13,22 @@ public import SignalServiceKit
 
 public struct ApprovedAttachments {
     public let isViewOnce: Bool
-    // [15M] TODO: Make this non-optional and always downsample in the same location.
-    public let imageQuality: ImageQualityLevel?
+    public let imageQuality: ImageQuality
     public let attachments: [PreviewableAttachment]
 
-    private init(isViewOnce: Bool, imageQuality: ImageQualityLevel?, attachments: [PreviewableAttachment]) {
+    private init(isViewOnce: Bool, imageQuality: ImageQuality, attachments: [PreviewableAttachment]) {
         owsPrecondition(!isViewOnce || attachments.count <= 1)
         self.isViewOnce = isViewOnce
         self.imageQuality = imageQuality
         self.attachments = attachments
     }
 
-    public init(viewOnceAttachment: PreviewableAttachment, imageQuality: ImageQualityLevel?) {
+    public init(viewOnceAttachment: PreviewableAttachment, imageQuality: ImageQuality) {
         self.init(isViewOnce: true, imageQuality: imageQuality, attachments: [viewOnceAttachment])
     }
 
-    public init(nonViewOnceAttachments: [PreviewableAttachment], imageQuality: ImageQualityLevel?) {
+    public init(nonViewOnceAttachments: [PreviewableAttachment], imageQuality: ImageQuality) {
         self.init(isViewOnce: false, imageQuality: imageQuality, attachments: nonViewOnceAttachments)
-    }
-
-    public static func empty() -> Self {
-        return Self(isViewOnce: false, imageQuality: nil, attachments: [])
     }
 }
 
@@ -92,7 +87,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
 // MARK: -
 
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSNavigationChildController {
+public final class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSNavigationChildController {
 
     // MARK: - Properties
 
@@ -111,8 +106,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         if
-            ImageQualityLevel.maximumForCurrentAppContext == .high,
-            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isImage }) {
+            ImageQualityLevel.maximumForCurrentAppContext() == .three,
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isImage })
+        {
             options.insert(.canChangeQualityLevel)
         }
 
@@ -129,7 +125,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    lazy var outputQualityLevel: ImageQualityLevel = SSKEnvironment.shared.databaseStorageRef.read { .resolvedQuality(tx: $0) }
+    private var outputImageQuality: ImageQuality
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -155,9 +151,26 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    public init(options: AttachmentApprovalViewControllerOptions, attachmentApprovalItems: [AttachmentApprovalItem]) {
+    public static func loadWithSneakyTransaction(
+        attachmentApprovalItems: [AttachmentApprovalItem],
+        options: AttachmentApprovalViewControllerOptions,
+    ) -> Self {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return Self(
+            attachmentApprovalItems: attachmentApprovalItems,
+            defaultImageQuality: databaseStorage.read(block: ImageQuality.fetchValue(tx:)),
+            options: options,
+        )
+    }
+
+    private init(
+        attachmentApprovalItems: [AttachmentApprovalItem],
+        defaultImageQuality: ImageQuality,
+        options: AttachmentApprovalViewControllerOptions,
+    ) {
         assert(attachmentApprovalItems.count > 0)
 
+        self.outputImageQuality = defaultImageQuality
         self.receivedOptions = options
 
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
@@ -166,7 +179,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let isAddMoreVisibleBlock = { [weak self] in
             return self?.isAddMoreVisible ?? false
         }
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisibleBlock)
+        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(
+            attachmentApprovalItems: attachmentApprovalItems,
+            isAddMoreVisible: isAddMoreVisibleBlock,
+        )
         self.dataSource = self
         self.delegate = self
 
@@ -205,7 +221,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if hasQuotedReplyDraft {
             options.insert(.disallowViewOnce)
         }
-        let vc = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
+        let vc = AttachmentApprovalViewController.loadWithSneakyTransaction(attachmentApprovalItems: attachmentApprovalItems, options: options)
         // The data source needs to be set before the message body because it is needed to hydrate mentions.
         vc.approvalDataSource = approvalDataSource
         vc.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
@@ -423,7 +439,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let configuration = AttachmentApprovalToolbar.Configuration(
             isAddMoreVisible: isAddMoreVisible,
             isMediaStripVisible: attachmentApprovalItems.count > 1,
-            isMediaHighQualityEnabled: outputQualityLevel == .high,
+            isMediaHighQualityEnabled: outputImageQuality == .high,
             isViewOnceOn: isViewOnceEnabled,
             canToggleViewOnce: options.contains(.canToggleViewOnce),
             canChangeMediaQuality: options.contains(.canChangeQualityLevel),
@@ -873,7 +889,7 @@ extension AttachmentApprovalViewController {
         // make below are reflected afterwards.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, asyncBlock: { modalVC in
             do {
-                let imageQuality = self.outputQualityLevel
+                let imageQuality = self.outputImageQuality
                 let attachments = try await self.prepareAttachments()
                 modalVC.dismiss {
                     let isViewOnce = self.options.contains(.canToggleViewOnce) && self.isViewOnceEnabled
@@ -1068,16 +1084,9 @@ extension AttachmentApprovalViewController {
         actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.isCancelable = true
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localPhoneNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-        let standardQualityLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)
-
-        let selectionControl = MediaQualitySelectionControl(
-            standardQualityLevel: standardQualityLevel,
-            currentQualityLevel: outputQualityLevel
-        )
+        let selectionControl = MediaQualitySelectionControl(currentQuality: outputImageQuality)
         selectionControl.callback = { [weak self, weak actionSheet] qualityLevel in
-            self?.outputQualityLevel = qualityLevel
+            self?.outputImageQuality = qualityLevel
             self?.updateBottomToolView(animated: false)
 
             if UIAccessibility.isVoiceOverRunning {
@@ -1119,24 +1128,22 @@ extension AttachmentApprovalViewController {
         private let buttonQualityStandard: MediaQualityButton
 
         private let buttonQualityHigh = MediaQualityButton(
-            title: ImageQualityLevel.high.localizedString,
+            title: ImageQuality.high.localizedString,
             subtitle: OWSLocalizedString(
                 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
                 comment: "Subtitle for the 'high' option for media quality."
             )
         )
 
-        private let standardQualityLevel: ImageQualityLevel
-        private(set) var qualityLevel: ImageQualityLevel
+        private(set) var imageQuality: ImageQuality
 
-        var callback: ((ImageQualityLevel) -> Void)?
+        var callback: ((ImageQuality) -> Void)?
 
-        init(standardQualityLevel: ImageQualityLevel, currentQualityLevel: ImageQualityLevel) {
-            self.standardQualityLevel = standardQualityLevel
-            self.qualityLevel = currentQualityLevel
+        init(currentQuality: ImageQuality) {
+            self.imageQuality = currentQuality
 
             self.buttonQualityStandard = MediaQualityButton(
-                title: standardQualityLevel.localizedString,
+                title: ImageQuality.standard.localizedString,
                 subtitle: OWSLocalizedString(
                     "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
                     comment: "Subtitle for the 'standard' option for media quality."
@@ -1146,7 +1153,7 @@ extension AttachmentApprovalViewController {
             super.init(frame: .zero)
 
             buttonQualityStandard.block = { [weak self] in
-                self?.didSelectQualityLevel(standardQualityLevel)
+                self?.didSelectQualityLevel(.standard)
             }
             addSubview(buttonQualityStandard)
             buttonQualityStandard.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .trailing)
@@ -1167,15 +1174,15 @@ extension AttachmentApprovalViewController {
             fatalError("init(coder:) has not been implemented")
         }
 
-        private func didSelectQualityLevel(_ qualityLevel: ImageQualityLevel) {
-            self.qualityLevel = qualityLevel
+        private func didSelectQualityLevel(_ imageQuality: ImageQuality) {
+            self.imageQuality = imageQuality
             updateButtonAppearance()
-            callback?(qualityLevel)
+            callback?(imageQuality)
         }
 
         private func updateButtonAppearance() {
-            buttonQualityStandard.isSelected = qualityLevel == standardQualityLevel
-            buttonQualityHigh.isSelected = qualityLevel == .high
+            buttonQualityStandard.isSelected = imageQuality == .standard
+            buttonQualityHigh.isSelected = imageQuality == .high
         }
 
         private class MediaQualityButton: OWSButton {
@@ -1256,7 +1263,7 @@ extension AttachmentApprovalViewController {
 
         override var accessibilityValue: String? {
             get {
-                let selectedButton = qualityLevel == .high ? buttonQualityHigh : buttonQualityStandard
+                let selectedButton = imageQuality == .high ? buttonQualityHigh : buttonQualityStandard
                 return [ selectedButton.topLabel, selectedButton.bottomLabel ].compactMap { $0.text }.joined(separator: ",")
             }
             set { super.accessibilityValue = newValue }
@@ -1268,20 +1275,20 @@ extension AttachmentApprovalViewController {
         }
 
         override func accessibilityActivate() -> Bool {
-            callback?(qualityLevel)
+            callback?(imageQuality)
             return true
         }
 
         override func accessibilityIncrement() {
-            if qualityLevel == standardQualityLevel {
-                qualityLevel = .high
+            if imageQuality == .standard {
+                imageQuality = .high
                 updateButtonAppearance()
             }
         }
 
         override func accessibilityDecrement() {
-            if qualityLevel == .high {
-                qualityLevel = standardQualityLevel
+            if imageQuality == .high {
+                imageQuality = .standard
                 updateButtonAppearance()
             }
         }
