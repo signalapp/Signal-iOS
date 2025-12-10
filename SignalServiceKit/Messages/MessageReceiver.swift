@@ -896,6 +896,11 @@ public final class MessageReceiver {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
+        guard SDS.fitsInInt64(dataMessage.timestamp) else {
+            Logger.warn("Ignoring dataMessage with too-large timestamp.")
+            return
+        }
+
         let envelope = request.decryptedEnvelope
 
         if let groupId = self.groupId(for: dataMessage) {
@@ -2083,6 +2088,9 @@ public final class MessageReceiver {
 
         guard let dataMessage = editMessage.dataMessage else {
             throw OWSAssertionError("Missing dataMessage in edit")
+        }
+        guard SDS.fitsInInt64(dataMessage.timestamp) else {
+            throw OWSAssertionError("dataMessage in edit had too-large timestamp! \(dataMessage.timestamp)")
         }
 
         let message = try DependenciesBridge.shared.editManager.processIncomingEditMessage(
