@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• 投票功能现提供更多辅助功能标签，以优化旁白支持。

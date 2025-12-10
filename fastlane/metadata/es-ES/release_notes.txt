@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• Ahora las encuestas incluyen etiquetas adicionales de accesibilidad para mejorar la compatibilidad con VoiceOver.

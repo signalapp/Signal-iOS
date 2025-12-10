@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "મીડિયા પર પ્રક્રિયા કરી રહ્યું છે...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Tap \"Back Up Now\" to try again.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "તમારું છેલ્લું બેકઅપ પૂર્ણ કરી શકાયું નથી. ફરી પ્રયાસ કરવા માટે \"હમણાં બેકઅપ લો\" પર ટેપ કરો.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "અપગ્રેડ કરો";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "ચલણ";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Don’t Show Again";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "ફરીથી બતાવશો નહીં";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "તમારા મેસેજમાં ફેરફાર કરવા માટે તેના પર ઝડપથી બે વાર ટેપ કરો. તમે તમારા મેસેજ મોકલ્યા પછી 24 કલાક સુધી તેમાં ફેરફાર કરી શકો છો.";
@@ -3839,10 +3839,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@એ ફક્ત એડમિનને મેસેજ મોકલવાની મંજૂરી આપવા માટે ગ્રુપ સેટિંગ્સ બદલ્યા.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "આ ગ્રૂપમાં જોડાવું છે અને તમારું નામ અને ફોટો તેના સભ્યો સાથે શેર કરવા છે?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "When you request to join, your name and photo will be shared with this group's members. An admin must approve your request.";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "જ્યારે તમે જોડાવાની વિનંતી કરશો, ત્યારે તમારું નામ અને ફોટો આ ગ્રૂપના સભ્યો સાથે શેર કરવામાં આવશે. એડમિને તમારી વિનંતી મંજૂર કરવી આવશ્યક છે.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "તમે ગ્રૂપ લિંક દ્વારા આ ગ્રૂપમાં જોડાઈ શકતા નથી કારણ કે એક એડમિને તમને દૂર કર્યા. ગ્રૂપમાં પાછા ઉમેરાવા માટે એડમિનનો સંપર્ક કરો.";
@@ -6542,43 +6542,43 @@
 "PINNED_CONVERSATION_LIMIT" = "તમે ફક્ત 4 ચેટ સુધી પિન કરી શકો છો.";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "મેસેજને પિન કરો";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
+"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "મેસેજને પિન કરવાથી સૌથી જૂનો મેસેજ બદલાઈ જશે.";
 
 /* Option in pinned message action sheet to replace oldest pin. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Replace";
+"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "બદલો";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "સૌથી જૂનો પિન બદલવો છે?";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "Message unpinned";
+"PINNED_MESSAGE_TOAST" = "મેસેજ અનપિન કર્યો";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "મેસેજને અનપિન કરો";
 
 /* Title for Pinned Messages detail view */
-"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+"PINNED_MESSAGES_DETAILS_TITLE" = "પિન કરેલા મેસેજ";
 
 /* Action menu item to go to a message in the conversation view */
-"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "મેસેજ પર જાઓ";
 
 /* Action menu item to see all pinned messages */
-"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "બધા મેસેજ જુઓ";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "મેસેજને અનપિન કરો";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "પિન કરેલું";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Disappearing messages will be unpinned when their timer expires and the message is removed from the chat.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "ગાયબ થતાં મેસેજનું ટાઇમર સમાપ્ત થઈ ગયા પછી તે અનપિન થઈ જશે અને મેસેજ ચેટમાંથી દૂર થઈ જશે.";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Pinning Disappearing Messages";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "ગાયબ થતાં મેસેજને પિન કરવા";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "PIN બનાવો";
@@ -6596,7 +6596,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "મીડિયા ચલાવો";
 
 /* Accessibility label for poll message. Embeds {{ poll question }}. */
-"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+"POLL_ACCESSIBILITY_LABEL" = "મતદાન: %1$@.";
 
 /* Accessibility label for a vote option that is not selected by the user. */
 "POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "બાકી";
@@ -8750,10 +8750,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "ફીચર્ડ";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "એક સ્ટીકર મોકલો અને તે અહીં દેખાશે";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "કોઈ તાજેતરના સ્ટીકરો નથી";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "તાજેતરનું";
@@ -9202,9 +9202,6 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "ઘાટા";
 
-/* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "ફોર્મેટિંગ દૂર કરો";
-
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "ફોર્મેટ કરો";
 
@@ -9213,6 +9210,9 @@
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "મોનોસ્પેસ";
+
+/* Option in selected text edit menu to remove all text formatting in the selected text range */
+"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "મેસેજ ઝાંખો કરનાર";

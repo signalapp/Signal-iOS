@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• סקרים כוללים כעת תוויות נגישות נוספות לשיפור התמיכה ב-VoiceOver.

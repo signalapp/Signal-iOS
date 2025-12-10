@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• Undian kini termasuk label kebolehcapaian tambahan untuk sokongan VoiceOver yang lebih baik.

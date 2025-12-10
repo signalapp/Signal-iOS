@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• Afstemninger har nu ekstra tilgængelighedsetiketter for bedre VoiceOver-understøttelse.
