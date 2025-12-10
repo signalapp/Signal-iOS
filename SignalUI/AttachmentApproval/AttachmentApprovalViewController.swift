@@ -766,7 +766,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        let dataSource = DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: fileUrl, ownership: .owned)
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
         if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {

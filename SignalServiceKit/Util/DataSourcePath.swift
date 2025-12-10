@@ -6,21 +6,30 @@
 import Foundation
 
 public class DataSourcePath {
-    public init(fileUrl: URL, shouldDeleteOnDeallocation: Bool) {
-        owsPrecondition(fileUrl.isFileURL)
-        self.fileUrl = fileUrl
-        self.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation
+    public enum Ownership {
+        /// The `DataSourcePath` owns this URL and may consume it.
+        case owned
+
+        /// The `DataSourcePath` is borrowing a reference to this file and must not
+        /// touch it.
+        case borrowed
     }
 
-    public convenience init(filePath: String, shouldDeleteOnDeallocation: Bool) {
+    public init(fileUrl: URL, ownership: Ownership) {
+        owsPrecondition(fileUrl.isFileURL)
+        self.fileUrl = fileUrl
+        self.ownership = ownership
+    }
+
+    public convenience init(filePath: String, ownership: Ownership) {
         let fileUrl = URL(fileURLWithPath: filePath)
-        self.init(fileUrl: fileUrl, shouldDeleteOnDeallocation: shouldDeleteOnDeallocation)
+        self.init(fileUrl: fileUrl, ownership: ownership)
     }
 
     public convenience init(writingTempFileData: Data, fileExtension: String) throws {
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension, isAvailableWhileDeviceLocked: true)
         try writingTempFileData.write(to: fileUrl, options: .completeFileProtectionUntilFirstUserAuthentication)
-        self.init(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
+        self.init(fileUrl: fileUrl, ownership: .owned)
     }
 
     public convenience init(writingSyncMessageData: Data) throws {
@@ -28,10 +37,9 @@ public class DataSourcePath {
     }
 
     deinit {
-        if shouldDeleteOnDeallocation && !isConsumed.get() {
-            // In the ObjC code this would fire into a dispatch queue
+        if ownership == .owned && !isConsumed.get() {
             do {
-                try FileManager.default.removeItem(at: fileUrl)
+                try OWSFileSystem.deleteFileIfExists(url: fileUrl)
             } catch {
                 owsFailDebug("DataSourcePath could not delete file: \(fileUrl), \(error)")
             }
@@ -39,7 +47,7 @@ public class DataSourcePath {
     }
 
     public let fileUrl: URL
-    private let shouldDeleteOnDeallocation: Bool
+    private let ownership: Ownership
     private let isConsumed = AtomicBool(false, lock: .init())
 
     private var _sourceFilename: String?
@@ -63,9 +71,11 @@ public class DataSourcePath {
         return UInt64(try fileUrl.resourceValues(forKeys: [.fileSizeKey]).fileSize!)
     }
 
-    public func consumeAndDelete() throws {
+    public func consumeAndDeleteIfNecessary() throws {
         owsAssertDebug(isConsumed.tryToSetFlag())
-        try OWSFileSystem.deleteFileIfExists(url: fileUrl)
+        if ownership == .owned {
+            try OWSFileSystem.deleteFileIfExists(url: fileUrl)
+        }
     }
 
     public func imageSource() throws -> any OWSImageSource {

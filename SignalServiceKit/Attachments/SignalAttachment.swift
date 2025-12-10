@@ -848,7 +848,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 throw .couldNotConvertImage
             }
 
-            let outputDataSource = DataSourcePath(fileUrl: tempFileUrl, shouldDeleteOnDeallocation: false)
+            let outputDataSource = DataSourcePath(fileUrl: tempFileUrl, ownership: .owned)
             let outputFileSize: UInt64
             do {
                 outputFileSize = try outputDataSource.readLength()
@@ -1085,7 +1085,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             mp4Filename = nil
         }
 
-        let dataSource = DataSourcePath(fileUrl: exportURL, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: exportURL, ownership: .owned)
         dataSource.sourceFilename = mp4Filename
 
         let endTime = MonotonicDate()

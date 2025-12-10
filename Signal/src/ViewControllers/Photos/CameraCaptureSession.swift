@@ -831,7 +831,7 @@ class CameraCaptureSession: NSObject {
 
     private func handleVideoRecording(at outputUrl: URL) throws {
         AssertIsOnMainThread()
-        let dataSource = DataSourcePath(fileUrl: outputUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: outputUrl, ownership: .owned)
         let attachment = try SignalAttachment.videoAttachment(
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,

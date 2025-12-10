@@ -14,7 +14,7 @@ class SignalAttachmentTest: SignalBaseTest {
     func testMetadataStrippingDoesNotChangeOrientation(url: URL) throws {
         let size = (try? DataImageSource.forPath(url.path).imageMetadata()?.pixelSize) ?? .zero
 
-        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourcePath(fileUrl: url, ownership: .borrowed)
         let attachment = try SignalAttachment.imageAttachment(
             dataSource: dataSource,
             dataUTI: UTType.jpeg.identifier
@@ -52,7 +52,7 @@ class SignalAttachmentTest: SignalBaseTest {
     func testRemoveMetadataFromPng() throws {
         let testBundle = Bundle(for: Self.self)
         let url = testBundle.url(forResource: "test-png-with-metadata", withExtension: "png")!
-        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourcePath(fileUrl: url, ownership: .borrowed)
         XCTAssertEqual(
             try pngChunkTypes(data: dataSource.readData()),
             ["IHDR", "PLTE", "sRGB", "tIME", "tEXt", "IDAT", "IEND"],

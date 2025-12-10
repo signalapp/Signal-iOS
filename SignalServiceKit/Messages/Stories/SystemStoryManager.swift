@@ -52,7 +52,6 @@ public class OnboardingStoryManagerStoryMessageFactory {
     ) async throws -> AttachmentDataSource {
         return try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
             dataSource: dataSource,
-            shouldConsume: true,
             mimeType: mimeType,
             renderingFlag: .default,
             sourceFilename: nil
@@ -548,7 +547,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         }
         let dataSource = DataSourcePath(
             fileUrl: resultUrl,
-            shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
+            ownership: CurrentAppContext().isRunningTests ? .borrowed : .owned,
         )
         return try await storyMessageFactory.validateAttachmentContents(
             dataSource: dataSource,

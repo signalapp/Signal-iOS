@@ -20,7 +20,6 @@ extension SendableAttachment {
     public func forSending(attachmentContentValidator: any AttachmentContentValidator) async throws -> ForSending {
         let dataSource = try await attachmentContentValidator.validateContents(
             sendableAttachment: self,
-            shouldConsume: true,
             shouldUseDefaultFilename: true,
         )
         return ForSending(

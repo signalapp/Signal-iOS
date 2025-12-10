@@ -66,12 +66,8 @@ public protocol AttachmentContentValidator {
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing fails.
-    ///
-    /// - Parameter  shouldConsume: If true, the source file will be deleted and the DataSource
-    /// consumed after validation is complete; otherwise the source file will be left as-is.
     func validateContents(
         dataSource: DataSourcePath,
-        shouldConsume: Bool,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -189,12 +185,10 @@ extension AttachmentContentValidator {
 
     public func validateContents(
         sendableAttachment: SendableAttachment,
-        shouldConsume: Bool,
         shouldUseDefaultFilename: Bool,
     ) async throws -> AttachmentDataSource {
         return try await validateContents(
             dataSource: sendableAttachment.dataSource,
-            shouldConsume: shouldConsume,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,
             sourceFilename: sendableAttachment.sourceFilename?.rawValue ?? (shouldUseDefaultFilename ? sendableAttachment.defaultFilename : nil),
@@ -203,14 +197,12 @@ extension AttachmentContentValidator {
 
     public func validateContents(
         dataSource: DataSourcePath,
-        shouldConsume: Bool,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) async throws -> AttachmentDataSource {
         return await .from(pendingAttachment: try self.validateContents(
             dataSource: dataSource,
-            shouldConsume: shouldConsume,
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename

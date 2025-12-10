@@ -159,7 +159,6 @@ public class AttachmentMultisend {
             for attachment in sendableAttachments {
                 let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
                     sendableAttachment: attachment,
-                    shouldConsume: true,
                     shouldUseDefaultFilename: false,
                 )
                 try results.append(.init(
@@ -182,7 +181,6 @@ public class AttachmentMultisend {
                 // doesn't segment.
                 originalDataSource = try await deps.attachmentValidator.validateContents(
                     sendableAttachment: segmentingResult.original,
-                    shouldConsume: true,
                     shouldUseDefaultFilename: false,
                 )
             } else {
@@ -197,7 +195,6 @@ public class AttachmentMultisend {
                 for segment in segments {
                     let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
                         sendableAttachment: segment,
-                        shouldConsume: true,
                         shouldUseDefaultFilename: false,
                     )
                     segmentedDataSources.append(dataSource)

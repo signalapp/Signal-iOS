@@ -379,7 +379,7 @@ public struct TypedItemProvider {
         let copiedUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileUrl.pathExtension)
         try FileManager.default.copyItem(at: fileUrl, to: copiedUrl)
 
-        let dataSource = DataSourcePath(fileUrl: copiedUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: copiedUrl, ownership: .owned)
         dataSource.sourceFilename = fileUrl.lastPathComponent
 
         let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileUrl.pathExtension) ?? defaultTypeIdentifier

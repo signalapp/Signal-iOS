@@ -28,7 +28,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateContents(
         dataSource: DataSourcePath,
-        shouldConsume: Bool,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
@@ -46,11 +45,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 sourceFilename: sourceFilename
             )]
         ).values.first!
-
-        if shouldConsume {
-            try dataSource.consumeAndDelete()
-        }
-
+        try dataSource.consumeAndDeleteIfNecessary()
         return pendingAttachment
     }
 

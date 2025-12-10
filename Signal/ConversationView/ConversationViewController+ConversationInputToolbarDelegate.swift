@@ -806,7 +806,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return
         }
 
-        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourcePath(fileUrl: url, ownership: .owned)
         dataSource.sourceFilename = filename
 
         let contentTypeIdentifier = (resourceValues?.contentType ?? .data).identifier

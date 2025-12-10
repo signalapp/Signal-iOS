@@ -134,7 +134,7 @@ public struct SendableAttachment {
         }
 
         let segments = try segmentFileUrls.map { url in
-            let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: true)
+            let dataSource = DataSourcePath(fileUrl: url, ownership: .owned)
             // [15M] TODO: This doesn't transfer all SignalAttachment fields.
             let attachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: self.dataUTI)
             return Self(nonImagePreviewableAttachment: PreviewableAttachment(rawValue: attachment))
