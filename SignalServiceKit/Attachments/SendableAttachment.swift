@@ -13,14 +13,14 @@ import Foundation
 /// send as-is. The bytes representing these attachments meet the criteria
 /// for sending via Signal.
 public struct SendableAttachment {
-    public let dataSource: any DataSource
+    public let dataSource: DataSourcePath
     public let dataUTI: String
     public let sourceFilename: FilteredFilename?
     public let mimeType: String
     public let renderingFlag: AttachmentReference.RenderingFlag
 
     private init(
-        dataSource: any DataSource,
+        dataSource: DataSourcePath,
         dataUTI: String,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -52,9 +52,12 @@ public struct SendableAttachment {
             guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
                 throw .invalidData
             }
+            guard let fileSize = try? dataSource.readLength() else {
+                throw .invalidData
+            }
             let isValidOriginal = SignalAttachment.isOriginalImageValid(
                 forImageQuality: imageQualityLevel,
-                fileSize: UInt64(safeCast: dataSource.dataLength),
+                fileSize: fileSize,
                 dataUTI: previewableAttachment.dataUTI,
                 imageMetadata: imageMetadata,
             )
@@ -110,9 +113,7 @@ public struct SendableAttachment {
         guard SignalAttachment.videoUTISet.contains(self.dataUTI) else {
             return SegmentAttachmentResult(self, segmented: nil)
         }
-        let dataSource = self.dataSource as! DataSourcePath
-
-        let asset = AVURLAsset(url: dataSource.fileUrl)
+        let asset = AVURLAsset(url: self.dataSource.fileUrl)
         let cmDuration = asset.duration
         let duration = cmDuration.seconds
         guard duration > segmentDuration else {
@@ -133,7 +134,7 @@ public struct SendableAttachment {
         }
 
         let segments = try segmentFileUrls.map { url in
-            let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: true)
+            let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: true)
             // [15M] TODO: This doesn't transfer all SignalAttachment fields.
             let attachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: self.dataUTI)
             return Self(nonImagePreviewableAttachment: PreviewableAttachment(rawValue: attachment))

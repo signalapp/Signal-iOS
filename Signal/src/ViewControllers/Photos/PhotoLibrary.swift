@@ -95,30 +95,27 @@ class PhotoAlbumContents {
         _ = imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: resultHandler)
     }
 
-    private func requestImageDataSource(for asset: PHAsset) async throws -> (dataSource: DataSource, dataUTI: String) {
+    private func requestImageDataSource(for asset: PHAsset) async throws -> (dataSource: DataSourcePath, dataUTI: String) {
         let options: PHImageRequestOptions = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
         options.version = .current
         options.deliveryMode = .highQualityFormat
-
-        return try await withCheckedThrowingContinuation { continuation in
+        let (imageData, dataUTI) = await withCheckedContinuation { continuation in
             _ = imageManager.requestImageDataAndOrientation(for: asset, options: options) { imageData, dataUTI, _, _ in
-                guard let imageData else {
-                    continuation.resume(throwing: PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
-                    return
-                }
-                guard let dataUTI else {
-                    continuation.resume(throwing: PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil"))
-                    return
-                }
-
-                guard let dataSource = DataSourceValue(imageData, utiType: dataUTI) else {
-                    continuation.resume(throwing: PhotoLibraryError.assertionError(description: "dataSource was unexpectedly nil"))
-                    return
-                }
-                continuation.resume(returning: (dataSource: dataSource, dataUTI: dataUTI))
+                continuation.resume(returning: (imageData, dataUTI))
             }
         }
+        guard let imageData else {
+            throw PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil")
+        }
+        guard let dataUTI else {
+            throw PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil")
+        }
+        guard let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI) else {
+            throw PhotoLibraryError.assertionError(description: "fileExtension was unexpectedly nil")
+        }
+        let dataSource = try DataSourcePath(writingTempFileData: imageData, fileExtension: fileExtension)
+        return (dataSource: dataSource, dataUTI: dataUTI)
     }
 
     private func requestVideoDataSource(for asset: PHAsset) async throws -> AVAsset {

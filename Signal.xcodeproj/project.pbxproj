@@ -1374,7 +1374,7 @@
 		7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */; };
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
 		7257F67E2C8B522200269C1E /* OWSBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257F67D2C8B522200269C1E /* OWSBackgroundTask.swift */; };
-		725DBBE12C7628BB003BAF74 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725DBBE02C7628BB003BAF74 /* DataSource.swift */; };
+		725DBBE12C7628BB003BAF74 /* DataSourcePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725DBBE02C7628BB003BAF74 /* DataSourcePath.swift */; };
 		7267B1562C5D4D3100612C34 /* Sha256HmacSiv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */; };
 		7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */; };
 		726C94222D6F442D00ABF9B9 /* UncooperativeTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */; };
@@ -5482,7 +5482,7 @@
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
 		72552EF32C9EF9E7008614AF /* OWSIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSIdentity.swift; sourceTree = "<group>"; };
 		7257F67D2C8B522200269C1E /* OWSBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSBackgroundTask.swift; sourceTree = "<group>"; };
-		725DBBE02C7628BB003BAF74 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		725DBBE02C7628BB003BAF74 /* DataSourcePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourcePath.swift; sourceTree = "<group>"; };
 		7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSiv.swift; sourceTree = "<group>"; };
 		7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSivTest.swift; sourceTree = "<group>"; };
 		726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncooperativeTimeout.swift; sourceTree = "<group>"; };
@@ -15140,7 +15140,7 @@
 				F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */,
 				F93999F728C8204800E34899 /* Data+MessagePadding.swift */,
 				F9C5CB2D289453B200548EEE /* Data+SSK.swift */,
-				725DBBE02C7628BB003BAF74 /* DataSource.swift */,
+				725DBBE02C7628BB003BAF74 /* DataSourcePath.swift */,
 				F9C5CB7C289453B200548EEE /* Date+SSK.swift */,
 				3452851A26DE890300824983 /* DateUtil.swift */,
 				F9C5CB06289453B200548EEE /* DebouncedEvent.swift */,
@@ -18774,7 +18774,7 @@
 				669C4AAE2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift in Sources */,
 				F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */,
 				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
-				725DBBE12C7628BB003BAF74 /* DataSource.swift in Sources */,
+				725DBBE12C7628BB003BAF74 /* DataSourcePath.swift in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				667DEE6B2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift in Sources */,
 				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,

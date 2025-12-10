@@ -54,10 +54,10 @@ class VideoEditorModel: NSObject {
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
     init?(_ attachment: PreviewableAttachment) throws {
-        guard let dataSource = attachment.rawValue.dataSourceIfVideo, !attachment.rawValue.isLoopingVideo else {
+        guard attachment.rawValue.isVideo, !attachment.rawValue.isLoopingVideo else {
             return nil
         }
-        let mediaUrl = dataSource.fileUrl
+        let mediaUrl = attachment.rawValue.dataSource.fileUrl
         self.srcVideoPath = mediaUrl.path
 
         let asset = AVURLAsset(url: mediaUrl)

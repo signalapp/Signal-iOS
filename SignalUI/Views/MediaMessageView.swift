@@ -81,10 +81,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func createAudioPreview() {
-        guard let audioPlayer = AudioPlayer(attachment: attachment, audioBehavior: .playback) else {
-            createGenericPreview()
-            return
-        }
+        let audioPlayer = AudioPlayer(attachment: attachment, audioBehavior: .playback)
 
         audioPlayer.delegate = self
         self.audioPlayer = audioPlayer
@@ -137,8 +134,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createAnimatedPreview() {
         guard
             attachment.isImage,
-            let dataUrl = attachment.rawValue.dataSource.dataUrl,
-            let image = SDAnimatedImage(contentsOfFile: dataUrl.path),
+            let image = SDAnimatedImage(contentsOfFile: attachment.rawValue.dataSource.fileUrl.path),
             image.size.width > 0 && image.size.height > 0
         else {
             createGenericPreview()
@@ -307,7 +303,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private func createFileSizeLabel() -> UIView {
         let label = UILabel()
-        let fileSize = attachment.rawValue.dataSource.dataLength
+        let fileSize = (try? attachment.rawValue.dataSource.readLength()) ?? 0
         label.text = String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             OWSFormat.localizedFileSizeString(from: Int64(fileSize)))

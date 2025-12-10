@@ -244,10 +244,11 @@ public struct TypedItemProvider {
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
             let pkPass = try await loadDataRepresentation()
-            let dataSource = DataSourceValue(pkPass, utiType: itemType.typeIdentifier)
-            guard let dataSource else {
+            let fileExtension = MimeTypeUtil.fileExtensionForUtiType(itemType.typeIdentifier)
+            guard let fileExtension else {
                 throw SignalAttachmentError.missingData
             }
+            let dataSource = try DataSourcePath(writingTempFileData: pkPass, fileExtension: fileExtension)
             attachment = PreviewableAttachment(
                 rawValue: try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier),
             )
@@ -346,11 +347,12 @@ public struct TypedItemProvider {
         } else {
             // If this is too large to send as a message, fall back to treating it as a
             // generic attachment that happens to contain text.
+            let dataSource = try DataSourcePath(
+                writingTempFileData: Data(filteredText.rawValue.utf8),
+                fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
+            )
             return .other(PreviewableAttachment(rawValue: try SignalAttachment.genericAttachment(
-                dataSource: DataSourceValue(
-                    Data(filteredText.rawValue.utf8),
-                    fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
-                ),
+                dataSource: dataSource,
                 dataUTI: UTType.plainText.identifier,
             )))
         }
@@ -360,12 +362,9 @@ public struct TypedItemProvider {
         guard let imagePng = image.pngData() else {
             throw ItemProviderError.uiImageMissingOrCorruptImageData
         }
-        let type = UTType.png
-        let dataSource = DataSourceValue(imagePng, utiType: type.identifier)
-        guard let dataSource else {
-            throw SignalAttachmentError.missingData
-        }
-        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: type.identifier)
+        let containerType = SignalAttachment.ContainerType.png
+        let dataSource = try DataSourcePath(writingTempFileData: imagePng, fileExtension: containerType.fileExtension)
+        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
         return PreviewableAttachment(rawValue: attachment)
     }
 
@@ -380,7 +379,7 @@ public struct TypedItemProvider {
         let copiedUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileUrl.pathExtension)
         try FileManager.default.copyItem(at: fileUrl, to: copiedUrl)
 
-        let dataSource = try DataSourcePath(fileUrl: copiedUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: copiedUrl, shouldDeleteOnDeallocation: true)
         dataSource.sourceFilename = fileUrl.lastPathComponent
 
         let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileUrl.pathExtension) ?? defaultTypeIdentifier

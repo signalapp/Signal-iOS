@@ -1928,10 +1928,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 return try await attachmentValidator.validateContents(
-                    dataSource: DataSourcePath(
-                        fileUrl: stickerDataUrl,
-                        shouldDeleteOnDeallocation: false
-                    ),
+                    dataSource: DataSourcePath(fileUrl: stickerDataUrl, shouldDeleteOnDeallocation: false),
                     shouldConsume: false,
                     mimeType: mimeType.rawValue,
                     renderingFlag: .borderless,

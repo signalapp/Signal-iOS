@@ -305,12 +305,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     ) async throws -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[link'n'sync]")
 
-        let dataLength = dataSource.dataLength
         let sourceURL = dataSource.fileUrl
-        guard dataLength > 0, let dataLength = UInt32(exactly: dataLength) else {
+        guard let fileSize = try? dataSource.readLength(), fileSize > 0, let fileSize = UInt32(exactly: fileSize) else {
             throw OWSAssertionError("invalid link n sync attachment size")
         }
-        let metadata = Upload.LinkNSyncUploadMetadata(fileUrl: sourceURL, encryptedDataLength: dataLength)
+        let metadata = Upload.LinkNSyncUploadMetadata(fileUrl: sourceURL, encryptedDataLength: fileSize)
         let form = try await Upload.FormRequest(
             networkManager: networkManager
         ).start()

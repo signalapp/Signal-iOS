@@ -53,14 +53,8 @@ public class AttachmentApprovalItem {
         guard attachment.rawValue.isImage, !attachment.rawValue.isAnimatedImage else {
             return nil
         }
-        guard let dataUrl: URL = attachment.rawValue.dataSource.dataUrl, dataUrl.isFileURL else {
-            owsFailDebug("Missing dataUrl.")
-            return nil
-        }
-
-        let path = dataUrl.path
         do {
-            return try ImageEditorModel(srcImagePath: path)
+            return try ImageEditorModel(srcImagePath: attachment.rawValue.dataSource.fileUrl.path)
         } catch {
             owsFailDebug("Could not create image editor: \(error)")
             return nil

@@ -133,7 +133,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
     }
 
     public override class func validateAttachmentContents(
-        dataSource: any DataSource,
+        dataSource: DataSourcePath,
         mimeType: String
     ) async throws -> AttachmentDataSource {
         struct FakePendingAttachment: PendingAttachment {

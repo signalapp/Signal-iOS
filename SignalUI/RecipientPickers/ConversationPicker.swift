@@ -86,13 +86,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         let maxVideoAttachmentDuration: TimeInterval? = attachments
             .lazy
             .compactMap { attachment in
-                guard
-                    attachment.rawValue.isVideo,
-                    let url = attachment.rawValue.dataSource.dataUrl
-                else {
+                guard attachment.rawValue.isVideo else {
                     return nil
                 }
-                return AVURLAsset(url: url).duration.seconds
+                return AVURLAsset(url: attachment.rawValue.dataSource.fileUrl).duration.seconds
             }
             .max()
 

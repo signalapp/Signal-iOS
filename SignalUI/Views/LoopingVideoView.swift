@@ -12,10 +12,7 @@ public class LoopingVideo: NSObject {
     fileprivate var asset: AVAsset
 
     public convenience init?(_ attachment: PreviewableAttachment) {
-        guard let url = attachment.rawValue.dataSource.dataUrl else {
-            return nil
-        }
-        self.init(decryptedLocalFileUrl: url)
+        self.init(decryptedLocalFileUrl: attachment.rawValue.dataSource.fileUrl)
     }
 
     public convenience init?(_ attachment: AttachmentStream) {

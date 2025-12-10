@@ -484,10 +484,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         do {
             return try await attachmentUploadManager.uploadLinkNSyncAttachment(
-                dataSource: try DataSourcePath(
-                    fileUrl: metadata.fileUrl,
-                    shouldDeleteOnDeallocation: true
-                ),
+                dataSource: DataSourcePath(fileUrl: metadata.fileUrl, shouldDeleteOnDeallocation: true),
                 progress: progress
             )
         } catch {

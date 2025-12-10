@@ -47,7 +47,7 @@ public class OnboardingStoryManagerStoryMessageFactory {
     }
 
     public class func validateAttachmentContents(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         mimeType: String
     ) async throws -> AttachmentDataSource {
         return try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
@@ -546,7 +546,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         guard fileSystem.isValidImage(at: resultUrl) else {
             throw OWSAssertionError("Invalid onboarding asset")
         }
-        let dataSource = try DataSourcePath(
+        let dataSource = DataSourcePath(
             fileUrl: resultUrl,
             shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
         )

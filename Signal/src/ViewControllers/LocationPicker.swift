@@ -480,10 +480,7 @@ public class Location: NSObject {
         guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
             throw LocationError.assertion
         }
-        let dataSource = DataSourceValue(jpegData, utiType: UTType.jpeg.identifier)
-        guard let dataSource else {
-            throw SignalAttachmentError.missingData
-        }
+        let dataSource = try DataSourcePath(writingTempFileData: jpegData, fileExtension: "jpg")
         return try await SendableAttachment.forPreviewableAttachment(
             PreviewableAttachment(rawValue: SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)),
             imageQualityLevel: .one,

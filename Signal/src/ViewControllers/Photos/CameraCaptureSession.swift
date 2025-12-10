@@ -831,7 +831,7 @@ class CameraCaptureSession: NSObject {
 
     private func handleVideoRecording(at outputUrl: URL) throws {
         AssertIsOnMainThread()
-        let dataSource = try DataSourcePath(fileUrl: outputUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: outputUrl, shouldDeleteOnDeallocation: true)
         let attachment = try SignalAttachment.videoAttachment(
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
@@ -992,12 +992,9 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
         case .failure(let error):
             delegate.cameraCaptureSession(self, didFailWith: error)
         case .success(let photoData):
-            let dataSource = DataSourceValue(photoData, utiType: UTType.jpeg.identifier)
             let attachment: SignalAttachment
-            do throws(SignalAttachmentError) {
-                guard let dataSource else {
-                    throw .missingData
-                }
+            do {
+                let dataSource = try DataSourcePath(writingTempFileData: photoData, fileExtension: "jpg")
                 attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             } catch {
                 delegate.cameraCaptureSession(self, didFailWith: error)

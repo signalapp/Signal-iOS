@@ -17,10 +17,7 @@ enum SignalAttachmentCloner {
             filename: attachment.reference.sourceFilename
         )
 
-        let decryptedDataSource = try DataSourcePath(
-            fileUrl: decryptedCopyUrl,
-            shouldDeleteOnDeallocation: true
-        )
+        let decryptedDataSource = DataSourcePath(fileUrl: decryptedCopyUrl, shouldDeleteOnDeallocation: true)
         decryptedDataSource.sourceFilename = attachment.reference.sourceFilename
 
         let signalAttachment: SignalAttachment

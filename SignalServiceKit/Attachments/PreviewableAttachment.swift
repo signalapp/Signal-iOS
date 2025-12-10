@@ -28,7 +28,7 @@ public struct PreviewableAttachment {
         self.rawValue = rawValue
     }
 
-    public var dataSource: any DataSource { self.rawValue.dataSource }
+    public var dataSource: DataSourcePath { self.rawValue.dataSource }
 
     public var dataUTI: String { self.rawValue.dataUTI }
     public var mimeType: String { self.rawValue.mimeType }

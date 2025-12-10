@@ -793,11 +793,8 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return OWSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "Generic filename for an attachment with no known name")
         }()
 
-        let dataSource: DataSourcePath
-        do {
-            dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
-        } catch {
-            owsFailDebug("couldn't build data source: \(error)")
+        guard url.isFileURL else {
+            owsFailDebug("couldn't build data source")
             DispatchQueue.main.async {
                 OWSActionSheets.showActionSheet(
                     title: OWSLocalizedString(
@@ -808,6 +805,8 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             }
             return
         }
+
+        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
         dataSource.sourceFilename = filename
 
         let contentTypeIdentifier = (resourceValues?.contentType ?? .data).identifier

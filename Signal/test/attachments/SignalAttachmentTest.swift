@@ -14,12 +14,12 @@ class SignalAttachmentTest: SignalBaseTest {
     func testMetadataStrippingDoesNotChangeOrientation(url: URL) throws {
         let size = (try? DataImageSource.forPath(url.path).imageMetadata()?.pixelSize) ?? .zero
 
-        let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
         let attachment = try SignalAttachment.imageAttachment(
             dataSource: dataSource,
             dataUTI: UTType.jpeg.identifier
         )
-        let newSize = DataImageSource(attachment.dataSource.data).imageMetadata()?.pixelSize
+        let newSize = DataImageSource(try attachment.dataSource.readData()).imageMetadata()?.pixelSize
 
         XCTAssertEqual(newSize, size, "image dimensions changed for \(url.lastPathComponent)")
     }
@@ -52,9 +52,9 @@ class SignalAttachmentTest: SignalBaseTest {
     func testRemoveMetadataFromPng() throws {
         let testBundle = Bundle(for: Self.self)
         let url = testBundle.url(forResource: "test-png-with-metadata", withExtension: "png")!
-        let dataSource = try DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false)
         XCTAssertEqual(
-            try pngChunkTypes(data: dataSource.data),
+            try pngChunkTypes(data: dataSource.readData()),
             ["IHDR", "PLTE", "sRGB", "tIME", "tEXt", "IDAT", "IEND"],
             "Test is not set up correctly. Fixture doesn't have the expected chunks"
         )
@@ -65,7 +65,7 @@ class SignalAttachmentTest: SignalBaseTest {
         )
 
         XCTAssertEqual(
-            try pngChunkTypes(data: attachment.dataSource.data),
+            try pngChunkTypes(data: try attachment.dataSource.readData()),
             ["IHDR", "PLTE", "sRGB", "IDAT", "IEND"]
         )
     }
@@ -95,7 +95,7 @@ class SignalAttachmentTest: SignalBaseTest {
             (try pngChunkTypes(data: pngData)).contains("tEXt"),
             "Test is not set up correctly. Fixture doesn't have the expected chunks"
         )
-        let dataSource = DataSourceValue(pngData, fileExtension: "png")
+        let dataSource = try DataSourcePath(writingTempFileData: pngData, fileExtension: "png")
 
         let attachment = try SignalAttachment.imageAttachment(
             dataSource: dataSource,
@@ -103,7 +103,7 @@ class SignalAttachmentTest: SignalBaseTest {
         )
 
         XCTAssert(
-            !(try pngChunkTypes(data: attachment.dataSource.data)).contains("tEXt"),
+            !(try pngChunkTypes(data: try attachment.dataSource.readData())).contains("tEXt"),
             "Result contained unexpected chunk"
         )
     }

@@ -70,7 +70,7 @@ public protocol AttachmentContentValidator {
     /// - Parameter  shouldConsume: If true, the source file will be deleted and the DataSource
     /// consumed after validation is complete; otherwise the source file will be left as-is.
     func validateContents(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         shouldConsume: Bool,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -202,7 +202,7 @@ extension AttachmentContentValidator {
     }
 
     public func validateContents(
-        dataSource: DataSource,
+        dataSource: DataSourcePath,
         shouldConsume: Bool,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,

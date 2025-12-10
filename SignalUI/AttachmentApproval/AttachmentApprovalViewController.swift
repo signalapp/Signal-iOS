@@ -727,34 +727,32 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
             throw OWSAssertionError("Could not render for output.")
         }
 
-        var dataType = UTType.image
-        guard let dstData: Data = {
-            let isLossy: Bool = attachmentApprovalItem.attachment.rawValue.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
-            if isLossy {
-                dataType = .jpeg
-                return dstImage.jpegData(compressionQuality: 0.9)
-            } else {
-                dataType = .png
-                return dstImage.pngData()
-            }
-        }() else {
+        let containerType: SignalAttachment.ContainerType
+        let dstData: Data?
+        let isLossy: Bool = attachmentApprovalItem.attachment.rawValue.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
+        if isLossy {
+            containerType = .jpg
+            dstData = dstImage.jpegData(compressionQuality: 0.9)
+        } else {
+            containerType = .png
+            dstData = dstImage.pngData()
+        }
+        guard let dstData else {
             throw OWSAssertionError("Could not export for output.")
         }
-        guard let dataSource = DataSourceValue(dstData, utiType: dataType.identifier) else {
-            throw OWSAssertionError("Could not prepare data source for output.")
-        }
+        let dataSource = try DataSourcePath(writingTempFileData: dstData, fileExtension: containerType.fileExtension)
 
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
         if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {
-            if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
+            if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(containerType.dataType.identifier) {
                 let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
                 filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
             }
         }
         dataSource.sourceFilename = filename
 
-        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataType.identifier)
+        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
         return PreviewableAttachment(rawValue: attachment)
     }
 
@@ -768,7 +766,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        let dataSource = try DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
+        let dataSource = DataSourcePath(fileUrl: fileUrl, shouldDeleteOnDeallocation: true)
         // Rewrite the filename's extension to reflect the output file format.
         var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
         if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {
@@ -1456,16 +1454,10 @@ private extension SaveableAsset {
 
     private init(attachment: PreviewableAttachment) throws {
         if attachment.isImage {
-            guard let imageUrl = attachment.rawValue.dataSource.dataUrl else {
-                throw OWSAssertionError("imageUrl was unexpectedly nil")
-            }
-
+            let imageUrl = attachment.rawValue.dataSource.fileUrl
             self = .imageUrl(imageUrl)
         } else if attachment.isVideo {
-            guard let videoUrl = attachment.rawValue.dataSource.dataUrl else {
-                throw OWSAssertionError("videoUrl was unexpectedly nil")
-            }
-
+            let videoUrl = attachment.rawValue.dataSource.fileUrl
             self = .videoUrl(videoUrl)
         } else {
             throw OWSAssertionError("unsaveable media")
