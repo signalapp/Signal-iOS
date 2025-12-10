@@ -447,8 +447,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         case .implicit:
             // Under the new reg flow, we will sync kbs keys before being fully ready with
             // ts account manager auth set up. skip if so.
-            let registrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-            guard registrationState.isRegistered else {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
                 Logger.info("Skipping storage service operation with implicit auth during registration.")
                 return nil
             }
@@ -460,11 +460,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 return nil
             }
             localIdentifiers = implicitLocalIdentifiers
-            guard let implicitIsPrimaryDevice = registrationState.isPrimaryDevice else {
-                owsFailDebug("Trying to perform storage service operation without isPrimaryDevice.")
-                return nil
-            }
-            isPrimaryDevice = implicitIsPrimaryDevice
+            isPrimaryDevice = registeredState.isPrimary
         }
 
         return {

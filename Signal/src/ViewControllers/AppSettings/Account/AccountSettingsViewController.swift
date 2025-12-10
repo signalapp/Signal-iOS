@@ -269,8 +269,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func changeNumberState() -> ChangeNumberState {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction -> ChangeNumberState in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let tsRegistrationState = tsAccountManager.registrationState(tx: transaction)
-            guard tsRegistrationState.isRegistered else {
+            let registeredState = try? tsAccountManager.registeredState(tx: transaction)
+            guard let registeredState else {
                 return .disallowed
             }
             let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
@@ -282,8 +282,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 return .disallowed
             }
             guard
-                let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction),
-                let localE164 = E164(localIdentifiers.phoneNumber),
+                let localE164 = E164(registeredState.localIdentifiers.phoneNumber),
                 let authToken = tsAccountManager.storedServerAuthToken(tx: transaction),
                 let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction).ifValid
             else {
@@ -293,7 +292,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
-                localAci: localIdentifiers.aci,
+                localAci: registeredState.localIdentifiers.aci,
                 localDeviceId: localDeviceId
             ))
         }

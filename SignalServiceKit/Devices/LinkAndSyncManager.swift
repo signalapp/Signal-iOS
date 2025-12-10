@@ -166,20 +166,15 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         tokenId: DeviceProvisioningTokenId,
         progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
     ) async throws(PrimaryLinkNSyncError) {
-        let (localIdentifiers, registrationState) = db.read { tx in
-            return (
-                tsAccountManager.localIdentifiers(tx: tx),
-                tsAccountManager.registrationState(tx: tx)
-            )
-        }
-        guard let localIdentifiers else {
-            owsFailDebug("Not registered!")
+        let registeredState: RegisteredState
+        do throws(NotRegisteredError) {
+            registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        } catch {
+            // TODO: Throw an error to indicate this failed because we're not registered.
+            Logger.warn("Couldn't wait for linking because we're no longer registered")
             return
         }
-        guard registrationState.isPrimaryDevice == true else {
-            owsFailDebug("Non-primary device waiting for secondary linking")
-            return
-        }
+        owsPrecondition(registeredState.isPrimary, "Can't wait for linking unless we're a primary")
 
         let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
         await deviceSleepManager?.addBlock(blockObject: blockObject)
@@ -235,7 +230,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             backupMetadata = try await generateBackup(
                 waitForDeviceToLinkResponse: waitForLinkResponse,
                 ephemeralBackupKey: ephemeralBackupKey,
-                localIdentifiers: localIdentifiers,
+                localIdentifiers: registeredState.localIdentifiers,
                 progress: progress.child(for: .exportingBackup)
             )
         } catch let error {

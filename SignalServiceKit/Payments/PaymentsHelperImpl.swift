@@ -29,12 +29,11 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     }
 
     public var hasValidPhoneNumberForPayments: Bool {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
             return false
         }
-        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-            return false
-        }
+        let localNumber = registeredState.localIdentifiers.phoneNumber
         let paymentsDisabledRegions = RemoteConfig.current.paymentsDisabledRegions
         if paymentsDisabledRegions.isEmpty {
             return Self.isValidPhoneNumberForPayments_fixedAllowlist(localNumber)

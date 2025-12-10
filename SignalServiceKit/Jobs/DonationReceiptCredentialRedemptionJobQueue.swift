@@ -525,20 +525,11 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         // Now that we know what type of job we are, suffix the logger.
         logger = logger.suffixed(with: "[\(configuration.paymentType)]")
 
-        let (
-            registrationState,
-            badgesSnapshotBeforeJob,
-        ) = db.read { tx in
-            return (
-                tsAccountManager.registrationState(tx: tx),
-                // In order to properly show the "you have a new badge" UI after this job
-                // succeeds, we need to know what badges we had beforehand.
-                ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx),
-            )
-        }
-
-        guard registrationState.isRegistered else {
-            throw OWSAssertionError("Attempting to redeem a donation, but not registered!")
+        _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let badgesSnapshotBeforeJob = db.read { tx in
+            // In order to properly show the "you have a new badge" UI after this job
+            // succeeds, we need to know what badges we had beforehand.
+            return ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
         }
 
         logger.info("Running job.")

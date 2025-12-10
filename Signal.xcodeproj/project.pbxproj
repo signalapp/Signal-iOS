@@ -695,6 +695,7 @@
 		5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */; };
 		507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
 		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
+		507C6AF52ED10BD900A7C74C /* RegisteredState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C6AF42ED10BD900A7C74C /* RegisteredState.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508622AD2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */; };
@@ -4871,6 +4872,7 @@
 		50791B1C2D037A9800D747F8 /* PhoneNumberCountryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberCountryTest.swift; sourceTree = "<group>"; };
 		5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPrecondition.swift; sourceTree = "<group>"; };
 		5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreconditionTest.swift; sourceTree = "<group>"; };
+		507C6AF42ED10BD900A7C74C /* RegisteredState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisteredState.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
 		507D614B2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		507D614C2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -14741,6 +14743,7 @@
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */,
 				50D146CC2D1F4E5800D628DE /* ProfileKey.swift */,
+				507C6AF42ED10BD900A7C74C /* RegisteredState.swift */,
 				C1C2185C2E70BA27008567A1 /* RegistrationIdMismatchManager.swift */,
 				507CD5E429660D5100E47DAC /* ServiceId.swift */,
 			);
@@ -19356,6 +19359,7 @@
 				66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */,
+				507C6AF52ED10BD900A7C74C /* RegisteredState.swift in Sources */,
 				C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
 				C1C2185D2E70BA27008567A1 /* RegistrationIdMismatchManager.swift in Sources */,

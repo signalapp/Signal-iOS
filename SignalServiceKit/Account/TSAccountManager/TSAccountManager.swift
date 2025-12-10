@@ -111,6 +111,20 @@ public enum LocalDeviceId: CustomStringConvertible {
 }
 
 extension TSAccountManager {
+    public func registeredStateWithMaybeSneakyTransaction() throws(NotRegisteredError) -> RegisteredState {
+        return try RegisteredState(
+            registrationState: self.registrationStateWithMaybeSneakyTransaction,
+            localIdentifiers: self.localIdentifiersWithMaybeSneakyTransaction,
+        )
+    }
+
+    public func registeredState(tx: DBReadTransaction) throws(NotRegisteredError) -> RegisteredState {
+        return try RegisteredState(
+            registrationState: self.registrationState(tx: tx),
+            localIdentifiers: self.localIdentifiers(tx: tx),
+        )
+    }
+
     public func localIdentifiersWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws -> LocalIdentifiers {
         switch authedAccount.info {
         case .explicit(let info):

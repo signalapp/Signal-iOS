@@ -123,11 +123,9 @@ class UrlOpener {
 
     @MainActor
     func openUrl(_ parsedUrl: ParsedUrl, in window: UIWindow) {
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return owsFailDebug("Ignoring URL; not registered.")
-        }
         guard let rootViewController = window.rootViewController else {
-            return owsFailDebug("Ignoring URL; no root view controller.")
+            owsFailDebug("Ignoring URL; no root view controller.")
+            return
         }
         if shouldDismiss(for: parsedUrl.openableUrl) && rootViewController.presentedViewController != nil {
             rootViewController.dismiss(animated: false, completion: {
@@ -147,11 +145,22 @@ class UrlOpener {
 
     @MainActor
     private func openUrlAfterDismissing(_ openableUrl: OpenableUrl, rootViewController: UIViewController) {
+        do throws(NotRegisteredError) {
+            try _openUrlAfterDismissing(openableUrl, rootViewController: rootViewController)
+        } catch {
+            Logger.warn("Ignoring url because we're not registered")
+        }
+    }
+
+    @MainActor
+    private func _openUrlAfterDismissing(_ openableUrl: OpenableUrl, rootViewController: UIViewController) throws(NotRegisteredError) {
         switch openableUrl {
         case .phoneNumberLink(let url):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             SignalDotMePhoneNumberLink.openChat(url: url, fromViewController: rootViewController)
 
         case .usernameLink(let link):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             Task {
                 guard let (_, aci) = await UsernameQuerier().queryForUsernameLink(
                     link: link,
@@ -167,18 +176,21 @@ class UrlOpener {
             }
 
         case .stickerPack(let stickerPackInfo):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPackInfo)
             stickerPackViewController.present(from: rootViewController, animated: false)
 
         case .groupInvite(let url):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: rootViewController)
 
         case .signalProxy(let url):
             rootViewController.present(ProxyLinkSheetViewController(url: url)!, animated: true)
 
         case .linkDevice:
-            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
-                owsFailDebug("Ignoring URL; not primary device.")
+            let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+            guard registeredState.isPrimary else {
+                Logger.warn("Ignoring URL; not primary device.")
                 return
             }
 
@@ -203,9 +215,9 @@ class UrlOpener {
             rootViewController.presentActionSheet(linkDeviceWarningActionSheet)
 
         case .quickRestore(let url):
-
-            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
-                owsFailDebug("Ignoring URL; not primary device.")
+            let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+            guard registeredState.isPrimary else {
+                Logger.warn("Ignoring URL; not primary device.")
                 return
             }
 
@@ -219,6 +231,7 @@ class UrlOpener {
             }
 
         case .completeIDEALDonation(let donationType):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             Task { [appReadiness, databaseStorage] in
                 let handled = await DonationViewsUtil.attemptToContinueActiveIDEALDonation(
                     type: donationType,
@@ -245,6 +258,7 @@ class UrlOpener {
             }
 
         case .callLink(let callLink):
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             GroupCallViewController.presentLobby(for: callLink)
         }
     }

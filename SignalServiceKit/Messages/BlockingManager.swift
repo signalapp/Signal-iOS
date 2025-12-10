@@ -427,13 +427,12 @@ public class BlockingManager {
             }
 
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: tx).isRegistered else {
-                throw OWSGenericError("Not registered.")
-            }
+            let registeredState = try tsAccountManager.registeredState(tx: tx)
 
-            guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
-                throw OWSAssertionError("Missing thread.")
-            }
+            let localThread = TSContactThread.getOrCreateThread(
+                withContactAddress: registeredState.localIdentifiers.aciAddress,
+                transaction: tx,
+            )
 
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             let blockedRecipients = try blockedRecipientStore.blockedRecipientIds(tx: tx).compactMap {

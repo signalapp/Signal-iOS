@@ -1096,13 +1096,14 @@ public class StickerManager: NSObject {
         packs: [StickerPackInfo],
         transaction: DBWriteTransaction
     ) {
-        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegistered else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: transaction) else {
             return
         }
-        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
-            owsFailDebug("Missing thread.")
-            return
-        }
+        let thread = TSContactThread.getOrCreateThread(
+            withContactAddress: registeredState.localIdentifiers.aciAddress,
+            transaction: transaction,
+        )
         let message = OWSStickerPackSyncMessage(
             localThread: thread,
             packs: packs,

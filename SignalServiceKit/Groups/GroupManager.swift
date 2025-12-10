@@ -1280,21 +1280,17 @@ public class GroupManager: NSObject {
     }
 
     private static func _ensureLocalProfileHasCommitmentIfNecessary() async throws {
-        let accountManager = DependenciesBridge.shared.tsAccountManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
 
-        func hasProfileKeyCredential() throws -> Bool {
-            return try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                guard accountManager.registrationState(tx: tx).isRegistered else {
-                    return false
-                }
-                guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
-                    throw OWSAssertionError("Missing localAci.")
-                }
+        func hasProfileKeyCredential() -> Bool {
+            return SSKEnvironment.shared.databaseStorageRef.read { tx in
+                let localAci = registeredState.localIdentifiers.aci
                 return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: localAci, transaction: tx)
             }
         }
 
-        guard try !hasProfileKeyCredential() else {
+        guard !hasProfileKeyCredential() else {
             return
         }
 
@@ -1303,16 +1299,11 @@ public class GroupManager: NSObject {
         // would get as part of fetching our local profile).
         _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
 
-        guard try !hasProfileKeyCredential() else {
+        guard !hasProfileKeyCredential() else {
             return
         }
 
-        guard
-            CurrentAppContext().isMainApp,
-            SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                accountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
-            })
-        else {
+        guard registeredState.isPrimary, CurrentAppContext().isMainApp else {
             Logger.warn("Skipping upload of local profile key commitment, not in main app!")
             return
         }

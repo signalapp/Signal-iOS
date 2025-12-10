@@ -34,26 +34,19 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
             return
         }
 
-        guard db.read(block: {
-            tsAccountManager.registrationState(tx: $0).isRegistered
+        guard let registeredState = db.read(block: { tx in
+            return try? tsAccountManager.registeredState(tx: tx)
         }) else {
             Logger.warn("Attempting to check registrationId while unregistered.")
             return
         }
 
-        guard let localIdentifiers = db.read(block: {
-            tsAccountManager.localIdentifiers(tx: $0)
-        }) else {
-            owsFailDebug("Missing local identifiers during registrationId check")
-            return
-        }
-
         do {
             // Check ACI
-            try await _checkRegistrationIdMatches(identity: .aci, serviceId: localIdentifiers.aci)
+            try await _checkRegistrationIdMatches(identity: .aci, serviceId: registeredState.localIdentifiers.aci)
 
             // Check PNI
-            if let pni = localIdentifiers.pni {
+            if let pni = registeredState.localIdentifiers.pni {
                 try await _checkRegistrationIdMatches(identity: .pni, serviceId: pni)
             } else {
                 owsFailDebug("Missing PNI during registrationId check")

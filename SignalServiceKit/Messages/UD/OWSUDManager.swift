@@ -296,10 +296,7 @@ public class OWSUDManagerImpl: OWSUDManager {
     }
 
     private func _fetchSenderCertificates(forceRefresh: Bool) async throws -> SenderCertificates {
-        guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            // We don't want to assert but we should log and fail.
-            throw OWSGenericError("Not registered and ready.")
-        }
+        _ = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         async let defaultCert = fetchSenderCertificate(aciOnly: false, forceRefresh: forceRefresh)
         async let aciOnlyCert = fetchSenderCertificate(aciOnly: true, forceRefresh: forceRefresh)
         return SenderCertificates(

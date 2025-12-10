@@ -1223,10 +1223,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private static nonisolated func peekCallLink(rootKey: CallLinkRootKey, deps: Dependencies) async throws {
-        guard let localIdentifiers = deps.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSGenericError("Not registered.")
-        }
-        let authCredential = try await deps.callService.authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        let registeredState = try deps.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let authCredential = try await deps.callService.authCredentialManager.fetchCallLinkAuthCredential(
+            localIdentifiers: registeredState.localIdentifiers,
+        )
         let eraId: String?
         do {
             eraId = try await deps.callService.callLinkManager.peekCallLink(rootKey: rootKey, authCredential: authCredential)

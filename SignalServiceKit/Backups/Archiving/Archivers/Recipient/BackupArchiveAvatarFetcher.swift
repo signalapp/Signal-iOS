@@ -173,10 +173,7 @@ public class BackupArchiveAvatarFetcher {
             record: Record,
             loader: TaskQueueLoader<TaskRunner>
         ) async -> TaskRecordResult {
-            guard
-                tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
-                let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
-            else {
+            guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
                 try? await loader.stop()
                 return .cancelled
             }
@@ -198,7 +195,7 @@ public class BackupArchiveAvatarFetcher {
                 }
 
                 do {
-                    if localIdentifiers.contains(serviceId: serviceId) {
+                    if registeredState.localIdentifiers.contains(serviceId: serviceId) {
                         _ = try await profileManager.fetchLocalUsersProfile(
                             authedAccount: .implicit()
                         )

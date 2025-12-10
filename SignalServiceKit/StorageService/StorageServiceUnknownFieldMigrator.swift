@@ -346,8 +346,8 @@ public class StorageServiceUnknownFieldMigrator {
             return
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
-            // Not registered!
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return
         }
 
@@ -356,7 +356,7 @@ public class StorageServiceUnknownFieldMigrator {
             migration: Migration
         ) {
             let filteredRecords = records.compactMap { $0 as? Migration.RecordType }
-            migration.mergeUnknownFields(filteredRecords, isPrimaryDevice, tx)
+            migration.mergeUnknownFields(filteredRecords, registeredState.isPrimary, tx)
         }
 
         necessaryMigrations.forEach { migrationId in
@@ -378,8 +378,8 @@ public class StorageServiceUnknownFieldMigrator {
             return record
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
-            // Not registered!
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return record
         }
 
@@ -393,7 +393,7 @@ public class StorageServiceUnknownFieldMigrator {
             }
             let builder = _builder ?? record.asBuilder()
             var typecastBuilder = builder as! Migration.RecordType.Builder
-            migration.interceptRemoteManifest(record as! Migration.RecordType, &typecastBuilder, isPrimaryDevice, tx)
+            migration.interceptRemoteManifest(record as! Migration.RecordType, &typecastBuilder, registeredState.isPrimary, tx)
             _builder = (typecastBuilder as! RecordType.Builder)
         }
 
@@ -421,8 +421,8 @@ public class StorageServiceUnknownFieldMigrator {
             return record
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
-            // Not registered!
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return record
         }
 
@@ -436,7 +436,7 @@ public class StorageServiceUnknownFieldMigrator {
             }
             let builder = _builder ?? record.asBuilder()
             var typecastBuilder = builder as! Migration.RecordType.Builder
-            migration.interceptLocalManifest(record as! Migration.RecordType, &typecastBuilder, isPrimaryDevice, tx)
+            migration.interceptLocalManifest(record as! Migration.RecordType, &typecastBuilder, registeredState.isPrimary, tx)
             _builder = (typecastBuilder as! RecordType.Builder)
         }
 

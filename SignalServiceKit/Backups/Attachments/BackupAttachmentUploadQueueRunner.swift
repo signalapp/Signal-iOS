@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol BackupAttachmentUploadQueueRunner {
 
@@ -415,17 +416,18 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 break
             }
 
-            let (localAci, isRegisteredPrimaryDevice) = db.read { tx in
-                return (
-                    self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
-                    self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                )
+            let localAci: Aci
+            let isPrimary: Bool
+            do throws(NotRegisteredError) {
+                let registeredState = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+                localAci = registeredState.localIdentifiers.aci
+                isPrimary = registeredState.isPrimary
+            } catch {
+                try? await loader.stop(reason: error)
+                return .retryableError(error)
             }
-            guard
-                isRegisteredPrimaryDevice,
-                let localAci
-            else {
-                let error = OWSAssertionError("Not registered!")
+            guard isPrimary else {
+                let error = OWSAssertionError("not primary")
                 try? await loader.stop(reason: error)
                 return .retryableError(error)
             }

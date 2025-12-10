@@ -153,17 +153,14 @@ public class DonationUtilities {
         inMode donationMode: DonationMode,
         tsAccountManager: TSAccountManager,
     ) -> Bool {
-        let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
-        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-
-        guard registrationState.isRegistered else {
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
             // Don't allow donations if unregistered.
             return false
         }
 
         return !supportedDonationPaymentMethods(
             forDonationMode: donationMode,
-            localNumber: localNumber
+            localNumber: registeredState.localIdentifiers.phoneNumber,
         ).isEmpty
     }
 

@@ -707,8 +707,10 @@ extension OWSProfileManager: ProfileManager {
         triggers: [RotateProfileKeyTrigger],
         authedAccount: AuthedAccount
     ) async throws -> Bool {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
-            throw OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        guard registeredState.isPrimary else {
+            throw OWSAssertionError("not a primary device")
         }
 
         Logger.info("Beginning profile key rotation.")
@@ -738,9 +740,7 @@ extension OWSProfileManager: ProfileManager {
         }
         try await uploadPromise.awaitable()
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            throw OWSAssertionError("Missing localAci.")
-        }
+        let localAci = registeredState.localIdentifiers.aci
 
         Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
 
@@ -1489,11 +1489,11 @@ extension OWSProfileManager: ProfileManager {
     ///
     /// - Parameter tx: The transaction to use for this operation.
     func rotateProfileKeyUponRecipientHideObjC(tx: DBWriteTransaction) {
-        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
-        guard tsRegistrationState.isRegistered else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return
         }
-        guard tsRegistrationState.isPrimaryDevice ?? false else {
+        guard registeredState.isPrimary else {
             return
         }
         // We schedule in the NSE by writing state; the actual rotation
@@ -1503,11 +1503,11 @@ extension OWSProfileManager: ProfileManager {
     }
 
     fileprivate func _forceRotateLocalProfileKeyForGroupDeparture(tx: DBWriteTransaction) {
-        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
-        guard tsRegistrationState.isRegistered else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return
         }
-        guard tsRegistrationState.isPrimaryDevice ?? false else {
+        guard registeredState.isPrimary else {
             return
         }
         // We schedule in the NSE by writing state; the actual rotation

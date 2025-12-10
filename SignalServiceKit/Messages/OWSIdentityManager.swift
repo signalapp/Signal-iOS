@@ -593,13 +593,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     private func syncQueuedVerificationStates() {
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
             return
         }
-        guard let thread = TSContactThread.getOrCreateLocalThreadWithSneakyTransaction() else {
-            owsFailDebug("Missing thread.")
-            return
-        }
+        let thread = TSContactThread.getOrCreateThread(contactAddress: registeredState.localIdentifiers.aciAddress)
         let allKeys = db.read { tx in queuedVerificationStateSyncMessagesKeyValueStore.allKeys(transaction: tx) }
         // We expect very few keys in practice, and each key triggers multiple
         // database write transactions. If we do end up with thousands of keys,

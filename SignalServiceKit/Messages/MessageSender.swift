@@ -604,9 +604,7 @@ public class MessageSender {
             throw AppExpiredError()
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        if !tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            throw NotRegisteredError()
-        }
+        _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         if message.shouldBeSaved {
             let latestCopy = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx) as? TSOutgoingMessage

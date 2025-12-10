@@ -159,7 +159,6 @@ public class MessageProcessor {
     private func drainPendingEnvelopes() {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
-
         guard SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted else { return }
 
         queueForProcessing.async {

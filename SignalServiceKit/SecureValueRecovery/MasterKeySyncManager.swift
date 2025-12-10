@@ -47,17 +47,13 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     }
 
     func runStartupJobs(tx: DBWriteTransaction) {
-        switch tsAccountManager.registrationState(tx: tx) {
-        case .registered:
-            runStartupJobsForPrimaryDevice(tx: tx)
-        case .provisioned:
-            runStartupJobsForLinkedDevice(tx: tx)
-        case .delinked, .deregistered, .unregistered, .transferred,
-                .transferringIncoming, .transferringLinkedOutgoing,
-                .transferringPrimaryOutgoing,
-                .reregistering, .relinking:
-            logger.info("Skipping; not registered")
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
             return
+        }
+        if registeredState.isPrimary {
+            runStartupJobsForPrimaryDevice(tx: tx)
+        } else {
+            runStartupJobsForLinkedDevice(tx: tx)
         }
     }
 

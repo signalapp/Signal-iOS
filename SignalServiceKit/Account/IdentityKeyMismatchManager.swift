@@ -151,13 +151,9 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
         let localIdentifier: ServiceId
         do {
             let loadLocalIdentifiers = { [db, tsAccountManager] () throws -> LocalIdentifiers in
-                let localIdentifiers = db.read { tx in
-                    return tsAccountManager.localIdentifiers(tx: tx)
+                return try db.read { tx in
+                    return try tsAccountManager.registeredState(tx: tx).localIdentifiers
                 }
-                guard let localIdentifiers else {
-                    throw OWSGenericError("not registered")
-                }
-                return localIdentifiers
             }
 
             switch identity {

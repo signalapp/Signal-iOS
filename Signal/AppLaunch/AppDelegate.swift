@@ -794,16 +794,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let tsRegistrationState: TSRegistrationState = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let registrationState = tsAccountManager.registrationState(tx: tx)
-            if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
+        let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
+            if let registeredState {
+                let localIdentifiers = registeredState.localIdentifiers
                 let deviceId = tsAccountManager.storedDeviceId(tx: tx)
                 let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
                 let deviceCount = localRecipient?.deviceIds.count ?? 0
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
-            return registrationState
         }
 
         let profileManager = SSKEnvironment.shared.profileManagerRef
@@ -852,12 +852,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.refreshConnection(isAppActive: false, shouldRunCron: false)
         }
 
-        if tsRegistrationState.isRegistered {
+        if registeredState != nil {
             // This should happen at any launch, background or foreground.
             SyncPushTokensJob.run()
         }
 
-        if tsRegistrationState.isRegistered {
+        if registeredState != nil {
             Task {
                 do {
                     try await APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(
@@ -878,7 +878,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 
         scheduleBgAppRefresh()
-        Self.updateApplicationShortcutItems(isRegistered: tsRegistrationState.isRegistered)
+        Self.updateApplicationShortcutItems(isRegistered: registeredState != nil)
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(
@@ -888,7 +888,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             object: nil
         )
 
-        checkDatabaseIntegrityIfNecessary(isRegistered: tsRegistrationState.isRegistered)
+        checkDatabaseIntegrityIfNecessary(isRegistered: registeredState != nil)
 
         SignalApp.shared.showLaunchInterface(
             launchInterface,
@@ -1388,13 +1388,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Logger.info("Activated.")
         }
 
-        let tsRegistrationState: TSRegistrationState = DependenciesBridge.shared.db.read { tx in
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+
+        if registeredState != nil {
+            DependenciesBridge.shared.db.read { tx in
             // Always check prekeys after app launches, and sometimes check on app activation.
-            let registrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
-            if registrationState.isRegistered {
                 DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
             }
-            return registrationState
         }
 
         if !hasActivated {
@@ -1406,7 +1407,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // cleaning in the background.
             SSKEnvironment.shared.disappearingMessagesJobRef.startIfNecessary()
 
-            if !tsRegistrationState.isRegistered {
+            if registeredState == nil {
                 // Unregistered user should have no unread messages. e.g. if you delete your account.
                 SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
             }
@@ -1415,7 +1416,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         refreshConnection(isAppActive: true, shouldRunCron: true)
 
         // Every time we become active...
-        if tsRegistrationState.isRegistered {
+        if registeredState != nil {
             // TODO: Should we run this immediately even if we would like to process already decrypted envelopes handed to us by the NSE?
             Task {
                 await SSKEnvironment.shared.groupMessageProcessorManagerRef.startAllProcessors()
@@ -1639,10 +1640,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             break
         case .notHandled:
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                Logger.info("Ignoring remote notification; user is not registered.")
-                return
-            }
+            _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
             await backgroundMessageFetcher.start()
 
@@ -1838,15 +1836,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         scheduleBgAppRefresh()
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        if isRegistered {
-            appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let localAddress = tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
-                    Logger.info("localAddress: \(String(describing: localAddress))")
-
-                    ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction)
-                }
+        let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        if let registeredState {
+            Logger.info("localAci: \(registeredState.localIdentifiers.aci)")
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction)
             }
             DependenciesBridge.shared.attachmentDownloadManager.beginDownloadingIfNecessary()
             Task {
@@ -1859,7 +1853,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        Self.updateApplicationShortcutItems(isRegistered: isRegistered)
+        Self.updateApplicationShortcutItems(isRegistered: registeredState != nil)
     }
 
     // MARK: - Shortcut Items
