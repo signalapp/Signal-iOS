@@ -429,6 +429,16 @@ private class ConversationBannerView: UIView {
             }
             backgroundView.layer.masksToBounds = true
             backgroundView.layer.cornerRadius = 16
+
+            if Theme.isDarkThemeEnabled {
+                layer.shadowColor = UIColor.white.cgColor
+                layer.shadowOpacity = 0.16
+            } else {
+                layer.shadowColor = UIColor.black.cgColor
+                layer.shadowOpacity = 0.08
+            }
+            layer.shadowRadius = 24
+            layer.shadowOffset = .init(width: 0, height: 4)
         }
         addSubview(backgroundView)
 
