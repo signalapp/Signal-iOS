@@ -135,11 +135,12 @@ public extension HydratedMessageBody.DisplayConfiguration {
     }
 
     static func mediaCaption(
+        textColor: UIColor,
         revealedSpoilerIds: Set<StyleIdType>
     ) -> Self {
         return .init(
             baseFont: .dynamicTypeBodyClamped,
-            baseTextColor: .fixed(.white),
+            baseTextColor: .fixed(textColor),
             revealedSpoilerIds: revealedSpoilerIds
         )
     }

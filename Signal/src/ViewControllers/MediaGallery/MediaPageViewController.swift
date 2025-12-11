@@ -102,6 +102,10 @@ class MediaPageViewController: UIPageViewController {
     // MARK: UIViewController
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
+        guard #unavailable(iOS 26) else {
+            return super.preferredStatusBarStyle
+        }
+
         if Theme.isDarkThemeEnabled {
             return .lightContent
         }
@@ -132,7 +136,10 @@ class MediaPageViewController: UIPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        overrideUserInterfaceStyle = .dark
+        if #unavailable(iOS 26) {
+            overrideUserInterfaceStyle = .dark
+        }
+
         view.backgroundColor = .Signal.background
 
         mediaInteractiveDismiss.addGestureRecognizer(to: view)

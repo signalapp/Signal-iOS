@@ -516,14 +516,31 @@ class MediaControlPanelView: UIView {
 
     // MARK: Media Rail
 
-    private static var galleryCellConfiguration = GalleryRailCellConfiguration(
-        cornerRadius: 6,
-        itemBorderWidth: 0,
-        itemBorderColor: nil,
-        focusedItemBorderWidth: 2,
-        focusedItemBorderColor: .white,
-        focusedItemOverlayColor: nil
-    )
+    private static var galleryCellConfiguration: GalleryRailCellConfiguration = {
+        // On iOS 26 selected thumbnail doesn't have a border, but instead
+        // it has some extra space around it. Similar to what Photos app does.
+        let borderColor: UIColor
+        let borderWidth: CGFloat
+        let extraPadding: CGFloat
+        if #available(iOS 26, *) {
+            borderColor = .clear
+            borderWidth = 0
+            extraPadding = 8
+        } else {
+            borderColor = .white
+            borderWidth = 2
+            extraPadding = 0
+        }
+        return GalleryRailCellConfiguration(
+            cornerRadius: 6,
+            itemBorderWidth: 0,
+            itemBorderColor: nil,
+            focusedItemBorderWidth: borderWidth,
+            focusedItemBorderColor: borderColor,
+            focusedItemOverlayColor: nil,
+            focusedItemExtraPadding: extraPadding,
+        )
+    }()
 
     // Thumbnail strip is shown for albums (>1 media in one message):
     // iOS 26: all interface orientations.

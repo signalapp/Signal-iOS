@@ -36,6 +36,7 @@ public struct GalleryRailCellConfiguration {
     public let focusedItemBorderWidth: CGFloat
     public let focusedItemBorderColor: UIColor?
     public let focusedItemOverlayColor: UIColor?
+    public let focusedItemExtraPadding: CGFloat
 
     public static var empty: GalleryRailCellConfiguration {
         GalleryRailCellConfiguration(
@@ -54,7 +55,8 @@ public struct GalleryRailCellConfiguration {
         itemBorderColor: UIColor?,
         focusedItemBorderWidth: CGFloat,
         focusedItemBorderColor: UIColor?,
-        focusedItemOverlayColor: UIColor?
+        focusedItemOverlayColor: UIColor?,
+        focusedItemExtraPadding: CGFloat = 0
     ) {
         self.cornerRadius = cornerRadius
         self.itemBorderWidth = itemBorderWidth
@@ -62,6 +64,7 @@ public struct GalleryRailCellConfiguration {
         self.focusedItemBorderWidth = focusedItemBorderWidth
         self.focusedItemBorderColor = focusedItemBorderColor
         self.focusedItemOverlayColor = focusedItemOverlayColor
+        self.focusedItemExtraPadding = focusedItemExtraPadding
     }
 }
 
@@ -69,22 +72,43 @@ public class GalleryRailCellView: UIView {
 
     weak var delegate: GalleryRailCellViewDelegate?
 
-    private let configuration: GalleryRailCellConfiguration
+    let configuration: GalleryRailCellConfiguration
+
+    private let contentContainer = UIView()
+
+    private let dimmerView = UIView()
 
     public init(configuration: GalleryRailCellConfiguration = .empty) {
         self.configuration = configuration
 
         super.init(frame: .zero)
 
-        layoutMargins = .zero
         clipsToBounds = false
+        directionalLayoutMargins = .zero
+
+        contentContainer.clipsToBounds = true
+        contentContainer.layer.cornerRadius = configuration.cornerRadius
+        contentContainer.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentContainer)
         contentContainer.autoPinEdgesToSuperviewMargins()
-        contentContainer.layer.cornerRadius = configuration.cornerRadius
 
         dimmerView.layer.cornerRadius = configuration.cornerRadius
+        dimmerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(dimmerView)
-        dimmerView.autoPinEdges(toEdgesOf: contentContainer)
+
+        NSLayoutConstraint.activate([
+            contentContainer.widthAnchor.constraint(equalTo: contentContainer.heightAnchor),
+
+            contentContainer.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            contentContainer.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            contentContainer.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            contentContainer.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+
+            dimmerView.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            dimmerView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            dimmerView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            dimmerView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+        ])
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
         addGestureRecognizer(tapGesture)
@@ -101,7 +125,7 @@ public class GalleryRailCellView: UIView {
         delegate?.didTapGalleryRailCellView(self)
     }
 
-    var item: GalleryRailItem?
+    private(set) var item: GalleryRailItem?
 
     func configure(item: GalleryRailItem, delegate: GalleryRailCellViewDelegate) {
         self.item = item
@@ -112,8 +136,14 @@ public class GalleryRailCellView: UIView {
         }
 
         let itemView = item.buildRailItemView()
+        itemView.translatesAutoresizingMaskIntoConstraints = false
         contentContainer.addSubview(itemView)
-        itemView.autoPinEdgesToSuperviewEdges()
+        NSLayoutConstraint.activate([
+            itemView.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            itemView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            itemView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            itemView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+        ])
     }
 
     // MARK: Selected
@@ -128,23 +158,12 @@ public class GalleryRailCellView: UIView {
 
             let dimmerColor = isCellFocused ? configuration.focusedItemOverlayColor : nil
             dimmerView.backgroundColor = dimmerColor
+
+            let horizontalMargin: CGFloat = isCellFocused ? configuration.focusedItemExtraPadding : 0
+            directionalLayoutMargins.leading = horizontalMargin
+            directionalLayoutMargins.trailing = horizontalMargin
         }
     }
-
-    // MARK: Subview Helpers
-
-    private let contentContainer: UIView = {
-        let view = UIView()
-        view.autoPinToSquareAspectRatio()
-        view.clipsToBounds = true
-        return view
-    }()
-
-    private let dimmerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
 }
 
 public protocol GalleryRailViewDelegate: AnyObject {
@@ -179,12 +198,17 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         clipsToBounds = false
         preservesSuperviewLayoutMargins = true
 
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
-        // Constrain width to view and not layout guide because as of iOS 16.4
-        // UIStackView, that GalleryRailView is placed in, was messing with view's layout margins.
-        scrollView.autoPinWidthToSuperview()
-        // Constrain height to margins because view controller adjusts those to control view spacing.
-        scrollView.autoPinHeightToSuperviewMargins()
+        NSLayoutConstraint.activate([
+            // Constrain width to view and not layout guide because as of iOS 16.4
+            // UIStackView, that GalleryRailView is placed in, was messing with view's layout margins.
+            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
+            // Constrain height to margins because view controller adjusts those to control view spacing.
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+        ])
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -229,12 +253,14 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         let stackView = installNewStackView(arrangedSubviews: cellViews)
-        stackViewHeightConstraint = stackView.autoSetDimension(.height, toSize: itemSize)
+        let heightConstraint = stackView.heightAnchor.constraint(equalToConstant: itemSize)
+        heightConstraint.isActive = true
         stackView.layoutIfNeeded()
         self.stackView = stackView
+        self.stackViewHeightConstraint = heightConstraint
 
         UIView.performWithoutAnimation {
-            self.layoutIfNeeded()
+            layoutIfNeeded()
         }
 
         updateFocusedItem(focusedItem, animated: animated)
@@ -272,29 +298,14 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
         stackView.axis = .horizontal
         stackView.spacing = 4
-
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stackView)
-        addConstraints([
-            NSLayoutConstraint(
-                item: stackView, attribute: .leading, relatedBy: .equal,
-                toItem: scrollView.contentLayoutGuide, attribute: .leading, multiplier: 1, constant: 0
-            ),
-            NSLayoutConstraint(
-                item: stackView, attribute: .top, relatedBy: .equal,
-                toItem: scrollView.contentLayoutGuide, attribute: .top, multiplier: 1, constant: 0
-            ),
-            NSLayoutConstraint(
-                item: stackView, attribute: .trailing, relatedBy: .equal,
-                toItem: scrollView.contentLayoutGuide, attribute: .trailing, multiplier: 1, constant: 0
-            ),
-            NSLayoutConstraint(
-                item: stackView, attribute: .bottom, relatedBy: .equal,
-                toItem: scrollView.contentLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0
-            ),
-            NSLayoutConstraint(
-                item: stackView, attribute: .height, relatedBy: .equal,
-                toItem: scrollView, attribute: .height, multiplier: 1, constant: 0
-            )
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
         ])
 
         return stackView
@@ -360,12 +371,17 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 cellView.isCellFocused = false
             }
         }
+        stackView?.layoutIfNeeded()
         scrollToFocusedCell(animated: animated)
     }
 
     private func scrollToFocusedCell(animated: Bool) {
         guard let focusedCell = cellViews.first(where: { $0.isCellFocused }) else { return }
+        // Scroll view's "viewport" area size doesn't consider extra padding focused cell might have.
+        // Adjust content offset accordingly.
         let cellFrame = focusedCell.convert(focusedCell.bounds, to: scrollView)
-        scrollView.scrollRectToVisible(cellFrame, animated: animated)
+        let extraPadding = focusedCell.configuration.focusedItemExtraPadding
+        let contentOffsetX = cellFrame.minX + extraPadding - scrollView.contentInset.left
+        scrollView.setContentOffset(.init(x: contentOffsetX, y: 0), animated: animated)
     }
 }

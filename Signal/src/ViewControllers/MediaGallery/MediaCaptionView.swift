@@ -224,7 +224,10 @@ class MediaCaptionView: UIView {
 
     private class func buildCaptionTextView(spoilerState: SpoilerRenderState) -> CaptionTextView {
         let textView = CaptionTextView(spoilerState: spoilerState)
-        let config = HydratedMessageBody.DisplayConfiguration.mediaCaption(revealedSpoilerIds: Set())
+        let config = HydratedMessageBody.DisplayConfiguration.mediaCaption(
+            textColor: .Signal.label,
+            revealedSpoilerIds: Set(),
+        )
         textView.font = config.baseFont
         textView.textColor = config.baseTextColor.forCurrentTheme
         textView.backgroundColor = .clear
@@ -240,13 +243,15 @@ class MediaCaptionView: UIView {
             spoilerConfig.animationManager = spoilerState.animationManager
             self.spoilerConfig = spoilerConfig
             self.spoilerState = spoilerState
-            super.init(frame: .zero, textContainer: nil)
 
-            self.disableAiWritingTools()
+            super.init(frame: .zero, textContainer: nil)
 
             isEditable = false
             isSelectable = false
-            self.textContainer.lineBreakMode = .byTruncatingTail
+            textContainer.lineBreakMode = .byTruncatingTail
+            textColor = .Signal.label
+
+            disableAiWritingTools()
             updateIsScrollEnabled()
         }
 
@@ -296,6 +301,7 @@ class MediaCaptionView: UIView {
                 return attrString
             case .messageBody(let body, let interactionIdentifier):
                 let displayConfig = HydratedMessageBody.DisplayConfiguration.mediaCaption(
+                    textColor: textColor ?? .Signal.label,
                     revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                         interactionIdentifier: interactionIdentifier
                     )
@@ -413,7 +419,7 @@ class MediaCaptionView: UIView {
 
             // 3 lines of text.
             let font = font ?? .dynamicTypeBodyClamped
-            let textColor = textColor ?? .white
+            let textColor = textColor ?? .Signal.label
             let collapsedTextConfig = CVTextLabel.Config(
                 text: .attributedText(attributedText),
                 displayConfig: .forUnstyledText(font: font, textColor: textColor),
