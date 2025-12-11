@@ -37,6 +37,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
         super.init()
 
+        view.backgroundColor = .Signal.groupedBackground
+
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         let titleLabel = UILabel()
