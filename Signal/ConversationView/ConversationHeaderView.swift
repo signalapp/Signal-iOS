@@ -106,6 +106,30 @@ class ConversationHeaderView: UIView {
             rootStack.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
 
+        // Embed a small glass view behind the avatar so that it's never visible to the user.
+        // Glass views react to content underneath and update appearance (light / dark)
+        // automatically. Using newer API for detecting trait collection changes it's now
+        // possible to attach a small handler that will force UILabels to have
+        // the same light or dark style as the glass view.
+        if #available(iOS 26, *) {
+            let glassTrackingView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            rootStack.insertSubview(glassTrackingView, at: 0)
+            glassTrackingView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                glassTrackingView.widthAnchor.constraint(equalToConstant: 10),
+                glassTrackingView.heightAnchor.constraint(equalToConstant: 10),
+                glassTrackingView.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
+                glassTrackingView.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
+            ])
+
+            glassTrackingView.contentView.registerForTraitChanges(
+                [ UITraitUserInterfaceStyle.self ],
+                handler: { [weak textRows] (view: UIView, _) in
+                    textRows?.overrideUserInterfaceStyle = view.traitCollection.userInterfaceStyle
+                }
+            )
+        }
+
         if #available(iOS 26, *) {
             heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         }
