@@ -111,8 +111,8 @@ extension DeviceTransferService: MCSessionDelegate {
             // it can be confident that the transfer has completed successfully and
             // clear out all data from this device. This will crash the app.
             Task { @MainActor in
-                SignalApp.resetAppData(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
-                SignalApp.showTransferCompleteAndExit()
+                SignalApp.shared.resetAppData(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
+                SignalApp.shared.showTransferCompleteAndExit()
             }
 
         case .incoming(let oldDevicePeerId, _, let receivedFileIds, let skippedFileIds, _):

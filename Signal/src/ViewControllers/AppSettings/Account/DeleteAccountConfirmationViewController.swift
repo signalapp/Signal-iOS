@@ -432,7 +432,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     private func resetAppDataAndExit() -> Never {
         let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
-        SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+        SignalApp.shared.resetAppDataAndExit(keyFetcher: keyFetcher)
     }
 
     // MARK: -

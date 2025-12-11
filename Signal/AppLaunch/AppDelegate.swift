@@ -560,8 +560,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let dependenciesBridge = DependenciesBridge.shared
         let cron = dependenciesBridge.cron
 
-        SignalApp.shared.performInitialSetup(appReadiness: appReadiness)
-
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         cron.schedulePeriodically(
             uniqueKey: .cleanUpMessageSendLog,
@@ -801,6 +799,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Handled internally by BlockingManager.
             },
         )
+
+        // Warm the "available emoji" cache, intentionally off the main thread.
+        Task.detached {
+            Emoji.warmAvailableCache()
+        }
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1191,7 +1194,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         if DebugFlags.internalSettings {
             actionSheet.addAction(.init(title: "Export Database (internal)") { [unowned viewController] _ in
-                SignalApp.showExportDatabaseUI(from: viewController) {
+                SignalApp.shared.showExportDatabaseUI(from: viewController) {
                     self.presentLaunchFailureActionSheet(
                         from: viewController,
                         supportTag: supportTag,
@@ -1241,7 +1244,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(let databaseStorage):
                 addSubmitDebugLogsAction { [unowned viewController] in
-                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController, databaseStorage: databaseStorage) {
+                    SignalApp.shared.showDatabaseIntegrityCheckUI(
+                        from: viewController,
+                        databaseStorage: databaseStorage,
+                    ) {
                         DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
                             owsFail("Exiting after submitting debug logs")
                         }
@@ -1271,7 +1277,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                             proceedStyle: .destructive,
                             proceedAction: { _ in
                                 ModalActivityIndicatorViewController.present(fromViewController: viewController) { _ in
-                                    SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+                                    SignalApp.shared.resetAppDataAndExit(keyFetcher: keyFetcher)
                                 }
                             },
                         )

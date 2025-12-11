@@ -12,32 +12,11 @@ enum LaunchInterface {
     case chatList
 }
 
-@objc
-public class SignalApp: NSObject {
-
-    @objc
+public class SignalApp {
     public static let shared = SignalApp()
-
     private(set) weak var conversationSplitViewController: ConversationSplitViewController?
 
-    private override init() {
-        super.init()
-    }
-
-    public func performInitialSetup(appReadiness: AppReadiness) {
-        appReadiness.runNowOrWhenUIDidBecomeReadySync {
-            self.warmCachesAsync()
-        }
-    }
-
-    private func warmCachesAsync() {
-        DispatchQueue.sharedUtility.async {
-            Emoji.warmAvailableCache()
-        }
-    }
-}
-
-extension SignalApp {
+    private init() {}
 
     var hasSelectedThread: Bool {
         return conversationSplitViewController?.selectedThread != nil
@@ -97,20 +76,17 @@ extension SignalApp {
         UIViewController.attemptRotationToDeviceOrientation()
     }
 
-    func showAppSettings(mode: ChatListViewController.ShowAppSettingsMode, completion: (() -> Void)? = nil) {
-        guard let conversationSplitViewController else {
-            owsFailDebug("Missing conversationSplitViewController.")
-            return
-        }
-        conversationSplitViewController.showAppSettingsWithMode(mode, completion: completion)
-    }
+    @objc
+    private func spamChallenge() {
+        let db = DependenciesBridge.shared.db
+        let windowManager = AppEnvironment.shared.windowManagerRef
 
-    func showCameraCaptureView(completion: ((UINavigationController) -> Void)? = nil) {
-        guard let conversationSplitViewController else {
-            owsFailDebug("Missing conversationSplitViewController.")
-            return
+        let frontmostViewController = windowManager.captchaWindow.findFrontmostViewController(ignoringAlerts: true)!
+        SpamCaptchaViewController.presentActionSheet(from: frontmostViewController)
+
+        db.write { tx in
+            SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
         }
-        conversationSplitViewController.showCameraView(completion: completion)
     }
 
     func showRegistration(
@@ -136,16 +112,30 @@ extension SignalApp {
         conversationSplitViewController = nil
     }
 
-    @objc
-    private func spamChallenge() {
-        SpamCaptchaViewController.presentActionSheet(from: AppEnvironment.shared.windowManagerRef.captchaWindow.findFrontmostViewController(ignoringAlerts: true)!)
-
-        DependenciesBridge.shared.db.write { tx in
-            SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
-        }
+    @MainActor
+    func showSecondaryProvisioning(appReadiness: AppReadinessSetter) {
+        ProvisioningController.presentProvisioningFlow(appReadiness: appReadiness)
+        conversationSplitViewController = nil
     }
 
-    @objc
+    // MARK: -
+
+    func showAppSettings(mode: ChatListViewController.ShowAppSettingsMode, completion: (() -> Void)? = nil) {
+        guard let conversationSplitViewController else {
+            owsFailDebug("Missing conversationSplitViewController.")
+            return
+        }
+        conversationSplitViewController.showAppSettingsWithMode(mode, completion: completion)
+    }
+
+    func showCameraCaptureView(completion: ((UINavigationController) -> Void)? = nil) {
+        guard let conversationSplitViewController else {
+            owsFailDebug("Missing conversationSplitViewController.")
+            return
+        }
+        conversationSplitViewController.showCameraView(completion: completion)
+    }
+
     func showNewConversationView() {
         AssertIsOnMainThread()
         guard let conversationSplitViewController else {
@@ -154,6 +144,20 @@ extension SignalApp {
         }
         conversationSplitViewController.showNewConversationView()
     }
+
+    func showMyStories(animated: Bool) {
+        AssertIsOnMainThread()
+
+        guard let conversationSplitViewController else {
+            owsFailDebug("No conversationSplitViewController")
+            return
+        }
+
+        Logger.info("")
+        conversationSplitViewController.showMyStoriesController(animated: animated)
+    }
+
+    // MARK: -
 
     func presentConversationForAddress(
         _ address: SignalServiceAddress,
@@ -252,29 +256,16 @@ extension SignalApp {
         )
     }
 
-    @objc
-    func showMyStories(animated: Bool) {
-        AssertIsOnMainThread()
-
-        guard let conversationSplitViewController else {
-            owsFailDebug("No conversationSplitViewController")
-            return
-        }
-
-        Logger.info("")
-
-        conversationSplitViewController.showMyStoriesController(animated: animated)
-    }
+    // MARK: -
 
     func snapshotSplitViewController(afterScreenUpdates: Bool) -> UIView? {
         return conversationSplitViewController?.view?.snapshotView(afterScreenUpdates: afterScreenUpdates)
     }
-}
 
-extension SignalApp {
+    // MARK: -
 
     @MainActor
-    static func resetLinkedAppDataAndExit(
+    func resetLinkedAppDataAndExit(
         localDeviceId: LocalDeviceId,
         keyFetcher: GRDBKeyFetcher,
         registrationStateChangeManager: RegistrationStateChangeManager,
@@ -292,7 +283,7 @@ extension SignalApp {
     /// - Important
     /// This is used in launch flows, before global singletons are available.
     @MainActor
-    static func resetAppDataAndExit(keyFetcher: GRDBKeyFetcher) -> Never {
+    func resetAppDataAndExit(keyFetcher: GRDBKeyFetcher) -> Never {
         resetAppData(keyFetcher: keyFetcher)
         exit(0)
     }
@@ -305,7 +296,7 @@ extension SignalApp {
     /// - Important
     /// This is used in launch flows, before global singletons are available.
     @MainActor
-    static func resetAppData(keyFetcher: GRDBKeyFetcher) {
+    func resetAppData(keyFetcher: GRDBKeyFetcher) {
         do {
             try keyFetcher.clear()
         } catch {
@@ -335,7 +326,7 @@ extension SignalApp {
     }
 
     @MainActor
-    static func showTransferCompleteAndExit() {
+    func showTransferCompleteAndExit() {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "OUTGOING_TRANSFER_COMPLETE_TITLE",
@@ -359,20 +350,10 @@ extension SignalApp {
         actionSheet.isCancelable = false
         CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
     }
-}
 
-extension SignalApp {
+    // MARK: -
 
-    @MainActor
-    func showSecondaryProvisioning(appReadiness: AppReadinessSetter) {
-        ProvisioningController.presentProvisioningFlow(appReadiness: appReadiness)
-        conversationSplitViewController = nil
-    }
-}
-
-extension SignalApp {
-
-    public static func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
+    public func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
         guard DebugFlags.internalSettings else {
             // This should NEVER be exposed outside of internal settings.
             // We do not want to expose users to phishing scams. This should only be used for debugging purposes.
@@ -417,7 +398,7 @@ extension SignalApp {
         parentVC.present(alert, animated: true)
     }
 
-    public static func showDatabaseIntegrityCheckUI(
+    public func showDatabaseIntegrityCheckUI(
         from parentVC: UIViewController,
         databaseStorage: SDSDatabaseStorage,
         completion: @escaping () -> Void = {}

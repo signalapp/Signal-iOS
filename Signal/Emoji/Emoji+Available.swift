@@ -16,8 +16,6 @@ extension Emoji {
     static func warmAvailableCache() {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard CurrentAppContext().hasUI else { return }
-
         var availableCache = [Emoji: Bool]()
         var uncachedEmoji = [Emoji]()
 
@@ -71,16 +69,12 @@ extension Emoji {
     }
 
     private static func isEmojiAvailable(_ emoji: Emoji) -> Bool {
-        owsAssertDebug(CurrentAppContext().hasUI)
-
         return emoji.rawValue.isUnicodeStringAvailable
     }
 
     /// Indicates whether the given emoji is available on this iOS
     /// version. We cache the availability in memory.
     var available: Bool {
-        owsAssertDebug(CurrentAppContext().hasUI)
-
         guard let available = Self.availableCache[self] else {
             let available = Self.isEmojiAvailable(self)
             Self.availableCache[self] = available

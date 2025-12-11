@@ -224,7 +224,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let registrationStateChangeManager = DependenciesBridge.shared.registrationStateChangeManager
 
                 ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
-                    await SignalApp.resetLinkedAppDataAndExit(
+                    await SignalApp.shared.resetLinkedAppDataAndExit(
                         localDeviceId: localDeviceId,
                         keyFetcher: keyFetcher,
                         registrationStateChangeManager: registrationStateChangeManager,
@@ -249,7 +249,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             proceedAction: { _ in
                 ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
                     let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
-                    SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+                    SignalApp.shared.resetAppDataAndExit(keyFetcher: keyFetcher)
                 }
             },
             fromViewController: self,

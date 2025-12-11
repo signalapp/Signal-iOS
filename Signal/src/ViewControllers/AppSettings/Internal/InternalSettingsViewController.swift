@@ -82,7 +82,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self = self else {
                     return
                 }
-                SignalApp.showExportDatabaseUI(from: self)
+                SignalApp.shared.showExportDatabaseUI(from: self)
             }
         ))
         debugSection.add(.actionItem(
@@ -98,7 +98,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self = self else {
                     return
                 }
-                SignalApp.showDatabaseIntegrityCheckUI(from: self, databaseStorage: SSKEnvironment.shared.databaseStorageRef)
+                SignalApp.shared.showDatabaseIntegrityCheckUI(
+                    from: self,
+                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                )
             }
         ))
         debugSection.add(.actionItem(

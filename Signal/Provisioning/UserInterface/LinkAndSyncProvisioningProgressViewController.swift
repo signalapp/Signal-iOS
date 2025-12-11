@@ -166,7 +166,7 @@ class LinkAndSyncProvisioningProgressViewController: ProvisioningBaseViewControl
             // Reset the whole app and force quit. If the user
             // exits in the middle of syncing we'll probably
             // crash anyway (dead10cc).
-            SignalApp.resetAppDataAndExit(
+            SignalApp.shared.resetAppDataAndExit(
                 keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher
             )
         }

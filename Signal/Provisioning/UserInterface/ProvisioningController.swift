@@ -92,7 +92,7 @@ class ProvisioningController: NSObject {
             // If we started a link'n'sync and terminated after committing
             // the restored backup but before finishing, reset the app data
             // and start over.
-            SignalApp.resetAppDataAndExit(
+            SignalApp.shared.resetAppDataAndExit(
                 keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher
             )
         default:

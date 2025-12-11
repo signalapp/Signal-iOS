@@ -170,7 +170,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     @objc
     private func didTapToExportDatabase() {
         owsPrecondition(DebugFlags.internalSettings, "Only internal users can export databases")
-        SignalApp.showExportDatabaseUI(from: self)
+        SignalApp.shared.showExportDatabaseUI(from: self)
     }
 
     @objc
@@ -201,7 +201,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             proceedStyle: .destructive
         ) { [keychainStorage] _ in
             ModalActivityIndicatorViewController.present(fromViewController: self) { _ in
-                SignalApp.resetAppDataAndExit(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage))
+                SignalApp.shared.resetAppDataAndExit(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage))
             }
         }
     }
