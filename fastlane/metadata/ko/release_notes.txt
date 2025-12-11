@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• 이제 설문조사에 향상된 보이스오버 지원을 위한 추가 접근성 레이블이 포함됩니다.

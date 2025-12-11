@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• A szavazások mostantól további kisegítő címkéket tartalmaznak a hangalámondás jobb támogatása érdekében.

@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• Nous avons ajouté des descriptions vocales aux sondages pour améliorer l'accessibilité de l'application.

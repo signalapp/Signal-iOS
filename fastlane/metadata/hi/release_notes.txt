@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• बेहतर VoiceOver सपोर्ट के लिए, अब पोल्स में अतिरिक्त ऐक्सेसेबिलिटी लेबल जोड़े गए हैं।
