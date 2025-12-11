@@ -336,6 +336,7 @@ public class GRDBSchemaMigrator {
         case fixRevokedForRestoredCallLinks
         case fixNameForRestoredCallLinks
         case addPinnedMessagesTable
+        case addPinnedAtTimestampToPinnedMessageTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -451,7 +452,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 135
+    public static let grdbSchemaVersionLatest: UInt = 136
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4314,6 +4315,14 @@ public class GRDBSchemaMigrator {
                 condition: Column("expiresAt") != nil
             )
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPinnedAtTimestampToPinnedMessageTable) { tx in
+            try tx.database.alter(table: "PinnedMessage") { table in
+                table.add(column: "sentTimestamp", .integer).notNull().defaults(to: 0)
+                table.add(column: "receivedTimestamp", .integer).notNull().defaults(to: 0)
+            }
             return .success(())
         }
 

@@ -1008,7 +1008,8 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
             accountManager: tsAccountManager,
             db: db,
-            threadStore: threadStore
+            threadStore: threadStore,
+            dateProvider: dateProvider
         )
 
         let storyRecipientStore = StoryRecipientStore()

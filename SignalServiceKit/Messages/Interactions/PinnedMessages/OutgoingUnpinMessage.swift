@@ -96,6 +96,7 @@ public class OutgoingUnpinMessage: TSOutgoingMessage {
             targetAuthorAci: targetMessageAuthorAci,
             expiresAt: nil,
             isPin: false,
+            sentTimestamp: timestamp,
             tx: tx
         )
     }

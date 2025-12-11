@@ -576,7 +576,7 @@ public final class MessageReceiver {
                              pinMessageProto: pinMessage,
                              pinAuthor: localIdentifiers.aci,
                              thread: thread,
-                             timestamp: dataMessage.timestamp,
+                             pinSentAtTimestamp: envelope.timestamp,
                              expireTimer: dataMessage.expireTimer,
                              expireTimerVersion: dataMessage.expireTimerVersion,
                              transaction: tx
@@ -1369,7 +1369,7 @@ public final class MessageReceiver {
                         pinMessageProto: pinMessage,
                         pinAuthor: envelope.sourceAci,
                         thread: thread,
-                        timestamp: dataMessage.timestamp,
+                        pinSentAtTimestamp: envelope.timestamp,
                         expireTimer: dataMessage.expireTimer,
                         expireTimerVersion: dataMessage.expireTimerVersion,
                         transaction: tx

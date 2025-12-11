@@ -2586,6 +2586,8 @@ CREATE
             ON UPDATE
                 CASCADE
                 ,"expiresAt" INTEGER
+                ,"sentTimestamp" INTEGER NOT NULL DEFAULT 0
+                ,"receivedTimestamp" INTEGER NOT NULL DEFAULT 0
 )
 ;
 

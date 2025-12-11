@@ -12,12 +12,16 @@ public struct PinnedMessageRecord: Codable, FetchableRecord, MutablePersistableR
     public let id: Int64
     public let interactionId: Int64
     public var threadId: Int64
-    public let expiresAt: Int64?
+    public let expiresAt: UInt64?
+    public let sentTimestamp: UInt64
+    public let receivedTimestamp: UInt64
 
     static func insertRecord(
         interactionId: Int64,
         threadId: Int64,
-        expiresAt: Int64? = nil,
+        expiresAt: UInt64? = nil,
+        sentTimestamp: UInt64,
+        receivedTimestamp: UInt64,
         tx: DBWriteTransaction
     ) throws(GRDB.DatabaseError) -> Self {
         do {
@@ -27,13 +31,17 @@ public struct PinnedMessageRecord: Codable, FetchableRecord, MutablePersistableR
                     INSERT INTO \(PinnedMessageRecord.databaseTableName) (
                         \(CodingKeys.interactionId.rawValue),
                         \(CodingKeys.threadId.rawValue),
-                        \(CodingKeys.expiresAt.rawValue)
-                    ) VALUES (?, ?, ?) RETURNING *
+                        \(CodingKeys.expiresAt.rawValue),
+                        \(CodingKeys.sentTimestamp.rawValue),
+                        \(CodingKeys.receivedTimestamp.rawValue)
+                    ) VALUES (?, ?, ?, ?, ?) RETURNING *
                     """,
                 arguments: [
                     interactionId,
                     threadId,
-                    expiresAt
+                    expiresAt,
+                    sentTimestamp,
+                    receivedTimestamp
                 ],
             )!
         } catch {
@@ -46,6 +54,8 @@ public struct PinnedMessageRecord: Codable, FetchableRecord, MutablePersistableR
         case interactionId
         case threadId
         case expiresAt
+        case sentTimestamp
+        case receivedTimestamp
     }
 
     enum Columns {
@@ -53,5 +63,7 @@ public struct PinnedMessageRecord: Codable, FetchableRecord, MutablePersistableR
         static let interactionId = Column(CodingKeys.interactionId.rawValue)
         static let threadId = Column(CodingKeys.threadId.rawValue)
         static let expiresAt = Column(CodingKeys.expiresAt.rawValue)
+        static let sentTimestamp = Column(CodingKeys.sentTimestamp.rawValue)
+        static let receivedTimestamp = Column(CodingKeys.receivedTimestamp.rawValue)
     }
 }

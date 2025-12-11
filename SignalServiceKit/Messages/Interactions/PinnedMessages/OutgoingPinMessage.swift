@@ -112,6 +112,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
             targetAuthorAci: targetMessageAuthorAci,
             expiresAt: nil,
             isPin: true,
+            sentTimestamp: timestamp,
             tx: tx
         )
     }
