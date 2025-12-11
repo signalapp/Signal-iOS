@@ -102,6 +102,9 @@ public class PinnedMessageManager {
             throw OWSAssertionError("threadId not found")
         }
 
+        // If this is a retry of an existing pinned message, delete the old entry so the expiry gets updated.
+        deleteRepeatPinAttempt(interactionId: interactionId, transaction: transaction)
+
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
             transaction: transaction
@@ -163,6 +166,17 @@ public class PinnedMessageManager {
         }
 
         return targetMessage
+    }
+
+    public func deleteRepeatPinAttempt(
+        interactionId: Int64,
+        transaction: DBWriteTransaction
+    ) {
+        _ = failIfThrows {
+            try PinnedMessageRecord
+                .filter(PinnedMessageRecord.Columns.interactionId == interactionId)
+                .deleteAll(transaction.database)
+        }
     }
 
     public func pruneOldestPinnedMessagesIfNecessary(
@@ -255,6 +269,9 @@ public class PinnedMessageManager {
                 )
             }
         }
+
+        // If this is a retry of an existing pinned message, delete the old entry so the expiry gets updated.
+        deleteRepeatPinAttempt(interactionId: interactionId, transaction: tx)
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
