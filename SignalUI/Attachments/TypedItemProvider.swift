@@ -249,9 +249,7 @@ public struct TypedItemProvider {
                 throw SignalAttachmentError.missingData
             }
             let dataSource = try DataSourcePath(writingTempFileData: pkPass, fileExtension: fileExtension)
-            attachment = PreviewableAttachment(
-                rawValue: try SignalAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier),
-            )
+            attachment = try PreviewableAttachment.genericAttachment(dataSource: dataSource, dataUTI: itemType.typeIdentifier)
         }
         return .other(attachment)
     }
@@ -351,10 +349,10 @@ public struct TypedItemProvider {
                 writingTempFileData: Data(filteredText.rawValue.utf8),
                 fileExtension: MimeTypeUtil.oversizeTextAttachmentFileExtension,
             )
-            return .other(PreviewableAttachment(rawValue: try SignalAttachment.genericAttachment(
+            return .other(try PreviewableAttachment.genericAttachment(
                 dataSource: dataSource,
                 dataUTI: UTType.plainText.identifier,
-            )))
+            ))
         }
     }
 
@@ -364,8 +362,7 @@ public struct TypedItemProvider {
         }
         let containerType = SignalAttachment.ContainerType.png
         let dataSource = try DataSourcePath(writingTempFileData: imagePng, fileExtension: containerType.fileExtension)
-        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
-        return PreviewableAttachment(rawValue: attachment)
+        return try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
     }
 
     private nonisolated static func copyFileUrl(
@@ -399,7 +396,7 @@ public struct TypedItemProvider {
             defer {
                 progressPoller?.stopPolling()
             }
-            let attachment = try await SignalAttachment.compressVideoAsMp4(
+            return try await PreviewableAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
                 sessionCallback: { exportSession in
                     guard let progress else { return }
@@ -407,15 +404,12 @@ public struct TypedItemProvider {
                     progressPoller?.startPolling()
                 }
             )
-            return PreviewableAttachment(rawValue: attachment)
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as
             // an image or throw an error.
-            let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            return PreviewableAttachment(rawValue: attachment)
+            return try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         } else {
-            let attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-            return PreviewableAttachment(rawValue: attachment)
+            return try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: dataUTI)
         }
     }
 }

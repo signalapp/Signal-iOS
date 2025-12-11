@@ -146,7 +146,7 @@ class ConversationInputTextView: BodyRangesTextView {
     var pasteboardHasPossibleAttachment: Bool {
         // We don't want to load/convert images more than once so we
         // only do a cursory validation pass at this time.
-        SignalAttachment.pasteboardHasPossibleAttachment() && !SignalAttachment.pasteboardHasText()
+        return PasteboardAttachment.mayHaveAttachments() && !PasteboardAttachment.hasText()
     }
 
     override var inputView: UIView? {

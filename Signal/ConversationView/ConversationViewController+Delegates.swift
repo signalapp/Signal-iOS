@@ -218,9 +218,9 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
     public func didAttemptAttachmentPaste() {
         // If trying to paste a sticker, forego anything async since
         // the pasteboard will be cleared as soon as paste() exits.
-        if SignalAttachment.pasteboardHasStickerAttachment() {
+        if PasteboardAttachment.hasStickerAttachment() {
             do {
-                self.didPasteAttachments([try SignalAttachment.stickerAttachmentFromPasteboard()].compacted())
+                self.didPasteAttachments([try PasteboardAttachment.loadPreviewableStickerAttachment()].compacted())
             } catch {
                 self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
             }
@@ -229,7 +229,7 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
 
         ModalActivityIndicatorViewController.present(fromViewController: self, asyncBlock: { modal in
             do {
-                let attachments = try await SignalAttachment.attachmentsFromPasteboard()
+                let attachments = try await PasteboardAttachment.loadPreviewableAttachments()
                 modal.dismiss {
                     // Note: attachment array might be nil at this point; that's fine.
                     self.didPasteAttachments(attachments)

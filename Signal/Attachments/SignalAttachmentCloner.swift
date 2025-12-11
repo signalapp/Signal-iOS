@@ -20,19 +20,19 @@ enum SignalAttachmentCloner {
         let decryptedDataSource = DataSourcePath(fileUrl: decryptedCopyUrl, ownership: .owned)
         decryptedDataSource.sourceFilename = attachment.reference.sourceFilename
 
-        let signalAttachment: SignalAttachment
+        let result: PreviewableAttachment
         switch attachment.reference.renderingFlag {
         case .default:
-            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            result = try PreviewableAttachment.buildAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
         case .voiceMessage:
-            signalAttachment = try SignalAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            result = try PreviewableAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
         case .borderless:
-            signalAttachment = try SignalAttachment.imageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
-            signalAttachment.isBorderless = true
+            result = try PreviewableAttachment.imageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            result.rawValue.isBorderless = true
         case .shouldLoop:
-            signalAttachment = try SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
-            signalAttachment.isLoopingVideo = true
+            result = try PreviewableAttachment.buildAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            result.rawValue.isLoopingVideo = true
         }
-        return PreviewableAttachment(rawValue: signalAttachment)
+        return result
     }
 }

@@ -621,7 +621,9 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
     }
 
-    public static var pasteboardType: String { SignalAttachment.bodyRangesPasteboardType }
+    // This can be more than just mentions (e.g. also text formatting styles)
+    // but the name remains as-is for backwards compatibility.
+    public static let pasteboardType = "private.archived-mention-text"
 
     open override func copy(_ sender: Any?) {
         let messageBody: MessageBody

@@ -482,7 +482,7 @@ public class Location: NSObject {
         }
         let dataSource = try DataSourcePath(writingTempFileData: jpegData, fileExtension: "jpg")
         return try await SendableAttachment.forPreviewableAttachment(
-            PreviewableAttachment(rawValue: SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)),
+            PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier),
             imageQualityLevel: .one,
         )
     }

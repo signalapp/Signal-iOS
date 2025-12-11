@@ -819,9 +819,9 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return
         }
 
-        let attachment: SignalAttachment
+        let attachment: PreviewableAttachment
         do {
-            attachment = try SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentTypeIdentifier)
+            attachment = try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: contentTypeIdentifier)
         } catch {
             DispatchQueue.main.async {
                 self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
@@ -829,7 +829,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return
         }
 
-        showApprovalDialog(forAttachments: [PreviewableAttachment(rawValue: attachment)])
+        showApprovalDialog(forAttachments: [attachment])
     }
 
     private func showApprovalDialogAfterProcessingVideo(dataSource: DataSourcePath) {
@@ -840,9 +840,9 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             canCancel: true,
             asyncBlock: { modalActivityIndicator in
                 do {
-                    let attachment = try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource)
+                    let attachment = try await PreviewableAttachment.compressVideoAsMp4(dataSource: dataSource)
                     modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showApprovalDialog(forAttachments: [PreviewableAttachment(rawValue: attachment)])
+                        self.showApprovalDialog(forAttachments: [attachment])
                     })
                 } catch {
                     owsFailDebug("Error: \(error).")

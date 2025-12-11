@@ -832,11 +832,11 @@ class CameraCaptureSession: NSObject {
     private func handleVideoRecording(at outputUrl: URL) throws {
         AssertIsOnMainThread()
         let dataSource = DataSourcePath(fileUrl: outputUrl, ownership: .owned)
-        let attachment = try SignalAttachment.videoAttachment(
+        let attachment = try PreviewableAttachment.videoAttachment(
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
         )
-        delegate?.cameraCaptureSession(self, didFinishProcessing: PreviewableAttachment(rawValue: attachment))
+        delegate?.cameraCaptureSession(self, didFinishProcessing: attachment)
     }
 
     private func handleVideoCaptureError(_ error: Error) {
@@ -992,15 +992,15 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
         case .failure(let error):
             delegate.cameraCaptureSession(self, didFailWith: error)
         case .success(let photoData):
-            let attachment: SignalAttachment
+            let attachment: PreviewableAttachment
             do {
                 let dataSource = try DataSourcePath(writingTempFileData: photoData, fileExtension: "jpg")
-                attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
+                attachment = try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             } catch {
                 delegate.cameraCaptureSession(self, didFailWith: error)
                 return
             }
-            delegate.cameraCaptureSession(self, didFinishProcessing: PreviewableAttachment(rawValue: attachment))
+            delegate.cameraCaptureSession(self, didFinishProcessing: attachment)
         }
     }
 }

@@ -752,8 +752,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         }
         dataSource.sourceFilename = filename
 
-        let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
-        return PreviewableAttachment(rawValue: attachment)
+        return try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: containerType.dataType.identifier)
     }
 
     private func prepareVideoAttachment(
@@ -775,8 +774,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         }
         dataSource.sourceFilename = filename
 
-        let attachment = try SignalAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
-        return PreviewableAttachment(rawValue: attachment)
+        return try PreviewableAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {

@@ -39,9 +39,8 @@ extension ConversationViewController: BodyRangesTextViewDelegate {
     }
 
     public func textViewDidInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) {
-        // Note: attachment might be nil or have an error at this point; that's fine.
         do {
-            self.didPasteAttachments([try SignalAttachment.attachmentFromMemoji(memojiGlyph)])
+            self.didPasteAttachments([try PasteboardAttachment.loadPreviewableMemojiAttachment(fromMemojiGlyph: memojiGlyph)])
         } catch {
             self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
         }

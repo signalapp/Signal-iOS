@@ -139,12 +139,10 @@ class PhotoAlbumContents {
         switch asset.mediaType {
         case .image:
             let (dataSource, dataUTI) = try await requestImageDataSource(for: asset)
-            let attachment = try SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            return PreviewableAttachment(rawValue: attachment)
+            return try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         case .video:
             let video = try await requestVideoDataSource(for: asset)
-            let attachment = try await SignalAttachment.compressVideoAsMp4(asset: video, baseFilename: nil)
-            return PreviewableAttachment(rawValue: attachment)
+            return try await PreviewableAttachment.compressVideoAsMp4(asset: video, baseFilename: nil)
         case .unknown, .audio:
             fallthrough
         @unknown default:

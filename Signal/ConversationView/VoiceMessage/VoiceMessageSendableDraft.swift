@@ -30,6 +30,6 @@ extension VoiceMessageSendableDraft {
         let dataSource = DataSourcePath(fileUrl: attachmentUrl, ownership: .owned)
         dataSource.sourceFilename = userVisibleFilename(currentDate: Date())
 
-        return PreviewableAttachment(rawValue: try SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier))
+        return try PreviewableAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier)
     }
 }
