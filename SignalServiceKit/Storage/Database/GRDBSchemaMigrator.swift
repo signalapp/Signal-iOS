@@ -255,12 +255,7 @@ public class GRDBSchemaMigrator {
         case createArchivedPaymentTable
         case removeDeadEndGroupThreadIdMappings
         case addTSAttachmentMigrationTable
-        case threadWallpaperTSAttachmentMigration1
-        case threadWallpaperTSAttachmentMigration2
-        case threadWallpaperTSAttachmentMigration3
         case indexMessageAttachmentReferenceByReceivedAtTimestamp
-        case migrateStoryMessageTSAttachments1
-        case migrateStoryMessageTSAttachments2
         case addBackupAttachmentDownloadQueue
         case createAttachmentUploadRecordTable
         case addBlockedRecipient
@@ -337,6 +332,7 @@ public class GRDBSchemaMigrator {
         case fixNameForRestoredCallLinks
         case addPinnedMessagesTable
         case addPinnedAtTimestampToPinnedMessageTable
+        case dropTSAttachment
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -448,6 +444,13 @@ public class GRDBSchemaMigrator {
 
         // Obsoleted by dataMigration_removeSystemContacts.
         case dataMigration_removeLinkedDeviceSystemContacts
+
+        // Obsoleted when we removed the TSAttachment migration.
+        case threadWallpaperTSAttachmentMigration1
+        case threadWallpaperTSAttachmentMigration2
+        case threadWallpaperTSAttachmentMigration3
+        case migrateStoryMessageTSAttachments1
+        case migrateStoryMessageTSAttachments2
 #endif
     }
 
@@ -3067,37 +3070,12 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.threadWallpaperTSAttachmentMigration1) { tx in
-            try TSAttachmentMigration.prepareThreadWallpaperMigration(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.threadWallpaperTSAttachmentMigration2) { tx in
-            try TSAttachmentMigration.completeThreadWallpaperMigration(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.threadWallpaperTSAttachmentMigration3) { tx in
-            try TSAttachmentMigration.cleanUpLegacyThreadWallpaperDirectory()
-            return .success(())
-        }
-
         migrator.registerMigration(.indexMessageAttachmentReferenceByReceivedAtTimestamp) { tx in
             try tx.database.create(
                 index: "index_message_attachment_reference_on_receivedAtTimestamp",
                 on: "MessageAttachmentReference",
                 columns: ["receivedAtTimestamp"]
             )
-            return .success(())
-        }
-
-        migrator.registerMigration(.migrateStoryMessageTSAttachments1) { tx in
-            try TSAttachmentMigration.StoryMessageMigration.prepareStoryMessageMigration(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.migrateStoryMessageTSAttachments2) { tx in
-            try TSAttachmentMigration.StoryMessageMigration.completeStoryMessageMigration(tx: tx)
             return .success(())
         }
 
@@ -4323,6 +4301,22 @@ public class GRDBSchemaMigrator {
                 table.add(column: "sentTimestamp", .integer).notNull().defaults(to: 0)
                 table.add(column: "receivedTimestamp", .integer).notNull().defaults(to: 0)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropTSAttachment) { tx in
+            // Delete the legacy attachments folder, which is hopefully already
+            // deleted.
+            if let containerURL = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: TSConstants.applicationGroup,
+            ) {
+                let tsAttachmentsDir = containerURL.path.appendingPathComponent("Attachments")
+                try? FileManager.default.removeItem(atPath: tsAttachmentsDir)
+            }
+
+            try tx.database.drop(table: "TSAttachmentMigration")
+            try tx.database.drop(table: "model_TSAttachment")
+
             return .success(())
         }
 

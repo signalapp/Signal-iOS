@@ -236,10 +236,6 @@ public class RemoteConfig {
         }
     }
 
-    public var tsAttachmentMigrationBatchDelayMs: UInt64 {
-        getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
-    }
-
     public var backupListMediaDefaultRefreshInterval: TimeInterval {
         let defaultValue: UInt64
         if BuildFlags.Backups.useLowerDefaultListMediaRefreshInterval {
@@ -285,14 +281,6 @@ public class RemoteConfig {
 
     public var messageQueueTimeMs: UInt64 {
         return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
-    }
-
-    public var shouldRunTSAttachmentMigrationInBGProcessingTask: Bool {
-        return !isEnabled(.tsAttachmentMigrationBGProcessingTaskKillSwitch)
-    }
-
-    public var shouldRunTSAttachmentMigrationInMainAppBackground: Bool {
-        return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
     public var backupSettingsKillSwitch: Bool {
@@ -528,8 +516,6 @@ private enum IsEnabledFlag: String, FlagType {
     case pollReceiveKillSwitch = "ios.pollReceiveKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
-    case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
 
     #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -557,8 +543,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .pollReceiveKillSwitch: true
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .serviceExtensionFailureKillSwitch: true
-        case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
-        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
 
         #if TESTABLE_BUILD
         case .hotSwappable: true
@@ -592,7 +576,6 @@ private enum ValueFlag: String, FlagType {
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
-    case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
     case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
     case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
     case pinnedMessageLimit = "global.pinned_message_limit"
@@ -627,7 +610,6 @@ private enum ValueFlag: String, FlagType {
         case .replaceableInteractionExpiration: false
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
-        case .tsAttachmentMigrationBatchDelayMs: true
         case .backupListMediaDefaultRefreshIntervalMs: true
         case .backupListMediaOutOfQuotaRefreshIntervalMs: true
         case .pinnedMessageLimit: true

@@ -17,7 +17,6 @@ enum LaunchPreflightError {
     case databaseCorruptedAndMightBeRecoverable
     case databaseUnrecoverablyCorrupted
     case lastAppLaunchCrashed
-    case incrementalTSAttachmentMigrationFailed
     case lowStorageSpaceAvailable
     case possibleReadCorruptionCrashed
 
@@ -33,8 +32,6 @@ enum LaunchPreflightError {
             return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
         case .lastAppLaunchCrashed:
             return "LaunchFailure_LastAppLaunchCrashed"
-        case .incrementalTSAttachmentMigrationFailed:
-            return "LaunchFailure_incrementalTSAttachmentMigrationFailed"
         case .lowStorageSpaceAvailable:
             return "LaunchFailure_NoDiskSpaceAvailable"
         case .possibleReadCorruptionCrashed:
@@ -259,24 +256,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
 
-        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
-        // TODO: remove this (and the incremental migrator itself) once we make this
-        // migration a launch-blocking GRDB migration.
-        let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore(
-            userDefaults: mainAppContext.appUserDefaults()
-        )
-        let incrementalMessageTSAttachmentMigratorFactory = IncrementalMessageTSAttachmentMigratorFactoryImpl(
-            store: incrementalMessageTSAttachmentMigrationStore
-        )
-
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
             deviceSleepManager: deviceSleepManager,
             keychainStorage: keychainStorage,
             launchStartedAt: launchStartedAt,
-            incrementalMessageTSAttachmentMigrationStore: incrementalMessageTSAttachmentMigrationStore,
-            incrementalMessageTSAttachmentMigratorFactory: incrementalMessageTSAttachmentMigratorFactory
         )
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
@@ -284,7 +269,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let preflightError = checkIfAllowedToLaunch(
             mainAppContext: mainAppContext,
             appVersion: appVersion,
-            incrementalTSAttachmentMigrationStore: incrementalMessageTSAttachmentMigrationStore,
             didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed
         )
 
@@ -311,14 +295,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
-        let attachmentMigrationRunner = IncrementalMessageTSAttachmentMigrationRunner(
-            appContext: mainAppContext,
-            db: databaseStorage,
-            store: incrementalMessageTSAttachmentMigrationStore,
-            migrator: { DependenciesBridge.shared.incrementalMessageTSAttachmentMigrator }
-        )
-        attachmentMigrationRunner.registerBGProcessingTask(appReadiness: appReadiness)
-
         let attachmentBackfillStore = AttachmentValidationBackfillStore()
         let attachmentValidationRunner = AttachmentValidationBackfillRunner(
             db: databaseStorage,
@@ -345,9 +321,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         databaseMigratorRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            if SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().shouldRunTSAttachmentMigrationInBGProcessingTask {
-                attachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded()
-            }
             attachmentValidationRunner.scheduleBGProcessingTaskIfNeeded()
             backupRunner.scheduleBGProcessingTaskIfNeeded()
         }
@@ -399,8 +372,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let deviceSleepManager: DeviceSleepManagerImpl
         let keychainStorage: any KeychainStorage
         let launchStartedAt: CFTimeInterval
-        let incrementalMessageTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore
-        let incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory
     }
 
     private func launchApp(
@@ -451,7 +422,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalMessageTSAttachmentMigratorFactory: launchContext.incrementalMessageTSAttachmentMigratorFactory
         )
         SUIEnvironment.shared.setUp(
             appReadiness: appReadiness,
@@ -478,20 +448,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         let finalContinuation = await dataMigrationContinuation.migrateDatabaseData()
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
-        guard BuildFlags.runTSAttachmentMigrationBlockingOnLaunch else {
-            return (finalContinuation, sleepBlockObject)
-        }
 
-        let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
-            await MainActor.run {
-                loadingViewController?.updateProgress(progress)
-            }
-        }
-        let migrateTask = Task {
-            _ = await finalContinuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
-                .runInMainAppUntilFinished(ignorePastFailures: true, progress: progressSink)
-        }
-        await migrateTask.value
         return (finalContinuation, sleepBlockObject)
     }
 
@@ -1014,7 +971,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func checkIfAllowedToLaunch(
         mainAppContext: MainAppContext,
         appVersion: AppVersion,
-        incrementalTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore,
         didDeviceTransferRestoreSucceed: Bool
     ) -> LaunchPreflightError? {
         guard checkEnoughDiskSpaceAvailable() else {
@@ -1058,19 +1014,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 return .possibleReadCorruptionCrashed
             }
             return .lastAppLaunchCrashed
-        }
-
-        if incrementalTSAttachmentMigrationStore.shouldReportFailureInUI() {
-            if let (logString, wasLoggedBefore) = incrementalTSAttachmentMigrationStore.consumeLastBGProcessingTaskError() {
-                if wasLoggedBefore {
-                    Logger.error("Previously failed TSAttachment migration in some BGProcessingTask: \(logString)")
-                } else {
-                    Logger.error("Failed TSAttachment migration in last BGProcessingTask: \(logString)")
-                }
-            } else if let checkpointString = incrementalTSAttachmentMigrationStore.getLastCheckpoint() {
-                Logger.error("Previously failed TSAttachment migration, last checkpoint: \(checkpointString)")
-            }
-            return .incrementalTSAttachmentMigrationFailed
         }
 
         return nil
@@ -1129,7 +1072,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
             actions = [.submitDebugLogsAndCrash]
 
-        case .lastAppLaunchCrashed, .incrementalTSAttachmentMigrationFailed:
+        case .lastAppLaunchCrashed:
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
                 comment: "Error indicating that the app crashed during the previous launch."
@@ -1271,7 +1214,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         func ignoreErrorAndLaunchApp(in window: UIWindow, launchContext: LaunchContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
-            launchContext.incrementalMessageTSAttachmentMigrationStore.didReportFailureInUI()
             let loadingViewController = LoadingViewController()
             window.rootViewController = loadingViewController
             self.launchApp(

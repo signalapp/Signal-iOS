@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import AVFoundation
 public import SignalServiceKit
 
 /// Represents an attachment the user *might* choose to send.

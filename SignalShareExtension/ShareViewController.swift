@@ -98,7 +98,6 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
                 callMessageHandler: NoopCallMessageHandler(),
                 currentCallProvider: CurrentCallNoOpProvider(),
                 notificationPresenter: NoopNotificationPresenterImpl(),
-                incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
             )
 
         // Configure the rest of the globals before preparing the database.

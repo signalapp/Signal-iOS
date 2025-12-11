@@ -16,7 +16,6 @@ public class MockSSKEnvironment {
         callMessageHandler: any CallMessageHandler = NoopCallMessageHandler(),
         currentCallProvider: any CurrentCallProvider = CurrentCallNoOpProvider(),
         notificationPresenter: any NotificationPresenter = NoopNotificationPresenterImpl(),
-        incrementalMessageTSAttachmentMigratorFactory: any IncrementalMessageTSAttachmentMigratorFactory = IncrementalMessageTSAttachmentMigratorFactoryMock(),
         testDependencies: AppSetup.TestDependencies? = nil
     ) async {
         owsPrecondition(!(CurrentAppContext() is TestAppContext))
@@ -51,7 +50,6 @@ public class MockSSKEnvironment {
             callMessageHandler: callMessageHandler,
             currentCallProvider: currentCallProvider,
             notificationPresenter: notificationPresenter,
-            incrementalMessageTSAttachmentMigratorFactory: incrementalMessageTSAttachmentMigratorFactory,
             testDependencies: testDependencies ?? AppSetup.TestDependencies(
                 contactManager: FakeContactsManager(),
                 groupV2Updates: MockGroupV2Updates(),

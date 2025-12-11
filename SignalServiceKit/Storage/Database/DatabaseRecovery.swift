@@ -301,8 +301,6 @@ public extension DatabaseRecovery {
             QueuedBackupStickerPackDownload.databaseTableName,
             OrphanedBackupAttachment.databaseTableName,
             "MessageBackupAvatarFetchQueue",
-            "model_TSAttachment",
-            "TSAttachmentMigration",
             "AvatarDefaultColor",
             GroupMessageProcessorJob.databaseTableName,
             "ListedBackupMediaObject",

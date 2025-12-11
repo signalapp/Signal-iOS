@@ -179,7 +179,6 @@ extension AppSetup.GlobalsContinuation {
         callMessageHandler: CallMessageHandler,
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
-        incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory,
         testDependencies: AppSetup.TestDependencies = AppSetup.TestDependencies(),
     ) -> AppSetup.DataMigrationContinuation {
         configureUnsatisfiableConstraintLogging()
@@ -1350,14 +1349,6 @@ extension AppSetup.GlobalsContinuation {
             usernameLookupManager: usernameLookupManager
         )
 
-        let incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigratorFactory.migrator(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            databaseStorage: databaseStorage,
-            remoteConfigManager: remoteConfigManager,
-            tsAccountManager: tsAccountManager
-        )
-
         let backupAttachmentsArchiver = BackupArchiveMessageAttachmentArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -1489,7 +1480,6 @@ extension AppSetup.GlobalsContinuation {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             libsignalNet: libsignalNet,
             localStorage: accountKeyStore,
             localRecipientArchiver: BackupArchiveLocalRecipientArchiver(
@@ -1696,7 +1686,6 @@ extension AppSetup.GlobalsContinuation {
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
-            incrementalMessageTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             individualCallRecordManager: individualCallRecordManager,
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
