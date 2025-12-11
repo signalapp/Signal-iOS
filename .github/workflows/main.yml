@@ -18,7 +18,7 @@ concurrency:
 
 env:
   # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md#xcode
-  DEVELOPER_DIR: /Applications/Xcode_26.0.app
+  DEVELOPER_DIR: /Applications/Xcode_26.1.app
 
 jobs:
   build_and_test:
@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         # Add additional Xcode versions here if necessary.
-        xcode: ["Xcode_26.0"]
+        xcode: ["Xcode_26.1"]
 
     steps:
       - name: Set Xcode version
