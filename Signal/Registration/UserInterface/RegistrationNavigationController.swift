@@ -360,11 +360,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil
             )
-        case .deviceTransfer(let state):
+        case .deviceTransfer(let coordinator):
             return Controller(
-                type: RegistrationTransferStatusViewController.self,
+                type: RegistrationDeviceTransferStatusViewController.self,
                 make: { presenter in
-                    return RegistrationTransferStatusViewController(state: state, presenter: presenter)
+                    return RegistrationDeviceTransferStatusViewController(
+                        coordinator: coordinator,
+                        presenter: presenter
+                    )
                 },
                 // No state to update.
                 update: nil
@@ -712,6 +715,11 @@ extension RegistrationNavigationController: RegistrationQuickRestoreQRCodePresen
 
 extension RegistrationNavigationController: RegistrationTransferStatusPresenter {
     func cancelTransfer() {
+        let guarantee = coordinator.resetRestoreMode()
+        pushNextController(guarantee)
+    }
+
+    func transferFailed(error: Error) {
         let guarantee = coordinator.resetRestoreMode()
         pushNextController(guarantee)
     }

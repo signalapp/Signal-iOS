@@ -105,8 +105,16 @@ class TransferStatusViewModel: ObservableObject {
         }
     }
 
-    var onCancel: (() -> Void) = {}
+    var confirmCancellation: (() async -> Bool) = { return true }
+    var cancelTransferBlock: (() -> Void) = {}
     var onSuccess: (() -> Void) = {}
+    var onFailure: ((Error) -> Void) = { _ in }
+
+    @MainActor
+    func propmtUserToCancelTransfer() async {
+        guard await confirmCancellation() else { return }
+        cancelTransferBlock()
+    }
 
     // Take up space so it doesn't pop in when appearing
     @Published var progressEstimateLabel = " "

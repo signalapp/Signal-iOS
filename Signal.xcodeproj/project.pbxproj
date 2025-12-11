@@ -404,8 +404,6 @@
 		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
 		34A955B9271B553D00B05242 /* PaymentsFormat+MobileCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat+MobileCoin.swift */; };
 		34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */; };
-		34ACA7D62733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */; };
-		34ACA7D72733159600E47AD4 /* ProvisioningTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */; };
 		34ACA7DB2733159600E47AD4 /* ProvisioningSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C32733159600E47AD4 /* ProvisioningSplashViewController.swift */; };
 		34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F42733183000E47AD4 /* RegistrationValues.swift */; };
 		34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */; };
@@ -1178,7 +1176,6 @@
 		66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */; };
-		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66C38A3A2D4055DC004B6B15 /* AttachmentBackupPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */; };
 		66C38A3C2D405A23004B6B15 /* AttachmentPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */; };
 		66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */; };
@@ -1589,7 +1586,6 @@
 		887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */; };
 		887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */; };
 		887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */; };
-		887CD4872473587300FDD265 /* transfer.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD4862473587300FDD265 /* transfer.json */; };
 		887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48824735D4200FDD265 /* launchApp-iPhone.json */; };
 		887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48924735D4200FDD265 /* launchApp-iPad.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
@@ -1618,10 +1614,6 @@
 		889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC0F246CE2760082211F /* TransferProgressView.swift */; };
-		88A4CC17246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */; };
-		88A4CC19246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */; };
-		88A4CC1B246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */; };
-		88A4CC1D246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
 		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
 		88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A941982409A391000E9700 /* LottieToggleButton.swift */; };
@@ -1767,7 +1759,7 @@
 		C113994D2CA1B3E200D4D90C /* QueuedBackupStickerPackDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */; };
 		C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
-		C12DB5E72DD39051005039FE /* RegistrationTransferStatusState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */; };
+		C12DB5E72DD39051005039FE /* DeviceTransferCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12DB5E62DD39051005039FE /* DeviceTransferCoordinator.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
 		C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
@@ -1776,7 +1768,7 @@
 		C13EDC3F2D94636000670597 /* Registration.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15EE0922D5D5AC00070838C /* Registration.pb.swift */; };
 		C14366262DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */; };
 		C14391132BD1C0DF00ED6FCB /* BackupRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */; };
-		C147C1722D9C58D60026952D /* RegistrationTransferStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */; };
+		C147C1722D9C58D60026952D /* DeviceTransferStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C147C1712D9C58D60026952D /* DeviceTransferStatusViewController.swift */; };
 		C14AEBDF2C1A482900FAA31D /* CVComponentArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */; };
 		C14D47602DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */; };
 		C14D47642DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */; };
@@ -1828,6 +1820,8 @@
 		C1A0F79D2B9F57340009DC0D /* MessageRootBackupKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79C2B9F57340009DC0D /* MessageRootBackupKey.swift */; };
 		C1A136C32DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */; };
 		C1A136C52DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */; };
+		C1A979872EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A979862EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift */; };
+		C1A979892EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A979882EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift */; };
 		C1AE7C5A2D7B4451007A618D /* QuickRestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */; };
 		C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */; };
 		C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */; };
@@ -4511,8 +4505,6 @@
 		34A955B8271B553D00B05242 /* PaymentsFormat+MobileCoin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PaymentsFormat+MobileCoin.swift"; sourceTree = "<group>"; };
 		34A955BC271B560000B05242 /* NameCollisionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameCollisionFinder.swift; sourceTree = "<group>"; };
 		34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningTransferChoiceViewController.swift; sourceTree = "<group>"; };
-		34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningTransferQRCodeViewController.swift; sourceTree = "<group>"; };
-		34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningTransferProgressViewController.swift; sourceTree = "<group>"; };
 		34ACA7C32733159600E47AD4 /* ProvisioningSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningSplashViewController.swift; sourceTree = "<group>"; };
 		34ACA7F42733183000E47AD4 /* RegistrationValues.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationValues.swift; sourceTree = "<group>"; };
 		34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountryCodeViewController.swift; sourceTree = "<group>"; };
@@ -5363,7 +5355,6 @@
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+ForSending.swift"; sourceTree = "<group>"; };
-		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackupPointer.swift; sourceTree = "<group>"; };
 		66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPointer.swift; sourceTree = "<group>"; };
 		66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStore.swift; sourceTree = "<group>"; };
@@ -5705,7 +5696,6 @@
 		887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Restore.swift"; sourceTree = "<group>"; };
 		887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+State.swift"; sourceTree = "<group>"; };
 		887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+MultipeerDelegates.swift"; sourceTree = "<group>"; };
-		887CD4862473587300FDD265 /* transfer.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = transfer.json; sourceTree = "<group>"; };
 		887CD48824735D4200FDD265 /* launchApp-iPhone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPhone.json"; sourceTree = "<group>"; };
 		887CD48924735D4200FDD265 /* launchApp-iPad.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPad.json"; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -5773,10 +5763,6 @@
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A4717228664DE3001A3065 /* BaseMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMemberViewController.swift; sourceTree = "<group>"; };
 		88A4CC0F246CE2760082211F /* TransferProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferProgressView.swift; sourceTree = "<group>"; };
-		88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferNavigationController.swift; sourceTree = "<group>"; };
-		88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferInitialViewController.swift; sourceTree = "<group>"; };
-		88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferQRScanningViewController.swift; sourceTree = "<group>"; };
-		88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferProgressViewController.swift; sourceTree = "<group>"; };
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
 		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
@@ -5952,14 +5938,14 @@
 		C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupStickerPackDownload.swift; sourceTree = "<group>"; };
 		C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAccessLimitedReminderView.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
-		C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusState.swift; sourceTree = "<group>"; };
+		C12DB5E62DD39051005039FE /* DeviceTransferCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferCoordinator.swift; sourceTree = "<group>"; };
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSOutgoingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRestoreFromBackupConfirmationViewController.swift; sourceTree = "<group>"; };
 		C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRequestManager.swift; sourceTree = "<group>"; };
-		C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusViewController.swift; sourceTree = "<group>"; };
+		C147C1712D9C58D60026952D /* DeviceTransferStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferStatusViewController.swift; sourceTree = "<group>"; };
 		C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentArchivedPayment.swift; sourceTree = "<group>"; };
 		C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreInitialViewController.swift; sourceTree = "<group>"; };
 		C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreProgressViewController.swift; sourceTree = "<group>"; };
@@ -6012,6 +5998,8 @@
 		C1A0F79C2B9F57340009DC0D /* MessageRootBackupKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRootBackupKey.swift; sourceTree = "<group>"; };
 		C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestorePresenter.swift; sourceTree = "<group>"; };
 		C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceRestoreViewModel.swift; sourceTree = "<group>"; };
+		C1A979862EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseQuickRestoreQRCodeViewController.swift; sourceTree = "<group>"; };
+		C1A979882EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusPresenter.swift; sourceTree = "<group>"; };
 		C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickRestoreManager.swift; sourceTree = "<group>"; };
 		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamTransform.swift; sourceTree = "<group>"; };
@@ -9699,6 +9687,7 @@
 		50E7E1CD2BACBE7D00A94861 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				C1A979862EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift */,
 				660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */,
 				66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */,
 				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
@@ -9708,8 +9697,6 @@
 				4C30E225234FB033009558B7 /* ProvisioningQRCodeViewController.swift */,
 				34ACA7C32733159600E47AD4 /* ProvisioningSplashViewController.swift */,
 				34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */,
-				34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */,
-				34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */,
 			);
 			path = UserInterface;
 			sourceTree = "<group>";
@@ -10480,9 +10467,7 @@
 				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
 				C14366252DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
-				66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */,
-				C12DB5E62DD39051005039FE /* RegistrationTransferStatusState.swift */,
-				C147C1712D9C58D60026952D /* RegistrationTransferStatusViewController.swift */,
+				C1A979882EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift */,
 				C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */,
 				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
 				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
@@ -11457,7 +11442,6 @@
 				66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */,
 				66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
-				887CD4862473587300FDD265 /* transfer.json */,
 				346EFC3925FFDC6900F493C7 /* update-pin-dark.json */,
 				346EFC3A25FFDC6A00F493C7 /* update-pin.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
@@ -11468,6 +11452,7 @@
 		88C4E38124671F9D009C9B97 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
+				C12DB5E62DD39051005039FE /* DeviceTransferCoordinator.swift */,
 				887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */,
 				887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */,
 				887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */,
@@ -11475,14 +11460,11 @@
 				887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */,
 				887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */,
 				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
+				C147C1712D9C58D60026952D /* DeviceTransferStatusViewController.swift */,
 				C14D475F2DAEC45C006178AC /* OutgoingDeviceRestoreInitialViewController.swift */,
 				C1A136C22DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift */,
 				C14D47632DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift */,
 				C1A136C42DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift */,
-				88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */,
-				88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */,
-				88A4CC1C246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift */,
-				88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */,
 				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
 				C1868F812DBAD04400DA512A /* TransferStatusState.swift */,
 			);
@@ -15921,7 +15903,6 @@
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
-				887CD4872473587300FDD265 /* transfer.json in Resources */,
 				346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */,
 				346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */,
 				88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */,
@@ -17717,6 +17698,7 @@
 				D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */,
 				B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
+				C1A979872EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift in Sources */,
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
 				66DA8DF82C910D3B00799E70 /* BGProcessingTaskRunner.swift in Sources */,
 				D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */,
@@ -17943,6 +17925,7 @@
 				66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */,
 				C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */,
 				505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */,
+				C12DB5E72DD39051005039FE /* DeviceTransferCoordinator.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
@@ -17950,6 +17933,7 @@
 				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
 				88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */,
+				C147C1722D9C58D60026952D /* DeviceTransferStatusViewController.swift in Sources */,
 				D900E6FF2DE143F9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift in Sources */,
 				D900E6F82DE10499004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
@@ -18152,10 +18136,6 @@
 				C1A136C32DB044950049CD05 /* OutgoingDeviceRestorePresenter.swift in Sources */,
 				C14D47642DAEE351006178AC /* OutgoingDeviceRestoreProgressViewController.swift in Sources */,
 				C1A136C52DB044A20049CD05 /* OutgoingDeviceRestoreViewModel.swift in Sources */,
-				88A4CC19246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift in Sources */,
-				88A4CC17246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift in Sources */,
-				88A4CC1D246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift in Sources */,
-				88A4CC1B246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */,
 				F93461B9291ED28A00366682 /* PaymentDetailsValidity.swift in Sources */,
@@ -18219,8 +18199,6 @@
 				C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */,
 				34ACA7DB2733159600E47AD4 /* ProvisioningSplashViewController.swift in Sources */,
 				34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */,
-				34ACA7D72733159600E47AD4 /* ProvisioningTransferProgressViewController.swift in Sources */,
-				34ACA7D62733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift in Sources */,
 				888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */,
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
@@ -18266,9 +18244,7 @@
 				C14366262DA55CF8008DE746 /* RegistrationRestoreFromBackupConfirmationViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
-				66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */,
-				C12DB5E72DD39051005039FE /* RegistrationTransferStatusState.swift in Sources */,
-				C147C1722D9C58D60026952D /* RegistrationTransferStatusViewController.swift in Sources */,
+				C1A979892EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift in Sources */,
 				C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
 				F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */,

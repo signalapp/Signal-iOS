@@ -26,6 +26,7 @@ public class RegistrationCoordinatorTest {
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var accountKeyStore: AccountKeyStore!
     private var localUsernameManagerMock: MockLocalUsernameManager!
+    private var mockIdentityManager: OWSIdentityManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
     private var mockURLSession: TSRequestOWSURLSessionMock!
@@ -35,6 +36,7 @@ public class RegistrationCoordinatorTest {
     private var preKeyManagerMock: RegistrationCoordinatorImpl.TestMocks.PreKeyManager!
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
+    private var quickRestoreManager: QuickRestoreManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
     private var registrationCoordinatorLoader: RegistrationCoordinatorLoaderImpl!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
@@ -95,6 +97,28 @@ public class RegistrationCoordinatorTest {
         usernameApiClientMock = RegistrationCoordinatorImpl.TestMocks.UsernameApiClient()
         usernameLinkManagerMock = MockUsernameLinkManager()
 
+        let recipientDbTable = RecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(
+            recipientDatabaseTable: recipientDbTable,
+            searchableNameIndexer: MockSearchableNameIndexer(),
+        )
+        let recipientIdFinder = RecipientIdFinder(
+            recipientDatabaseTable: recipientDbTable,
+            recipientFetcher: recipientFetcher
+        )
+        mockIdentityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
+
+        quickRestoreManager = QuickRestoreManager(
+            accountKeyStore: accountKeyStore,
+            backupNonceStore: BackupNonceMetadataStore(),
+            backupSettingsStore: BackupSettingsStore(),
+            db: db,
+            deviceProvisioningService: DeviceProvisioningServiceImpl(networkManager: networkManagerMock),
+            identityManager: mockIdentityManager,
+            networkManager: networkManagerMock,
+            tsAccountManager: tsAccountManagerMock
+        )
+
         let mockURLSession = TSRequestOWSURLSessionMock()
         self.mockURLSession = mockURLSession
         let mockSignalService = OWSSignalServiceMock()
@@ -115,7 +139,7 @@ public class RegistrationCoordinatorTest {
             contactsStore: contactsStore,
             dateProvider: { self.dateProvider() },
             db: db,
-            deviceTransferService: RegistrationCoordinatorImpl.TestMocks.DeviceTransferService(),
+            deviceTransferService: DeviceTransferServiceMock(),
             experienceManager: experienceManager,
             identityManager: RegistrationCoordinatorImpl.TestMocks.IdentityManager(),
             localUsernameManager: localUsernameManagerMock,
@@ -127,7 +151,7 @@ public class RegistrationCoordinatorTest {
             preKeyManager: preKeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
-            quickRestoreManager: RegistrationCoordinatorImpl.TestMocks.QuickRestoreManager(),
+            quickRestoreManager: quickRestoreManager,
             receiptManager: receiptManagerMock,
             registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterMock(),
             registrationStateChangeManager: registrationStateChangeManagerMock,

@@ -17,6 +17,14 @@ protocol DeviceTransferServiceObserver: AnyObject {
     func deviceTransferServiceDidRequestAppRelaunch()
 }
 
+protocol DeviceTransferServiceProtocol: AnyObject {
+    func startAcceptingTransfersFromOldDevices(mode: DeviceTransferService.TransferMode) throws -> URL
+    func addObserver(_ observer: DeviceTransferServiceObserver)
+    func removeObserver(_ observer: DeviceTransferServiceObserver)
+    func stopAcceptingTransfersFromOldDevices()
+    func cancelTransferFromOldDevice()
+}
+
 ///
 /// The following service is used to facilitate users in transferring their account from
 /// an old device (OD) to a new device (ND) using MultipeerConnectivity. The general steps
@@ -67,7 +75,7 @@ protocol DeviceTransferServiceObserver: AnyObject {
 ///          iv. Move all the received files into place, set the new database key, etc.
 ///          v. Hot-swap the new database into place and present the conversation list
 ///
-class DeviceTransferService: NSObject {
+class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let pendingTransferDirectory = URL(fileURLWithPath: "transfer", isDirectory: true, relativeTo: appSharedDataDirectory)
@@ -582,3 +590,21 @@ class DeviceTransferService: NSObject {
         lastWholeNumberProgress = 0
     }
 }
+
+#if TESTABLE_BUILD
+
+class DeviceTransferServiceMock: DeviceTransferServiceProtocol {
+    func startAcceptingTransfersFromOldDevices(mode: Signal.DeviceTransferService.TransferMode) throws -> URL {
+        return URL(string: "https://example.com")!
+    }
+
+    func addObserver(_ observer: any DeviceTransferServiceObserver) { }
+
+    func removeObserver(_ observer: any DeviceTransferServiceObserver) { }
+
+    func stopAcceptingTransfersFromOldDevices() { }
+
+    func cancelTransferFromOldDevice() { }
+}
+
+#endif

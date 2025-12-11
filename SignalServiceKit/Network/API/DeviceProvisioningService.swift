@@ -30,9 +30,9 @@ public protocol DeviceProvisioningService {
 }
 
 public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
-    private let networkManager: NetworkManager
+    private let networkManager: any NetworkManagerProtocol
 
-    public init(networkManager: NetworkManager) {
+    public init(networkManager: any NetworkManagerProtocol) {
         self.networkManager = networkManager
     }
 

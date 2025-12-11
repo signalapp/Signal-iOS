@@ -53,7 +53,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         self.quickRestoreManager = quickRestoreManager
         self.provisioningURL = deviceProvisioningURL
 
-       transferStatusViewModel.onCancel = { [weak self] in
+       transferStatusViewModel.cancelTransferBlock = { [weak self] in
             self?.cancelTransfer()
         }
     }

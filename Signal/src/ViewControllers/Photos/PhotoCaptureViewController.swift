@@ -1309,16 +1309,13 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
 
                 showUsernameLinkSheet(username: username, aci: aci)
             }
-        } else if
-            let provisioningURL = DeviceProvisioningURL(urlString: qrCodeString),
-            DependenciesBridge.shared.tsAccountManager
-                .registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
-        {
-            qrCodeScanned = true
+        } else if let provisioningURL = DeviceProvisioningURL(urlString: qrCodeString) {
 
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             switch provisioningURL.linkType {
-            case .linkDevice:
-
+            case .linkDevice where registeredState?.isPrimary == true:
+                qrCodeScanned = true
                 let linkDeviceWarningActionSheet = ActionSheetController(
                     message: OWSLocalizedString(
                         "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
@@ -1339,7 +1336,9 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
                 linkDeviceWarningActionSheet.addAction(cancelAction)
                 presentActionSheet(linkDeviceWarningActionSheet)
+
             case .quickRestore:
+                qrCodeScanned = true
                 let presentBlock = {
                     self.dismiss(animated: true) {
                         AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
@@ -1358,6 +1357,9 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 } else {
                     presentBlock()
                 }
+
+            case .linkDevice:
+                Logger.warn("Scanned linkDevice provisioning URL, but not a registered primary.")
             }
         }
     }

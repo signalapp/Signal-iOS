@@ -84,7 +84,7 @@ public enum RegistrationStep: Equatable {
     /// Prompt the user to confirm restoring from backup
     case confirmRestoreFromBackup(RegistrationRestoreFromBackupConfirmationState)
 
-    case deviceTransfer(RegistrationTransferStatusState)
+    case deviceTransfer(DeviceTransferCoordinator)
 
     /// If the account has not set whether its phone number should be
     /// discoverable, this step happens after registration is complete.

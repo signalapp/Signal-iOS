@@ -113,10 +113,12 @@ class ProvisioningPrepViewController: ProvisioningBaseViewController {
     func didPressNext() {
         Logger.info("")
 
-        if isTransferring {
-            provisioningController.transferAccount(fromViewController: self)
-        } else {
-            provisioningController.didConfirmSecondaryDevice(from: self)
+        Task {
+            if isTransferring {
+                await provisioningController.transferAccount(fromViewController: self)
+            } else {
+                await provisioningController.didConfirmSecondaryDevice(from: self)
+            }
         }
     }
 }

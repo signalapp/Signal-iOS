@@ -19,7 +19,7 @@ public struct RegistrationCoordinatorDependencies {
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
     public let dateProvider: DateProvider
     public let db: any DB
-    let deviceTransferService: RegistrationCoordinatorImpl.Shims.DeviceTransferService
+    let deviceTransferService: any DeviceTransferServiceProtocol
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let identityManager: RegistrationCoordinatorImpl.Shims.IdentityManager
     public let localUsernameManager: LocalUsernameManager
@@ -31,7 +31,7 @@ public struct RegistrationCoordinatorDependencies {
     public let preKeyManager: any PreKeyManager
     public let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
-    let quickRestoreManager: RegistrationCoordinatorImpl.Shims.QuickRestoreManager
+    let quickRestoreManager: QuickRestoreManager
     public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
     public let registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenter
     public let registrationStateChangeManager: RegistrationStateChangeManager
@@ -62,7 +62,7 @@ public struct RegistrationCoordinatorDependencies {
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,
-            deviceTransferService: RegistrationCoordinatorImpl.Wrappers.DeviceTransferService(AppEnvironment.shared.deviceTransferServiceRef),
+            deviceTransferService: AppEnvironment.shared.deviceTransferServiceRef,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             identityManager: RegistrationCoordinatorImpl.Wrappers.IdentityManager(DependenciesBridge.shared.identityManager),
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
@@ -74,7 +74,7 @@ public struct RegistrationCoordinatorDependencies {
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerRef),
             pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
-            quickRestoreManager: RegistrationCoordinatorImpl.Wrappers.QuickRestoreManager(AppEnvironment.shared.quickRestoreManager),
+            quickRestoreManager: AppEnvironment.shared.quickRestoreManager,
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
             registrationBackupErrorPresenter: RegistrationCoordinatorBackupErrorPresenterImpl(),
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,

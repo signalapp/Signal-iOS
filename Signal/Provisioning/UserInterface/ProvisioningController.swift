@@ -215,47 +215,55 @@ class ProvisioningController: NSObject {
 
     // MARK: - Transfer
 
-    func transferAccount(fromViewController: UIViewController) {
-        AssertIsOnMainThread()
-
+    @MainActor
+    func transferAccount(fromViewController: UIViewController) async {
         Logger.info("")
-
         guard let navigationController = fromViewController.navigationController else {
             owsFailDebug("Missing navigationController")
             return
         }
 
-        guard !(navigationController.topViewController is ProvisioningTransferQRCodeViewController) else {
+        if navigationController.topViewController is BaseQuickRestoreQRCodeViewController {
             // qr code view is already presented, we don't need to push it again.
             return
         }
 
-        let view = ProvisioningTransferQRCodeViewController(provisioningController: self)
-        navigationController.pushViewController(view, animated: true)
-    }
+        let view = BaseQuickRestoreQRCodeViewController()
+        await navigationController.awaitablePush(view, animated: true)
+        do {
+            let message = try await view.waitForMessage()
+            guard let restoreToken = message.restoreMethodToken else {
+                throw OWSAssertionError("Missing restore token")
+            }
 
-    func accountTransferInProgress(fromViewController: UIViewController, progress: Progress) {
-        AssertIsOnMainThread()
+            let transferState = DeviceTransferCoordinator(
+                deviceTransferService: AppEnvironment.shared.deviceTransferServiceRef,
+                quickRestoreManager: AppEnvironment.shared.quickRestoreManager,
+                restoreMethodToken: restoreToken,
+                restoreMode: .linked
+            )
 
-        Logger.info("")
+            transferState.cancelTransferBlock = { [weak self] in
+                self?.pushTransferChoiceView(onto: navigationController)
+            }
+            transferState.onFailure = { [weak self] _ in
+                self?.pushTransferChoiceView(onto: navigationController)
+            }
 
-        guard let navigationController = fromViewController.navigationController else {
-            owsFailDebug("Missing navigationController")
-            return
+            await navigationController.awaitablePush(
+                DeviceTransferStatusViewController(coordinator: transferState),
+                animated: true
+            )
+        } catch {
+            // Display error to the user
+            Logger.error("Failed to start transfer")
         }
-
-        guard !(navigationController.topViewController is ProvisioningTransferProgressViewController) else {
-            // qr code view is already presented, we don't need to push it again.
-            return
-        }
-
-        let view = ProvisioningTransferProgressViewController(provisioningController: self, progress: progress)
-        navigationController.pushViewController(view, animated: true)
     }
 
     // MARK: - Linking
 
-    func didConfirmSecondaryDevice(from viewController: ProvisioningPrepViewController) {
+    @MainActor
+    func didConfirmSecondaryDevice(from viewController: ProvisioningPrepViewController) async {
         guard let navigationController = viewController.navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
             return
@@ -265,14 +273,13 @@ class ProvisioningController: NSObject {
             provisioningController: self,
             provisioningSocketManager: provisioningSocketManager
         )
-        navigationController.pushViewController(qrCodeViewController, animated: true)
 
-        Task {
-            await awaitProvisioning(
-                from: qrCodeViewController,
-                navigationController: navigationController
-            )
-        }
+        await navigationController.awaitablePush(qrCodeViewController, animated: true)
+
+        await awaitProvisioning(
+            from: qrCodeViewController,
+            navigationController: navigationController
+        )
     }
 
     @MainActor

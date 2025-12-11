@@ -8,32 +8,24 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-// MARK: - RegistrationTransferStatusPresenter
+// MARK: - DeviceTransferStatusViewController
 
-protocol RegistrationTransferStatusPresenter: AnyObject {
-    func cancelTransfer()
-}
-
-// MARK: - RegistrationTransferStatusViewController
-
-class RegistrationTransferStatusViewController: HostingController<TransferStatusView> {
+class DeviceTransferStatusViewController: HostingController<TransferStatusView> {
     override var prefersNavigationBarHidden: Bool { true }
 
-    private let state: RegistrationTransferStatusState
+    private let coordinator: DeviceTransferCoordinator
 
-    init(
-        state: RegistrationTransferStatusState,
-        presenter: RegistrationTransferStatusPresenter? = nil
-    ) {
-        self.state = state
+    init(coordinator: DeviceTransferCoordinator) {
+        self.coordinator = coordinator
 
-        super.init(wrappedView: TransferStatusView(viewModel: state.transferStatusViewModel, isNewDevice: true))
+        super.init(wrappedView: TransferStatusView(viewModel: coordinator.transferStatusViewModel, isNewDevice: true))
 
-        state.onCancel = {
-            presenter?.cancelTransfer()
+        coordinator.confirmCancellation = { [weak self] in
+            guard let self else { return true }
+            return await self.confirmCancellation()
         }
 
-        state.onSuccess = { [weak self] in
+        coordinator.onSuccess = { [weak self] in
             let sheet = HeroSheetViewController(
                 hero: .image(UIImage(named: "transfer_complete")!),
                 title: OWSLocalizedString(
@@ -60,18 +52,55 @@ class RegistrationTransferStatusViewController: HostingController<TransferStatus
         }
     }
 
+    @MainActor
+    func confirmCancellation() async -> Bool {
+        Logger.info("")
+
+        return await withCheckedContinuation { continuation in
+            let actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
+                    comment: "The title of the dialog asking the user if they want to cancel a device transfer"
+                ),
+                message: OWSLocalizedString(
+                    "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
+                    comment: "The message of the dialog asking the user if they want to cancel a device transfer"
+                )
+            )
+
+            let okAction = ActionSheetAction(
+                title: OWSLocalizedString(
+                    "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+                    comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"
+                ),
+                style: .destructive
+            ) { _ in
+                continuation.resume(returning: true)
+            }
+            actionSheet.addAction(okAction)
+
+            let cancelAction = ActionSheetAction(
+                title: CommonStrings.cancelButton,
+                style: .cancel
+            ) { _ in
+                continuation.resume(returning: false)
+            }
+            actionSheet.addAction(cancelAction)
+
+            present(actionSheet, animated: true)
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         Task {
             do {
-                try await state.start()
+                try await coordinator.start()
             } catch {
-                Logger.error("ERROR: \(error)")
-                // TODO: [Backups] - Display an error to the user
+                coordinator.onFailure(error)
             }
         }
     }
-
 }
 
 struct TransferStatusView: View {
@@ -95,6 +124,14 @@ struct TransferStatusView: View {
                 Text(indefinite.message(isNewDevice: isNewDevice))
                     .font(.body)
                     .foregroundStyle(Color.Signal.secondaryLabel)
+                Spacer()
+                Button(CommonStrings.cancelButton) {
+                    Task {
+                        await viewModel.propmtUserToCancelTransfer()
+                    }
+                }
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .padding(.bottom, 32)
             case .transferring(let progress):
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING",
@@ -121,7 +158,14 @@ struct TransferStatusView: View {
                 Text(viewModel.progressEstimateLabel)
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 Spacer()
-            case .error(_):
+                Button(CommonStrings.cancelButton) {
+                    Task {
+                        await viewModel.propmtUserToCancelTransfer()
+                    }
+                }
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .padding(.bottom, 32)
+            case .error(let error):
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE",
                     comment: "Title for a progress view displayed after failure of device transfer."
@@ -137,14 +181,15 @@ struct TransferStatusView: View {
                     .font(.body)
                     .foregroundStyle(Color.Signal.secondaryLabel)
                 Spacer()
+                Button(OWSLocalizedString(
+                    "DEVICE_TRANSFER_TRY_AGAIN_ACTION",
+                    comment: "Action asking user to try again after transfer failure."
+                )) {
+                    viewModel.onFailure(error)
+                }
+                .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+                .padding(.bottom, 32)
             }
-
-            Spacer()
-            Button(CommonStrings.cancelButton) {
-                viewModel.onCancel()
-            }
-            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
-            .padding(.bottom, 32)
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
@@ -158,7 +203,7 @@ struct TransferStatusView: View {
 @available(iOS 17, *)
 #Preview {
     let viewModel = TransferStatusViewModel()
-    viewModel.onCancel = { print("onCancel") }
+    viewModel.cancelTransferBlock = { print("onCancel") }
     viewModel.onSuccess = { print("onSuccess") }
     var task = Task {
         try? await viewModel.simulateProgressForPreviews()

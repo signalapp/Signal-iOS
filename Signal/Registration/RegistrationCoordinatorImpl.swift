@@ -1798,12 +1798,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch persistedState.restoreMethod {
         case .deviceTransfer:
             if let restoreToken = registrationMessage.restoreMethodToken {
-                let transferStatusState = RegistrationTransferStatusState(
+                let deviceTransferCoordinator = DeviceTransferCoordinator(
                     deviceTransferService: deps.deviceTransferService,
                     quickRestoreManager: deps.quickRestoreManager,
-                    restoreMethodToken: restoreToken
+                    restoreMethodToken: restoreToken,
+                    restoreMode: .primary
                 )
-                return .deviceTransfer(transferStatusState)
+                return .deviceTransfer(deviceTransferCoordinator)
             } else {
                 return .scanQuickRegistrationQrCode
             }

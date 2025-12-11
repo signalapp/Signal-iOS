@@ -24,7 +24,7 @@ public class QuickRestoreManager {
     private let db: any DB
     private let deviceProvisioningService: DeviceProvisioningService
     private let identityManager: OWSIdentityManager
-    private let networkManager: NetworkManager
+    private let networkManager: any NetworkManagerProtocol
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -34,7 +34,7 @@ public class QuickRestoreManager {
         db: any DB,
         deviceProvisioningService: DeviceProvisioningService,
         identityManager: OWSIdentityManager,
-        networkManager: NetworkManager,
+        networkManager: any NetworkManagerProtocol,
         tsAccountManager: TSAccountManager
     ) {
         self.accountKeyStore = accountKeyStore

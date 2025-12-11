@@ -116,6 +116,14 @@ public extension UINavigationController {
             completion()
         }
     }
+
+    func awaitablePush(_ viewController: UIViewController, animated: Bool) async {
+        await withCheckedContinuation { continuation in
+            self.pushViewController(viewController, animated: animated) {
+                continuation.resume()
+            }
+        }
+    }
 }
 
 // MARK: -
