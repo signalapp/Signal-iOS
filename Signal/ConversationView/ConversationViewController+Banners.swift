@@ -15,6 +15,13 @@ extension ConversationViewController {
     public func ensureBannerState() {
         AssertIsOnMainThread()
 
+        let isFirstLoadOfPinnedMessage: Bool
+        if let bannerStackView {
+            isFirstLoadOfPinnedMessage = bannerStackView.arrangedSubviews.count(where: { pinnedMessageBanner(view: $0) != nil}) == 0
+        } else {
+            isFirstLoadOfPinnedMessage = true
+        }
+
         // This method should be called rarely, so it's simplest to discard and
         // rebuild the indicator view every time.
         if let bannerStackView {
@@ -78,10 +85,27 @@ extension ConversationViewController {
         ])
         view.layoutSubviews()
 
+        if isFirstLoadOfPinnedMessage {
+            for banner in bannersView.arrangedSubviews {
+                if let pinnedMessageBanner = pinnedMessageBanner(view: banner) {
+                    pinnedMessageBanner.animateBannerFadeIn()
+                }
+            }
+        }
+
         bannerStackView = bannersView
         if hasViewDidAppearEverBegun {
             updateContentInsets()
         }
+    }
+
+    private func pinnedMessageBanner(view: UIView) -> ConversationBannerView? {
+        guard let banner = view as? ConversationBannerView,
+              let config = banner.contentView.configuration as? ConversationBannerView.ContentConfiguration,
+              config.isPinnedMessagesBanner else {
+            return nil
+        }
+        return banner
     }
 }
 
@@ -89,6 +113,15 @@ extension ConversationViewController {
 
 private class ConversationBannerView: UIView {
     internal var contentView: UIView & UIContentView
+    private var blurBackgroundView: UIVisualEffectView?
+
+    public static func fadeInAnimator() -> UIViewPropertyAnimator {
+        return UIViewPropertyAnimator(
+            duration: 0.35,
+            springDamping: 1,
+            springResponse: 0.35
+        )
+    }
 
     /// Contains all the information necessary to construct any banner.
     struct ContentConfiguration: UIContentConfiguration {
@@ -444,6 +477,7 @@ private class ConversationBannerView: UIView {
 
         if let visualEffectView = backgroundView as? UIVisualEffectView {
             visualEffectView.contentView.addSubview(contentView)
+            blurBackgroundView = visualEffectView
         } else {
             addSubview(contentView)
         }
@@ -463,6 +497,48 @@ private class ConversationBannerView: UIView {
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+    }
+
+    public func animateBannerFadeIn() {
+        guard let contentView = contentView as? ConversationBannerContentView else {
+            return
+        }
+        let animator = ConversationBannerView.fadeInAnimator()
+        UIView.performWithoutAnimation {
+            blurBackgroundView?.effect = nil
+            contentView.bodyLabel.alpha = 0
+            contentView.titleLabel.alpha = 0
+            contentView.thumbnail?.alpha = 0
+        }
+
+        animator.addAnimations {
+            if let backgroundViewEffect = self.backgroundViewVisualEffect() {
+                self.blurBackgroundView?.effect = backgroundViewEffect
+            }
+            contentView.bodyLabel.alpha = 1
+            contentView.titleLabel.alpha = 1
+            contentView.thumbnail?.alpha = 1
+        }
+
+        animator.startAnimation()
+    }
+
+    private func backgroundViewVisualEffect() -> UIVisualEffect? {
+        if #available(iOS 26, *) {
+            let glassEffect = UIGlassEffect(style: .regular)
+            glassEffect.tintColor = UIColor { traitCollection in
+                if traitCollection.userInterfaceStyle == .dark {
+                    return UIColor(white: 0, alpha: 0.2)
+                }
+                return UIColor(white: 1, alpha: 0.12)
+            }
+            return glassEffect
+        }
+
+        guard !UIAccessibility.isReduceTransparencyEnabled else { return nil }
+
+        let blurEffect = Theme.barBlurEffect
+        return blurEffect
     }
 
     required init?(coder: NSCoder) {
