@@ -105,6 +105,14 @@ extension SignalApp {
         conversationSplitViewController.showAppSettingsWithMode(mode, completion: completion)
     }
 
+    func showCameraCaptureView(completion: ((UINavigationController) -> Void)? = nil) {
+        guard let conversationSplitViewController else {
+            owsFailDebug("Missing conversationSplitViewController.")
+            return
+        }
+        conversationSplitViewController.showCameraView(completion: completion)
+    }
+
     func showRegistration(
         loader: RegistrationCoordinatorLoader,
         desiredMode: RegistrationMode,

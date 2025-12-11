@@ -214,21 +214,43 @@ class UrlOpener {
             linkDeviceWarningActionSheet.addAction(.cancel)
             rootViewController.presentActionSheet(linkDeviceWarningActionSheet)
 
-        case .quickRestore(let url):
+        case .quickRestore:
             let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             guard registeredState.isPrimary else {
                 Logger.warn("Ignoring URL; not primary device.")
                 return
             }
 
-            let provisioningURL = DeviceProvisioningURL(urlString: url.absoluteString)
-            if let provisioningURL {
-                AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
-                    provisioningURL: provisioningURL,
-                    presentingViewController: CurrentAppContext().frontmostViewController()!,
-                    animated: true
+            let quickRestoreWarningActionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE",
+                    comment: "Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL."
                 )
+            )
+
+            let showCameraViewAction = ActionSheetAction(
+                title: CommonStrings.continueButton
+            ) { _ in
+                SignalApp.shared.showCameraCaptureView { navController in
+                    let sheet = HeroSheetViewController(
+                        hero: .image(UIImage(named: "phone-qr")!),
+                        title: OWSLocalizedString(
+                            "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE",
+                            comment: "Title for sheet with info about scanning a Quick Restore QR code"
+                        ),
+                        body: OWSLocalizedString(
+                            "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY",
+                            comment: "Body for sheet with info about scanning a Quick Restore QR code"
+                        ),
+                        primaryButton: .dismissing(title: CommonStrings.okButton)
+                    )
+                    navController.topViewController?.present(sheet, animated: true)
+                }
             }
+
+            quickRestoreWarningActionSheet.addAction(showCameraViewAction)
+            quickRestoreWarningActionSheet.addAction(.cancel)
+            rootViewController.presentActionSheet(quickRestoreWarningActionSheet)
 
         case .completeIDEALDonation(let donationType):
             _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()

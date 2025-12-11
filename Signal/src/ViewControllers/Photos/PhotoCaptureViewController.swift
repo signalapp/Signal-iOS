@@ -1340,12 +1340,23 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 linkDeviceWarningActionSheet.addAction(cancelAction)
                 presentActionSheet(linkDeviceWarningActionSheet)
             case .quickRestore:
-                self.dismiss(animated: true) {
-                    AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
-                        provisioningURL: provisioningURL,
-                        presentingViewController: CurrentAppContext().frontmostViewController()!,
-                        animated: true
-                    )
+                let presentBlock = {
+                    self.dismiss(animated: true) {
+                        AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
+                            provisioningURL: provisioningURL,
+                            presentingViewController: CurrentAppContext().frontmostViewController()!,
+                            animated: true
+                        )
+                    }
+                }
+                // If anything is presented over the phone capture view, dismiss it first -
+                // then dismiss the photo view and present the restore UI
+                if navigationController?.presentedViewController != nil {
+                    self.navigationController?.presentedViewController?.dismiss(animated: true) {
+                        presentBlock()
+                    }
+                } else {
+                    presentBlock()
                 }
             }
         }

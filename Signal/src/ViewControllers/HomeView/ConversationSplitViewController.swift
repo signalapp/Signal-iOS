@@ -562,6 +562,11 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         homeVC.chatListViewController.showAppSettings()
     }
 
+    @objc
+    func showCameraView(completion: ((UINavigationController) -> Void)? = nil) {
+        homeVC.chatListViewController.presentCameraView(completion: completion)
+    }
+
     func showAppSettingsWithMode(_ mode: ChatListViewController.ShowAppSettingsMode, completion: (() -> Void)? = nil) {
         homeVC.chatListViewController.showAppSettings(mode: mode, completion: completion)
     }

@@ -10,6 +10,10 @@ extension ChatListViewController: CameraFirstCaptureDelegate {
 
     @objc
     func showCameraView() {
+        presentCameraView()
+    }
+
+    func presentCameraView(completion: ((UINavigationController) -> Void)? = nil) {
         // Dismiss any message actions if they're presented
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
 
@@ -39,6 +43,7 @@ extension ChatListViewController: CameraFirstCaptureDelegate {
                         cameraModal.modalPresentationCapturesStatusBarAppearance = true
                         cameraModal.setNeedsStatusBarAppearanceUpdate()
                     }
+                    completion?(cameraModal)
                 })
             }
         }

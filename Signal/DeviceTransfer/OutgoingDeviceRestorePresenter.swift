@@ -43,8 +43,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             deviceProvisioningURL: provisioningURL
         )
 
-        internalNavigationController.pushViewController(
-            OutgoingDeviceRestoreIntialViewController(presenter: self),
+        internalNavigationController.setViewControllers(
+            [OutgoingDeviceRestoreIntialViewController(presenter: self)],
             animated: false
         )
 
