@@ -71,7 +71,7 @@ public struct ImageMetadata {
     public let imageFormat: ImageFormat
     public let pixelSize: CGSize
     public let hasAlpha: Bool
-    let isAnimated: Bool
+    public let isAnimated: Bool
 
     internal init(imageFormat: ImageFormat, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
         self.imageFormat = imageFormat
@@ -80,7 +80,7 @@ public struct ImageMetadata {
         self.isAnimated = isAnimated
     }
 
-    var hasStickerLikeProperties: Bool {
+    public var hasStickerLikeProperties: Bool {
         let maxStickerHeight = CGFloat(512)
         return (
             pixelSize.width <= maxStickerHeight

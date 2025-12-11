@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import SignalServiceKit
 
 /// Represents an attachment the user *might* choose to send.
 ///

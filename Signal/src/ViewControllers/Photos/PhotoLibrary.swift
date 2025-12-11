@@ -7,6 +7,7 @@ import CoreServices
 import Foundation
 import Photos
 import SignalServiceKit
+import SignalUI
 
 protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)

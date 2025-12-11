@@ -12,7 +12,7 @@ import Contacts
 import CoreLocation
 import CoreServices
 public import MapKit
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 
@@ -475,7 +475,7 @@ public class Location: NSObject {
         self.placemark = placemark
     }
 
-    public func prepareAttachment() async throws -> SendableAttachment {
+    func prepareAttachment() async throws -> SendableAttachment {
         let image = try await generateSnapshot()
         guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
             throw LocationError.assertion

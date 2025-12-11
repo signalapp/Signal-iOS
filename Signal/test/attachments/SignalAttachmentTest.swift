@@ -6,6 +6,7 @@
 import XCTest
 import CoreServices
 import SignalServiceKit
+import SignalUI
 import UniformTypeIdentifiers
 
 class SignalAttachmentTest: SignalBaseTest {

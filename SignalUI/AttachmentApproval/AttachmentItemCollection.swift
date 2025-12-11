@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 
 public class AttachmentApprovalItem {
 

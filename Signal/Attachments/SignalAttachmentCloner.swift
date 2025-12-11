@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 
 enum SignalAttachmentCloner {
     static func cloneAsSignalAttachment(attachment: ReferencedAttachmentStream) throws -> PreviewableAttachment {

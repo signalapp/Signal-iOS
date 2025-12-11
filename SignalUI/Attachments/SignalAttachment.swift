@@ -7,6 +7,7 @@ public import AVFoundation
 import Foundation
 import MobileCoreServices
 import SDWebImage
+public import SignalServiceKit
 
 public enum SignalAttachmentError: Error {
     case missingData
