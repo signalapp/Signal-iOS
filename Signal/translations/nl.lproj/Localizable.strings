@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Media verwerken…";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Tap \"Back Up Now\" to try again.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "De laatste back-up kon niet worden voltooid. Tik op ‘Nu back-up maken’ om het opnieuw te proberen.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Upgraden";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Don’t Show Again";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Niet meer weergeven";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Tik snel twee keer op je berichten om ze te bewerken. Je kunt je berichten bewerken tot 24 uur nadat ze zijn verzonden.";
@@ -3839,10 +3839,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsinstellingen aangepast zodat uitsluitend beheerders berichten kunnen verzenden en oproepen kunnen beginnen.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Wil je lid worden van deze groep en je profielnaam, -foto en -omschrijving met de andere leden delen?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "When you request to join, your name and photo will be shared with this group's members. An admin must approve your request.";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "Wanneer je verzoekt om lid te worden zullen je profielnaam, -foto en -omschrijving direct zichtbaar zijn voor de groepsleden. Een beheerder moet je verzoek goedkeuren.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Je kunt niet via de groepslink lid worden van deze groep omdat je door een beheerder uit deze groep bent verwijderd. Neem contact op met een beheerder om weer aan de groep te worden toegevoegd.";
@@ -6541,44 +6541,56 @@
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "Je kunt niet meer dan 4 chats vastzetten.";
 
+/* Shown when another user pins a message. Embeds {{ another user }}. */
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+
+/* Shown when the local user pins a message. */
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Bericht vastzetten";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
+"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Je oudste vastgezette bericht wordt vervangen door het nieuwe bericht.";
 
 /* Option in pinned message action sheet to replace oldest pin. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Replace";
+"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Vervangen";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Oudste vastgezette bericht vervangen?";
+
+/* Body for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+
+/* Title for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "Message unpinned";
+"PINNED_MESSAGE_TOAST" = "Bericht losgemaakt";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Bericht losmaken";
 
 /* Title for Pinned Messages detail view */
-"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+"PINNED_MESSAGES_DETAILS_TITLE" = "Vastgezette berichten";
 
 /* Action menu item to go to a message in the conversation view */
-"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "Naar bericht gaan";
 
 /* Action menu item to see all pinned messages */
-"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "Alle berichten bekijken";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "Bericht losmaken";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Vastgezet";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Disappearing messages will be unpinned when their timer expires and the message is removed from the chat.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Verdwijnende berichten worden losgemaakt zodra hun timer afloopt en het bericht uit de chat wordt verwijderd.";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Pinning Disappearing Messages";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Verdwijnende berichten vastzetten";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Pincode aanmaken";
@@ -6596,7 +6608,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
 
 /* Accessibility label for poll message. Embeds {{ poll question }}. */
-"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+"POLL_ACCESSIBILITY_LABEL" = "Peiling: %1$@.";
 
 /* Accessibility label for a vote option that is not selected by the user. */
 "POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "In afwachting";
@@ -6876,6 +6888,15 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Opnieuw registreren voor pushmeldingen is geslaagd.";
+
+/* Body for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+
+/* Title for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+
+/* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "In reactie op %1$@.";
@@ -7511,7 +7532,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ontgrendelen";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Naam, gebruikersnaam of telefoonnummer";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Naam, gebruikersnaam, nummer";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Zoeken op naam of telefoonnummer";
@@ -8750,10 +8771,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "Uitgelicht";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Verstuurde stickers zie je hier";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "Geen recente stickers";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "Onlangs gebruikt";
@@ -9202,9 +9223,6 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "Vet";
 
-/* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Opmaak wissen";
-
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Opmaak";
 
@@ -9213,6 +9231,9 @@
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "Monospace";
+
+/* Option in selected text edit menu to remove all text formatting in the selected text range */
+"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";

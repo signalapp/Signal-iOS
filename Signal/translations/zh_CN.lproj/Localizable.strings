@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "正在处理媒体...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Tap \"Back Up Now\" to try again.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "您上次的备份没能完成。点击“立即备份”以重试。";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "升级";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "货币";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Don’t Show Again";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "不再显示";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "在您的消息上快速双击可以对其进行编辑。编辑时限为消息发送后的 24 小时以内。";
@@ -3839,10 +3839,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 已将群组设置更改为仅允许管理员发送消息。";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "您要加入此群组并向其成员分享您的名字和头像吗？";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "When you request to join, your name and photo will be shared with this group's members. An admin must approve your request.";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "当您申请加入时，您的姓名和照片将分享给该群组成员。群管理员必须批准您的申请。";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "您无法通过此群组链接加入群组，因为有一位管理员移除了您。请联系管理员以重新加入该群组。";
@@ -6541,44 +6541,56 @@
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "您最多只能置顶 4 个聊天。";
 
+/* Shown when another user pins a message. Embeds {{ another user }}. */
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+
+/* Shown when the local user pins a message. */
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "置顶消息";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
+"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "置顶消息将替换最早的置顶消息。";
 
 /* Option in pinned message action sheet to replace oldest pin. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Replace";
+"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "替换";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "替换最早的置顶消息？";
+
+/* Body for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+
+/* Title for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "Message unpinned";
+"PINNED_MESSAGE_TOAST" = "消息已取消置顶";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "取消置顶消息";
 
 /* Title for Pinned Messages detail view */
-"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+"PINNED_MESSAGES_DETAILS_TITLE" = "置顶的消息";
 
 /* Action menu item to go to a message in the conversation view */
-"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "前往消息";
 
 /* Action menu item to see all pinned messages */
-"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "查看所有消息";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "取消置顶消息";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "已置顶";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Disappearing messages will be unpinned when their timer expires and the message is removed from the chat.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "限时消息将在定时器结束时自动取消置顶并从聊天中删除。";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Pinning Disappearing Messages";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "置顶限时消息";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "创建 PIN 码";
@@ -6596,7 +6608,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
 
 /* Accessibility label for poll message. Embeds {{ poll question }}. */
-"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+"POLL_ACCESSIBILITY_LABEL" = "投票：%1$@。";
 
 /* Accessibility label for a vote option that is not selected by the user. */
 "POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "处理中";
@@ -6876,6 +6888,15 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "成功重新注册了推送.";
+
+/* Body for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+
+/* Title for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+
+/* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "回复 %1$@。";
@@ -8750,10 +8771,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "精选";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "发送表情后，将在此处显示";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "无最近表情";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "最近通话";
@@ -9202,9 +9223,6 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "加粗";
 
-/* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "清除格式";
-
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "格式";
 
@@ -9213,6 +9231,9 @@
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "等宽字体";
+
+/* Option in selected text edit menu to remove all text formatting in the selected text range */
+"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "防剧透";

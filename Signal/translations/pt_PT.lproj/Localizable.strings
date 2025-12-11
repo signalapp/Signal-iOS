@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "A processar ficheiros multimédia…";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Tap \"Back Up Now\" to try again.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "A sua última cópia de segurança não pôde ser completada. Toque em \"Fazer cópia de segurança\" para tentar novamente.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Atualizar";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Moeda";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Don’t Show Again";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Não mostrar outra vez";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Toque duas vezes rapidamente nas suas mensagens para as editar. Pode editar as suas mensagens até 24 horas depois serem enviadas.";
@@ -3839,10 +3839,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ modificou as definições de grupo de forma a permitir que apenas os administradores possam enviar mensagens.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Juntar-se a este grupo e partilhar o seu nome e foto com os membros?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "When you request to join, your name and photo will be shared with this group's members. An admin must approve your request.";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "Ao pedir para se juntar, o seu nome e foto serão partilhados com os membros deste grupo. Um administrador tem de aprovar o seu pedido.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Não se pode juntar a este grupo através do link porque foi removido por um administrador. Contacte um administrador para voltar a ser adicionado ao grupo.";
@@ -6541,44 +6541,56 @@
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "Apenas pode afixar até 4 chats.";
 
+/* Shown when another user pins a message. Embeds {{ another user }}. */
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+
+/* Shown when the local user pins a message. */
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Afixar mensagem";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
+"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "A mensagem a afixar substituirá a mais antiga.";
 
 /* Option in pinned message action sheet to replace oldest pin. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Replace";
+"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Substituir";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Substituir mensagem afixada mais antiga?";
+
+/* Body for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+
+/* Title for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "Message unpinned";
+"PINNED_MESSAGE_TOAST" = "Mensagem desafixada";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Desafixar mensagem";
 
 /* Title for Pinned Messages detail view */
-"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+"PINNED_MESSAGES_DETAILS_TITLE" = "Mensagens afixadas";
 
 /* Action menu item to go to a message in the conversation view */
-"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "Ir a mensagem";
 
 /* Action menu item to see all pinned messages */
-"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "Ver todas as mensagens";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "Desafixar mensagem";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Afixada(s)";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Disappearing messages will be unpinned when their timer expires and the message is removed from the chat.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "As mensagens temporárias serão desafixadas quando o seu temporizador expirar e a mensagem for removida do chat.";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Pinning Disappearing Messages";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Afixar mensagens temporárias";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Criar PIN";
@@ -6596,7 +6608,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproduzir";
 
 /* Accessibility label for poll message. Embeds {{ poll question }}. */
-"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+"POLL_ACCESSIBILITY_LABEL" = "Sondagem: %1$@.";
 
 /* Accessibility label for a vote option that is not selected by the user. */
 "POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "Pendente";
@@ -6876,6 +6888,15 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Reinscreveu-se com sucesso nas notificações push.";
+
+/* Body for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+
+/* Title for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+
+/* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "A responder a %1$@.";
@@ -8750,10 +8771,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "Em destaque";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Envie um autocolante e aparecerá aqui";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "Não há autocolantes recentes";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "Recentes";
@@ -9202,9 +9223,6 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "Negrito";
 
-/* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Limpar formatação";
-
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Formatar";
 
@@ -9213,6 +9231,9 @@
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "Monoespaçado";
+
+/* Option in selected text edit menu to remove all text formatting in the selected text range */
+"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";

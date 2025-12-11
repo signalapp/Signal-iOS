@@ -260,7 +260,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d개 대화에서 이 사용자 지정 색을 사용 중입니다. 모든 대화에서 이 색을 삭제할까요?</string>
+			<string>%1$d개 대화에서 이 색상을 사용 중입니다. 모든 대화에서 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -1235,7 +1235,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>사용자 지정 스토리 · 볼 수 있는 사람 %1$d명</string>
+			<string>맞춤 스토리 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE</key>

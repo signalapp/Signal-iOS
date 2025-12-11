@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "미디어 처리 중...";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Your last backup couldn't be completed. Tap \"Back Up Now\" to try again.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "마지막 백업을 완료하지 못했습니다. '지금 백업'을 탭하여 다시 시도하세요.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "업그레이드";
@@ -1655,22 +1655,22 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "이전 전화번호가 잘못됐습니다. 올바른 전화번호를 입력하여 번호를 변경하세요.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "다음은 대화창 색의 미리 보기입니다.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "다음은 대화창 색의 미리보기입니다.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "다음은 대화창 색의 미리 보기입니다.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "다음은 대화창 색의 미리보기입니다.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "또 다른 거품";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "색상은 사용자에게만 보입니다.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "색상은 나에게만 표시됩니다.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "색상은 사용자에게만 보입니다.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "색상은 나에게만 표시됩니다.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "색상은 사용자에게만 보입니다.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "색상은 나에게만 표시됩니다.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "자동";
@@ -2168,7 +2168,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "그룹 정보 수정";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "관리자만";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "관리자";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "모든 멤버";
@@ -2201,7 +2201,7 @@
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 끈 대화에서 멘션될 경우 알림을 받아보시겠어요?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "언급";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "멘션";
 
 /* Button to message the chat */
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "메세지";
@@ -2222,7 +2222,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "알림 끄기";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "알림 꺼지지 않음";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "알림 켜짐";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1일";
@@ -2285,7 +2285,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "메시지 전송";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "관리자만";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "관리자";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "그룹 차단 해제";
@@ -2372,7 +2372,7 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "통화 설정";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "그라디언트";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "그라데이션";
 
 /* Title for the 'hue' section in the chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "색상";
@@ -2381,13 +2381,13 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "채도";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "견고함";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "단색";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "사용자 지정 색상";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "맞춤 색상";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "드래그하여 그라디언트 방향 변경";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "드래그하여 그라데이션 방향 변경";
 
 /* Button to run the database integrity check */
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "실행";
@@ -2732,7 +2732,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ 뒤 이 대화의 메시지가 사라집니다.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "지역 시간";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "맞춤 시간";
 
 /* Title for a picker for the unit of time to use for disappearing messages. */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER" = "단위";
@@ -2744,7 +2744,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "일";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "이 기능을 사용하면 이 대화에서 보내거나 받는 새 메시지가 확인 후 자동 삭제됩니다.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "이 기능을 켤 경우, 대화에서 주고받는 새 메시지는 확인 후 자동 삭제됩니다.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "현재 메시지가 %1$@ 후 사라지도록 설정됨";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "통화";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "Don’t Show Again";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "다시 표시 안 함";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "메시지를 수정하려면 메지시를 빠르게 두 번 탭하세요. 메시지는 전송 후 24시간 내에 수정할 수 있습니다.";
@@ -3527,10 +3527,10 @@
 "GO_TO_SETTINGS_BUTTON" = "설정으로 이동";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 정보를 수정할 수 있는 사람을 '%1$@'(으)로 변경했습니다.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 정보를 수정할 수 있는 사람을 '%1$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 정보를 수정할 수 있는 사람을 '%2$@'(으)로 변경했습니다.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 정보를 수정할 수 있는 사람을 '%2$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "이제 '%1$@'이(가) 그룹 정보를 변경할 수 있습니다.";
@@ -3551,10 +3551,10 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "꺼짐";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 멤버십을 수정할 수 있는 사람을 '%1$@'(으)로 변경했습니다.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 멤버십을 수정할 수 있는 사람을 '%1$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 멤버십을 수정할 수 있는 사람을 '%2$@'(으)로 변경했습니다.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 멤버십을 수정할 수 있는 사람을 '%2$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "이제 '%1$@'이(가) 그룹 멤버십을 변경할 수 있습니다.";
@@ -3749,7 +3749,7 @@
 "GROUP_DESCRIPTION_MORE" = "더";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "그룹 설명 추가…";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "그룹 설명 추가하기";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "그룹 설명은 그룹의 멤버와 초대받은 사용자들에게 표시됩니다.";
@@ -3839,10 +3839,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님은 관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "이 그룹에 참여하여 멤버들에게 이름과 사진을 공유하시겠어요?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "When you request to join, your name and photo will be shared with this group's members. An admin must approve your request.";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "가입을 요청하면 이름과 사진이 이 그룹의 멤버들과 공유됩니다. 관리자가 요청을 승인해야 합니다.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "관리자가 귀하를 제거했기 때문에 그룹 링크를 통해 그룹에 참가할 수 없습니다. 관리자에게 그룹에 다시 추가해 달라고 요청하세요.";
@@ -4637,7 +4637,7 @@
 "LEAVE_GROUP_FAILED" = "그룹 나가기 도중 오류가 발생했습니다.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "'레거시 그룹'은 @멘션, 관리자와 같은 기능을 지원하지 않는 그룹입니다. 대부분 레거시 그룹은 자동 또는 수동으로 '새 그룹'으로 업그레이드 되었습니다. 이 그룹은 장기간 비활성 상태였으므로 더 이상 업그레이드할 수 없습니다.\n\n이 대화를 계속하려면 새 그룹을 만들어야 합니다.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "'레거시 그룹'은 @멘션, 관리자 등 일부 기능을 지원하지 않는 그룹입니다. 대부분의 레거시 그룹은 자동 또는 수동으로 '새 그룹'으로 업그레이드되었지만, 이 그룹은 오랫동안 사용되지 않아 더 이상 업그레이드할 수 없습니다.\n\n이 대화를 계속하려면 새 그룹을 만들어야 합니다.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "레거시 그룹";
@@ -4646,7 +4646,7 @@
 "LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "이 그룹은 레거시 그룹이며, 더 이상 지원되지 않습니다. 이 대화를 계속하려면 새로운 그룹을 만드세요. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "새 그룹에는 @멘션 및 그룹 관리자와 같은 기능이 있으며 향후 더 많은 기능을 지원할 예정입니다.\n\n모든 업그레이드 전의 메시지 기록과 미디어를 보관했습니다.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "새 그룹에는 @멘션 및 그룹 관리자와 같은 기능이 있으며 향후 더 많은 기능을 지원할 예정입니다.\n\n업그레이드 전의 모든 메시지 기록과 미디어는 보관 처리되었습니다.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "새 그룹이 무엇인가요?";
@@ -5495,7 +5495,7 @@
 "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "특정 사용자만 볼 수 있음";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "새 사용자 지정 스토리";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "새 맞춤 스토리";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "기존 그룹과 공유";
@@ -5507,16 +5507,16 @@
 "NEW_STORY_SHEET_TITLE" = "스토리 유형 선택";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "별칭";
+"NICKNAME_BUTTON_TITLE" = "닉네임";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "이 별칭과 메모를 영구 삭제합니다.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "이 닉네임과 메모를 영구 삭제합니다.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "별칭을 삭제할까요?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "닉네임을 삭제할까요?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "별칭과 메모는 Signal에 엔드투엔드 암호화되어 저장됩니다. 해당 항목은 사용자에게만 표시됩니다.";
+"NICKNAME_EDITOR_DESCRIPTION" = "닉네임과 메모는 Signal에 엔드투엔드 암호화되어 저장되며, 나에게만 표시됩니다.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "성";
@@ -5528,7 +5528,7 @@
 "NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "메모";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "별칭";
+"NICKNAME_EDITOR_TITLE" = "닉네임";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "전화번호로 연락처 찾기";
@@ -5594,7 +5594,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "앱이 열려 있을 때 재생";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "사용자 설정 소리 추가…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "맞춤 알림음 추가하기";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "이름, 내용 또는 조치";
@@ -6541,44 +6541,56 @@
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "대화는 4개까지만 고정할 수 있습니다.";
 
+/* Shown when another user pins a message. Embeds {{ another user }}. */
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+
+/* Shown when the local user pins a message. */
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "메시지 고정";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
+"PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "고정 메시지가 가장 오래된 메시지를 대체합니다.";
 
 /* Option in pinned message action sheet to replace oldest pin. */
-"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "Replace";
+"PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "바꾸기";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Replace oldest pin?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "가장 오래된 고정 항목을 교체하시겠습니까?";
+
+/* Body for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+
+/* Title for error sheet shown if the pinned message failed to send */
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "Message unpinned";
+"PINNED_MESSAGE_TOAST" = "메시지 고정 해제됨";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "메시지 고정 해제";
 
 /* Title for Pinned Messages detail view */
-"PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+"PINNED_MESSAGES_DETAILS_TITLE" = "고정 메시지";
 
 /* Action menu item to go to a message in the conversation view */
-"PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";
+"PINNED_MESSAGES_GO_TO_MESSAGE" = "메시지로 이동";
 
 /* Action menu item to see all pinned messages */
-"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
+"PINNED_MESSAGES_SEE_ALL_MESSAGES" = "모든 메시지 보기";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "메시지 고정 해제";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "고정됨";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "Disappearing messages will be unpinned when their timer expires and the message is removed from the chat.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "자동 삭제 메시지는 타이머가 만료되고 채팅에서 메시지가 제거되면 고정이 해제됩니다.";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "Pinning Disappearing Messages";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "자동 삭제 메시지 고정";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "PIN 만들기";
@@ -6596,7 +6608,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
 
 /* Accessibility label for poll message. Embeds {{ poll question }}. */
-"POLL_ACCESSIBILITY_LABEL" = "Poll: %1$@.";
+"POLL_ACCESSIBILITY_LABEL" = "설문조사: %1$@";
 
 /* Accessibility label for a vote option that is not selected by the user. */
 "POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "대기 중";
@@ -6722,7 +6734,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "볼 수 있는 사람 추가";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "사용자 지정 스토리 삭제";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "맞춤 스토리 삭제";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@'을(를) 삭제할까요? 이 스토리에 공유한 업데이트도 삭제합니다.";
@@ -6876,6 +6888,15 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "푸시 알림을 재등록했습니다.";
+
+/* Body for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+
+/* Title for sheet with info about scanning a Quick Restore QR code */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+
+/* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ 님에게 답장하는 중입니다.";
@@ -8750,10 +8771,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "추천";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "스티커를 보내면 여기에 표시됩니다";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "최근 스티커 없음";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "최근";
@@ -9202,9 +9223,6 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "두껍게";
 
-/* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "텍스트 서식 지우기";
-
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "서식 지정";
 
@@ -9213,6 +9231,9 @@
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "고정 폭";
+
+/* Option in selected text edit menu to remove all text formatting in the selected text range */
+"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "스포일러";
@@ -9650,7 +9671,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "길게 누르면 녹음됩니다.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
-"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "%1$@ 및 %2$@을(를) 사용한 그라데이션";
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "%1$@ 및 %2$@ 색상을 사용한 그라데이션";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "연락처 이름";
