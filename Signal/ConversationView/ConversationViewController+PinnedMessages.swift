@@ -309,4 +309,8 @@ extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
             isAnimated: true
         )
     }
+
+    func unpinMessage(message: TSMessage) {
+        handleActionUnpin(message: message)
+    }
 }

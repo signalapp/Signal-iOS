@@ -6494,7 +6494,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin Message";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pinning message will replace the oldest one.";
@@ -6515,7 +6515,7 @@
 "PINNED_MESSAGE_TOAST" = "Message unpinned";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin Message";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
@@ -6527,7 +6527,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "See all Messages";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin Message";
+"PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Pinned";
