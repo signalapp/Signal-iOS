@@ -737,6 +737,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReadyUIStillPending()
 
+        // Start our various expiration jobs. Callers who add a new "expiring
+        // element" should call .restart() on the appropriate job.
+        dependenciesBridge.deletedCallRecordExpirationJob.start()
+        dependenciesBridge.disappearingMessagesExpirationJob.start()
+        dependenciesBridge.storyMessageExpirationJob.start()
+
         Task {
             let backgroundTask = OWSBackgroundTask(label: "AppLaunchesAttemptedCleanup")
             defer { backgroundTask.end() }
@@ -1350,10 +1356,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             hasActivated = true
 
             RTCInitializeSSL()
-
-            // Clean up any messages that expired since last launch and continue
-            // cleaning in the background.
-            SSKEnvironment.shared.disappearingMessagesJobRef.startIfNecessary()
 
             if registeredState == nil {
                 // Unregistered user should have no unread messages. e.g. if you delete your account.

@@ -164,7 +164,6 @@ public class AppEnvironment: NSObject {
             let callRecordStore = DependenciesBridge.shared.callRecordStore
             let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
             let db = DependenciesBridge.shared.db
-            let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
             let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
             let identityKeyMismatchManager = DependenciesBridge.shared.identityKeyMismatchManager
             let interactionStore = DependenciesBridge.shared.interactionStore
@@ -254,10 +253,6 @@ public class AppEnvironment: NSObject {
                 await db.awaitableWrite { tx in
                     groupCallRecordRingingCleanupManager.cleanupRingingCalls(tx: tx)
                 }
-            }
-
-            Task {
-                await deletedCallRecordCleanupManager.startCleanupIfNecessary()
             }
 
             Task { () async -> Void in

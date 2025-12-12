@@ -838,8 +838,6 @@ extension AppSetup.GlobalsContinuation {
             wallpaperStore: wallpaperStore
         )
 
-        let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
-
         let groupMemberUpdater = GroupMemberUpdaterImpl(
             temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
             groupMemberStore: groupMemberStore,
@@ -853,7 +851,7 @@ extension AppSetup.GlobalsContinuation {
 
         let callLinkStore = CallLinkRecordStoreImpl()
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
-        let deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
+        let deletedCallRecordExpirationJob = DeletedCallRecordExpirationJob(
             callLinkStore: callLinkStore,
             dateProvider: dateProvider,
             db: db,
@@ -899,7 +897,7 @@ extension AppSetup.GlobalsContinuation {
         let callRecordDeleteManager = CallRecordDeleteManagerImpl(
             callRecordStore: callRecordStore,
             outgoingCallEventSyncMessageManager: outgoingCallEventSyncMessageManager,
-            deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
+            deletedCallRecordExpirationJob: deletedCallRecordExpirationJob,
             deletedCallRecordStore: deletedCallRecordStore,
             threadStore: threadStore
         )
@@ -918,6 +916,13 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
             messageSendLog: messageSendLog,
             tsAccountManager: tsAccountManager
+        )
+
+        let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
+        let disappearingMessagesExpirationJob = DisappearingMessagesExpirationJob(
+            dateProvider: dateProvider,
+            db: db,
+            interactionDeleteManager: interactionDeleteManager,
         )
 
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
@@ -1017,6 +1022,10 @@ extension AppSetup.GlobalsContinuation {
             storyRecipientStore: storyRecipientStore,
             storageServiceManager: storageServiceManager,
             threadStore: threadStore
+        )
+        let storyMessageExpirationJob = StoryMessageExpirationJob(
+            dateProvider: dateProvider,
+            db: db,
         )
 
         let authorMergeHelper = AuthorMergeHelper()
@@ -1244,7 +1253,7 @@ extension AppSetup.GlobalsContinuation {
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: attachmentDownloadManager,
             attachmentManager: attachmentManager,
-            disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
+            disappearingMessagesExpirationJob: disappearingMessagesExpirationJob,
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
             interactionDeleteManager: interactionDeleteManager,
@@ -1272,7 +1281,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
-        let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
         let storageServiceRecordIkmMigrator = StorageServiceRecordIkmMigratorImpl(
             db: db,
@@ -1455,7 +1463,7 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             dateProviderMonotonic: dateProviderMonotonic,
             db: db,
-            disappearingMessagesJob: disappearingMessagesJob,
+            disappearingMessagesExpirationJob: disappearingMessagesExpirationJob,
             distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 storyStore: backupStoryStore,
@@ -1661,7 +1669,7 @@ extension AppSetup.GlobalsContinuation {
             currentCallProvider: currentCallProvider,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
-            deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
+            deletedCallRecordExpirationJob: deletedCallRecordExpirationJob,
             deletedCallRecordStore: deletedCallRecordStore,
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
@@ -1670,6 +1678,7 @@ extension AppSetup.GlobalsContinuation {
             deviceSleepManager: deviceSleepManager,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            disappearingMessagesExpirationJob: disappearingMessagesExpirationJob,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             editManager: editManager,
             editMessageStore: editMessageStore,
@@ -1725,6 +1734,7 @@ extension AppSetup.GlobalsContinuation {
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
             storageServiceRecordIkmMigrator: storageServiceRecordIkmMigrator,
+            storyMessageExpirationJob: storyMessageExpirationJob,
             storyRecipientManager: storyRecipientManager,
             storyRecipientStore: storyRecipientStore,
             subscriptionConfigManager: subscriptionConfigManager,
@@ -1823,7 +1833,6 @@ extension AppSetup.GlobalsContinuation {
             messageDecrypter: messageDecrypter,
             groupMessageProcessorManager: groupMessageProcessorManager,
             ows2FAManager: ows2FAManager,
-            disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,
             receiptSender: receiptSender,
             reachabilityManager: reachabilityManager,

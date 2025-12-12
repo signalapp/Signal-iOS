@@ -54,7 +54,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let dateProvider: DateProvider
     private let dateProviderMonotonic: DateProviderMonotonic
     private let db: any DB
-    private let disappearingMessagesJob: OWSDisappearingMessagesJob
+    private let disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob
     private let distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver
     private let encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider
     private let fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer
@@ -95,7 +95,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         dateProvider: @escaping DateProvider,
         dateProviderMonotonic: @escaping DateProviderMonotonic,
         db: any DB,
-        disappearingMessagesJob: OWSDisappearingMessagesJob,
+        disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob,
         distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver,
         encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider,
         fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer,
@@ -132,7 +132,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.dateProvider = dateProvider
         self.dateProviderMonotonic = dateProviderMonotonic
         self.db = db
-        self.disappearingMessagesJob = disappearingMessagesJob
+        self.disappearingMessagesExpirationJob = disappearingMessagesExpirationJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedStreamProvider = encryptedStreamProvider
         self.fullTextSearchIndexer = fullTextSearchIndexer
@@ -1331,11 +1331,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 tx: tx,
             )
 
-            tx.addSyncCompletion { [
-                avatarFetcher,
-                backupAttachmentCoordinator,
-                disappearingMessagesJob
-            ] in
+            tx.addSyncCompletion { [self] in
                 Task {
                     // Kick off avatar fetches enqueued during restore.
                     try await avatarFetcher.runIfNeeded()
@@ -1346,8 +1342,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     try await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
                 }
 
-                // Start ticking down for disappearing messages.
-                disappearingMessagesJob.startIfNecessary()
+                // We may have inserted disappearing messages, so we need to let
+                // the expiration job know.
+                disappearingMessagesExpirationJob.restart()
             }
 
             logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")

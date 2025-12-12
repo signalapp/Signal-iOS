@@ -353,9 +353,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return;
     }
     uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
-    [SSKEnvironment.shared.disappearingMessagesJobRef startAnyExpirationForMessage:self
-                                                               expirationStartedAt:nowMs
-                                                                       transaction:transaction];
+    [DisappearingMessagesExpirationJobObjcBridge startExpirationForMessage:self
+                                                       expirationStartedAt:nowMs
+                                                                        tx:transaction];
 }
 
 - (BOOL)hasPerConversationExpiration

@@ -8,40 +8,14 @@ public import LibSignalClient
 
 extension SentMessageTranscriptReceiverImpl {
     public enum Shims {
-        public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobShim
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerShim
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerShim
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesShim
     }
     public enum Wrappers {
-        public typealias DisappearingMessagesJob = _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerWrapper
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesWrapper
-    }
-}
-
-// MARK: - DisappearingMessagesJob
-
-public protocol _SentMessageTranscriptReceiver_DisappearingMessagesJobShim {
-
-    func startExpiration(
-        for message: TSMessage,
-        expirationStartedAt: UInt64,
-        tx: DBWriteTransaction
-    )
-}
-
-public class _SentMessageTranscriptReceiver_DisappearingMessagesJobWrapper: _SentMessageTranscriptReceiver_DisappearingMessagesJobShim {
-
-    public init() {}
-
-    public func startExpiration(for message: TSMessage, expirationStartedAt: UInt64, tx: DBWriteTransaction) {
-        SSKEnvironment.shared.disappearingMessagesJobRef.startAnyExpiration(
-            for: message,
-            expirationStartedAt: expirationStartedAt,
-            transaction: tx
-        )
     }
 }
 

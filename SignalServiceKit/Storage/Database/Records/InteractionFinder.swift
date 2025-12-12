@@ -223,8 +223,9 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    // The interactions should be enumerated in order from "next to expire" to "last to expire".
-    public class func nextMessageWithStartedPerConversationExpirationToExpire(
+    // MARK: -
+
+    public class func nextExpiringMessage(
         transaction: DBReadTransaction
     ) -> TSMessage? {
         let sql = """
@@ -238,7 +239,8 @@ public class InteractionFinder: NSObject {
             sql: sql,
             transaction: transaction
         )
-        do {
+
+        return failIfThrows {
             while let interaction = try cursor.next() {
                 if let message = interaction as? TSMessage {
                     return message
@@ -246,27 +248,11 @@ public class InteractionFinder: NSObject {
                     owsFailDebug("Unexpected object: \(type(of: interaction))")
                 }
             }
-        } catch {
-            owsFail("error: \(error)")
+            return nil
         }
-        return nil
     }
 
-    public class func fetchSomeExpiredMessageRowIds(now: UInt64, limit: Int, tx: DBReadTransaction) throws -> [Int64] {
-        let sql = """
-            SELECT \(interactionColumn: .id)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
-            WHERE \(interactionColumn: .expiresAt) > 0
-            AND \(interactionColumn: .expiresAt) <= ?
-            LIMIT \(limit)
-            """
-        do {
-            return try Int64.fetchAll(tx.database, sql: sql, arguments: [now])
-        } catch {
-            throw error.grdbErrorForLogging
-        }
-    }
+    // MARK: -
 
     public class func interactions(
         withInteractionIds interactionIds: Set<String>,

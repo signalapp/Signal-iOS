@@ -12,7 +12,7 @@ import LibSignalClient
 /// the necessary additional tasks related to deleting a ``CallRecord``.
 ///
 /// - SeeAlso ``DeletedCallRecord``
-/// - SeeAlso ``DeletedCallRecordCleanupManager``
+/// - SeeAlso ``DeletedCallRecordExpirationJob``
 /// - SeeAlso ``CallRecordStore/delete(callRecords:tx:)``
 public protocol CallRecordDeleteManager {
     /// Delete the given call record.
@@ -56,20 +56,20 @@ public protocol CallRecordDeleteManager {
 final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
     private let callRecordStore: CallRecordStore
     private let outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager
-    private let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
+    private let deletedCallRecordExpirationJob: DeletedCallRecordExpirationJob
     private let deletedCallRecordStore: DeletedCallRecordStore
     private let threadStore: ThreadStore
 
     init(
         callRecordStore: CallRecordStore,
         outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager,
-        deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
+        deletedCallRecordExpirationJob: DeletedCallRecordExpirationJob,
         deletedCallRecordStore: DeletedCallRecordStore,
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
         self.outgoingCallEventSyncMessageManager = outgoingCallEventSyncMessageManager
-        self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
+        self.deletedCallRecordExpirationJob = deletedCallRecordExpirationJob
         self.deletedCallRecordStore = deletedCallRecordStore
         self.threadStore = threadStore
     }
@@ -145,8 +145,8 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
             deletedCallRecordStore.insert(deletedCallRecord: deletedCallRecord, tx: tx)
         }
 
-        Task {
-            await deletedCallRecordCleanupManager.startCleanupIfNecessary()
-        }
+        // We've added a new DeletedCallRecord to expire, so let the expiration
+        // job know.
+        deletedCallRecordExpirationJob.restart()
     }
 }

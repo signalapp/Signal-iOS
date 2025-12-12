@@ -220,9 +220,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                             }];
 
     // readTimestamp may be earlier than now, so backdate the expiration if necessary.
-    [SSKEnvironment.shared.disappearingMessagesJobRef startAnyExpirationForMessage:self
-                                                               expirationStartedAt:readTimestamp
-                                                                       transaction:transaction];
+    [DisappearingMessagesExpirationJobObjcBridge startExpirationForMessage:self
+                                                       expirationStartedAt:readTimestamp
+                                                                        tx:transaction];
 
     [SSKEnvironment.shared.receiptManagerRef messageWasRead:self
                                                      thread:thread

@@ -267,42 +267,20 @@ public class StoryFinder {
         }
     }
 
-    // The stories should be enumerated in order from "next to expire" to "last to expire".
-    public static func fetchSomeExpiredStories(now: UInt64, limit: Int, tx: DBReadTransaction) throws -> [StoryMessage] {
-        let sql = """
-            SELECT *
-            FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.timestamp)) <= ?
-            AND \(StoryMessage.columnName(.authorAci)) != ?
-            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
-            LIMIT \(limit)
-        """
-        do {
-            return try StoryMessage.fetchAll(tx.database, sql: sql, arguments: [
-                now - StoryManager.storyLifetimeMillis,
-                StoryMessage.systemStoryAuthor.serviceIdUppercaseString
-            ])
-        } catch {
-            throw error.grdbErrorForLogging
-        }
-    }
-
-    public static func oldestExpirableTimestamp(transaction: DBReadTransaction) -> UInt64? {
+    public static func nextExpiringStory(tx: DBReadTransaction) -> StoryMessage? {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.authorAci)) != ?
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
-            LIMIT 1
         """
 
-        do {
-            return try UInt64.fetchOne(transaction.database, sql: sql, arguments: [
-                StoryMessage.systemStoryAuthor.serviceIdUppercaseString
-            ])
-        } catch {
-            owsFailDebug("failed to lookup next story expiration \(error)")
-            return nil
+        return failIfThrows {
+            return try StoryMessage.fetchOne(
+                tx.database,
+                sql: sql,
+                arguments: [StoryMessage.systemStoryAuthor.serviceIdUppercaseString],
+            )
         }
     }
 

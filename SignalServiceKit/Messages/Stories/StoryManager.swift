@@ -115,7 +115,9 @@ public class StoryManager {
 
         startAutomaticDownloadIfNecessary(for: message, transaction: transaction)
 
-        SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
+        // We have a new story message, so make sure our expiration job knows
+        // about it.
+        DependenciesBridge.shared.storyMessageExpirationJob.restart()
 
         SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, transaction: transaction)
     }
@@ -149,7 +151,9 @@ public class StoryManager {
 
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction)
 
-            SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
+            // We have a new story message, so make sure our expiration job
+            // knows about it.
+            DependenciesBridge.shared.storyMessageExpirationJob.restart()
 
             SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, transaction: transaction)
         } else {
@@ -167,11 +171,6 @@ public class StoryManager {
         StoryFinder.enumerateStoriesForContext(.groupId(groupId), transaction: tx) { storyMessage, _ in
             storyMessage.anyRemove(transaction: tx)
         }
-    }
-
-    public class func nextExpirationTimestamp(transaction: DBReadTransaction) -> UInt64? {
-        guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
-        return timestamp + storyLifetimeMillis
     }
 
     private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"

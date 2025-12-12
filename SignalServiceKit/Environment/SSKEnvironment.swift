@@ -49,8 +49,6 @@ public class SSKEnvironment: NSObject {
     public let groupMessageProcessorManagerRef: GroupMessageProcessorManager
     public let ows2FAManagerRef: OWS2FAManager
     @objc
-    public let disappearingMessagesJobRef: OWSDisappearingMessagesJob
-    @objc
     public let receiptManagerRef: OWSReceiptManager
     @objc
     public let receiptSenderRef: ReceiptSender
@@ -117,7 +115,6 @@ public class SSKEnvironment: NSObject {
         messageDecrypter: OWSMessageDecrypter,
         groupMessageProcessorManager: GroupMessageProcessorManager,
         ows2FAManager: OWS2FAManager,
-        disappearingMessagesJob: OWSDisappearingMessagesJob,
         receiptManager: OWSReceiptManager,
         receiptSender: ReceiptSender,
         reachabilityManager: SSKReachabilityManager,
@@ -177,7 +174,6 @@ public class SSKEnvironment: NSObject {
         self.messageDecrypterRef = messageDecrypter
         self.groupMessageProcessorManagerRef = groupMessageProcessorManager
         self.ows2FAManagerRef = ows2FAManager
-        self.disappearingMessagesJobRef = disappearingMessagesJob
         self.receiptManagerRef = receiptManager
         self.receiptSenderRef = receiptSender
         self.syncManagerRef = syncManager

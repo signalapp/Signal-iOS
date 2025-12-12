@@ -10,7 +10,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
     private let attachmentDownloads: AttachmentDownloadManager
     private let attachmentManager: AttachmentManager
-    private let disappearingMessagesJob: Shims.DisappearingMessagesJob
+    private let disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
     private let interactionDeleteManager: InteractionDeleteManager
@@ -24,7 +24,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     public init(
         attachmentDownloads: AttachmentDownloadManager,
         attachmentManager: AttachmentManager,
-        disappearingMessagesJob: Shims.DisappearingMessagesJob,
+        disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob,
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,
         interactionDeleteManager: InteractionDeleteManager,
@@ -37,7 +37,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     ) {
         self.attachmentDownloads = attachmentDownloads
         self.attachmentManager = attachmentManager
-        self.disappearingMessagesJob = disappearingMessagesJob
+        self.disappearingMessagesExpirationJob = disappearingMessagesExpirationJob
         self.earlyMessageManager = earlyMessageManager
         self.groupManager = groupManager
         self.interactionDeleteManager = interactionDeleteManager
@@ -376,10 +376,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         if let expirationStartedAt = messageParams.expirationStartedAt {
             /// The insert and update methods above may start expiration for
             /// this message, but transcript.expirationStartedAt may be earlier,
-            /// so we need to pass that to the OWSDisappearingMessagesJob in
+            /// so we need to pass that to DisappearingMessagesExpirationJob in
             /// case it needs to back-date the expiration.
-            disappearingMessagesJob.startExpiration(
-                for: outgoingMessage,
+            disappearingMessagesExpirationJob.startExpiration(
+                forMessage: outgoingMessage,
                 expirationStartedAt: expirationStartedAt,
                 tx: tx
             )
