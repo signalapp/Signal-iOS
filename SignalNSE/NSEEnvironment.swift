@@ -86,6 +86,9 @@ class NSEEnvironment {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReady()
 
-        AppVersionImpl.shared.nseLaunchDidComplete()
+        let appVersion = AppVersionImpl.shared
+        appVersion.dumpToLog()
+        appVersion.updateFirstVersionIfNeeded()
+        appVersion.nseLaunchDidComplete()
     }
 }

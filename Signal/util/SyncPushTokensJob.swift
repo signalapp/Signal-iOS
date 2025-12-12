@@ -57,8 +57,6 @@ class SyncPushTokensJob: NSObject {
 
         if SSKEnvironment.shared.preferencesRef.pushToken != pushToken {
             reason = "changed"
-        } else if AppVersionImpl.shared.lastAppVersion != AppVersionImpl.shared.currentAppVersion {
-            reason = "upgraded"
         } else if !Self.hasUploadedTokensOnce.get() {
             reason = "launched"
         } else {

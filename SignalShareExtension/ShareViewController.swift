@@ -259,7 +259,10 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
         let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
         Logger.info("localAci: \(localAci?.logString ?? "<none>")")
 
-        AppVersionImpl.shared.saeLaunchDidComplete()
+        let appVersion = AppVersionImpl.shared
+        appVersion.dumpToLog()
+        appVersion.updateFirstVersionIfNeeded()
+        appVersion.saeLaunchDidComplete()
 
         Logger.info("")
     }

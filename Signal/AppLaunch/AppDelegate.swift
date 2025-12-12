@@ -253,8 +253,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
+        appVersion.dumpToLog()
+        appVersion.updateFirstVersionIfNeeded()
 
         let launchContext = LaunchContext(
             appContext: mainAppContext,
@@ -263,6 +264,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             keychainStorage: keychainStorage,
             launchStartedAt: launchStartedAt,
         )
+
+        let userDefaults = mainAppContext.appUserDefaults()
+        if appVersion.lastAppVersionForCrashDetection != appVersion.currentAppVersion {
+            userDefaults.removeObject(forKey: Constants.appLaunchesAttemptedKey)
+        }
+        appVersion.updateLastVersionForCrashDetection()
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
         // but before we access the database or files on disk.
@@ -288,7 +295,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // If this is a regular launch, increment the "launches attempted" counter.
         // If repeatedly start launching but never finish them (ie the app is
         // crashing while launching), we'll notice in `checkIfAllowedToLaunch`.
-        let userDefaults = mainAppContext.appUserDefaults()
         let appLaunchesAttempted = userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey)
         userDefaults.set(appLaunchesAttempted + 1, forKey: Constants.appLaunchesAttemptedKey)
 
@@ -1015,10 +1021,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
-        if
-            appVersion.lastAppVersion == appVersion.currentAppVersion,
-            userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey) >= launchAttemptFailureThreshold
-        {
+        if userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey) >= launchAttemptFailureThreshold {
             if case .readCorrupted = databaseCorruptionState.status {
                 return .possibleReadCorruptionCrashed
             }

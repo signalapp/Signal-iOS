@@ -21,7 +21,7 @@ public protocol AppVersion {
 
     /// The version of the app the last time it was launched. `nil` if the app
     /// hasn't been launched.
-    var lastAppVersion: String? { get }
+    var lastAppVersionForCrashDetection: String? { get }
 
     /// Internally, we use a version format with 4 dotted values to uniquely
     /// identify builds. The first three values are the the release version, the
@@ -52,6 +52,8 @@ public protocol AppVersion {
     )
 
     func dumpToLog()
+    func updateFirstVersionIfNeeded()
+    func updateLastVersionForCrashDetection()
 }
 
 extension AppVersion {
@@ -116,7 +118,7 @@ public class AppVersionImpl: AppVersion {
     private let firstVersionKey = "kNSUserDefaults_FirstAppVersion"
     private let backupAppVersionKey = "kNSUserDefaults_BackupAppVersion"
     private let firstBackupAppVersionKey = "kNSUserDefaults_FirstBackupAppVersion"
-    private let lastVersionKey = "kNSUserDefaults_LastVersion"
+    private let lastVersionForCrashDetectionKey = "kNSUserDefaults_LastVersion"
     private let lastCompletedLaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion"
     private let lastCompletedMainAppLaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp"
     private let lastCompletedSAELaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_SAE"
@@ -124,13 +126,10 @@ public class AppVersionImpl: AppVersion {
     private let firstMainAppLaunchDateAfterUpdateKey = "FirstMainAppLaunchDateAfterUpdate"
 
     public static let shared: AppVersion = {
-        let result = AppVersionImpl(
+        return AppVersionImpl(
             bundle: Bundle.main,
-            userDefaults: CurrentAppContext().appUserDefaults()
+            userDefaults: CurrentAppContext().appUserDefaults(),
         )
-        result.dumpToLog()
-        result.updateLaunchedVersionInfo()
-        return result
     }()
 
     // MARK: - Properties
@@ -172,7 +171,7 @@ public class AppVersionImpl: AppVersion {
 
     /// The version of the app the last time it was launched. `nil` if the app
     /// hasn't been launched.
-    public var lastAppVersion: String? { userDefaults.string(forKey: lastVersionKey) }
+    public var lastAppVersionForCrashDetection: String? { userDefaults.string(forKey: lastVersionForCrashDetectionKey) }
 
     /// Internally, we use a version format with 4 dotted values to uniquely
     /// identify builds. The first three values are the the release version, the
@@ -242,11 +241,14 @@ public class AppVersionImpl: AppVersion {
         self.userDefaults = userDefaults
     }
 
-    private func updateLaunchedVersionInfo() {
+    public func updateFirstVersionIfNeeded() {
         if userDefaults.string(forKey: firstVersionKey) == nil {
             userDefaults.set(currentAppVersion, forKey: firstVersionKey)
         }
-        userDefaults.set(currentAppVersion, forKey: lastVersionKey)
+    }
+
+    public func updateLastVersionForCrashDetection() {
+        userDefaults.set(currentAppVersion, forKey: lastVersionForCrashDetectionKey)
     }
 
     public func dumpToLog() {
@@ -257,7 +259,6 @@ public class AppVersionImpl: AppVersion {
         if let firstBackupAppVersion {
             Logger.info("firstBackupAppVersion: \(formatForLogging(firstBackupAppVersion))")
         }
-        Logger.info("lastAppVersion: \(formatForLogging(lastAppVersion))")
         Logger.info("currentAppVersion: \(formatForLogging(currentAppVersion))")
         Logger.info("lastCompletedLaunchAppVersion: \(formatForLogging(lastCompletedLaunchAppVersion))")
         Logger.info("lastCompletedLaunchMainAppVersion: \(formatForLogging(lastCompletedLaunchMainAppVersion))")
@@ -363,7 +364,7 @@ public class MockAppVerion: AppVersion {
 
     public var firstBackupAppVersion: String?
 
-    public var lastAppVersion: String? = "1.0"
+    public var lastAppVersionForCrashDetection: String? = "1.0"
 
     public var currentAppVersion: String = "1.0.0.0"
 
@@ -393,6 +394,10 @@ public class MockAppVerion: AppVersion {
     ) {}
 
     public func dumpToLog() {}
+
+    public func updateFirstVersionIfNeeded() {}
+
+    public func updateLastVersionForCrashDetection() {}
 }
 
 #endif
