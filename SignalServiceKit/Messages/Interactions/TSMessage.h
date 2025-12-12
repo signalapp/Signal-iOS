@@ -93,6 +93,10 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
+/// - Important Deprecated. Do not use!
+/// - SeeAlso ``expiresAt``
+@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
+
 /// Nullable UInt32, with 0 and null treated as equivalent.
 /// An incrementing clock value for the expire timer that determines if we update the thread-level
 /// timer when receiving a message. Taken from the local VersionedDisappearingMessageToken
@@ -204,8 +208,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (BOOL)shouldStartExpireTimer;
 
 #pragma mark - Update With... Methods
-
-- (void)updateStoredShouldStartExpireTimer;
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction;
 

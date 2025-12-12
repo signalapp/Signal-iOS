@@ -333,6 +333,7 @@ public class GRDBSchemaMigrator {
         case addPinnedMessagesTable
         case addPinnedAtTimestampToPinnedMessageTable
         case dropTSAttachment
+        case deprecateStoredShouldStartExpireTimer
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -455,7 +456,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 136
+    public static let grdbSchemaVersionLatest: UInt = 137
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -4317,6 +4318,24 @@ public class GRDBSchemaMigrator {
             try tx.database.drop(table: "TSAttachmentMigration")
             try tx.database.drop(table: "model_TSAttachment")
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.deprecateStoredShouldStartExpireTimer) { tx in
+            // In the distant past, there may have been messages with
+            // storedShouldStartExpireTimer set that failed to set their
+            // expiresAt, which is what drives message expiration. If any still
+            // somehow exist, make them expire immediately.
+            try tx.database.execute(sql: """
+                UPDATE model_TSInteraction
+                SET expireStartedAt = 1, expiresAt = 2
+                WHERE storedShouldStartExpireTimer IS TRUE
+                    AND (expiresAt IS 0 OR expireStartedAt IS 0)
+            """)
+
+            // Since storedShouldStartExpireTimer isn't used in any queries, we
+            // can drop this index.
+            try tx.database.drop(index: "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt")
             return .success(())
         }
 

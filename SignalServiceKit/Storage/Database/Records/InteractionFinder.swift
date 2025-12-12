@@ -227,8 +227,6 @@ public class InteractionFinder: NSObject {
     public class func nextMessageWithStartedPerConversationExpirationToExpire(
         transaction: DBReadTransaction
     ) -> TSMessage? {
-        // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
-        //       once expiration has begun we want to see it through.
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -255,8 +253,6 @@ public class InteractionFinder: NSObject {
     }
 
     public class func fetchSomeExpiredMessageRowIds(now: UInt64, limit: Int, tx: DBReadTransaction) throws -> [Int64] {
-        // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
-        //       once expiration has begun we want to see it through.
         let sql = """
             SELECT \(interactionColumn: .id)
             FROM \(InteractionRecord.databaseTableName)
@@ -269,32 +265,6 @@ public class InteractionFinder: NSObject {
             return try Int64.fetchAll(tx.database, sql: sql, arguments: [now])
         } catch {
             throw error.grdbErrorForLogging
-        }
-    }
-
-    public class func fetchAllMessageUniqueIdsWhichFailedToStartExpiring(
-        transaction: DBReadTransaction
-    ) -> [String] {
-        // NOTE: We DO consult storedShouldStartExpireTimer here.
-        //       We don't want to start expiration until it is true.
-        let sql = """
-            SELECT \(interactionColumn: .uniqueId)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt"))
-            WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
-            AND (
-                \(interactionColumn: .expiresAt) IS 0 OR
-                \(interactionColumn: .expireStartedAt) IS 0
-            )
-            """
-        do {
-            return try String.fetchAll(
-                transaction.database,
-                sql: sql
-            )
-        } catch {
-            owsFailDebug("error: \(error)")
-            return []
         }
     }
 

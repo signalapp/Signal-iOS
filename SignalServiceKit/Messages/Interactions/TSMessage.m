@@ -54,9 +54,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic, nullable) NSString *storyReactionEmoji;
 
-// This property is only intended to be used by GRDB queries.
-@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
-
 @property (nonatomic) BOOL isPoll;
 
 @end
@@ -317,8 +314,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyWillInsertWithTransaction:transaction];
 
     [self insertMentionsInDatabaseWithTx:transaction];
-
-    [self updateStoredShouldStartExpireTimer];
 }
 
 - (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
@@ -335,8 +330,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
-
-    [self updateStoredShouldStartExpireTimer];
 }
 
 - (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
@@ -363,11 +356,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [SSKEnvironment.shared.disappearingMessagesJobRef startAnyExpirationForMessage:self
                                                                expirationStartedAt:nowMs
                                                                        transaction:transaction];
-}
-
-- (void)updateStoredShouldStartExpireTimer
-{
-    _storedShouldStartExpireTimer = [self shouldStartExpireTimer];
 }
 
 - (BOOL)hasPerConversationExpiration

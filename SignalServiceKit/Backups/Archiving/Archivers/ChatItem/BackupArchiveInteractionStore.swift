@@ -152,9 +152,6 @@ public final class BackupArchiveInteractionStore {
         if let message = interaction as? TSOutgoingMessage {
             message.updateStoredMessageState()
         }
-        if let message = interaction as? TSMessage {
-            message.updateStoredShouldStartExpireTimer()
-        }
 
         let shouldAppearInInbox = interaction.shouldAppearInInbox(
             groupUpdateItemsBuilder: { infoMessage in

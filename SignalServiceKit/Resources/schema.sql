@@ -903,20 +903,6 @@ CREATE
 ;
 
 CREATE
-    INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt
-        ON model_TSInteraction (
-        uniqueThreadId
-        ,uniqueId
-    )
-WHERE
-    storedShouldStartExpireTimer IS TRUE
-    AND (
-        expiresAt IS 0
-        OR expireStartedAt IS 0
-    )
-;
-
-CREATE
     INDEX "index_model_TSThread_on_storyViewMode"
         ON "model_TSThread"("storyViewMode"
     ,"lastSentStoryTimestamp"

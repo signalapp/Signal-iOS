@@ -128,7 +128,6 @@ public final class OWSDisappearingMessagesJob: NSObject {
             guard !Self.isDatabaseCorrupted() else { return }
             hasStarted = true
             Self.serialQueue.async { [self] in
-                cleanUpMessagesWhichFailedToStartExpiringWithSneakyTransaction()
                 _ = runLoop()
             }
         }
@@ -287,20 +286,5 @@ public final class OWSDisappearingMessagesJob: NSObject {
             storyMessage.anyRemove(transaction: tx)
         }
         return storyMessages.count
-    }
-
-    private func cleanUpMessagesWhichFailedToStartExpiringWithSneakyTransaction() {
-        myDatabaseStorage.write { tx in
-            let messageIds = DisappearingMessagesFinder().fetchAllMessageUniqueIdsWhichFailedToStartExpiring(tx: tx)
-            for messageId in messageIds {
-                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: tx) else {
-                    owsFailDebug("Missing message.")
-                    continue
-                }
-                // We don't know when it was actually read, so assume it was read as soon as it was received.
-                let readTimeBestGuess = message.receivedAtTimestamp
-                startAnyExpiration(for: message, expirationStartedAt: readTimeBestGuess, transaction: tx)
-            }
-        }
     }
 }

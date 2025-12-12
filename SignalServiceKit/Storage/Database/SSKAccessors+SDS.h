@@ -19,15 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSMessage (SDS)
-
-// This property is only intended to be used by GRDB queries.
-@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
-
-@end
-
-#pragma mark -
-
 @interface TSInfoMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
