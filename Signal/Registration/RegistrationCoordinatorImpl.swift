@@ -244,7 +244,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be submitting verification code from non session paths.")
             return Guarantee.wrapAsync { await self.nextStep() }
         case .session(let session):
-            return Guarantee.wrapAsync { await self.submitSessionCode(session: session, code: code) }
+            return Guarantee.wrapAsync { await self.submitSessionCode(session: session, code: code, failureCount: 0) }
         }
     }
 
@@ -350,7 +350,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return Guarantee.wrapAsync { await self.nextStep() }
         case .session(let session):
             return Guarantee.wrapAsync {
-                return await self.submit(challengeFulfillment: .captcha(token), for: session)
+                return await self.submit(challengeFulfillment: .captcha(token), for: session, failureCount: 0)
             }
         }
     }
@@ -1356,7 +1356,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .showErrorSheet(.genericError)
                 }
             }
-            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity, failureCount: 0)
         }
     }
 
@@ -1459,7 +1459,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
 
         // Update the account attributes once, now, at the end.
-        return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+        return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity, failureCount: 0)
     }
 
     private func fetchBackupCdnInfo(
@@ -1546,20 +1546,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func updateAccountAttributesAndFinish(
         accountIdentity: AccountIdentity,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         Logger.info("")
 
         let error = await self.updateAccountAttributes(accountIdentity)
 
-        if
-            let error,
-            error.isNetworkFailureOrTimeout,
-            retriesLeft > 0
-        {
+        if let error, failureCount < maxAutomaticRetries, error.isNetworkFailureOrTimeout {
+            let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+            try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
             return await updateAccountAttributesAndFinish(
                 accountIdentity: accountIdentity,
-                retriesLeft: retriesLeft - 1
+                failureCount: failureCount + 1,
             )
         }
         // If we have a deregistration error, it doesn't matter. We are finished
@@ -1770,7 +1770,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .permissions
         }
         if inMemoryState.hasEnteredE164, let e164 = persistedState.e164 {
-            return await startSession(e164: e164)
+            return await startSession(e164: e164, failureCount: 0)
         }
         return .phoneNumberEntry(phoneNumberEntryState())
     }
@@ -1936,7 +1936,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func registerForRegRecoveryPwPath(
         regRecoveryPw: String,
         e164: E164,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int = 0,
     ) async -> RegistrationStep {
         let reglockToken = self.reglockToken(for: e164)
         return await makeRegisterOrChangeNumberRequest(
@@ -1949,7 +1949,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     regRecoveryPw: regRecoveryPw,
                     e164: e164,
                     reglockToken: reglockToken,
-                    retriesLeft: retriesLeft
+                    failureCount: failureCount,
                 )
             }
         )
@@ -1961,8 +1961,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         regRecoveryPw: String,
         e164: E164,
         reglockToken: String?,
-        retriesLeft: Int
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         // NOTE: it is not possible for our e164 to be rejected here; the entire request
         // may be rejected for being malformed, but if the e164 is invalidly formatted
         // that will just look to the server like our reg recovery password is incorrect.
@@ -2028,7 +2030,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                 // Start a session so we go down that path to recovery, challenging
                 // the reglock we just failed so we can eventually get in.
-                return await startSession(e164: e164)
+                return await startSession(e164: e164, failureCount: 0)
             }
 
         case .rejectedVerificationMethod:
@@ -2104,11 +2106,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .retryAfter(let timeInterval):
-            if timeInterval < Constants.autoRetryInterval {
-                try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
-                return await self.registerForRegRecoveryPwPath(
+            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
+                return await registerForRegRecoveryPwPath(
                     regRecoveryPw: regRecoveryPw,
-                    e164: e164
+                    e164: e164,
+                    failureCount: failureCount + 1,
                 )
             }
             // If we get a long timeout, just give up and fall back to the session
@@ -2117,7 +2121,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // this lockout should never happen.
             Logger.error("Rate limited when registering via recovery password; falling back to session.")
             wipeInMemoryStateToPreventSVRPathAttempts()
-            return await startSession(e164: e164)
+            return await startSession(e164: e164, failureCount: 0)
 
         case .deviceTransferPossible:
             // Device transfer can happen, let the user pick.
@@ -2125,11 +2129,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await registerForRegRecoveryPwPath(
                     regRecoveryPw: regRecoveryPw,
                     e164: e164,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
@@ -2178,7 +2184,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return await restoreSVRMasterSecretForAuthCredentialPath(
             pin: pin,
-            credential: svrAuthCredential
+            credential: svrAuthCredential,
+            failureCount: 0,
         )
     }
 
@@ -2186,8 +2193,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreSVRMasterSecretForAuthCredentialPath(
         pin: String,
         credential: SVRAuthCredential,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         let result = await deps.svr.restoreKeys(pin: pin, authMethod: .svrAuth(credential, backup: nil)).awaitable()
 
         switch result {
@@ -2225,20 +2234,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
 
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await restoreSVRMasterSecretForAuthCredentialPath(
                     pin: pin,
                     credential: credential,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
         case .genericError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await restoreSVRMasterSecretForAuthCredentialPath(
                     pin: pin,
                     credential: credential,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             } else {
                 inMemoryState.pinFromUser = nil
@@ -2283,7 +2296,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         return await makeSVR2AuthCredentialCheckRequest(
             svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
-            e164: e164
+            e164: e164,
+            failureCount: 0,
         )
     }
 
@@ -2291,7 +2305,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeSVR2AuthCredentialCheckRequest(
         svr2AuthCredentialCandidates: [SVR2AuthCredential],
         e164: E164,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
         let response = await Service.makeSVR2AuthCheckRequest(
             e164: e164,
@@ -2302,7 +2316,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             response,
             svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
             e164: e164,
-            retriesLeft: retriesLeft
+            failureCount: failureCount,
         )
     }
 
@@ -2311,17 +2325,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ response: Service.SVR2AuthCheckResponse,
         svr2AuthCredentialCandidates: [SVR2AuthCredential],
         e164: E164,
-        retriesLeft: Int
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         var matchedCredential: SVR2AuthCredential?
         var credentialsToDelete = [SVR2AuthCredential]()
         switch response {
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await makeSVR2AuthCredentialCheckRequest(
                     svr2AuthCredentialCandidates: svr2AuthCredentialCandidates,
                     e164: e164,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             self.inMemoryState.svr2AuthCredentialCandidates = nil
@@ -2395,7 +2413,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     session: session,
                     pin: pinFromUser,
                     svrAuthCredential: svrAuthCredential,
-                    reglockExpirationDate: reglockExpirationDate
+                    reglockExpirationDate: reglockExpirationDate,
+                    failureCount: 0,
                 )
             } else {
                 // And, if none of the above is true, go ahead and prompt for the users PIN
@@ -2432,7 +2451,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if session.verified {
             // We have to complete registration.
-            return await makeRegisterOrChangeNumberRequestFromSession(session)
+            return await makeRegisterOrChangeNumberRequestFromSession(session, failureCount: 0)
         }
 
         // We show the code entry screen if we've ever tried sending
@@ -2489,7 +2508,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch pendingCodeTransport {
             case .sms:
                 if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
+                    return await requestSessionCode(session: session, transport: pendingCodeTransport, failureCount: 0)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -2500,7 +2519,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             case .voice:
                 if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
+                    return await requestSessionCode(session: session, transport: pendingCodeTransport, failureCount: 0)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -2611,7 +2630,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func makeRegisterOrChangeNumberRequestFromSession(
         _ session: RegistrationSession,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
         if
             let timeoutDate = persistedState.sessionState?.createAccountTimeout,
@@ -2634,7 +2653,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     accountResponse,
                     sessionFromBeforeRequest: session,
                     reglockTokenUsedInRequest: reglockToken,
-                    retriesLeft: retriesLeft
+                    failureCount: failureCount,
                 )
             }
         )
@@ -2645,8 +2664,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ response: AccountResponse,
         sessionFromBeforeRequest: RegistrationSession,
         reglockTokenUsedInRequest: String?,
-        retriesLeft: Int
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         switch response {
         case .success(let identityResponse):
             inMemoryState.session = nil
@@ -2731,11 +2752,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .retryAfter(let timeInterval):
-            if timeInterval < Constants.autoRetryInterval {
-                try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
-                return await self.makeRegisterOrChangeNumberRequestFromSession(sessionFromBeforeRequest)
+            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
+                return await self.makeRegisterOrChangeNumberRequestFromSession(
+                    sessionFromBeforeRequest,
+                    failureCount: failureCount + 1,
+                )
             }
-            let timeoutDate = self.deps.dateProvider().addingTimeInterval(timeInterval)
+            let timeoutDate = self.deps.dateProvider().addingTimeInterval(max(timeInterval, 15))
             self.db.write { tx in
                 self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                     $0.createAccountTimeout = timeoutDate
@@ -2746,10 +2771,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.needsToAskForDeviceTransfer = true
             return .chooseRestoreMethod(.unspecified)
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await self.makeRegisterOrChangeNumberRequestFromSession(
                     sessionFromBeforeRequest,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
@@ -2761,8 +2788,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func startSession(
         e164: E164,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         let tokenResult = await deps.pushRegistrationManager.requestPushToken()
         let apnsToken: String?
         switch tokenResult {
@@ -2800,22 +2829,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 validationError: .invalidE164(.init(invalidE164: e164))
             ))
         case .retryAfter(let timeInterval):
-            if timeInterval < Constants.autoRetryInterval {
-                try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
-                return await startSession(e164: e164)
+            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
+                return await startSession(e164: e164, failureCount: failureCount + 1)
             }
             return .phoneNumberEntry(phoneNumberEntryState(
                 validationError: .rateLimited(.init(
-                    expiration: deps.dateProvider().addingTimeInterval(timeInterval),
+                    expiration: deps.dateProvider().addingTimeInterval(max(timeInterval, 15)),
                     e164: e164
-                ))
+                )),
             ))
         case .networkFailure:
-            if retriesLeft > 0 {
-                return await startSession(
-                    e164: e164,
-                    retriesLeft: retriesLeft - 1
-                )
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
+                return await startSession(e164: e164, failureCount: failureCount + 1)
             }
             return .showErrorSheet(.networkError)
         case .genericError:
@@ -2827,8 +2856,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func requestSessionCode(
         session: RegistrationSession,
         transport: Registration.CodeTransport,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         let result = await self.deps.sessionManager.requestVerificationCode(
             for: session,
             transport: transport
@@ -2887,12 +2918,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .voice:
                 timeInterval = session.nextCall
             }
-            if let timeInterval, timeInterval < Constants.autoRetryInterval {
+            if failureCount < maxAutomaticRetries, let timeInterval, timeInterval < Constants.autoRetryInterval {
                 self.db.write { self.processSession(session, $0) }
-                try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
                 return await requestSessionCode(
                     session: session,
-                    transport: transport
+                    transport: transport,
+                    failureCount: failureCount + 1,
                 )
             } else {
                 inMemoryState.pendingCodeTransport = nil
@@ -2917,10 +2950,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // We were trying to resend from the phone number screen.
                     return .phoneNumberEntry(self.phoneNumberEntryState(
                         validationError: .rateLimited(.init(
-                            expiration: self.deps.dateProvider().addingTimeInterval(timeInterval),
+                            expiration: self.deps.dateProvider().addingTimeInterval(max(timeInterval, 15)),
                             e164: session.e164
-                        )
-                        )))
+                        )),
+                    ))
                 } else {
                     // Can't send a code, session is useless.
                     db.write { self.resetSession($0) }
@@ -2928,11 +2961,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
         case .networkFailure:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await requestSessionCode(
                     session: session,
                     transport: transport,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             inMemoryState.pendingCodeTransport = nil
@@ -3034,7 +3069,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.info("Attempting to fulfill push challenge with a token we already have")
             return await submit(
                 challengeFulfillment: .pushChallenge(unfulfilledPushChallengeToken),
-                for: session
+                for: session,
+                failureCount: 0,
             )
         }
 
@@ -3057,7 +3093,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 return await submit(
                     challengeFulfillment: .pushChallenge(challengeToken),
-                    for: session
+                    for: session,
+                    failureCount: 0,
                 )
             } catch {
                 switch error {
@@ -3138,8 +3175,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func submit(
         challengeFulfillment fulfillment: Registration.ChallengeFulfillment,
         for session: RegistrationSession,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         switch fulfillment {
         case .captcha:
             Logger.info("Submitting CAPTCHA challenge fulfillment")
@@ -3197,11 +3236,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { self.processSession(session, $0) }
             return await nextStep()
         case .networkFailure:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
                 return await submit(
                     challengeFulfillment: fulfillment,
                     for: session,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
@@ -3221,8 +3260,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func submitSessionCode(
         session: RegistrationSession,
         code: String,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         Logger.info("")
 
         db.write { tx in
@@ -3273,28 +3314,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         case .retryAfterTimeout(let session):
             db.write { self.processSession(session, $0) }
-            if let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
-                try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
+            if failureCount < maxAutomaticRetries, let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
                 return await self.submitSessionCode(
                     session: session,
-                    code: code
+                    code: code,
+                    failureCount: failureCount + 1,
                 )
             }
             if session.nextVerificationAttemptDate != nil {
                 return .verificationCodeEntry(verificationCodeEntryState(
                     session: session,
-                    validationError: .submitCodeTimeout
+                    validationError: .submitCodeTimeout,
                 ))
             } else {
                 // Something went wrong, we can't submit again.
                 return verificationCodeSubmissionRejectedError
             }
         case .networkFailure:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await submitSessionCode(
                     session: session,
                     code: code,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
@@ -3313,8 +3358,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         pin: String,
         svrAuthCredential: SVRAuthCredential,
         reglockExpirationDate: Date,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         Logger.info("")
 
         let result = await deps.svr.restoreKeys(
@@ -3361,13 +3408,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             return await nextStep()
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await restoreSVRMasterSecretForSessionPathReglock(
                     session: session,
                     pin: pin,
                     svrAuthCredential: svrAuthCredential,
                     reglockExpirationDate: reglockExpirationDate,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
@@ -3737,7 +3786,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             !persistedState.hasGivenUpTryingToRestoreWithSVR
         {
             // If we have no SVR data, fetch it.
-            return await self.restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+            return await self.restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity, failureCount: 0)
         }
         return nil
     }
@@ -3761,7 +3810,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     pin: pin,
                     resetPINReminderInterval: resetPINReminderInterval,
                     accountEntropyPool: accountEntropyPool,
-                    accountIdentity: accountIdentity
+                    accountIdentity: accountIdentity,
+                    failureCount: 0,
                 )
             }
 
@@ -3780,8 +3830,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreSVRBackupPostRegistration(
         pin: String,
         accountIdentity: AccountIdentity,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         Logger.info("")
 
         let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
@@ -3825,22 +3877,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .init(mode: .restoringBackup)
             )
         case .networkError:
-            if retriesLeft > 0 {
+            if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await restoreSVRBackupPostRegistration(
                     pin: pin,
                     accountIdentity: accountIdentity,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             }
             return .showErrorSheet(.networkError)
         case .genericError(let error):
             if error.isPostRegDeregisteredError {
                 return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-            } else if retriesLeft > 0 {
+            } else if failureCount < maxAutomaticRetries {
+                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                 return await restoreSVRBackupPostRegistration(
                     pin: pin,
                     accountIdentity: accountIdentity,
-                    retriesLeft: retriesLeft - 1
+                    failureCount: failureCount + 1,
                 )
             } else {
                 self.inMemoryState.pinFromUser = nil
@@ -3863,8 +3919,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         resetPINReminderInterval: Bool,
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
-        retriesLeft: Int = Constants.networkErrorRetries
+        failureCount: Int,
     ) async -> RegistrationStep {
+        let maxAutomaticRetries = Constants.networkErrorRetries
+
         Logger.info("")
 
         let authMethod: SVR.AuthMethod
@@ -3900,13 +3958,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
         } catch {
             if error.isNetworkFailureOrTimeout {
-                if retriesLeft > 0 {
+                if failureCount < maxAutomaticRetries {
+                    let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
+                    try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
                     return await backupToSVR(
                         pin: pin,
                         resetPINReminderInterval: resetPINReminderInterval,
                         accountEntropyPool: accountEntropyPool,
                         accountIdentity: accountIdentity,
-                        retriesLeft: retriesLeft - 1
+                        failureCount: failureCount + 1,
                     )
                 }
                 return .showErrorSheet(.networkError)

@@ -2023,7 +2023,7 @@ public class RegistrationCoordinatorTest {
                     stubs.phoneNumberEntryState(
                         mode: mode,
                         previouslyEnteredE164: Stubs.e164,
-                        withValidationErrorFor: .retryAfter(retryTimeInterval)
+                        withValidationErrorFor: .retryAfter(15),
                     )
                 )
         )
@@ -2186,7 +2186,7 @@ public class RegistrationCoordinatorTest {
                     stubs.phoneNumberEntryState(
                         mode: mode,
                         previouslyEnteredE164: Stubs.e164,
-                        withValidationErrorFor: .retryAfter(10)
+                        withValidationErrorFor: .retryAfter(15),
                     )
                 )
         )
