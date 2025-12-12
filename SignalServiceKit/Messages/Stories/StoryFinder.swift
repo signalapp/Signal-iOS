@@ -269,7 +269,7 @@ public class StoryFinder {
 
     public static func nextExpiringStory(tx: DBReadTransaction) -> StoryMessage? {
         let sql = """
-            SELECT \(StoryMessage.columnName(.timestamp))
+            SELECT *
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.authorAci)) != ?
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
