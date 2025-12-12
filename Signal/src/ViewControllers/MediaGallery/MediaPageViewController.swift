@@ -336,6 +336,18 @@ class MediaPageViewController: UIPageViewController {
     private func showOrHideTopAndBottomPanelsAsNecessary(animated: Bool) {
         topPanel.setIsHidden(shouldHideToolbars, animated: animated)
         bottomMediaPanel.setIsHidden(shouldHideToolbars || bottomMediaPanel.shouldBeHidden, animated: animated)
+        if #available(iOS 26, *) {
+            let targetColor = shouldHideToolbars ? UIColor.black : UIColor.Signal.background
+            if animated {
+                let animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut)
+                animator.addAnimations {
+                    self.view.backgroundColor = targetColor
+                }
+                animator.startAnimation()
+            } else {
+                view.backgroundColor = targetColor
+            }
+        }
     }
 
     private var shouldHideStatusBar: Bool {
