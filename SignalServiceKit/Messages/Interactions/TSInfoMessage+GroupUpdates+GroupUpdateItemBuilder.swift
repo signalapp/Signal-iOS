@@ -2392,7 +2392,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case .localUser:
                 addItem(.announcementOnlyDisabledByLocalUser)
             case let .aci(aci):
-                addItem(.announcementOnlyEnabledByOtherUser(updaterAci: aci.codableUuid))
+                addItem(.announcementOnlyDisabledByOtherUser(updaterAci: aci.codableUuid))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.announcementOnlyDisabledByUnknownUser)
             }
