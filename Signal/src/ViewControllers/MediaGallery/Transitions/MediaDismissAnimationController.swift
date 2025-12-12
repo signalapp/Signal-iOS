@@ -26,8 +26,9 @@ class MediaDismissAnimationController: NSObject {
 }
 
 extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning {
+
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 2.5 : 0.25
+        return MediaPresentationContext.animationDuration
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -126,8 +127,9 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         }
 
         // Dims content underneath the media view while user is gragging the media around.
+        // Latest iOS versions (Photos app) doesn't have a dimming view.
         let dimmerView: UIView?
-        if isTransitionInteractive {
+        if isTransitionInteractive, #unavailable(iOS 26) {
             let view = UIView(frame: containerView.bounds)
             view.alpha = 0
             view.backgroundColor = .ows_blackAlpha40
@@ -211,7 +213,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             let animator = UIViewPropertyAnimator(
                 duration: duration,
                 springDamping: 1,
-                springResponse: 0.3,
+                springResponse: 0.35,
                 initialVelocity: velocity ?? .zero
             )
             animator.addAnimations {

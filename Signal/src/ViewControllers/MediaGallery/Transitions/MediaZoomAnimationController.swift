@@ -20,7 +20,7 @@ class MediaZoomAnimationController: NSObject {
 
 extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 2.5 : 0.25
+        return MediaPresentationContext.animationDuration
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -144,12 +144,11 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         toTransitionalOverlayView?.alpha = 0.0
         toMediaContext.mediaView.alpha = 0.0
 
-        let duration = transitionDuration(using: transitionContext)
-
         fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
         toContextProvider.mediaWillPresent(toContext: toMediaContext)
 
-        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 0.77, springResponse: 0.3)
+        let duration = transitionDuration(using: transitionContext)
+        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.35)
         animator.addAnimations {
             fromTransitionalOverlayView?.alpha = 0.0
             toView.alpha = 1.0

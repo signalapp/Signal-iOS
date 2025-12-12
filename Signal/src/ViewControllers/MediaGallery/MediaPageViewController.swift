@@ -911,7 +911,11 @@ extension MediaPageViewController: MediaPresentationContextProvider {
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        // This makes top and bottom bar being visible during animation.
+        // Since on iOS 26 those bars don't have a background we don't need this view at all.
+        guard #unavailable(iOS 26) else { return nil }
         guard !shouldHideToolbars else { return nil }
+
         guard let snapshotView = view.snapshotView(afterScreenUpdates: true) else { return nil }
 
         // Apply masking to only show top and bottom panels.

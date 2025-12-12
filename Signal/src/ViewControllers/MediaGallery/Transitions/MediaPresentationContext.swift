@@ -3,10 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import UIKit
-
-let kIsDebuggingMediaPresentationAnimations = false
 
 enum Media {
     case gallery(MediaGalleryItem)
@@ -44,6 +41,8 @@ enum MediaViewShape {
 }
 
 struct MediaPresentationContext {
+    static let animationDuration: TimeInterval = 0.35
+
     let mediaView: UIView
     let presentationFrame: CGRect
     let mediaViewShape: MediaViewShape

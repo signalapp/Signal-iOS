@@ -781,24 +781,19 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
     func mediaWillDismiss(toContext: MediaPresentationContext) {
         // To avoid flicker when transition view is animated over the message bubble,
         // we initially hide the overlaying elements and fade them in.
-        let mediaOverlayViews = toContext.mediaOverlayViews
-        for mediaOverlayView in mediaOverlayViews {
-            mediaOverlayView.alpha = 0
-        }
+        toContext.mediaOverlayViews.forEach { $0.alpha = 0 }
     }
 
     func mediaDidDismiss(toContext: MediaPresentationContext) {
         // To avoid flicker when transition view is animated over the message bubble,
         // we initially hide the overlaying elements and fade them in.
         let mediaOverlayViews = toContext.mediaOverlayViews
-        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
         UIView.animate(
-            withDuration: duration,
+            withDuration: MediaPresentationContext.animationDuration,
             animations: {
-                for mediaOverlayView in mediaOverlayViews {
-                    mediaOverlayView.alpha = 1
-                }
-            })
+                mediaOverlayViews.forEach { $0.alpha = 1 }
+            }
+        )
     }
 }
 
