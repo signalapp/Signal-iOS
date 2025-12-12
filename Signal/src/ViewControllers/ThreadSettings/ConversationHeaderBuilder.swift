@@ -321,6 +321,7 @@ struct ConversationHeaderBuilder {
             let stackView = UIStackView()
             stackView.axis = .horizontal
             stackView.distribution = .fillEqually
+            stackView.alignment = .top
             stackView.spacing = spacerWidth
             buttons.forEach { stackView.addArrangedSubview($0) }
             subviews.append(stackView)
