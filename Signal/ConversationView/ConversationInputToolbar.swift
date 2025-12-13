@@ -2399,6 +2399,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             ensureButtonVisibility(withAnimation: true, doLayout: true)
         }
     }
+    
+    var isVoiceInteractionActive: Bool {
+        return voiceMemoRecordingState != .idle && voiceMemoRecordingState != .draft
+    }
+    
     private var voiceMemoGestureStartLocation: CGPoint?
 
     private var isShowingVoiceMemoUI: Bool = false {
