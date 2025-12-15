@@ -748,6 +748,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         dependenciesBridge.deletedCallRecordExpirationJob.start()
         dependenciesBridge.disappearingMessagesExpirationJob.start()
         dependenciesBridge.storyMessageExpirationJob.start()
+        dependenciesBridge.pinnedMessageExpirationJob.start()
 
         Task {
             let backgroundTask = OWSBackgroundTask(label: "AppLaunchesAttemptedCleanup")

@@ -20,7 +20,8 @@ struct PinnedMessageManagerTest {
             accountManager: MockTSAccountManager(),
             db: db,
             threadStore: MockThreadStore(),
-            dateProvider: Date.provider
+            dateProvider: Date.provider,
+            expirationJob: PinnedMessageExpirationJob(dateProvider: { Date() }, db: db)
         )
     }
 

@@ -19,6 +19,7 @@ public class PinnedMessageManager {
     private let db: DB
     private let threadStore: ThreadStore
     private let dateProvider: DateProvider
+    private let expirationJob: PinnedMessageExpirationJob
 
     // Int value of how many times the disappearing message warning has been shown.
     // If 3 or greater, don't show again.
@@ -30,7 +31,8 @@ public class PinnedMessageManager {
         accountManager: TSAccountManager,
         db: DB,
         threadStore: ThreadStore,
-        dateProvider: @escaping DateProvider
+        dateProvider: @escaping DateProvider,
+        expirationJob: PinnedMessageExpirationJob
     ) {
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
@@ -39,6 +41,7 @@ public class PinnedMessageManager {
         self.threadStore = threadStore
         self.keyValueStore = NewKeyValueStore(collection: "PinnedMessage")
         self.dateProvider = dateProvider
+        self.expirationJob = expirationJob
     }
 
     public func fetchPinnedMessagesForThread(
@@ -91,7 +94,7 @@ public class PinnedMessageManager {
 
         var expiresAt: UInt64?
         if pinMessageProto.hasPinDurationSeconds {
-            expiresAt = pinSentAtTimestamp + UInt64(pinMessageProto.pinDurationSeconds)
+            expiresAt = pinReceivedAtTimestamp + UInt64(pinMessageProto.pinDurationSeconds * 1000)
         } else if pinMessageProto.hasPinDurationForever {
             // expiresAt should stay nil
         } else {
@@ -133,6 +136,8 @@ public class PinnedMessageManager {
             expireTimerVersion: dmConfig.timerVersion,
             tx: transaction
         )
+
+        expirationJob.restart()
 
         return targetMessage
     }
@@ -307,6 +312,8 @@ public class PinnedMessageManager {
             expireTimerVersion: dmConfig.timerVersion,
             tx: tx
         )
+
+        expirationJob.restart()
     }
 
     private func getMessageAuthorAci(interaction: TSMessage, tx: DBReadTransaction) -> Aci? {
@@ -329,7 +336,7 @@ public class PinnedMessageManager {
     public func getOutgoingPinMessage(
         interaction: TSMessage,
         thread: TSThread,
-        expiresAt: Int64?,
+        expiresAt: TimeInterval?,
         tx: DBWriteTransaction
     ) -> OutgoingPinMessage? {
         guard let authorAci = getMessageAuthorAci(interaction: interaction, tx: tx) else {
@@ -405,5 +412,14 @@ public class PinnedMessageManager {
         )
 
         infoMessage.anyInsert(transaction: tx)
+    }
+
+    public class func nextExpiringPinnedMessage(tx: DBReadTransaction) -> PinnedMessageRecord? {
+        return failIfThrows {
+            try PinnedMessageRecord
+                .filter(PinnedMessageRecord.Columns.expiresAt != nil)
+                .order(PinnedMessageRecord.Columns.expiresAt)
+                .fetchOne(tx.database)
+        }
     }
 }

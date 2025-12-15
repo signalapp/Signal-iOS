@@ -28,6 +28,7 @@
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */; };
 		048D58382EDDD57E00F26237 /* OutgoingPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */; };
+		04A19B432EEC815200CCB105 /* PinnedMessageExpirationJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
 		04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */; };
@@ -4064,6 +4065,7 @@
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisappearingMessageViewController.swift; sourceTree = "<group>"; };
 		048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPinMessage.swift; sourceTree = "<group>"; };
+		04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageExpirationJob.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
 		04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollTerminate.swift; sourceTree = "<group>"; };
@@ -8254,6 +8256,7 @@
 			children = (
 				048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */,
 				042223B92EDF30B300158556 /* OutgoingUnpinMessage.swift */,
+				04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */,
 				045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */,
 				045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */,
 				0426758F2EC529F500124C5F /* TSInfoMessage+PinnedMessage.swift */,
@@ -19200,6 +19203,7 @@
 				F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */,
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,
 				50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */,
+				04A19B432EEC815200CCB105 /* PinnedMessageExpirationJob.swift in Sources */,
 				045B40892EC67510002D3F9A /* PinnedMessageManager.swift in Sources */,
 				045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */,
 				6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */,

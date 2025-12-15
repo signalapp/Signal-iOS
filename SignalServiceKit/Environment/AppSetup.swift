@@ -1007,13 +1007,19 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore
         )
 
+        let pinnedMessageExpirationJob = PinnedMessageExpirationJob(
+            dateProvider: dateProvider,
+            db: db
+        )
+
         let pinnedMessageManager = PinnedMessageManager(
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
             accountManager: tsAccountManager,
             db: db,
             threadStore: threadStore,
-            dateProvider: dateProvider
+            dateProvider: dateProvider,
+            expirationJob: pinnedMessageExpirationJob
         )
 
         let storyRecipientStore = StoryRecipientStore()
@@ -1715,6 +1721,7 @@ extension AppSetup.GlobalsContinuation {
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedMessageManager: pinnedMessageManager,
+            pinnedMessageExpirationJob: pinnedMessageExpirationJob,
             pinnedThreadManager: pinnedThreadManager,
             pinnedThreadStore: pinnedThreadStore,
             pollMessageManager: pollMessageManager,

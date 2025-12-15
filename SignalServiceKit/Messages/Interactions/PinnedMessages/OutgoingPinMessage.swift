@@ -107,10 +107,12 @@ public class OutgoingPinMessage: TSOutgoingMessage {
             return
         }
 
+        let expiresAtMs: UInt64? = pinDurationSeconds > 0 ? Date.ows_millisecondTimestamp() + UInt64(pinDurationSeconds * 1000) : nil
+
         pinnedMessageManager.applyPinMessageChangeToLocalState(
             targetTimestamp: targetMessageTimestamp,
             targetAuthorAci: targetMessageAuthorAci,
-            expiresAt: nil,
+            expiresAt: expiresAtMs,
             isPin: true,
             sentTimestamp: timestamp,
             tx: tx

@@ -6517,8 +6517,23 @@
 /* Label for button to unpin a message */
 "PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
 
+/* Option in pinned message action sheet to pin for 24 hours. */
+"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+
+/* Option in pinned message action sheet to pin for 30 days. */
+"PINNED_MESSAGES_30_DAYS" = "30 Days";
+
+/* Option in pinned message action sheet to pin for 7 days. */
+"PINNED_MESSAGES_7_DAYS" = "7 Days";
+
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "Pinned Messages";
+
+/* Title for an action sheet to indicate how long to keep the pin active */
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+
+/* Option in pinned message action sheet to pin with no expiry. */
+"PINNED_MESSAGES_FOREVER" = "Forever";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "Go to Message";

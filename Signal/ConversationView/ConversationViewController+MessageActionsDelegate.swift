@@ -328,53 +328,96 @@ extension ConversationViewController: MessageActionsDelegate {
         completion?()
     }
 
+    private func showPinExpiryActionSheet(completion: @escaping (TimeInterval?) -> Void) {
+         let actionSheet = ActionSheetController(
+             title: nil,
+             message: OWSLocalizedString(
+                 "PINNED_MESSAGES_EXPIRY_SHEET_TITLE",
+                 comment: "Title for an action sheet to indicate how long to keep the pin active"
+             )
+         )
+         actionSheet.addAction(ActionSheetAction(
+             title: OWSLocalizedString(
+                 "PINNED_MESSAGES_24_HOURS",
+                 comment: "Option in pinned message action sheet to pin for 24 hours."
+             ),
+             handler: { _ in
+                 completion(.day)
+             },
+         ))
+         actionSheet.addAction(ActionSheetAction(
+             title: OWSLocalizedString(
+                 "PINNED_MESSAGES_7_DAYS",
+                 comment: "Option in pinned message action sheet to pin for 7 days."
+             ),
+             handler: { _ in
+                 completion(7 * .day)
+             },
+         ))
+         actionSheet.addAction(ActionSheetAction(
+             title: OWSLocalizedString(
+                 "PINNED_MESSAGES_30_DAYS",
+                 comment: "Option in pinned message action sheet to pin for 30 days."
+             ),
+             handler: { _ in
+                 completion(30 * .day)
+             },
+         ))
+         actionSheet.addAction(ActionSheetAction(
+             title: OWSLocalizedString(
+                 "PINNED_MESSAGES_FOREVER",
+                 comment: "Option in pinned message action sheet to pin with no expiry."
+             ),
+             handler: { _ in
+                 completion(nil)
+             },
+         ))
+         actionSheet.addAction(.cancel)
+         presentActionSheet(actionSheet)
+     }
+
     private func handleActionPin(message: TSMessage) {
         let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
         let db = DependenciesBridge.shared.db
 
-        let pinMessage = db.write { tx in
-            pinnedMessageManager.getOutgoingPinMessage(
-                interaction: message,
-                thread: thread,
-                expiresAt: nil,
-                tx: tx
-            )
-        }
+        let choosePinExpiryAndSendWithOptionalDMWarning: () -> Void = {
+            self.showPinExpiryActionSheet(completion: { expiryInSeconds in
+                db.write { tx in
+                    let pinMessage = pinnedMessageManager.getOutgoingPinMessage(
+                        interaction: message,
+                        thread: self.thread,
+                        expiresAt: expiryInSeconds,
+                        tx: tx
+                    )
 
-        guard let pinMessage else {
-            return
-        }
+                    guard let pinMessage else {
+                        return
+                    }
 
-        let sendPinMessageWithOptionalDMWarning: () -> Void = {
-            let shouldShowDMWarning = db.write { tx in
-                if pinnedMessageManager.shouldShowDisappearingMessageWarning(message: message, tx: tx) {
-                    pinnedMessageManager.incrementDisappearingMessageWarningCount(tx: tx)
-                    return true
-                }
-                return false
-            }
-
-            if shouldShowDMWarning {
-                self.present(
-                    PinDisappearingMessageViewController(
-                        pinnedMessageManager: pinnedMessageManager,
-                        db: DependenciesBridge.shared.db,
-                        completion: {
-                            Task {
-                                await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
-                            }
-                        }),
-                    animated: true
-                ) {
-                    Task {
-                        await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                    if pinnedMessageManager.shouldShowDisappearingMessageWarning(message: message, tx: tx) {
+                        pinnedMessageManager.incrementDisappearingMessageWarningCount(tx: tx)
+                        self.present(
+                            PinDisappearingMessageViewController(
+                                pinnedMessageManager: pinnedMessageManager,
+                                db: DependenciesBridge.shared.db,
+                                completion: {
+                                    Task {
+                                        await self.queuePinMessageChangeWithModal(
+                                            message: message,
+                                            pinMessage: pinMessage,
+                                            completion: nil
+                                        )
+                                    }
+                                }),
+                            animated: true
+                        )
+                    } else {
+                        Task {
+                            await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                        }
                     }
                 }
-            } else {
-                Task {
-                    await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
-                }
-            }
+            })
         }
 
         if threadViewModel.pinnedMessages.count >= RemoteConfig.current.pinnedMessageLimit {
@@ -394,13 +437,13 @@ extension ConversationViewController: MessageActionsDelegate {
                     comment: "Option in pinned message action sheet to replace oldest pin."
                 ),
                 handler: { _ in
-                    sendPinMessageWithOptionalDMWarning()
+                    choosePinExpiryAndSendWithOptionalDMWarning()
                 },
             ))
             actionSheet.addAction(.cancel)
             presentActionSheet(actionSheet)
         } else {
-            sendPinMessageWithOptionalDMWarning()
+            choosePinExpiryAndSendWithOptionalDMWarning()
         }
     }
 
