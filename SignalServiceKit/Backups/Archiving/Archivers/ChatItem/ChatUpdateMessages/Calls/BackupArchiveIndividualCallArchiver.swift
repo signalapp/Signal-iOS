@@ -135,6 +135,7 @@ final class BackupArchiveIndividualCallArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
+            pinMessageDetails: nil,
             context: context.recipientContext
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let details):

@@ -108,6 +108,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
             chatItemType: .updateMessage(chatUpdate),
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
+            pinMessageDetails: nil,
             context: context.recipientContext
         )
 

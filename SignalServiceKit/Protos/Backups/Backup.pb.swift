@@ -2223,6 +2223,16 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._item = .poll(newValue)}
   }
 
+  /// only set if message is pinned
+  public var pinDetails: BackupProto_ChatItem.PinDetails {
+    get {return _storage._pinDetails ?? BackupProto_ChatItem.PinDetails()}
+    set {_uniqueStorage()._pinDetails = newValue}
+  }
+  /// Returns true if `pinDetails` has been explicitly set.
+  public var hasPinDetails: Bool {return _storage._pinDetails != nil}
+  /// Clears the value of `pinDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearPinDetails() {_uniqueStorage()._pinDetails = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this item without throwing an error.
@@ -2297,6 +2307,44 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     // methods supported on all messages.
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public struct PinDetails: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var pinnedAtTimestamp: UInt64 = 0
+
+    public var pinExpiry: BackupProto_ChatItem.PinDetails.OneOf_PinExpiry? = nil
+
+    /// timestamp when the pin should expire
+    public var pinExpiresAtTimestamp: UInt64 {
+      get {
+        if case .pinExpiresAtTimestamp(let v)? = pinExpiry {return v}
+        return 0
+      }
+      set {pinExpiry = .pinExpiresAtTimestamp(newValue)}
+    }
+
+    public var pinNeverExpires: Bool {
+      get {
+        if case .pinNeverExpires(let v)? = pinExpiry {return v}
+        return false
+      }
+      set {pinExpiry = .pinNeverExpires(newValue)}
+    }
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public enum OneOf_PinExpiry: Equatable, Sendable {
+      /// timestamp when the pin should expire
+      case pinExpiresAtTimestamp(UInt64)
+      case pinNeverExpires(Bool)
+
+    }
 
     public init() {}
   }
@@ -4124,6 +4172,14 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
     set {update = .pollTerminate(newValue)}
   }
 
+  public var pinMessage: BackupProto_PinMessageUpdate {
+    get {
+      if case .pinMessage(let v)? = update {return v}
+      return BackupProto_PinMessageUpdate()
+    }
+    set {update = .pinMessage(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should ignore the update message without throwing an error.
@@ -4138,6 +4194,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
     case groupCall(BackupProto_GroupCall)
     case learnedProfileChange(BackupProto_LearnedProfileChatUpdate)
     case pollTerminate(BackupProto_PollTerminateUpdate)
+    case pinMessage(BackupProto_PinMessageUpdate)
 
   }
 
@@ -5756,6 +5813,21 @@ public struct BackupProto_PollTerminateUpdate: Sendable {
 
   /// Between 1-100 characters
   public var question: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct BackupProto_PinMessageUpdate: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var targetSentTimestamp: UInt64 = 0
+
+  /// recipient id
+  public var authorID: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -8560,7 +8632,7 @@ extension BackupProto_DistributionList.PrivacyMode: SwiftProtobuf._ProtoNameProv
 
 extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0\u{1}pinDetails\0")
 
   fileprivate class _StorageClass {
     var _chatID: UInt64 = 0
@@ -8572,6 +8644,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     var _sms: Bool = false
     var _directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails?
     var _item: BackupProto_ChatItem.OneOf_Item?
+    var _pinDetails: BackupProto_ChatItem.PinDetails? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -8591,6 +8664,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       _sms = source._sms
       _directionalDetails = source._directionalDetails
       _item = source._item
+      _pinDetails = source._pinDetails
     }
   }
 
@@ -8785,6 +8859,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
             _storage._item = .poll(v)
           }
         }()
+        case 21: try { try decoder.decodeSingularMessageField(value: &_storage._pinDetails) }()
         default: break
         }
       }
@@ -8876,6 +8951,9 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       }()
       case nil: break
       }
+      try { if let v = _storage._pinDetails {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -8894,6 +8972,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
         if _storage._sms != rhs_storage._sms {return false}
         if _storage._directionalDetails != rhs_storage._directionalDetails {return false}
         if _storage._item != rhs_storage._item {return false}
+        if _storage._pinDetails != rhs_storage._pinDetails {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -9001,6 +9080,68 @@ extension BackupProto_ChatItem.DirectionlessMessageDetails: SwiftProtobuf.Messag
   }
 
   public static func ==(lhs: BackupProto_ChatItem.DirectionlessMessageDetails, rhs: BackupProto_ChatItem.DirectionlessMessageDetails) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_ChatItem.PinDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".PinDetails"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pinnedAtTimestamp\0\u{1}pinExpiresAtTimestamp\0\u{1}pinNeverExpires\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.pinnedAtTimestamp) }()
+      case 2: try {
+        var v: UInt64?
+        try decoder.decodeSingularUInt64Field(value: &v)
+        if let v = v {
+          if self.pinExpiry != nil {try decoder.handleConflictingOneOf()}
+          self.pinExpiry = .pinExpiresAtTimestamp(v)
+        }
+      }()
+      case 3: try {
+        var v: Bool?
+        try decoder.decodeSingularBoolField(value: &v)
+        if let v = v {
+          if self.pinExpiry != nil {try decoder.handleConflictingOneOf()}
+          self.pinExpiry = .pinNeverExpires(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if self.pinnedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.pinnedAtTimestamp, fieldNumber: 1)
+    }
+    switch self.pinExpiry {
+    case .pinExpiresAtTimestamp?: try {
+      guard case .pinExpiresAtTimestamp(let v)? = self.pinExpiry else { preconditionFailure() }
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    }()
+    case .pinNeverExpires?: try {
+      guard case .pinNeverExpires(let v)? = self.pinExpiry else { preconditionFailure() }
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_ChatItem.PinDetails, rhs: BackupProto_ChatItem.PinDetails) -> Bool {
+    if lhs.pinnedAtTimestamp != rhs.pinnedAtTimestamp {return false}
+    if lhs.pinExpiry != rhs.pinExpiry {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -11191,7 +11332,7 @@ extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProt
 
 extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatUpdateMessage"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}simpleUpdate\0\u{1}groupChange\0\u{1}expirationTimerChange\0\u{1}profileChange\0\u{1}threadMerge\0\u{1}sessionSwitchover\0\u{1}individualCall\0\u{1}groupCall\0\u{1}learnedProfileChange\0\u{1}pollTerminate\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}simpleUpdate\0\u{1}groupChange\0\u{1}expirationTimerChange\0\u{1}profileChange\0\u{1}threadMerge\0\u{1}sessionSwitchover\0\u{1}individualCall\0\u{1}groupCall\0\u{1}learnedProfileChange\0\u{1}pollTerminate\0\u{1}pinMessage\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11329,6 +11470,19 @@ extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._M
           self.update = .pollTerminate(v)
         }
       }()
+      case 11: try {
+        var v: BackupProto_PinMessageUpdate?
+        var hadOneofValue = false
+        if let current = self.update {
+          hadOneofValue = true
+          if case .pinMessage(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.update = .pinMessage(v)
+        }
+      }()
       default: break
       }
     }
@@ -11379,6 +11533,10 @@ extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._M
     case .pollTerminate?: try {
       guard case .pollTerminate(let v)? = self.update else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    }()
+    case .pinMessage?: try {
+      guard case .pinMessage(let v)? = self.update else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     }()
     case nil: break
     }
@@ -13662,6 +13820,41 @@ extension BackupProto_PollTerminateUpdate: SwiftProtobuf.Message, SwiftProtobuf.
   public static func ==(lhs: BackupProto_PollTerminateUpdate, rhs: BackupProto_PollTerminateUpdate) -> Bool {
     if lhs.targetSentTimestamp != rhs.targetSentTimestamp {return false}
     if lhs.question != rhs.question {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_PinMessageUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PinMessageUpdate"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}authorId\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.targetSentTimestamp) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.authorID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.targetSentTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.targetSentTimestamp, fieldNumber: 1)
+    }
+    if self.authorID != 0 {
+      try visitor.visitSingularUInt64Field(value: self.authorID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_PinMessageUpdate, rhs: BackupProto_PinMessageUpdate) -> Bool {
+    if lhs.targetSentTimestamp != rhs.targetSentTimestamp {return false}
+    if lhs.authorID != rhs.authorID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

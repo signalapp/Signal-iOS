@@ -1462,7 +1462,8 @@ extension AppSetup.GlobalsContinuation {
                 pollArchiver: pollArchiver,
                 reactionStore: reactionStore,
                 threadStore: backupThreadStore,
-                reactionArchiver: backupReactionArchiver
+                reactionArchiver: backupReactionArchiver,
+                pinnedMessageManager: pinnedMessageManager
             ),
             contactRecipientArchiver: backupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,

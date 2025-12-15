@@ -76,6 +76,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
+            pinMessageDetails: nil,
             context: context.recipientContext
         )
     }

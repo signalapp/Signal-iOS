@@ -71,6 +71,7 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
+            pinMessageDetails: nil,
             context: context.recipientContext
         )
     }

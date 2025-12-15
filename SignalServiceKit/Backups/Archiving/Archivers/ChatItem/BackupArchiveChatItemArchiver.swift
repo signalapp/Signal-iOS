@@ -50,6 +50,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
     private let reactionArchiver: BackupArchiveReactionArchiver
+    private let pinnedMessageManager: PinnedMessageManager
 
     private lazy var contentsArchiver = BackupArchiveTSMessageContentsArchiver(
         interactionStore: interactionStore,
@@ -57,17 +58,20 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         attachmentsArchiver: attachmentsArchiver,
         oversizeTextArchiver: oversizeTextArchiver,
         reactionArchiver: reactionArchiver,
-        pollArchiver: pollArchiver
+        pollArchiver: pollArchiver,
+        pinnedMessageManager: pinnedMessageManager
     )
     private lazy var incomingMessageArchiver = BackupArchiveTSIncomingMessageArchiver(
         contentsArchiver: contentsArchiver,
         editMessageStore: editMessageStore,
-        interactionStore: interactionStore
+        interactionStore: interactionStore,
+        pinnedMessageManager: pinnedMessageManager
     )
     private lazy var outgoingMessageArchiver = BackupArchiveTSOutgoingMessageArchiver(
         contentsArchiver: contentsArchiver,
         editMessageStore: editMessageStore,
-        interactionStore: interactionStore
+        interactionStore: interactionStore,
+        pinnedMessageManager: pinnedMessageManager
     )
     private lazy var chatUpdateMessageArchiver = BackupArchiveChatUpdateMessageArchiver(
         callRecordStore: callRecordStore,
@@ -92,7 +96,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         pollArchiver: BackupArchivePollArchiver,
         reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
-        reactionArchiver: BackupArchiveReactionArchiver
+        reactionArchiver: BackupArchiveReactionArchiver,
+        pinnedMessageManager: PinnedMessageManager
     ) {
         self.archivedPaymentStore = archivedPaymentStore
         self.attachmentsArchiver = attachmentsArchiver
@@ -108,6 +113,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.reactionStore = reactionStore
         self.threadStore = threadStore
         self.reactionArchiver = reactionArchiver
+        self.pinnedMessageManager = pinnedMessageManager
     }
 
     // MARK: -
@@ -401,6 +407,19 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                 fromDetails: pastRevisionDetails,
                 chatId: chatId
             )
+        }
+
+        if let pinMessageDetails = details.pinMessageDetails {
+            var pinDetails = BackupProto_ChatItem.PinDetails()
+            pinDetails.pinnedAtTimestamp = pinMessageDetails.pinnedAtTimestamp
+            let expiryDetails: BackupProto_ChatItem.PinDetails.OneOf_PinExpiry
+            if let expiry = pinMessageDetails.expiresAtTimestamp {
+                expiryDetails = .pinExpiresAtTimestamp(expiry)
+            } else {
+                expiryDetails = .pinNeverExpires(true)
+            }
+            pinDetails.pinExpiry = expiryDetails
+            chatItem.pinDetails = pinDetails
         }
 
         return chatItem

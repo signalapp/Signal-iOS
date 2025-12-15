@@ -65,6 +65,7 @@ final class BackupArchiveLearnedProfileChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
+            pinMessageDetails: nil,
             context: context.recipientContext
         )
     }

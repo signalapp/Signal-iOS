@@ -18,6 +18,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
     private let simpleChatUpdateArchiver: BackupArchiveSimpleChatUpdateArchiver
     private let threadMergeChatUpdateArchiver: BackupArchiveThreadMergeChatUpdateArchiver
     private let pollTerminatedChatUpdateArchiver: BackupArchivePollTerminateChatUpdateArchiver
+    private let pinMessageChatUpdateArchiver: BackupArchivePinMessageChatUpdateArchiver
 
     init(
         callRecordStore: any CallRecordStore,
@@ -62,6 +63,9 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             interactionStore: interactionStore
         )
         pollTerminatedChatUpdateArchiver = BackupArchivePollTerminateChatUpdateArchiver(
+            interactionStore: interactionStore
+        )
+        pinMessageChatUpdateArchiver = BackupArchivePinMessageChatUpdateArchiver(
             interactionStore: interactionStore
         )
     }
@@ -203,10 +207,12 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
                 threadInfo: threadInfo,
                 context: context
             )
-
-            // TODO: replace once pinned messages are in backups
         case .typePinnedMessage:
-            return .skippableInteraction(.pinnedMessage)
+            return pinMessageChatUpdateArchiver.archivePinMessageChatUpdate(
+                infoMessage: infoMessage,
+                threadInfo: threadInfo,
+                context: context
+            )
         }
     }
 
@@ -301,6 +307,13 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
         case .pollTerminate(let pollTerminateUpdateProto):
             return pollTerminatedChatUpdateArchiver.restorePollTerminateChatUpdate(
                 pollTerminateUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context
+            )
+        case .pinMessage(let pinMessageUpdateProto):
+            return pinMessageChatUpdateArchiver.restorePinMessageChatUpdate(
+                pinMessageUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
                 context: context

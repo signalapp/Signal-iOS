@@ -15,6 +15,7 @@
 		0436E4B02E5E2DC20011E125 /* OWSPollTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */; };
 		043CC30E2E1EF79C00D9002E /* ThreadFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */; };
 		04472D5E2E8AD74200D69EE0 /* OutgoingPollVote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04472D5D2E8AD73A00D69EE0 /* OutgoingPollVote.swift */; };
+		044A2C6E2EEB444E00AA3CA0 /* BackupArchivePinMessageChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044A2C6D2EEB443E00AA3CA0 /* BackupArchivePinMessageChatUpdateArchiver.swift */; };
 		044D77782E5E6D750048C21A /* PollVoteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D77772E5E6D700048C21A /* PollVoteRecord.swift */; };
 		044D84452E9FDDF00090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */; };
 		044D84472E9FEE010090BA64 /* BackupArchivePollArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */; };
@@ -4052,6 +4053,7 @@
 		0436E4AF2E5E2DB90011E125 /* OWSPollTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPollTest.swift; sourceTree = "<group>"; };
 		043CC30D2E1EF79300D9002E /* ThreadFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFinderTests.swift; sourceTree = "<group>"; };
 		04472D5D2E8AD73A00D69EE0 /* OutgoingPollVote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollVote.swift; sourceTree = "<group>"; };
+		044A2C6D2EEB443E00AA3CA0 /* BackupArchivePinMessageChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePinMessageChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		044D77772E5E6D700048C21A /* PollVoteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteRecord.swift; sourceTree = "<group>"; };
 		044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollTerminateChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollArchiver.swift; sourceTree = "<group>"; };
@@ -9916,6 +9918,7 @@
 				D9EA2A862C2B609800B367DF /* BackupArchiveChatUpdateMessageArchiver.swift */,
 				D91D9C8B2C3F06400009E4F7 /* BackupArchiveExpirationTimerChatUpdateArchiver.swift */,
 				D99655E22C50433800AD29FB /* BackupArchiveLearnedProfileChatUpdateArchiver.swift */,
+				044A2C6D2EEB443E00AA3CA0 /* BackupArchivePinMessageChatUpdateArchiver.swift */,
 				044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */,
 				D994C7D02C45D24F009ECEDA /* BackupArchiveProfileChangeChatUpdateArchiver.swift */,
 				D9BFB8C72C4F02C900D67881 /* BackupArchiveSessionSwitchoverChatUpdateArchiver.swift */,
@@ -18546,6 +18549,7 @@
 				665C0D5E2ADF53E200539A37 /* BackupArchiveManagerImpl.swift in Sources */,
 				C10E9FAF2BB778E100A609B9 /* BackupArchiveManagerMock.swift in Sources */,
 				665F6F9D2C5C2FAD0002915C /* BackupArchiveMessageAttachmentArchiver.swift in Sources */,
+				044A2C6E2EEB444E00AA3CA0 /* BackupArchivePinMessageChatUpdateArchiver.swift in Sources */,
 				044D84472E9FEE010090BA64 /* BackupArchivePollArchiver.swift in Sources */,
 				044D84452E9FDDF00090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift in Sources */,
 				D94D67CD2C9DEF870091B485 /* BackupArchivePostFrameRestoreActionManager.swift in Sources */,

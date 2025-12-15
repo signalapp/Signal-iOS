@@ -258,6 +258,9 @@ extension BackupArchive {
 
             /// Author Aci for end poll message was invalid
             case endPollUpdateInvalidAuthorAci
+
+            /// A pin message chat update was missing all persistable data
+            case pinMessageChatUpdateMissingPersistableData
         }
 
         private let type: ErrorType
@@ -383,7 +386,8 @@ extension BackupArchive {
                     .pollVoteAuthorSignalRecipientIdMissing,
                     .endPollUpdateInvalidAuthorAci,
                     .pollEndMissingQuestion,
-                    .pollEndMissingPersistableData:
+                    .pollEndMissingPersistableData,
+                    .pinMessageChatUpdateMissingPersistableData:
                 // Log any others as we see them.
                 return nil
             }
@@ -457,7 +461,8 @@ extension BackupArchive {
                     .pollVoteAuthorSignalRecipientIdMissing,
                     .endPollUpdateInvalidAuthorAci,
                     .pollEndMissingQuestion,
-                    .pollEndMissingPersistableData:
+                    .pollEndMissingPersistableData,
+                    .pinMessageChatUpdateMissingPersistableData:
                 return .error
             case .invalidInteractionDatabaseRow:
                 // We've seen real world databases with interaction rows that
@@ -839,6 +844,15 @@ extension BackupArchive {
 
                 /// We expect all authors to have an associated latest vote count, but there wasn't
                 case noPollVoteCountForAuthor
+
+                /// The pin message author had an invalid non-contact Address
+                case pinMessageAuthorNotContact
+
+                /// There were more pinned messages than allowed
+                case invalidNumberOfPinnedMessages
+
+                /// A timestamp to help identify a target message overflowed a local type
+                case sentTimestampOverflowedLocalType
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -1002,7 +1016,10 @@ extension BackupArchive {
                         .pollQuestionEmpty,
                         .pollVoteAuthorNotContact,
                         .pollVoteCountRepeated,
-                        .noPollVoteCountForAuthor:
+                        .noPollVoteCountForAuthor,
+                        .pinMessageAuthorNotContact,
+                        .invalidNumberOfPinnedMessages,
+                        .sentTimestampOverflowedLocalType:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }
@@ -1114,7 +1131,10 @@ extension BackupArchive {
                         .pollQuestionEmpty,
                         .pollVoteAuthorNotContact,
                         .pollVoteCountRepeated,
-                        .noPollVoteCountForAuthor:
+                        .noPollVoteCountForAuthor,
+                        .pinMessageAuthorNotContact,
+                        .invalidNumberOfPinnedMessages,
+                        .sentTimestampOverflowedLocalType:
                     return .error
                 case .quotedMessageEmptyContent:
                     // It was historically possible to end up with a quote that

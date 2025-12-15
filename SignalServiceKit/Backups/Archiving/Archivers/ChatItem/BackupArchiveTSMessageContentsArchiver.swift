@@ -149,6 +149,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let reactionArchiver: BackupArchiveReactionArchiver
     private let pollArchiver: BackupArchivePollArchiver
+    private let pinnedMessageManager: PinnedMessageManager
 
     init(
         interactionStore: BackupArchiveInteractionStore,
@@ -156,7 +157,8 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         attachmentsArchiver: BackupArchiveMessageAttachmentArchiver,
         oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
         reactionArchiver: BackupArchiveReactionArchiver,
-        pollArchiver: BackupArchivePollArchiver
+        pollArchiver: BackupArchivePollArchiver,
+        pinnedMessageManager: PinnedMessageManager
     ) {
         self.interactionStore = interactionStore
         self.archivedPaymentStore = archivedPaymentStore
@@ -164,6 +166,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         self.oversizeTextArchiver = oversizeTextArchiver
         self.reactionArchiver = reactionArchiver
         self.pollArchiver = pollArchiver
+        self.pinnedMessageManager = pinnedMessageManager
     }
 
     // MARK: - Archiving
@@ -1124,6 +1127,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         message: TSMessage,
         thread: BackupArchive.ChatThread,
         chatItemId: BackupArchive.ChatItemId,
+        pinDetails: BackupProto_ChatItem.PinDetails?,
         restoredContents: BackupArchive.RestoredMessageContents,
         context: BackupArchive.ChatItemRestoringContext
     ) -> RestoreInteractionResult<Void> {
@@ -1288,6 +1292,18 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
+        }
+
+        if let pinDetails {
+            downstreamObjectResults.append(
+                restorePinMessage(
+                    pinDetails: pinDetails,
+                    message: message,
+                    chatItemId: chatItemId,
+                    chatThread: thread,
+                    context: context
+                )
+            )
         }
 
         return downstreamObjectResults.reduce(.success(()), {
@@ -2129,6 +2145,73 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 .poll(poll),
                 partialErrors
             )
+        }
+    }
+
+    // MARK: -
+
+    private func restorePinMessage(
+        pinDetails: BackupProto_ChatItem.PinDetails,
+        message: TSMessage,
+        chatItemId: BackupArchive.ChatItemId,
+        chatThread: BackupArchive.ChatThread,
+        context: BackupArchive.ChatItemRestoringContext
+    ) -> BackupArchive.RestoreInteractionResult<Void> {
+
+        let threadId: Int64?
+        switch chatThread.threadType {
+        case .contact(let contactThread):
+            threadId = contactThread.sqliteRowId
+        case .groupV2(let groupThread):
+            threadId = groupThread.sqliteRowId
+        }
+
+        guard let threadId else {
+            return .messageFailure([.restoreFrameError(
+                .databaseModelMissingRowId(modelClass: TSThread.self), chatItemId
+            )])
+        }
+
+        var expiresAtTimestamp: UInt64?
+        switch pinDetails.pinExpiry {
+        case .pinExpiresAtTimestamp(let timestamp):
+            guard BackupArchive.Timestamps.isValid(timestamp) else {
+                return .partialRestore((), [.restoreFrameError(
+                    .invalidProtoData(.chatItemInvalidDateSent),
+                    chatItemId
+                )])
+            }
+            expiresAtTimestamp = timestamp
+        case .pinNeverExpires, .none:
+            break
+        }
+
+        guard BackupArchive.Timestamps.isValid(pinDetails.pinnedAtTimestamp) else {
+            return .partialRestore((), [.restoreFrameError(
+                .invalidProtoData(.chatItemInvalidDateSent),
+                chatItemId
+            )])
+        }
+
+        let details = PinMessageDetails(pinnedAtTimestamp: pinDetails.pinnedAtTimestamp, expiresAtTimestamp: expiresAtTimestamp)
+
+        let applyPinMessageResult = pinnedMessageManager.applyPinMessageFromBackup(
+            message: message,
+            threadId: threadId,
+            pinDetails: details,
+            chatItemId: chatItemId,
+            tx: context.tx
+        )
+
+        switch applyPinMessageResult {
+        case .success:
+            return .success(())
+        case .unrecognizedEnum(let error):
+            return .unrecognizedEnum(error)
+        case .partialRestore(let errors):
+            return .partialRestore((), errors)
+        case .failure(let error):
+            return .messageFailure(error)
         }
     }
 }

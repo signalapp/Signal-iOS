@@ -235,6 +235,31 @@ extension BackupArchive {
             }
             return recipientDbRowIdMap[recipientDbRowId]
         }
+
+        enum RecipientIdResult {
+            case found(BackupArchive.RecipientId)
+            case missing(BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>)
+        }
+
+        func getRecipientId(
+            aci: Aci,
+            forInteraction interaction: TSInteraction,
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
+        ) -> RecipientIdResult {
+            let contactAddress = BackupArchive.ContactAddress(aci: aci)
+
+            if let recipientId = self[.contact(contactAddress)] {
+                return .found(recipientId)
+            }
+
+            return .missing(.archiveFrameError(
+                .referencedRecipientIdMissing(.contact(contactAddress)),
+                BackupArchive.InteractionUniqueId(interaction: interaction),
+                file: file, function: function, line: line
+            ))
+        }
     }
 
     public class RecipientRestoringContext: RestoringContext {

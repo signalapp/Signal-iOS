@@ -7,8 +7,9 @@ import Foundation
 import GRDB
 public import LibSignalClient
 
-public enum PinnedMessageError: Error {
-    case messageSendTimeout
+public struct PinMessageDetails {
+    let pinnedAtTimestamp: UInt64
+    let expiresAtTimestamp: UInt64? // nil is forever
 }
 
 public class PinnedMessageManager {
@@ -421,5 +422,55 @@ public class PinnedMessageManager {
                 .order(PinnedMessageRecord.Columns.expiresAt)
                 .fetchOne(tx.database)
         }
+    }
+
+    // MARK: - Backups
+
+    public func pinMessageDetails(interactionId: Int64, tx: DBReadTransaction) -> PinMessageDetails? {
+        failIfThrows {
+            try PinnedMessageRecord
+                .filter(PinnedMessageRecord.Columns.interactionId == interactionId)
+                .fetchOne(tx.database)
+                .map { PinMessageDetails(pinnedAtTimestamp: $0.receivedTimestamp, expiresAtTimestamp: $0.expiresAt) }
+        }
+    }
+
+    private func numberOfPinnedMessagesForThread(threadId: Int64, tx: DBReadTransaction) -> Int {
+        failIfThrows {
+            try PinnedMessageRecord
+                .filter(PinnedMessageRecord.Columns.threadId == threadId)
+                .fetchCount(tx.database)
+        }
+    }
+
+    public func applyPinMessageFromBackup(
+        message: TSMessage,
+        threadId: Int64,
+        pinDetails: PinMessageDetails,
+        chatItemId: BackupArchive.ChatItemId,
+        tx: DBWriteTransaction
+    ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
+        guard let interactionId = message.sqliteRowId else {
+            return .failure([.restoreFrameError(.databaseModelMissingRowId(modelClass: TSMessage.self), chatItemId)])
+        }
+
+        // check if there's already max limit and throw if so
+        let numExistingPins = numberOfPinnedMessagesForThread(threadId: threadId, tx: tx)
+        guard numExistingPins < RemoteConfig.current.pinnedMessageLimit else {
+            return .partialRestore([.restoreFrameError(.invalidProtoData(.invalidNumberOfPinnedMessages), chatItemId)])
+        }
+
+        failIfThrows {
+            _ = try PinnedMessageRecord.insertRecord(
+                interactionId: interactionId,
+                threadId: threadId,
+                expiresAt: pinDetails.expiresAtTimestamp,
+                sentTimestamp: 0, // Currently not used.
+                receivedTimestamp: pinDetails.pinnedAtTimestamp,
+                tx: tx
+            )
+        }
+
+        return .success
     }
 }

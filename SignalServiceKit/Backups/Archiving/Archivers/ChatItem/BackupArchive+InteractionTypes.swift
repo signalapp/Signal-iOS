@@ -78,6 +78,8 @@ extension BackupArchive {
             pastRevisions.append(pastRevision)
         }
 
+        private(set) var pinMessageDetails: PinMessageDetails?
+
         // MARK: -
 
         /// Returns whether the `chatItemType` of the latest or any prior
@@ -114,7 +116,8 @@ extension BackupArchive {
             isSealedSender: Bool,
             chatItemType: ChatItemType,
             isSmsPreviouslyRestoredFromBackup: Bool,
-            pastRevisions: [InteractionArchiveDetails]
+            pastRevisions: [InteractionArchiveDetails],
+            pinMessageDetails: PinMessageDetails?
         ) {
             self.author = author
             self.directionalDetails = directionalDetails
@@ -125,6 +128,7 @@ extension BackupArchive {
             self.chatItemType = chatItemType
             self.isSmsPreviouslyRestoredFromBackup = isSmsPreviouslyRestoredFromBackup
             self.pastRevisions = pastRevisions
+            self.pinMessageDetails = pinMessageDetails
         }
 
         static func validateAndBuild(
@@ -139,6 +143,7 @@ extension BackupArchive {
             isSmsPreviouslyRestoredFromBackup: Bool,
             pastRevisions: [InteractionArchiveDetails] = [],
             threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
+            pinMessageDetails: PinMessageDetails?,
             context: BackupArchive.RecipientArchivingContext
         ) -> BackupArchive.ArchiveInteractionResult<Self> {
             var authorRecipientId: RecipientId
@@ -215,7 +220,8 @@ extension BackupArchive {
                 isSealedSender: isSealedSender,
                 chatItemType: chatItemType,
                 isSmsPreviouslyRestoredFromBackup: isSmsPreviouslyRestoredFromBackup,
-                pastRevisions: pastRevisions
+                pastRevisions: pastRevisions,
+                pinMessageDetails: pinMessageDetails
             )
             if partialErrors.isEmpty {
                 return .success(details)

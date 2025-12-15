@@ -13,11 +13,13 @@ class BackupArchiveTSOutgoingMessageArchiver {
     private let editHistoryArchiver: BackupArchiveTSMessageEditHistoryArchiver<TSOutgoingMessage>
     private let editMessageStore: EditMessageStore
     private let interactionStore: BackupArchiveInteractionStore
+    private let pinnedMessageManager: PinnedMessageManager
 
     init(
         contentsArchiver: BackupArchiveTSMessageContentsArchiver,
         editMessageStore: EditMessageStore,
-        interactionStore: BackupArchiveInteractionStore
+        interactionStore: BackupArchiveInteractionStore,
+        pinnedMessageManager: PinnedMessageManager
     ) {
         self.contentsArchiver = contentsArchiver
         self.editHistoryArchiver = BackupArchiveTSMessageEditHistoryArchiver(
@@ -25,6 +27,7 @@ class BackupArchiveTSOutgoingMessageArchiver {
         )
         self.editMessageStore = editMessageStore
         self.interactionStore = interactionStore
+        self.pinnedMessageManager = pinnedMessageManager
     }
 
     // MARK: - Archiving
@@ -174,6 +177,14 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             expireStartDate = nil
         }
 
+        guard let interactionRowId = outgoingMessage.sqliteRowId else {
+            return .completeFailure(.fatalArchiveError(
+                .fetchedInteractionMissingRowId
+            ))
+        }
+
+        let pinMessageDetails = pinnedMessageManager.pinMessageDetails(interactionId: interactionRowId, tx: context.tx)
+
         let detailsResult = Details.validateAndBuild(
             interactionUniqueId: outgoingMessage.uniqueInteractionId,
             author: .localUser,
@@ -185,6 +196,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup,
             threadInfo: threadInfo,
+            pinMessageDetails: pinMessageDetails,
             context: context.recipientContext
         )
 
@@ -397,6 +409,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                 message: outgoingMessage,
                 thread: chatThread,
                 chatItemId: chatItem.id,
+                pinDetails: chatItem.hasPinDetails ? chatItem.pinDetails : nil,
                 restoredContents: contents,
                 context: context
             )

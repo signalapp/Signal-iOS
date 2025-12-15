@@ -309,6 +309,7 @@ extension BackupArchive {
             case ChatItem_ChatUpdateMessage_IndividualCall
             case ChatItem_ChatUpdateMessage_GroupCall
             case ChatItem_ChatUpdateMessage_PollTerminate
+            case ChatItem_ChatUpdateMessage_PinMessage
 
             case ChatItem_PaymentNotification
             case ChatItem_GiftBadge
@@ -415,6 +416,8 @@ extension BackupArchive {
                             self = .ChatItem_ChatUpdateMessage_IndividualCall
                         case .pollTerminate:
                             self = .ChatItem_ChatUpdateMessage_PollTerminate
+                        case .pinMessage:
+                            self = .ChatItem_ChatUpdateMessage_PinMessage
                         case nil:
                             return nil
                         }
