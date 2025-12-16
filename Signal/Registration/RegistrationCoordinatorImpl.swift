@@ -2886,7 +2886,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .voice:
                 timeInterval = session.nextCall
             }
-            if let timeInterval, timeInterval < Constants.autoRetryInterval {
+            if session.allowedToRequestCode, let timeInterval, timeInterval < Constants.autoRetryInterval {
                 self.db.write { self.processSession(session, $0) }
                 try? await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
                 return await requestSessionCode(
@@ -2909,7 +2909,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }
                         }()
                     ))
-                } else if let timeInterval {
+                } else if session.allowedToRequestCode, let timeInterval {
                     db.write {
                         self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
                     }
