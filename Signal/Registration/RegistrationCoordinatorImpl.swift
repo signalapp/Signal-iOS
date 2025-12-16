@@ -2924,6 +2924,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             if
                 failureCount < maxAutomaticRetries,
+                session.allowedToRequestCode,
                 let timeInterval,
                 timeInterval < Constants.autoRetryInterval,
                 let retryAfterHeader,
@@ -2953,7 +2954,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }
                         }()
                     ))
-                } else if let timeInterval {
+                } else if session.allowedToRequestCode, let timeInterval {
                     db.write {
                         self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
                     }
