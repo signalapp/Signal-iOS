@@ -42,8 +42,4 @@ extension AvatarViewPresentationContextProvider {
             mediaViewShape: mediaViewShape
         )
     }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
 }

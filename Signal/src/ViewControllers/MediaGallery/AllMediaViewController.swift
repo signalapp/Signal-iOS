@@ -50,10 +50,6 @@ extension AllMediaViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         return tileViewController.mediaPresentationContext(item: item, in: coordinateSpace)
     }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return tileViewController.snapshotOverlayView(in: coordinateSpace)
-    }
 }
 
 extension AllMediaViewController: OWSNavigationChildController {

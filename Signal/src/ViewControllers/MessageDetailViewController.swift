@@ -774,10 +774,6 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
         )
     }
 
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
-
     func mediaWillDismiss(toContext: MediaPresentationContext) {
         // To avoid flicker when transition view is animated over the message bubble,
         // we initially hide the overlaying elements and fade them in.

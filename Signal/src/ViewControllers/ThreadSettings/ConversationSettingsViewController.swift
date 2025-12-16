@@ -1106,10 +1106,6 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
             clippingAreaInsets: clippingAreaInsets
         )
     }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
 }
 
 extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {

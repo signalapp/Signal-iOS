@@ -896,6 +896,7 @@ extension MediaPageViewController: MediaControlPanelDelegate {
 }
 
 extension MediaPageViewController: MediaPresentationContextProvider {
+
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         guard let mediaView = currentViewController?.mediaView else { return nil }
 
@@ -904,32 +905,28 @@ extension MediaPageViewController: MediaPresentationContextProvider {
             return nil
         }
 
+        let backgroundColor: UIColor = if #available(iOS 26, *) { .Signal.background } else { .black }
         return MediaPresentationContext(
             mediaView: mediaView,
-            presentationFrame: mediaView.frame
+            presentationFrame: mediaView.frame,
+            backgroundColor: backgroundColor
         )
     }
 
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        // This makes top and bottom bar being visible during animation.
-        // Since on iOS 26 those bars don't have a background we don't need this view at all.
-        guard #unavailable(iOS 26) else { return nil }
-        guard !shouldHideToolbars else { return nil }
+    func mediaWillPresent(toContext: MediaPresentationContext) {
+        view.backgroundColor = .clear
+    }
 
-        guard let snapshotView = view.snapshotView(afterScreenUpdates: true) else { return nil }
+    func mediaDidPresent(toContext: MediaPresentationContext) {
+        view.backgroundColor = .Signal.background
+    }
 
-        // Apply masking to only show top and bottom panels.
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = snapshotView.layer.bounds
-        let path = UIBezierPath()
-        path.append(UIBezierPath(rect: topPanel.frame))
-        path.append(UIBezierPath(rect: bottomMediaPanel.frame))
-        maskLayer.path = path.cgPath
-        snapshotView.layer.mask = maskLayer
+    func mediaWillDismiss(fromContext: MediaPresentationContext) {
+        view.backgroundColor = .clear
+    }
 
-        let presentationFrame = coordinateSpace.convert(snapshotView.frame, from: view.superview!)
-
-        return (snapshotView, presentationFrame)
+    func mediaDidDismiss(fromContext: MediaPresentationContext) {
+        view.backgroundColor = .Signal.background
     }
 }
 

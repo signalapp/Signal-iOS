@@ -1242,10 +1242,6 @@ extension MediaTileViewController: MediaPresentationContextProvider {
         }
         return cell.mediaPresentationContext(collectionView: collectionView, in: coordinateSpace)
     }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
 }
 
 // MARK: - Private Helper Classes

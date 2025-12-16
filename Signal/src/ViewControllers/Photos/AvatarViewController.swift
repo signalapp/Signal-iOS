@@ -146,10 +146,6 @@ extension AvatarViewController: MediaPresentationContextProvider {
             mediaViewShape: .circle
         )
     }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
 }
 
 extension AvatarViewController: UIViewControllerTransitioningDelegate {

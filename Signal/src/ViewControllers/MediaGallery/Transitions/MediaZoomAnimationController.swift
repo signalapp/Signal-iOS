@@ -24,7 +24,11 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+
         let containerView = transitionContext.containerView
+
+        // Bunch of check to ensure everything is set up for the animated transition.
+        // If there's anything wrong the transition would complete without animation.
 
         guard let fromVC = transitionContext.viewController(forKey: .from) else {
             owsFailDebug("fromVC was unexpectedly nil")
@@ -79,10 +83,6 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             transitionContext.completeTransition(false)
             return
         }
-        containerView.addSubview(toView)
-        toView.alpha = 0.0
-        toView.autoPinEdgesToSuperviewEdges()
-        toView.layoutIfNeeded()
 
         guard let toMediaContext = toContextProvider.mediaPresentationContext(item: item, in: containerView) else {
             owsFailDebug("toPresentationContext was unexpectedly nil")
@@ -103,8 +103,19 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
 
+        // All is good, set up the view hieranchy and view animations.
+
+        let backgroundView = UIView(frame: containerView.bounds)
+        backgroundView.backgroundColor = fromMediaContext.backgroundColor
+        backgroundView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
+        containerView.addSubview(backgroundView)
+
+        // Sometimes the media being opened isn't fully visible because of the scroll position
+        // of the container the media is in (chat view, all media view). To preserve obscured area
+        // a clipping view needs to be set up.
         let clippingView = UIView(frame: containerView.bounds)
         clippingView.clipsToBounds = true
+        clippingView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
         if let clippingAreaInsets = fromMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
             let maskLayer = CALayer()
             maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
@@ -120,28 +131,16 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         transitionView.frame = fromMediaContext.presentationFrame
         clippingView.addSubview(transitionView)
 
-        let fromTransitionalOverlayView: UIView?
-        if let (overlayView, overlayViewFrame) = fromContextProvider.snapshotOverlayView(in: containerView) {
-            fromTransitionalOverlayView = overlayView
-            containerView.addSubview(overlayView)
-            overlayView.frame = overlayViewFrame
-        } else {
-            fromTransitionalOverlayView = nil
-        }
-
-        let toTransitionalOverlayView: UIView?
-        if let (overlayView, overlayViewFrame) = toContextProvider.snapshotOverlayView(in: containerView) {
-            toTransitionalOverlayView = overlayView
-            containerView.addSubview(overlayView)
-            overlayView.frame = overlayViewFrame
-        } else {
-            toTransitionalOverlayView = nil
-        }
+        // `toView` goes above the media view so that any toolbars the view might have show
+        // over the media view.
+        containerView.addSubview(toView)
+        toView.alpha = 0
+        toView.frame = containerView.bounds
+        toView.autoPinEdgesToSuperviewEdges()
+        toView.layoutIfNeeded()
 
         // Because toggling `isHidden` causes UIStack view layouts to change, we instead toggle `alpha`
-        fromTransitionalOverlayView?.alpha = 1.0
         fromMediaContext.mediaView.alpha = 0.0
-        toTransitionalOverlayView?.alpha = 0.0
         toMediaContext.mediaView.alpha = 0.0
 
         fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
@@ -150,12 +149,12 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         let duration = transitionDuration(using: transitionContext)
         let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.35)
         animator.addAnimations {
-            fromTransitionalOverlayView?.alpha = 0.0
             toView.alpha = 1.0
-            toTransitionalOverlayView?.alpha = 1.0
             transitionView.shape = toMediaContext.mediaViewShape
             transitionView.frame = toMediaContext.presentationFrame
+            backgroundView.backgroundColor = toMediaContext.backgroundColor
 
+            // TODO: this doesn't animate. fix it.
             if let clippingAreaInsets = toMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
                 let maskLayer = CALayer()
                 maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
@@ -175,8 +174,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
 
             // Then remove transition views after media is visible
             clippingView.removeFromSuperview()
-            fromTransitionalOverlayView?.removeFromSuperview()
-            toTransitionalOverlayView?.removeFromSuperview()
+            backgroundView.removeFromSuperview()
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }

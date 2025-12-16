@@ -45,17 +45,20 @@ struct MediaPresentationContext {
 
     let mediaView: UIView
     let presentationFrame: CGRect
+    let backgroundColor: UIColor
     let mediaViewShape: MediaViewShape
     let clippingAreaInsets: UIEdgeInsets?
 
     init(
         mediaView: UIView,
         presentationFrame: CGRect,
+        backgroundColor: UIColor = .clear,
         mediaViewShape: MediaViewShape = .rectangle(0),
         clippingAreaInsets: UIEdgeInsets? = nil
     ) {
         self.mediaView = mediaView
         self.presentationFrame = presentationFrame
+        self.backgroundColor = backgroundColor
         self.mediaViewShape = mediaViewShape
         self.clippingAreaInsets = clippingAreaInsets
     }
@@ -79,10 +82,6 @@ struct MediaPresentationContext {
 // stop showing the media pager. This can be a pop to the tile view, or a modal dismiss.
 protocol MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext?
-
-    // The transitionView will be presented below this view.
-    // If nil, the transitionView will be presented above all
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)?
 
     func mediaWillPresent(fromContext: MediaPresentationContext)
     func mediaWillPresent(toContext: MediaPresentationContext)
