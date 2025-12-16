@@ -70,9 +70,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
     private weak var presenter: RegistrationPhoneNumberPresenter?
 
-    private var now = Date() {
-        didSet { configureUI() }
-    }
     private var nowTimer: Timer?
 
     private var nationalNumber: String { phoneNumberInput.nationalNumber }
@@ -210,13 +207,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         stackView.setCustomSpacing(24, after: explanationLabel)
 
         configureUI()
-
-        // We only need this timer if the user has been rate limited, but it's simpler to always
-        // start it.
-        nowTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            self.now = Date()
-        }
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -301,6 +291,17 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 return false
             }
         }()
+
+        if isBlockedByValidationError, case .rateLimited = validationError {
+            if nowTimer == nil {
+                nowTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+                    self?.configureUI()
+                }
+            }
+        } else {
+            nowTimer?.invalidate()
+            nowTimer = nil
+        }
 
         navigationItem.rightBarButtonItem?.isEnabled = canSubmit(isBlockedByValidationError: isBlockedByValidationError)
 
