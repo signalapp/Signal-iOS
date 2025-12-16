@@ -317,6 +317,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
             isOn: { SpinningCheckmarks.shouldSpin },
             target: self,
             selector: #selector(spinCheckmarks(_:))))
+        otherSection.add(.disclosureItem(withText: "Show Call Quality Survey") { [weak self] in
+            self?.present(CallQualitySurveyNavigationController(), animated: true)
+        })
         contents.add(otherSection)
 
         if mode != .registration {

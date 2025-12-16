@@ -381,6 +381,15 @@ public extension UIBarButtonItem {
         ClosureBarButtonItem(image: Theme.iconImage(icon), style: style, action: action)
     }
 
+    /// Creates a bar button with the given image that performs the action in the provided closure.
+    static func button(
+        image: UIImage,
+        style: UIBarButtonItem.Style,
+        action: @escaping () -> Void
+    ) -> UIBarButtonItem {
+        ClosureBarButtonItem(image: image, style: style, action: action)
+    }
+
     // Keep this static function public instead of exposing ClosureBarButtonItem
     // because ClosureBarButtonItem will only function properly if using its
     // custom convenience initializer.

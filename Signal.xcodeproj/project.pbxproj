@@ -1685,6 +1685,10 @@
 		B91751D92EC5548500FF7A9C /* AppIcon-yellow.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751D82EC5548500FF7A9C /* AppIcon-yellow.icon */; };
 		B91751DB2EC5556B00FF7A9C /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751DA2EC5556B00FF7A9C /* AppIcon.icon */; };
 		B91ACD9E2A797698000CFBC7 /* StickerPickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */; };
+		B924DFA62EE7C42B00B88147 /* CallQualitySurveyNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924DFA52EE7C42B00B88147 /* CallQualitySurveyNavigation.swift */; };
+		B924DFA82EE7C63400B88147 /* CallQualitySurveyRatingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924DFA72EE7C63400B88147 /* CallQualitySurveyRatingViewController.swift */; };
+		B924DFAA2EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924DFA92EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift */; };
+		B924DFAC2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924DFAB2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift */; };
 		B9291BFC2B6058AE006BC25F /* ContactAboutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */; };
 		B92E76A92B647E780095C4DF /* StackSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92E76A82B647E780095C4DF /* StackSheetViewController.swift */; };
 		B92E76AB2B6871520095C4DF /* ProfileDetailLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92E76AA2B6871520095C4DF /* ProfileDetailLabel.swift */; };
@@ -1704,6 +1708,7 @@
 		B97803012DD65B0A00E9FC82 /* LinearProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97803002DD65B0A00E9FC82 /* LinearProgressView.swift */; };
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
+		B985D29A2EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B985D2992EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift */; };
 		B9921F882CC6FDB200AB667F /* HeroSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */; };
 		B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */; };
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
@@ -5846,6 +5851,10 @@
 		B91751D82EC5548500FF7A9C /* AppIcon-yellow.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-yellow.icon"; sourceTree = "<group>"; };
 		B91751DA2EC5556B00FF7A9C /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerKeyboard.swift; sourceTree = "<group>"; };
+		B924DFA52EE7C42B00B88147 /* CallQualitySurveyNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyNavigation.swift; sourceTree = "<group>"; };
+		B924DFA72EE7C63400B88147 /* CallQualitySurveyRatingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyRatingViewController.swift; sourceTree = "<group>"; };
+		B924DFA92EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyIssuesViewController.swift; sourceTree = "<group>"; };
+		B924DFAB2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyDebugLogViewController.swift; sourceTree = "<group>"; };
 		B9291BFB2B6058AE006BC25F /* ContactAboutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAboutSheet.swift; sourceTree = "<group>"; };
 		B92E76A82B647E780095C4DF /* StackSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSheetViewController.swift; sourceTree = "<group>"; };
 		B92E76AA2B6871520095C4DF /* ProfileDetailLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailLabel.swift; sourceTree = "<group>"; };
@@ -5866,6 +5875,7 @@
 		B97803002DD65B0A00E9FC82 /* LinearProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearProgressView.swift; sourceTree = "<group>"; };
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
+		B985D2992EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyCustomIssueViewController.swift; sourceTree = "<group>"; };
 		B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroSheetViewController.swift; sourceTree = "<group>"; };
 		B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicesEducationSheet.swift; sourceTree = "<group>"; };
 		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
@@ -11552,6 +11562,18 @@
 			path = AppIcons;
 			sourceTree = "<group>";
 		};
+		B924DFA42EE7C35E00B88147 /* Survey */ = {
+			isa = PBXGroup;
+			children = (
+				B985D2992EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift */,
+				B924DFAB2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift */,
+				B924DFA92EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift */,
+				B924DFA52EE7C42B00B88147 /* CallQualitySurveyNavigation.swift */,
+				B924DFA72EE7C63400B88147 /* CallQualitySurveyRatingViewController.swift */,
+			);
+			path = Survey;
+			sourceTree = "<group>";
+		};
 		B9327B3B2BBB77B800CCDBBA /* NicknameRecord */ = {
 			isa = PBXGroup;
 			children = (
@@ -13619,6 +13641,7 @@
 		D9E43BC22CC194140001536E /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				B924DFA42EE7C35E00B88147 /* Survey */,
 				D9E43B932CC194140001536E /* CallButton.swift */,
 				D9E43B942CC194140001536E /* CallControls.swift */,
 				D9E43B952CC194140001536E /* CallControlsConfirmationToast.swift */,
@@ -17700,6 +17723,11 @@
 				D9E43BF32CC194140001536E /* CallMemberVideoView.swift in Sources */,
 				D9E43BF42CC194140001536E /* CallMemberView.swift in Sources */,
 				D9E43BF52CC194140001536E /* CallMemberWaitingAndErrorView.swift in Sources */,
+				B985D29A2EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift in Sources */,
+				B924DFAC2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift in Sources */,
+				B924DFAA2EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift in Sources */,
+				B924DFA62EE7C42B00B88147 /* CallQualitySurveyNavigation.swift in Sources */,
+				B924DFA82EE7C63400B88147 /* CallQualitySurveyRatingViewController.swift in Sources */,
 				D9E43C1D2CC194140001536E /* CallRecordLoader.swift in Sources */,
 				D9E43C1E2CC194140001536E /* CallService.swift in Sources */,
 				D9E43C1F2CC194140001536E /* CallServiceState.swift in Sources */,

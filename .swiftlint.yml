@@ -32,6 +32,7 @@ disabled_rules:
 - todo
 - trailing_comma
 - type_body_length
+- unavailable_condition
 - unneeded_synthesized_initializer
 - unused_closure_parameter
 - unused_optional_binding
