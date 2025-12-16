@@ -51,7 +51,7 @@ public enum Registration {
         /// Typically, invalid e164.
         case invalidArgument
         /// The server indicated the client should retry after at least this much time has passed.
-        case retryAfter(TimeInterval)
+        case retryAfter(TimeInterval?)
         /// A network failure.
         case networkFailure
         /// Some other generic unknown error.
@@ -80,7 +80,7 @@ public enum Registration {
         case transportError(RegistrationSession)
         /// The request was made before the required timeout; it should be
         /// made again after the time specified in the `RegistrationSession`.
-        case retryAfterTimeout(RegistrationSession)
+        case retryAfterTimeout(RegistrationSession, retryAfterHeader: TimeInterval?)
         /// The provided session has timed out or is otherwise invalid, and a new
         /// session needs to be started, throwing away all current session state.
         case invalidSession

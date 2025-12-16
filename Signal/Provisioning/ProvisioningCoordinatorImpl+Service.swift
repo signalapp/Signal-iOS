@@ -39,7 +39,6 @@ extension ProvisioningCoordinatorImpl {
                 let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
                 return handleVerifySecondaryDeviceResponse(
                     statusCode: response.responseStatusCode,
-                    retryAfterHeader: response.headers[Constants.retryAfterHeader],
                     bodyData: response.responseBodyData
                 )
             } catch {
@@ -51,7 +50,6 @@ extension ProvisioningCoordinatorImpl {
                 }
                 return handleVerifySecondaryDeviceResponse(
                     statusCode: error.responseStatusCode,
-                    retryAfterHeader: error.responseHeaders?[Constants.retryAfterHeader],
                     bodyData: error.httpResponseData
                 )
             }
@@ -59,7 +57,6 @@ extension ProvisioningCoordinatorImpl {
 
         private static func handleVerifySecondaryDeviceResponse(
             statusCode: Int,
-            retryAfterHeader: String?,
             bodyData: Data?
         ) -> VerifySecondaryDeviceResponse {
             let statusCode = ProvisioningServiceResponses.VerifySecondaryDeviceResponseCodes(rawValue: statusCode)
@@ -102,12 +99,6 @@ extension ProvisioningCoordinatorImpl {
 
             // Don't care what the response is.
             _ = try await networkManager.asyncRequest(request)
-        }
-
-        enum Constants {
-            static let defaultRetryTime: TimeInterval = 3
-
-            static let retryAfterHeader = "retry-after"
         }
     }
 }

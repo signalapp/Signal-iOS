@@ -35,7 +35,7 @@ extension RegistrationCoordinatorImpl {
 
         private static func handleSVR2AuthCheckResponse(
             statusCode: Int,
-            retryAfterHeader: String?,
+            retryAfterHeader: TimeInterval?,
             bodyData: Data?
         ) -> SVR2AuthCheckResponse {
             let statusCode = RegistrationServiceResponses.SVR2AuthCheckResponseCodes(rawValue: statusCode)
@@ -96,7 +96,7 @@ extension RegistrationCoordinatorImpl {
         private static func handleCreateAccountResponse(
             authPassword: String,
             statusCode: Int,
-            retryAfterHeader: String?,
+            retryAfterHeader: TimeInterval?,
             bodyData: Data?
         ) -> AccountResponse {
             let statusCode = RegistrationServiceResponses.AccountCreationResponseCodes(rawValue: statusCode)
@@ -140,17 +140,7 @@ extension RegistrationCoordinatorImpl {
                 return .reglockFailure(response)
 
             case .retry:
-                let retryAfter: TimeInterval
-                if
-                    let retryAfterHeader,
-                    let retryAfterTime = TimeInterval(retryAfterHeader)
-                {
-                    retryAfter = retryAfterTime
-                } else {
-                    Logger.warn("Missing retry-after header from server; falling back to default.")
-                    retryAfter = Constants.defaultRetryTime
-                }
-                return .retryAfter(retryAfter)
+                return .retryAfter(retryAfterHeader)
 
             case .unauthorized:
                 Logger.warn("Got unauthorized response for create account")
@@ -196,7 +186,7 @@ extension RegistrationCoordinatorImpl {
         private static func handleChangeNumberResponse(
             authPassword: String,
             statusCode: Int,
-            retryAfterHeader: String?,
+            retryAfterHeader: TimeInterval?,
             bodyData: Data?
         ) -> AccountResponse {
             let statusCode = RegistrationServiceResponses.ChangeNumberResponseCodes(rawValue: statusCode)
@@ -233,17 +223,7 @@ extension RegistrationCoordinatorImpl {
                 return .reglockFailure(response)
 
             case .retry:
-                let retryAfter: TimeInterval
-                if
-                    let retryAfterHeader,
-                    let retryAfterTime = TimeInterval(retryAfterHeader)
-                {
-                    retryAfter = retryAfterTime
-                } else {
-                    Logger.warn("Missing retry-after header from server; falling back to default.")
-                    retryAfter = Constants.defaultRetryTime
-                }
-                return .retryAfter(retryAfter)
+                return .retryAfter(retryAfterHeader)
 
             case .unauthorized, .regRecoveryPasswordRejected:
                 return .rejectedVerificationMethod
@@ -340,7 +320,7 @@ extension RegistrationCoordinatorImpl {
 
         private static func makeRequest<ResponseType>(
             _ makeRequest: () async throws -> HTTPResponse,
-            handler: (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
+            handler: (_ statusCode: Int, _ retryAfterHeader: TimeInterval?, _ bodyData: Data?) -> ResponseType,
             fallbackError: ResponseType,
             networkFailureError: ResponseType
         ) async -> ResponseType {
@@ -348,7 +328,7 @@ extension RegistrationCoordinatorImpl {
                 let response = try await makeRequest()
                 return handler(
                     response.responseStatusCode,
-                    response.headers[Constants.retryAfterHeader],
+                    response.headers.retryAfterTimeInterval,
                     response.responseBodyData
                 )
             } catch where error.isNetworkFailureOrTimeout {
@@ -356,18 +336,12 @@ extension RegistrationCoordinatorImpl {
             } catch let error as OWSHTTPError {
                 return handler(
                     error.responseStatusCode,
-                    error.responseHeaders?[Constants.retryAfterHeader],
+                    error.responseHeaders?.retryAfterTimeInterval,
                     error.httpResponseData
                 )
             } catch {
                 return fallbackError
             }
-        }
-
-        enum Constants {
-            static let defaultRetryTime: TimeInterval = 3
-
-            static let retryAfterHeader = "retry-after"
         }
     }
 }

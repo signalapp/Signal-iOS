@@ -2106,7 +2106,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .retryAfter(let timeInterval):
-            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+            if failureCount < maxAutomaticRetries, let timeInterval, timeInterval < Constants.autoRetryInterval {
                 let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
                 try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
                 return await registerForRegRecoveryPwPath(
@@ -2115,9 +2115,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     failureCount: failureCount + 1,
                 )
             }
-            // If we get a long timeout, just give up and fall back to the session
-            // path. Reg recovery password based recovery is best effort anyway.
-            // Besides since this is always our first attempt at registering,
+            // If we get a long/infinite timeout, just give up and fall back to the
+            // session path. Reg recovery password based recovery is best effort
+            // anyway. Besides since this is always our first attempt at registering,
             // this lockout should never happen.
             Logger.error("Rate limited when registering via recovery password; falling back to session.")
             wipeInMemoryStateToPreventSVRPathAttempts()
@@ -2752,7 +2752,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
 
         case .retryAfter(let timeInterval):
-            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+            if failureCount < maxAutomaticRetries, let timeInterval, timeInterval < Constants.autoRetryInterval {
                 let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
                 try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
                 return await self.makeRegisterOrChangeNumberRequestFromSession(
@@ -2760,11 +2760,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     failureCount: failureCount + 1,
                 )
             }
-            let timeoutDate = self.deps.dateProvider().addingTimeInterval(max(timeInterval, 15))
-            self.db.write { tx in
-                self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
-                    $0.createAccountTimeout = timeoutDate
+            if let timeInterval {
+                let timeoutDate = self.deps.dateProvider().addingTimeInterval(max(timeInterval, 15))
+                self.db.write { tx in
+                    self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                        $0.createAccountTimeout = timeoutDate
+                    }
                 }
+            } else {
+                db.write { self.resetSession($0) }
             }
             return await nextStep()
         case .deviceTransferPossible:
@@ -2829,14 +2833,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 validationError: .invalidE164(.init(invalidE164: e164))
             ))
         case .retryAfter(let timeInterval):
-            if failureCount < maxAutomaticRetries, timeInterval < Constants.autoRetryInterval {
+            if failureCount < maxAutomaticRetries, let timeInterval, timeInterval < Constants.autoRetryInterval {
                 let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
                 try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
                 return await startSession(e164: e164, failureCount: failureCount + 1)
             }
             return .phoneNumberEntry(phoneNumberEntryState(
                 validationError: .rateLimited(.init(
-                    expiration: deps.dateProvider().addingTimeInterval(max(timeInterval, 15)),
+                    expiration: deps.dateProvider().addingTimeInterval(max(timeInterval ?? 15, 15)),
                     e164: e164
                 )),
             ))
@@ -2910,7 +2914,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Wipe the pending code request, so we don't auto-retry.
             inMemoryState.pendingCodeTransport = nil
             return await nextStep()
-        case .retryAfterTimeout(let session):
+        case .retryAfterTimeout(let session, let retryAfterHeader):
             let timeInterval: TimeInterval?
             switch transport {
             case .sms:
@@ -2918,10 +2922,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .voice:
                 timeInterval = session.nextCall
             }
-            if failureCount < maxAutomaticRetries, let timeInterval, timeInterval < Constants.autoRetryInterval {
+            if
+                failureCount < maxAutomaticRetries,
+                let timeInterval,
+                timeInterval < Constants.autoRetryInterval,
+                let retryAfterHeader,
+                retryAfterHeader < Constants.autoRetryInterval
+            {
                 self.db.write { self.processSession(session, $0) }
                 let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
+                try? await Task.sleep(nanoseconds: max(timeInterval, retryAfterHeader, minimumBackoff).clampedNanoseconds)
                 return await requestSessionCode(
                     session: session,
                     transport: transport,
@@ -3227,7 +3237,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .showErrorSheet(.networkError)
             }
-        case .retryAfterTimeout(let session):
+        case .retryAfterTimeout(let session, retryAfterHeader: _):
             Logger.error("Should not have to retry a captcha challenge request")
             // Clear the pending code; we want the user to press again
             // once the timeout expires.
@@ -3312,11 +3322,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .showErrorSheet(.networkError)
             }
-        case .retryAfterTimeout(let session):
+        case .retryAfterTimeout(let session, let retryAfterHeader):
             db.write { self.processSession(session, $0) }
-            if failureCount < maxAutomaticRetries, let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
+            if
+                failureCount < maxAutomaticRetries,
+                let timeInterval = session.nextVerificationAttempt,
+                timeInterval < Constants.autoRetryInterval,
+                let retryAfterHeader,
+                retryAfterHeader < Constants.autoRetryInterval
+            {
                 let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: max(timeInterval, minimumBackoff).clampedNanoseconds)
+                try? await Task.sleep(nanoseconds: max(timeInterval, retryAfterHeader, minimumBackoff).clampedNanoseconds)
                 return await self.submitSessionCode(
                     session: session,
                     code: code,
@@ -4818,7 +4834,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// Either the session was invalid/expired or the registration recovery password was wrong.
         case rejectedVerificationMethod
         case deviceTransferPossible
-        case retryAfter(TimeInterval)
+        case retryAfter(TimeInterval?)
         case networkError
         case genericError
     }

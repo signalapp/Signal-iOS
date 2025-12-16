@@ -416,7 +416,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             (.malformedRequest, .genericError, false),
             (.disallowed, .disallowed(sessionConverter(responseBody)), true),
             (.missingSession, .invalidSession, false),
-            (.retry, .retryAfterTimeout(sessionConverter(responseBody)), true),
+            (.retry, .retryAfterTimeout(sessionConverter(responseBody), retryAfterHeader: nil), true),
             (.unexpectedError, .genericError, false)
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
@@ -519,9 +519,9 @@ public class RegistrationSessionManagerTest: XCTestCase {
             (.malformedRequest, .genericError, nil),
             (.missingSession, .invalidSession, nil),
             (.newCodeRequired, .success(verifiedResponseSession), verifiedResponseBody),
-            (.newCodeRequired, .retryAfterTimeout(unVerifiedResponseSession), unVerifiedResponseBody),
+            (.newCodeRequired, .retryAfterTimeout(unVerifiedResponseSession, retryAfterHeader: nil), unVerifiedResponseBody),
             (.newCodeRequired, .disallowed(unVerifiedWithNoAttemptResponseSession), unVerifiedWithNoAttemptResponseBody),
-            (.retry, .retryAfterTimeout(unVerifiedResponseSession), unVerifiedResponseBody),
+            (.retry, .retryAfterTimeout(unVerifiedResponseSession, retryAfterHeader: nil), unVerifiedResponseBody),
             (.unexpectedError, .genericError, nil)
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {

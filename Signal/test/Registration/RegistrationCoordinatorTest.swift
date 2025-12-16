@@ -2171,10 +2171,10 @@ public class RegistrationCoordinatorTest {
         // Once we get that session, we should try and send a code.
 
         // Reject with a timeout.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(stubs.session(
-            receivedDate: self.date,
-            nextSMS: 10
-        )))
+        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
+            stubs.session(receivedDate: self.date, nextSMS: 10),
+            retryAfterHeader: nil,
+        ))
 
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the phone number entry screen again
@@ -2708,32 +2708,30 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a retry response.
-        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(stubs.session(
-            nextVerificationAttempt: 10,
-        )))
+        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(
+            stubs.session(nextVerificationAttempt: 10),
+            retryAfterHeader: 10,
+        ))
 
         // Resend an sms code, time that out too.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(stubs.session(
-            nextSMS: 7,
-            nextCall: 0,
-            nextVerificationAttempt: 9,
-        )))
+        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
+            stubs.session(nextSMS: 7, nextCall: 0, nextVerificationAttempt: 9),
+            retryAfterHeader: 7,
+        ))
 
         // Resend an voice code, time that out too
         // Make the timeout SO short that it retries
         sessionManager.didRequestCode = false
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(stubs.session(
-            nextSMS: 6,
-            nextCall: 0.1,
-            nextVerificationAttempt: 8,
-        )))
+        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
+            stubs.session(nextSMS: 6, nextCall: 0.1, nextVerificationAttempt: 8),
+            retryAfterHeader: 0.1,
+        ))
 
         // Be ready for the retry. Ensure we called it the first time.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(stubs.session(
-            nextSMS: 5,
-            nextCall: 4,
-            nextVerificationAttempt: 8,
-        )))
+        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
+            stubs.session(nextSMS: 5, nextCall: 4, nextVerificationAttempt: 8),
+            retryAfterHeader: 4,
+        ))
 
         #expect(
             await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable() ==
@@ -2807,7 +2805,7 @@ public class RegistrationCoordinatorTest {
 
         // Give back a retry response when submitting a code,
         // but with no ability to resubmit.
-        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(stubs.session()))
+        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(stubs.session(), retryAfterHeader: nil))
 
         #expect(
             await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable() ==
@@ -3520,7 +3518,7 @@ public class RegistrationCoordinatorTest {
                 validationError = .invalidE164(.init(invalidE164: previouslyEnteredE164 ?? Stubs.e164))
             case .retryAfter(let timeInterval):
                 validationError = .rateLimited(.init(
-                    expiration: date.addingTimeInterval(timeInterval),
+                    expiration: date.addingTimeInterval(timeInterval!),
                     e164: previouslyEnteredE164 ?? Stubs.e164
                 ))
             case .networkFailure, .genericError:

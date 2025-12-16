@@ -113,7 +113,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             let .success(session),
             let .disallowed(session),
             let .rejectedArgument(session),
-            let .retryAfterTimeout(session),
+            let .retryAfterTimeout(session, retryAfterHeader: _),
             let .transportError(session):
             await db.awaitableWrite { self.persist(session: session, $0) }
         case .invalidSession:
@@ -203,7 +203,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func handleBeginSessionResponse(
         forE164 e164: E164,
         statusCode: Int,
-        retryAfterHeader: String?,
+        retryAfterHeader: TimeInterval?,
         bodyData: Data?
     ) -> Registration.BeginSessionResponse {
         let statusCode = RegistrationServiceResponses.BeginSessionResponseCodes(rawValue: statusCode)
@@ -216,16 +216,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         case .invalidArgument, .missingArgument:
             return .invalidArgument
         case .retry:
-            let retryAfter: TimeInterval
-            if
-                let retryAfterHeader,
-                let retryAfterTime = TimeInterval(retryAfterHeader)
-            {
-                retryAfter = retryAfterTime
-            } else {
-                retryAfter = Constants.defaultRetryTime
-            }
-            return .retryAfter(retryAfter)
+            return .retryAfter(retryAfterHeader)
         case .unexpectedError, .none:
             return .genericError
         }
@@ -255,13 +246,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return await makeUpdateRequest(
             request,
             session: session,
-            handler: self.handleFulfillChallengeResponse(sessionAtSendTime:statusCode:bodyData:)
+            handler: self.handleFulfillChallengeResponse(sessionAtSendTime:statusCode:retryAfterHeader:bodyData:)
         )
     }
 
     private func handleFulfillChallengeResponse(
         sessionAtSendTime: RegistrationSession,
         statusCode: Int,
+        retryAfterHeader: TimeInterval?,
         bodyData: Data?
     ) -> Registration.UpdateSessionResponse {
         let e164 = sessionAtSendTime.e164
@@ -324,13 +316,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return await makeUpdateRequest(
             request,
             session: session,
-            handler: self.handleRequestVerificationCodeResponse(sessionAtSendTime:statusCode:bodyData:)
+            handler: self.handleRequestVerificationCodeResponse(sessionAtSendTime:statusCode:retryAfterHeader:bodyData:)
         )
     }
 
     private func handleRequestVerificationCodeResponse(
         sessionAtSendTime: RegistrationSession,
         statusCode: Int,
+        retryAfterHeader: TimeInterval?,
         bodyData: Data?
     ) -> Registration.UpdateSessionResponse {
         let e164 = sessionAtSendTime.e164
@@ -350,7 +343,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return registrationSession(
                 fromResponseBody: bodyData,
                 e164: e164
-            ).map { .retryAfterTimeout($0) } ?? .genericError
+            ).map { .retryAfterTimeout($0, retryAfterHeader: retryAfterHeader) } ?? .genericError
         case .providerFailure:
             return serverFailureResponse(fromResponseBody: bodyData, sessionAtSendTime: sessionAtSendTime).map { .serverFailure($0) } ?? .genericError
         case .missingSession:
@@ -378,13 +371,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return await makeUpdateRequest(
             request,
             session: session,
-            handler: self.handleSubmitVerificationCodeResponse(sessionAtSendTime:statusCode:bodyData:)
+            handler: self.handleSubmitVerificationCodeResponse(sessionAtSendTime:statusCode:retryAfterHeader:bodyData:)
         )
     }
 
     private func handleSubmitVerificationCodeResponse(
         sessionAtSendTime: RegistrationSession,
         statusCode: Int,
+        retryAfterHeader: TimeInterval?,
         bodyData: Data?
     ) -> Registration.UpdateSessionResponse {
         let e164 = sessionAtSendTime.e164
@@ -410,7 +404,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return registrationSession(
                 fromResponseBody: bodyData,
                 e164: e164
-            ).map { .retryAfterTimeout($0) } ?? .genericError
+            ).map { .retryAfterTimeout($0, retryAfterHeader: retryAfterHeader) } ?? .genericError
         case .missingSession:
             return .invalidSession
         case .newCodeRequired:
@@ -428,7 +422,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 return .success(session)
             } else if session.nextVerificationAttempt != nil {
                 // We can submit a code, but not yet.
-                return .retryAfterTimeout(session)
+                return .retryAfterTimeout(session, retryAfterHeader: retryAfterHeader)
             } else {
                 // There is no code to submit.
                 return .disallowed(session)
@@ -496,12 +490,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // MARK: - Generic Request Helpers
 
-    enum Constants {
-        static let defaultRetryTime: TimeInterval = 3
-
-        static let retryAfterHeader = "retry-after"
-    }
-
     private func registrationSession(
         fromResponseBody bodyData: Data?,
         e164: E164
@@ -563,7 +551,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func makeRequest<ResponseType>(
         _ request: TSRequest,
         e164: E164,
-        handler: @escaping (_ e164: E164, _ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
+        handler: @escaping (_ e164: E164, _ statusCode: Int, _ retryAfterHeader: TimeInterval?, _ bodyData: Data?) -> ResponseType,
         fallbackError: ResponseType,
         networkFailureError: ResponseType
     ) async -> ResponseType {
@@ -572,7 +560,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return handler(
                 e164,
                 response.responseStatusCode,
-                response.headers[Constants.retryAfterHeader],
+                response.headers.retryAfterTimeInterval,
                 response.responseBodyData
             )
         } catch {
@@ -585,7 +573,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return handler(
                 e164,
                 error.responseStatusCode,
-                error.responseHeaders?.value(forHeader: Constants.retryAfterHeader),
+                error.responseHeaders?.retryAfterTimeInterval,
                 error.httpResponseData
             )
         }
@@ -594,13 +582,13 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func makeUpdateRequest(
         _ request: TSRequest,
         session: RegistrationSession,
-        handler: @escaping (_ priorSession: RegistrationSession, _ statusCode: Int, _ bodyData: Data?) -> Registration.UpdateSessionResponse
+        handler: @escaping (_ priorSession: RegistrationSession, _ statusCode: Int, _ retryAfterHeader: TimeInterval?, _ bodyData: Data?) -> Registration.UpdateSessionResponse
     ) async -> Registration.UpdateSessionResponse {
         return await makeRequest(
             request,
             e164: session.e164,
-            handler: { _, statusCode, _, bodyData in
-                return handler(session, statusCode, bodyData)
+            handler: { _, statusCode, retryAfterHeader, bodyData in
+                return handler(session, statusCode, retryAfterHeader, bodyData)
             },
             fallbackError: .genericError,
             networkFailureError: .networkFailure

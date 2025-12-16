@@ -148,16 +148,7 @@ public class HTTPUtils {
     }
 
     public static func retryDelayNanoSeconds(_ response: HTTPResponse, defaultRetryTime: TimeInterval = 15) -> UInt64 {
-        let retryAfter: TimeInterval
-        if
-            let retryAfterHeader = response.headers["retry-after"],
-            let retryAfterTime = TimeInterval(retryAfterHeader)
-        {
-            retryAfter = retryAfterTime
-        } else {
-            retryAfter = defaultRetryTime
-        }
-        return retryAfter.clampedNanoseconds
+        return (response.headers.retryAfterTimeInterval ?? defaultRetryTime).clampedNanoseconds
     }
 }
 
@@ -283,17 +274,7 @@ public func owsFailBetaUnlessNetworkFailure(
 extension HttpHeaders {
 
     public var retryAfterTimeInterval: TimeInterval? {
-        guard let retryAfterStringValue else {
-            return nil
-        }
-
-        let timeInterval = TimeInterval(retryAfterStringValue)
-
-        guard let timeInterval, timeInterval > 0 else {
-            return nil
-        }
-
-        return timeInterval
+        return retryAfterStringValue.flatMap(TimeInterval.init(_:))
     }
 
     public var retryAfterDate: Date? {
