@@ -185,6 +185,7 @@ private class ConversationBannerView: UIView {
         var titleLabel = UILabel()
         var bodyLabel = UILabel()
         var thumbnail: UIImageView?
+        var isAnimating: Bool = false
 
         init(configuration: ContentConfiguration) {
             _configuration = configuration
@@ -230,7 +231,7 @@ private class ConversationBannerView: UIView {
             {
                 animatePinnedMessageTransition(
                     newTitle: title,
-                    newBody: configuration.body.string,
+                    newBody: configuration.body,
                     newThumbnail: configuration.thumbnail
                 )
             } else {
@@ -329,19 +330,23 @@ private class ConversationBannerView: UIView {
             }
         }
 
-        private func animatePinnedMessageTransition(newTitle: String, newBody: String, newThumbnail: UIImageView?) {
-            func makeAnimatedStack(title: String?, body: String?, thumbnailImageView: UIImageView?) -> (UIStackView) {
+        private func animatePinnedMessageTransition(newTitle: String, newBody: NSAttributedString, newThumbnail: UIImageView?) {
+            func makeAnimatedStack(title: String?, body: NSAttributedString?, thumbnailImageView: UIImageView?) -> (UIStackView) {
                 let hStack = UIStackView()
                 hStack.axis = .horizontal
                 hStack.spacing = 12
 
                 let _titleLabel = UILabel()
+                _titleLabel.numberOfLines = 0
+                _titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
+                _titleLabel.textColor = .Signal.label
                 _titleLabel.text = title
-                _titleLabel.font = titleLabel.font
 
                 let _bodyLabel = UILabel()
-                _bodyLabel.text = body
-                _bodyLabel.font = bodyLabel.font
+                _bodyLabel.numberOfLines = 0
+                _bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
+                _bodyLabel.textColor = .Signal.label
+                _bodyLabel.attributedText = body
 
                 let newTextStack = UIStackView(arrangedSubviews: [_titleLabel, _bodyLabel])
                 newTextStack.axis = .vertical
@@ -356,7 +361,7 @@ private class ConversationBannerView: UIView {
 
             let oldAnimatedStack = makeAnimatedStack(
                 title: titleLabel.text,
-                body: bodyLabel.text,
+                body: bodyLabel.attributedText,
                 thumbnailImageView: thumbnail
             )
             let newAnimatedStack = makeAnimatedStack(
@@ -403,10 +408,11 @@ private class ConversationBannerView: UIView {
             }
 
             pinAnimator.addCompletion { [self] _ in
+                self.isAnimating = false
                 fixedHeightAnimationView.removeFromSuperview()
 
                 self.titleLabel.text = newTitle
-                self.bodyLabel.text = newBody
+                self.bodyLabel.attributedText = newBody
                 self.thumbnail = newThumbnail
 
                 let textStackIndex: Int
@@ -418,6 +424,7 @@ private class ConversationBannerView: UIView {
                 }
                 insertArrangedSubview(textStackView, at: textStackIndex)
             }
+            self.isAnimating = true
             pinAnimator.startAnimation()
         }
 
@@ -497,6 +504,13 @@ private class ConversationBannerView: UIView {
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+    }
+
+    public func isAnimating() -> Bool {
+        guard let bannerContentView = contentView as? ConversationBannerContentView else {
+            return false
+        }
+        return bannerContentView.isAnimating
     }
 
     public func animateBannerFadeIn() {
@@ -995,8 +1009,14 @@ internal extension ConversationViewController {
                 imageView.setCompressionResistanceHigh()
                 return imageView
             }(),
-            bannerTapAction: threadViewModel.pinnedMessages.count == 1 ? nil : { [weak self] in
-                self?.handleTappedPinnedMessage()
+            bannerTapAction: { [weak self] in
+                guard let priorPinnedMessage = self?.bannerStackView?.arrangedSubviews.last as? ConversationBannerView else {
+                    return
+                }
+
+                if !priorPinnedMessage.isAnimating() {
+                    self?.handleTappedPinnedMessage()
+                }
             },
             isPinnedMessagesBanner: true
         )
